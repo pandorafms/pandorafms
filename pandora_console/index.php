@@ -1513,7 +1513,7 @@ require 'include/php_to_js_values.php';
 <script type="text/javascript" language="javascript">
     // Handle the scroll.
     $(document).ready(scrollFunction());
-    $(document).ready(menuResizing());
+    $(document).ready(menuActionButtonResizing());
     // When there are less than 5 rows, all rows must be white
     var theme = "<?php echo $config['style']; ?>";
     if (theme === 'pandora') {
@@ -1522,7 +1522,7 @@ require 'include/php_to_js_values.php';
         }
     }
 
-    //$('.button_collapse').on('click', menuResizing());
+    //$('.button_collapse').on('click', menuActionButtonResizing());
 
     // Cursor change for show a spinner. Experimental.
     /*
@@ -1543,8 +1543,8 @@ require 'include/php_to_js_values.php';
         scrollFunction()
     };
 
-    function menuResizing() {
-        $('.action_buttons_right_content').attr('style', 'left: '+($('#menu_full').width() + 36)+'px;');
+    function menuActionButtonResizing() {
+        $('.action_buttons_right_content').attr('style', 'left: '+($('#menu_full').width())+'px;');
     }
 
     function scrollFunction() {
@@ -1557,36 +1557,6 @@ require 'include/php_to_js_values.php';
                 document.getElementById("top_btn").style.display = "none";
             }
         }
-/*
-        var separationHeight = 10;
-        // Position of the visible part of document.
-        var scrollTop = document.documentElement.scrollTop;
-        // Height of all document.
-        var scrollHeight = document.documentElement.scrollHeight;
-        // Height of visible window (browser).
-        var clientHeight = document.documentElement.clientHeight;
-        // Height of footer (Plus 10px).
-        var footerHeight = document.getElementById('foot').offsetHeight + separationHeight;*/
-        // Fixed action buttons element.
-        var actionButtons = document.getElementById('principal_action_buttons');
-        // Handle the position of principal_action_buttons.
-        if (actionButtons) {
-            var $bottom = '', $left = '';
-            /*
-            if ((scrollHeight - clientHeight - scrollTop) < footerHeight) {
-                $bottom = 'bottom:'+(footerHeight - (scrollHeight - clientHeight - window.scrollY))+'px;';
-            } else {
-                $bottom = 'bottom:'+separationHeight+'px;';
-            }
-            */
-            if (actionButtons.classList.contains('fixed_action_buttons_size') === false) {
-                $left = 'left:'+(document.documentElement.offsetWidth - document.getElementById('principal_action_buttons').offsetWidth - 20)+'px;';
-                actionButtons.setAttribute('style', $left);
-            }
-            // Set the position of principal action buttons.
-            //actionButtons.setAttribute('style', $left+$bottom);
-        }
-
     }
 
     // When the user clicks on the button, scroll to the top of the document.

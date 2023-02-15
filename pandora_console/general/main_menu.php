@@ -214,6 +214,7 @@ echo '</div>';
             $('div#page').toggleClass('page_classic page_collapsed');
             $('#header_table').toggleClass('header_table_classic header_table_collapsed');
             $('li.menu_icon').toggleClass("no_hidden_menu menu_icon_collapsed");
+            menuActionButtonResizing();
         });
 
         const id_selected = '<?php echo $menu1_selected; ?>';

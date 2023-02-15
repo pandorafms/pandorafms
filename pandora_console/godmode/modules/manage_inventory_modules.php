@@ -278,7 +278,7 @@ if ($create_module_inventory === true) {
 $total_modules = db_get_sql('SELECT COUNT(*) FROM tmodule_inventory');
 
 $table = new stdClass();
-$table->styleTable = 'margin: 10px 10px 0; width: -webkit-fill-available';
+$table->styleTable = 'margin: 10px 10px 0; width: -webkit-fill-available; width: -moz-available';
 $table->class = 'info_table';
 $table->size = [];
 $table->size[0] = '140px';

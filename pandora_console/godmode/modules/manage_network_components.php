@@ -743,7 +743,7 @@ if ($components === false) {
 }
 
 $table = new stdClass();
-$table->styleTable = 'margin: 10px 10px 0; width: -webkit-fill-available';
+$table->styleTable = 'margin: 10px 10px 0; width: -webkit-fill-available; width: -moz-available';
 $table->head = [];
 $table->class = 'info_table';
 if ($is_management_allowed === true) {

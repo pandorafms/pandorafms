@@ -528,12 +528,12 @@ ul li {
 }
 
 .header_table_classic {
-  padding-left: 315px;
+  padding-left: 300px;
   /* 280 + 35 */
 }
 
 .header_table_collapsed {
-  padding-left: 115px;
+  padding-left: 100px;
   /* 80 + 35 */
 }
 

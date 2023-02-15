@@ -63,6 +63,7 @@ function dialog_message(message_id) {
                     .parent()
                     .addClass('checkselected');
                 $(".check_delete").prop("checked", true);
+                console.log($('.check_delete'));
                 $('.check_delete').each(function(){
                     $('#hidden-id_report_'+$(this).val()).prop("disabled", false);
                 });
@@ -73,6 +74,7 @@ function dialog_message(message_id) {
                     .parent()
                     .parent()
                     .removeClass('checkselected');
+                console.log($('.check_delete'));
                 $(".check_delete").prop("checked", false);
             }
         });
@@ -253,7 +255,7 @@ if ($idReport != 0) {
         // Despite its permissions.
         $delete_report_bypass = false;
 
-        if ($action == 'delete_report') {
+        if ($action === 'delete_report') {
             if ($config['id_user'] == $report['id_user']
                 || is_user_admin($config['id_user'])
             ) {
@@ -887,11 +889,10 @@ switch ($action) {
             $filtersStr = http_build_query($filters, '', '&amp;');
             $url = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
             $url .= '&'.$filtersStr;
-            ui_pagination($total_reports, $url, $offset, $pagination);
-
+            // ui_pagination($total_reports, $url, $offset, $pagination);
             $table = new stdClass();
             $table->id = 'report_list';
-            $table->width = '100%';
+            $table->styleTable = 'margin: 0 10px;';
             $table->class = 'info_table';
             $table->cellpadding = 0;
             $table->cellspacing = 0;
@@ -1044,37 +1045,55 @@ switch ($action) {
                         ['title' => __('This report exceeds the item limit for realtime operations')]
                     );
                     $data[3] = null;
-                } else if (!$report['non_interactive']) {
-                    $data[2] = '<a href="'.$config['homeurl'].'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure.'">';
-                    $data[2] .= html_print_image(
-                        'images/html.png',
-                        true,
+                } else if ((bool) $report['non_interactive'] === false) {
+                    $data[2] = html_print_anchor(
                         [
-                            'title' => __('HTML view'),
-                            'class' => 'invert_filter',
-                        ]
+                            'href'    => $config['homeurl'].'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure,
+                            'content' => html_print_image(
+                                'images/file-html.svg',
+                                true,
+                                [
+                                    'title' => __('HTML view'),
+                                    'class' => 'invert_filter main_menu_icon',
+                                ]
+                            ),
+                        ],
+                        true
                     );
-                    $data[2] .= '</a>';
-                    $data[3] = '<a onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
-                    $data[3] .= html_print_image(
-                        'images/xml.png',
-                        true,
+
+                    $data[3] = html_print_anchor(
                         [
-                            'title' => __('Export to XML'),
-                            'class' => 'invert_filter',
-                        ]
+                            'onClick' => 'blockResubmit($(this))',
+                            'href'    => ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'],
+                            'content' => html_print_image(
+                                'images/file-xml.svg',
+                                true,
+                                [
+                                    'title' => __('Export to XML'),
+                                    'class' => 'invert_filter main_menu_icon',
+                                ]
+                            ),
+                        ],
+                        true
                     );
-                    $data[3] .= '</a>';
                     // I chose ajax.php because it's supposed
                     // to give XML anyway.
                 } else {
                     $data[2] = html_print_image(
-                        'images/html_disabled.png',
-                        true
+                        'images/file-html.svg',
+                        true,
+                        [
+                            'title' => __('HTML view'),
+                            'class' => 'invert_filter main_menu_icon alpha50',
+                        ]
                     );
                     $data[3] = html_print_image(
-                        'images/xml_disabled.png',
-                        true
+                        'images/file-xml.svg',
+                        true,
+                        [
+                            'title' => __('Export to XML'),
+                            'class' => 'invert_filter main_menu_icon alpha50',
+                        ]
                     );
                 }
 
@@ -1145,89 +1164,103 @@ switch ($action) {
 
                 if ($edit || $delete) {
                     $columnview = true;
-                    $table->cellclass[][$next] = 'table_action_buttons';
-
+                    // $table->cellclass[][$next] = 'table_action_buttons';
+                    $tableActionButtons = [];
                     if (!isset($table->head[$next])) {
                         $table->head[$next] = '<span title="Operations">'.__('Op.').'</span>'.html_print_checkbox('all_delete', 0, false, true, false);
                         $table->size = [];
-                        // $table->size[$next] = '80px';
                     }
 
                     if ($edit) {
-                        $data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" class="inline_line">';
-                        $data[$next] .= html_print_input_image(
+                        $tableActionButtons[] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" class="inline_line">';
+                        $tableActionButtons[] = html_print_input_image(
                             'edit',
-                            'images/config.png',
+                            'images/edit.svg',
                             1,
                             '',
                             true,
-                            ['title' => __('Edit')]
+                            [
+                                'title' => __('Edit'),
+                                'class' => 'main_menu_icon',
+                            ]
                         );
-                        $data[$next] .= html_print_input_hidden(
+                        $tableActionButtons[] = html_print_input_hidden(
                             'id_report',
                             $report['id_report'],
                             true
                         );
-                        $data[$next] .= '</form>';
+                        $tableActionButtons[] = '</form>';
                     }
 
-                    $data[$next] .= '<form method="post" style="display: inline"; onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-                    $data[$next] .= html_print_input_hidden(
+                    $tableActionButtons[] = '<form method="post" style="display: inline"; onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+                    $tableActionButtons[] = html_print_input_hidden(
                         'id_report',
                         $report['id_report'],
                         true
                     );
-                    $data[$next] .= html_print_input_hidden(
+                    $tableActionButtons[] = html_print_input_hidden(
                         'action',
                         'copy_report',
                         true
                     );
-                    $data[$next] .= html_print_input_image(
+                    $tableActionButtons[] = html_print_input_image(
                         'dup',
-                        'images/copy.png',
+                        'images/copy.svg',
                         1,
                         '',
                         true,
-                        ['title' => __('Duplicate')]
+                        [
+                            'title' => __('Duplicate'),
+                            'class' => 'main_menu_icon',
+                        ]
                     );
-                    $data[$next] .= '</form> ';
+                    $tableActionButtons[] = '</form> ';
 
                     if ($delete) {
-                        $data[$next] .= '<form method="post" class="inline_line" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-                        $data[$next] .= html_print_input_image(
+                        $tableActionButtons[] = '<form method="post" class="inline_line" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+                        $tableActionButtons[] = html_print_input_image(
                             'delete',
-                            'images/cross.png',
+                            'images/delete.svg',
                             1,
                             'margin-right: 10px;',
                             true,
                             [
                                 'title' => __('Delete'),
-                                'class' => 'invert_filter',
+                                'class' => 'main_menu_icon',
                             ]
                         );
-                        $data[$next] .= html_print_input_hidden(
+                        $tableActionButtons[] = html_print_input_hidden(
                             'id_report',
                             $report['id_report'],
                             true
                         );
-                        $data[$next] .= html_print_input_hidden(
+                        $tableActionButtons[] = html_print_input_hidden(
                             'action',
                             'delete_report',
                             true
                         );
 
-                        $data[$next] .= html_print_checkbox_extended(
+                        $tableActionButtons[] = html_print_checkbox_extended(
                             'massive_report_check',
                             $report['id_report'],
                             false,
                             false,
                             '',
-                            'class="check_delete"',
+                            [ 'input_class' => 'check_delete' ],
                             true
                         );
 
-                        $data[$next] .= '</form>';
+                        $tableActionButtons[] = '</form>';
                     }
+
+                    $data[$next] = html_print_div(
+                        [
+                            'class'   => 'table_action_buttons',
+                            'style'   => 'padding-top: 8px;',
+                            'content' => implode('', $tableActionButtons),
+                        ],
+                        true
+                    );
                 } else {
                     if ($op_column) {
                         $data[$next] = '';
@@ -1237,18 +1270,15 @@ switch ($action) {
                 array_push($table->data, $data);
             }
 
-
-
             html_print_table($table);
-            ui_pagination(
+            $tablePagination = ui_pagination(
                 $total_reports,
                 $url,
                 $offset,
                 $pagination,
-                false,
-                'offset',
                 true,
-                'pagination-bottom'
+                'offset',
+                false,
             );
         } else {
             ui_print_info_message(
@@ -1262,25 +1292,28 @@ switch ($action) {
         if (check_acl($config['id_user'], 0, 'RW')
             || check_acl($config['id_user'], 0, 'RM')
         ) {
-            $output = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
-            $buttonsOutput .= html_print_submit_button(
+            $buttonsOutput = [];
+            // Create form.
+            $buttonsOutput[] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
+            $buttonsOutput[] = html_print_submit_button(
                 __('Create report'),
                 'create',
                 false,
                 [ 'icon' => 'next' ],
                 true
             );
-            $output .= '</form>';
+            $buttonsOutput[] = '</form>';
 
-            $output .= '<form class="inline_line" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
+            // Delete form.
+            $buttonsOutput[] = '<form class="inline_line mrgn_right_10px" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
 
             foreach ($reports as $report) {
-                $output .= '<input class="massive_report_form_elements" id="hidden-id_report_'.$report['id_report'].'" name="id_report[]" type="hidden" disabled value="'.$report['id_report'].'">';
+                $buttonsOutput[] = '<input class="massive_report_form_elements" id="hidden-id_report_'.$report['id_report'].'" name="id_report[]" type="hidden" disabled value="'.$report['id_report'].'">';
             }
 
             if (empty($report) === false) {
-                $output .= '<input id="hidden-action" name="action" type="hidden" value="delete_report">';
-                $buttonsOutput .= html_print_submit_button(
+                $buttonsOutput[] = html_print_input_hidden('action', 'delete_report', true);
+                $buttonsOutput[] = html_print_submit_button(
                     __('Delete'),
                     'delete_btn',
                     false,
@@ -1292,17 +1325,16 @@ switch ($action) {
                 );
             }
 
-            $output .= html_print_div(
+            $buttonsOutput[] = '</form>';
+
+            echo html_print_action_buttons(
+                implode('', $buttonsOutput),
                 [
-                    'class'   => 'action-buttons',
-                    'content' => $buttonsOutput,
+                    'type'          => 'form_action',
+                    'right_content' => $tablePagination,
                 ],
                 true
             );
-
-            $output .= '</form>';
-
-            echo $output;
         }
 
         enterprise_hook('close_meta_frame');

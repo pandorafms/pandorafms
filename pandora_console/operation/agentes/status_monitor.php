@@ -162,7 +162,7 @@ $autosearch = false;
 // It is validated if it receives parameters different from those it has by default.
 if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
     || $ag_modulename !== '' || $refr !== 0 || $offset !== 0 || $status !== 4
-    || $modulegroup !== -1 || $tag_filter !== 0 || $sortField !== ''
+    || $modulegroup !== -1 || (bool) array_filter($tag_filter) !== false || $sortField !== ''
     || $sort !== 'none' || $id_module !== 0 || $module_option !== 1
     || $min_hours_status !== ''
 ) {
@@ -276,6 +276,7 @@ if ($loaded_filter['id_filter'] > 0) {
         if (is_array($tag_filter) === false) {
             $tag_filter = json_decode($tag_filter, true);
         }
+
         if ($tag_filter === '') {
             $tag_filter = [0 => 0];
         }

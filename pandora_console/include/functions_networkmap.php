@@ -1126,6 +1126,10 @@ function networkmap_open_graph(
             $head .= 'overlap="scalexy";';
         }
 
+        if ($layout == 'spring1' || $layout == 'spring2') {
+            $head .= 'sep="'.$node_sep.'";';
+        }
+
         if ($layout === 'flat') {
             $head .= 'ranksep="'.$rank_sep.'";';
         } else if ($layout === 'spring2') {

@@ -1196,6 +1196,10 @@ class NetworkMap
                 $head .= 'overlap="scalexy";';
             }
 
+            if ($layout == 'spring1' || $layout == 'spring2') {
+                $head .= 'sep="'.$node_sep.'";';
+            }
+
             if ($layout == 'flat') {
                 $head .= 'ranksep="'.$rank_sep.'";';
             }
@@ -3505,6 +3509,7 @@ class NetworkMap
             url_background_grid: url_background_grid,
             refresh_time: '.$this->mapOptions['refresh_time'].',
             font_size: '.$this->mapOptions['font_size'].',
+            method: '.$this->map['generation_method'].',
             base_url_homedir: "'.ui_get_full_url(false).'"
         });
         init_drag_and_drop();

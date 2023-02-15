@@ -4250,7 +4250,7 @@ function ui_toggle(
     }
 
     // Options.
-    $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-fill-available;';
+    $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-available;';
     $style = 'overflow:hidden;';
     if ($hidden_default === true) {
         $imageRotate = '180deg';

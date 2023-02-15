@@ -1750,7 +1750,7 @@ div.title_line {
   border-bottom: 1px solid #c1ccdc;
   /* width: calc(100% + 3em); */
   width: -webkit-fill-available;
-  width: -moz-fill-available;
+  width: -moz-available;
   padding-right: 0px;
   /* margin-bottom: 20px; */
   height: 53px;
@@ -2759,6 +2759,7 @@ td.cellBig {
 
 .info_box_container.info_box_information {
   width: -webkit-fill-available;
+  width: -moz-available;
   position: relative;
   top: 0 !important;
   right: 0;
@@ -10765,6 +10766,7 @@ tr.bring_next_field {
   bottom: 8px;
   z-index: 1;
   width: -webkit-fill-available;
+  width: -moz-available;
   padding-right: 10px;
 }
 
@@ -10782,12 +10784,13 @@ tr.bring_next_field {
 
 .fixed_action_buttons_size {
   width: -webkit-fill-available;
-  width: -moz-fill-available;
+  width: -moz-available;
   /*margin-right: 20px;*/
 }
 
 .action_buttons_background_mask {
   width: -webkit-fill-available;
+  width: -moz-available;
   position: absolute;
   left: 0;
   height: 58px;
@@ -10861,7 +10864,7 @@ pre.external_tools_output {
   background-color: #fff;
   z-index: 1;
   width: -webkit-fill-available;
-  width: -moz-fill-available;
+  width: -moz-available;
 }
 
 /*
@@ -11021,7 +11024,7 @@ span.subsection_header_title {
 
 .width_available {
   width: -webkit-fill-available !important;
-  width: -moz-fill-available !important;
+  width: -moz-available !important;
 }
 
 .snmp-td {

@@ -57,10 +57,10 @@ if ($new_networkmap) {
     $offset_x = '';
     $offset_y = '';
     $scale_z = 0.5;
-    $node_sep = 10;
-    $rank_sep = 1.0;
+    $node_sep = 0.25;
+    $rank_sep = 0.5;
     $mindist = 1.0;
-    $kval = 5;
+    $kval = 0.3;
     $refresh_time = 300;
 }
 
@@ -565,7 +565,7 @@ $(document).ready(function() {
             $("#form_editor-kval")
                 .css('display', 'none');
             $("#form_editor-nodesep")
-                .css('display', '');
+                .css('display', 'none');
         }
         else if (method == 'neato') {
             $("#form_editor-ranksep")

@@ -4231,10 +4231,13 @@ function events_page_details($event, $server_id=0)
 
         $data = [];
         $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('OS').'</div>';
-        $data[1] = ui_print_os_icon($agent['id_os'], true, true);
+        $data[1] = '<div style="display:flex"><div class="main_menu_icon">'.ui_print_os_icon($agent['id_os'], false, true).'</div>';
+        $data[1] .= get_os_name($agent['id_os']);
         if (empty($agent['os_version']) === false) {
             $data[1] .= ' ('.$agent['os_version'].')';
         }
+
+        $data[1] .= '</div>';
 
         $table_details->data[] = $data;
 

@@ -594,7 +594,7 @@ $row['control'] .= '&nbsp;<span id="test-integria-message" class="invisible"></s
 $table_remote->data['integria_test'] = $row;
 
 // Print.
-echo '<div class="center pdd_b_20px">';
+echo '<div class="center pdd_b_20px mrgn_top_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
 html_print_image(
     'images/integria_logo.svg',

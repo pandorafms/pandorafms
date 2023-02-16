@@ -11173,3 +11173,7 @@ form#satellite_conf_edit > fieldset.full-column {
 #principal_action_buttons .select2-container {
   z-index: 50;
 }
+
+.action-buttons > button {
+  margin: 10px;
+}

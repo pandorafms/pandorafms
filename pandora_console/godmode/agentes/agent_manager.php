@@ -479,6 +479,8 @@ if (isset($groups[$grupo]) === true || $new_agent === true) {
         false,
         false,
         '540px',
+        false,
+        true,
     );
 } else {
     $tableAgent->data['primary_group'][0] .= groups_get_name($grupo);

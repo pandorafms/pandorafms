@@ -192,7 +192,10 @@ class TipsWindow
     {
         global $config;
         $exclude = get_parameter('exclude', '');
+        $userInfo = users_get_user_by_id($config['id_user']);
         $profilesUser = users_get_user_profile($config['id_user']);
+        $language = ($userInfo['language'] !== 'default') ? $userInfo['language'] : $config['language'];
+
         $idProfilesFilter = '0';
         foreach ($profilesUser as $key => $profile) {
             $idProfilesFilter .= ','.$profile['id_perfil'];
@@ -211,7 +214,7 @@ class TipsWindow
 
         $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
 
-        $sql .= ' ORDER BY CASE WHEN id_lang = "'.$config['language'].'" THEN id_lang END DESC, RAND()';
+        $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
 
         $tip = db_get_row_sql($sql);
 
@@ -419,11 +422,7 @@ class TipsWindow
     {
         global $config;
 
-        // Init data.
         $data = [];
-        // Count of total records.
-        $count = 0;
-        // Catch post parameters.
         $start  = get_parameter('start', 0);
         $length = get_parameter('length', $config['block_size']);
         $orderDatatable = get_datatable_order(true);
@@ -568,6 +567,14 @@ class TipsWindow
         $table->data = [];
         $table->data[0][0] = __('Images');
         $table->data[0][1] .= html_print_div(['id' => 'inputs_images'], true);
+        $table->data[0][1] .= html_print_div(
+            [
+                'id'      => 'notices_images',
+                'class'   => 'invisible',
+                'content' => '<p>'.__('Wrong size, we recommend images of 464x260 px').'</p>',
+            ],
+            true
+        );
         $table->data[0][1] .= html_print_button(__('Add image'), 'button_add_image', false, '', '', true);
         $table->data[1][0] = __('Language');
         $table->data[1][1] = html_print_select_from_sql(
@@ -637,7 +644,7 @@ class TipsWindow
                 );
                 $outputImagesTip .= html_print_div(
                     [
-                        'class'   => 'image-tip',
+                        'class'   => 'image_tip',
                         'content' => $imageTip,
                     ],
                     true
@@ -658,6 +665,14 @@ class TipsWindow
         $table->data[0][1] .= $outputImagesTip;
         $table->data[0][1] .= html_print_div(['id' => 'inputs_images'], true);
         $table->data[0][1] .= html_print_input_hidden('images_to_delete', '{}', true);
+        $table->data[0][1] .= html_print_div(
+            [
+                'id'      => 'notices_images',
+                'class'   => 'invisible',
+                'content' => '<p>'.__('Wrong size, we recommend images of 464x260 px').'</p>',
+            ],
+            true
+        );
         $table->data[0][1] .= html_print_button(__('Add image'), 'button_add_image', false, '', '', true);
         $table->data[1][0] = __('Language');
         $table->data[1][1] = html_print_select_from_sql(

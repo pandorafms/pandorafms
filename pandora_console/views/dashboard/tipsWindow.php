@@ -70,8 +70,8 @@ $output .= '<div class="ui-dialog-buttonset">';
 // TODO Delete this buttons and use html_print_button when merge new design
 $output .= '<button type="button" class="submit-cancel-tips ui-button ui-corner-all ui-widget" onclick="close_dialog()">Maybe later</button>';
 $output .= '<div class="counter-tips">';
-$output .= html_print_image('images/arrow-left-grey.png', true, ['class' => 'arrow-counter']);
-$output .= html_print_image('images/arrow-right-grey.png', true, ['class' => 'arrow-counter']);
+$output .= html_print_image('images/arrow-left-grey.png', true, ['class' => 'arrow_counter']);
+$output .= html_print_image('images/arrow-right-grey.png', true, ['class' => 'arrow_counter']);
 $output .= '</div>';
 $output .= '<button type="button" class="submit-next-tips ui-button ui-corner-all ui-widget" onclick="next_tip()">Ok</button>';
 $output .= '</div>';

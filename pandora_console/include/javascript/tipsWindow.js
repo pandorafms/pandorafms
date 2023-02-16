@@ -6,14 +6,15 @@ $(document).ready(function() {
     $(div_image).attr("class", "action_image");
     $(div_image).append(
       `<input type="file" accept="image/png,image/jpeg,image/gif" name="file_${numberImages +
-        1}" />`
+        1}"  onchange="checkImage(this)"/>`
     );
     $(div_image).append(
-      `<input type="image" src="images/delete.png" onclick="removeImage('file_${numberImages +
+      `<input type="image" src="images/delete.png" onclick="removeInputImage('file_${numberImages +
         1}');" class="remove-image" value="-"/>`
     );
     $("#inputs_images").append(div_image);
   });
+
   $("#image-delete_image_tip1").on("click", function(e) {
     e.preventDefault();
   });
@@ -38,7 +39,24 @@ $("#checkbox_tips_startup").ready(function() {
     });
   });
 });
+function checkImage(e) {
+  var maxWidth = 464;
+  var maxHeight = 260;
 
+  var reader = new FileReader();
+  reader.readAsDataURL(e.files[0]);
+  reader.onload = function(e) {
+    var img = new Image();
+    img.src = e.target.result;
+    img.onload = function() {
+      if (this.width !== maxWidth || this.height !== maxHeight) {
+        $("#notices_images").removeClass("invisible");
+      } else {
+        $("#notices_images").addClass("invisible");
+      }
+    };
+  };
+}
 function deleteImage(e, id, path) {
   var imagesToDelete = JSON.parse($("#hidden-images_to_delete").val());
   imagesToDelete[id] = path;
@@ -52,10 +70,13 @@ function activeCarousel() {
     $(".carousel .images").bxSlider({ controls: true });
   }
 }
-function removeImage(name) {
+function removeInputImage(name) {
   $(`input[name=${name}]`)
     .parent()
     .remove();
+  if ($(".action_image").length === 0) {
+    $("#notices_images").addClass("invisible");
+  }
 }
 function render({ title, text, url, files }) {
   $("#title_tip").html(title);

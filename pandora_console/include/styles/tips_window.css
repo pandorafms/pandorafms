@@ -154,7 +154,7 @@ span.count-round-tip.active {
   align-items: center;
   margin-top: 10px;
 }
-.arrow-counter {
+.arrow_counter {
   width: 7px;
   margin: 0px 5px;
 }
@@ -184,11 +184,14 @@ span.disable {
   text-align: center;
   display: flex;
 }
-.image-tip {
+.image_tip {
   display: flex;
   align-items: center;
   margin: 10px 0px;
 }
-.image-tip img {
+.image_tip img {
   max-width: 350px;
+}
+#notices_images {
+  color: #e63c52;
 }

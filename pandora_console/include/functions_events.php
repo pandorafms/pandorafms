@@ -3476,7 +3476,7 @@ function events_page_responses($event)
 
         // Comments.
         $data = [];
-        $data[0] = __('Comsssment');
+        $data[0] = __('Comment');
         $data[1] = '';
         $data[2] = html_print_button(
             __('Add comment'),

@@ -117,9 +117,7 @@ function profile_create_user_profile(
         'assigned_by'  => $assign,
         'no_hierarchy' => $no_hierarchy ? 1 : 0,
     ];
-    hd('inicio insert', true);
-    hd($insert, true);
-    hd('final insert', true);
+
     return db_process_sql_insert('tusuario_perfil', $insert);
 }
 

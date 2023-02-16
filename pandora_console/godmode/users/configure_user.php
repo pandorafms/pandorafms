@@ -29,7 +29,7 @@
 
 // Load global vars.
 global $config;
-
+hd($_REQUEST, true);
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
@@ -1836,7 +1836,6 @@ if (is_metaconsole() === true) {
     include_once 'user_management.php';
 }
 
-echo '</div>';
 
 if ((bool) $config['admin_can_add_user'] === true) {
     html_print_csrf_hidden();
@@ -1847,6 +1846,8 @@ echo '</div>';
 if ($new_user === true) {
     html_print_input_hidden('json_profile', $json_profile);
 }
+
+echo '</div>';
 
 echo '</form>';
 echo '</div>';

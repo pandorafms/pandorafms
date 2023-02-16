@@ -149,7 +149,7 @@ if ($action === 'delete') {
 
     if (count($errors) === 0) {
         $response = $tipsWindow->deleteTip($idTip);
-        hd($response, true);
+
         if ($response === 0) {
             $errors[] = __('Error in delete tip');
         }

@@ -44,6 +44,7 @@ if ($view === 'create' || $view === 'edit') {
     if ($action === 'create' || $action === 'edit') {
         $files = $_FILES;
         $id_lang = get_parameter('id_lang', '');
+        $id_profile = get_parameter('id_profile', '');
         $title = get_parameter('title', '');
         $text = get_parameter('text', '');
         $url = get_parameter('url', '');
@@ -76,7 +77,7 @@ if ($view === 'create' || $view === 'edit') {
                         $uploadImages = $tipsWindow->uploadImages($files);
                     }
 
-                    $response = $tipsWindow->createTip($id_lang, $title, $text, $url, $enable, $uploadImages);
+                    $response = $tipsWindow->createTip($id_lang, $id_profile, $title, $text, $url, $enable, $uploadImages);
 
                     if ($response === 0) {
                         $errors[] = __('Error in insert tip');
@@ -100,7 +101,7 @@ if ($view === 'create' || $view === 'edit') {
                             $uploadImages = $tipsWindow->uploadImages($files);
                         }
 
-                        $response = $tipsWindow->updateTip($idTip, $id_lang, $title, $text, $url, $enable, $uploadImages);
+                        $response = $tipsWindow->updateTip($idTip, $id_profile, $id_lang, $title, $text, $url, $enable, $uploadImages);
 
                         if ($response === 0) {
                             $errors[] = __('Error in update tip');

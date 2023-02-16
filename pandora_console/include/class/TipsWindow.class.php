@@ -128,7 +128,7 @@ class TipsWindow
         ui_require_javascript_file('tipsWindow');
         ui_require_javascript_file('jquery.bxslider.min');
         echo '<div id="tips_window_modal"></div>';
-        $totalTips = $this->getTotalTipsEnabled();
+        $totalTips = $this->getTotalTipsShowUser();
         if ($totalTips > 0) {
             ?>
 
@@ -192,6 +192,11 @@ class TipsWindow
     {
         global $config;
         $exclude = get_parameter('exclude', '');
+        $profilesUser = users_get_user_profile($config['id_user']);
+        $idProfilesFilter = '0';
+        foreach ($profilesUser as $key => $profile) {
+            $idProfilesFilter .= ','.$profile['id_perfil'];
+        }
 
         $sql = 'SELECT id, title, text, url
                 FROM twelcome_tip
@@ -203,6 +208,8 @@ class TipsWindow
                 $sql .= sprintf(' AND id NOT IN (%s)', $exclude);
             }
         }
+
+        $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
 
         $sql .= ' ORDER BY CASE WHEN id_lang = "'.$config['language'].'" THEN id_lang END DESC, RAND()';
 
@@ -240,9 +247,24 @@ class TipsWindow
     }
 
 
-    public function getTotalTipsEnabled()
+    public function getTotalTipsShowUser()
     {
-        return db_get_sql('SELECT count(*) FROM twelcome_tip WHERE enable = "1"');
+        global $config;
+        $profilesUser = users_get_user_profile($config['id_user']);
+        $idProfilesFilter = '0';
+        foreach ($profilesUser as $key => $profile) {
+            $idProfilesFilter .= ','.$profile['id_perfil'];
+        }
+
+        $sql = 'SELECT count(*)
+                FROM twelcome_tip
+                WHERE enable = "1" ';
+
+        $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
+
+        $sql .= ' ORDER BY CASE WHEN id_lang = "'.$config['language'].'" THEN id_lang END DESC, RAND()';
+
+        return db_get_sql($sql);
     }
 
 
@@ -535,6 +557,8 @@ class TipsWindow
             }
         }
 
+        $profiles = profile_get_profiles();
+
         $table = new stdClass();
         $table->width = '100%';
         $table->class = 'databox filters';
@@ -555,14 +579,16 @@ class TipsWindow
             '0',
             true
         );
-        $table->data[2][0] = __('Title');
-        $table->data[2][1] = html_print_input_text('title', '', '', 35, 100, true);
-        $table->data[3][0] = __('Text');
-        $table->data[3][1] = html_print_textarea('text', 5, 1, '', '', true);
-        $table->data[4][0] = __('Url');
-        $table->data[4][1] = html_print_input_text('url', '', '', 35, 100, true);
-        $table->data[5][0] = __('Enable');
-        $table->data[5][1] = html_print_checkbox_switch('enable', true, true, true);
+        $table->data[2][0] = __('Profile');
+        $table->data[2][1] = html_print_select($profiles, 'id_profile', '0', '', __('All'), 0, true);
+        $table->data[3][0] = __('Title');
+        $table->data[3][1] = html_print_input_text('title', '', '', 35, 100, true);
+        $table->data[4][0] = __('Text');
+        $table->data[4][1] = html_print_textarea('text', 5, 1, '', '', true);
+        $table->data[5][0] = __('Url');
+        $table->data[5][1] = html_print_input_text('url', '', '', 35, 100, true);
+        $table->data[6][0] = __('Enable');
+        $table->data[6][1] = html_print_checkbox_switch('enable', true, true, true);
 
         echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create&action=create" enctype="multipart/form-data">';
         html_print_table($table);
@@ -619,6 +645,8 @@ class TipsWindow
             }
         }
 
+        $profiles = profile_get_profiles();
+
         $table = new stdClass();
         $table->width = '100%';
         $table->class = 'databox filters';
@@ -641,14 +669,16 @@ class TipsWindow
             '0',
             true
         );
-        $table->data[2][0] = __('Title');
-        $table->data[2][1] = html_print_input_text('title', $tip['title'], '', 35, 100, true);
-        $table->data[3][0] = __('Text');
-        $table->data[3][1] = html_print_textarea('text', 5, 1, $tip['text'], '', true);
-        $table->data[4][0] = __('Url');
-        $table->data[4][1] = html_print_input_text('url', $tip['url'], '', 35, 100, true);
-        $table->data[5][0] = __('Enable');
-        $table->data[5][1] = html_print_checkbox_switch('enable', 1, ($tip['enable'] === '1') ? true : false, true);
+        $table->data[2][0] = __('Profile');
+        $table->data[2][1] = html_print_select($profiles, 'id_profile', $tip['id_profile'], '', __('All'), 0, true);
+        $table->data[3][0] = __('Title');
+        $table->data[3][1] = html_print_input_text('title', $tip['title'], '', 35, 100, true);
+        $table->data[4][0] = __('Text');
+        $table->data[4][1] = html_print_textarea('text', 5, 1, $tip['text'], '', true);
+        $table->data[5][0] = __('Url');
+        $table->data[5][1] = html_print_input_text('url', $tip['url'], '', 35, 100, true);
+        $table->data[6][0] = __('Enable');
+        $table->data[6][1] = html_print_checkbox_switch('enable', 1, ($tip['enable'] === '1') ? true : false, true);
 
         echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&action=edit&idTip='.$tip['id'].'" enctype="multipart/form-data">';
         html_print_table($table);
@@ -660,18 +690,19 @@ class TipsWindow
     }
 
 
-    public function updateTip($id, $id_lang, $title, $text, $url, $enable, $images=null)
+    public function updateTip($id, $id_profile, $id_lang, $title, $text, $url, $enable, $images=null)
     {
         db_process_sql_begin();
-        hd($enable, true);
+
         $idTip = db_process_sql_update(
             'twelcome_tip',
             [
-                'id_lang' => $id_lang,
-                'title'   => io_safe_input($title),
-                'text'    => io_safe_input($text),
-                'url'     => io_safe_input($url),
-                'enable'  => $enable,
+                'id_lang'    => $id_lang,
+                'id_profile' => (empty($id_profile) === false) ? $id_profile : 0,
+                'title'      => io_safe_input($title),
+                'text'       => io_safe_input($text),
+                'url'        => io_safe_input($url),
+                'enable'     => $enable,
             ],
             ['id' => $id]
         );
@@ -703,17 +734,18 @@ class TipsWindow
     }
 
 
-    public function createTip($id_lang, $title, $text, $url, $enable, $images=null)
+    public function createTip($id_lang, $id_profile, $title, $text, $url, $enable, $images=null)
     {
         db_process_sql_begin();
         $idTip = db_process_sql_insert(
             'twelcome_tip',
             [
-                'id_lang' => $id_lang,
-                'title'   => io_safe_input($title),
-                'text'    => io_safe_input($text),
-                'url'     => io_safe_input($url),
-                'enable'  => $enable,
+                'id_lang'    => $id_lang,
+                'id_profile' => (empty($id_profile) === false) ? $id_profile : 0,
+                'title'      => io_safe_input($title),
+                'text'       => io_safe_input($text),
+                'url'        => io_safe_input($url),
+                'enable'     => $enable,
             ]
         );
         if ($idTip === false) {

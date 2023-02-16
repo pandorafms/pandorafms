@@ -42,7 +42,7 @@ $output .= '<p>'.html_print_checkbox(
     'checkbox_tips_startup'
 ).__('Show usage tips at startup').'</p>';
 $output .= '</div>';
-$output .= '<div class="carousel'.(($files === false) ? 'invisible' : '').'">';
+$output .= '<div class="carousel '.(($files === false) ? 'invisible' : '').'">';
 $output .= '<div class="images">';
 
 if ($files !== false) {

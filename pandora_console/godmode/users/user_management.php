@@ -703,6 +703,34 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
     true
 );
 
+
+$contentQrCode = [];
+$contentQrCode[] = html_print_image(
+    'images/example_qr.png',
+    true,
+    [
+        'width'  => '200px',
+        'height' => '200px',
+    ]
+);
+$contentQrCode[] = '<span class="input_sub_placeholder input_sub_placeholder_qrcode">'.__('Generated automatically with the information provided for the user').'</span>';
+
+$qrCode = html_print_div(
+    [
+        'style'   => 'display: flex;flex-direction: column;align-items: center;',
+        'content' => implode('', $contentQrCode),
+    ],
+    true
+);
+
+// QR Code and API Token advice.
+html_print_div(
+    [
+        'id'      => 'api_qrcode_display',
+        'content' => $qrCode.$apiTokenContent,
+    ]
+);
+
 html_print_table($userManagementTable);
 // User Profile definition table. (Only where user is not creating).
 if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {

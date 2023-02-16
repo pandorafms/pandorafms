@@ -11173,3 +11173,21 @@ form#satellite_conf_edit > fieldset.full-column {
 #principal_action_buttons .select2-container {
   z-index: 50;
 }
+
+#api_qrcode_display {
+  width: 300px;
+  height: 300px;
+  position: absolute;
+  left: 660px;
+  top: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.input_sub_placeholder.input_sub_placeholder_qrcode {
+  font-size: 13px;
+  text-align: center;
+  width: 70%;
+}

@@ -10762,8 +10762,8 @@ tr.bring_next_field {
 
 .fixed_action_buttons {
   position: fixed;
-  padding: 0px;
-  bottom: 8px;
+  padding: 0;
+  bottom: 0;
   z-index: 1;
   width: -webkit-fill-available;
   width: -moz-available;
@@ -10793,8 +10793,8 @@ tr.bring_next_field {
   width: -moz-available;
   position: absolute;
   left: 0;
+  top: 0;
   height: 58px;
-  top: -8px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
   /*z-index: 10000;*/

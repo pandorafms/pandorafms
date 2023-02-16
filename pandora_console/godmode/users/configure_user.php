@@ -29,7 +29,7 @@
 
 // Load global vars.
 global $config;
-hd($_REQUEST, true);
+
 check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
@@ -773,7 +773,6 @@ if ($update_user) {
                             );
                         }
 
-                        hd('res1-res2', true);
                         ui_print_result_message(
                             $res1 || $res2,
                             __('User info successfully updated'),
@@ -847,7 +846,7 @@ if ($update_user) {
                 false,
                 $info
             );
-            hd('apitoken', true);
+
             ui_print_result_message(
                 $res1,
                 ($apiTokenRenewed === true) ? __('You have generated a new API Token.') : __('User info successfully updated'),
@@ -916,15 +915,7 @@ if ($add_profile && empty($json_profile)) {
         false,
         'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
     );
-    /*
-        hd('>>>>>', true);
-        hd($id2, true);
-        hd($profile2, true);
-        hd($group2, true);
-        hd($tags, true);
-        hd($no_hierarchy, true);
-        hd('<<<<<<', true);
-    */
+
     $return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $no_hierarchy);
     if ($return === false) {
         $is_err = true;
@@ -1586,7 +1577,12 @@ if ($double_auth_enabled === true && (bool) $config['double_auth_enabled'] === t
     );
 }
 
-$doubleAuthentication = html_print_div(['content' => implode('', $doubleAuthElementsContent)], true);
+if (empty($doubleAuthElementsContent) === false) {
+    $doubleAuthentication = html_print_div(['content' => implode('', $doubleAuthElementsContent)], true);
+} else {
+    $doubleAuthentication = '';
+}
+
 
 /*
     if (isset($double_authentication)) {

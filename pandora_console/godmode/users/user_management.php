@@ -220,9 +220,14 @@ $userManagementTable->data['fields_phone'][0] = html_print_input_text_extended(
     true
 );
 
+$fieldsAdminUserCount = 0;
 $userManagementTable->rowclass['captions_fields_admin_user'] = 'field_half_width w50p';
-$userManagementTable->cellclass['captions_fields_admin_user'][0] = 'wrap';
-$userManagementTable->data['captions_fields_admin_user'][0] = $doubleAuthentication;
+$userManagementTable->cellclass['captions_fields_admin_user'][$fieldsAdminUserCount] = 'wrap';
+if (empty($doubleAuthentication) === false) {
+    $userManagementTable->data['captions_fields_admin_user'][$fieldsAdminUserCount] = $doubleAuthentication;
+    $fieldsAdminUserCount++;
+}
+
 if (users_is_admin() === true) {
     $globalProfileContent = [];
     $globalProfileContent[] = '<span>'.__('Administrator user').'</span>';
@@ -233,8 +238,8 @@ if (users_is_admin() === true) {
         true
     );
 
-    $userManagementTable->cellclass['captions_fields_admin_user'][1] = 'wrap';
-    $userManagementTable->data['captions_fields_admin_user'][1] = html_print_div(
+    $userManagementTable->cellclass['captions_fields_admin_user'][$fieldsAdminUserCount] = 'wrap';
+    $userManagementTable->data['captions_fields_admin_user'][$fieldsAdminUserCount] = html_print_div(
         [
             'class'   => 'margin-top-10',
             'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',

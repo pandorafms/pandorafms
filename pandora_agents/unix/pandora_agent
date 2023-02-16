@@ -556,30 +556,38 @@ BEGIN {
 	sub runCommand {
 		my ($self, $ref, $output_mode) = @_;
 
+		my $result;
 		if($self->load_libraries()) {
 			# Functionality possible.
 			my $command = $self->{'commands'}->{$ref};
-			my $result = $self->evaluate_command($ref);
-			if (ref($result) eq "HASH") {
-				# Process command result.
-				if (defined($output_mode) && $output_mode eq 'xml') {
-					my $output = '';
-					$output .= "<cmd_report>\n";
-					$output .= "  <cmd_response>\n";
-					$output .= "    <cmd_name><![CDATA[".$result->{'name'}."]]></cmd_name>\n";
-					$output .= "    <cmd_key><![CDATA[".$ref."]]></cmd_key>\n";
-					$output .= "    <cmd_errorlevel><![CDATA[".$result->{'error_level'}."]]></cmd_errorlevel>\n";
-					$output .= "    <cmd_stdout><![CDATA[".$result->{'stdout'}."]]></cmd_stdout>\n";
-					$output .= "    <cmd_stderr><![CDATA[".$result->{'stderr'}."]]></cmd_stderr>\n";
-					$output .= "  </cmd_response>\n";
-					$output .= "</cmd_report>\n";
+			$result = $self->evaluate_command($ref);
+		} else {
+				$result = {
+				'stderr' => 'Cannot use commands without YAML dependency, please install it.',
+				'name'   => 'YAML::Tiny',
+				'error_level' => 2,
+			};
+		}
 
-					return $output;
-				}
-				return $result;
-			} else {
-				$self->set_last_error('Failed to process ['.$ref.']: '.$result);
+		if (ref($result) eq "HASH") {
+			# Process command result.
+			if (defined($output_mode) && $output_mode eq 'xml') {
+				my $output = '';
+				$output .= "<cmd_report>\n";
+				$output .= "  <cmd_response>\n";
+				$output .= "    <cmd_name><![CDATA[".$result->{'name'}."]]></cmd_name>\n";
+				$output .= "    <cmd_key><![CDATA[".$ref."]]></cmd_key>\n";
+				$output .= "    <cmd_errorlevel><![CDATA[".$result->{'error_level'}."]]></cmd_errorlevel>\n";
+				$output .= "    <cmd_stdout><![CDATA[".$result->{'stdout'}."]]></cmd_stdout>\n";
+				$output .= "    <cmd_stderr><![CDATA[".$result->{'stderr'}."]]></cmd_stderr>\n";
+				$output .= "  </cmd_response>\n";
+				$output .= "</cmd_report>\n";
+
+				return $output;
 			}
+			return $result;
+		} else {
+			$self->set_last_error('Failed to process ['.$ref.']: '.$result);
 		}
 
 		return undef;
@@ -1014,8 +1022,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.768';
-use constant AGENT_BUILD => '230206';
+use constant AGENT_VERSION => '7.0NG.769';
+use constant AGENT_BUILD => '230216';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;

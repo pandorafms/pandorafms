@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.768 Build 230206";
+my $version = "7.0NG.769 Build 230216";
 
 # Pandora server configuration
 my %conf;
@@ -1067,12 +1067,18 @@ sub pandora_delete_old_session_data {
 
 	$ulimit_timestamp = time() - $session_timeout;
 
-	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
+	log_message ('PURGE', "Deleting old session data from tsessions_php");
 	while(db_delete_limit ($dbh, 'tsessions_php', 'last_active < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
 
 	db_do ($dbh, "DELETE FROM tsessions_php WHERE data IS NULL OR id_session REGEXP '^cron-'");
+
+	# Delete cron cookies file
+	my $cookie_file = '/tmp/cron-session-cookies';
+	log_message ('PURGE', "Deleting cron session file");
+	unlink($cookie_file) or die 	log_message ('PURGE', "Could not delete session file");
+ 
 }
 
 ###############################################################################

@@ -782,7 +782,9 @@ class NetworkMap
         if ($this->network) {
             // Network map, based on direct network.
             $nodes = networkmap_get_nodes_from_ip_mask(
-                $this->network
+                $this->network,
+                false,
+                '&#x0d;&#x0a;'
             );
         } else if ($this->mapOptions['map_filter']['empty_map']) {
             // Empty map returns no data.
@@ -792,17 +794,22 @@ class NetworkMap
                 || $this->mapOptions['map_filter']['dont_show_subgroups'] == 1
             ) {
                 // Show only current selected group.
-                $filter['id_grupo'] = $this->idGroup;
+                $filter['id_grupo'] = explode(',', $this->idGroup);
             } else {
                 // Show current group and children.
-                $childrens = groups_get_children($this->idGroup, null, true);
-                if (!empty($childrens)) {
-                    $childrens = array_keys($childrens);
+                foreach (explode(',', $this->idGroup) as $key => $group) {
+                    $childrens = groups_get_children($group, null, true);
+                    if (!empty($childrens)) {
+                        $childrens = array_keys($childrens);
 
-                    $filter['id_grupo'] = $childrens;
-                    $filter['id_grupo'][] = $this->idGroup;
-                } else {
-                    $filter['id_grupo'] = $this->idGroup;
+                        if (empty($filter['id_grupo']) === false) {
+                            $filter['id_grupo'] = array_merge($filter['id_grupo'], $childrens);
+                        } else {
+                            $filter['id_grupo'] = $childrens;
+                        }
+                    } else {
+                        $filter['id_grupo'][] = $group;
+                    }
                 }
             }
 
@@ -1187,6 +1194,10 @@ class NetworkMap
         ) {
             if ($nooverlap != '') {
                 $head .= 'overlap="scalexy";';
+            }
+
+            if ($layout == 'spring1' || $layout == 'spring2') {
+                $head .= 'sep="'.$node_sep.'";';
             }
 
             if ($layout == 'flat') {
@@ -3498,6 +3509,7 @@ class NetworkMap
             url_background_grid: url_background_grid,
             refresh_time: '.$this->mapOptions['refresh_time'].',
             font_size: '.$this->mapOptions['font_size'].',
+            method: '.$this->map['generation_method'].',
             base_url_homedir: "'.ui_get_full_url(false).'"
         });
         init_drag_and_drop();

@@ -11192,3 +11192,7 @@ form#satellite_conf_edit > fieldset.full-column {
   width: 70%;
   margin-top: 5px;
 }
+
+.action-buttons > button {
+  margin: 10px;
+}

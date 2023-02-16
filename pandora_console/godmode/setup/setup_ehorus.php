@@ -137,7 +137,7 @@ $row['control'] .= '&nbsp;<span id="test-ehorus-message" class="invisible"></spa
 $table_remote->data['ehorus_test'] = $row;
 
 // Print.
-echo '<div class="center pdd_b_20px">';
+echo '<div class="center pdd_b_20px mrgn_top_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
 if ($config['style'] === 'pandora_black' && is_metaconsole() === true) {
     html_print_image(

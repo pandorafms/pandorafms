@@ -476,7 +476,7 @@ a.pandora_pagination.current:hover {
 
 .section_table_title {
   flex: 0 1 auto;
-  font-size: 11pt;
+  font-size: 15px;
   color: #14524f;
   font-family: "Pandora-Bold";
   margin: 4px 0 7px;
@@ -489,7 +489,7 @@ a.pandora_pagination.current:hover {
   height: 3px;
   background-color: #14524f;
   margin-top: -4px;
-  box-shadow: inset 1px 1px 1px 1px #1d7873;
+  /*box-shadow: inset 1px 1px 1px 1px #1d7873;*/
 }
 
 .cron_section {

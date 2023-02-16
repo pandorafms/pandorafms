@@ -1834,6 +1834,7 @@ button.filter,
 button.cancel,
 button.default,
 button.deploy,
+button.preview,
 input.deploy,
 input.next,
 input.upd,
@@ -1854,10 +1855,14 @@ input.filter,
 input.cancel,
 input.default,
 input.pdf,
-input.spinn {
+input.spinn,
+input.preview {
   padding-right: 30px;
 }
-
+button.preview,
+input.preview {
+  background-image: url(../../images/eye.png);
+}
 button.next,
 input.next {
   background-image: url(../../images/input_go.png);

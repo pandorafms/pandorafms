@@ -18,6 +18,10 @@ $(document).ready(function() {
   $("#image-delete_image_tip1").on("click", function(e) {
     e.preventDefault();
   });
+  $("#submit-preview_button").on("click", function(e) {
+    e.preventDefault();
+    previewTip();
+  });
 });
 
 $("#checkbox_tips_startup").ready(function() {
@@ -116,8 +120,15 @@ function render({ title, text, url, files }) {
 }
 
 function close_dialog() {
-  $("#tips_window_modal").dialog("close");
-  $("#tips_window_modal").remove();
+  if ($("#tips_window_modal").length > 0) {
+    $("#tips_window_modal").dialog("close");
+    $("#tips_window_modal").remove();
+  }
+
+  if ($("#tips_window_modal_preview").length > 0) {
+    $("#tips_window_modal_preview").dialog("close");
+    $("#tips_window_modal_preview").empty();
+  }
 }
 
 function render_counter() {
@@ -160,14 +171,8 @@ function next_tip() {
 function load_tips_modal(settings) {
   var data = new FormData();
   if (settings.extradata) {
-    settings.extradata.forEach(function(item) {
-      if (item.value != undefined) {
-        if (item.value instanceof Object || item.value instanceof Array) {
-          data.append(item.name, JSON.stringify(item.value));
-        } else {
-          data.append(item.name, item.value);
-        }
-      }
+    Object.keys(settings.extradata).forEach(key => {
+      data.append(key, settings.extradata[key]);
     });
   }
   data.append("page", settings.onshow.page);
@@ -286,5 +291,30 @@ function load_tips_modal(settings) {
     error: function(data) {
       console.error(data);
     }
+  });
+}
+
+function previewTip() {
+  var extradata = {
+    title: $("input[name=title]").val(),
+    text: $("textarea[name=text]").val(),
+    url: $("input[name=url]").val()
+  };
+
+  //first images that can delete
+  if ($(".image_tip img").length > 0) {
+    extradata["files"] = [];
+    $(".image_tip img").each(function(index) {
+      extradata["files"].push($(".image_tip img")[index].src);
+    });
+  }
+  load_tips_modal({
+    target: $("#tips_window_modal_preview"),
+    url: url,
+    onshow: {
+      page: page,
+      method: "renderPreview"
+    },
+    extradata //Receive json
   });
 }

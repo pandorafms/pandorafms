@@ -7,7 +7,8 @@
   left: 0;
   z-index: 2001;
 }
-#tips_window_modal {
+#tips_window_modal,
+#tips_window_modal_preview {
   padding: 0px;
 }
 .window {
@@ -40,7 +41,7 @@
   overflow: hidden;
   position: relative;
   width: 100%;
-  height: 264px;
+  height: 280px;
   max-width: 464px;
   text-align: center;
   margin: 0 auto;
@@ -84,7 +85,8 @@
   width: 100%;
   justify-content: space-between;
 }
-#tips_window_modal .ui-dialog-buttonset button.submit-cancel-tips {
+#tips_window_modal .ui-dialog-buttonset button.submit-cancel-tips,
+#tips_window_modal_preview .ui-dialog-buttonset button.submit-cancel-tips {
   border-radius: 6px;
   color: #14524f;
   width: fit-content;
@@ -95,7 +97,8 @@
   background-color: #ffffff;
   font-weight: 600;
 }
-#tips_window_modal .ui-dialog-buttonset button.submit-next-tips {
+#tips_window_modal .ui-dialog-buttonset button.submit-next-tips,
+#tips_window_modal_preview .ui-dialog-buttonset button.submit-next-tips {
   border-radius: 6px;
   color: #ffffff;
   width: fit-content;
@@ -115,7 +118,8 @@
   border-top-right-radius: 10px !important;
   border-top-left-radius: 10px !important;
 }
-#tips_window_modal .ui-dialog-buttonset button {
+#tips_window_modal .ui-dialog-buttonset button,
+#tips_window_modal_preview .ui-dialog-buttonset button {
   margin: 0px 20px !important;
   margin-top: 10px !important;
 }
@@ -194,4 +198,8 @@ span.disable {
 }
 #notices_images {
   color: #e63c52;
+}
+.preview {
+  background-position: 92% 10px !important;
+  margin-right: 20px !important;
 }

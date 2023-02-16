@@ -39,15 +39,21 @@ $output .= '<p>'.html_print_checkbox(
     '',
     false,
     '',
-    'checkbox_tips_startup'
+    ($preview === true) ? '' : 'checkbox_tips_startup'
 ).__('Show usage tips at startup').'</p>';
 $output .= '</div>';
 $output .= '<div class="carousel '.(($files === false) ? 'invisible' : '').'">';
 $output .= '<div class="images">';
 
 if ($files !== false) {
-    foreach ($files as $key => $file) {
-        $output .= html_print_image($file['path'].$file['filename'], true);
+    if ($preview === true) {
+        foreach ($files as $key => $file) {
+            $output .= html_print_image($file, true);
+        }
+    } else {
+        foreach ($files as $key => $file) {
+            $output .= html_print_image($file['path'].$file['filename'], true);
+        }
     }
 }
 
@@ -73,7 +79,12 @@ $output .= '<div class="counter-tips">';
 $output .= html_print_image('images/arrow-left-grey.png', true, ['class' => 'arrow_counter']);
 $output .= html_print_image('images/arrow-right-grey.png', true, ['class' => 'arrow_counter']);
 $output .= '</div>';
-$output .= '<button type="button" class="submit-next-tips ui-button ui-corner-all ui-widget" onclick="next_tip()">Ok</button>';
+if ($preview === true) {
+    $output .= '<button type="button" class="submit-next-tips ui-button ui-corner-all ui-widget" onclick="close_dialog()">Ok</button>';
+} else {
+    $output .= '<button type="button" class="submit-next-tips ui-button ui-corner-all ui-widget" onclick="next_tip()">Ok</button>';
+}
+
 $output .= '</div>';
 $output .= '</div>';
 echo $output;

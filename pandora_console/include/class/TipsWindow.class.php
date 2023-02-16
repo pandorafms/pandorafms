@@ -45,6 +45,7 @@ class TipsWindow
     public $AJAXMethods = [
         'getRandomTip',
         'renderView',
+        'renderPreview',
         'setShowTipsAtStartup',
         'getTips',
     ];
@@ -166,6 +167,33 @@ class TipsWindow
                 'url'   => $initialTip['url'],
                 'files' => $initialTip['files'],
                 'id'    => $initialTip['id'],
+            ]
+        );
+    }
+
+
+    public function renderPreview()
+    {
+        $title = get_parameter('title', '');
+        $text = get_parameter('text', '');
+        $url = get_parameter('url', '');
+        $files = get_parameter('files', '');
+        if (empty($files) === false) {
+            $files = explode(',', $files);
+        }
+
+        foreach ($files as $key => $value) {
+            $files[$key] = str_replace(ui_get_full_url('/'), '', $value);
+        }
+
+        View::render(
+            'dashboard/tipsWindow',
+            [
+                'title'   => $title,
+                'text'    => $text,
+                'url'     => $url,
+                'preview' => true,
+                'files'   => $files,
             ]
         );
     }
@@ -543,8 +571,10 @@ class TipsWindow
 
     public function viewCreate($errors=null)
     {
-        ui_require_javascript_file('tipsWindow');
         ui_require_css_file('tips_window');
+        ui_require_css_file('jquery.bxslider');
+        ui_require_javascript_file('tipsWindow');
+        ui_require_javascript_file('jquery.bxslider.min');
 
         if ($errors !== null) {
             if (count($errors) > 0) {
@@ -558,6 +588,11 @@ class TipsWindow
 
         $profiles = profile_get_profiles();
 
+        echo '<script>
+                var url = "'.ui_get_full_url('ajax.php').'";
+                var page = "'.$this->ajaxController.'";
+                var totalTips = 1;
+              </script>';
         $table = new stdClass();
         $table->width = '100%';
         $table->class = 'databox filters';
@@ -600,10 +635,19 @@ class TipsWindow
         echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create&action=create" enctype="multipart/form-data">';
         html_print_table($table);
         echo '<div class="action-buttons" style="width: '.$table->width.'">';
+        html_print_submit_button(
+            __('Preview'),
+            'preview_button',
+            false,
+            [
+                'class' => 'sub preview',
+                'id'    => 'prev_button',
+            ]
+        );
         html_print_submit_button(__('Send'), 'submit_button', false, ['class' => 'sub next']);
-
         echo '</div>';
         echo '</form>';
+        html_print_div(['id' => 'tips_window_modal_preview']);
     }
 
 
@@ -616,8 +660,10 @@ class TipsWindow
 
         $files = $this->getFilesFromTip($idTip);
 
-        ui_require_javascript_file('tipsWindow');
         ui_require_css_file('tips_window');
+        ui_require_css_file('jquery.bxslider');
+        ui_require_javascript_file('tipsWindow');
+        ui_require_javascript_file('jquery.bxslider.min');
 
         if ($errors !== null) {
             if (count($errors) > 0) {
@@ -654,6 +700,11 @@ class TipsWindow
 
         $profiles = profile_get_profiles();
 
+        echo '<script>
+                var url = "'.ui_get_full_url('ajax.php').'";
+                var page = "'.$this->ajaxController.'";
+                var totalTips = 1;
+              </script>';
         $table = new stdClass();
         $table->width = '100%';
         $table->class = 'databox filters';
@@ -698,10 +749,20 @@ class TipsWindow
         echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&action=edit&idTip='.$tip['id'].'" enctype="multipart/form-data">';
         html_print_table($table);
         echo '<div class="action-buttons" style="width: '.$table->width.'">';
+        html_print_submit_button(
+            __('Preview'),
+            'preview_button',
+            false,
+            [
+                'class' => 'sub preview',
+                'id'    => 'prev_button',
+            ]
+        );
         html_print_submit_button(__('Send'), 'submit_button', false, ['class' => 'sub next']);
 
         echo '</div>';
         echo '</form>';
+        html_print_div(['id' => 'tips_window_modal_preview']);
     }
 
 

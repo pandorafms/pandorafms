@@ -449,8 +449,8 @@ if (enterprise_installed() === true) {
         'custom_splash_login',
         $config['custom_splash_login'],
         '',
-        '',
-        '',
+        __('Default'),
+        'default',
         true,
         false,
         true,
@@ -664,6 +664,12 @@ if (enterprise_installed() === true) {
 }
 
 if (enterprise_installed() === true) {
+    $table_styles->data[$row][0] = __('Background opacity % (login)');
+    $table_styles->data[$row][1] = "<input type='number' value=".$config['background_opacity']." size='5' name='background_opacity' min='0' max='99'>";
+    $row++;
+}
+
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Disable logo in graphs');
     $table_styles->data[$row][1] = html_print_checkbox_switch(
         'fixed_graph',
@@ -715,6 +721,16 @@ $table_styles->data[$row][1] = html_print_checkbox_switch(
     $config['visual_animation'],
     true
 );
+$row++;
+
+$table_styles->data[$row][0] = __('Random background (login)');
+$table_styles->data[$row][1] = html_print_checkbox_switch(
+    'random_background',
+    1,
+    $config['random_background'],
+    true
+);
+$row++;
 
 
 // ----------------------------------------------------------------------
@@ -1147,7 +1163,7 @@ $table_vc->data[$row][1] = html_print_select(
 $row++;
 
 $table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu');
-$table_vc->data[$row][1] = "<input type ='number' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
+$table_vc->data[$row][1] = "<input ' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
 $row++;
 
 $table_vc->data[$row][0] = __('Default line thickness for the Visual Console');
@@ -1181,7 +1197,7 @@ $table_ser->size[0] = '50%';
 $table_ser->data = [];
 
 $table_ser->data['number'][0] = __('Number of favorite services to show in the menu');
-$table_ser->data['number'][1] = "<input type ='number' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
+$table_ser->data['number'][1] = "<input ' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
 
 // ----------------------------------------------------------------------
 // Reports
@@ -1214,12 +1230,12 @@ $table_report->data[$row][1] = html_print_checkbox_switch(
 $row++;
 
 $table_report->data[$row][0] = __('PDF font size (px)');
-$table_report->data[$row][1] = "<input type ='number' value=".$config['global_font_size_report']." name='global_font_size_report' min='1' max='50' step='1'>";
+$table_report->data[$row][1] = "<input ' value=".$config['global_font_size_report']." name='global_font_size_report' min='1' max='50' step='1'>";
 
 $row++;
 
 $table_report->data[$row][0] = __('HTML font size for SLA (em)');
-$table_report->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." name='font_size_item_report' min='1' max='9' step='0.1'>";
+$table_report->data[$row][1] = "<input ' value=".$config['font_size_item_report']." name='font_size_item_report' min='1' max='9' step='0.1'>";
 
 $row++;
 

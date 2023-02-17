@@ -10002,6 +10002,10 @@ input[type="submit"].secondary:active {
   color: #0d312f;
 }
 
+input[type="file"] {
+  padding-top: 10px;
+}
+
 button.buttonButton,
 button.submitButton {
   display: flex;
@@ -10343,6 +10347,11 @@ button div.cog {
     contain;
 }
 
+button div.signin {
+  mask: url(../../images/signin.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/signin.svg) no-repeat center / contain;
+}
+
 button div.fail {
   mask: url(../../images/fail@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
@@ -10554,6 +10563,7 @@ tr.bring_next_field {
   vertical-align: middle;
   text-align: left;
   min-width: 150px !important;
+  z-index: 10002;
 }
 
 .select2-container .select2-selection--single,
@@ -11195,4 +11205,8 @@ form#satellite_conf_edit > fieldset.full-column {
 
 .action-buttons > button {
   margin: 10px;
+}
+
+.inputs_date_details > input {
+  margin: 5px;
 }

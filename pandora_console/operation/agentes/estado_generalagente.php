@@ -211,7 +211,7 @@ $table_agent_graph .= '</div>';*/
 $table_status->data['agent_os'][0] = __('OS');
 $agentOS = [];
 $agentOS[] = html_print_div([ 'content' => (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version']], true);
-$agentOS[] = html_print_div([ 'style' => 'width: 32px', 'content' => ui_print_os_icon($agent['id_os'], false, true)], true);
+$agentOS[] = html_print_div([ 'style' => 'width: 16px;padding-left: 5px', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
 $table_status->data['agent_os'][1] = html_print_div(['class' => 'agent_details_agent_data', 'content' => implode('', $agentOS)], true);
 
 // $table_agent_os .= (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version'].'</p>';

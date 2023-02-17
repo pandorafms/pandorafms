@@ -80,7 +80,7 @@ $alive_animation = agents_get_starmap($id_agente, 200, 50);
  * START: TABLE AGENT BUILD.
  */
 $agentCaptionAddedMessage = [];
-$agentCaption = '<span class="subsection_header_title">'.__('Agent status').'</span>';
+$agentCaption = '<span class="subsection_header_title">'.ucfirst(agents_get_alias($agent['id_agente'])).'</span>';
 $in_planned_downtime = (bool) db_get_sql(
     'SELECT executed FROM tplanned_downtime 
 	INNER JOIN tplanned_downtime_agents 
@@ -209,7 +209,10 @@ $table_agent_graph .= '</div>';*/
 */
 
 $table_status->data['agent_os'][0] = __('OS');
-$table_status->data['agent_os'][1] = (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version'];
+$agentOS = [];
+$agentOS[] = html_print_div([ 'content' => (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version']], true);
+$agentOS[] = html_print_div([ 'style' => 'width: 32px', 'content' => ui_print_os_icon($agent['id_os'], false, true)], true);
+$table_status->data['agent_os'][1] = html_print_div(['class' => 'agent_details_agent_data', 'content' => implode('', $agentOS)], true);
 
 // $table_agent_os .= (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version'].'</p>';
 $addresses = agents_get_addresses($id_agente);

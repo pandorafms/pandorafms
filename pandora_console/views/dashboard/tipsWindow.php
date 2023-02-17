@@ -1,16 +1,16 @@
 <?php
 /**
- * Dashboards Modal for tips
+ * Dashboards View tips in modal
  *
  * @category   Console Class
- $output .= '* @packagePandora FMS';
+ * @package    Pandora FMS
  * @subpackage Dashboards
- $output .= '* @version1.0.0';
- $output .= '* @licenseSee below';
+ * @version    1.0.0
+ * @license    See below
  *
- $output .= '*______ __________ _______ ________';
- $output .= '*   |   __ \.-----.--.--.--|  |.-----.----.-----. |___|   |   | __|';
- $output .= '*  |__/|  _  | |  _  ||  _  |   _|  _  | |___|   |__ |';
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
@@ -25,6 +25,7 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+
 $output = '';
 $output .= '<script>var idTips = ['.$id.'];</script>';
 $output .= '<div class="window">';

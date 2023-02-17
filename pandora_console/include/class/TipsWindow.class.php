@@ -27,7 +27,6 @@
  */
 
 // Begin.
-use LDAP\Result;
 use PandoraFMS\View;
 global $config;
 
@@ -82,8 +81,6 @@ class TipsWindow
      */
     public function ajaxMethod($method)
     {
-        global $config;
-
         // Check access.
         check_login();
 
@@ -94,8 +91,7 @@ class TipsWindow
     /**
      * Constructor.
      *
-     * @param boolean $must_run        Must run or not.
-     * @param string  $ajax_controller Controller.
+     * @param string $ajax_controller Controller.
      *
      * @return object
      * @throws Exception On error.
@@ -156,6 +152,11 @@ class TipsWindow
     }
 
 
+    /**
+     * Render view modal with random tip
+     *
+     * @return void
+     */
     public function renderView()
     {
         $initialTip = $this->getRandomTip(true);
@@ -172,6 +173,11 @@ class TipsWindow
     }
 
 
+    /**
+     * Render preview view modal with parameter
+     *
+     * @return void
+     */
     public function renderPreview()
     {
         $title = get_parameter('title', '');
@@ -209,6 +215,13 @@ class TipsWindow
     }
 
 
+    /**
+     * Search a tip by id
+     *
+     * @param integer $idTip Id from tip.
+     *
+     * @return array   $tip
+     */
     public function getTipById($idTip)
     {
         $tip = db_get_row(
@@ -226,6 +239,13 @@ class TipsWindow
     }
 
 
+    /**
+     * Return a tip or print it in json
+     *
+     * @param boolean $return Param for return or print json.
+     *
+     * @return array $tip
+     */
     public function getRandomTip($return=false)
     {
         global $config;
@@ -282,12 +302,22 @@ class TipsWindow
     }
 
 
+    /**
+     * Get number of tips in database
+     *
+     * @return integer
+     */
     public function getTotalTips()
     {
         return db_get_sql('SELECT count(*) FROM twelcome_tip');
     }
 
 
+    /**
+     * Get totals tips that user can show
+     *
+     * @return array
+     */
     public function getTotalTipsShowUser()
     {
         global $config;
@@ -309,6 +339,13 @@ class TipsWindow
     }
 
 
+    /**
+     * Return files from tip
+     *
+     * @param integer $idTip Id from tip.
+     *
+     * @return array
+     */
     public function getFilesFromTip($idTip)
     {
         if (empty($idTip) === true) {
@@ -322,6 +359,14 @@ class TipsWindow
     }
 
 
+    /**
+     * Delete all images from tip in db and files
+     *
+     * @param integer $idTip          Id from tip.
+     * @param array   $imagesToRemove Array with id and images path.
+     *
+     * @return void
+     */
     public function deleteImagesFromTip($idTip, $imagesToRemove)
     {
         foreach ($imagesToRemove as $id => $image) {
@@ -337,6 +382,11 @@ class TipsWindow
     }
 
 
+    /**
+     * Update token user for show tips at startup
+     *
+     * @return void
+     */
     public function setShowTipsAtStartup()
     {
         global $config;
@@ -363,6 +413,13 @@ class TipsWindow
     }
 
 
+    /**
+     * Draw table in list tips
+     *
+     * @param array $errors Array of errors if exists.
+     *
+     * @return void
+     */
     public function draw($errors=null)
     {
         ui_require_css_file('tips_window');
@@ -438,6 +495,13 @@ class TipsWindow
     }
 
 
+    /**
+     * Delete tip and his files.
+     *
+     * @param integer $idTip Id from tip.
+     *
+     * @return integer Status from sql query.
+     */
     public function deleteTip($idTip)
     {
         $files = $this->getFilesFromTip($idTip);
@@ -456,6 +520,11 @@ class TipsWindow
     }
 
 
+    /**
+     * Return tips for datatable
+     *
+     * @return void
+     */
     public function getTips()
     {
         global $config;
@@ -579,6 +648,13 @@ class TipsWindow
     }
 
 
+    /**
+     * Render view create tips
+     *
+     * @param array $errors Array of errors if exists.
+     *
+     * @return void
+     */
     public function viewCreate($errors=null)
     {
         ui_require_css_file('tips_window');
@@ -661,6 +737,14 @@ class TipsWindow
     }
 
 
+     /**
+      * Render view edit tips
+      *
+      * @param integer $idTip  Id from tips.
+      * @param array   $errors Array of errors if exists.
+      *
+      * @return void
+      */
     public function viewEdit($idTip, $errors=null)
     {
         $tip = $this->getTipById($idTip);
@@ -776,6 +860,20 @@ class TipsWindow
     }
 
 
+    /**
+     * Udpdate tip
+     *
+     * @param integer $id         Id from tip.
+     * @param integer $id_profile Id profile.
+     * @param string  $id_lang    Id langugage.
+     * @param string  $title      Title from tip.
+     * @param string  $text       Text from tip.
+     * @param string  $url        Url from tip.
+     * @param boolean $enable     Indicates if the tip is activated.
+     * @param array   $images     Images from tip.
+     *
+     * @return boolean
+     */
     public function updateTip($id, $id_profile, $id_lang, $title, $text, $url, $enable, $images=null)
     {
         db_process_sql_begin();
@@ -820,6 +918,19 @@ class TipsWindow
     }
 
 
+    /**
+     * Create tip
+     *
+     * @param string  $id_lang    Id langugage.
+     * @param integer $id_profile Id profile.
+     * @param string  $title      Title from tip.
+     * @param string  $text       Text from tip.
+     * @param string  $url        Url from tip.
+     * @param boolean $enable     Indicates if the tip is activated.
+     * @param array   $images     Images from tip.
+     *
+     * @return boolean
+     */
     public function createTip($id_lang, $id_profile, $title, $text, $url, $enable, $images=null)
     {
         db_process_sql_begin();
@@ -862,6 +973,13 @@ class TipsWindow
     }
 
 
+    /**
+     * Validate images uploads for the user
+     *
+     * @param array $files List images for validate.
+     *
+     * @return boolean Return boolean or array errors.
+     */
     public function validateImages($files)
     {
         $formats = [
@@ -895,6 +1013,13 @@ class TipsWindow
     }
 
 
+    /**
+     * Upload images passed by user
+     *
+     * @param array $files List of files for upload.
+     *
+     * @return array List of names files.
+     */
     public function uploadImages($files)
     {
         $dir = 'images/tips/';

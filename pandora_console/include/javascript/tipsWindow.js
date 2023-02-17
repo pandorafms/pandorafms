@@ -1,4 +1,4 @@
-/* globals $, idTips, totalTips, url, page */
+/* globals $, idTips, totalTips, url, page, uniqId */
 $(document).ready(function() {
   $("#button-button_add_image").on("click", function() {
     var numberImages = $("#inputs_images").children().length;
@@ -161,8 +161,6 @@ function next_tip() {
       if (success) {
         idTips.push(parseInt(data.id));
         render(data);
-      } else {
-        //TODO control error
       }
     }
   });

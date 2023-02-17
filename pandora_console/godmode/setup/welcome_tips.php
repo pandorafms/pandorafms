@@ -1,10 +1,10 @@
 <?php
 /**
- * Welcome Tips
+ * Controller View tips in setup
  *
- * @category   Welcome Tips
+ * @category   Console Class
  * @package    Pandora FMS
- * @subpackage Opensource
+ * @subpackage Dashboards
  * @version    1.0.0
  * @license    See below
  *
@@ -28,7 +28,6 @@
 
 // Begin.
 global $config;
-// Require needed class.
 require_once $config['homedir'].'/include/class/TipsWindow.class.php';
 $view = get_parameter('view', '');
 $action = get_parameter('action', '');

@@ -1,10 +1,10 @@
 <?php
 /**
- * Tips to Pandora FMS feature.
+ * Tips pandora
  *
- * @category   Class
+ * @category   Ajax library.
  * @package    Pandora FMS
- * @subpackage Tips Window
+ * @subpackage Modules.
  * @version    1.0.0
  * @license    See below
  *

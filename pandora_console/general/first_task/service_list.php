@@ -37,14 +37,8 @@ ui_require_css_file('first_task');
                 ?>
             </p>
             <form action="index.php?sec=estado&sec2=enterprise/godmode/services/services.service&action=new_service" method="post">
-            <?php
-            html_print_submit_button(
-                __('Create Services'),
-                'createServiceButton'
-            );
-            ?>
+                <input type="submit" class="button_task" value="<?php echo __('Create Services'); ?>" />
             </form>
-        
         </div>
     </div>
     <?php

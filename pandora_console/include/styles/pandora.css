@@ -10002,6 +10002,10 @@ input[type="submit"].secondary:active {
   color: #0d312f;
 }
 
+input[type="file"] {
+  padding-top: 10px;
+}
+
 button.buttonButton,
 button.submitButton {
   display: flex;

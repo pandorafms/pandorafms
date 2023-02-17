@@ -543,7 +543,7 @@ class TipsWindow
 
             if (key_exists('filter_title', $filters) === true) {
                 if (empty($filters['filter_title']) === false) {
-                    $filter = ' WHERE title like "%'.$filters['filter_title'].'%"';
+                    $filter = ' WHERE title like "%'.io_safe_input($filters['filter_title']).'%"';
                 }
             }
 

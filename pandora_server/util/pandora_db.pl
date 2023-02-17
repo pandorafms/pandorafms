@@ -53,6 +53,9 @@ my $SMALL_OPERATION_STEP = 1000;	# 1000 is default
 # Timeout for lock acquisition.
 my $LOCK_TIMEOUT = 60;
 
+# Cron cookies file.
+my $COOKIES_FILE = '/tmp/cron-session-cookies';
+
 # FLUSH in each IO 
 $| = 1;
 
@@ -1075,9 +1078,8 @@ sub pandora_delete_old_session_data {
 	db_do ($dbh, "DELETE FROM tsessions_php WHERE data IS NULL OR id_session REGEXP '^cron-'");
 
 	# Delete cron cookies file
-	my $cookie_file = '/tmp/cron-session-cookies';
 	log_message ('PURGE', "Deleting cron session file");
-	unlink($cookie_file) or die 	log_message ('PURGE', "Could not delete session file");
+	unlink($COOKIES_FILE);
  
 }
 

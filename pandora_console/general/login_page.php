@@ -30,16 +30,21 @@ require_once __DIR__.'/../include/functions_html.php';
 
 if ($config['visual_animation']) {
     echo '<style>
-	@keyframes login_move {
-        from {margin-left: 10%;margin-right: 10%;opacity:0.1}
-        to {margin-left: 5%;margin-right: 5%;opacity:1}
-	}
-	
-	
-	div.container_login{
-		animation-name: login_move;
-		animation-duration: 3s;
-	}
+        div.container_login {
+            animation: container_login 3s ease;
+        }
+        
+        @keyframes container_login {
+            0% {
+                transform: scale(.9);
+                opacity: 0.1;
+            }
+            
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
 	</style>';
 }
 
@@ -87,17 +92,35 @@ if (!empty($page) && !empty($sec)) {
 }
 
 $login_body_style = '';
-$login_body_class = '';
 // Overrides the default background with the defined by the user.
-if (!empty($config['login_background'])) {
+$background_url = 'images/backgrounds/background_pandora_console_keys.jpg';
+
+if (empty($config['random_background']) === false) {
+    $random_backgrounds = scandir($config['homedir'].'/images/backgrounds/random_backgrounds');
+    unset($random_backgrounds[0], $random_backgrounds[1]);
+    $random_background = array_rand($random_backgrounds);
+    $background_url = 'images/backgrounds/random_backgrounds/'.$random_backgrounds[$random_background];
+    $background_100 = 'background-size: 100% 100% !important; ';
+}
+
+if (empty($config['login_background']) === false) {
     $background_url = 'images/backgrounds/'.$config['login_background'];
-    $login_body_style = "style=\"background-size: 100% 100% !important;background:linear-gradient(74deg, rgba(2, 2, 2, 0.333) 36%, transparent 36%), url('".$background_url."');\"";
+    $background_100 = 'background-size: 100% 100% !important; ';
 }
 
 // Support for Internet Explorer and Microsoft Edge browsers
 if (strpos($_SERVER['HTTP_USER_AGENT'], 'Trident') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Edge') !== false) {
-    $login_body_class = "class='login_body_trident'";
+    $background_url = 'images/backgrounds/background_pandora_console_keys.jpg';
+    $background_100 = '';
 }
+
+if (empty($config['background_opacity']) === false) {
+    $opacity = $config['background_opacity'];
+} else {
+    $opacity = 30;
+}
+
+$login_body_style = 'style="'.$background_100.'background: linear-gradient(rgba(0,0,0,.'.$opacity.'), rgba(0,0,0,.'.$opacity.")), url('".$background_url."');\"";
 
 // Get alternative custom in case of db fail.
 $custom_fields = [
@@ -123,36 +146,36 @@ foreach ($custom_fields as $field) {
 // Get the custom icons.
 $docs_logo = ui_get_docs_logo();
 $support_logo = ui_get_support_logo();
-echo '<div id="login_body" '.$login_body_class.' '.$login_body_style.'>';
+echo '<div id="login_body" '.$login_body_style.'>';
 echo '<div id="header_login">';
 
 echo '<div id="list_icon_docs_support"><ul>';
 
 if (isset($config['custom_docs_url'])) {
     if ($docs_logo !== false) {
-        echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+        echo '<li id="li_margin_doc_img"><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
     }
 
-    echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_doc"><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
 } else if (!$custom_conf_enabled) {
-    echo '<li><a href="https://pandorafms.com/manual/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
-    echo '<li><a href="https://pandorafms.com/manual/" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_doc_img"><a href="https://pandorafms.com/manual/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+    echo '<li id="li_margin_doc"><a href="https://pandorafms.com/manual/" target="_blank">'.__('Docs').'</li>';
 }
 
 if (isset($config['custom_support_url'])) {
     if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         if ($support_logo !== false) {
-            echo '<li id="li_margin_left"><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+            echo '<li id="li_margin_support_img"><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
         }
 
-        echo '<li><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank">'.__('Support').'</li>';
+        echo '<li id="li_margin_support"><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank">'.__('Support').'</li>';
     } else {
-        echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-        echo '<li>'.__('Support').'</li>';
+        echo '<li id="li_margin_support_img"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+        echo '<li id="li_margin_support">'.__('Support').'</li>';
     }
 } else if (!$custom_conf_enabled) {
-    echo '<li id="li_margin_left"><a href="https://support.pandorafms.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-    echo '<li><a href="https://support.pandorafms.com" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_support_img"><a href="https://support.pandorafms.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+    echo '<li id="li_margin_support"><a href="https://support.pandorafms.com" target="_blank">'.__('Docs').'</li>';
 }
 
         echo '</ul></div>';
@@ -286,10 +309,18 @@ switch ($login_screen) {
                     false,
                     true
                 );
+            echo '<div id="show-hide-pass"></div>';
             echo '</div>';
             echo '<div class="login_button">';
-                // html_print_submit_button(__('Login'), 'login_button', false, 'class="next_login"');
-                html_print_submit_button(__('Login'), 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
+                html_print_submit_button(
+                    __('Login'),
+                    'login_button',
+                    false,
+                    [
+                        'fixed_id' => 'submit-login_button',
+                        'icon'     => 'signin',
+                    ]
+                );
             echo '</div>';
         }
     break;
@@ -360,13 +391,23 @@ if ($config['enterprise_installed']) {
     }
 }
 
+echo '
+    <div class="loader" id="spinner_login">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+';
+echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'</div>';
+
 // CSRF validation.
 html_print_csrf_hidden();
 
     echo '</form></div>';
     echo '<div class="login_data">';
         echo '<div class ="text_banner_login">';
-            echo '<div><span class="span1 pandora_upper">';
+            echo '<div><span class="span1">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if ($config['custom_title1_login']) {
         echo io_safe_output($config['custom_title1_login']);
@@ -393,7 +434,7 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         echo '</div>';
         echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
-    if (isset($config['custom_splash_login'])) {
+    if (empty($config['custom_splash_login']) === false && $config['custom_splash_login'] !== 'default') {
         html_print_image(
             'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
             false,
@@ -405,25 +446,39 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
             false
         );
     } else {
-        html_print_image(
-            'enterprise/images/custom_splash_login/splash_image_default.png',
-            false,
-            [
-                'alt'    => 'logo',
-                'border' => 0,
-            ],
-            false,
-            false
-        );
+        echo '
+            <div class="loginimg-container">
+                <div class="lineone"></div> 
+                <div class="linetwo"></div>
+                <div class="linethree"></div>
+                <div style="display:flex;">
+                    <div class="towerone"></div>
+                    <div class="towertwo"></div>
+                    <div class="towerthree"></div>
+                    <div class="towerfour"></div>
+                </div>
+            </div>
+        ';
     }
 } else {
-    html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
+    echo '
+            <div class="loginimg-container">
+                <div class="lineone"></div> 
+                <div class="linetwo"></div>
+                <div class="linethree"></div>
+                <div style="display:flex;">
+                    <div class="towerone"></div>
+                    <div class="towertwo"></div>
+                    <div class="towerthree"></div>
+                    <div class="towerfour"></div>
+                </div>
+            </div>
+        ';
 }
 
         echo '</div>';
     echo '</div>';
 echo '</div>';
-echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'</div>';
 echo '</div>';
 
 if (empty($process_error_message) && isset($mail)) {
@@ -503,7 +558,7 @@ if (isset($login_failed)) {
     }
 
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-error', false);
+                    html_print_submit_button('Ok', 'hide-login-error', false, ['class' => ' mini']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -527,7 +582,7 @@ if ($login_screen == 'logout') {
 
                 echo '</div>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-logout', false);
+                    html_print_submit_button('Ok', 'hide-login-logout', false, ['class' => ' mini']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -709,7 +764,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     });
                 });
 
-                $("#submit-hide-login-error").click (function () {
+                $("#button-hide-login-error").click (function () {
                     $("#modal_alert" ).dialog('close');
                     
                 });
@@ -798,7 +853,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     });
                 });
 
-                $("#submit-hide-login-error").click (function () {
+                $("#button-hide-login-error").click (function () {
                     $("#login_failed" ).dialog('close');
                     $("#login_correct_pass").dialog('close');
                 });
@@ -824,7 +879,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             });
         });
 
-        $("#submit-reset_correct_button").click (function () {
+        $("#button-reset_correct_button").click (function () {
             $("#reset_correct").dialog('close');
         });        
     });
@@ -867,6 +922,31 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             $("#centralized_mode_reset_dialog").dialog('close');
         });
     }
+
+    $(document).ready(function () {
+        $('#show-hide-pass').click(function (e) {
+            let inputPass = this.previousElementSibling;
+
+            if (inputPass.type === "password") {
+                inputPass.type = "text";
+                inputPass.style.backgroundImage = "url('<?php echo $config['homeurl_static']; ?>/images/eye-closed-input.png')";
+            } else {
+                inputPass.type = "password";
+                inputPass.style.backgroundImage = "url('<?php echo $config['homeurl_static']; ?>/images/eye-open-input.png')";
+            }
+        });
+
+        $('#submit-login_button span').removeAttr('style');
+        $('#spinner_login').hide();
+    });
+
+    $('#submit-login_button').click(function (e) {
+        $('.login_nick').hide();
+        $('.login_pass').hide();
+        $('.login_button').hide();
+        $('.reset_password').hide();
+        $('#spinner_login').show();
+    });
 
     /* ]]> */
 </script>

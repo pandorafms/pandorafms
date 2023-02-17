@@ -10343,6 +10343,11 @@ button div.cog {
     contain;
 }
 
+button div.signin {
+  mask: url(../../images/signin.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/signin.svg) no-repeat center / contain;
+}
+
 button div.fail {
   mask: url(../../images/fail@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;

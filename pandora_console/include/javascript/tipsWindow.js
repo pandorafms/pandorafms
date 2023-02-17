@@ -298,23 +298,52 @@ function previewTip() {
   var extradata = {
     title: $("input[name=title]").val(),
     text: $("textarea[name=text]").val(),
-    url: $("input[name=url]").val()
+    url: $("input[name=url]").val(),
+    files: []
   };
 
-  //first images that can delete
+  //images in server
   if ($(".image_tip img").length > 0) {
-    extradata["files"] = [];
     $(".image_tip img").each(function(index) {
       extradata["files"].push($(".image_tip img")[index].src);
     });
   }
-  load_tips_modal({
-    target: $("#tips_window_modal_preview"),
-    url: url,
-    onshow: {
-      page: page,
-      method: "renderPreview"
-    },
-    extradata //Receive json
-  });
+
+  //Images in client
+  var totalInputsFiles = $("input[type=file]").length;
+  if (totalInputsFiles > 0) {
+    extradata["totalFiles64"] = totalInputsFiles;
+    $("input[type=file]").each(function(index) {
+      var reader = new FileReader();
+      reader.readAsDataURL(this.files[0]);
+      reader.onload = function(e) {
+        var img = new Image();
+        img.src = e.target.result;
+        img.onload = function() {
+          extradata[`file64_${index}`] = this.currentSrc;
+          if (totalInputsFiles - 1 === index) {
+            load_tips_modal({
+              target: $("#tips_window_modal_preview"),
+              url: url,
+              onshow: {
+                page: page,
+                method: "renderPreview"
+              },
+              extradata //Receive json
+            });
+          }
+        };
+      };
+    });
+  } else {
+    load_tips_modal({
+      target: $("#tips_window_modal_preview"),
+      url: url,
+      onshow: {
+        page: page,
+        method: "renderPreview"
+      },
+      extradata //Receive json
+    });
+  }
 }

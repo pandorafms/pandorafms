@@ -178,12 +178,21 @@ class TipsWindow
         $text = get_parameter('text', '');
         $url = get_parameter('url', '');
         $files = get_parameter('files', '');
-        if (empty($files) === false) {
-            $files = explode(',', $files);
+        $totalFiles64 = get_parameter('totalFiles64', '');
+        $files64 = false;
+
+        if ($totalFiles64 > 0) {
+            $files64 = [];
+            for ($i = 0; $i < $totalFiles64; $i++) {
+                $files64[] = get_parameter('file64_'.$i, '');
+            }
         }
 
-        foreach ($files as $key => $value) {
-            $files[$key] = str_replace(ui_get_full_url('/'), '', $value);
+        if (empty($files) === false) {
+            $files = explode(',', $files);
+            foreach ($files as $key => $value) {
+                $files[$key] = str_replace(ui_get_full_url('/'), '', $value);
+            }
         }
 
         View::render(
@@ -193,7 +202,8 @@ class TipsWindow
                 'text'    => $text,
                 'url'     => $url,
                 'preview' => true,
-                'files'   => $files,
+                'files'   => (empty($files) === false) ? $files : false,
+                'files64' => (empty($files64) === false) ? $files64 : false,
             ]
         );
     }

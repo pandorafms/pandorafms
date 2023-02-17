@@ -29,7 +29,7 @@
   font-size: 15px;
 }
 .description {
-  padding: 20px;
+  padding: 0px 20px 20px 20px;
   text-align: center;
 }
 .actions {
@@ -41,7 +41,7 @@
   overflow: hidden;
   position: relative;
   width: 100%;
-  height: 280px;
+  height: 300px;
   max-width: 464px;
   text-align: center;
   margin: 0 auto;
@@ -79,6 +79,8 @@
 }
 .carousel .images img {
   width: 100%;
+  height: 100%;
+  max-height: 260px;
 }
 .dialog_tips .ui-dialog-buttonset {
   display: flex;
@@ -163,7 +165,7 @@ span.count-round-tip.active {
   margin: 0px 5px;
 }
 .bx-viewport {
-  height: fit-content !important;
+  height: 260px !important;
 }
 .action_image {
   margin: 10px 0px;

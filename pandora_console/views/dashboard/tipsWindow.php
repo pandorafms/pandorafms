@@ -42,7 +42,7 @@ $output .= '<p>'.html_print_checkbox(
     ($preview === true) ? '' : 'checkbox_tips_startup'
 ).__('Show usage tips at startup').'</p>';
 $output .= '</div>';
-$output .= '<div class="carousel '.(($files === false) ? 'invisible' : '').'">';
+$output .= '<div class="carousel '.(($files === false && $files64 === false) ? 'invisible' : '').'">';
 $output .= '<div class="images">';
 
 if ($files !== false) {
@@ -54,6 +54,12 @@ if ($files !== false) {
         foreach ($files as $key => $file) {
             $output .= html_print_image($file['path'].$file['filename'], true);
         }
+    }
+}
+
+if ($files64 !== false) {
+    foreach ($files64 as $key => $file) {
+        $output .= '<img src="'.$file.'" />';
     }
 }
 

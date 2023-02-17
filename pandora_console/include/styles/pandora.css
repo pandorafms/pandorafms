@@ -10558,6 +10558,7 @@ tr.bring_next_field {
   vertical-align: middle;
   text-align: left;
   min-width: 150px !important;
+  z-index: 10002;
 }
 
 .select2-container .select2-selection--single,
@@ -11199,4 +11200,8 @@ form#satellite_conf_edit > fieldset.full-column {
 
 .action-buttons > button {
   margin: 10px;
+}
+
+.inputs_date_details > input {
+  margin: 5px;
 }

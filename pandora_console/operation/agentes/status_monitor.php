@@ -2106,7 +2106,7 @@ if (!empty($result)) {
 
 
 // End Build List Result.
-echo "<div id='monitor_details_window'></div>";
+echo "<div id='monitor_details_window' class='filter_table'></div>";
 
 // Load filter div for dialog.
 echo '<div id="load-modal-filter" style="display:none"></div>';
@@ -2252,7 +2252,7 @@ function show_module_detail_dialog(module_id, id_agent, server_name, offset, per
                         opacity: 0.5,
                         background: "black"
                     },
-                    width: 620,
+                    width: 700,
                     height: 500
                 })
                 .show ();

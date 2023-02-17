@@ -225,8 +225,7 @@ if (check_login()) {
             SECONDS_2YEARS    => __('2 years'),
             SECONDS_3YEARS    => __('3 years'),
         ];
-
-        $formtable->data[0][0] = html_print_radio_button_extended(
+        $formtable->data[0][0] = '<div style="display:flex;align-items:center;font-weight:bold;">'.html_print_radio_button_extended(
             'selection_mode',
             'fromnow',
             '',
@@ -235,8 +234,9 @@ if (check_login()) {
             '',
             'class="mrgn_right_15px"',
             true
-        ).__('Choose a time from now');
-        $formtable->data[0][1] = html_print_select(
+        ).__('Choose a time from now').'</div>';
+        $formtable->colspan[0][0] = 2;
+        $formtable->data[0][2] = html_print_select(
             $periods,
             'period',
             $period,
@@ -247,12 +247,11 @@ if (check_login()) {
             false,
             false
         );
-        $formtable->data[0][2] = '';
         $formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(".$module_id.', '.$agentId.', "'.$server_name.'", 0, -1,"'.modules_get_agentmodule_name($module_id)."\")'>".html_print_image('images/refresh.png', true, ['style' => 'vertical-align: middle;', 'border' => '0', 'class' => 'invert_filter' ]).'</a>';
         $formtable->rowspan[0][3] = 2;
         $formtable->cellstyle[0][3] = 'vertical-align: middle;';
 
-        $formtable->data[1][0] = html_print_radio_button_extended(
+        $formtable->data[1][0] = '<div style="display:flex;align-items:center;font-weight:bold;">'.html_print_radio_button_extended(
             'selection_mode',
             'range',
             '',
@@ -262,9 +261,9 @@ if (check_login()) {
             'class="mrgn_right_15px"',
             true
         ).__('Specify time range');
-        $formtable->data[1][1] = __('Timestamp from:');
+        $formtable->data[1][1] = '<span style="font-weight:bold">'.__('Timestamp from:').'</span></div>';
 
-        $formtable->data[1][2] = html_print_input_text(
+        $formtable->data[1][2] = '<div class="inputs_date_details">'.html_print_input_text(
             'date_from',
             $date_from,
             '',
@@ -277,12 +276,12 @@ if (check_login()) {
             $time_from,
             '',
             9,
-            7,
+            8,
             true
         );
 
         $formtable->data[1][1] .= '<br />';
-        $formtable->data[1][1] .= __('Timestamp to:');
+        $formtable->data[1][1] .= '<span style="font-weight:bold">'.__('Timestamp to:').'</span>';
 
         $formtable->data[1][2] .= '<br />';
         $formtable->data[1][2] .= html_print_input_text(
@@ -298,9 +297,9 @@ if (check_login()) {
             $time_to,
             '',
             9,
-            7,
+            8,
             true
-        );
+        ).'</div>';
 
         $freesearch_object = '';
         if (preg_match('/_string/', $moduletype_name)) {

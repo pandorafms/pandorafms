@@ -271,6 +271,13 @@ function load_tips_modal(settings) {
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
+          if ($("#tips_window_modal").length > 0) {
+            $("#tips_window_modal").remove();
+          }
+
+          if ($("#tips_window_modal_preview").length > 0) {
+            $("#tips_window_modal_preview").empty();
+          }
 
           if (settings.cleanup != undefined) {
             settings.cleanup();

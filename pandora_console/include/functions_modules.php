@@ -4160,13 +4160,13 @@ function get_module_realtime_link_graph($module)
 
     $link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 900, 480)">';
     $link_button .= html_print_image(
-        'images/realtime_shortcut.png',
+        'images/prediction@svg.svg',
         true,
         [
             'border' => '0',
             'alt'    => '',
             'title'  => __('Realtime SNMP graph'),
-            'class'  => 'invert_filter',
+            'class'  => 'invert_filter main_menu_icon',
         ]
     );
     $link_button .= '</a>';

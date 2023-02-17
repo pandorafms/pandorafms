@@ -236,98 +236,121 @@
 /* Icons specified here */
 .icon_oper-networkconsole {
   background: url(../../images/menu/network.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_oper-agents {
   background: url(../../images/menu/monitoring.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_oper-events {
   background: url(../../images/menu/events.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 /* users */
 .icon_oper-users {
   background: url(../../images/menu/workspace.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 /* trap console */
 .icon_oper-snmpc,
 .icon_god-snmpc {
   background: url(../../images/menu/op_snmp.menu.png) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_oper-reporting {
   background: url(../../images/menu/reporting.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_oper-gismaps {
   background: url(../../images/menu/op_gis.menu.png) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_oper-netflow {
   background: url(../../images/menu/op_netflow.menu.png) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_oper-extensions {
   background: url(../../images/menu/tools.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 /* Godmode images */
 .icon_god-discovery {
   background: url(../../images/menu/discovery.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-resources {
   background: url(../../images/menu/resources.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-configuration {
   background: url(../../images/menu/configuration.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-alerts {
   background: url(../../images/menu/alerts.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-users {
   background: url(../../images/menu/users.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-reporting {
   background: url(../../images/menu/reporting_edit.menu.png) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-servers {
   background: url(../../images/menu/servers.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-setup {
   background: url(../../images/menu/settings.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-events {
   background: url(../../images/menu/events_2.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-extensions {
   background: url(../../images/menu/admin_tools.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-links {
   background: url(../../images/menu/links.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-um_messages {
   background: url(../../images/menu/warp_update.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_god-module_library {
   background: url(../../images/menu/library.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 .icon_about {
   background: url(../../images/menu/about.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 #menu_container {
@@ -422,11 +445,6 @@ ul li {
   align-items: center;
 }
 
-.menu li div {
-  background-clip: text;
-  /* Very important to fix a bug in Firefox */
-}
-
 .godmode {
   padding-top: 2em !important;
 }
@@ -476,6 +494,14 @@ ul li {
   display: flex !important;
 }
 
+.submenu_text,
+.span_has_menu_text,
+.title_menu_classic span {
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: -0.3px;
+  height: 18px;
+}
 .menu_icon_collapsed {
   background-position: 50% 50%;
 }
@@ -607,7 +633,7 @@ ul li {
 
 .span_selected {
   color: #1d7874 !important;
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .tabs_collapsed {
@@ -661,4 +687,12 @@ ul li {
 
 .logo_icon {
   margin-left: 16px;
+}
+
+.head_tab_selected span {
+  color: #161628;
+}
+
+.head_tab_unselected span {
+  color: #95a3bf;
 }

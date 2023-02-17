@@ -1962,9 +1962,9 @@ $(".logo_preview").click (function(e) {
 
     var homeUrl = "<?php echo $config['homeurl']; ?>";
     var homeUrlEnt = homeUrl + "<?php echo enterprise_installed() ? 'enterprise/' : ''; ?>";
-
+    var elementToCheck = $('#'+e.target.id).parent().attr('id');
     // Fill it seing the target has been clicked
-    switch (e.target.id) {
+    switch (elementToCheck) {
         case 'button-custom_logo_preview':
             icon_name = $("select#custom_logo option:selected").val();
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
@@ -1974,7 +1974,7 @@ $(".logo_preview").click (function(e) {
             icon_name = $("select#custom_logo_collapsed option:selected").val();
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
             options.grayed = true;
-            break;            
+            break;
         case 'button-custom_logo_white_bg_preview':
             icon_name = $("select#custom_logo_white_bg option:selected").val();
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;

@@ -10002,6 +10002,10 @@ input[type="submit"].secondary:active {
   color: #0d312f;
 }
 
+input[type="file"] {
+  padding-top: 10px;
+}
+
 button.buttonButton,
 button.submitButton {
   display: flex;
@@ -10559,6 +10563,7 @@ tr.bring_next_field {
   vertical-align: middle;
   text-align: left;
   min-width: 150px !important;
+  z-index: 10002;
 }
 
 .select2-container .select2-selection--single,
@@ -10767,8 +10772,8 @@ tr.bring_next_field {
 
 .fixed_action_buttons {
   position: fixed;
-  padding: 0px;
-  bottom: 8px;
+  padding: 0;
+  bottom: 0;
   z-index: 1;
   width: -webkit-fill-available;
   width: -moz-available;
@@ -10798,8 +10803,8 @@ tr.bring_next_field {
   width: -moz-available;
   position: absolute;
   left: 0;
+  top: 0;
   height: 58px;
-  top: -8px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
   /*z-index: 10000;*/
@@ -11177,4 +11182,31 @@ form#satellite_conf_edit > fieldset.full-column {
 #principal_action_buttons input,
 #principal_action_buttons .select2-container {
   z-index: 50;
+}
+
+#api_qrcode_display {
+  width: 300px;
+  height: 300px;
+  position: absolute;
+  left: 660px;
+  top: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.input_sub_placeholder.input_sub_placeholder_qrcode {
+  font-size: 13px;
+  text-align: center;
+  width: 70%;
+  margin-top: 5px;
+}
+
+.action-buttons > button {
+  margin: 10px;
+}
+
+.inputs_date_details > input {
+  margin: 5px;
 }

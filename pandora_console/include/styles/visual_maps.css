@@ -106,7 +106,9 @@ input.vs_button_ghost {
 }
 
 div#editor div#toolbox input.visual_editor_button_toolbox,
-div#edit-controls input.visual_editor_button_toolbox {
+div#edit-controls input.visual_editor_button_toolbox,
+div#edit-controls > div.toolbox-buttons button,
+div#edit-controls > div.visual-console-copy-delete button {
   padding-right: 20px;
   padding-top: 12px;
   padding-bottom: 12px;
@@ -114,6 +116,12 @@ div#edit-controls input.visual_editor_button_toolbox {
   border-bottom: 3px solid transparent;
   padding-left: 20px;
   border-radius: initial;
+}
+
+div#edit-controls > div.toolbox-buttons button,
+div#edit-controls > div.visual-console-copy-delete button {
+  margin-left: 2px;
+  vertical-align: middle;
 }
 
 div#edit-controls button.sub:hover,
@@ -127,317 +135,413 @@ div#edit-controls input.sub[disabled] {
   border-color: transparent;
 }
 
-input.delete_min {
+input.delete_min,
+button.delete_min {
   background: url(../../images/cross.png) no-repeat center;
 }
-input.delete_min[disabled] {
+input.delete_min[disabled],
+button.delete_min[disabled] {
   background: url(../../images/cross.disabled.png) no-repeat center;
 }
-input.delete_min_white {
+input.delete_min_white,
+button.delete_min_white {
   background: url(../../images/cross.disabled.png) no-repeat center;
 }
-input.delete_min_white[disabled] {
+input.delete_min_white[disabled],
+button.delete_min_white[disabled] {
   background: url(../../images/cross.png) no-repeat center;
 }
 
-input.graph_min {
+input.graph_min,
+button.graph_min {
   background: url(../../images/chart_curve.png) no-repeat center;
 }
-input.graph_min[disabled] {
+input.graph_min[disabled],
+button.graph_min[disabled] {
   background: url(../../images/chart_curve.disabled.png) no-repeat center;
 }
-input.graph_min_white {
+input.graph_min_white,
+button.graph_min_white {
   background: url(../../images/chart_curve.disabled.png) no-repeat center;
 }
-input.graph_min_white[disabled] {
+input.graph_min_white[disabled],
+button.graph_min_white[disabled] {
   background: url(../../images/chart_curve.png) no-repeat center;
 }
 
-input.bars_graph_min {
+input.bars_graph_min,
+button.bars_graph_min {
   background: url(../../images/icono-barras-arriba.png) no-repeat center;
 }
-input.bars_graph_min[disabled] {
+input.bars_graph_min[disabled],
+button.bars_graph_min[disabled] {
   background: url(../../images/icono-barras-arriba.disabled.png) no-repeat
     center;
 }
-input.bars_graph_min_white {
+input.bars_graph_min_white,
+button.bars_graph_min_white {
   background: url(../../images/icono-barras-arriba.disabled.png) no-repeat
     center;
 }
-input.bars_graph_min_white[disabled] {
+input.bars_graph_min_white[disabled],
+button.bars_graph_min_white[disabled] {
   background: url(../../images/icono-barras-arriba.png) no-repeat center;
 }
 
-input.percentile_min {
+input.percentile_min,
+button.percentile_min {
   background: url(../../images/chart_bar.png) no-repeat center;
 }
-input.percentile_min[disabled] {
+input.percentile_min[disabled],
+button.percentile_min[disabled] {
   background: url(../../images/chart_bar.disabled.png) no-repeat center;
 }
-input.percentile_min_white {
+input.percentile_min_white,
+button.percentile_min_white {
   background: url(../../images/chart_bar.disabled.png) no-repeat center;
 }
-input.percentile_min_white[disabled] {
+input.percentile_min_white[disabled],
+button.percentile_min_white[disabled] {
   background: url(../../images/chart_bar.png) no-repeat center;
 }
 
-input.percentile_item_min {
+input.percentile_item_min,
+button.percentile_item_min {
   background: url(../../images/percentile_item.png) no-repeat center;
 }
-input.percentile_item_min[disabled] {
+input.percentile_item_min[disabled],
+button.percentile_item_min[disabled] {
   background: url(../../images/percentile_item.disabled.png) no-repeat center;
 }
-input.percentile_item_min_white {
+input.percentile_item_min_white,
+button.percentile_item_min_white {
   background: url(../../images/percentile_item.disabled.png) no-repeat center;
 }
-input.percentile_item_min_white[disabled] {
+input.percentile_item_min_white[disabled],
+button.percentile_item_min_white[disabled] {
   background: url(../../images/percentile_item.png) no-repeat center;
 }
 
-input.auto_sla_graph_min {
+input.auto_sla_graph_min,
+button.auto_sla_graph_min {
   background: url(../../images/auto_sla_graph.png) no-repeat center;
 }
-input.auto_sla_graph_min[disabled] {
+input.auto_sla_graph_min[disabled],
+button.auto_sla_graph_min[disabled] {
   background: url(../../images/auto_sla_graph.disabled.png) no-repeat center;
 }
-input.auto_sla_graph_min_white {
+input.auto_sla_graph_min_white,
+button.auto_sla_graph_min_white {
   background: url(../../images/auto_sla_graph.disabled.png) no-repeat center;
 }
-input.auto_sla_graph_min_white[disabled] {
+input.auto_sla_graph_min_white[disabled],
+button.auto_sla_graph_min_white[disabled] {
   background: url(../../images/auto_sla_graph.png) no-repeat center;
 }
 
-input.donut_graph_min {
+input.donut_graph_min,
+button.donut_graph_min {
   background: url(../../images/icono-quesito.png) no-repeat center;
 }
-input.donut_graph_min[disabled] {
+input.donut_graph_min[disabled],
+button.donut_graph_min[disabled] {
   background: url(../../images/icono-quesito.disabled.png) no-repeat center;
 }
-input.donut_graph_min_white {
+input.donut_graph_min_white,
+button.donut_graph_min_white {
   background: url(../../images/icono-quesito.disabled.png) no-repeat center;
 }
-input.donut_graph_min_white[disabled] {
+input.donut_graph_min_white[disabled],
+button.donut_graph_min_white[disabled] {
   background: url(../../images/icono-quesito.png) no-repeat center;
 }
 
-input.binary_min {
+input.binary_min,
+button.binary_min {
   background: url(../../images/binary.png) no-repeat center;
 }
-input.binary_min[disabled] {
+input.binary_min[disabled],
+button.binary_min[disabled] {
   background: url(../../images/binary.disabled.png) no-repeat center;
 }
-input.binary_min_white {
+input.binary_min_white,
+button.binary_min_white {
   background: url(../../images/binary.disabled.png) no-repeat center;
 }
-input.binary_min_white[disabled] {
+input.binary_min_white[disabled],
+button.binary_min_white[disabled] {
   background: url(../../images/binary.png) no-repeat center;
 }
 
-input.camera_min {
+input.camera_min,
+button.camera_min {
   background: url(../../images/camera.png) no-repeat center;
 }
-input.camera_min[disabled] {
+input.camera_min[disabled],
+button.camera_min[disabled] {
   background: url(../../images/camera.disabled.png) no-repeat center;
 }
-input.camera_min_white {
+input.camera_min_white,
+button.camera_min_white {
   background: url(../../images/camera.disabled.png) no-repeat center;
 }
-input.camera_min_white[disabled] {
+input.camera_min_white[disabled],
+button.camera_min_white[disabled] {
   background: url(../../images/camera.png) no-repeat center;
 }
 
-input.config_min {
+input.config_min,
+button.config_min {
   background: url(../../images/config.png) no-repeat center;
 }
-input.config_min[disabled] {
+input.config_min[disabled],
+button.config_min[disabled] {
   background: url(../../images/config.disabled.png) no-repeat center;
 }
-input.config_min_white {
+input.config_min_white,
+button.config_min_white {
   background: url(../../images/config.disabled.png) no-repeat center;
 }
-input.config_min_white[disabled] {
+input.config_min_white[disabled],
+button.config_min_white[disabled] {
   background: url(../../images/config.png) no-repeat center;
 }
 
-input.label_min {
+input.label_min,
+button.label_min {
   background: url(../../images/tag_red.png) no-repeat center;
 }
-input.label_min[disabled] {
+input.label_min[disabled],
+button.label_min[disabled] {
   background: url(../../images/tag_red.disabled.png) no-repeat center;
 }
-input.label_min_white {
+input.label_min_white,
+button.label_min_white {
   background: url(../../images/tag_red.disabled.png) no-repeat center;
 }
-input.label_min_white[disabled] {
+input.label_min_white[disabled],
+button.label_min_white[disabled] {
   background: url(../../images/tag_red.png) no-repeat center;
 }
 
-input.icon_min {
+input.icon_min,
+button.icon_min {
   background: url(../../images/photo.png) no-repeat center;
 }
-input.icon_min[disabled] {
+input.icon_min[disabled],
+button.icon_min[disabled] {
   background: url(../../images/photo.disabled.png) no-repeat center;
 }
-input.icon_min_white {
+input.icon_min_white,
+button.icon_min_white {
   background: url(../../images/photo.disabled.png) no-repeat center;
 }
-input.icon_min_white[disabled] {
+input.icon_min_white[disabled],
+button.icon_min_white[disabled] {
   background: url(../../images/photo.png) no-repeat center;
 }
 
-input.clock_min {
+input.clock_min,
+button.clock_min {
   background: url(../../images/clock-tab.png) no-repeat center;
 }
-input.clock_min[disabled] {
+input.clock_min[disabled],
+button.clock_min[disabled] {
   background: url(../../images/clock-tab.disabled.png) no-repeat center;
 }
-input.clock_min_white {
+input.clock_min_white,
+button.clock_min_white {
   background: url(../../images/clock-tab.disabled.png) no-repeat center;
 }
-input.clock_min_white[disabled] {
+input.clock_min_white[disabled],
+button.clock_min_white[disabled] {
   background: url(../../images/clock-tab.png) no-repeat center;
 }
 
-input.box_item {
+input.box_item,
+button.box_item {
   background: url(../../images/box_item.png) no-repeat center;
 }
-input.box_item[disabled] {
+input.box_item[disabled],
+button.box_item[disabled] {
   background: url(../../images/box_item.disabled.png) no-repeat center;
 }
-input.box_item_white {
+input.box_item_white,
+button.box_item_white {
   background: url(../../images/box_item.disabled.png) no-repeat center;
 }
-input.box_item_white[disabled] {
+input.box_item_white[disabled],
+button.box_item_white[disabled] {
   background: url(../../images/box_item.png) no-repeat center;
 }
 
-input.line_item {
+input.line_item,
+button.line_item {
   background: url(../../images/line_item.png) no-repeat center;
 }
-input.line_item[disabled] {
+input.line_item[disabled],
+button.line_item[disabled] {
   background: url(../../images/line_item.disabled.png) no-repeat center;
 }
-input.line_item_white {
+input.line_item_white,
+button.line_item_white {
   background: url(../../images/line_item.disabled.png) no-repeat center;
 }
-input.line_item_white[disabled] {
+input.line_item_white[disabled],
+button.line_item_white[disabled] {
   background: url(../../images/line_item.png) no-repeat center;
 }
 
-input.copy_item {
+input.copy_item,
+button.copy_item {
   background: url(../../images/copy_visualmap.png) no-repeat center;
 }
-input.copy_item[disabled] {
+input.copy_item[disabled],
+button.copy_item[disabled] {
   background: url(../../images/copy_visualmap.disabled.png) no-repeat center;
 }
-input.copy_item_white {
+input.copy_item_white,
+button.copy_item_white {
   background: url(../../images/copy_visualmap.disabled.png) no-repeat center;
 }
-input.copy_item_white[disabled] {
+input.copy_item_white[disabled],
+button.copy_item_white[disabled] {
   background: url(../../images/copy_visualmap.png) no-repeat center;
 }
 
-input.grid_min {
+input.grid_min,
+button.grid_min {
   background: url(../../images/grid.png) no-repeat center;
 }
-input.grid_min[disabled] {
+input.grid_min[disabled],
+button.grid_min[disabled] {
   background: url(../../images/grid.disabled.png) no-repeat center;
 }
-input.grid_min_white {
+input.grid_min_white,
+button.grid_min_white {
   background: url(../../images/grid.disabled.png) no-repeat center;
 }
-input.grid_min_white[disabled] {
+input.grid_min_white[disabled],
+button.grid_min_white[disabled] {
   background: url(../../images/grid.png) no-repeat center;
 }
 
-input.save_min {
+input.save_min,
+button.save_min {
   background: url(../../images/file.png) no-repeat center;
 }
-input.save_min[disabled] {
+input.save_min[disabled],
+button.save_min[disabled] {
   background: url(../../images/file.disabled.png) no-repeat center;
 }
-input.save_min_white {
+input.save_min_white,
+button.save_min_white {
   background: url(../../images/file.disabled.png) no-repeat center;
 }
-input.save_min_white[disabled] {
+input.save_min_white[disabled],
+button.save_min_white[disabled] {
   background: url(../../images/file.png) no-repeat center;
 }
 
-input.service_min {
+input.service_min,
+button.service_min {
   background: url(../../images/box.png) no-repeat center;
 }
-input.service_min[disabled] {
+input.service_min[disabled],
+button.service_min[disabled] {
   background: url(../../images/box.disabled.png) no-repeat center;
 }
-input.service_min_white {
+input.service_min_white,
+button.service_min_white {
   background: url(../../images/box.disabled.png) no-repeat center;
 }
-input.service_min_white[disabled] {
+input.service_min_white[disabled],
+button.service_min_white[disabled] {
   background: url(../../images/box.png) no-repeat center;
 }
 
-input.network_link_min {
+input.network_link_min,
+button.network_link_min {
   background: url(../../images/network_link_item.png) no-repeat center;
 }
-input.network_link_min[disabled] {
+input.network_link_min[disabled],
+button.network_link_min[disabled] {
   background: url(../../images/network_link_item.disabled.png) no-repeat center;
 }
-input.network_link_min_white {
+input.network_link_min_white,
+button.network_link_min_white {
   background: url(../../images/network_link_item.disabled.png) no-repeat center;
 }
-input.network_link_min_white[disabled] {
+input.network_link_min_white[disabled],
+button.network_link_min_white[disabled] {
   background: url(../../images/network_link_item.png) no-repeat center;
 }
 
-input.group_item_min {
+input.group_item_min,
+button.group_item_min {
   background: url(../../images/group_green.png) no-repeat center;
 }
-input.group_item_min[disabled] {
+input.group_item_min[disabled],
+button.group_item_min[disabled] {
   background: url(../../images/group_green.disabled.png) no-repeat center;
 }
-input.group_item_min_white {
+input.group_item_min_white,
+button.group_item_min_white {
   background: url(../../images/group_green.disabled.png) no-repeat center;
 }
-input.group_item_min_white[disabled] {
+input.group_item_min_white[disabled],
+button.group_item_min_white[disabled] {
   background: url(../../images/group_green.png) no-repeat center;
 }
 
-input.color_cloud_min {
+input.color_cloud_min,
+button.color_cloud_min {
   background: url(../../images/color_cloud_item.png) no-repeat center;
 }
-input.color_cloud_min[disabled] {
+input.color_cloud_min[disabled],
+button.color_cloud_min[disabled] {
   background: url(../../images/color_cloud_item.disabled.png) no-repeat center;
 }
-input.color_cloud_min_white {
+input.color_cloud_min_white,
+button.color_cloud_min_white {
   background: url(../../images/color_cloud_item.disabled.png) no-repeat center;
 }
-input.color_cloud_min_white[disabled] {
+input.color_cloud_min_white[disabled],
+button.color_cloud_min_white[disabled] {
   background: url(../../images/color_cloud_item.png) no-repeat center;
 }
 
-input.odometer_min {
+input.odometer_min,
+button.odometer_min {
   background: url(../../images/odometer.png) no-repeat center;
 }
-input.odometer_min[disabled] {
+input.odometer_min[disabled],
+button.odometer_min[disabled] {
   background: url(../../images/odometer.disabled.png) no-repeat center;
 }
-input.odometer_min_white {
+input.odometer_min_white,
+button.odometer_min_white {
   background: url(../../images/odometer.disabled.png) no-repeat center;
 }
-input.odometer_min_white[disabled] {
+input.odometer_min_white[disabled],
+button.odometer_min_white[disabled] {
   background: url(../../images/odometer.png) no-repeat center;
 }
 
-input.basic_chart_min {
+input.basic_chart_min,
+button.basic_chart_min {
   background: url(../../images/basic_chart.png) no-repeat center;
 }
-input.basic_chart_min[disabled] {
+input.basic_chart_min[disabled],
+button.basic_chart_min[disabled] {
   background: url(../../images/basic_chart.disabled.png) no-repeat center;
 }
-input.basic_chart_min_white {
+input.basic_chart_min_white,
+button.basic_chart_min_white {
   background: url(../../images/basic_chart.disabled.png) no-repeat center;
 }
-input.basic_chart_min_white[disabled] {
+input.basic_chart_min_white[disabled],
+button.basic_chart_min_white[disabled] {
   background: url(../../images/basic_chart.png) no-repeat center;
 }
 

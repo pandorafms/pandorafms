@@ -921,7 +921,8 @@ if ($agents !== false) {
                 [
                     'href'    => ui_get_full_url(
                         sprintf(
-                            'index.php?sec=gagente&sec2=godmode/agentes/borrar_agente&%s_agent=%s&group_id=%s&recursion=%s&search=%s&offset=%s&sort_field=%s&sort=%s&disabled=%s',
+                            'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=%s&%s_agent=%s&group_id=%s&recursion=%s&search=%s&offset=%s&sort_field=%s&sort=%s&disabled=%s',
+                            $agent['id_agente'],
                             $agentDisableEnableAction,
                             $agent['id_agente'],
                             $ag_group,

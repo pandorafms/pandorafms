@@ -205,7 +205,7 @@ $table->data[$i++][1] = html_print_textarea(
     2,
     25,
     $list_ACL_IPs_for_API,
-    'class="height_50px w300px"',
+    'class="height_130px w300px"',
     true
 );
 
@@ -713,7 +713,6 @@ echo '<legend>'.__('Mail configuration').'</legend>';
 
     echo '</fieldset>';
 
-    echo '<fieldset>';
 
     html_print_div(
         [

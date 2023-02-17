@@ -118,12 +118,12 @@ ui_print_message_dialog(
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
         <link rel="stylesheet" href="../../include/styles/select2.min.css" type="text/css" />
-        <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
         <script type='text/javascript' src='../../include/javascript/select2.min.js'></script>
+        <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
         <?php
         require_once $config['homedir'].'/include/graphs/functions_flot.php';
             echo include_javascript_dependencies_flot_graph(true, '../');
@@ -202,10 +202,10 @@ ui_print_message_dialog(
         $table = html_get_predefined_table('transparent', 2);
         $table->width = '100%';
         $table->id = 'stat_win_form_div';
-        $table->style[0] = 'text-align:left;';
-        $table->style[1] = 'text-align:left;';
-        $table->style[2] = 'text-align:left;font-weight: bold;';
-        $table->style[3] = 'text-align:left;';
+        $table->style[0] = 'text-align:left;font-weight: bold;font-size:8.5pt;line-height:30pt;';
+        $table->style[1] = 'text-align:left;font-weight: bold;line-height:30pt;';
+        $table->style[2] = 'text-align:left;font-weight: bold;line-height:30pt;';
+        $table->style[3] = 'text-align:left;font-weight: bold;line-height:30pt;';
         $table->class = 'table_modal_alternate';
         $table->data = [];
 
@@ -451,7 +451,10 @@ ui_print_message_dialog(
             __('Reload'),
             'submit',
             false,
-            'class="sub upd"',
+            [
+                'icon'  => 'Icon search secondary mini',
+                'class' => 'float-right',
+            ],
             true
         );
         $form_table .= '</div>';

@@ -3449,7 +3449,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     $output = '';
     $classes = '';
     $fixedId = '';
-
+    $iconStyle = '';
+    $spanStyle = 'margin-top: 4px;';
     if (empty($name) === true) {
         $name = 'unnamed';
     }
@@ -3477,6 +3478,10 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
                 $classes .= ' '.$value;
             } else if ($attribute === 'fixed_id') {
                 $fixedId = $value;
+            } else if ($attribute === 'icon_style') {
+                $iconStyle = $value;
+            } else if ($attribute === 'span_style') {
+                $spanStyle .= $value;
             } else if ($attribute === 'rawAttributes') {
                 $buttonType = ($attr_array['type'] ?? 'button');
                 $buttonAttributes = $value;
@@ -3492,7 +3497,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     if (empty($iconToUse) === false || (isset($buttonMode) === true && $buttonMode !== 'onlyIcon')) {
         $iconDiv = html_print_div(
             [
-                'style' => '',
+                'style' => $iconStyle,
                 'class' => sprintf(
                     'subIcon %s %s',
                     $iconToUse,
@@ -3505,8 +3510,12 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $iconDiv = '';
     }
 
+    // Defined id. Is usable for span and button.
+    // TODO. Check if will be proper use button or submit when where appropiate.
+    $mainId = ((empty($fixedId) === false) ? $fixedId : 'button-'.$name);
+
     if ($imageButton === false) {
-        $content = '<span style="margin-top: 4px;" class="font_11">'.$label.'</span>';
+        $content = '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
         $content .= $iconDiv;
     } else {
         $content = $iconDiv;
@@ -3526,7 +3535,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $parameters = [];
         $parameters[] = 'class="'.$classes.'"';
         $parameters[] = (empty($name) === false) ? ' name="'.$name.'"' : '';
-        $parameters[] = 'id="'.((empty($fixedId) === false) ? $fixedId : 'button-'.$name ).'"';
+        $parameters[] = 'id="'.$mainId.'"';
         $parameters[] = (empty($label) === false) ? ' value="'.$label.'"' : '';
         $parameters[] = (empty($script) === false) ? ' onClick="'.$script.'"' : '';
         $parameters[] = ($disabled === true) ? ' disabled' : '';

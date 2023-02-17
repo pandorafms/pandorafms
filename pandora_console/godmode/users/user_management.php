@@ -220,6 +220,14 @@ $userManagementTable->data['fields_phone'][0] = html_print_input_text_extended(
     true
 );
 
+$fieldsAdminUserCount = 0;
+$userManagementTable->rowclass['captions_fields_admin_user'] = 'field_half_width w50p';
+$userManagementTable->cellclass['captions_fields_admin_user'][$fieldsAdminUserCount] = 'wrap';
+if (empty($doubleAuthentication) === false) {
+    $userManagementTable->data['captions_fields_admin_user'][$fieldsAdminUserCount] = $doubleAuthentication;
+    $fieldsAdminUserCount++;
+}
+
 if (users_is_admin() === true) {
     $globalProfileContent = [];
     $globalProfileContent[] = '<span>'.__('Administrator user').'</span>';
@@ -230,8 +238,8 @@ if (users_is_admin() === true) {
         true
     );
 
-    $userManagementTable->rowclass['captions_fields_admin_user'] = 'field_half_width';
-    $userManagementTable->data['captions_fields_admin_user'][0] = html_print_div(
+    $userManagementTable->cellclass['captions_fields_admin_user'][$fieldsAdminUserCount] = 'wrap';
+    $userManagementTable->data['captions_fields_admin_user'][$fieldsAdminUserCount] = html_print_div(
         [
             'class'   => 'margin-top-10',
             'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
@@ -698,6 +706,34 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
         'content' => implode('', $allowAllIpsContent),
     ],
     true
+);
+
+
+$contentQrCode = [];
+$contentQrCode[] = html_print_image(
+    'images/example_qr.png',
+    true,
+    [
+        'width'  => '200px',
+        'height' => '200px',
+    ]
+);
+$contentQrCode[] = '<span class="input_sub_placeholder input_sub_placeholder_qrcode">'.__('Generated automatically with the information provided for the user').'</span>';
+
+$qrCode = html_print_div(
+    [
+        'style'   => 'display: flex;flex-direction: column;align-items: center;',
+        'content' => implode('', $contentQrCode),
+    ],
+    true
+);
+
+// QR Code and API Token advice.
+html_print_div(
+    [
+        'id'      => 'api_qrcode_display',
+        'content' => $qrCode.$apiTokenContent,
+    ]
 );
 
 html_print_table($userManagementTable);

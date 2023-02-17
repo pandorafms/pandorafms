@@ -875,12 +875,40 @@ if (is_ajax()) {
                                     <p><span>'.__('Build').'</span> '.$build_version.'</p>
                                     <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span> 2023/04/26</p>';
         if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
-            $dialog .= '
-                                    <div style="display: inline;">
-                                        <button class="sub" onclick="location.href=\''.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'\'">'.__('Update manager').'</button>
-                                        <button class="sub" onclick="location.href=\''.ui_get_full_url('/index.php?sec=gextensions&sec2=tools/diagnostics', false, false, false).'\'">'.__('System report').'</button>
-                                    </div>
-                                        ';
+            $dialogButtons = [];
+
+            $dialogButtons[] = html_print_button(
+                __('Update manager'),
+                'update_manager',
+                false,
+                'location.href=\''.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'\'',
+                [
+                    'icon' => 'cog',
+                    'mode' => 'mini secondary',
+                ],
+                true
+            );
+
+            $dialogButtons[] = html_print_button(
+                __('System report'),
+                'system_report',
+                false,
+                'location.href=\''.ui_get_full_url('/index.php?sec=gextensions&sec2=tools/diagnostics', false, false, false).'\'',
+                [
+                    'icon' => 'info',
+                    'mode' => 'mini secondary',
+                ],
+                true
+            );
+
+            $dialog .= html_print_div(
+                [
+                    'style'   => 'flex-direction: row;',
+                    'class'   => 'action-buttons',
+                    'content' => implode('', $dialogButtons),
+                ],
+                true
+            );
         }
 
         $dialog .= '</th>

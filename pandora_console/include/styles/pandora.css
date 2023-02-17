@@ -10347,6 +10347,10 @@ button div.cog {
     contain;
 }
 
+button div.info {
+  mask: url(../../images/info@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/info@svg.svg) no-repeat center / contain;
+}
 button div.signin {
   mask: url(../../images/signin.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/signin.svg) no-repeat center / contain;

@@ -656,7 +656,7 @@ if ($access_console_node === true) {
     $sub['message_list']['subtype'] = 'nolink';
     $sub2 = [];
     $sub2['operation/messages/message_list']['text'] = __('Messages List');
-    $sub2['operation/messages/message_edit&amp;new_msg=1']['text'] = __('New message');
+    $sub2['operation/messages/message_edit&new_msg=1']['text'] = __('New message');
 
     $sub['message_list']['sub2'] = $sub2;
 }

@@ -104,6 +104,11 @@ function menu_print_menu(&$menu)
         if (empty($id) === false) {
             $sec2 = 'operation/visual_console/render_view&id='.$id;
         }
+    } else if ($sec2 === 'operation/messages/message_edit') {
+        $new_msg = (int) get_parameter('new_msg', 0);
+        if (empty($new_msg) === false) {
+            $sec2 = 'operation/messages/message_edit&new_msg='.$new_msg;
+        }
     } else {
         $sec2 = (string) get_parameter('sec2');
     }

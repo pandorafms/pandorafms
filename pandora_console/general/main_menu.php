@@ -444,7 +444,7 @@ echo '</div>';
          */
         function menu_calculate_top(index, item_height) {
             const result = index * item_height;
-            return 136 + result;
+            return 133 + result;
         }
     });
 </script>

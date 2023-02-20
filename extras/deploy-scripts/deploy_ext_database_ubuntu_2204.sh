@@ -181,7 +181,7 @@ cat > /etc/mysql/my.cnf << EOF_DB
 [mysqld]
 datadir=/var/lib/mysql
 user=mysql
-character-set-server=utf8
+character-set-server=utf8mb4
 skip-character-set-client-handshake
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
@@ -196,7 +196,7 @@ innodb_flush_log_at_trx_commit = 0
 innodb_flush_method = O_DIRECT
 innodb_log_file_size = 64M
 innodb_log_buffer_size = 16M
-innodb_io_capacity = 100
+innodb_io_capacity = 300
 thread_cache_size = 8
 thread_stack    = 256K
 max_connections = 100

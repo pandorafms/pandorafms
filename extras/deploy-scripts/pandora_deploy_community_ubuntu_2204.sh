@@ -106,6 +106,21 @@ check_root_permissions () {
     fi
 }
 
+installing_docker () {
+    #Installing docker for debug
+    echo "Start installig docker" &>> "$LOGFILE"
+    mkdir -m 0755 -p /etc/apt/keyrings &>> "$LOGFILE"
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg &>> "$LOGFILE"
+    echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+        $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list &>> "$LOGFILE"
+    apt update -y &>> "$LOGFILE"
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin &>> "$LOGFILE"
+    systemctl disable docker --now &>> "$LOGFILE"
+    systemctl disable docker.socket --now &>> "$LOGFILE"
+    echo "End installig docker" &>> "$LOGFILE"
+}
+
 ## Main
 echo "Starting PandoraFMS Community deployment Ubuntu 22.04 ver. $S_VERSION"
 
@@ -173,7 +188,7 @@ execute_cmd "cd $WORKDIR" "Moving to workdir:  $WORKDIR"
 
 ## Install utils
 execute_cmd "apt update" "Updating repos"
-execute_cmd "apt install -y net-tools vim curl wget software-properties-common apt-transport-https" "Installing utils"
+execute_cmd "apt install -y net-tools vim curl wget software-properties-common apt-transport-https ca-certificates gnupg lsb-release" "Installing utils"
 
 #Installing Apache and php-fpm
 [ -e "/etc/apt/sources.list.d/ondrej-ubuntu-php-jammy.list" ] || execute_cmd "add-apt-repository ppa:ondrej/php -y" "Enable ppa:ondrej/php repo"
@@ -221,7 +236,8 @@ systemctl restart php$PHPVER-fpm &>> "$LOGFILE"
 	php$PHPVER-xml \
 	php$PHPVER-yaml \
 	libnet-telnet-perl \
-    whois"
+    whois \
+    cron"
 execute_cmd "apt install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
 # Server dependencies
@@ -254,9 +270,12 @@ server_dependencies=" \
 	libnet-telnet-perl \
 	libjson-perl \
 	libencode-perl \
+    cron \
 	libgeo-ip-perl \
 	openjdk-8-jdk "
 execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
+
+execute_cmd "installing_docker" "Installing Docker for debug"
 
 # wmic and pandorawmic
 execute_cmd "curl -O https://firefly.artica.es/pandorafms/utils/bin/wmic" "Downloading wmic"
@@ -393,7 +412,7 @@ cat > /etc/mysql/my.cnf << EOF_DB
 [mysqld]
 datadir=/var/lib/mysql
 user=mysql
-character-set-server=utf8
+character-set-server=utf8mb4
 skip-character-set-client-handshake
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
@@ -408,7 +427,7 @@ innodb_flush_log_at_trx_commit = 0
 innodb_flush_method = O_DIRECT
 innodb_log_file_size = 64M
 innodb_log_buffer_size = 16M
-innodb_io_capacity = 100
+innodb_io_capacity = 300
 thread_cache_size = 8
 thread_stack    = 256K
 max_connections = 100
@@ -731,9 +750,14 @@ systemctl enable pandora_server &>> "$LOGFILE"
 execute_cmd "service tentacle_serverd start" "Starting Tentacle Server"
 systemctl enable tentacle_serverd &>> "$LOGFILE"
 
-# Enabling condole cron
+# Enabling console cron
 execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
 echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
+
+# Enabling pandoradb cron
+execute_cmd "echo 'enabling pandoradb cron' >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS pandoradb cron"
+echo "@hourly         root    bash -c /etc/cron.hourly/pandora_db" >> /etc/crontab
+
 
 ## Enabling agent adn configuring Agente
 sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF &>> "$LOGFILE"

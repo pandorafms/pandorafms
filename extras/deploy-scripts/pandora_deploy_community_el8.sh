@@ -107,6 +107,17 @@ check_root_permissions () {
     fi
 }
 
+installing_docker () {
+    #Installing docker for debug
+    echo "Start installig docker" &>> "$LOGFILE"
+    dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo &>> "$LOGFILE"
+    dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin &>> "$LOGFILE"
+    systemctl disable --now docker &>> "$LOGFILE"
+    systemctl disable docker.socket --now &>> "$LOGFILE"
+    echo "End installig docker" &>> "$LOGFILE"
+}
+
+
 ## Main
 echo "Starting PandoraFMS Community deployment EL8 ver. $S_VERSION"
 
@@ -207,6 +218,7 @@ else
     execute_cmd "dnf config-manager --set-enabled powertools" "Configuring Powertools"
 fi
 
+execute_cmd "installing_docker" "Installing Docker for debug"
 
 #Installing wget
 execute_cmd "dnf install -y wget" "Installing wget"
@@ -454,7 +466,7 @@ innodb_flush_log_at_trx_commit = 0
 innodb_flush_method = O_DIRECT
 innodb_log_file_size = 64M
 innodb_log_buffer_size = 16M
-innodb_io_capacity = 100
+innodb_io_capacity = 300
 thread_cache_size = 8
 thread_stack    = 256K
 max_connections = 100
@@ -483,6 +495,7 @@ EO_CONFIG_F
     if [ "$MYVER" -eq '80' ] ; then
         sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
         sed -i -e "s/#skip-log-bin/skip-log-bin/g" /etc/my.cnf
+        sed -i -e "s/character-set-server=utf8/character-set-server=utf8mb4/g" /etc/my.cnf
     fi
 
     execute_cmd "systemctl restart mysqld" "Configuring database engine"

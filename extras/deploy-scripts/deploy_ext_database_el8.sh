@@ -275,6 +275,8 @@ EO_CONFIG_F
     if [ "$MYVER" -eq '80' ] ; then
         sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
         sed -i -e "s/#skip-log-bin/skip-log-bin/g" /etc/my.cnf
+        sed -i -e "s/character-set-server=utf8/character-set-server=utf8mb4/g" /etc/my.cnf
+
     fi
 
     execute_cmd "systemctl restart mysqld" "Configuring database engine"

@@ -334,7 +334,7 @@ switch ($login_screen) {
 
         echo '<div class="login_nick">';
         echo '<div>';
-            html_print_image('/images/icono_autenticacion.png', false);
+            // html_print_image('/images/icono_autenticacion.png', false);
         echo '</div>';
         html_print_input_text_extended('auth_code', '', 'auth_code', '', '', '', false, '', 'class="login login_password" placeholder="'.__('Authentication code').'"', false, true);
         echo '</div>';

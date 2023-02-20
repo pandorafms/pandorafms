@@ -1670,4 +1670,11 @@ require 'include/php_to_js_values.php';
             }
         );
     });
+
+    // Cog animations.
+    $(document).ready(function() {
+        $(".submitButton").click(function(){
+            $("#"+this.id+" > .subIcon.cog").addClass("rotation");
+        });
+    });
 </script>

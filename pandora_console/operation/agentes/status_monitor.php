@@ -946,8 +946,9 @@ $tableFilter->data[4][0] = html_print_button(
     false,
     '',
     [
-        'icon' => 'wand',
-        'mode' => 'mini secondary',
+        'icon'  => 'wand',
+        'mode'  => 'mini secondary',
+        'class' => 'float-left margin-right-2 sub config',
     ],
     true
 );
@@ -959,8 +960,9 @@ $tableFilter->data[4][1] = html_print_button(
     false,
     '',
     [
-        'icon' => 'wand',
-        'mode' => 'mini secondary',
+        'icon'  => 'wand',
+        'mode'  => 'mini secondary',
+        'class' => 'float-left margin-right-2 sub wand',
     ],
     true
 );
@@ -1405,6 +1407,16 @@ if ($autosearch) {
 
         // Start Build List Result.
 if (empty($result) === false) {
+    if (is_metaconsole() === true) {
+        html_print_action_buttons(
+            html_print_div(['style' => 'float:left; height: 55px;', 'class' => 'mrgn_top_15px'], true),
+            [
+                'type'          => 'form_action',
+                'right_content' => $tablePagination,
+            ]
+        );
+    }
+
     $table = new StdClass();
     $table->cellpadding = 0;
     $table->cellspacing = 0;
@@ -2120,7 +2132,6 @@ if (empty($result) === false) {
     html_print_table($table);
 
     if ($count_modules > $config['block_size']) {
-        hd('patata');
         $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', false);
     }
 } else {
@@ -2131,13 +2142,15 @@ if (empty($result) === false) {
     }
 }
 
-html_print_action_buttons(
-    html_print_div(['style' => 'float:left; height: 55px;'], true),
-    [
-        'type'          => 'form_action',
-        'right_content' => $tablePagination,
-    ]
-);
+if (is_metaconsole() !== true) {
+    html_print_action_buttons(
+        html_print_div(['style' => 'float:left; height: 55px;'], true),
+        [
+            'type'          => 'form_action',
+            'right_content' => $tablePagination,
+        ]
+    );
+}
 
 // End Build List Result.
 echo "<div id='monitor_details_window' class='filter_table'></div>";

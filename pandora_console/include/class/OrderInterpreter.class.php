@@ -294,7 +294,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Task List'),
                 'icon' => ui_get_full_url(
-                    'images/menu/discovery.menu.png'
+                    'images/menu/discovery.svg'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=discovery&sec2=godmode/servers/discovery&wiz=tasklist'
@@ -338,7 +338,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Warp Update'),
                 'icon' => ui_get_full_url(
-                    'images/menu/um_messages.svg'
+                    'images/menu/warp_update.svg'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=setup'

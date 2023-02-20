@@ -153,7 +153,7 @@ html {
 }
 
 body {
-  background-color: #fbfbfb;
+  background-color: #f6f7fb;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1080,14 +1080,14 @@ div#page {
 }
 
 body.pure {
-  background-color: #fbfbfb;
+  background-color: #f6f7fb;
 }
 
 div#container {
   margin: 0 auto;
   min-width: 960px;
   text-align: left;
-  background: #fbfbfb;
+  background: #f6f7fb;
   width: 100%;
 }
 
@@ -1096,7 +1096,7 @@ div#main {
   /* width: 100%; */
   /* margin-left: 3em; */
   background-color: #f6f7fb;
-  margin-bottom: 3em;
+  padding-bottom: 3em;
   position: relative;
   /* margin-top: 8.8em; */
   flex-direction: column;
@@ -10818,18 +10818,23 @@ tr.bring_next_field {
   left: -95px !important;
 }
 
+.external_tools_title {
+  padding: 0 10px;
+}
 pre.external_tools_output {
+  padding: 0 10px;
+  /*
   border: 1px solid #e5e9ed;
   -moz-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
   -webkit-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
   box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
   border-radius: 8px;
   color: #cacaca;
-  padding: 10px;
   background-color: #000;
   background-image: radial-gradient(rgba(0, 150, 0, 0.75), #000 120%);
   font-size: 11pt;
   text-shadow: 0 0 5px #000;
+    */
 }
 
 .dialog_table_form td:first-child {
@@ -10919,6 +10924,10 @@ table.table_modal_alternate .select2-selection__arrow {
   top: -4px !important;
 }
 
+.fixed_filter_bar .select2-selection__arrow b,
+.filter_table .select2-selection__arrow b {
+  margin-top: 11px !important;
+}
 .filter_table
   .select2-container
   .select2-selection--single

@@ -1456,10 +1456,10 @@ if (__PAN_XHPROF__ === 1) {
 }
 
 if ($config['pure'] == 0) {
-    echo '<div id="both"></div>';
+    // echo '<div id="both"></div>';
     echo '</div>';
     // Main.
-    echo '<div id="both">&nbsp;</div>';
+    // echo '<div id="both">&nbsp;</div>';
     echo '</div>';
     // Page (id = page).
 } else {
@@ -1488,7 +1488,7 @@ if ($config['pure'] == 0) {
     echo '</div>';
     // Container div.
     echo '</div>';
-    echo '<div id="both"></div>';
+    // echo '<div id="both"></div>';
     echo '</div>';
 }
 

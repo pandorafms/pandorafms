@@ -528,14 +528,16 @@ class ExternalTools extends HTML
 
         // Form table.
         $table = new StdClass();
-        $table->class = 'databox filters w100p';
+        $table->class = 'fixed_filter_bar';
         $table->id = 'externalToolTable';
-
+        $table->cellstyle['captions'][0] = 'width: 0';
+        $table->cellstyle['captions'][1] = 'width: 0';
+        $table->cellstyle['captions'][2] = 'width: 0';
         $table->data = [];
 
-        $table->data[0][0] = __('Operation');
+        $table->data['captions'][0] = __('Operation');
 
-        $table->data[0][1] = html_print_select(
+        $table->data['inputs'][0] = html_print_select(
             $commandList,
             'operation',
             $this->operation,
@@ -545,8 +547,8 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->data[0][2] = __('IP Adress');
-        $table->data[0][3] = html_print_select(
+        $table->data['captions'][1] = __('IP Adress');
+        $table->data['inputs'][1] = html_print_select(
             $ipsSelect,
             'select_ips',
             $principal_ip,
@@ -556,10 +558,10 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->cellclass[0][4] = 'snmpcolumn';
-        $table->data[0][4] = __('SNMP Version');
-        $table->data[0][4] .= '&nbsp;';
-        $table->data[0][4] .= html_print_select(
+        $table->cellclass['captions'][2] = 'snmpcolumn';
+        $table->cellclass['inputs'][2] = 'snmpcolumn';
+        $table->data['captions'][2] = __('SNMP Version');
+        $table->data['inputs'][2] = html_print_select(
             [
                 '1'  => 'v1',
                 '2c' => 'v2c',
@@ -572,10 +574,10 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->cellclass[0][5] = 'snmpcolumn';
-        $table->data[0][5] = __('SNMP Community');
-        $table->data[0][5] .= '&nbsp;';
-        $table->data[0][5] .= html_print_input_text(
+        $table->cellclass['captions'][3] = 'snmpcolumn';
+        $table->cellclass['inputs'][3] = 'snmpcolumn';
+        $table->data['captions'][3] = __('SNMP Community');
+        $table->data['inputs'][3] = html_print_input_text(
             'community',
             $this->community,
             '',
@@ -584,7 +586,7 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->data[0][6] = html_print_div(
+        $table->data['inputs'][4] = html_print_div(
             [
                 'class'   => 'action-buttons',
                 'content' => html_print_submit_button(
@@ -719,7 +721,7 @@ class ExternalTools extends HTML
         try {
             // If caption is not added, don't show anything.
             if (empty($caption) === false) {
-                $output .= sprintf('<h3>%s</h3>', $caption);
+                $output .= sprintf('<h3 class="external_tools_title">%s</h3>', $caption);
             }
 
             $output .= '<pre class="external_tools_output">';
@@ -787,7 +789,7 @@ class ExternalTools extends HTML
                     'format'         => '-Oqn',
                 ];
 
-                echo '<h3>'.__('SNMP information for ').$ip.'</h3>';
+                echo '<h3 class="external_tools_title">'.__('SNMP information for ').$ip.'</h3>';
 
                 $snmp_obj['base_oid'] = '.1.3.6.1.2.1.1.3.0';
                 $result = get_h_snmpwalk($snmp_obj);
@@ -849,7 +851,7 @@ class ExternalTools extends HTML
 
                 html_print_table($table);
             } else if ((int) $operation === COMMAND_DIGWHOIS) {
-                echo '<h3>'.__('Domain and IP information for ').$ip.'</h3>';
+                echo '<h3 class="external_tools_title">'.__('Domain and IP information for ').$ip.'</h3>';
 
                 // Dig execution.
                 $dig = $this->whereIsTheCommand('dig');

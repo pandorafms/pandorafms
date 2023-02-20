@@ -813,7 +813,7 @@ if ($id_agente) {
     $pure = (int) get_parameter('pure');
     if ($pure === 0) {
         ui_print_standard_header(
-            agents_get_alias($id_agente),
+            __('Agent setup view'),
             'images/agent.png',
             false,
             $helper,

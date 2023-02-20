@@ -1904,7 +1904,7 @@ switch ($tab) {
 
 if ((bool) $config['pure'] === false) {
     ui_print_standard_header(
-        agents_get_alias($id_agente),
+        __('Agent main view'),
         $icon,
         false,
         ($help_header ?? ''),

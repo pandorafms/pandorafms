@@ -56,11 +56,11 @@ if (! defined('METACONSOLE')) {
     $buttons['fields'] = [
         'active'    => false,
         'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields">'.html_print_image(
-            'images/custom_columns.png',
+            'images/edit_columns@svg.svg',
             true,
             [
                 'title' => __('Custom fields'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>',
         'operation' => true,
@@ -69,11 +69,11 @@ if (! defined('METACONSOLE')) {
     $buttons['view'] = [
         'active'    => false,
         'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor">'.html_print_image(
-            'images/list.png',
+            'images/logs@svg.svg',
             true,
             [
                 'title' => __('View'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>',
         'operation' => true,
@@ -499,63 +499,6 @@ if (is_metaconsole() === true) {
     $limit_sql = $config['block_size'];
 }
 
-// End Build SQL sentences.
-//
-// Start Build Search Form.
-//
-$table = new StdClass();
-$table->width = '100%';
-$table->cellspacing = 0;
-$table->cellpadding = 0;
-$table->class = 'databox filters';
-$table->style[0] = 'font-weight: bold;';
-$table->style[1] = 'font-weight: bold;';
-$table->style[2] = 'font-weight: bold;';
-$table->style[3] = 'font-weight: bold;';
-$table->style[4] = 'font-weight: bold;';
-
-$table->data[0][0] = __('Group');
-$table->data[0][1] = '<div class="flex flex-row-vcenter w290px"><div class="w200px">';
-$table->data[0][1] .= html_print_select_groups(
-    $config['id_user'],
-    'AR',
-    true,
-    'ag_group',
-    $ag_group,
-    '',
-    '',
-    '0',
-    true,
-    false,
-    false,
-    '',
-    false,
-    '',
-    false,
-    false,
-    'id_grupo',
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    $not_condition
-);
-
-$table->data[0][1] .= '</div><div>';
-$table->data[0][1] .= html_print_input(
-    [
-        'type'    => 'checkbox',
-        'name'    => 'recursion',
-        'return'  => true,
-        'checked' => ($recursion === true || $recursion === 'true' || $recursion === '1') ? 'checked' : false,
-        'value'   => 1,
-    ]
-);
-$table->data[0][1] .= __('Recursion');
-$table->data[0][1] .= '</div></div>';
-
 $fields = [];
 $fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
 $fields[AGENT_MODULE_STATUS_WARNING] = __('Warning');
@@ -565,24 +508,7 @@ $fields[AGENT_MODULE_STATUS_NOT_NORMAL] = __('Not normal');
 // Default.
 $fields[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 
-$table->data[0][2] = __('Monitor status');
-$table->data[0][3] = html_print_select(
-    $fields,
-    'status',
-    $status,
-    '',
-    __($is_none),
-    -1,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 150px;'
-);
-
 $rows_select = [];
-$table->data[0][4] = __('Module group');
 $rows_select[0] = __('Not assigned');
 if (is_metaconsole() === false) {
     $rows = db_get_all_rows_sql(
@@ -590,7 +516,7 @@ if (is_metaconsole() === false) {
 		FROM tmodule_group ORDER BY name'
     );
     $rows = io_safe_output($rows);
-    if (!empty($rows)) {
+    if (empty($rows) === false) {
         foreach ($rows as $module_group) {
             $rows_select[$module_group['id_mg']] = $module_group['name'];
         }
@@ -599,30 +525,12 @@ if (is_metaconsole() === false) {
     $rows_select = modules_get_modulegroups();
 }
 
-$table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup, '', __($is_none), -1, true, false, true, '', false, 'width: 120px;');
-
-$table->data[1][0] = __('Module name');
-$table->data[1][1] = html_print_autocomplete_modules(
-    'ag_modulename',
-    $ag_modulename,
-    false,
-    true,
-    '',
-    [],
-    true
-);
-
-$table->data[1][2] = __('Search');
-$table->data[1][3] = html_print_input_text('ag_freestring', $ag_freestring, '', 20, 30, true);
-
-$table->data[1][4] = __('Tags').ui_print_help_tip(__('Only it is show tags in use.'), true);
-
 $tags = [];
 $tags = tags_get_user_tags();
-if (empty($tags)) {
-    $table->data[1][5] = __('No tags');
+if (empty($tags) === true) {
+    $tagsElement = __('No tags');
 } else {
-    $table->data[1][5] = html_print_select(
+    $tagsElement = html_print_select(
         $tags,
         'tag_filter[]',
         $tag_filter,
@@ -636,14 +544,13 @@ if (empty($tags)) {
         false,
         'width: 150px;'
     );
+    $tagsElement .= ui_print_input_placeholder(
+        __('Only it is show tags in use.'),
+        true
+    );
 }
 
-$table2 = new StdClass();
-$table2->width = '100%';
-$table2->class = 'filters';
-$table2->style = [];
-$table2->style[0] = 'font-weight: bold;';
-$table2->style[1] = 'font-weight: bold;';
+
 
 $network_available = db_get_sql(
     'SELECT count(*)
@@ -683,8 +590,6 @@ if ($develop_bypass) {
     $prediction_available = 1;
 }
 
-
-
 $typemodules = [];
 $typemodules[1] = __('Data server module');
 if ($network_available || is_metaconsole() === true) {
@@ -710,33 +615,17 @@ if (enterprise_installed()) {
     }
 }
 
-
-$table2->data[0][0] = '<span>'.__('Server type').'</span>';
-
-$table2->data[0][1] = html_print_select($typemodules, 'moduletype', $moduletype, '', __($is_none), '', true, false, true, '', false, 'width: 150px;');
-
 $monitor_options = [
     0 => __('All'),
     1 => __('Only enabled'),
     2 => __('Only disabled'),
 ];
 
-$table2->data[0][2] = '<span>'.__('Show monitors...').'</span>';
-
-$table2->data[0][3] = html_print_select($monitor_options, 'module_option', $module_option, '', '', '', true, false, true, '', false, 'width: 150px;');
-
 $min_hours_val = empty($min_hours_status) ? '' : (int) $min_hours_status;
-
-$table2->data[0][4] = '<span>'.__('Min. hours in current status').'</span>';
-$table2->data[0][5] = html_print_input_text('min_hours_status', $min_hours_val, '', 12, 20, true);
-
-$table2->data[1][0] = '<span id="datatypetittle"';
-$table2->data[1][0] .= '>'.__('Data type').'</span>';
-$table2->data[1][1] .= '<div id="datatypebox">';
 
 switch ($moduletype) {
     case 1:
-        $sql = sprintf(
+        $sqlModuleType = sprintf(
             'SELECT id_tipo, descripcion
 				FROM ttipo_modulo
 				WHERE categoria '.$not_condition.' IN (6,7,8,0,1,2,-1) order by descripcion '
@@ -744,7 +633,7 @@ switch ($moduletype) {
     break;
 
     case 2:
-        $sql = sprintf(
+        $sqlModuleType = sprintf(
             'SELECT id_tipo, descripcion
 				FROM ttipo_modulo
 				WHERE categoria '.$not_condition.' between 3 and 5 '
@@ -752,7 +641,7 @@ switch ($moduletype) {
     break;
 
     case 4:
-        $sql = sprintf(
+        $sqlModuleType = sprintf(
             'SELECT id_tipo, descripcion
 				FROM ttipo_modulo
 				WHERE categoria '.$not_condition.' between 0 and 2 '
@@ -760,7 +649,7 @@ switch ($moduletype) {
     break;
 
     case 6:
-        $sql = sprintf(
+        $sqlModuleType = sprintf(
             'SELECT id_tipo, descripcion
 				FROM ttipo_modulo
 				WHERE categoria '.$not_condition.' between 0 and 2 '
@@ -768,7 +657,7 @@ switch ($moduletype) {
     break;
 
     case 7:
-        $sql = sprintf(
+        $sqlModuleType = sprintf(
             'SELECT id_tipo, descripcion
 				FROM ttipo_modulo
 				WHERE categoria '.$condition_query.' 9'
@@ -776,7 +665,7 @@ switch ($moduletype) {
     break;
 
     case 5:
-        $sql = sprintf(
+        $sqlModuleType = sprintf(
             'SELECT id_tipo, descripcion
 				FROM ttipo_modulo
 				WHERE categoria '.$condition_query.' 0'
@@ -784,7 +673,7 @@ switch ($moduletype) {
     break;
 
     case 8:
-        $sql = sprintf(
+        $sqlModuleType = sprintf(
             'SELECT id_tipo, descripcion
 				FROM ttipo_modulo
 				WHERE nombre '.$condition_query.' \'web_analysis\''
@@ -792,61 +681,19 @@ switch ($moduletype) {
     break;
 
     case '':
-        $sql = sprintf(
+    default:
+        $sqlModuleType = sprintf(
             'SELECT id_tipo, descripcion
 					FROM ttipo_modulo'
         );
     break;
-
-    default:
-        // Nothing.
-    break;
 }
-
-$a = db_get_all_rows_sql($sql);
-$table2->data[1][1] .= '<select id="datatype" name="datatype" style="height: 28px;" ';
-
-$table2->data[1][1] .= '>';
-
-$table2->data[1][1] .= '<option name="datatype" value="">'.__($is_none).'</option>';
-
-
-foreach ($a as $valor) {
-    $table2->data[1][1] .= '<option name="datatype" value="'.$valor['id_tipo'].'" ';
-
-    if ($valor['id_tipo'] == $datatype) {
-        $table2->data[1][1] .= 'selected';
-    }
-
-    $table2->data[1][1] .= '>'.$valor['descripcion'].'</option>';
-}
-
-$table2->data[1][1] .= '</select>';
-$table2->data[1][1] .= '</div>';
-$check_not_condition = '';
 
 if ($not_condition !== '') {
     $check_not_condition = true;
+} else {
+    $check_not_condition = '';
 }
-
-$table2->data[1][2] .= __('Not condition').'&nbsp;'.ui_print_help_tip(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true);
-$table2->data[1][3] = html_print_div(
-    [
-        'class'   => 'w120px mrgn_5px mrgn_lft_0px mrgn_right_0px',
-        'content' => html_print_input(
-            [
-                'type'    => 'switch',
-                'name'    => 'not_condition',
-                'return'  => false,
-                'checked' => ($check_not_condition === true || $check_not_condition === 'true' || $check_not_condition === '1') ? 'checked' : false,
-                'value'   => 'NOT',
-                'id'      => 'not_condition_switch',
-                'onclick' => 'changeNotConditionStatus(this)',
-            ]
-        ),
-    ],
-    true
-);
 
 $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
 if ($custom_fields === false) {
@@ -889,11 +736,180 @@ foreach ($custom_fields as $custom_field) {
 
 $div_custom_fields .= '</div>';
 
-$filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
 
-$table2->colspan[2][0] = 7;
-$table2->cellstyle[2][0] = 'padding-left: 10px;';
-$table2->data[2][0] = ui_toggle(
+// End Build SQL sentences.
+//
+// Start Build Search Form.
+//
+$table = new stdClass();
+$tableFilter = new StdClass();
+$tableFilter->width = '100%';
+$tableFilter->cellspacing = 0;
+$tableFilter->cellpadding = 0;
+$tableFilter->id = 'main_status_monitor_filter';
+$tableFilter->class = 'filter_table';
+$tableFilter->cellclass['inputs_second_line'][2] = 'flex flex_column wrap';
+// Defined styles.
+$tableFilter->style[0] = 'padding-right: 10px';
+$tableFilter->style[1] = 'padding-right: 10px';
+$tableFilter->style[2] = 'padding-right: 10px';
+// Captions for first line.
+$tableFilter->data['captions_first_line'][0] = __('Group');
+$tableFilter->data['captions_first_line'][1] = __('Module group');
+$tableFilter->data['captions_first_line'][2] = __('Recursion');
+$tableFilter->data['captions_first_line'][3] = __('Search');
+// Inputs for first line.
+$tableFilter->data['inputs_first_line'][0] = html_print_select_groups(
+    $config['id_user'],
+    'AR',
+    true,
+    'ag_group',
+    $ag_group,
+    '',
+    '',
+    '0',
+    true,
+    false,
+    false,
+    '',
+    false,
+    '',
+    false,
+    false,
+    'id_grupo',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    $not_condition
+);
+$tableFilter->data['inputs_first_line'][1] = html_print_select(
+    $rows_select,
+    'modulegroup',
+    $modulegroup,
+    '',
+    __($is_none),
+    -1,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 100%;'
+);
+$tableFilter->data['inputs_first_line'][2] = html_print_checkbox_switch(
+    'recursion',
+    1,
+    ($recursion === true || $recursion === 'true' || $recursion === '1') ? 'checked' : false,
+    true
+);
+$tableFilter->data['inputs_first_line'][3] = html_print_input_text(
+    'ag_freestring',
+    $ag_freestring,
+    '',
+    40,
+    30,
+    true
+);
+// Captions for second line.
+$tableFilter->data['captions_second_line'][0] = __('Monitor status');
+$tableFilter->data['captions_second_line'][1] = __('Module name');
+$tableFilter->data['captions_second_line'][2] = __('Tags');
+// Inputs for second line.
+$tableFilter->rowstyle['inputs_second_line'] = 'vertical-align: top;';
+$tableFilter->data['inputs_second_line'][0] = html_print_select(
+    $fields,
+    'status',
+    $status,
+    '',
+    __($is_none),
+    -1,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 150px;'
+);
+
+$tableFilter->data['inputs_second_line'][1] = html_print_autocomplete_modules(
+    'ag_modulename',
+    $ag_modulename,
+    false,
+    true,
+    '',
+    [],
+    true
+);
+
+$tableFilter->data['inputs_second_line'][2] = $tagsElement;
+
+// Advanced filter.
+$tableAdvancedFilter = new StdClass();
+$tableAdvancedFilter->width = '100%';
+$tableAdvancedFilter->class = 'filters';
+$tableAdvancedFilter->style = [];
+// $tableAdvancedFilter->style[0] = 'font-weight: bold;';
+$tableAdvancedFilter->cellclass['fields_advancedField_1'][4] = 'flex flex_column wrap';
+$tableAdvancedFilter->rowstyle['fields_advancedField_1'] = 'vertical-align: top;';
+// $tableAdvancedFilter->style[1] = 'font-weight: bold;';
+$tableAdvancedFilter->data['captions_advancedField_1'][0] = '<span>'.__('Server type').'</span>';
+$tableAdvancedFilter->data['captions_advancedField_1'][1] = '<span>'.__('Show monitors...').'</span>';
+$tableAdvancedFilter->data['captions_advancedField_1'][2] = '<span>'.__('Min. hours in current status').'</span>';
+$tableAdvancedFilter->data['captions_advancedField_1'][3] = '<span>'.__('Data type').'</span>';
+$tableAdvancedFilter->data['captions_advancedField_1'][4] = '<span>'.__('Not condition').'</span>';
+
+$tableAdvancedFilter->data['fields_advancedField_1'][0] = html_print_select($typemodules, 'moduletype', $moduletype, '', __($is_none), '', true, false, true, '', false, 'width: 150px;');
+$tableAdvancedFilter->data['fields_advancedField_1'][1] = html_print_select($monitor_options, 'module_option', $module_option, '', '', '', true, false, true, '', false, 'width: 150px;');
+$tableAdvancedFilter->data['fields_advancedField_1'][2] = html_print_input_text('min_hours_status', $min_hours_val, '', 12, 20, true);
+$tableAdvancedFilter->data['fields_advancedField_1'][3] = html_print_select_from_sql($sqlModuleType, 'datatype', '', '', __('All'), 0, true);
+$tableAdvancedFilter->data['fields_advancedField_1'][4] = html_print_div(
+    [
+        'class'   => 'w120px mrgn_5px mrgn_lft_0px mrgn_right_0px flex wrap',
+        'content' => html_print_input(
+            [
+                'type'    => 'switch',
+                'name'    => 'not_condition',
+                'return'  => false,
+                'checked' => ($check_not_condition === true || $check_not_condition === 'true' || $check_not_condition === '1') ? 'checked' : false,
+                'value'   => 'NOT',
+                'id'      => 'not_condition_switch',
+                'onclick' => 'changeNotConditionStatus(this)',
+            ]
+        ).ui_print_input_placeholder(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true),
+    ],
+    true
+);
+/*
+    '<div id="datatypebox">';
+
+    $a = db_get_all_rows_sql($sql);
+
+    $tableAdvancedFilter->data[1][1] .= '<select id="datatype" name="datatype" style="height: 28px;" ';
+
+    $tableAdvancedFilter->data[1][1] .= '>';
+
+    $tableAdvancedFilter->data[1][1] .= '<option name="datatype" value="">'.__($is_none).'</option>';
+
+
+    foreach ($a as $valor) {
+    $tableAdvancedFilter->data[1][1] .= '<option name="datatype" value="'.$valor['id_tipo'].'" ';
+
+    if ($valor['id_tipo'] == $datatype) {
+        $tableAdvancedFilter->data[1][1] .= 'selected';
+    }
+
+    $tableAdvancedFilter->data[1][1] .= '>'.$valor['descripcion'].'</option>';
+    }
+
+    $tableAdvancedFilter->data[1][1] .= '</select>';
+    $tableAdvancedFilter->data[1][1] .= '</div>';
+*/
+$tableAdvancedFilter->colspan[2][0] = 7;
+$tableAdvancedFilter->cellstyle[2][0] = 'padding-left: 10px;';
+$tableAdvancedFilter->data[2][0] = ui_toggle(
     $div_custom_fields,
     __('Agent custom fields'),
     '',
@@ -905,14 +921,14 @@ $table2->data[2][0] = ui_toggle(
     'white_table_graph'
 );
 
-$table->colspan[3][0] = 7;
-$table->cellstyle[3][0] = 'padding-left: 10px;padding-bottom: 0px;';
-$table->data[3][0] = ui_toggle(
+$tableFilter->colspan[3][0] = 7;
+$tableFilter->cellstyle[3][0] = 'padding-left: 10px;padding-bottom: 0px;';
+$tableFilter->data[3][0] = ui_toggle(
     html_print_table(
-        $table2,
+        $tableAdvancedFilter,
         true
     ),
-    __('Advanced options'),
+    '<span class="">'.__('Advanced options').'</span>',
     '',
     '',
     true,
@@ -922,45 +938,50 @@ $table->data[3][0] = ui_toggle(
     'white_table_graph'
 );
 
-$table->colspan[4][0] = 2;
-$table->cellstyle[4][0] = 'padding-top: 0px;';
-$table->data[4][0] = html_print_button(
+// $tableFilter->colspan[4][0] = 2;
+$tableFilter->cellstyle[4][0] = 'padding-top: 0px;';
+$tableFilter->data[4][0] = html_print_button(
     __('Load filter'),
     'load-filter',
     false,
     '',
-    'class="float-left margin-right-2 sub config"',
+    [
+        'icon' => 'wand',
+        'mode' => 'mini secondary',
+    ],
     true
 );
 
-$table->cellstyle[4][0] .= 'padding-top: 0px;';
-$table->data[4][0] .= html_print_button(
+
+$tableFilter->data[4][1] = html_print_button(
     __('Save filter'),
     'save-filter',
     false,
     '',
-    'class="float-left margin-right-2 sub wand"',
+    [
+        'icon' => 'wand',
+        'mode' => 'mini secondary',
+    ],
     true
 );
 
-$table->colspan[4][2] = 5;
-$table->cellstyle[4][2] = 'padding-top: 0px;';
-$table->data[4][2] = html_print_submit_button(
-    __('Show'),
+$tableFilter->colspan[4][2] = 5;
+$tableFilter->cellstyle[4][2] = 'padding-top: 0px;';
+$tableFilter->data[4][2] = html_print_submit_button(
+    __('Filter'),
     'uptbutton',
     false,
-    'class="sub search mgn_tp_0 right"',
+    [
+        'icon' => 'next',
+        'mode' => 'mini',
+    ],
     true
 );
 
-$filters .= html_print_table($table, true);
+$filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
+$filters .= html_print_table($tableFilter, true);
 $filters .= '</form>';
-
-if (is_metaconsole() === true) {
-    ui_toggle($filters, __('Show filters'), '', '', false);
-} else {
-    echo $filters;
-}
+ui_toggle($filters, '<span class="subsection_header_title">'.__('Filters').'</span>');
 
 unset($table);
 // End Build Search Form.
@@ -1249,13 +1270,13 @@ switch ($sortField) {
 
         // We do not show the modules until the user searches with the filter.
 if ($autosearch) {
-    if (! defined('METACONSOLE')) {
+    if (is_metaconsole() === false) {
         $result = db_get_all_rows_sql($sql);
 
         if ($result === false) {
             $result = [];
         } else {
-            ui_pagination($count, false, $offset, 0, false, 'offset', true);
+            $tablePagination = ui_pagination($count, false, $offset, 0, true, 'offset', false);
         }
     } else {
         // For each server defined and not disabled.
@@ -1272,7 +1293,7 @@ if ($autosearch) {
         $count_modules = 0;
         foreach ($servers as $server) {
             // If connection was good then retrieve all data server.
-            if (metaconsole_connect($server) == NOERR) {
+            if (metaconsole_connect($server) === NOERR) {
                 $connection = true;
             } else {
                 $connection = false;
@@ -1280,7 +1301,7 @@ if ($autosearch) {
 
             $result_server = db_get_all_rows_sql($sql);
 
-            if (!empty($result_server)) {
+            if (empty($result_server) === false) {
                 // Create HASH login info.
                 $pwd = $server['auth_token'];
                 $auth_serialized = json_decode($pwd, true);
@@ -1321,7 +1342,7 @@ if ($autosearch) {
         }
 
         if ($count_modules > $config['block_size']) {
-            ui_pagination($count_modules, false, $offset);
+            $tablePagination = ui_pagination($count_modules, false, $offset, 0, true);
         }
 
         // Get number of elements of the pagination.
@@ -1329,13 +1350,12 @@ if ($autosearch) {
     }
 }
 
-if (($config['dbtype'] == 'oracle') && ($result !== false)) {
-    for ($i = 0; $i < count($result); $i++) {
-        unset($result[$i]['rnum']);
-    }
-}
-
-
+// Oracle legacy code.
+// if (($config['dbtype'] == 'oracle') && ($result !== false)) {
+// for ($i = 0; $i < count($result); $i++) {
+// unset($result[$i]['rnum']);
+// }
+// }
         // Urls to sort the table.
         $url_agent_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
         $url_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
@@ -1384,12 +1404,13 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
         $url_timestamp_down .= '&sort_field=timestamp&sort=down';
 
         // Start Build List Result.
-if (!empty($result)) {
+if (empty($result) === false) {
     $table = new StdClass();
     $table->cellpadding = 0;
     $table->cellspacing = 0;
-    $table->width = '100%';
-    $table->class = 'info_table';
+    $table->styleTable = 'margin: 0 10px; width: -webkit-fill-available; width: -moz-available';
+    $table->class = 'info_table tactical_table';
+    $table->id = 'monitors_view';
     $table->head = [];
     $table->data = [];
     $table->size = [];
@@ -1405,56 +1426,61 @@ if (!empty($result)) {
     }
 
     if (in_array('agent', $show_fields) || is_metaconsole()) {
-        $table->head[1] = __('Agent');
+        $table->head[1] = '<span>'.__('Agent').'</span>';
         $table->head[1] .= ui_get_sorting_arrows($url_agent_name.'up', $url_agent_name.'down', $selectAgentNameUp, $selectAgentNameDown);
     }
 
     if (in_array('data_type', $show_fields) || is_metaconsole()) {
-        $table->head[2] = __('Data Type');
+        $table->head[2] = '<span>'.__('Data Type').'</span>';
         $table->head[2] .= ui_get_sorting_arrows($url_type.'up', $url_type.'down', $selectDataTypeUp, $selectDataTypeDown);
-        $table->align[2] = 'left';
+        $table->headstyle[2] = 'text-align: center';
+        $table->align[2] = 'center';
     }
 
     if (in_array('module_name', $show_fields) || is_metaconsole()) {
-        $table->head[3] = __('Module name');
+        $table->head[3] = '<span>'.__('Module name').'</span>';
         $table->head[3] .= ui_get_sorting_arrows($url_module_name.'up', $url_module_name.'down', $selectModuleNameUp, $selectModuleNameDown);
     }
 
     if (in_array('server_type', $show_fields) || is_metaconsole()) {
-        $table->head[4] = __('Server type');
+        $table->head[4] = '<span>'.__('Server type').'</span>';
         $table->head[4] .= ui_get_sorting_arrows($url_server_type.'up', $url_server_type.'down', $selectTypeUp, $selectTypeDown);
+        $table->headstyle[4] = 'text-align: center';
+        $table->align[4] = 'center';
     }
 
     if (in_array('interval', $show_fields) || is_metaconsole()) {
-        $table->head[5] = __('Interval');
+        $table->head[5] = '<span>'.__('Interval').'</span>';
         $table->head[5] .= ui_get_sorting_arrows($url_interval.'up', $url_interval.'down', $selectIntervalUp, $selectIntervalDown);
         $table->align[5] = 'left';
     }
 
     if (in_array('status', $show_fields) || is_metaconsole()) {
-        $table->head[6] = __('Status');
+        $table->head[6] = '<span>'.__('Status').'</span>';
         $table->head[6] .= ui_get_sorting_arrows($url_status.'up', $url_status.'down', $selectStatusUp, $selectStatusDown);
         $table->align[6] = 'left';
     }
 
     if (in_array('last_status_change', $show_fields)) {
-        $table->head[7] = __('Last status change');
+        $table->head[7] = '<span>'.__('Last status change').'</span>';
         $table->head[7] .= ui_get_sorting_arrows($url_status.'up', $url_status.'down', $selectStatusUp, $selectStatusDown);
-        $table->align[7] = 'left';
+        $table->headstyle[7] = 'text-align: center';
+        $table->align[7] = 'center';
     }
 
     if (in_array('graph', $show_fields) || is_metaconsole()) {
-        $table->head[8] = __('Graph');
-        $table->align[8] = 'left';
+        $table->head[8] = '<span>'.__('Graph').'</span>';
+        $table->headstyle[8] = 'text-align: center';
+        $table->align[8] = 'center';
     }
 
     if (in_array('warn', $show_fields) || is_metaconsole()) {
-        $table->head[9] = __('Warn');
+        $table->head[9] = '<span>'.__('W/C').'</span>';
         $table->align[9] = 'left';
     }
 
     if (in_array('data', $show_fields) || is_metaconsole()) {
-        $table->head[10] = __('Data');
+        $table->head[10] = '<span>'.__('Data').'</span>';
         $table->align[10] = 'left';
         if (is_metaconsole()) {
             $table->head[10] .= ui_get_sorting_arrows($url_data.'up', $url_data.'down', $selectDataUp, $selectDataDown);
@@ -1462,7 +1488,7 @@ if (!empty($result)) {
     }
 
     if (in_array('timestamp', $show_fields) || is_metaconsole()) {
-        $table->head[11] = __('Timestamp');
+        $table->head[11] = '<span>'.__('Timestamp').'</span>';
         $table->head[11] .= ui_get_sorting_arrows($url_timestamp_up, $url_timestamp_down, $selectTimestampUp, $selectTimestampDown);
         $table->align[11] = 'left';
     }
@@ -1476,7 +1502,7 @@ if (!empty($result)) {
 
     foreach ($result as $row) {
         // Avoid unset, null and false value.
-        if (empty($row['server_name'])) {
+        if (empty($row['server_name']) === true) {
             $row['server_name'] = '';
         }
 
@@ -1585,71 +1611,42 @@ if (!empty($result)) {
         }
 
         if (in_array('data_type', $show_fields) || is_metaconsole()) {
-            $data[2] = html_print_image('images/'.modules_show_icon_type($row['module_type']), true, ['class' => 'invert_filter']);
+            $data[2] = html_print_image('images/'.modules_show_icon_type($row['module_type']), true, ['class' => 'invert_filter main_menu_icon']);
             $agent_groups = is_metaconsole() ? $row['groups_in_server'] : agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
             if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
                 $show_edit_icon = true;
-                if (defined('METACONSOLE')) {
+                if (is_metaconsole() === true) {
                     if (!can_user_access_node()) {
                         $show_edit_icon = false;
                     }
 
-                    $url_edit_module = $row['server_url'].'index.php?'.'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'id_agente='.$row['id_agent'].'&'.'tab=module&'.'id_agent_module='.$row['id_agente_modulo'].'&'.'edit_module=1'.'&loginhash=auto&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']);
+                    $url_edit_module = $row['server_url'].'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$row['id_agent'].'&'.'tab=module&'.'id_agent_module='.$row['id_agente_modulo'].'&'.'edit_module=1'.'&loginhash=auto&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']);
                 } else {
                     $url_edit_module = 'index.php?'.'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'id_agente='.$row['id_agent'].'&'.'tab=module&'.'id_agent_module='.$row['id_agente_modulo'].'&'.'edit_module=1';
                 }
-
-                if ($show_edit_icon) {
-                    $table->cellclass[][2] = 'table_action_buttons';
-                    $data[2] .= '<a href="'.$url_edit_module.'">'.html_print_image(
-                        'images/config.png',
-                        true,
-                        [
-                            'alt'    => '0',
-                            'border' => '',
-                            'title'  => __('Edit'),
-                        ]
-                    ).'</a>';
-                }
             }
         }
 
-        if (in_array('module_name', $show_fields) || is_metaconsole()) {
-            $data[3] = ui_print_truncate_text($row['module_name'], 'module_small', false, true, true);
-            if ($row['extended_info'] != '') {
+        if (in_array('module_name', $show_fields) === true || is_metaconsole() === true) {
+            $data[3] = html_print_anchor(
+                [
+                    'href'    => ($url_edit_module ?? '#'),
+                    'content' => ui_print_truncate_text($row['module_name'], 'module_small', false, true, true),
+                ],
+                true
+            );
+
+            if (empty($row['extended_info']) === false) {
                 $data[3] .= ui_print_help_tip($row['extended_info'], true, '/images/default_list.png');
             }
 
-            if ($row['tags'] != '') {
+            if (empty($row['tags']) === false) {
                 $data[3] .= html_print_image(
-                    '/images/tag_red.png',
+                    '/images/tag@svg.svg',
                     true,
                     [
                         'title' => $row['tags'],
-                        'class' => 'tag_row',
-                    ]
-                );
-            }
-        }
-
-        if (in_array('server_type', $show_fields) || is_metaconsole()) {
-            $data[4] = ui_print_servertype_icon((int) $row['id_modulo']);
-        }
-
-
-        if (in_array('module_name', $show_fields) || is_metaconsole()) {
-            $data[3] = ui_print_truncate_text($row['module_name'], 'module_small', false, true, true);
-            if ($row['extended_info'] != '') {
-                $data[3] .= ui_print_help_tip($row['extended_info'], true, '/images/default_list.png');
-            }
-
-            if ($row['tags'] != '') {
-                $data[3] .= html_print_image(
-                    '/images/tag_red.png',
-                    true,
-                    [
-                        'title' => $row['tags'],
-                        'class' => 'tag_row invert_filter',
+                        'class' => 'inverse_filter main_menu_icon',
                     ]
                 );
             }
@@ -1660,12 +1657,14 @@ if (!empty($result)) {
         }
 
 
-        if (in_array('interval', $show_fields) || is_metaconsole()) {
-            $data[5] = ($row['module_interval'] == 0) ? human_time_description_raw($row['agent_interval']) : human_time_description_raw($row['module_interval']);
+        if (in_array('interval', $show_fields) === true || is_metaconsole() === true) {
+            $data[5] = ((int) $row['module_interval'] === 0) ? human_time_description_raw($row['agent_interval']) : human_time_description_raw($row['module_interval']);
         }
 
         if (in_array('status', $show_fields) || is_metaconsole()) {
-            if ($row['utimestamp'] == 0 && (($row['module_type'] < 21
+            hd($row['utimestamp'], true);
+            hd($row['module_type'], true);
+            if ($row['utimestamp'] === 0 && (($row['module_type'] < 21
                 || $row['module_type'] > 23) && $row['module_type'] != 100)
             ) {
                 $data[6] = ui_print_status_image(
@@ -1775,6 +1774,7 @@ if (!empty($result)) {
                 $last_status = modules_get_agentmodule_last_status(
                     $row['id_agente_modulo']
                 );
+                hd('pues por aqui tambien', true);
                 switch ($last_status) {
                     case 0:
                         if (is_numeric($row['datos'])) {
@@ -1873,7 +1873,7 @@ if (!empty($result)) {
                     $graph_params['histogram'] = 1;
                 }
 
-                if (is_metaconsole() && isset($row['server_id'])) {
+                if (is_metaconsole() === true && isset($row['server_id']) === true) {
                     // Set the server id.
                     $graph_params['server'] = $row['server_id'];
                 }
@@ -1882,21 +1882,28 @@ if (!empty($result)) {
 
                 $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
 
-                $data[8] = get_module_realtime_link_graph($row);
+                $graphIconsContent = [];
+                $graphIconsContent[] = get_module_realtime_link_graph($row);
 
                 if ($tresholds === true || $graph_type === 'boolean') {
-                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image(
-                        'images/histograma.png',
-                        true,
+                    $graphIconsContent[] = html_print_anchor(
                         [
-                            'border' => '0',
-                            'alt'    => '',
-                            'class'  => 'invert_filter',
-                        ]
-                    ).'</a>';
+                            'href'    => 'javascript:'.$link,
+                            'content' => html_print_image(
+                                'images/event-history.svg',
+                                true,
+                                [
+                                    'border' => '0',
+                                    'alt'    => '',
+                                    'class'  => 'invert_filter main_menu_icon',
+                                ]
+                            ),
+                        ],
+                        true
+                    );
                 }
 
-                if (!is_snapshot_data($row['datos'])) {
+                if (is_snapshot_data($row['datos']) === false) {
                     if ($tresholds === true || $graph_type === 'boolean') {
                         unset($graph_params['histogram']);
                     }
@@ -1904,21 +1911,41 @@ if (!empty($result)) {
                     $graph_params_str = http_build_query($graph_params);
 
                     $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
-                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter']).'</a>';
+                    $graphIconsContent[] = html_print_anchor(
+                        [
+                            'href'    => 'javascript:'.$link,
+                            'content' => html_print_image('images/module-graph.svg', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter main_menu_icon']),
+                        ],
+                        true
+                    );
                 }
 
-                $data[8] .= '<a href="javascript: show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')">'.html_print_image(
-                    'images/binary.png',
-                    true,
+                $graphIconsContent[] = html_print_anchor(
                     [
-                        'border' => '0',
-                        'alt'    => '',
-                        'class'  => 'invert_filter',
-                    ]
-                ).'</a>';
+                        'href'    => 'javascript: show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')',
+                        'content' => html_print_image(
+                            'images/simple-value.svg',
+                            true,
+                            [
+                                'border' => '0',
+                                'alt'    => '',
+                                'class'  => 'invert_filter main_menu_icon',
+                            ]
+                        ),
+                    ],
+                    true
+                );
 
-                $data[8] .= '<span id=\'hidden_name_module_'.$row['id_agente_modulo'].'\'
+                $graphIconsContent[] = '<span id=\'hidden_name_module_'.$row['id_agente_modulo'].'\'
 								class=\'invisible\'>'.$row['module_name'].'</span>';
+
+                $data[8] = html_print_div(
+                    [
+                        'class'   => 'table_action_buttons',
+                        'content' => implode('', $graphIconsContent),
+                    ],
+                    true
+                );
             }
         }
 
@@ -2092,9 +2119,9 @@ if (!empty($result)) {
 
     html_print_table($table);
 
-
     if ($count_modules > $config['block_size']) {
-        ui_pagination($count_modules, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+        hd('patata');
+        $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', false);
     }
 } else {
     if ($first_interaction) {
@@ -2104,6 +2131,13 @@ if (!empty($result)) {
     }
 }
 
+html_print_action_buttons(
+    html_print_div(['style' => 'float:left; height: 55px;'], true),
+    [
+        'type'          => 'form_action',
+        'right_content' => $tablePagination,
+    ]
+);
 
 // End Build List Result.
 echo "<div id='monitor_details_window' class='filter_table'></div>";

@@ -860,7 +860,7 @@ if (tags_has_user_acl_tags($config['id_user']) === false) {
 }
 
 $tagsAvailableData .= html_print_image(
-    'images/svg/plus.svg',
+    'images/plus.svg',
     true,
     [
         'id'    => 'right',

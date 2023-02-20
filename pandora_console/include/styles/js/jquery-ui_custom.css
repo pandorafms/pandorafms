@@ -187,8 +187,8 @@
 .ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close,
 .ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close:hover {
   background-color: rgb(51, 51, 51);
-  mask: url(../../../images/svg/fail.svg) no-repeat right / contain;
-  -webkit-mask: url(../../../images/svg/fail.svg) no-repeat right / contain;
+  mask: url(../../../images/close@svg.svg) no-repeat right / contain;
+  -webkit-mask: url(../../../images/close@svg.svg) no-repeat right / contain;
 }
 
 .ui-dialog-title {

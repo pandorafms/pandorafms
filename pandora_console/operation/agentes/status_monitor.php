@@ -1674,25 +1674,24 @@ if (empty($result) === false) {
         }
 
         if (in_array('status', $show_fields) || is_metaconsole()) {
-            hd($row['utimestamp'], true);
-            hd($row['module_type'], true);
+            $data[6] = '<div class="status_rounded_rectangles">';
             if ($row['utimestamp'] === 0 && (($row['module_type'] < 21
                 || $row['module_type'] > 23) && $row['module_type'] != 100)
             ) {
-                $data[6] = ui_print_status_image(
+                $data[6] .= ui_print_status_image(
                     STATUS_MODULE_NO_DATA,
                     __('NOT INIT'),
                     true
                 );
             } else if ($row['estado'] == 0) {
                 if (is_numeric($row['datos'])) {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_OK,
                         __('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
                         true
                     );
                 } else {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_OK,
                         __('NORMAL').': '.htmlspecialchars($row['datos']),
                         true
@@ -1700,7 +1699,7 @@ if (empty($result) === false) {
                 }
             } else if ($row['estado'] == 1) {
                 if (is_numeric($row['datos'])) {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_CRITICAL,
                         __('CRITICAL').': '.remove_right_zeros(
                             number_format(
@@ -1713,7 +1712,7 @@ if (empty($result) === false) {
                         true
                     );
                 } else {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_CRITICAL,
                         __('CRITICAL').': '.htmlspecialchars($row['datos']),
                         true
@@ -1721,7 +1720,7 @@ if (empty($result) === false) {
                 }
             } else if ($row['estado'] == 2) {
                 if (is_numeric($row['datos'])) {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_WARNING,
                         __('WARNING').': '.remove_right_zeros(
                             number_format(
@@ -1734,7 +1733,7 @@ if (empty($result) === false) {
                         true
                     );
                 } else {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_WARNING,
                         __('WARNING').': '.htmlspecialchars($row['datos']),
                         true
@@ -1742,7 +1741,7 @@ if (empty($result) === false) {
                 }
             } else if ($row['estado'] == 3) {
                 if (is_numeric($row['datos'])) {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_UNKNOWN,
                         __('UNKNOWN').': '.remove_right_zeros(
                             number_format(
@@ -1755,7 +1754,7 @@ if (empty($result) === false) {
                         true
                     );
                 } else {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_UNKNOWN,
                         __('UNKNOWN').': '.htmlspecialchars($row['datos']),
                         true
@@ -1763,7 +1762,7 @@ if (empty($result) === false) {
                 }
             } else if ($row['estado'] == 4) {
                 if (is_numeric($row['datos'])) {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_NO_DATA,
                         __('NO DATA').': '.remove_right_zeros(
                             number_format(
@@ -1776,7 +1775,7 @@ if (empty($result) === false) {
                         true
                     );
                 } else {
-                    $data[6] = ui_print_status_image(
+                    $data[6] .= ui_print_status_image(
                         STATUS_MODULE_NO_DATA,
                         __('NO DATA').': '.htmlspecialchars($row['datos']),
                         true
@@ -1786,17 +1785,17 @@ if (empty($result) === false) {
                 $last_status = modules_get_agentmodule_last_status(
                     $row['id_agente_modulo']
                 );
-                hd('pues por aqui tambien', true);
+
                 switch ($last_status) {
                     case 0:
                         if (is_numeric($row['datos'])) {
-                            $data[6] = ui_print_status_image(
+                            $data[6] .= ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
                                 __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
                                 true
                             );
                         } else {
-                            $data[6] = ui_print_status_image(
+                            $data[6] .= ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
                                 __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.htmlspecialchars($row['datos']),
                                 true
@@ -1806,13 +1805,13 @@ if (empty($result) === false) {
 
                     case 1:
                         if (is_numeric($row['datos'])) {
-                            $data[6] = ui_print_status_image(
+                            $data[6] .= ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
                                 __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
                                 true
                             );
                         } else {
-                            $data[6] = ui_print_status_image(
+                            $data[6] .= ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
                                 __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.htmlspecialchars($row['datos']),
                                 true
@@ -1822,13 +1821,13 @@ if (empty($result) === false) {
 
                     case 2:
                         if (is_numeric($row['datos'])) {
-                            $data[6] = ui_print_status_image(
+                            $data[6] .= ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
                                 __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])),
                                 true
                             );
                         } else {
-                            $data[6] = ui_print_status_image(
+                            $data[6] .= ui_print_status_image(
                                 STATUS_MODULE_UNKNOWN,
                                 __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.htmlspecialchars($row['datos']),
                                 true
@@ -1837,6 +1836,8 @@ if (empty($result) === false) {
                     break;
                 }
             }
+
+            $data[6] .= '</div>';
         }
 
         if (in_array('last_status_change', $show_fields) || is_metaconsole()) {

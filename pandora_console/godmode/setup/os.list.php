@@ -1,6 +1,6 @@
 <?php
 /**
- * Os.
+ * Os List.
  *
  * @category   Os
  * @package    Pandora FMS
@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -61,7 +61,8 @@ if (is_management_allowed() === false) {
 
 $table = new stdClass();
 
-$table->width = '100%';
+// $table->width = '100%';
+$table->styleTable = 'margin: 10px 10px 0';
 $table->class = 'info_table';
 
 $table->head[0] = '';
@@ -102,7 +103,7 @@ if ($osList === false) {
 $table->data = [];
 foreach ($osList as $os) {
     $data = [];
-    $data[] = ui_print_os_icon($os['id_os'], false, true);
+    $data[] = html_print_div(['class' => 'main_menu_icon', 'content' => ui_print_os_icon($os['id_os'], false, true)], true);
     $data[] = $os['id_os'];
     if ($is_management_allowed === true) {
         if (is_metaconsole() === true) {
@@ -119,11 +120,20 @@ foreach ($osList as $os) {
     if ($is_management_allowed === true) {
         $table->cellclass[][4] = 'table_action_buttons';
         if ($os['id_os'] > 16) {
-            if (is_metaconsole()) {
-                $data[] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=delete&tab2=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true).'</a>';
+            if (is_metaconsole() === true) {
+                $hrefDelete = 'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=delete&tab2=list&id_os='.$os['id_os'];
             } else {
-                $data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
+                $hrefDelete = 'index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os='.$os['id_os'];
             }
+
+            $data[] = html_print_anchor(
+                [
+                    'href'    => $hrefDelete,
+                    'class'   => 'inverse_filter main_menu_icon',
+                    'content' => html_print_image('images/delete.svg', true),
+                ],
+                true
+            );
         } else {
             // The original icons of pandora don't delete.
             $data[] = '';
@@ -134,7 +144,6 @@ foreach ($osList as $os) {
 }
 
 if (isset($data) === true) {
-    ui_pagination($count_osList, ui_get_url_refresh(['message' => false]), $offset);
     html_print_table($table);
     ui_pagination($count_osList, ui_get_url_refresh(['message' => false]), $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {

@@ -242,9 +242,6 @@ div.login_pass {
   cursor: pointer;
 }
 
-#show-hide-pass img {
-}
-
 div.login_nick input:-webkit-autofill,
 div.login_nick input:-webkit-autofill:hover,
 div.login_nick input:-webkit-autofill:focus,
@@ -351,7 +348,7 @@ span.span1 {
 }
 
 span.span2 {
-  font-size: 26px;
+  font-size: 20px;
   letter-spacing: -0.26px;
   font-weight: 350;
   color: #c1ccdc;
@@ -379,7 +376,7 @@ div.img_banner_login img {
 }
 
 .reset_password a {
-  color: #14524f;
+  color: #ffffff;
   font-size: 9pt;
   font-weight: bold;
 }
@@ -393,7 +390,7 @@ div.img_banner_login img {
     line-height: 49pt;
   }
   span.span2 {
-    font-size: 26px;
+    font-size: 20px;
     letter-spacing: -0.26px;
     font-weight: 350;
     color: #c1ccdc;
@@ -730,4 +727,28 @@ div.login_pass input:-webkit-autofill:hover,
 div.login_pass input:-webkit-autofill:focus,
 div.login_pass input:-webkit-autofill:active {
   background-image: url("../../images/eye-closed-input.png");
+}
+
+button.submitButton {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  min-width: 110px;
+  height: 42px;
+  font-size: 14px;
+  font-family: "Pandora-Regular";
+  align-items: center;
+  line-height: 24px;
+  box-shadow: 0px 3px 6px #c7c7c7;
+  color: #fff;
+  border: 2px solid #14524f;
+  border-radius: 8px;
+  padding: 0 10px;
+  cursor: pointer;
+  z-index: 100;
+  font-weight: bold;
+}
+
+.content_alert {
+  margin: 0 !important;
 }

@@ -171,11 +171,11 @@ if (isset($config['custom_support_url'])) {
         echo '<li id="li_margin_support"><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank">'.__('Support').'</li>';
     } else {
         echo '<li id="li_margin_support_img"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-        echo '<li id="li_margin_support">'.__('Support').'</li>';
+        echo '<li id="li_margin_support"><a href="https://support.pandorafms.com" target="_blank">'.__('Support').'</a></li>';
     }
 } else if (!$custom_conf_enabled) {
     echo '<li id="li_margin_support_img"><a href="https://support.pandorafms.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-    echo '<li id="li_margin_support"><a href="https://support.pandorafms.com" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_support"><a href="https://support.pandorafms.com" target="_blank">'.__('Support').'</a></li>';
 }
 
         echo '</ul></div>';
@@ -370,17 +370,18 @@ if ($config['enterprise_installed']) {
             echo '<a href="javascript:centralized_mode_reset_dialog();">'.__('Forgot your password?');
             echo '</a>';
 
-            echo '<div id="centralized_mode_reset_dialog" title="'.__('Password reset').'" style="display:none">';
+            echo '<div id="centralized_mode_reset_dialog" title="'.__('Centralized mode').'" style="display:none">';
                 echo '<div class="content_alert">';
                     echo '<div class="icon_message_alert">';
-                        echo html_print_image('images/icono_stop.png', true, ['alt' => __('Password reset'), 'border' => 0]);
+                        echo html_print_image('images/icono_stop.png', true, ['alt' => __('Centralized mode'), 'border' => 0]);
                     echo '</div>';
                     echo '<div class="content_message_alert">';
                         echo '<div class="text_message_alert">';
                             echo '<p>'.__('This node is configured with centralized mode. Go to metaconsole to reset the password').'</p>';
                         echo '</div>';
+                        echo '<br>';
                         echo '<div class="button_message_alert">';
-                            html_print_submit_button('Ok', 'centralized_mode_reset_button', false);
+                            html_print_submit_button('Ok', 'centralized_mode_reset_button', false, ['class' => 'mini float-right']);
                         echo '</div>';
                     echo '</div>';
                 echo '</div>';
@@ -492,25 +493,28 @@ if (empty($process_error_message) && isset($mail)) {
                     echo '<h1>'.__('INFO').'</h1>';
                     echo '<p>'.__('An email has been sent to your email address').'</p>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'reset_correct_button', false);
+                    html_print_submit_button('Ok', 'reset_correct_button', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
     echo '</div>';
 } else if (isset($process_error_message) && !empty($process_error_message)) {
-    echo '<div id="reset_correct" title="'.__('Password reset').'">';
+    echo '<div id="reset_correct" title="'.__('Error').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
-                echo html_print_image('images/icono_stop.png', true, ['alt' => __('Password reset'), 'border' => 0]);
+                echo html_print_image('images/icono_stop.png', true, ['alt' => __('Forbidden'), 'border' => 0]);
             echo '</div>';
             echo '<div class="content_message_alert">';
                 echo '<div class="text_message_alert">';
                     echo '<h1>'.__('ERROR').'</h1>';
                     echo '<p>'.$process_error_message.'</p>';
+                    echo '<br>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'reset_correct_button', false);
+                    html_print_submit_button('Ok', 'reset_correct_button', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -529,8 +533,9 @@ if (isset($correct_reset_pass_process)) {
                     echo '<h1>'.__('SUCCESS').'</h1>';
                     echo '<p>'.$correct_reset_pass_process.'</p>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'final_process_correct_button', false);
+                    html_print_submit_button('Ok', 'final_process_correct_button', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -557,8 +562,9 @@ if (isset($login_failed)) {
         echo '</div>';
     }
 
+    echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-error', false, ['class' => ' mini']);
+                    html_print_submit_button('Ok', 'hide-login-error', false, ['class' => ' mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -581,8 +587,9 @@ if ($login_screen == 'logout') {
     }
 
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-logout', false, ['class' => ' mini']);
+                    html_print_submit_button('Ok', 'hide-login-logout', false, ['class' => ' mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -600,8 +607,9 @@ if ($login_screen === 'disabled_access_node') {
                     echo '<h1>'.__('Centralized user in metaconsole').'</h1>';
                     echo '<p>'.__('This user does not have access on node, please enable node access on this user from metaconsole.').'</p>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-logout', false);
+                    html_print_submit_button('Ok', 'hide-login-logout', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -708,8 +716,9 @@ if ($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' 
                     echo '<h1>'.$title.'</h1>';
                     echo '<p> '.$message.'</h1>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-error', false);
+                    html_print_submit_button('Ok', 'hide-login-error', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -779,19 +788,23 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 220,
                         width: 528,
                         clickOutside: true,
                         overlay: {
                             opacity: 0.5,
                             background: "black"
+                        },
+                        open: function (event, ui) {
+                            $(".ui-widget-overlay").click(function () {
+                                $('#login_logout').dialog('close');
+                            });
                         }
                     });
                 });
 
                 $("#button-hide-login-logout").click (function () {
-                    document.location = "<?php echo ui_get_full_url('index.php'); ?>";
-                });        
+                    $( "#login_logout" ).dialog( "close" );
+                });
             });
         break;
 
@@ -802,7 +815,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 220,
                         width: 528,
                         clickOutside: true,
                         overlay: {
@@ -826,7 +838,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 400,
                         width: 700,
                         overlay: {
                             opacity: 0.5,
@@ -844,7 +855,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 220,
                         width: 528,
                         overlay: {
                             opacity: 0.5,
@@ -869,7 +879,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                 resizable: true,
                 draggable: true,
                 modal: true,
-                height: 220,
                 width: 528,
                 clickOutside: true,
                 overlay: {
@@ -890,7 +899,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                 resizable: true,
                 draggable: true,
                 modal: true,
-                height: 220,
                 width: 528,
                 clickOutside: true,
                 overlay: {
@@ -910,7 +918,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             resizable: true,
             draggable: true,
             modal: true,
-            height: 220,
             width: 528,
             overlay: {
                 opacity: 0.5,

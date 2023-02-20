@@ -309,7 +309,6 @@ switch ($login_screen) {
                     false,
                     true
                 );
-            echo '<div id="show-hide-pass"></div>';
             echo '</div>';
             echo '<div class="login_button">';
                 html_print_submit_button(
@@ -924,18 +923,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
     }
 
     $(document).ready(function () {
-        $('#show-hide-pass').click(function (e) {
-            let inputPass = this.previousElementSibling;
-
-            if (inputPass.type === "password") {
-                inputPass.type = "text";
-                inputPass.style.backgroundImage = "url('<?php echo $config['homeurl_static']; ?>/images/eye-closed-input.png')";
-            } else {
-                inputPass.type = "password";
-                inputPass.style.backgroundImage = "url('<?php echo $config['homeurl_static']; ?>/images/eye-open-input.png')";
-            }
-        });
-
         $('#submit-login_button span').removeAttr('style');
         $('#spinner_login').hide();
     });

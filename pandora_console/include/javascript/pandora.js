@@ -2340,3 +2340,15 @@ function autoclose_info_box(id, autoCloseTime) {
     close_info_box(id);
   }, autoCloseTime);
 }
+
+function show_hide_password(e, url) {
+  let inputPass = e.target.previousElementSibling;
+
+  if (inputPass.type === "password") {
+    inputPass.type = "text";
+    inputPass.style.backgroundImage = "url(" + url + "/images/disable.svg)";
+  } else {
+    inputPass.type = "password";
+    inputPass.style.backgroundImage = "url(" + url + "/images/enable.svg)";
+  }
+}

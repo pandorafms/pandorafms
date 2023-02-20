@@ -2478,6 +2478,7 @@ function html_print_input_text_extended(
     $autocomplete='off',
     $disabled=false
 ) {
+    global $config;
     static $idcounter = 0;
 
     if ($maxlength === 0) {
@@ -2542,10 +2543,17 @@ function html_print_input_text_extended(
         $output .= 'disabled="disabled" ';
     }
 
+    $hasClass = false;
     if (is_array($attributes)) {
         foreach ($attributes as $attribute => $attr_value) {
-            if (! in_array($attribute, $valid_attrs)) {
+            if (in_array($attribute, $valid_attrs) === false) {
                 continue;
+            }
+
+            // Only for password inputs.
+            if (($attribute === 'class') && ($password === true)) {
+                $attr_value .= ' show-hide-pass-background';
+                $hasClass = true;
             }
 
             $output .= $attribute.'="'.$attr_value.'" ';
@@ -2553,6 +2561,10 @@ function html_print_input_text_extended(
     } else {
         $output .= trim($attributes).' ';
         $attributes = [];
+    }
+
+    if (($hasClass === false) && ($password === true)) {
+        $output .= 'class="show-hide-pass-background" ';
     }
 
     if (!empty($alt)) {
@@ -2603,6 +2615,17 @@ function html_print_input_text_extended(
 
     $output .= $function.'/>';
 
+    if ($password === true) {
+        $output .= html_print_div(
+            [
+                'id'      => 'show-hide-'.$id,
+                'class'   => 'show-hide-pass',
+                'onClick' => 'show_hide_password(event, \''.$config['homeurl'].'\')',
+            ],
+            true
+        );
+    }
+
     if (!$return) {
         echo $output;
     }
@@ -2637,10 +2660,11 @@ function html_print_div(
         'style',
         'class',
         'title',
+        'onClick',
     ];
 
-    if (isset($options['hidden'])) {
-        if (isset($options['style'])) {
+    if (isset($options['hidden']) === true) {
+        if (isset($options['style']) === true) {
             $options['style'] .= 'display:none;';
         } else {
             $options['style'] = 'display:none;';
@@ -2648,7 +2672,7 @@ function html_print_div(
     }
 
     foreach ($attrs as $attribute) {
-        if (isset($options[$attribute])) {
+        if (isset($options[$attribute]) === true) {
             $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
         }
     }
@@ -2659,7 +2683,7 @@ function html_print_div(
 
     $output .= '</div>';
 
-    if ($return) {
+    if ($return === true) {
         return $output;
     } else {
         echo $output;

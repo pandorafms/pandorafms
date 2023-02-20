@@ -9908,9 +9908,9 @@ input,
 textarea,
 select {
   background-color: #f6f7fb;
-  height: 42px;
-  border: 1px solid #c0ccdc;
-  border-radius: 8px;
+  height: 38px;
+  border: 2px solid #c0ccdc;
+  border-radius: 6px;
   padding-left: 12px;
   font: normal normal normal 14px Pandora-Light;
   color: #2b3332;
@@ -9937,7 +9937,7 @@ select:disabled,
 input:not([type="image"]):focus,
 textarea:focus,
 select:focus {
-  border: 1px solid #8a96a6;
+  border: 2px solid #8a96a6;
 }
 
 :focus {
@@ -10424,15 +10424,15 @@ button.ui-button.ui-widget.submit-cancel:active {
 }
 
 .moduleIdBox {
-  height: 40px;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  height: 36px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
   margin-left: -56px;
-  border: 1px solid #c0ccdc;
+  border: 2px solid #c0ccdc;
   background-color: #f6f7fb;
   padding: 0 16px;
   z-index: 0;
-  line-height: 42px;
+  line-height: 40px;
 }
 
 /* Custom Checkbox Style */
@@ -10567,14 +10567,14 @@ tr.bring_next_field {
   vertical-align: middle;
   text-align: left;
   min-width: 150px !important;
-  z-index: 10002;
+  z-index: 60;
 }
 
 .select2-container .select2-selection--single,
 .select2-container .select2-selection--multiple {
   background-color: #f6f7fb !important;
-  border: 1px solid #c0ccdc !important;
-  border-radius: 8px !important;
+  border: 2px solid #c0ccdc !important;
+  border-radius: 6px !important;
   color: #2b3332 !important;
   -webkit-box-sizing: border-box !important;
   -moz-box-sizing: border-box !important;
@@ -10584,7 +10584,7 @@ tr.bring_next_field {
 }
 
 .select2-container .select2-selection--single {
-  height: 42px !important;
+  height: 38px !important;
   padding-left: 4px !important;
   display: block;
   user-select: none;
@@ -10592,7 +10592,7 @@ tr.bring_next_field {
 }
 
 .select2-container .select2-selection--multiple {
-  height: 42px !important;
+  height: 38px !important;
   padding-left: 0px !important;
 }
 
@@ -10621,7 +10621,7 @@ tr.bring_next_field {
   border: 0 !important;
   height: 20px !important;
   margin-left: -8px !important;
-  margin-top: 10px !important;
+  margin-top: 8px !important;
   position: absolute !important;
   width: 20px !important;
   background: url(../../images/dropdown-down.svg) no-repeat content-box !important;
@@ -10642,7 +10642,7 @@ tr.bring_next_field {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #444 !important;
-  line-height: 42px !important;
+  line-height: 36px !important;
 }
 
 .select2-container--default.select2-container--open.select2-container--below
@@ -10808,7 +10808,7 @@ tr.bring_next_field {
   position: absolute;
   left: 0;
   top: 0;
-  height: 58px;
+  height: 62px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
   /*z-index: 10000;*/
@@ -11213,4 +11213,23 @@ form#satellite_conf_edit > fieldset.full-column {
 
 .inputs_date_details > input {
   margin: 5px;
+}
+
+.show-hide-pass {
+  position: relative;
+  right: 38px;
+  top: 0px;
+  border: 0;
+  outline: none;
+  margin: 0;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+}
+
+.show-hide-pass-background {
+  background-position: center right 15px;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  background-image: url("../../images/enable.svg");
 }

@@ -2612,6 +2612,7 @@ div#header_autorefresh_counter {
 }
 
 .autorefresh_disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -4757,17 +4758,16 @@ div#dialog_messages table th:last-child {
   font-weight: bold;
 }
 
-.notification-ball.notification-ball-new-messages:hover {
-  box-shadow: 0 0 3px #888;
-}
-
 .notification-ball-no-messages {
-  background-color: #82b92e;
-  cursor: pointer;
+  background-image: url(../../images/discovery_ok@header.svg);
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .notification-ball-new-messages {
-  background-color: #e63c52;
+  background-image: url(../../images/discovery_error@header.svg);
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 #notification-wrapper {
@@ -11239,14 +11239,15 @@ form#satellite_conf_edit > fieldset.full-column {
 
 .show-hide-pass {
   position: relative;
-  right: 38px;
-  top: 0px;
+  right: 48px;
+  top: 14px;
   border: 0;
   outline: none;
   margin: 0;
   height: 40px;
   width: 40px;
   cursor: pointer;
+  display: inline-block;
 }
 
 .show-hide-pass-background {

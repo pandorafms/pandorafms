@@ -307,14 +307,21 @@ if ($access_console_node === true) {
 
 
     if (check_acl($config['id_user'], 0, 'VR') || check_acl($config['id_user'], 0, 'VW') || check_acl($config['id_user'], 0, 'VM')) {
+        $url_visual_console = '';
         if (!isset($config['vc_favourite_view']) || $config['vc_favourite_view'] == 0) {
             // Visual console.
             $sub['godmode/reporting/map_builder']['text'] = __('Visual console');
             $sub['godmode/reporting/map_builder']['id'] = 'Visual_console';
+            $sub['godmode/reporting/map_builder']['type'] = 'direct';
+            $sub['godmode/reporting/map_builder']['subtype'] = 'nolink';
+            $url_visual_console = 'godmode/reporting/map_builder';
         } else {
             // Visual console favorite.
             $sub['godmode/reporting/visual_console_favorite']['text'] = __('Visual console');
             $sub['godmode/reporting/visual_console_favorite']['id'] = 'Visual_console';
+            $sub['godmode/reporting/visual_console_favorite']['type'] = 'direct';
+            $sub['godmode/reporting/visual_console_favorite']['subtype'] = 'nolink';
+            $url_visual_console = 'godmode/reporting/visual_console_favorite';
         }
 
         if ($config['vc_menu_items'] != 0) {
@@ -341,6 +348,12 @@ if ($access_console_node === true) {
             $layouts = visual_map_get_user_layouts($config['id_user'], false, false, $returnAllGroups, true);
             $sub2 = [];
 
+            $sub2[$url_visual_console] = [
+                'text'  => __('Visual console list'),
+                'title' => __('Visual console list'),
+                'refr'  => 0,
+            ];
+
             if ($layouts === false) {
                 $layouts = [];
             } else {
@@ -364,15 +377,15 @@ if ($access_console_node === true) {
 
                     $name = io_safe_output($layout['name']);
 
-                    $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['text'] = ui_print_truncate_text($name, MENU_SIZE_TEXT, false, true, false);
-                    $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['id'] = mb_substr($name, 0, 19);
-                    $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['title'] = $name;
+                    $sub2['operation/visual_console/render_view&id='.$layout['id']]['text'] = ui_print_truncate_text($name, MENU_SIZE_TEXT, false, true, false);
+                    $sub2['operation/visual_console/render_view&id='.$layout['id']]['id'] = mb_substr($name, 0, 19);
+                    $sub2['operation/visual_console/render_view&id='.$layout['id']]['title'] = $name;
                     if (!empty($config['vc_refr'])) {
-                        $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['refr'] = $config['vc_refr'];
+                        $sub2['operation/visual_console/render_view&id='.$layout['id']]['refr'] = $config['vc_refr'];
                     } else if (((int) get_parameter('refr', 0)) > 0) {
-                        $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['refr'] = (int) get_parameter('refr', 0);
+                        $sub2['operation/visual_console/render_view&id='.$layout['id']]['refr'] = (int) get_parameter('refr', 0);
                     } else {
-                        $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['refr'] = 0;
+                        $sub2['operation/visual_console/render_view&id='.$layout['id']]['refr'] = 0;
                     }
                 }
 
@@ -424,10 +437,10 @@ if ($access_console_node === true) {
                     continue;
                 }
 
-                $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['text'] = ui_print_truncate_text(io_safe_output($gisMap['map_name']), MENU_SIZE_TEXT, false, true, false);
-                $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['id'] = mb_substr(io_safe_output($gisMap['map_name']), 0, 15);
-                $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['title'] = io_safe_output($gisMap['map_name']);
-                $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['refr'] = 0;
+                $sub2['operation/gis_maps/render_view&map_id='.$gisMap['id_tgis_map']]['text'] = ui_print_truncate_text(io_safe_output($gisMap['map_name']), MENU_SIZE_TEXT, false, true, false);
+                $sub2['operation/gis_maps/render_view&map_id='.$gisMap['id_tgis_map']]['id'] = mb_substr(io_safe_output($gisMap['map_name']), 0, 15);
+                $sub2['operation/gis_maps/render_view&map_id='.$gisMap['id_tgis_map']]['title'] = io_safe_output($gisMap['map_name']);
+                $sub2['operation/gis_maps/render_view&map_id='.$gisMap['id_tgis_map']]['refr'] = 0;
             }
 
             $sub['gismaps']['sub2'] = $sub2;
@@ -480,10 +493,16 @@ if ($access_console_node === true) {
             $sub['operation/dashboard/dashboard']['id'] = 'Dashboard';
             $sub['operation/dashboard/dashboard']['refr'] = 0;
             $sub['operation/dashboard/dashboard']['subsecs'] = ['operation/dashboard/dashboard'];
+            $sub['operation/dashboard/dashboard']['type'] = 'direct';
+            $sub['operation/dashboard/dashboard']['subtype'] = 'nolink';
 
             $dashboards = Manager::getDashboards(-1, -1, true);
 
             $sub2 = [];
+            $sub2['operation/dashboard/dashboard'] = [
+                'text'  => __('Dashboard list'),
+                'title' => __('Dashboard list'),
+            ];
             foreach ($dashboards as $dashboard) {
                 $name = io_safe_output($dashboard['name']);
 

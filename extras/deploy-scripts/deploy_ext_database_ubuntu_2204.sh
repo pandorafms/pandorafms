@@ -16,7 +16,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='202302081'
+S_VERSION='202302201'
 LOGFILE="/tmp/deploy-ext-db-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 

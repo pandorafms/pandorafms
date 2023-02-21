@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='202301251'
+S_VERSION='202302201'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables

@@ -9,7 +9,7 @@
 # RedHat 8.5
 
 #Constants
-S_VERSION='202302081'
+S_VERSION='202302201'
 LOGFILE="/tmp/deploy-ext-db-$(date +%F).log"
 
 

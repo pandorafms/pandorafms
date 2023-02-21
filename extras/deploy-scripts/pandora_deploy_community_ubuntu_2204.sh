@@ -16,7 +16,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='202301251'
+S_VERSION='202302201'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 

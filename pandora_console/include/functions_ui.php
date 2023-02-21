@@ -2891,7 +2891,7 @@ function ui_print_status_image(
 
     if ($image_with_css === true) {
         $shape_status = get_shape_status_set($type);
-        $shape_status['is_tree_view'] = true;
+        // $shape_status['is_tree_view'] = true;
         return ui_print_status_sets($type, $title, $return, $shape_status, $extra_info);
     } else {
         $imagepath .= '/'.$type;

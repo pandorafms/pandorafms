@@ -1,16 +1,32 @@
 <?php
+/**
+ * Edit Fields manager.
+ *
+ * @category   Resources.
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Load global vars.
 global $config;
 
 check_login();
@@ -47,13 +63,8 @@ if ($id_field) {
 }
 
 $table = new stdClass();
-$table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox m2020';
 $table->id = 'configure_field';
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
-$table->style[4] = 'font-weight: bold';
-$table->style[6] = 'font-weight: bold';
 
 echo "<div id='message_set_password'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
 echo "<p class='center bolder'>".__('You cannot set the Password type until you clear the combo values and click on update button.').'</p>';
@@ -75,7 +86,7 @@ echo '</div>';
 $table->data = [];
 
 $table->data[0][0] = __('Name');
-$table->data[0][1] = html_print_input_text(
+$table->data[1][0] = html_print_input_text(
     'name',
     $name,
     '',
@@ -84,30 +95,39 @@ $table->data[0][1] = html_print_input_text(
     true
 );
 
-$table->data[1][0] = __('Pass type').ui_print_help_tip(
+$table->data[2][0] = __('Pass type').ui_print_help_tip(
     __('The fields with pass type enabled will be displayed like html input type pass in html'),
     true
 );
-$table->data[1][1] = html_print_checkbox_switch(
+$table->data[2][1] = __('Display on front').ui_print_help_tip(
+    __('The fields with display on front enabled will be displayed into the agent details'),
+    true
+);
+$table->data[2][2] = __('Link type');
+
+$table->data[3][0] = html_print_checkbox_switch(
     'is_password_type',
     1,
     $is_password_type,
     true
 );
-
-$table->data[2][0] = __('Display on front').ui_print_help_tip(
-    __('The fields with display on front enabled will be displayed into the agent details'),
-    true
-);
-$table->data[2][1] = html_print_checkbox_switch(
+$table->data[3][1] = html_print_checkbox_switch(
     'display_on_front',
     1,
     $display_on_front,
     true
 );
-
-$table->data[3][0] = __('Enabled combo');
-$table->data[3][1] = html_print_checkbox_switch_extended(
+$table->data[3][2] = html_print_checkbox_switch_extended(
+    'is_link_enabled',
+    1,
+    $is_link_enabled,
+    false,
+    '',
+    '',
+    true
+);
+$table->data[4][0] = __('Enabled combo');
+$table->data[5][0] = html_print_checkbox_switch_extended(
     'is_combo_enable',
     0,
     $config['is_combo_enable'],
@@ -117,12 +137,15 @@ $table->data[3][1] = html_print_checkbox_switch_extended(
     true
 );
 
-$table->rowstyle[4] = 'display: none;';
-$table->data[4][0] = __('Combo values').ui_print_help_tip(
+
+$table->cellstyle[4][1] = 'display: none;';
+$table->cellstyle[5][1] = 'display: none;';
+
+$table->data[4][1] = __('Combo values').ui_print_help_tip(
     __('Set values separated by comma'),
     true
 );
-$table->data[4][1] = html_print_textarea(
+$table->data[5][1] = html_print_textarea(
     'combo_values',
     3,
     65,
@@ -131,31 +154,40 @@ $table->data[4][1] = html_print_textarea(
     true
 );
 
-$table->data[5][0] = __('Link type');
-$table->data[5][1] = html_print_checkbox_switch_extended(
-    'is_link_enabled',
-    1,
-    $is_link_enabled,
-    false,
-    '',
-    '',
-    true
-);
 
 echo '<form name="field" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/fields_manager">';
 html_print_table($table);
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
-if ($id_field) {
+if ($id_field > 0) {
     html_print_input_hidden('update_field', 1);
     html_print_input_hidden('id_field', $id_field);
-    html_print_submit_button(__('Update'), 'updbutton', false, 'class="sub upd"');
+    $buttonCaption = __('Update');
+    $buttonName = 'updbutton';
 } else {
     html_print_input_hidden('create_field', 1);
-    html_print_submit_button(__('Create'), 'crtbutton', false, 'class="sub wand"');
+    $buttonCaption = __('Create');
+    $buttonName = 'crtbutton';
 }
 
-echo '</div>';
+$actionButtons = [];
+$actionButtons[] = html_print_submit_button(
+    $buttonCaption,
+    $buttonName,
+    false,
+    [ 'icon' => 'wand' ],
+    true
+);
+$actionButtons[] = html_print_go_back_button(
+    'index.php?sec=gagente&sec2=godmode/agentes/fields_manager',
+    ['button_class' => ''],
+    true
+);
+
+html_print_action_buttons(
+    implode('', $actionButtons),
+    ['type' => 'form_action'],
+);
+
 echo '</form>';
 ?>
 

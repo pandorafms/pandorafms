@@ -1,17 +1,32 @@
 <?php
+/**
+ * Module Type List.
+ *
+ * @category   Modules.
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -26,12 +41,30 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 }
 
 // Header.
-ui_print_page_header(__('Module management').' &raquo; '.__('Defined modules'), 'images/gm_modules.png', false, '', true);
+ui_print_standard_header(
+    __('Defined module types'),
+    'images/module_group.png',
+    false,
+    '',
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Resources'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Module types'),
+        ],
+    ]
+);
+
 
 $update_module = (bool) get_parameter_post('update_module');
 
 // Update
-if ($update_module) {
+if ($update_module === true) {
     $name = get_parameter_post('name');
     $id_type = get_parameter_post('id_type');
     $description = get_parameter_post('description');
@@ -54,43 +87,33 @@ if ($update_module) {
     }
 }
 
+$table = new stdClass();
+$table->id = 'module_type_list';
+$table->class = 'info_table m2020';
+$table->size = [];
+$table->size[0] = '5%';
+$table->size[1] = '5%';
+$table->head = [];
+$table->head[0] = __('ID');
+$table->head[1] = __('Icon');
+$table->head[2] = __('Name');
+$table->head[3] = __('Description');
 
-echo "<table cellpadding='0' cellspacing='0' width='100%' class='info_table'>";
-echo '<thead>';
-echo '<th>'.__('Icon').'</th>';
-echo '<th>'.__('ID').'</th>';
-echo '<th>'.__('Name').'</th>';
-echo '<th>'.__('Description').'</th>';
-echo '</thead';
+$table->data = [];
 
-$rows = db_get_all_rows_sql('SELECT * FROM ttipo_modulo ORDER BY nombre');
+$rows = db_get_all_rows_sql('SELECT * FROM ttipo_modulo ORDER BY id_tipo');
 if ($rows === false) {
     $rows = [];
 }
 
-$color = 0;
 foreach ($rows as $row) {
-    if ($color == 1) {
-        $tdcolor = 'datos';
-        $color = 0;
-    } else {
-        $tdcolor = 'datos2';
-        $color = 1;
-    }
+    $data[0] = $row['id_tipo'];
+    $data[1] = html_print_image('images/'.$row['icon'], true, ['class' => 'main_menu_icon invert_filter']);
+    $data[2] = $row['nombre'];
+    $data[3] = $row['descripcion'];
 
-    echo "
-	<tr>
-		<td class='$tdcolor' align=''>".html_print_image('images/'.$row['icon'], true, ['border' => '0', 'class' => 'invert_filter'])."</td>
-		<td class='$tdcolor'>
-		<b>".$row['id_tipo']."
-		</b></td>
-		<td class='$tdcolor'>
-		<b>".$row['nombre']."
-		</b></td>
-		<td class='$tdcolor'>
-		".$row['descripcion'].'
-		</td>
-	</tr>';
+    array_push($table->data, $data);
 }
 
-echo '</table>';
+html_print_table($table);
+// $tablePagination = ui_pagination($total_groups, $url, $offset, 0, true, 'offset', false);

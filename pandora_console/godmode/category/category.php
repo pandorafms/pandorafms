@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,35 +52,21 @@ $search = (int) get_parameter('search_category', 0);
 $category_name = (string) get_parameter('category_name', '');
 $tab = (string) get_parameter('tab', 'list');
 
-if (is_metaconsole() === true) {
-    $buttons = [
-        'list' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
-                'images/list.png',
-                true,
-                [
-                    'title' => __('List categories'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>',
-        ],
-    ];
-} else {
-    $buttons = [
-        'list' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=galertas&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
-                'images/list.png',
-                true,
-                [
-                    'title' => __('List categories'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>',
-        ],
-    ];
-}
+$sec = (is_metaconsole() === true) ? 'advanced' : 'galertas';
+
+$buttons = [
+    'list' => [
+        'active' => false,
+        'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'title' => __('List categories'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        ).'</a>',
+    ],
+];
 
 $buttons[$tab]['active'] = true;
 
@@ -88,7 +74,24 @@ $buttons[$tab]['active'] = true;
 if (is_metaconsole() === true) {
     ui_meta_print_header(__('Categories configuration'), __('List'), $buttons);
 } else {
-    ui_print_page_header(__('Categories configuration'), 'images/gm_modules.png', false, '', true, $buttons);
+    ui_print_standard_header(
+        __('Categories configuration'),
+        'images/gm_modules.png',
+        false,
+        '',
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Module categories'),
+            ],
+        ]
+    );
 }
 
 
@@ -152,12 +155,8 @@ $rowPair = true;
 $iterator = 0;
 
 if (empty($result) === false) {
-    // Prepare pagination.
-    ui_pagination($total_categories, $url);
-
     $table = new stdClass();
-    $table->width = '100%';
-    $table->class = 'info_table';
+    $table->class = 'info_table m2020';
 
     $table->data = [];
     $table->head = [];
@@ -185,14 +184,20 @@ if (empty($result) === false) {
         if (is_metaconsole() === true) {
             $data[0] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".$category['name'].'</a>';
             $data[1] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image(
-                'images/config.png',
+                'images/edit.svg',
                 true,
-                ['title' => 'Edit']
+                [
+                    'title' => __('Edit'),
+                    'class' => 'main_menu_icon',
+                ]
             ).'</a>&nbsp;&nbsp;';
             $data[1] .= '<a  href="index.php?sec=advanced&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
-                'images/cross.png',
+                'images/delet.svg',
                 true,
-                ['title' => 'Delete']
+                [
+                    'title' => __('Delete'),
+                    'class' => 'main_menu_icon',
+                ]
             ).'</a>';
         } else {
             if ($is_management_allowed === true) {
@@ -203,16 +208,39 @@ if (empty($result) === false) {
 
             if ($is_management_allowed === true) {
                 $table->cellclass[][1] = 'table_action_buttons';
-                $data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image(
-                    'images/config.png',
-                    true,
-                    ['title' => 'Edit']
-                ).'</a>';
-                $data[1] .= '<a  href="index.php?sec=gmodules&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
-                    'images/cross.png',
-                    true,
-                    ['title' => 'Delete']
-                ).'</a>';
+                $tableActionButtonsContent = [];
+                $tableActionButtonsContent[] = html_print_anchor(
+                    [
+                        'href'    => 'index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category='.$category['id'].'&pure='.(int) $config['pure'],
+                        'content' => html_print_image(
+                            'images/edit.svg',
+                            true,
+                            [
+                                'title' => __('Edit'),
+                                'class' => 'main_menu_icon',
+                            ]
+                        ),
+                    ],
+                    true
+                );
+
+                $tableActionButtonsContent[] = html_print_anchor(
+                    [
+                        'href'    => 'index.php?sec=gmodules&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'],
+                        'onClick' => 'if (! confirm (\''.__('Are you sure?').'\')) return false',
+                        'content' => html_print_image(
+                            'images/delete.svg',
+                            true,
+                            [
+                                'title' => __('Delete'),
+                                'class' => 'main_menu_icon',
+                            ]
+                        ),
+                    ],
+                    true
+                );
+
+                $data[1] = implode('', $tableActionButtonsContent);
             }
         }
 
@@ -220,7 +248,7 @@ if (empty($result) === false) {
     }
 
     html_print_table($table);
-    ui_pagination($total_categories, $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination($total_categories, $url, $offset, 0, true, 'offset', false);
 } else {
     // No categories available or selected.
     ui_print_info_message(['no_close' => true, 'message' => __('No categories found') ]);
@@ -228,24 +256,23 @@ if (empty($result) === false) {
 
 if ($is_management_allowed === true) {
     // Form to add new categories or search categories.
-    if (is_metaconsole() === true) {
-        echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
-    } else {
-        echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
-    }
+    $sec = (is_metaconsole() === true) ? 'advanced' : 'gmodules';
+
+    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
 
     html_print_input_hidden('create_category', '1', true);
 
-    html_print_div(
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create category'),
+            'create_button',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
         [
-            'class'   => 'action-buttons',
-            'content' => html_print_submit_button(
-                __('Create category'),
-                'create_button',
-                false,
-                [ 'icon' => 'next' ],
-                true
-            ),
+            'type'          => 'form_action',
+            'right_content' => $tablePagination,
         ]
     );
 

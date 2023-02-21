@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 /**
  * Resource registration.
  *
@@ -14,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -239,13 +240,6 @@ function process_upload_xml_report($xml, $group_filter=0)
             }
 
             switch ($item['type']) {
-                case 1:
-                case 'simple_graph':
-                break;
-
-                case 'simple_baseline_graph':
-                break;
-
                 case 2:
                 case 'custom_graph':
                 case 'automatic_custom_graph':
@@ -361,30 +355,6 @@ function process_upload_xml_report($xml, $group_filter=0)
                     }
                 break;
 
-                case 6:
-                case 'monitor_report':
-                break;
-
-                case 7:
-                case 'avg_value':
-                break;
-
-                case 8:
-                case 'max_value':
-                break;
-
-                case 9:
-                case 'min_value':
-                break;
-
-                case 10:
-                case 'sumatory':
-                break;
-
-                case 'agent_detailed_event':
-                case 'event_report_agent':
-                break;
-
                 case 'text':
                     $values['text'] = io_safe_input($item['text']);
                 break;
@@ -405,18 +375,6 @@ function process_upload_xml_report($xml, $group_filter=0)
                     $values['id_agent'] = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($item->group));
                 break;
 
-                case 'event_report_module':
-                break;
-
-                case 'alert_report_module':
-                break;
-
-                case 'alert_report_agent':
-                break;
-
-                case 'alert_report_group':
-                break;
-
                 case 'url':
                     $values['external_source'] = io_safe_input($item['url']);
                 break;
@@ -426,9 +384,32 @@ function process_upload_xml_report($xml, $group_filter=0)
                     $values['line_separator'] = io_safe_input($item['line_separator']);
                     $values['column_separator'] = io_safe_input($item['column_separator']);
                 break;
+
+                case 1:
+                case 'simple_graph':
+                case 'simple_baseline_graph':
+                case 6:
+                case 'monitor_report':
+                case 7:
+                case 'avg_value':
+                case 8:
+                case 'max_value':
+                case 9:
+                case 'min_value':
+                case 10:
+                case 'sumatory':
+                case 'event_report_module':
+                case 'alert_report_module':
+                case 'alert_report_agent':
+                case 'alert_report_group':
+                case 'agent_detailed_event':
+                case 'event_report_agent':
+                default:
+                    // Do nothing.
+                break;
             }
 
-            if (empty($agents_item)) {
+            if (empty($agents_item) === true) {
                 $id_content = db_process_sql_insert('treport_content', $values);
                     ui_print_result_message(
                         $id_content,
@@ -782,7 +763,7 @@ function process_upload_xml_visualmap($xml, $filter_group=0)
 
 function process_upload_xml_component($xml)
 {
-    // Extract components
+    // Extract components.
     $components = [];
     foreach ($xml->xpath('/component') as $componentElement) {
         $name = io_safe_input((string) $componentElement->name);
@@ -838,7 +819,7 @@ function process_upload_xml_component($xml)
         $idComponent = false;
         switch ((int) $componentElement->module_source) {
             case 1:
-                // Local component
+                // Local component.
                 $values = [
                     'description'                => $description,
                     'id_network_component_group' => $group,
@@ -854,12 +835,12 @@ function process_upload_xml_component($xml)
                 // Network component
                 // for modules
                 // 15 = remote_snmp, 16 = remote_snmp_inc,
-                // 17 = remote_snmp_string, 18 = remote_snmp_proc
+                // 17 = remote_snmp_string, 18 = remote_snmp_proc.
                 $custom_string_1 = '';
                 $custom_string_2 = '';
                 $custom_string_3 = '';
                 if ($type >= 15 && $type <= 18) {
-                    // New support for snmp v3
+                    // New support for snmp v3.
                     $tcp_send = $snmp_version;
                     $plugin_user = $auth_user;
                     $plugin_pass = $auth_password;
@@ -909,13 +890,13 @@ function process_upload_xml_component($xml)
                         'post_process'       => $post_process,
                     ]
                 );
-                if ((bool) $idComponent) {
+                if ((bool) $idComponent === true) {
                     $components[] = $idComponent;
                 }
             break;
 
             case 4:
-                // Plugin component
+                // Plugin component.
                 $idComponent = network_components_create_network_component(
                     $name,
                     $type,
@@ -956,17 +937,13 @@ function process_upload_xml_component($xml)
                         'post_process'       => $post_process,
                     ]
                 );
-                if ((bool) $idComponent) {
+                if ((bool) $idComponent === true) {
                     $components[] = $idComponent;
                 }
             break;
 
-            case 5:
-                // Prediction component
-            break;
-
             case 6:
-                // WMI component
+                // WMI component.
                 $idComponent = network_components_create_network_component(
                     $name,
                     $type,
@@ -1013,13 +990,17 @@ function process_upload_xml_component($xml)
                         'post_process'       => $post_process,
                     ]
                 );
-                if ((bool) $idComponent) {
+                if ((bool) $idComponent === true) {
                     $components[] = $idComponent;
                 }
             break;
 
+            case 5:
+                // Prediction component.
             case 7:
-                // Web component
+                // Web component.
+            default:
+                // Do nothing.
             break;
         }
 
@@ -1030,9 +1011,9 @@ function process_upload_xml_component($xml)
         );
     }
 
-    // Extract the template
+    // Extract the template.
     $templateElement = $xml->xpath('//template');
-    if (!empty($templateElement)) {
+    if (empty($templateElement) === false) {
         $templateElement = $templateElement[0];
 
         $templateName = (string) $templateElement->name;
@@ -1092,9 +1073,26 @@ function resource_registration_extension_main()
     include_once $config['homedir'].'/include/functions_db.php';
     enterprise_include_once('include/functions_local_components.php');
 
-    ui_print_page_header(__('Resource registration'), 'images/extensions.png', false, '', true, '');
+    ui_print_standard_header(
+        __('Resource registration'),
+        'images/extensions.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Resource registration'),
+            ],
+        ]
+    );
 
-    if (!extension_loaded('libxml')) {
+    if (extension_loaded('libxml') === false) {
         ui_print_error_message(_('Error, please install the PHP libXML in the system.'));
 
         return;
@@ -1119,15 +1117,36 @@ function resource_registration_extension_main()
         return;
     }
 
-    echo '<div class=notify>';
-    echo __('This extension makes registering resource templates easier.').' '.__('Here you can upload a resource template in .ptr format.').' '.__('Please refer to our documentation for more information on how to obtain and use %s resources.', get_product_name()).' '.'<br> <br>'.__('You can get more resurces in our <a href="https://pandorafms.com/Library/Library/">Public Resource Library</a>');
-    echo '</div>';
+    ui_print_warning_message(
+        __('This extension makes registering resource templates easier.').'<br>'.__('Here you can upload a resource template in .ptr format.').'<br>'.__('Please refer to our documentation for more information on how to obtain and use %s resources.', get_product_name()).' '.'<br> <br>'.__('You can get more resurces in our <a href="https://pandorafms.com/Library/Library/">Public Resource Library</a>')
+    );
 
-    echo '<br /><br />';
+    $table = new stdClass();
+    $table->class = 'databox m2020';
+    $table->id = 'resource_registration_table';
+
+    $table->data = [];
+    $table->data[0][0] = __('File to upload');
+    $table->data[0][1] = __('Group filter');
+    $table->data[1][0] = html_print_input_file('resource_upload', true);
+    $table->data[1][1] = html_print_select_groups(false, 'AW', true, 'group', '', '', __('All'), 0, true);
 
     // Upload form.
-    echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
-        echo '<table class="databox" id="table1" width="98%" border="0" cellpadding="4" cellspacing="4">';
+    echo '<form name="submit_plugin" method="POST" enctype="multipart/form-data">';
+        html_print_table($table);
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Upload'),
+                'upload',
+                false,
+                [ 'icon' => 'wand' ],
+                true
+            ),
+            ['type' => 'form_action']
+        );
+    echo '</form>';
+        /*
+            echo '<table class="databox" id="table1" width="98%" border="0" cellpadding="4" cellspacing="4">';
             echo '<tr>';
                 echo "<td colspan='2' class='datos'><input type='file' name='resource_upload' accept='.ptr'/>";
                 echo '<td>'.__('Group filter: ').'</td>';
@@ -1136,8 +1155,7 @@ function resource_registration_extension_main()
                 echo '</td>';
                 echo "<td class='datos'><input type='submit' class='sub next' value='".__('Upload')."' />";
             echo '</tr>';
-        echo '</table>';
-    echo '</form>';
+        echo '</table>';*/
 
     if (isset($_FILES['resource_upload']['tmp_name']) === false) {
         return;

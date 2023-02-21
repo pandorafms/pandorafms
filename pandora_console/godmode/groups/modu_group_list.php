@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -66,13 +66,23 @@ if (is_ajax() === true) {
 
 if (is_metaconsole() === false) {
     // Header.
-    ui_print_page_header(
-        __('Module groups defined in %s', get_product_name()),
+    ui_print_standard_header(
+        __('Module groups list'),
         'images/module_group.png',
         false,
         '',
         true,
-        ''
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Module groups'),
+            ],
+        ]
     );
 }
 
@@ -243,8 +253,7 @@ $sql = 'SELECT *
 $groups = db_get_all_rows_sql($sql);
 
 $table = new stdClass();
-$table->width = '100%';
-$table->class = 'info_table';
+$table->class = 'info_table m2020';
 
 if (empty($groups) === false) {
     $table->head = [];
@@ -253,6 +262,8 @@ if (empty($groups) === false) {
     if ($is_management_allowed === true) {
         $table->head[2] = __('Delete');
     }
+
+    $table->size[0] = '5%';
 
     $table->align = [];
     $table->align[1] = 'left';
@@ -270,10 +281,10 @@ if (empty($groups) === false) {
         if ($is_management_allowed === true) {
             $data[1] = '<strong><a href="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group&id_group='.$id_group['id_mg'].'">'.ui_print_truncate_text($id_group['name'], GENERIC_SIZE_TEXT).'</a></strong>';
             if (is_metaconsole() === true) {
-                $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+                $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon']).'</a>';
             } else {
                 $table->cellclass[][2] = 'table_action_buttons';
-                $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+                $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon']).'</a>';
             }
         } else {
             $data[1] = '<strong>';
@@ -284,9 +295,8 @@ if (empty($groups) === false) {
         array_push($table->data, $data);
     }
 
-    ui_pagination($total_groups, $url, $offset);
     html_print_table($table);
-    ui_pagination($total_groups, $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination($total_groups, $url, $offset, 0, true, 'offset', false);
 } else {
     ui_print_info_message(
         [
@@ -298,16 +308,17 @@ if (empty($groups) === false) {
 
 if ($is_management_allowed === true) {
     echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group">';
-    html_print_div(
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create module group'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
         [
-            'class'   => 'action-buttons',
-            'content' => html_print_submit_button(
-                __('Create module group'),
-                'crt',
-                false,
-                [ 'icon' => 'next' ],
-                true
-            ),
+            'type'          => 'form_action',
+            'right_content' => $tablePagination,
         ]
     );
     echo '</form>';

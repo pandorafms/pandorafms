@@ -50,36 +50,29 @@ $update_category = (int) get_parameter('update_category', 0);
 $create_category = (int) get_parameter('create_category', 0);
 $name_category = (string) get_parameter('name_category', '');
 $tab = (string) get_parameter('tab', 'list');
+// Main URL.
+$mainUrl = 'index.php?sec=gagente&sec2=godmode/category/category';
+$sec = (is_metaconsole() === true) ? 'advanced' : 'gmodules';
 
-if (is_metaconsole() === true) {
-    $buttons = [
-        'list' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
-                'images/list.png',
-                true,
-                [
-                    'title' => __('List categories'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>',
-        ],
-    ];
-} else {
-    $buttons = [
-        'list' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gmodules&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
-                'images/list.png',
-                true,
-                [
-                    'title' => __('List categories'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>',
-        ],
-    ];
-}
+$buttons = [
+    'list' => [
+        'active' => false,
+        'text'   => html_print_anchor(
+            [
+                'href'    => 'index.php?sec='.$sec.'&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'],
+                'content' => html_print_image(
+                    'images/logs@svg.svg',
+                    true,
+                    [
+                        'title' => __('List categories'),
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                ),
+            ],
+            true
+        ),
+    ],
+];
 
 $buttons[$tab]['active'] = false;
 
@@ -87,7 +80,25 @@ $buttons[$tab]['active'] = false;
 if (is_metaconsole() === true) {
     ui_meta_print_header(__('Categories configuration'), __('Editor'), $buttons);
 } else {
-    ui_print_page_header(__('Categories configuration'), 'images/gm_modules.png', false, '', true, $buttons);
+    // Header.
+    ui_print_standard_header(
+        __('Manage category'),
+        'images/gm_modules.png',
+        false,
+        '',
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => $mainUrl,
+                'label' => __('Module categories'),
+            ],
+        ]
+    );
 }
 
 
@@ -151,7 +162,7 @@ if ($create_category) {
 
 // Form fields are filled here
 // Get results when update action is performed.
-if ($action == 'update' && $id_category != 0) {
+if ($action === 'update' && $id_category != 0) {
     $result_category = db_get_row_filter('tcategory', ['id' => $id_category]);
     $name_category = $result_category['name'];
 } //end if
@@ -159,47 +170,28 @@ else {
     $name_category = '';
 }
 
+// Create/Update category form.
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/category/edit_category&action='.$action.'&id_category='.$id_category.'&pure='.(int) $config['pure'].'" enctype="multipart/form-data">';
 
-// Create/Update category form
-echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action='.$action.'&id_category='.$id_category.'&pure='.(int) $config['pure'].'" enctype="multipart/form-data">';
+$table = new stdClass();
+$table->id = 'edit_catagory_table';
+$table->class = 'databox m2020';
 
-if (!defined('METACONSOLE')) {
-    echo '<div align=left  class="pandora_form w100p">';
-} else {
-    echo '<div align=left  class="pandora_form w100p">';
-}
-
-echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
-
-if (defined('METACONSOLE')) {
-    if ($action == 'update') {
-        echo '<thead>
-					<tr>
-						<th align=center colspan=5>'.__('Update category').'</th>
-					</tr>
-				</thead>';
-    }
-
-    if ($action == 'new') {
-        echo '<thead>
-					<tr>
-						<th align=center colspan=5>'.__('Create category').'</th>
-					</tr>
-				</thead>';
+$table->head = [];
+if (is_metaconsole() === true) {
+    if ($action === 'update') {
+        $table->head[0] = __('Update category');
+    } else if ($action === 'new') {
+        $table->head[0] = __('Create category');
     }
 }
 
-    echo '<tr>';
-        echo "<td class='bolder'>";
+$table->data = [];
 
-        html_print_label(__('Name'), 'name');
-        echo '</td>';
-        echo '<td>';
-        html_print_input_text('name_category', $name_category);
-        echo '</td>';
-    echo '</tr>';
+$table->data[0][0] = __('Name');
+$table->data[1][0] = html_print_input_text('name_category', $name_category, '', 50, 255, true);
 
-echo '</table>';
+html_print_table($table);
 
 if ($action === 'update') {
     html_print_input_hidden('update_category', 1);
@@ -213,20 +205,25 @@ if ($action === 'update') {
     $buttonIcon = 'next';
 }
 
-html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            $buttonCaption,
-            $buttonName,
-            false,
-            [ 'icon' => $buttonIcon ],
-            true
-        ),
-    ]
+$actionButtons = [];
+$actionButtons[] = html_print_submit_button(
+    $buttonCaption,
+    $buttonName,
+    false,
+    [ 'icon' => $buttonIcon ],
+    true
+);
+$actionButtons[] = html_print_go_back_button(
+    $mainUrl,
+    ['button_class' => ''],
+    true
 );
 
-echo '</div>';
+html_print_action_buttons(
+    implode('', $actionButtons),
+    [ 'type' => 'form_action' ]
+);
+
 echo '</form>';
 
 enterprise_hook('close_meta_frame');

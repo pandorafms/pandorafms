@@ -62,23 +62,23 @@ if (is_management_allowed() === false) {
 $table = new stdClass();
 
 // $table->width = '100%';
-$table->styleTable = 'margin: 10px 10px 0';
-$table->class = 'info_table';
+// $table->styleTable = 'margin: 10px 10px 0';
+$table->class = 'info_table m2020';
 
-$table->head[0] = '';
-$table->head[1] = __('ID');
+$table->head[0] = __('ID');
+$table->head[1] = __('Icon');
 $table->head[2] = __('Name');
 $table->head[3] = __('Description');
 if ($is_management_allowed === true) {
     $table->head[4] = '';
 }
 
-$table->align[0] = 'center';
+$table->align[1] = 'center';
 if ($is_management_allowed === true) {
     $table->align[4] = 'center';
 }
 
-$table->size[0] = '20px';
+$table->size[0] = '5%';
 if ($is_management_allowed === true) {
     $table->size[4] = '20px';
 }
@@ -103,14 +103,22 @@ if ($osList === false) {
 $table->data = [];
 foreach ($osList as $os) {
     $data = [];
-    $data[] = html_print_div(['class' => 'main_menu_icon', 'content' => ui_print_os_icon($os['id_os'], false, true)], true);
     $data[] = $os['id_os'];
+    $data[] = html_print_div(['class' => 'main_menu_icon', 'content' => ui_print_os_icon($os['id_os'], false, true)], true);
     if ($is_management_allowed === true) {
         if (is_metaconsole() === true) {
-            $data[] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=edit&tab2=builder&id_os='.$os['id_os'].'">'.io_safe_output($os['name']).'</a>';
+            $osNameUrl = 'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=edit&tab2=builder&id_os='.$os['id_os'];
         } else {
-            $data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os='.$os['id_os'].'">'.io_safe_output($os['name']).'</a>';
+            $osNameUrl = 'index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os='.$os['id_os'];
         }
+
+        $data[] = html_print_anchor(
+            [
+                'href'    => $osNameUrl,
+                'content' => io_safe_output($os['name']),
+            ],
+            true
+        );
     } else {
         $data[] = io_safe_output($os['name']);
     }

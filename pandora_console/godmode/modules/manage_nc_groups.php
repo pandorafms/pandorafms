@@ -1,17 +1,32 @@
 <?php
+/**
+ * Component group Management.
+ *
+ * @category   Modules.
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -32,16 +47,27 @@ require_once $config['homedir'].'/include/functions_network_components.php';
 require_once $config['homedir'].'/include/functions_component_groups.php';
 
 // Header
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     components_meta_print_header();
     $sec = 'advanced';
 } else {
-    ui_print_page_header(
-        __('Module management').' &raquo; '.__('Component group management'),
+    ui_print_standard_header(
+        __('Component group management'),
         '',
         false,
         '',
-        true
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Component groups'),
+            ],
+        ]
     );
     $sec = 'gmodules';
 }
@@ -234,12 +260,11 @@ foreach ($groups as $group_key => $group_val) {
 $groups = component_groups_get_groups_tree_recursive($groups_clean, 0, 0);
 
 $table = new stdClass();
-$table->width = '100%';
-$table->class = 'info_table';
+$table->class = 'info_table m2020';
 $table->head = [];
 $table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
 $table->head[0] = __('Name');
-if (is_management_allowed() === true || is_metaconsole()) {
+if (is_management_allowed() === true || is_metaconsole() === true) {
     $table->head[1] = __('Action');
 }
 
@@ -272,8 +297,14 @@ foreach ($groups as $group) {
 
     $table->cellclass[][1] = 'table_action_buttons';
     if (is_management_allowed() === true || is_metaconsole()) {
-        $data[1] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-        href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+        $data[1] = html_print_anchor(
+            [
+                'onClick' => 'if(confirm(\"'.__('Are you sure?').'\")) return true; else return false;',
+                'href'    => 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg'].'&offset=0',
+                'content' => html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon']),
+            ],
+            true
+        );
     }
 
     array_push($table->data, $data);
@@ -296,35 +327,63 @@ if (is_management_allowed() === false && is_metaconsole() === false) {
     );
 }
 
-if (isset($data)) {
-    echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups'>";
-    html_print_input_hidden('multiple_delete', 1);
+$actionButtons = [];
+if (isset($data) === true) {
+    echo '<form id="multiple_delete_form" method="POST" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_nc_groups">';
     html_print_table($table);
-    if (is_management_allowed() === true || is_metaconsole()) {
-        echo "<div class='pdd_l_10px float-right mrgn_btn_15px'>";
-        html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-        echo '</div>';
-    }
-
     echo '</form>';
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined component groups') ]);
 }
 
 if (is_management_allowed() === true || is_metaconsole()) {
-    echo '<form method="post" action='.$url.'>';
-    echo '<div class="float-right">';
-        html_print_input_hidden('new', 1);
-        html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
-    echo '</div>';
+    // Create form.
+    echo '<form id="create_form" method="POST" action="'.$url.'">';
+    html_print_input_hidden('new', 1);
     echo '</form>';
+    // Create action button.
+    $actionButtons[] = html_print_submit_button(
+        __('Create'),
+        'crt',
+        false,
+        [
+            'icon' => 'wand',
+            'form' => 'create_form',
+        ],
+        true
+    );
+    // Delete action button.
+    if (isset($data) === true) {
+        $actionButtons[] = html_print_input_hidden(
+            'multiple_delete',
+            1,
+            false,
+            false,
+            'form="multiple_delete_form"'
+        );
+        $actionButtons[] = html_print_submit_button(
+            __('Delete'),
+            'delete_btn',
+            false,
+            [
+                'icon' => 'delete',
+                'mode' => 'secondary',
+                'form' => 'multiple_delete_form',
+            ],
+            true
+        );
+    }
 }
+
+html_print_action_buttons(
+    implode('', $actionButtons),
+    ['type' => 'form_action']
+);
 
 enterprise_hook('close_meta_frame');
 
 ?>
 <script type="text/javascript">
-    
     $( document ).ready(function() {
 
         $('[id^=checkbox-delete_multiple]').change(function(){
@@ -332,11 +391,11 @@ enterprise_hook('close_meta_frame');
                 $(this).parent().parent().removeClass('checkselected');
             }
             else{
-                $(this).parent().parent().addClass('checkselected');    
+                $(this).parent().parent().addClass('checkselected');
             }
         });
 
-        $('[id^=checkbox-all_delete]').change(function(){    
+        $('[id^=checkbox-all_delete]').change(function(){
             if ($("#checkbox-all_delete").prop("checked")) {
                 $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
                 $(".check_delete").prop("checked", true);
@@ -344,11 +403,7 @@ enterprise_hook('close_meta_frame');
             else{
                 $('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
                 $(".check_delete").prop("checked", false);
-            }    
+            }
         });
-
     });
-
-
-    
 </script>

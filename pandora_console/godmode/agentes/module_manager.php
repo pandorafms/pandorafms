@@ -1168,7 +1168,7 @@ if ($modules !== false) {
                 [
                     'href'           => 'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'],
                     'onClick'        => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
-                    'image'          => 'images/cluster@svg.svg',
+                    'image'          => 'images/cluster@os.svg',
                     'title'          => __('Create network component'),
                     'disabled'       => ((is_user_admin($config['id_user']) === true) && (int) $module['id_modulo'] === MODULE_NETWORK) === false,
                     'disabled_title' => ' ('.__('Disabled').')',

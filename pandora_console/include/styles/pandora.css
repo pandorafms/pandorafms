@@ -1982,15 +1982,17 @@ div#agent_wizard_subtabs {
 }
 
 table.databox {
-  background-color: #f9faf9;
+  background-color: #fff;
   border-spacing: 0px;
-  -moz-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
-  -webkit-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
-  box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
-  border-radius: 4px;
-  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  /*-moz-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);*/
+  /* -webkit-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%); */
+  /* box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%); */
+  border: 2px solid #c0ccdc;
   padding: 20px;
   margin-bottom: 20px;
+  width: -webkit-fill-available;
+  width: -moz-available;
 }
 
 .databox > tbody > tr > td {
@@ -3717,7 +3719,7 @@ table#policy_modules td * {
 }
 
 .tactical_table > thead > tr span {
-  line-height: 26px;
+  /*line-height: 26px;*/
 }
 
 .info_table thead th .sort_arrow,
@@ -6746,10 +6748,6 @@ div.graph div.legend table {
   margin: 0px;
 }
 
-.mrgn_5px_a0 {
-  margin: 5px auto 0;
-}
-
 .mrgn_10px {
   margin: 10px;
 }
@@ -7022,6 +7020,17 @@ div.graph div.legend table {
   margin-bottom: 80px;
 }
 
+.m1010 {
+  margin: 10px;
+}
+
+.m1020 {
+  margin: 10px 20px;
+}
+
+.m2020 {
+  margin: 20px;
+}
 .snmp_view_div {
   float: left;
   padding-left: 30px;
@@ -9887,7 +9896,8 @@ div#err_msg_centralised {
 .inputFile {
   background-color: #f6f7fb;
   height: 16px;
-  font: normal normal normal 13px Pandora-Light;
+  font-family: "Pandora-Regular";
+  font-size: 12px;
   padding: 5.5pt 20pt;
   cursor: pointer;
   color: #14524f;
@@ -9908,12 +9918,13 @@ input,
 textarea,
 select {
   background-color: #f6f7fb;
-  height: 38px;
   border: 2px solid #c0ccdc;
   border-radius: 6px;
+  height: 38px;
+  font-family: "Pandora-Regular";
+  font-size: 12px;
+  color: #333333;
   padding-left: 12px;
-  font: normal normal normal 14px Pandora-Light;
-  color: #2b3332;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -10593,7 +10604,8 @@ tr.bring_next_field {
   -moz-box-sizing: border-box !important;
   box-sizing: border-box !important;
   cursor: pointer;
-  font: normal normal normal 12px Pandora-Light !important;
+  font-family: "Pandora-Regular" !important;
+  font-size: 12px !important;
 }
 
 .select2-container .select2-selection--single {
@@ -10891,7 +10903,7 @@ pre.external_tools_output {
 .fixed_filter_bar {
   position: sticky;
   top: 114px;
-  margin-bottom: 10px;
+  /*margin-bottom: 10px;*/
   border: 1px solid #e5e9ed;
   background-color: #fff;
   z-index: 1;

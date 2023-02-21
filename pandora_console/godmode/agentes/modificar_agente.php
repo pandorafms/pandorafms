@@ -654,8 +654,7 @@ if ($agents !== false) {
 
     $tableAgents = new stdClass();
     $tableAgents->id = 'agent_list';
-    $tableAgents->class = 'info_table tactical_table';
-    $tableAgents->styleTable = 'margin: 0 10px';
+    $tableAgents->class = 'info_table tactical_table m2020';
     $tableAgents->head = [];
     $tableAgents->data = [];
     // Header.

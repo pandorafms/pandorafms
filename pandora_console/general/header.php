@@ -26,7 +26,7 @@ config_check();
 echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
 ?>
-    <div id="header_table_inner">        
+    <div id="header_table_inner">
         <?php
         // ======= Notifications Discovery ===============================================
         $notifications_numbers = notifications_get_counters();
@@ -37,7 +37,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
         // ======= Servers List ===============================================
         if ((bool) check_acl($config['id_user'], 0, 'AW') !== false) {
-            $servers_list = '<div id="servers_list">';
             $servers = [];
             $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
             if ($servers['all'] != 0) {
@@ -45,22 +44,33 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 $servers['down'] = ($servers['all'] - $servers['up']);
                 if ($servers['up'] == 0) {
                     // All Servers down or no servers at all.
-                    $servers_check_img = html_print_image('images/header_down_gray.png', true, ['alt' => 'cross', 'class' => 'bot', 'title' => __('All systems').': '.__('Down')]);
+                    $servers_check_img = html_print_image('images/system_error@header.svg', true, ['alt' => 'cross', 'class' => 'main_menu_icon bot', 'title' => __('All systems').': '.__('Down')]);
                 } else if ($servers['down'] != 0) {
                     // Some servers down.
-                    $servers_check_img = html_print_image('images/header_warning_gray.png', true, ['alt' => 'error', 'class' => 'bot', 'title' => $servers['down'].' '.__('servers down')]);
+                    $servers_check_img = html_print_image('images/system_warning@header.svg', true, ['alt' => 'error', 'class' => 'main_menu_icon bot', 'title' => $servers['down'].' '.__('servers down')]);
                 } else {
                     // All servers up.
-                    $servers_check_img = html_print_image('images/header_ready_gray.png', true, ['alt' => 'ok', 'class' => 'bot', 'title' => __('All systems').': '.__('Ready')]);
+                    $servers_check_img = html_print_image('images/system_ok@header.svg', true, ['alt' => 'ok', 'class' => 'main_menu_icon bot', 'title' => __('All systems').': '.__('Ready')]);
                 }
 
                 unset($servers);
                 // Since this is the header, we don't like to trickle down variables.
-                $servers_check_img_link = '<a class="white" href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60">';
-                 $servers_check_img_link .= $servers_check_img;
-                 $servers_check_img_link .= '</a>';
+                $servers_check_img_link = html_print_anchor(
+                    [
+                        'href'    => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
+                        'content' => $servers_check_img,
+                    ],
+                    true
+                );
             };
-            $servers_list .= $servers_check_img_link.'</div>';
+
+            $servers_list = html_print_div(
+                [
+                    'id'      => 'servers_list',
+                    'content' => $servers_check_img_link,
+                ],
+                true
+            );
         }
 
 
@@ -71,9 +81,9 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
         $check_minor_release_available = db_check_minor_relase_available();
 
-        if ($check_minor_release_available) {
+        if ($check_minor_release_available === true) {
             if (users_is_admin($config['id_user'])) {
-                if ($config['language'] == 'es') {
+                if ($config['language'] === 'es') {
                     set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
                 } else {
                     set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('About minor release update').'</a>', 'minor release/s available');
@@ -227,10 +237,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
                 if ($do_refresh) {
                     $autorefresh_img = html_print_image(
-                        'images/header_refresh_gray.png',
+                        'images/auto_refresh@header.svg',
                         true,
                         [
-                            'class' => 'bot',
+                            'class' => 'main_menu_icon bot',
                             'alt'   => 'lightning',
                             'title' => __('Configure autorefresh'),
                         ]
@@ -293,10 +303,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                     $display_counter = 'display:block';
                 } else {
                     $autorefresh_img = html_print_image(
-                        'images/header_refresh_disabled_gray.png',
+                        'images/auto_refresh@header.svg',
                         true,
                         [
-                            'class' => 'bot autorefresh_disabled invert_filter',
+                            'class' => 'main_menu_icon bot autorefresh_disabled invert_filter',
                             'alt'   => 'lightning',
                             'title' => __('Disabled autorefresh'),
                         ]
@@ -312,10 +322,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 }
             } else {
                 $autorefresh_img = html_print_image(
-                    'images/header_refresh_disabled_gray.png',
+                    'images/auto_refresh@header.svg',
                     true,
                     [
-                        'class' => 'bot autorefresh_disabled invert_filter',
+                        'class' => 'main_menu_icon bot autorefresh_disabled invert_filter',
                         'alt'   => 'lightning',
                         'title' => __('Disabled autorefresh'),
                     ]
@@ -350,9 +360,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
             $header_feedback .= '<div id="msg-header" class="invisible"></div>';
             $header_feedback .= html_print_image(
-                'images/feedback-header.png',
+                'images/send_feedback@header.svg',
                 true,
                 [
+                    'class' => 'main_menu_icon',
                     'title' => __('Feedback'),
                     'id'    => 'feedback-header',
                     'alt'   => __('Feedback'),
@@ -373,11 +384,11 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         $header_support = '<div id="header_support">';
         $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
         $header_support .= html_print_image(
-            'images/header_support.png',
+            'images/support@header.svg',
             true,
             [
                 'title' => __('Go to support'),
-                'class' => 'bot invert_filter',
+                'class' => 'main_menu_icon bot invert_filter',
                 'alt'   => 'user',
             ]
         );
@@ -387,11 +398,11 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         $header_docu = '<div id="header_docu">';
         $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
         $header_docu .= html_print_image(
-            'images/header_docu.png',
+            'images/documentation@header.svg',
             true,
             [
                 'title' => __('Go to documentation'),
-                'class' => 'bot invert_filter',
+                'class' => 'main_menu_icon bot invert_filter',
                 'alt'   => 'user',
             ]
         );
@@ -399,15 +410,14 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
 
         // User.
-        $headerUserImage = (is_user_admin($config['id_user']) === true) ? 'images/header_user_admin_green.png' : 'images/header_user_green.png';
-
+        // $headerUserImage = (is_user_admin($config['id_user']) === true) ? 'images/header_user_admin_green.png' : 'images/header_user_green.png';
         $headerUser = [];
         $headerUser[] = html_print_image(
-            $headerUserImage,
+            'images/edit_user@header.svg',
             true,
             [
                 'title' => __('Edit my user'),
-                'class' => 'bot',
+                'class' => 'main_menu_icon bot',
                 'alt'   => 'user',
             ]
         );
@@ -431,7 +441,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         // Logout.
         $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
         $header_logout .= html_print_image(
-            'images/header_logout_gray.png',
+            'images/sign_out@header.svg',
             true,
             [
                 'alt'   => __('Logout'),

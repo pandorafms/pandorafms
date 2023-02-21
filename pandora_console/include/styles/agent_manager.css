@@ -168,6 +168,7 @@ a#qr_code_agent_view {
 .agent_description {
   height: 126px;
 }
+/*
 .agent_custom_id {
   padding-bottom: 0.7em;
   padding-top: 0.5em;
@@ -176,6 +177,7 @@ a#qr_code_agent_view {
   border: 1px solid #ccc;
 }
 
+*/
 #safe_mode_module {
   margin-top: 0.6em;
 }

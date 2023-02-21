@@ -153,7 +153,7 @@ html {
 }
 
 body {
-  background-color: #fbfbfb;
+  background-color: #f6f7fb;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1080,14 +1080,14 @@ div#page {
 }
 
 body.pure {
-  background-color: #fbfbfb;
+  background-color: #f6f7fb;
 }
 
 div#container {
   margin: 0 auto;
   min-width: 960px;
   text-align: left;
-  background: #fbfbfb;
+  background: #f6f7fb;
   width: 100%;
 }
 
@@ -1096,7 +1096,7 @@ div#main {
   /* width: 100%; */
   /* margin-left: 3em; */
   background-color: #f6f7fb;
-  margin-bottom: 3em;
+  padding-bottom: 3em;
   position: relative;
   /* margin-top: 8.8em; */
   flex-direction: column;
@@ -2545,14 +2545,14 @@ div#pandora_logo_header {
 }
 
 .header_title {
+  font-size: 12px;
+  color: #161628;
   font-weight: 600;
-  font-size: 10.5pt;
-  color: #303030;
 }
 
 .header_subtitle {
-  font-size: 10pt;
-  color: #606060;
+  font-size: 15px;
+  color: #8a96a6;
   font-weight: 300;
 }
 
@@ -2612,6 +2612,7 @@ div#header_autorefresh_counter {
 }
 
 .autorefresh_disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -4757,17 +4758,16 @@ div#dialog_messages table th:last-child {
   font-weight: bold;
 }
 
-.notification-ball.notification-ball-new-messages:hover {
-  box-shadow: 0 0 3px #888;
-}
-
 .notification-ball-no-messages {
-  background-color: #82b92e;
-  cursor: pointer;
+  background-image: url(../../images/discovery_ok@header.svg);
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .notification-ball-new-messages {
-  background-color: #e63c52;
+  background-image: url(../../images/discovery_error@header.svg);
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 #notification-wrapper {
@@ -9886,7 +9886,7 @@ div#err_msg_centralised {
 
 .inputFile {
   background-color: #f6f7fb;
-  height: 28px;
+  height: 16px;
   font: normal normal normal 13px Pandora-Light;
   padding: 5.5pt 20pt;
   cursor: pointer;
@@ -9908,9 +9908,9 @@ input,
 textarea,
 select {
   background-color: #f6f7fb;
-  height: 42px;
-  border: 1px solid #c0ccdc;
-  border-radius: 8px;
+  height: 38px;
+  border: 2px solid #c0ccdc;
+  border-radius: 6px;
   padding-left: 12px;
   font: normal normal normal 14px Pandora-Light;
   color: #2b3332;
@@ -9937,7 +9937,7 @@ select:disabled,
 input:not([type="image"]):focus,
 textarea:focus,
 select:focus {
-  border: 1px solid #8a96a6;
+  border: 2px solid #8a96a6;
 }
 
 :focus {
@@ -10361,6 +10361,19 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.cog.rotation {
+  animation: rotation 4s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
 .ui-dialog-buttonset {
   width: 100%;
   display: flex;
@@ -10424,15 +10437,15 @@ button.ui-button.ui-widget.submit-cancel:active {
 }
 
 .moduleIdBox {
-  height: 40px;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  height: 36px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
   margin-left: -56px;
-  border: 1px solid #c0ccdc;
+  border: 2px solid #c0ccdc;
   background-color: #f6f7fb;
   padding: 0 16px;
   z-index: 0;
-  line-height: 42px;
+  line-height: 40px;
 }
 
 /* Custom Checkbox Style */
@@ -10567,14 +10580,14 @@ tr.bring_next_field {
   vertical-align: middle;
   text-align: left;
   min-width: 150px !important;
-  z-index: 10002;
+  z-index: 60;
 }
 
 .select2-container .select2-selection--single,
 .select2-container .select2-selection--multiple {
   background-color: #f6f7fb !important;
-  border: 1px solid #c0ccdc !important;
-  border-radius: 8px !important;
+  border: 2px solid #c0ccdc !important;
+  border-radius: 6px !important;
   color: #2b3332 !important;
   -webkit-box-sizing: border-box !important;
   -moz-box-sizing: border-box !important;
@@ -10584,7 +10597,7 @@ tr.bring_next_field {
 }
 
 .select2-container .select2-selection--single {
-  height: 42px !important;
+  height: 38px !important;
   padding-left: 4px !important;
   display: block;
   user-select: none;
@@ -10592,7 +10605,7 @@ tr.bring_next_field {
 }
 
 .select2-container .select2-selection--multiple {
-  height: 42px !important;
+  height: 38px !important;
   padding-left: 0px !important;
 }
 
@@ -10621,7 +10634,7 @@ tr.bring_next_field {
   border: 0 !important;
   height: 20px !important;
   margin-left: -8px !important;
-  margin-top: 10px !important;
+  margin-top: 8px !important;
   position: absolute !important;
   width: 20px !important;
   background: url(../../images/dropdown-down.svg) no-repeat content-box !important;
@@ -10642,7 +10655,7 @@ tr.bring_next_field {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #444 !important;
-  line-height: 42px !important;
+  line-height: 36px !important;
 }
 
 .select2-container--default.select2-container--open.select2-container--below
@@ -10808,7 +10821,7 @@ tr.bring_next_field {
   position: absolute;
   left: 0;
   top: 0;
-  height: 58px;
+  height: 62px;
   border: 1px solid #e5e9ed;
   background-color: #fff;
   /*z-index: 10000;*/
@@ -10818,18 +10831,23 @@ tr.bring_next_field {
   left: -95px !important;
 }
 
+.external_tools_title {
+  padding: 0 10px;
+}
 pre.external_tools_output {
+  padding: 0 10px;
+  /*
   border: 1px solid #e5e9ed;
   -moz-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
   -webkit-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
   box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);
   border-radius: 8px;
   color: #cacaca;
-  padding: 10px;
   background-color: #000;
   background-image: radial-gradient(rgba(0, 150, 0, 0.75), #000 120%);
   font-size: 11pt;
   text-shadow: 0 0 5px #000;
+    */
 }
 
 .dialog_table_form td:first-child {
@@ -10919,6 +10937,10 @@ table.table_modal_alternate .select2-selection__arrow {
   top: -4px !important;
 }
 
+.fixed_filter_bar .select2-selection__arrow b,
+.filter_table .select2-selection__arrow b {
+  margin-top: 11px !important;
+}
 .filter_table
   .select2-container
   .select2-selection--single
@@ -11213,4 +11235,24 @@ form#satellite_conf_edit > fieldset.full-column {
 
 .inputs_date_details > input {
   margin: 5px;
+}
+
+.show-hide-pass {
+  position: relative;
+  right: 48px;
+  top: 14px;
+  border: 0;
+  outline: none;
+  margin: 0;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.show-hide-pass-background {
+  background-position: center right 15px;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  background-image: url("../../images/enable.svg");
 }

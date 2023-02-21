@@ -155,26 +155,26 @@ UNLOCK TABLES;
 
 LOCK TABLES `tconfig_os` WRITE;
 INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`, `previous_name`) VALUES 
-(1,'Linux','Linux: All versions','linux@svg.svg', ''),
-(2,'Solaris','Sun Solaris','solaris@svg.svg', ''),
-(3,'AIX','IBM AIX','aix@svg.svg', ''),
-(4,'BSD','OpenBSD, FreeBSD and Others','freebsd@svg.svg', ''),
-(5,'HP-UX','HP-UX Unix OS','HP@svg.svg', ''),
-(7,'Cisco','CISCO IOS','cisco@svg.svg', ''),
-(8,'MacOS','MAC OS','apple@svg.svg', ''),
-(9,'Windows','Microsoft Windows OS','windows@svg.svg', ''),
-(10,'Other','Other SO','other-OS@svg.svg', ''),
-(11,'Network','Network Agent','network-server@svg.svg', ''),
-(12,'Web Server','Web Server/Application','network-server@svg.svg', ''),
-(13,'Sensor','Hardware Agent (Sensor)','network-server@svg.svg', ''),
-(14,'Embedded','Embedded device running an agent','embedded@svg.svg', ''),
-(15,'Android','Android agent','android@svg.svg', ''),
-(16, 'VMware', 'VMware Architecture', 'vmware@svg.svg', ''),
-(17, 'Router', 'Generic router', 'routers@svg.svg', ''),
-(18, 'Switch', 'Generic switch', 'switch@svg.svg', ''),
-(19, 'Satellite', 'Satellite agent', 'satellite@svg.svg', ''),
-(20, 'Mainframe', 'Mainframe agent', 'mainframe@svg.svg', ''),
-(100, 'Cluster', 'Cluster agent', 'cluster@svg.svg', '');
+(1,'Linux','Linux: All versions','linux@os.svg', ''),
+(2,'Solaris','Sun Solaris','solaris@os.svg', ''),
+(3,'AIX','IBM AIX','aix@os.svg', ''),
+(4,'BSD','OpenBSD, FreeBSD and Others','freebsd@os.svg', ''),
+(5,'HP-UX','HP-UX Unix OS','HP@os.svg', ''),
+(7,'Cisco','CISCO IOS','cisco@os.svg', ''),
+(8,'MacOS','MAC OS','apple@os.svg', ''),
+(9,'Windows','Microsoft Windows OS','windows@os.svg', ''),
+(10,'Other','Other SO','other-OS@os.svg', ''),
+(11,'Network','Network Agent','network-server@os.svg', ''),
+(12,'Web Server','Web Server/Application','network-server@os.svg', ''),
+(13,'Sensor','Hardware Agent (Sensor)','network-server@os.svg', ''),
+(14,'Embedded','Embedded device running an agent','embedded@os.svg', ''),
+(15,'Android','Android agent','android@os.svg', ''),
+(16, 'VMware', 'VMware Architecture', 'vmware@os.svg', ''),
+(17, 'Router', 'Generic router', 'routers@os.svg', ''),
+(18, 'Switch', 'Generic switch', 'switch@os.svg', ''),
+(19, 'Satellite', 'Satellite agent', 'satellite@os.svg', ''),
+(20, 'Mainframe', 'Mainframe agent', 'mainframe@os.svg', ''),
+(100, 'Cluster', 'Cluster agent', 'cluster@os.svg', '');
 UNLOCK TABLES;
 
 

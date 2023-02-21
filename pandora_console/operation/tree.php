@@ -27,7 +27,12 @@
  */
 
 // Begin.
-ui_require_css_file('tree');
+if (is_metaconsole() === true) {
+    ui_require_css_file('tree_meta');
+} else {
+    ui_require_css_file('tree');
+}
+
 ui_require_css_file('fixed-bottom-box');
 
 global $config;
@@ -309,7 +314,12 @@ html_print_input_hidden('tag-id', $tag_id);
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 
-ui_require_javascript_file('TreeController', 'include/javascript/tree/');
+if (is_metaconsole() === true) {
+    ui_require_javascript_file('TreeControllerMeta', 'include/javascript/tree/');
+} else {
+    ui_require_javascript_file('TreeController', 'include/javascript/tree/');
+}
+
 ui_print_spinner(__('Loading'));
 /*
     html_print_image(

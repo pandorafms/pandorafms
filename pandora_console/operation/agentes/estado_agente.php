@@ -272,7 +272,7 @@ $searchForm .= '</form>';
 
 ui_toggle(
     $searchForm,
-    __('Filter'),
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
     'filter_form'
 );
 

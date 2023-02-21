@@ -938,7 +938,7 @@ if ($step == 2) {
             false,
             (!$is_management_allowed | $disabled),
             "removeTinyMCE('textarea_field".$i."')",
-            '',
+            'style="height: 15px !important;"',
             true
         );
         // Advanced.
@@ -951,7 +951,7 @@ if ($step == 2) {
             true,
             (!$is_management_allowed | $disabled),
             "addTinyMCE('textarea_field".$i."')",
-            '',
+            'style="height: 15px !important;"',
             true
         );
         $table->data['field'.$i][1] .= '</small></b></div>';
@@ -962,7 +962,7 @@ if ($step == 2) {
             1,
             1,
             isset($fields[$i]) ? $fields[$i] : '',
-            'class="fields" min-height-40px',
+            'class="fields w100p" style="min-height: 100px !important;"',
             true,
             '',
             (!$is_management_allowed | $disabled)
@@ -979,7 +979,7 @@ if ($step == 2) {
             false,
             (!$is_management_allowed | $disabled),
             "removeTinyMCE('textarea_field".$i."_recovery')",
-            '',
+            'style="height: 15px !important;"',
             true
         );
         // Advanced.
@@ -992,7 +992,7 @@ if ($step == 2) {
             true,
             (!$is_management_allowed | $disabled),
             "addTinyMCE('textarea_field".$i."_recovery')",
-            '',
+            'style="height: 15px !important;"',
             true
         );
         $table->data['field'.$i][2] .= '</small></b></div>';
@@ -1003,7 +1003,7 @@ if ($step == 2) {
             1,
             1,
             isset($fields_recovery[$i]) ? $fields_recovery[$i] : '',
-            'class="fields min-height-40px"',
+            'class="fields w100p" style="min-height: 100px !important;"',
             true,
             '',
             (!$is_management_allowed | $disabled)
@@ -1167,32 +1167,37 @@ if ($id) {
 if (!$disabled) {
     if ($is_management_allowed === true) {
         if ($step >= LAST_STEP) {
-            html_print_submit_button(
+            $actionButtons = html_print_submit_button(
                 __('Finish'),
                 'finish',
                 false,
-                'class="sub upd"'
+                'class="submitButton"',
+                true
             );
         } else {
             html_print_input_hidden('step', ($step + 1));
             if ($step == 2) {
                 // Javascript onsubmit to avoid min = 0 and max = 0.
-                html_print_submit_button(
+                $actionButtons = html_print_submit_button(
                     __('Next'),
                     'next',
                     false,
-                    'class="sub next" onclick="return check_fields_step2();"'
+                    'class="submitButton" onclick="return check_fields_step2();"',
+                    true
                 );
             } else {
-                html_print_submit_button(
+                $actionButtons = html_print_submit_button(
                     __('Next'),
                     'next',
                     false,
-                    'class="sub next"'
+                    'class="submitButton"',
+                    true
                 );
             }
         }
     }
+
+    html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 }
 
 echo '</div>';

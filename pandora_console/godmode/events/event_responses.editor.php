@@ -84,6 +84,7 @@ if ($event_response_id > 0) {
 $table = new stdClass();
 $table->styleTable = 'margin: 10px 10px 0';
 $table->class = 'databox filters';
+$table->colspan[4][1] = 3;
 
 if (is_metaconsole()) {
     $table->head[0] = __('Edit event responses');
@@ -183,7 +184,7 @@ $data[1] = html_print_textarea(
     3,
     1,
     $event_response['target'],
-    'class="mh_initial"',
+    'class="mh_initial w100p"',
     true
 );
 

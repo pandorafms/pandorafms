@@ -646,7 +646,7 @@ class Diagnostics extends Wizard
         $currentTime = time();
 
         $pandoraDbLastRun = __('Pandora DB has never been executed');
-        if ($dateDbMantenaince !== false) {
+        if ($dateDbMantenaince !== false && empty($dateDbMantenaince) === false) {
             $difference = ($currentTime - $dateDbMantenaince);
             $pandoraDbLastRun = human_time_description_raw(
                 $difference,

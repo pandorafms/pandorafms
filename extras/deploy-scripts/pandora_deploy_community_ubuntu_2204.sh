@@ -772,7 +772,7 @@ sed --follow-symlinks -i -e "s/^openssl_conf = openssl_init/#openssl_conf = open
 
 cat > /etc/issue.net << EOF_banner
 
-Welcome to Pandora FMS appliance on CentOS
+Welcome to Pandora FMS appliance on Ubuntu
 ------------------------------------------
 Go to Public http://$ipplublic/pandora_console$to to login web console
 $(ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v "172.17.0.1" | awk '{print $2}' | awk -F '/' '{print "Go to Local http://"$1"/pandora_console to login web console"}')

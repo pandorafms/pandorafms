@@ -25,6 +25,8 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+
+namespace PandoraFMS;
 class Heatmap
 {
 
@@ -159,7 +161,7 @@ class Heatmap
             ],
         ];
 
-        echo '<div id="div_'.$this->randomId.'" class="mainDiv">';
+        echo '<div id="div_'.$this->randomId.'" class="mainDiv" style="width: 100%;height: 100%">';
         ?>
             <script type="text/javascript">
                 $(document).ready(function() {

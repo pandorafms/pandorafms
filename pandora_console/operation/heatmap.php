@@ -41,6 +41,7 @@ if ($agent_a === false && $agent_w === false) {
 }
 
 require_once $config['homedir'].'/include/class/Heatmap.class.php';
+use PandoraFMS\Heatmap;
 
 $pure = (bool) get_parameter('pure', false);
 $type = get_parameter('type', 0);

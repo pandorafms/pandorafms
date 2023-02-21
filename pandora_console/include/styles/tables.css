@@ -466,7 +466,7 @@ a.pandora_pagination.current:hover {
 }
 
 .table_action_buttons a:hover {
-  background-color: #fff;
+  background-color: transparent;
   border-radius: 4px;
 }
 

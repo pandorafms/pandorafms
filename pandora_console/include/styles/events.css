@@ -483,3 +483,8 @@ div.multi-response-buttons {
   flex-direction: row-reverse;
   justify-content: flex-start;
 }
+
+td:has(div#server_to_exec_label),
+td:has(div#server_to_exec_value) {
+  padding: 0px;
+}

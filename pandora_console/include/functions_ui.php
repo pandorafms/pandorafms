@@ -3559,7 +3559,7 @@ function ui_print_datatable(array $parameters)
             $filter .= $parameters['form']['html'];
         }
 
-        $filter .= '<ul class="datatable_filter content">';
+        $filter .= '<ul class="datatable_filter content filter_table">';
 
         foreach ($parameters['form']['inputs'] as $input) {
             $filter .= html_print_input(($input + ['return' => true]), 'li');

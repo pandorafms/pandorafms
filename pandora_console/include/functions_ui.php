@@ -379,7 +379,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageTable->data = [];
     $messageTable->data[0][0] = '<b>'.$text_title.'</b>';
     $messageTable->data[0][1] = $closeButton;
-    $messageTable->data[1][0] = '<span style="color: #000;">'.$text_message.'</b>';
+    $messageTable->data[1][0] = '<span>'.$text_message.'</b>';
 
     // JavaScript help vars.
     $messageCreated = html_print_table($messageTable, true);

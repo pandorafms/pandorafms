@@ -888,7 +888,7 @@ foreach ($agents as $agent) {
 
     $data[2] = html_print_div(
         [
-            'class'   => 'main_menu_icon',
+            'class'   => 'invert_filter main_menu_icon',
             'content' => ui_print_os_icon($agent['id_os'], false, true),
         ],
         true
@@ -903,7 +903,10 @@ foreach ($agents as $agent) {
         true,
         'groups_small',
         '',
-        false
+        false,
+        false,
+        false,
+        'invert_filter main_menu_icon'
     );
     $data[4] .= '</a>';
     $agent['not_init_count'] = $agent['notinit_count'];

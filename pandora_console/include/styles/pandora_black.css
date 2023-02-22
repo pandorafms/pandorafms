@@ -677,6 +677,7 @@ div#main_pure {
 }
 
 div#main,
+div#container,
 body.pure {
   background-color: #111;
 }
@@ -1329,6 +1330,7 @@ p.trademark-copyright {
 
 .action_buttons_background_mask {
   background-color: #222;
+  border-top: 1px solid #82b92e;
 }
 
 button.buttonButton,
@@ -1336,6 +1338,28 @@ button.submitButton {
   box-shadow: 0px 3px 6px #111;
 }
 
+button.buttonButton.secondary,
+button.submitButton.secondary {
+  background-color: #999;
+  color: #fff;
+  border-color: #fff;
+}
+
+button.buttonButton.secondary:hover,
+button.submitButton.secondary:hover {
+  color: #ddd !important;
+  border-color: #ddd !important;
+}
+
+button.buttonButton.secondary > div,
+button.submitButton.secondary > div {
+  background-color: #fff !important;
+}
+
+button.buttonButton.secondary:hover > div,
+button.submitButton.secondary:hover > div {
+  background-color: #ddd !important;
+}
 .fixed_filter_bar {
   background-color: #222;
 }

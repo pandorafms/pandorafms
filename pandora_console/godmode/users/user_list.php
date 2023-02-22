@@ -333,6 +333,7 @@ if ($delete_user === true) {
             $result = delete_user($id_user);
 
             if ($result) {
+                delete_session_user($id_user);
                 db_pandora_audit(
                     AUDIT_LOG_USER_MANAGEMENT,
                     __('Deleted user %s', io_safe_output($id_user))
@@ -401,6 +402,11 @@ if ($delete_user === true) {
         __('There was a problem deleting the profile')
     );
 } else if ($disable_user !== false) {
+    // CSRF Validator.
+    if (html_print_csrf_error()) {
+        return;
+    }
+
     // Disable_user.
     $id_user = get_parameter('id', 0);
 
@@ -645,6 +651,8 @@ $limit = (int) $config['block_size'];
 $rowPair = true;
 $iterator = 0;
 $cont = 0;
+// Creates csrf.
+$csrf = html_print_csrf_hidden(true);
 foreach ($info as $user_id => $user_info) {
     if (empty($user_id) === true) {
         continue;
@@ -814,6 +822,8 @@ foreach ($info as $user_id => $user_info) {
                     $user_info['id_user'],
                     true
                 );
+                // Same csrf for every disable button for submit.
+                $data[6] .= $csrf;
                 $data[6] .= html_print_input_hidden(
                     'disable_user',
                     $toDoAction,

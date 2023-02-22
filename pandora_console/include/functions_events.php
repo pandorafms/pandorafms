@@ -496,9 +496,13 @@ function events_update_status($id_evento, $status, $filter=null)
             // No groups option direct update.
             $update_sql = sprintf(
                 'UPDATE tevento
-                 SET estado = %d
+                 SET estado = %d,
+                    ack_utimestamp = %d,
+                    id_usuario = "%s"
                  WHERE id_evento = %d',
                 $status,
+                time(),
+                $config['id_user'],
                 $id_evento
             );
         break;
@@ -4732,7 +4736,7 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Owner');
-    if (empty($event['owner_user']) === true) {
+    if ($event['owner_user'] == -1) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
         $user_owner = db_get_value(
@@ -4797,14 +4801,15 @@ function events_page_general($event)
 
     $data = [];
 
-    $table_general->rowid[7] = 'general_status';
+    $table_general->rowid[count($table_general->data)] = 'general_status';
+    $table_general->cellclass[count($table_general->data)][1] = 'general_status';
     $data[0] = __('Status');
     $data[1] = $event_st['title'];
     $data[2] = html_print_image($event_st['img'], true);
     $table_general->data[] = $data;
 
     // If event is validated, show who and when acknowleded it.
-    $table_general->cellclass[8][1] = 'general_acknowleded';
+    $table_general->cellclass[count($table_general->data)][1] = 'general_acknowleded';
 
     $data = [];
     $data[0] = __('Acknowledged by');
@@ -4825,7 +4830,17 @@ function events_page_general($event)
             }
         }
 
-        $data[1] = $user_ack.'&nbsp;(&nbsp;'.date($config['date_format'], $event['ack_utimestamp_raw']).'&nbsp;)&nbsp;';
+        $data[1] = $user_ack.'&nbsp;(&nbsp;';
+        if ($event['ack_utimestamp_raw'] !== false
+            && $event['ack_utimestamp_raw'] !== 'false'
+        ) {
+            $data[1] .= date(
+                $config['date_format'],
+                $event['ack_utimestamp_raw']
+            );
+        }
+
+        $data[1] .= '&nbsp;)&nbsp;';
     } else {
         $data[1] = '<i>'.__('N/A').'</i>';
     }
@@ -4932,9 +4947,8 @@ function events_page_general_acknowledged($event_id)
 {
     global $config;
     $Acknowledged = '';
-    $event = db_get_all_rows_filter('tevento', 'id_evento', $event_id);
-
-    if ($event) {
+    $event = db_get_row('tevento', 'id_evento', $event_id);
+    if ($event !== false && $event['estado'] == 1) {
         $user_ack = db_get_value(
             'fullname',
             'tusuario',
@@ -4946,7 +4960,17 @@ function events_page_general_acknowledged($event_id)
             $user_ack = $config['id_user'];
         }
 
-        $Acknowledged = $user_ack.'&nbsp;(&nbsp;'.date($config['date_format'], $event['ack_utimestamp_raw']).'&nbsp;)&nbsp;';
+        $Acknowledged = $user_ack.'&nbsp;(&nbsp;';
+        if ($event['ack_utimestamp'] !== false
+            && $event['ack_utimestamp'] !== 'false'
+        ) {
+            $Acknowledged .= date(
+                $config['date_format'],
+                $event['ack_utimestamp']
+            );
+        }
+
+        $Acknowledged .= '&nbsp;)&nbsp;';
     } else {
         $Acknowledged = 'N/A';
     }

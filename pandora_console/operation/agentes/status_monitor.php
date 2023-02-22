@@ -120,6 +120,7 @@ if (! defined('METACONSOLE')) {
 }
 
 $recursion = get_parameter_switch('recursion', false);
+
 if ($recursion === false) {
     $recursion = get_parameter('recursion', false);
 }
@@ -132,7 +133,7 @@ $refr = (int) get_parameter('refr', 0);
 $offset = (int) get_parameter('offset', 0);
 $status = (int) get_parameter('status', 4);
 $modulegroup = (int) get_parameter('modulegroup', -1);
-$tag_filter = (int) get_parameter('tag_filter', 0);
+$tag_filter = get_parameter('tag_filter', [0]);
 $min_hours_status = (string) get_parameter('min_hours_status', '');
 // Sort functionality.
 $sortField = get_parameter('sort_field');
@@ -161,7 +162,7 @@ $autosearch = false;
 // It is validated if it receives parameters different from those it has by default.
 if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
     || $ag_modulename !== '' || $refr !== 0 || $offset !== 0 || $status !== 4
-    || $modulegroup !== -1 || $tag_filter !== 0 || $sortField !== ''
+    || $modulegroup !== -1 || (bool) array_filter($tag_filter) !== false || $sortField !== ''
     || $sort !== 'none' || $id_module !== 0 || $module_option !== 1
     || $min_hours_status !== ''
 ) {
@@ -218,6 +219,72 @@ if (is_numeric($ag_group)) {
     $id_ag_group = 0;
 } else {
     $id_ag_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $ag_group);
+}
+
+$load_filter_id = (int) get_parameter('filter_id', 0);
+
+if ($load_filter_id > 0) {
+    $user_groups_fl = users_get_groups(
+        $config['id_user'],
+        'AR',
+        users_can_manage_group_all(),
+        true
+    );
+
+    $sql = sprintf(
+        'SELECT id_filter, id_name
+        FROM tmonitor_filter
+        WHERE id_filter = %d AND id_group_filter IN (%s)',
+        $load_filter_id,
+        implode(',', array_keys($user_groups_fl))
+    );
+
+    $loaded_filter = db_get_row_sql($sql);
+}
+
+if ($loaded_filter['id_filter'] > 0) {
+    $query_filter['id_filter'] = $load_filter_id;
+    $filter = db_get_row_filter('tmonitor_filter', $query_filter, false);
+    if ($filter !== false) {
+        $ag_group = $filter['ag_group'];
+        $recursion = $filter['recursion'];
+        $status = $filter['status'];
+        $modulegroup = $filter['modulegroup'];
+        $ag_modulename = $filter['ag_modulename'];
+        $ag_freestring = $filter['ag_freestring'];
+        $tag_filter = $filter['tag_filter'];
+        $moduletype = $filter['moduletype'];
+        $module_option = $filter['module_option'];
+        $min_hours_status = $filter['min_hours_status'];
+        $datatype = $filter['datatype'];
+        $not_condition = $filter['not_condition'];
+        $ag_custom_fields = $filter['ag_custom_fields'];
+
+        if ($not_condition === 'false') {
+            $not_condition = '';
+        }
+
+        if ($not_condition !== '') {
+            $is_none = 'None';
+            $not_condition = 'NOT';
+        }
+
+        if ($not_condition !== '') {
+            $condition_query = '!=';
+        }
+
+        if (is_array($tag_filter) === false) {
+            $tag_filter = json_decode($tag_filter, true);
+        }
+
+        if ($tag_filter === '') {
+            $tag_filter = [0 => 0];
+        }
+
+        if (is_array($ag_custom_fields) === false) {
+            $ag_custom_fields = json_decode(io_safe_output($ag_custom_fields), true);
+        }
+    }
 }
 
 // Agent group selector.
@@ -370,19 +437,21 @@ if (!empty($ag_custom_fields)) {
     }
 }
 
+$all_tags = in_array(0, $tag_filter);
+
 // Filter by tag.
-if ($tag_filter !== 0) {
-    if ($is_metaconsole) {
-        $sql_conditions .= ' AND tagente_modulo.id_agente_modulo IN (
-				SELECT ttag_module.id_agente_modulo
-				FROM ttag_module
-				WHERE ttag_module.id_tag '.$not_condition.' IN ('.$tag_filter.'))';
-    } else {
-        $sql_conditions .= ' AND tagente_modulo.id_agente_modulo IN (
-				SELECT ttag_module.id_agente_modulo
-				FROM ttag_module
-				WHERE ttag_module.id_tag '.$condition_query.' '.$tag_filter.')';
+if ($all_tags === false) {
+    $sql_conditions .= ' AND tagente_modulo.id_agente_modulo IN (
+        SELECT ttag_module.id_agente_modulo
+        FROM ttag_module
+        WHERE 1=1';
+
+    if ($all_tags === false) {
+        $sql_conditions .= ' AND ttag_module.id_tag '.$not_condition.' IN ('.implode(',', $tag_filter).'))';
     }
+} else if ($not_condition === 'NOT') {
+    // Match nothing if not condition has been selected along with all tags selected (none).
+    $sql_conditions .= ' AND 0=0';
 }
 
 
@@ -391,17 +460,17 @@ if ($tag_filter !== 0) {
 $sql_conditions_tags = '';
 
 if (!users_is_admin()) {
-        $sql_conditions_tags = tags_get_acl_tags(
-            $config['id_user'],
-            ($recursion) ? $all_groups : $ag_group,
-            'AR',
-            'module_condition',
-            'AND',
-            'tagente_modulo',
-            true,
-            [],
-            false
-        );
+    $sql_conditions_tags = tags_get_acl_tags(
+        $config['id_user'],
+        ($recursion) ? array_flip($all_groups) : $ag_group,
+        'AR',
+        'module_condition',
+        'AND',
+        'tagente_modulo',
+        true,
+        [],
+        false
+    );
 
     if (is_numeric($sql_conditions_tags)) {
         $sql_conditions_tags = ' AND 1 = 0';
@@ -475,13 +544,14 @@ $table->data[0][1] .= html_print_select_groups(
     false,
     $not_condition
 );
+
 $table->data[0][1] .= '</div><div>';
 $table->data[0][1] .= html_print_input(
     [
         'type'    => 'checkbox',
         'name'    => 'recursion',
         'return'  => true,
-        'checked' => $recursion,
+        'checked' => ($recursion === true || $recursion === 'true' || $recursion === '1') ? 'checked' : false,
         'value'   => 1,
     ]
 );
@@ -556,13 +626,13 @@ if (empty($tags)) {
 } else {
     $table->data[1][5] = html_print_select(
         $tags,
-        'tag_filter',
+        'tag_filter[]',
         $tag_filter,
         '',
-        __($is_none),
-        '',
+        __('All'),
+        0,
         true,
-        false,
+        true,
         true,
         '',
         false,
@@ -665,7 +735,6 @@ $table2->data[0][5] = html_print_input_text('min_hours_status', $min_hours_val, 
 $table2->data[1][0] = '<span id="datatypetittle"';
 $table2->data[1][0] .= '>'.__('Data type').'</span>';
 $table2->data[1][1] .= '<div id="datatypebox">';
-
 
 switch ($moduletype) {
     case 1:
@@ -771,7 +840,7 @@ $table2->data[1][3] = html_print_div(
                 'type'    => 'switch',
                 'name'    => 'not_condition',
                 'return'  => false,
-                'checked' => $check_not_condition,
+                'checked' => ($check_not_condition === true || $check_not_condition === 'true' || $check_not_condition === '1') ? 'checked' : false,
                 'value'   => 'NOT',
                 'id'      => 'not_condition_switch',
                 'onclick' => 'changeNotConditionStatus(this)',
@@ -855,9 +924,30 @@ $table->data[3][0] = ui_toggle(
     'white_table_graph'
 );
 
-$table->colspan[4][0] = 7;
+$table->colspan[4][0] = 2;
 $table->cellstyle[4][0] = 'padding-top: 0px;';
-$table->data[4][0] = html_print_submit_button(
+$table->data[4][0] = html_print_button(
+    __('Load filter'),
+    'load-filter',
+    false,
+    '',
+    'class="float-left margin-right-2 sub config"',
+    true
+);
+
+$table->cellstyle[4][0] .= 'padding-top: 0px;';
+$table->data[4][0] .= html_print_button(
+    __('Save filter'),
+    'save-filter',
+    false,
+    '',
+    'class="float-left margin-right-2 sub wand"',
+    true
+);
+
+$table->colspan[4][2] = 5;
+$table->cellstyle[4][2] = 'padding-top: 0px;';
+$table->data[4][2] = html_print_submit_button(
     __('Show'),
     'uptbutton',
     false,
@@ -1480,7 +1570,7 @@ if (!empty($result)) {
                     'agent_small',
                     false,
                     true,
-                    false,
+                    true,
                     '[&hellip;]',
                     'font-size:7.5pt;'
                 );
@@ -2017,15 +2107,75 @@ if (!empty($result)) {
 }
 
 
-        // End Build List Result.
-        echo "<div id='monitor_details_window'></div>";
+// End Build List Result.
+echo "<div id='monitor_details_window'></div>";
 
-        enterprise_hook('close_meta_frame');
+// Load filter div for dialog.
+echo '<div id="load-modal-filter" style="display:none"></div>';
+echo '<div id="save-modal-filter" style="display:none"></div>';
 
-        ui_require_javascript_file('pandora_modules');
+enterprise_hook('close_meta_frame');
+
+ui_require_javascript_file('pandora_modules');
 
 ?>
 <script type="text/javascript">
+
+var loading = 0;
+
+/* Filter management */
+$('#button-load-filter').click(function (event) {
+   // event.preventDefault();
+
+    if($('#load-filter-select').length) {
+        $('#load-filter-select').dialog();
+    } else {
+        if (loading == 0) {
+            loading = 1
+            $.ajax({
+                method: 'POST',
+                url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                data: {
+                    page: 'include/ajax/module',
+                    load_filter_modal: 1
+                },
+                success: function (data){
+                    $('#load-modal-filter')
+                        .empty()
+                        .html(data);
+
+                    loading = 0;
+                }
+            });
+        }
+    }
+});
+
+$('#button-save-filter').click(function (){
+   // event.preventDefault();
+    if($('#save-filter-select').length) {
+        $('#save-filter-select').dialog();
+    } else {
+        if (loading == 0) {
+            loading = 1
+            $.ajax({
+                method: 'POST',
+                url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                data: {
+                    page: 'include/ajax/module',
+                    save_filter_modal: 1,
+                    current_filter: $('#latest_filter_id').val()
+                },
+                success: function (data){
+                    $('#save-modal-filter')
+                    .empty()
+                    .html(data);
+                    loading = 0;
+                }
+            });
+        }
+    }
+});
 
 if(!document.getElementById('not_condition_switch').checked){
     document.getElementById("select2-ag_group-container").innerHTML = "None";
@@ -2149,12 +2299,10 @@ function changeNotConditionStatus() {
         $("#modulegroup").select2().val(["None"]).trigger("change");
         $("#tag_filter").select2().val(["None"]).trigger("change");
 
-
         document.getElementById("select2-status-container").innerHTML = "None";
         document.getElementById("select2-moduletype-container").innerHTML = "None";
         document.getElementById("select2-ag_group-container").innerHTML = "None";
         document.getElementById("select2-modulegroup-container").innerHTML = "None";
-        document.getElementById("select2-tag_filter-container").innerHTML = "None";
 
     }else {
         $('select[name=datatypebox] > option:first-child').val('All');
@@ -2176,7 +2324,6 @@ function changeNotConditionStatus() {
         document.getElementById("select2-moduletype-container").innerHTML = "All";
         document.getElementById("select2-ag_group-container").innerHTML = "All";
         document.getElementById("select2-modulegroup-container").innerHTML = "All";
-        document.getElementById("select2-tag_filter-container").innerHTML = "All";
     }
 
 }

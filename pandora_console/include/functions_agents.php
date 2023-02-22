@@ -1405,12 +1405,14 @@ function agents_get_group_agents(
                 'id_agente',
                 'alias',
                 'ta.id_tmetaconsole_setup AS id_server',
+                'ta.disabled',
             ];
         } else {
             $fields = [
                 'ta.id_tagente AS id_agente',
                 'alias',
                 'ta.id_tmetaconsole_setup AS id_server',
+                'ta.disabled',
             ];
         }
     } else {
@@ -1419,6 +1421,7 @@ function agents_get_group_agents(
         $fields = [
             'id_agente',
             'alias',
+            'disabled',
         ];
     }
 
@@ -1461,6 +1464,13 @@ function agents_get_group_agents(
 
             case 'upper':
                 $value = mb_strtoupper($row['alias'], 'UTF-8');
+            break;
+
+            case 'disabled':
+                $value = $row['alias'];
+                if ($row['disabled'] == 1) {
+                    $value .= ' ('.__('Disabled').')';
+                }
             break;
 
             default:

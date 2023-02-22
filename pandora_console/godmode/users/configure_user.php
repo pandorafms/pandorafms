@@ -1353,11 +1353,8 @@ $values = [
     'Alert detail'   => __('Alert detail'),
     'External link'  => __('External link'),
     'Other'          => __('Other'),
+    'Dashboard'      => __('Dashboard'),
 ];
-if (!is_metaconsole()) {
-    $values['Dashboard'] = __('Dashboard');
-}
-
 
 $home_screen .= html_print_select(
     $values,
@@ -1372,7 +1369,14 @@ $home_screen .= html_print_select(
 ).'</div>';
 
 
-$dashboards = Manager::getDashboards(-1, -1);
+$dashboards = Manager::getDashboards(
+    -1,
+    -1,
+    false,
+    false,
+    $id_usr
+);
+
 $dashboards_aux = [];
 if ($dashboards === false) {
     $dashboards = ['None' => 'None'];

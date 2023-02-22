@@ -116,7 +116,7 @@ $data[1] = html_print_input_text(
 $data[2] = __('Password');
 $data[3] = html_print_input_password(
     'plugin_pass',
-    $plugin_pass,
+    '',
     '',
     15,
     60,
@@ -191,6 +191,11 @@ $(document).ready (function () {
             $("#text-custom_ip_target").hide();
         }
     });
+
+    // Add input password values with js to hide it in browser inspector.
+    $('#password-plugin_pass').val('<?php echo $plugin_pass; ?>');
+
+    observerInputPassword();
 });
 
 </script>

@@ -92,6 +92,9 @@ $node_id = (int) get_parameter('node_id', 0);
 if ($get_comments === true) {
     $event = get_parameter('event', false);
     $event_rep = (int) get_parameter('event_rep', 0);
+    $event_rep = get_parameter_post('event')['event_rep'];
+    $group_rep = get_parameter_post('event')['group_rep'];
+
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
@@ -99,7 +102,7 @@ if ($get_comments === true) {
     $eventsGrouped = [];
     // Consider if the event is grouped.
     $whereGrouped = '1=1';
-    if ($event_rep === EVENT_GROUP_REP_EVENTS) {
+    if ($group_rep === EVENT_GROUP_REP_EVENTS && $event_rep > 1) {
         // Default grouped message filtering (evento and estado).
         $whereGrouped = sprintf(
             '`evento` = "%s"',
@@ -120,7 +123,7 @@ if ($get_comments === true) {
                 (int) $event['id_agentmodule']
             );
         }
-    } else if ($event_rep === EVENT_GROUP_REP_EXTRAIDS) {
+    } else if ($group_rep === EVENT_GROUP_REP_EXTRAIDS) {
         $whereGrouped = sprintf(
             '`id_extra` = "%s"',
             $event['id_extra']
@@ -1515,9 +1518,37 @@ if ($change_status === true) {
 }
 
 if ($get_Acknowledged === true) {
-    $event_id = get_parameter('event_id');
-    echo events_page_general_acknowledged($event_id);
-    return;
+    $event_id = (int) get_parameter('event_id', 0);
+    $server_id = (int) get_parameter('server_id', 0);
+
+    $return = '';
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
+
+        echo events_page_general_acknowledged($event_id);
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
+        $return = false;
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+    }
+
+    return $return;
 }
 
 if ($change_owner === true) {
@@ -1611,6 +1642,7 @@ if ($get_extended_event) {
     $comments = $event['comments'];
 
     $event['similar_ids'] = $similar_ids;
+    $event['group_rep'] = $group_rep;
 
     if (isset($comments) === false) {
         $comments = $event['user_comment'];
@@ -2379,6 +2411,18 @@ if ($drawConsoleSound === true) {
             $output .= '</span>';
             $output .= '</div>';
             $output .= '<div class="elements-discovered-alerts"><ul></ul></div>';
+            $output .= html_print_input_hidden(
+                'ajax_file_sound_console',
+                ui_get_full_url('ajax.php', false, false, false),
+                true
+            );
+            $output .= html_print_input_hidden(
+                'meta',
+                is_metaconsole(),
+                true
+            );
+            $output .= '<div id="sound_event_details_window"></div>';
+            $output .= '<div id="sound_event_response_window"></div>';
         $output .= '</div>';
     $output .= '</div>';
 
@@ -2465,6 +2509,37 @@ if ($get_events_fired) {
         $filter = events_get_event_filter($filter_id);
     }
 
+    if (is_metaconsole() === true) {
+        $servers = metaconsole_get_servers();
+        if (is_array($servers) === true) {
+            $servers = array_reduce(
+                $servers,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['server_name'];
+                    return $carry;
+                }
+            );
+        } else {
+            $servers = [];
+        }
+
+        if ($filter['server_id'] === '') {
+            $filter['server_id'] = array_keys($servers);
+        } else {
+            if (is_array($filter['server_id']) === false) {
+                if (is_numeric($filter['server_id']) === true) {
+                    if ($filter['server_id'] !== 0) {
+                        $filter['server_id'] = [$filter['server_id']];
+                    } else {
+                        $filter['server_id'] = array_keys($servers);
+                    }
+                } else {
+                    $filter['server_id'] = explode(',', $filter['server_id']);
+                }
+            }
+        }
+    }
+
     // Set time.
     $filter['event_view_hr'] = 0;
 
@@ -2483,29 +2558,32 @@ if ($get_events_fired) {
     $return = [];
     if (empty($data) === false) {
         foreach ($data as $event) {
-            $return[] = [
-                'fired'     => $event['id_evento'],
-                'message'   => ui_print_string_substr(
-                    strip_tags(io_safe_output($event['evento'])),
-                    75,
-                    true,
-                    '9'
-                ),
-                'priority'  => ui_print_event_priority($event['criticity'], true, true),
-                'type'      => events_print_type_img(
-                    $event['event_type'],
-                    true
-                ),
-                'timestamp' => ui_print_timestamp(
-                    $event['timestamp'],
-                    true,
-                    ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
-                ),
-            ];
+            $return[] = array_merge(
+                $event,
+                [
+                    'fired'     => $event['id_evento'],
+                    'message'   => ui_print_string_substr(
+                        strip_tags(io_safe_output($event['evento'])),
+                        75,
+                        true,
+                        '9'
+                    ),
+                    'priority'  => ui_print_event_priority($event['criticity'], true, true),
+                    'type'      => events_print_type_img(
+                        $event['event_type'],
+                        true
+                    ),
+                    'timestamp' => ui_print_timestamp(
+                        $event['timestamp'],
+                        true,
+                        ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
+                    ),
+                ]
+            );
         }
     }
 
-    echo io_json_mb_encode($return);
+    echo io_safe_output(io_json_mb_encode($return));
     return;
 }
 

@@ -320,6 +320,7 @@ try {
                 $rss .= xml_entry('link', $url.'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agente']);
             }
 
+            $rss .= xml_entry('author', $row['agent_name']);
             $rss .= xml_entry('comments', $row['']);
             $rss .= xml_entry('pubDate', $row['timestamp']);
             $rss .= xml_entry('category', $row['source']);

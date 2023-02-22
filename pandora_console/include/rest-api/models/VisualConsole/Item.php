@@ -1771,8 +1771,8 @@ class Item extends CachedModel
         $imageSrc = static::issetInArray(
             $data,
             [
-                'image',
                 'imageSrc',
+                'image',
                 'backgroundColor',
                 'backgroundType',
                 'valueType',

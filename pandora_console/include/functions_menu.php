@@ -508,6 +508,14 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=wizard']['text'] = __('Templates wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=edit']['text'] = __('Edit custom reports');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=list_items&action=edit']['text'] = __('List items');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=item_editor&action=new']['text'] = __('Edit item');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=edit']['text'] = __('Wizard');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard_sla&action=edit']['text'] = __('Wizard sla');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=global&action=edit']['text'] = __('Global custom reports');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=advanced&action=edit']['text'] = __('Avanced options');
+
     if ($config['activate_gis']) {
         $menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
     }
@@ -789,6 +797,7 @@ if (is_ajax()) {
         $db_fragmentation = json_decode($d->getTablesFragmentation());
         $sys_info = json_decode($d->getSystemInfo());
         $php_sys = json_decode($d->getPHPSetup());
+        $system_date = json_decode($d->getSystemDate());
 
         $fragmentation_status = '';
         if ($db_fragmentation->data->tablesFragmentationStatus->status === 1) {
@@ -811,6 +820,27 @@ if (is_ajax()) {
             );
         }
 
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms.png', false, false, false);
+        if (enterprise_installed() === false) {
+            if ($config['style'] === 'pandora_black') {
+                $image_about = 'images/custom_logo/'.HEADER_LOGO_BLACK_CLASSIC;
+            } else if ($config['style'] === 'pandora') {
+                $image_about = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_CLASSIC;
+            }
+        } else {
+            if ($config['style'] === 'pandora_black' && $config['custom_logo'] === HEADER_LOGO_DEFAULT_CLASSIC) {
+                $config['custom_logo'] = HEADER_LOGO_BLACK_CLASSIC;
+            } else if ($config['style'] === 'pandora' && $config['custom_logo'] === HEADER_LOGO_BLACK_CLASSIC) {
+                $config['custom_logo'] = HEADER_LOGO_DEFAULT_CLASSIC;
+            }
+
+            $image_about = 'images/custom_logo/'.$config['custom_logo'];
+
+            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
+                $image_about = ENTERPRISE_DIR.'/'.$image_about;
+            }
+        }
+
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
                 <ul>
@@ -827,7 +857,7 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%;">
-                                    <img src="'.ui_get_full_url('/images/custom_logo/'.$config['custom_logo'], false, false, false).'" alt="logo" width="70%">
+                                    <img src="'.$image_about.'" alt="logo" width="70%">
                                 </th>
                                 <th style="width: 60%; text-align: left;">
                                     <h1>'.$product_name.'</h1>
@@ -999,6 +1029,14 @@ if (is_ajax()) {
                                 </th>
                                 <th style="width: 85%;">
                                     <p>'.$sys_info->data->ipInfo->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%;">
+                                    <p><span>'.$system_date->data->date->name.'</span></p>
+                                </th>
+                                <th style="width: 85%;">
+                                    <p>'.$system_date->data->date->value.'</p>
                                 </th>
                             </tr>
                         </tbody>

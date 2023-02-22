@@ -285,10 +285,15 @@ server_dependencies=" \
     java \
     bind-utils \
     whois \
+    cpanminus \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.artica.es/centos7/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "yum install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
+
+# install cpan dependencies
+execute_cmd "cpanm -i Thread::Semaphore"  "Installing Thread::Semaphore"
+
 
 # SDK VMware perl dependencies
 vmware_dependencies=" \
@@ -634,8 +639,8 @@ systemctl enable tentacle_serverd &>> $LOGFILE
 execute_cmd "service tentacle_serverd start" "Starting Tentacle Server"
 
 # Enabling condole cron
-execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
-echo "* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
+execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
+echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
 ## Enabling agent
 systemctl enable pandora_agent_daemon &>> $LOGFILE
 execute_cmd "systemctl start pandora_agent_daemon" "Starting Pandora FMS Agent"

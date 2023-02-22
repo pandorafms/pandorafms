@@ -104,6 +104,7 @@ class Diagnostics extends Wizard
         'getChartAjax',
         'formFeedback',
         'createdScheduleFeedbackTask',
+        'getSystemDate',
     ];
 
 
@@ -209,6 +210,7 @@ class Diagnostics extends Wizard
             'getAttachmentFolder',
             'getInfoTagenteDatos',
             'getServerThreads',
+            'getSystemDate',
         ];
 
         if ($this->pdf === true) {
@@ -276,6 +278,10 @@ class Diagnostics extends Wizard
 
                 case 'getShowEngine':
                     $title = __('SQL show engine innodb status');
+                break;
+
+                case 'getSystemDate':
+                    $title = __('Date system');
                 break;
 
                 default:
@@ -517,6 +523,27 @@ class Diagnostics extends Wizard
 
 
     /**
+     * Date system
+     *
+     * @return string
+     */
+    public function getSystemDate(): string
+    {
+        $result = [
+            'error' => false,
+            'data'  => [
+                'date' => [
+                    'name'  => __('System Date (Console)'),
+                    'value' => date('H:i:s Y-m-d'),
+                ],
+            ],
+        ];
+
+        return json_encode($result);
+    }
+
+
+    /**
      * Database size stats.
      *
      * @return string
@@ -619,7 +646,7 @@ class Diagnostics extends Wizard
         $currentTime = time();
 
         $pandoraDbLastRun = __('Pandora DB has never been executed');
-        if ($dateDbMantenaince !== false) {
+        if ($dateDbMantenaince !== false && empty($dateDbMantenaince) === false) {
             $difference = ($currentTime - $dateDbMantenaince);
             $pandoraDbLastRun = human_time_description_raw(
                 $difference,
@@ -659,15 +686,6 @@ class Diagnostics extends Wizard
     {
         global $config;
 
-        // Size BBDD.
-        $dbSizeSql = db_get_value_sql(
-            'SELECT ROUND(SUM(data_length+index_length)/1024/1024,3)
-            FROM information_schema.TABLES'
-        );
-
-        // Add unit size.
-        $dbSize = $dbSizeSql.' M';
-
         $result = [
             'error' => false,
             'data'  => [
@@ -682,10 +700,6 @@ class Diagnostics extends Wizard
                 'dbSchemeBuild'        => [
                     'name'  => __('DB Schema Build'),
                     'value' => $config['db_scheme_build'],
-                ],
-                'dbSize'               => [
-                    'name'  => __('DB Size'),
-                    'value' => $dbSize,
                 ],
             ],
         ];

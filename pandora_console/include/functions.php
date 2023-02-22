@@ -6420,3 +6420,19 @@ function is_pandora_db_running()
 
     return !$is_free_lock;
 }
+
+
+/**
+ * Check nms license on api.
+ *
+ * @return boolean.
+ * */
+function nms_check_api()
+{
+    global $config;
+
+    if ((int) $config['license_nms'] === 1) {
+        returnError('license_error');
+        return true;
+    }
+}

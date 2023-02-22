@@ -498,10 +498,12 @@ if ($id_agente) {
     }
 
     // Collection.
-    $collectiontab = enterprise_hook('collection_tab');
+    if ((int) $config['license_nms'] !== 1) {
+        $collectiontab = enterprise_hook('collection_tab');
 
-    if ($collectiontab == -1) {
-        $collectiontab = '';
+        if ($collectiontab == -1) {
+            $collectiontab = '';
+        }
     }
 
     // NetworkConfigManager tab.
@@ -1994,7 +1996,7 @@ if ($create_module) {
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
             AUDIT_LOG_AGENT_MANAGEMENT,
-            "Added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
+            "Added module '".db_escape_string_sql($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             true,
             io_json_mb_encode($values)

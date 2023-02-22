@@ -4,6 +4,7 @@
 ##############################################################################################################
 ## Tested versions ##
 # Ubuntu 22.04.1
+# Ubuntu 22.04.2
 
 #avoid promps
 export DEBIAN_FRONTEND=noninteractive
@@ -496,7 +497,7 @@ check_cmd_status "Error installing PandoraFMS Agent"
 
 # Copy gotty utility
 cd $WORKDIR &>> "$LOGFILE"
-execute_cmd "wget https://pandorafms.com/library/wp-content/uploads/2019/11/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
+execute_cmd "wget https://firefly.pandorafms.com/pandorafms/utils/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
 tar xvzf gotty_linux_amd64.tar.gz &>> $LOGFILE
 execute_cmd "mv gotty /usr/bin/" 'Installing gotty util'
 

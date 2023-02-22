@@ -4,6 +4,7 @@
 ##############################################################################################################
 ## Tested versions ##
 # Ubuntu 22.04.1
+# Ubuntu 22.04.2  
 
 #avoid promps
 export DEBIAN_FRONTEND=noninteractive

@@ -217,7 +217,7 @@ if ($writeDashboards === 1) {
     $text = __('Create a new dashboard');
 
     // Button for display modal options dashboard.
-    $output = '<a href="#" class="float-right" onclick=\'';
+    $output = '<div class="action-buttons" onclick=\'';
     $output .= 'show_option_dialog('.json_encode(
         [
             'title'      => $text,
@@ -236,7 +236,7 @@ if ($writeDashboards === 1) {
         'class="sub next"',
         true
     );
-    $output .= '</a>';
+    $output .= '</div>';
 
     echo $output;
 

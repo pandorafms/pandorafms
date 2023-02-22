@@ -41,22 +41,22 @@ $groups = users_get_groups();
 switch ($action) {
     default:
     case 'new':
-        $actionButtonHtml = html_print_submit_button(
+        $actionButtons = html_print_submit_button(
             __('Save'),
             'add',
             false,
-            'class="sub wand"',
+            [ 'icon' => 'next' ],
             true
         );
         $hiddenFieldAction = 'save';
     break;
     case 'update':
     case 'edit':
-        $actionButtonHtml = html_print_submit_button(
+        $actionButtons = html_print_submit_button(
             __('Update'),
             'edit',
             false,
-            'class="sub upd"',
+            [ 'icon' => 'next' ],
             true
         );
         $hiddenFieldAction = 'update';
@@ -191,22 +191,9 @@ if ($enterpriseEnable) {
     }
 
     $table->data['interactive_report'][0] = __('Non interactive report');
-    $table->data['interactive_report'][1] = __('Yes');
-    $table->data['interactive_report'][1] .= '&nbsp;&nbsp;&nbsp;';
-    $table->data['interactive_report'][1] .= html_print_radio_button(
+    $table->data['interactive_report'][1] .= html_print_checkbox_switch(
         'non_interactive',
         1,
-        '',
-        $non_interactive_check,
-        true
-    );
-    $table->data['interactive_report'][1] .= '&nbsp;&nbsp;';
-    $table->data['interactive_report'][1] .= __('No');
-    $table->data['interactive_report'][1] .= '&nbsp;&nbsp;&nbsp;';
-    $table->data['interactive_report'][1] .= html_print_radio_button(
-        'non_interactive',
-        0,
-        '',
         $non_interactive_check,
         true
     );
@@ -215,8 +202,8 @@ if ($enterpriseEnable) {
 $table->data['description'][0] = __('Description');
 $table->data['description'][1] = html_print_textarea(
     'description',
-    5,
-    15,
+    2,
+    80,
     $description,
     '',
     true
@@ -244,7 +231,7 @@ echo '<form class="" method="post">';
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo $actionButtonHtml;
+html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 html_print_input_hidden('action', $hiddenFieldAction);
 html_print_input_hidden('id_report', $idReport);
 echo '</div></form>';

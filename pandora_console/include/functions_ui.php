@@ -5841,6 +5841,15 @@ function ui_print_agent_autocomplete_input($parameters)
             .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
         }
 
+        $(document).ready(function () {
+            $("#'.$input_id.'").focusout(function (e) {
+                setTimeout(() => {
+                    let iconImage = "'.$icon_image.'";
+                    $("#'.$input_id.'").attr("style", "background-image: url(\'"+iconImage+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                }, 100);
+            });
+        });
+
 		function set_functions_change_autocomplete_'.$input_name.'() {
 			var cache_'.$input_name.' = {};
 

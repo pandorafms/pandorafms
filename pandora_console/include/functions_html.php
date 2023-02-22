@@ -2150,7 +2150,7 @@ function html_print_extended_select_for_time(
                         'class' => $uniq_name.'_toggler '.$class.' invert_filter',
                         'alt'   => __('Custom'),
                         'title' => __('Custom'),
-                        'style' => 'width: 18px; margin-bottom: -5px; margin-left: 10px'.$style_icon,
+                        'style' => 'width: 18px; margin-bottom: -5px; margin-left: 10px; padding-top: 10px;'.$style_icon,
                     ],
                     false,
                     false,
@@ -2162,7 +2162,7 @@ function html_print_extended_select_for_time(
 
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" class="w100p inline_line">';
+    echo '<div id="'.$uniq_name.'_manual" class="w100p inline_flex">';
         html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -2178,7 +2178,7 @@ function html_print_extended_select_for_time(
             false,
             $class,
             $readonly,
-            'padding: 0px 5px; height: 42px; margin: -6px 0 0 6px; width: 140px;'.$select_style,
+            ' margin-left: 5px; width: 140px;'.$select_style,
             false,
             false,
             false,
@@ -2196,7 +2196,7 @@ function html_print_extended_select_for_time(
                 'class' => $uniq_name.'_toggler invert_filter',
                 'alt'   => __('List'),
                 'title' => __('List'),
-                'style' => 'width: 18px;margin-bottom: -5px;'.$style_icon,
+                'style' => 'width: 18px;margin-bottom: -5px; padding-top: 10px;'.$style_icon,
             ]
         ).'</a>';
     echo '</div>';

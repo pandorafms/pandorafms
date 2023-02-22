@@ -204,7 +204,7 @@ $urlFilter = '&agent_filter='.$agentFilter.'&module_filter='.$moduleFilter.'&typ
 if (!defined('METACONSOLE')) {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'databox filters mrgn_btn_0';
     $table->data[0][0] = __('Agents');
     $table->data[0][0] .= html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
     $table->data[0][1] = __('Modules');
@@ -349,7 +349,7 @@ $table->style[0] = 'text-align: right;';
 
 
 if ($items) {
-    $table->width = '98%';
+    $table->width = '100%';
     if (defined('METACONSOLE')) {
         $table->width = '100%';
         $table->class = 'databox data';
@@ -687,7 +687,7 @@ if (defined('METACONSOLE')) {
             echo "<div class='pdd_b_20px right; w100p'>";
 
             html_print_input_hidden('ids_items_to_delete', '');
-            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete right mrgn_btn_15px"');
+            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete right mrgn_btn_15px mrgn_right_20px"');
             echo '</div>';
         echo '</form>';
     }

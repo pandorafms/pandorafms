@@ -626,8 +626,8 @@ if (is_ajax() === true) {
                         $tmp->mini_severity .= $output;
                         $tmp->mini_severity .= '</div>';
 
-                        $criticity = '<div class="criticity" style="background: ';
-                        $criticity .= $color.'">'.$text.'</div>';
+                        $criticity = '<div class="criticity forced_title" style="background: ';
+                        $criticity .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">'.$text.'</div>';
                         $tmp->criticity = $criticity;
 
                         // Add event severity to end of text.
@@ -695,8 +695,8 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $event_type = '<div class="criticity" style="background: ';
-                        $event_type .= $color.'">'.$text.'</div>';
+                        $event_type = '<div class="event_module_background_state forced_title" style="background: ';
+                        $event_type .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">&nbsp;</div>';
                         $tmp->event_type = $event_type;
 
                         // Module status.
@@ -735,8 +735,8 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $module_status = '<div class="criticity" style="background: ';
-                        $module_status .= $color.'">'.$text.'</div>';
+                        $module_status = '<div class="status_rounded_rectangles forced_title" style="background: ';
+                        $module_status .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">&nbsp;</div>';
                         $tmp->module_status = $module_status;
 
                         // Status.
@@ -772,7 +772,7 @@ if (is_ajax() === true) {
                                     true,
                                     [
                                         'title' => __('Event in process'),
-                                        'class' => 'forced-title invert_filter',
+                                        'class' => 'forced-title invert_filter height_20px',
                                     ]
                                 );
                             break;
@@ -790,7 +790,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $draw_state = '<div>';
+                        $draw_state = '<div class="center">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';
@@ -1812,7 +1812,7 @@ $in .= '</div>';
 $inputs[] = $in;
 
 // Trick view in table.
-$inputs[] = '<div style="min-width:32%;"></div>';
+$inputs[] = '<div class="w100p"></div>';
 
 $buttons = [];
 
@@ -2211,7 +2211,8 @@ $filter .= ui_toggle(
     true,
     true,
     'white_box white_box_opened',
-    'no-border flex-row'
+    'no-border flex-row',
+    'box-flat white_table_graph w100p'
 );
 
 try {
@@ -2394,7 +2395,7 @@ try {
                 [
                     'id'                             => $table_id,
                     'class'                          => 'info_table events',
-                    'style'                          => 'width: 100%;',
+                    'style'                          => 'width: 99%;',
                     'ajax_url'                       => 'operation/events/events',
                     'ajax_data'                      => [
                         'get_events' => 1,

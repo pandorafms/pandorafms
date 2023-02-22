@@ -458,7 +458,7 @@ ul li {
   top: 0;
   left: 0;
   background-color: #ffffff;
-  border-right: 1px solid #c1ccdc;
+  border-right: 1px solid #eee;
 }
 
 .button_collapse {
@@ -482,7 +482,7 @@ ul li {
 
 .menu_full_classic,
 .button_classic {
-  width: 280px;
+  width: 250px;
 }
 
 .menu_full_collapsed,
@@ -551,7 +551,7 @@ ul li {
  * ---------------------------------------------------------------------
  */
 .page_classic {
-  padding-left: 280px;
+  padding-left: 250px;
 }
 
 .page_collapsed {
@@ -559,7 +559,7 @@ ul li {
 }
 
 .header_table_classic {
-  padding-left: 300px;
+  padding-left: 270px;
   /* 280 + 35 */
 }
 

@@ -5628,16 +5628,26 @@ sub pandora_server_statistics ($$) {
 			# Non-dataserver LAG calculation:
 			if ($server->{"server_type"} != DATASERVER){
 				
-				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
-					FROM tagente_estado, tagente_modulo
-					WHERE utimestamp > 0
-					AND tagente_modulo.disabled = 0
-					AND tagente_modulo.id_tipo_modulo < 5 
-					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-					AND current_interval > 0
-					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-					AND running_by = ?
-					AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)", $server->{"id_server"});
+				$lag_row = get_db_single_row ($dbh, 
+				"SELECT COUNT(tam.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
+					FROM (
+  					SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+  						FROM tagente_estado
+								WHERE tagente_estado.current_interval > 0
+								AND tagente_estado.last_execution_try > 0
+								AND tagente_estado.running_by = ?
+    			) tae
+    			JOIN (
+						SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag
+							FROM tagente_modulo LEFT JOIN tagente
+							ON tagente_modulo.id_agente = tagente.id_agente
+								WHERE tagente.disabled = 0
+								AND tagente_modulo.disabled = 0
+								AND tagente_modulo.id_tipo_modulo < 5 
+				) tam
+				ON tae.id_agente_modulo = tam.id_agente_modulo
+					WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)
+					AND (tam.flag = 1 OR (UNIX_TIMESTAMP() - tae.last_execution_try) > tae.current_interval)", $server->{"id_server"});
 			}
 			# Dataserver LAG calculation:
 			else {
@@ -6009,10 +6019,6 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $start_performance = time;
-	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
-	my $read_speed = int((time - $start_performance) * 1e6);
-
 	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
 
 	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
@@ -6058,13 +6064,6 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_disk_spool</data>";
 		$xml_output .=" </module>";
 	}
-
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Execution_Time</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <unit>us</unit>";
-	$xml_output .=" <data>$read_speed</data>";
-	$xml_output .=" </module>";
 
 	$xml_output .= "</agent_data>";
 
@@ -6214,7 +6213,7 @@ sub pandora_module_unknown ($$) {
 				')
 			)
 			AND tagente_estado.utimestamp != 0
-			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP()', $pa_config->{'unknown_interval'});
+			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP() LIMIT ?', $pa_config->{'unknown_interval'}, $pa_config->{'unknown_block_size'});
 	
 	foreach my $module (@modules) {
 		

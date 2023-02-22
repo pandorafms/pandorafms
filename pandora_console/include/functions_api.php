@@ -198,6 +198,16 @@ function returnError($typeError, $returnType='string')
             );
         break;
 
+        case 'license_error':
+            returnData(
+                $returnType,
+                [
+                    'type' => 'string',
+                    'data' => __('License not allowed for this operation.'),
+                ]
+            );
+        break;
+
         default:
             returnData(
                 $returnType,

@@ -359,6 +359,10 @@ if ($config['enterprise_installed']) {
 }
 
 // CSRF validation.
+if (isset($_SESSION['csrf_code']) === true) {
+    unset($_SESSION['csrf_code']);
+}
+
 html_print_csrf_hidden();
 
     echo '</form></div>';

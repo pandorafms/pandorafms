@@ -57,10 +57,10 @@ if ($new_networkmap) {
     $offset_x = '';
     $offset_y = '';
     $scale_z = 0.5;
-    $node_sep = 10;
-    $rank_sep = 1.0;
+    $node_sep = 0.25;
+    $rank_sep = 0.5;
     $mindist = 1.0;
-    $kval = 5;
+    $kval = 0.3;
     $refresh_time = 300;
 }
 
@@ -273,6 +273,25 @@ if (!empty($result)) {
 if ($not_found) {
     ui_print_error_message(__('Not found networkmap.'));
 } else {
+    if ($disabled_source === false) {
+        echo '<div id="map_loading" style="width: 98%;height: 1000px; background-color: rgba(245, 245, 245, .3);position: absolute;display: flex;justify-content: center;align-items: center;flex-direction: column-reverse;">';
+        echo html_print_image('images/spinner.gif', true, 'width: 50px;height: 50px;');
+        echo '<div>'.__('Creating map...').'</div>';
+        echo '</div>';
+        $info1 = __('To create a network map that visually recreates link-level (L2) relationships, you must first discover these relationships with Discovery Server.  Network maps only reflect relationships that have already been discovered.');
+        $separator = '<br>';
+        $info2 = __('Discovery Server discovers relationships between interfaces (L2) through SNMP and relationships between hosts (L3) through route discovery.');
+        $info3 = __('You can also create these relationships manually by editing nodes or re-passing a discovery task after adding new information (for example by adding new SNMP communities).');
+        $info4 = __('See our documentation for more information.');
+        ui_print_info_message(
+            [
+                'no_close' => false,
+                'message'  => $info1.$separator.$info2.$separator.$info3.$separator.$info4,
+            ],
+            'style="width: 98%;"'
+        );
+    }
+
     $table = new stdClass();
     $table->id = 'form_editor';
 
@@ -337,7 +356,14 @@ if ($not_found) {
     );
 
     $table->data[3][0] = __('Description');
-    $table->data[3][1] = html_print_textarea('description', 7, 25, $description, '', true);
+    $table->data[3][1] = html_print_input_text(
+        'description',
+        $description,
+        '',
+        100,
+        100,
+        true
+    );
 
     $table->data[4][0] = __('Position X');
     $table->data[4][1] = html_print_input_text('pos_x', $offset_x, '', 2, 10, true);
@@ -352,7 +378,23 @@ if ($not_found) {
     $table->data[6][1] = html_print_input_text('scale_z', $scale_z, '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
 
     $table->data['source'][0] = __('Source');
-    $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true, $disabled_source).html_print_radio_button('source', 'recon_task', __('Discovery task'), $source, true, $disabled_source).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true, $disabled_source);
+    $table->data['source'][1] = html_print_select(
+        [
+            'group'      => __('Group'),
+            'recon_task' => __('Discovery task'),
+            'ip_mask'    => __('CIDR IP mask'),
+        ],
+        'source',
+        $source,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false,
+        '',
+        $disabled_source
+    );
 
     $table->data['source_data_recon_task'][0] = __('Source from recon task');
     $table->data['source_data_recon_task'][0] .= ui_print_help_tip(
@@ -378,18 +420,28 @@ if ($not_found) {
     );
 
     $table->data['source_data_ip_mask'][0] = __('Source from CIDR IP mask');
-    $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $ip_mask, '', 20, 255, true, $disabled_source);
+    $table->data['source_data_ip_mask'][1] = html_print_textarea(
+        'ip_mask',
+        3,
+        5,
+        $ip_mask,
+        'style="width: 238px"',
+        true,
+        '',
+        $disabled_source
+    );
 
     $table->data['source_data_group'][0] = __('Source group');
     $table->data['source_data_group'][1] = '<div class="w250px">'.html_print_select_groups(
         $config['id_user'],
         'AR',
         true,
-        'id_group',
-        $id_group,
+        'id_group[]',
+        explode(',', $id_group),
         '',
         '',
         '',
+        true,
         true
     ).'</div>';
     $table->data['source_data_group'][1] .= html_print_image(
@@ -498,9 +550,10 @@ if ($not_found) {
 <script type="text/javascript">
 
 $(document).ready(function() {
-    $("input[name='source']").on('change', function() {
-        var source = $("input[name='source']:checked").val();
-        
+    $("#map_loading").hide();
+    $("#source").change(function() {
+        const source = $(this).val();
+
         if (source == 'recon_task') {
             $("#form_editor-source_data_ip_mask")
                 .css('display', 'none');
@@ -510,7 +563,6 @@ $(document).ready(function() {
                 .css('display', 'none');
             $("#form_editor-source_data_recon_task")
                 .css('display', '');
-            
         }
         else if (source == 'ip_mask') {
             $("#form_editor-source_data_ip_mask")
@@ -565,7 +617,7 @@ $(document).ready(function() {
             $("#form_editor-kval")
                 .css('display', 'none');
             $("#form_editor-nodesep")
-                .css('display', '');
+                .css('display', 'none');
         }
         else if (method == 'neato') {
             $("#form_editor-ranksep")
@@ -598,17 +650,15 @@ $(document).ready(function() {
                 .css('display', '');
         }
     });
-    
-    $("input[name='source']").trigger("change");
+
+    $("#source").trigger("change");
     $("#method").trigger("change");
 
-    
     // Control if id_group has changed.
     var id_group_old = $("#id_group").val();
     var id_group_changed = false;
 
     $("#id_group").on('change',{id_group_old: id_group_old}, function () {
-        
         var id_group_new = $("#id_group").val();
         if((id_group_old != id_group_new) && (update_networkmap == 1 )) {
             id_group_changed = true;
@@ -625,7 +675,7 @@ $(document).ready(function() {
     update_networkmap = $("input[name='update_networkmap']").val();
 
     $( "#submit-crt" ).click(function( event ) {
-
+        $("#map_loading").show();
         if(update_networkmap == 1 && id_group_changed === true) {
             confirmDialog({
                         title: '<?php echo __('Are you sure?'); ?>',
@@ -643,7 +693,6 @@ $(document).ready(function() {
                     })
             event.preventDefault();
         }
- 
     });
 
     $("#refresh_time_units").trigger("change");

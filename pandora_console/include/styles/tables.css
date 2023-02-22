@@ -405,6 +405,27 @@ a.pandora_pagination.current:hover {
   cursor: default;
 }
 
+.filter_input_datatable {
+  width: 45% !important;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  max-width: 450px;
+  min-width: 400px;
+}
+.filter_input_datatable input {
+  flex: 1;
+}
+.filter_input_datatable label {
+  width: 93px;
+  max-width: 100%;
+}
+.filter_input_datatable .select2.select2-container {
+  flex: 1;
+}
+.datatable_filter.content li.filter_input_datatable {
+  margin: 1em 0;
+}
 /* Default datatable filter style */
 .datatable_filter.content {
   display: flex;
@@ -419,6 +440,7 @@ a.pandora_pagination.current:hover {
 .datatable_filter.content li {
   flex: 1 1 auto;
   margin: 1em auto;
+  padding: 0px 10px;
 }
 .sorting_desc {
   background: url(../../images/sort_down_green.png) no-repeat;

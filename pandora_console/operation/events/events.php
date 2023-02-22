@@ -239,6 +239,13 @@ $server_id = get_parameter(
     ($filter['server_id'] ?? '')
 );
 
+if (empty($id_agent) === true) {
+    $id_agent = get_parameter(
+        'id_agent',
+        ($filter['id_agent'] ?? '')
+    );
+}
+
 if (is_metaconsole() === true) {
     $servers = metaconsole_get_servers();
     if (is_array($servers) === true) {
@@ -574,37 +581,37 @@ if (is_ajax() === true) {
 
                         // Event severity prepared.
                         switch ($tmp->criticity) {
-                            case EVENT_CRIT_CRITICAL;
+                            case EVENT_CRIT_CRITICAL:
                                 $text = __('CRITICAL');
                                 $color = COL_CRITICAL;
                             break;
 
-                            case EVENT_CRIT_MAINTENANCE;
+                            case EVENT_CRIT_MAINTENANCE:
                                 $text = __('MAINTENANCE');
                                 $color = COL_MAINTENANCE;
                             break;
 
-                            case EVENT_CRIT_INFORMATIONAL;
+                            case EVENT_CRIT_INFORMATIONAL:
                                 $text = __('INFORMATIONAL');
                                 $color = COL_INFORMATIONAL;
                             break;
 
-                            case EVENT_CRIT_MAJOR;
+                            case EVENT_CRIT_MAJOR:
                                 $text = __('MAJOR');
                                 $color = COL_MAJOR;
                             break;
 
-                            case EVENT_CRIT_MINOR;
+                            case EVENT_CRIT_MINOR:
                                 $text = __('MINOR');
                                 $color = COL_MINOR;
                             break;
 
-                            case EVENT_CRIT_NORMAL;
+                            case EVENT_CRIT_NORMAL:
                                 $text = __('NORMAL');
                                 $color = COL_NORMAL;
                             break;
 
-                            case EVENT_CRIT_WARNING;
+                            case EVENT_CRIT_WARNING:
                                 $text = __('WARNING');
                                 $color = COL_WARNING;
                             break;
@@ -652,43 +659,43 @@ if (is_ajax() === true) {
 
                         // Event type prepared.
                         switch ($tmp->event_type) {
-                            case EVENTS_ALERT_FIRED;
-                            case EVENTS_ALERT_RECOVERED;
-                            case EVENTS_ALERT_CEASED;
-                            case EVENTS_ALERT_MANUAL_VALIDATION;
+                            case EVENTS_ALERT_FIRED:
+                            case EVENTS_ALERT_RECOVERED:
+                            case EVENTS_ALERT_CEASED:
+                            case EVENTS_ALERT_MANUAL_VALIDATION:
                                 $text = __('ALERT');
                                 $color = COL_ALERTFIRED;
                             break;
 
-                            case EVENTS_RECON_HOST_DETECTED;
-                            case EVENTS_SYSTEM;
-                            case EVENTS_ERROR;
-                            case EVENTS_NEW_AGENT;
-                            case EVENTS_CONFIGURATION_CHANGE;
+                            case EVENTS_RECON_HOST_DETECTED:
+                            case EVENTS_SYSTEM:
+                            case EVENTS_ERROR:
+                            case EVENTS_NEW_AGENT:
+                            case EVENTS_CONFIGURATION_CHANGE:
                                 $text = __('SYSTEM');
                                 $color = COL_MAINTENANCE;
                             break;
 
-                            case EVENTS_GOING_UP_WARNING;
-                            case EVENTS_GOING_DOWN_WARNING;
+                            case EVENTS_GOING_UP_WARNING:
+                            case EVENTS_GOING_DOWN_WARNING:
                                 $text = __('WARNING');
                                 $color = COL_WARNING;
                             break;
 
-                            case EVENTS_GOING_DOWN_NORMAL;
-                            case EVENTS_GOING_UP_NORMAL;
+                            case EVENTS_GOING_DOWN_NORMAL:
+                            case EVENTS_GOING_UP_NORMAL:
                                 $text = __('NORMAL');
                                 $color = COL_NORMAL;
                             break;
 
-                            case EVENTS_GOING_DOWN_CRITICAL;
-                            case EVENTS_GOING_UP_CRITICAL;
+                            case EVENTS_GOING_DOWN_CRITICAL:
+                            case EVENTS_GOING_UP_CRITICAL:
                                 $text = __('CRITICAL');
                                 $color = COL_CRITICAL;
                             break;
 
-                            case EVENTS_UNKNOWN;
-                            case EVENTS_GOING_UNKNOWN;
+                            case EVENTS_UNKNOWN:
+                            case EVENTS_GOING_UNKNOWN:
                             default:
                                 $text = __('UNKNOWN');
                                 $color = COL_UNKNOWN;
@@ -702,29 +709,29 @@ if (is_ajax() === true) {
                         // Module status.
                         // Event severity prepared.
                         switch ($tmp->module_status) {
-                            case AGENT_MODULE_STATUS_NORMAL;
+                            case AGENT_MODULE_STATUS_NORMAL:
                                 $text = __('NORMAL');
                                 $color = COL_NORMAL;
                             break;
 
-                            case AGENT_MODULE_STATUS_CRITICAL_BAD;
+                            case AGENT_MODULE_STATUS_CRITICAL_BAD:
                                 $text = __('CRITICAL');
                                 $color = COL_CRITICAL;
                             break;
 
-                            case AGENT_MODULE_STATUS_NO_DATA;
+                            case AGENT_MODULE_STATUS_NO_DATA:
                                 $text = __('NOT INIT');
                                 $color = COL_NOTINIT;
                             break;
 
-                            case AGENT_MODULE_STATUS_CRITICAL_ALERT;
-                            case AGENT_MODULE_STATUS_NORMAL_ALERT;
-                            case AGENT_MODULE_STATUS_WARNING_ALERT;
+                            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                            case AGENT_MODULE_STATUS_WARNING_ALERT:
                                 $text = __('ALERT');
                                 $color = COL_ALERTFIRED;
                             break;
 
-                            case AGENT_MODULE_STATUS_WARNING;
+                            case AGENT_MODULE_STATUS_WARNING:
                                 $text = __('WARNING');
                                 $color = COL_WARNING;
                             break;
@@ -2417,8 +2424,6 @@ try {
                             100,
                             200,
                             500,
-                            1000,
-                            -1,
                         ],
                         [
                             $config['block_size'],
@@ -2427,8 +2432,6 @@ try {
                             100,
                             200,
                             500,
-                            1000,
-                            'All',
                         ],
                     ],
                     'order'                          => [
@@ -2658,7 +2661,7 @@ function process_datatables_callback(table, settings) {
 
         function countdown_repeat() {
             var until_time = new Date();
-            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo($config['refr'] * 1000); ?>));
             return until_time;
         }
 
@@ -3076,7 +3079,7 @@ $(document).ready( function() {
     //Autorefresh in fullscreen
     var pure = '<?php echo $pure; ?>';
     if(pure == 1){
-        var refresh_interval = parseInt('<?php echo ($config['refr'] * 1000); ?>');
+        var refresh_interval = parseInt('<?php echo($config['refr'] * 1000); ?>');
         var until_time='';
 
         // If autorefresh is disabled, don't show the countdown   
@@ -3087,7 +3090,7 @@ $(document).ready( function() {
 
         function events_refresh() {
             until_time = new Date();
-            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo($config['refr'] * 1000); ?>));
 
             $("#refrcounter").countdown ({
                 until: until_time,

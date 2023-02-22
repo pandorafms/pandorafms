@@ -1054,6 +1054,7 @@ if (isset($_GET['bye'])) {
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
 
+    generate_csrf_code();
     // Process logout.
     include 'general/logoff.php';
 

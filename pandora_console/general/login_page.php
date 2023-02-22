@@ -402,6 +402,10 @@ echo '
 echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'</div>';
 
 // CSRF validation.
+if (isset($_SESSION['csrf_code']) === true) {
+    unset($_SESSION['csrf_code']);
+}
+
 html_print_csrf_hidden();
 
     echo '</form></div>';

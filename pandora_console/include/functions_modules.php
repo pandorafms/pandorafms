@@ -519,12 +519,13 @@ function modules_delete_agent_module($id_agent_module)
         'disabled'       => 1,
         'delete_pending' => 1,
     ];
-    $result = db_process_sql_update(
+    $id_agent = db_process_sql_update(
         'tagente_modulo',
         $values,
         ['id_agente_modulo' => $id_borrar_modulo]
     );
-    if ($result === false) {
+
+    if ($id_agent === false) {
         $error++;
     } else {
         // Set flag to update module status count.
@@ -562,7 +563,7 @@ function modules_delete_agent_module($id_agent_module)
     $result = db_process_delete_temp(
         'ttag_module',
         'id_agente_modulo',
-        $id_borrar_modulo
+        $id_agent
     );
     if ($result === false) {
         $error++;

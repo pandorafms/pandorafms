@@ -84,8 +84,8 @@ if (isset($_GET['server']) === true) {
 
     $table->cellpadding = 4;
     $table->cellspacing = 4;
-    $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'databox m2020';
+    $table->id = 'server_update_form';
 
     $table->data[] = [
         __('Name'),
@@ -129,17 +129,24 @@ if (isset($_GET['server']) === true) {
 
     html_print_table($table);
 
-    html_print_div(
-        [
-            'class'   => 'action-buttons w100p',
-            'content' => html_print_submit_button(
-                __('Update'),
-                '',
-                false,
-                [ 'icon' => 'update' ],
-                true
-            ),
-        ]
+    $actionButtons = [];
+    $actionButtons[] = html_print_submit_button(
+        __('Update'),
+        '',
+        false,
+        [ 'icon' => 'update' ],
+        true
+    );
+
+    $actionButtons[] = html_print_go_back_button(
+        'index.php?sec=gservers&sec2=godmode/servers/modificar_server',
+        ['button_class' => ''],
+        true
+    );
+
+    html_print_action_buttons(
+        implode('', $actionButtons),
+        ['type' => 'form_action'],
     );
 
     echo '</form>';
@@ -249,6 +256,10 @@ if (isset($_GET['server']) === true) {
             [
                 'link'  => '',
                 'label' => __('Servers'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage Servers'),
             ],
         ]
     );

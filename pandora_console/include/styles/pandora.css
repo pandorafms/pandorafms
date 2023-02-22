@@ -153,17 +153,20 @@ html {
 }
 
 body {
-  background-color: #f6f7fb;
+  background-color: #fbfbfb;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  font-weight: 400;
-  font-family: "Pandora-Regular";
-  -webkit-font-smoothing: antialiased;
+  color: #333;
+  font-family: "lato";
+  -webkit-font-smoothing: initial;
   text-rendering: optimizeLegibility;
 }
 
+body * {
+  font-family: "lato";
+}
 body.body-report {
   display: block;
 }
@@ -1386,7 +1389,7 @@ div#head {
   height: 60px;
   padding-top: 0px;
   margin: 0 auto;
-  border-bottom: 1px solid #c1ccdc;
+  border-bottom: 1px solid #eee;
   min-width: 882px;
   background-color: #fff;
   color: #000;
@@ -1747,7 +1750,7 @@ div.title_line {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 1px solid #c1ccdc;
+  border-bottom: 1px solid #eee;
   /* width: calc(100% + 3em); */
   width: -webkit-fill-available;
   width: -moz-available;
@@ -1756,7 +1759,7 @@ div.title_line {
   height: 53px;
   box-sizing: border-box;
   background-color: #fff;
-  /* margin-left: -3em;*/
+  /* margin-left: -3em; */
 }
 
 /* Breadcrum */
@@ -1945,7 +1948,7 @@ div#agent_wizard_subtabs {
 #menu_tab_left li span {
   color: #161628;
   font-size: 15px;
-  font-family: Pandora-Bold;
+  /*font-family: 'Lato';*/
 }
 
 /* New styles for data box */
@@ -1991,8 +1994,12 @@ table.databox {
   border: 2px solid #c0ccdc;
   padding: 20px;
   margin-bottom: 20px;
+  width: calc(100% - 40px);
+  width: -webkit-fill-available;
+  /*
   width: -webkit-fill-available;
   width: -moz-available;
+  */
 }
 
 .databox > tbody > tr > td {
@@ -2547,13 +2554,13 @@ div#pandora_logo_header {
 }
 
 .header_title {
-  font-size: 12px;
-  color: #161628;
+  font-size: 11pt;
+  color: #444;
   font-weight: 600;
 }
 
 .header_subtitle {
-  font-size: 15px;
+  font-size: 10pt;
   color: #8a96a6;
   font-weight: 300;
 }
@@ -2745,7 +2752,8 @@ td.cellBig {
 
 .info_box .title * {
   font-size: 14pt;
-  font-family: "Pandora-Bold";
+  /*font-family: "lato";*/
+  font-weight: bold;
 }
 
 .info_box .icon {
@@ -2906,7 +2914,7 @@ input#text-id_parent.ac_input {
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  font-family: inherit;
+  /*font-family: inherit;*/
 }
 
 /* plugins */
@@ -6483,7 +6491,7 @@ table.table_modal_alternate tr td:first-child {
 
 .bars-graph-rotate .flot-text .flot-x-axis div .break_word {
   word-break: break-word;
-  font-family: "lato" !important;
+  /*font-family: "lato" !important;*/
 }
 
 .flot-text .flot-x-axis div {
@@ -9896,7 +9904,7 @@ div#err_msg_centralised {
 .inputFile {
   background-color: #f6f7fb;
   height: 16px;
-  font-family: "Pandora-Regular";
+  /*font-family: "lato";*/
   font-size: 12px;
   padding: 5.5pt 20pt;
   cursor: pointer;
@@ -9921,7 +9929,7 @@ select {
   border: 2px solid #c0ccdc;
   border-radius: 6px;
   height: 38px;
-  font-family: "Pandora-Regular";
+  /*font-family: "lato";*/
   font-size: 12px;
   color: #333333;
   padding-left: 12px;
@@ -9975,7 +9983,7 @@ input[type="submit"] {
   box-shadow: 0px 3px 6px #c7c7c7;
   letter-spacing: 0px;
   color: #ffffff;
-  font-family: Pandora-Regular;
+  /*font-family: "lato";*/
   font-size: 16px;
   margin-left: 1em;
   cursor: pointer;
@@ -10025,7 +10033,7 @@ button.submitButton {
   min-width: 110px;
   height: 42px;
   font-size: 14px;
-  font-family: "Pandora-Regular";
+  /*font-family: "lato";*/
   align-items: center;
   line-height: 24px;
   box-shadow: 0px 3px 6px #c7c7c7;
@@ -10603,7 +10611,7 @@ tr.bring_next_field {
   -moz-box-sizing: border-box !important;
   box-sizing: border-box !important;
   cursor: pointer;
-  font-family: "Pandora-Regular" !important;
+  /*font-family: "lato" !important;*/
   font-size: 12px !important;
 }
 
@@ -10761,7 +10769,8 @@ tr.bring_next_field {
 .floating_form td {
   font-size: 13px;
   min-height: 32px;
-  font-family: "Pandora-Bold";
+  /*font-family: "lato";*/
+  font-weight: bold;
 }
 
 .floating_form td.subinput {
@@ -11066,7 +11075,7 @@ span.subsection_header_title {
   height: 18px;
 }
 .regular_font {
-  font-family: "Pandora-Regular" !important;
+  font-family: "lato" !important;
 }
 
 .width_available {
@@ -11213,7 +11222,7 @@ form#satellite_conf_edit > fieldset.full-column {
 .input_sub_placeholder {
   font-size: 8pt;
   color: #8a96a6;
-  font-family: "Pandora-Regular";
+  /*font-family: "lato";*/
 }
 
 #principal_action_buttons input,

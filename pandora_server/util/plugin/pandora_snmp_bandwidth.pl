@@ -571,7 +571,7 @@ foreach my $iface (keys %{$analysis_tree}) {
     $inUsage += $analysis_tree->{$iface}{'inUsage'};
     $j++;
   }
-  if (is_enabled($analysis_tree->{$iface}{'outUsage'}) || $analysis_tree->{$iface}{'inUsage'} == 0) {
+  if (is_enabled($analysis_tree->{$iface}{'outUsage'}) || $analysis_tree->{$iface}{'outUsage'} == 0) {
     $outUsage += $analysis_tree->{$iface}{'outUsage'};
     $k++;
   }

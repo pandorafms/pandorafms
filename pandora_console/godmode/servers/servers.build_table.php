@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,15 +54,13 @@ if ($servers === false) {
 }
 
 $table = new StdClass();
-$table->width = '100%';
-$table->class = 'info_table';
+$table->class = 'info_table m2020';
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->size = [];
 
 $table->style = [];
-$table->style[0] = 'font-weight: bold';
-
+// $table->style[0] = 'font-weight: bold';
 $table->align = [];
 $table->align[1] = 'center';
 $table->align[3] = 'center';
@@ -196,12 +194,11 @@ foreach ($servers as $server) {
         if ($server['type'] === 'recon') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist').'">';
             $data[8] .= html_print_image(
-                'images/first_task/icono_grande_reconserver.png',
+                'images/snmp-trap@svg.svg',
                 true,
                 [
                     'title' => __('Manage Discovery tasks'),
-                    'style' => 'width:21px;height:21px;',
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
 
                 ]
             );
@@ -211,22 +208,22 @@ foreach ($servers as $server) {
         if ($server['type'] === 'data') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server['id_server']).'">';
             $data[8] .= html_print_image(
-                'images/target.png',
+                'images/change-active.svg',
                 true,
                 [
                     'title' => __('Reset module status and fired alert counts'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[8] .= '</a>';
         } else if ($server['type'] === 'enterprise snmp') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_snmp_enterprise='.$server['id_server']).'">';
             $data[8] .= html_print_image(
-                'images/target.png',
+                'images/change-active.svg',
                 true,
                 [
                     'title' => __('Claim back SNMP modules'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[8] .= '</a>';
@@ -234,11 +231,11 @@ foreach ($servers as $server) {
 
         $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server['id_server']).'">';
         $data[8] .= html_print_image(
-            'images/config.png',
+            'images/edit.svg',
             true,
             [
                 'title' => __('Edit'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         );
         $data[8] .= '</a>';
@@ -246,22 +243,22 @@ foreach ($servers as $server) {
         if (($names_servers[$safe_server_name] === true) && ($server['type'] === 'data' || $server['type'] === 'enterprise satellite')) {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext.'&tab=agent_editor').'">';
             $data[8] .= html_print_image(
-                'images/agent.png',
+                'images/agents@svg.svg',
                 true,
                 [
                     'title' => __('Manage satellite hosts'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[8] .= '</a>';
 
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext).'">';
             $data[8] .= html_print_image(
-                'images/remote_configuration.png',
+                'images/remote_configuration@svg.svg',
                 true,
                 [
                     'title' => __('Remote configuration'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[8] .= '</a>';
@@ -270,12 +267,12 @@ foreach ($servers as $server) {
 
         $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server['id_server'].'&amp;delete=1').'">';
         $data[8] .= html_print_image(
-            'images/cross.png',
+            'images/delete.svg',
             true,
             [
                 'title'   => __('Delete'),
                 'onclick' => "if (! confirm ('".__('Modules run by this server will stop working. Do you want to continue?')."')) return false",
-                'class'   => 'invert_filter',
+                'class'   => 'main_menu_icon invert_filter',
             ]
         );
         $data[8] .= '</a>';

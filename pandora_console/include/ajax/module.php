@@ -1149,7 +1149,7 @@ if (check_login()) {
             $last_status_change_text = __('Time elapsed since last status change: ');
             $last_status_change_text .= (empty($module['last_status_change']) === false) ? human_time_comparation($module['last_status_change']) : __('N/A');
 
-            $data[4] .= ui_print_status_image($status, htmlspecialchars($title), true, false, false, false, $last_status_change_text);
+            $data[4] .= ui_print_status_image($status, htmlspecialchars($title), true, false, false, true, $last_status_change_text);
             if ($show_context_help_first_time === false) {
                 $show_context_help_first_time = true;
 
@@ -1158,6 +1158,7 @@ if (check_login()) {
                 }
             }
 
+            hd($data[4], true);
             // Module thresholds.
             $data[5] = '';
             if ((int) $module['id_tipo_modulo'] !== 25) {

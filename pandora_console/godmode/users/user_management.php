@@ -407,7 +407,7 @@ $select_out = html_print_select(
     true,
     '',
     false,
-    'width:100%'
+    'width:100%;'
 );
 
 $select_in = html_print_select(
@@ -422,7 +422,7 @@ $select_in = html_print_select(
     true,
     '',
     false,
-    'width:100%'
+    'width:100%;'
 );
 
 // Full list pages generation.

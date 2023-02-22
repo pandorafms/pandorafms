@@ -153,7 +153,7 @@ html {
 }
 
 body {
-  background-color: #fbfbfb;
+  background-color: #f6f7fb;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -10341,8 +10341,8 @@ button div.sound {
 }
 
 button div.add {
-  mask: url(../../images/plus.svg) no-repeat center / contain;
-  -webkit-mask: url(../../images/plus.svg) no-repeat center / contain;
+  mask: url(../../images/wizard@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/wizard@svg.svg) no-repeat center / contain;
 }
 
 button div.delete {

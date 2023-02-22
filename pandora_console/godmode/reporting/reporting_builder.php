@@ -1181,7 +1181,7 @@ switch ($action) {
                             true,
                             [
                                 'title' => __('Edit'),
-                                'class' => 'main_menu_icon',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         );
                         $tableActionButtons[] = html_print_input_hidden(
@@ -1211,7 +1211,7 @@ switch ($action) {
                         true,
                         [
                             'title' => __('Duplicate'),
-                            'class' => 'main_menu_icon',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $tableActionButtons[] = '</form> ';
@@ -1226,7 +1226,7 @@ switch ($action) {
                             true,
                             [
                                 'title' => __('Delete'),
-                                'class' => 'main_menu_icon',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         );
                         $tableActionButtons[] = html_print_input_hidden(

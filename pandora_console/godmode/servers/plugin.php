@@ -493,7 +493,7 @@ if (empty($create) === false || empty($view) === false) {
             'title'   => __('Save changes'),
             'href'    => 'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&tab=Attachments&id_plugin='.$form_id,
             'class'   => 'mrgn_lft_5px',
-            'content' => html_print_image('images/validate.svg', true, ['class' => 'main_menu_icon invert_filter'], false, true),
+            'content' => html_print_image('images/validate.svg', true, ['class' => 'invert_filter main_menu_icon'], false, true),
         ],
         true
     );
@@ -1003,7 +1003,7 @@ if (empty($create) === false || empty($view) === false) {
                                 true,
                                 [
                                     'title' => __('Lock'),
-                                    'class' => 'main_menu_icon invert_filter',
+                                    'class' => 'invert_filter main_menu_icon',
                                 ]
                             ),
                         ],

@@ -401,7 +401,7 @@ $img = html_print_image(
     true,
     [
         'border' => 0,
-        'class'  => 'main_menu_icon',
+        'class'  => 'invert_filter main_menu_icon',
     ]
 );
 
@@ -444,7 +444,7 @@ foreach ($profiles as $profile) {
             true,
             [
                 'title' => __('Edit'),
-                'class' => 'main_menu_icon',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>';
         if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) users_is_admin() === true) {
@@ -457,7 +457,7 @@ foreach ($profiles as $profile) {
                         true,
                         [
                             'title' => __('Delete'),
-                            'class' => 'main_menu_icon',
+                            'class' => 'invert_filter main_menu_icon',
                         ]
                     ),
                 ],

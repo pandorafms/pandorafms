@@ -188,7 +188,7 @@ if (empty($result) === false) {
                 true,
                 [
                     'title' => __('Edit'),
-                    'class' => 'main_menu_icon',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>&nbsp;&nbsp;';
             $data[1] .= '<a  href="index.php?sec=advanced&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
@@ -196,7 +196,7 @@ if (empty($result) === false) {
                 true,
                 [
                     'title' => __('Delete'),
-                    'class' => 'main_menu_icon',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
         } else {
@@ -217,7 +217,7 @@ if (empty($result) === false) {
                             true,
                             [
                                 'title' => __('Edit'),
-                                'class' => 'main_menu_icon',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],
@@ -233,7 +233,7 @@ if (empty($result) === false) {
                             true,
                             [
                                 'title' => __('Delete'),
-                                'class' => 'main_menu_icon',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],

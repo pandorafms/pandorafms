@@ -301,7 +301,7 @@ foreach ($groups as $group) {
             [
                 'onClick' => 'if(confirm(\"'.__('Are you sure?').'\")) return true; else return false;',
                 'href'    => 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg'].'&offset=0',
-                'content' => html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon']),
+                'content' => html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']),
             ],
             true
         );

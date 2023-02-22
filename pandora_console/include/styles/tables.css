@@ -190,14 +190,8 @@
   /*margin-left: 0.5em;*/
 }
 
-.info_table > tbody > tr:last-child {
-  /*border-bottom: 1px solid #e2e2e2;*/
-  border-top: 0;
-  /*border-bottom: 1px solid #c0ccdc;*/
-  /*
-  border-left: 1px solid #c0ccdc;
-  border-right: 1px solid #c0ccdc;
-    */
+.info_table > tbody > tr:last-child > td {
+  border-bottom: 0;
 }
 .info_table > tbody > tr > th,
 .info_table > thead > tr > th,

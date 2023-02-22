@@ -363,7 +363,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 'images/send_feedback@header.svg',
                 true,
                 [
-                    'class' => 'main_menu_icon',
+                    'class' => 'main_menu_icon invert_filter',
                     'title' => __('Feedback'),
                     'id'    => 'feedback-header',
                     'alt'   => __('Feedback'),
@@ -417,7 +417,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             true,
             [
                 'title' => __('Edit my user'),
-                'class' => 'main_menu_icon bot',
+                'class' => 'main_menu_icon bot invert_filter',
                 'alt'   => 'user',
             ]
         );

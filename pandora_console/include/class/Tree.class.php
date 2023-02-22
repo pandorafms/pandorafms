@@ -668,8 +668,8 @@ class Tree
             }
         }
 
-        $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true);
-
+        $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true, ['is_tree_view' => true]);
+        hd($module['statusImageHTML'], true);
         // HTML of the server type image.
         $module['serverTypeHTML'] = ui_print_servertype_icon((int) $module['server_type']);
 
@@ -904,7 +904,7 @@ class Tree
 
         // Quiet image
         if (isset($agent['quiet']) && $agent['quiet']) {
-               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
+               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['is_tree_view' => 'yes', 'class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
         }
 
         // Children

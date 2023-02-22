@@ -1100,7 +1100,7 @@ $class = 'databox filters';
                         false,
                         false,
                         '',
-                        'fullwidth'
+                        ''
                     );
                 } else {
                     html_print_input_text(
@@ -1113,7 +1113,7 @@ $class = 'databox filters';
                         false,
                         false,
                         '',
-                        'fullwidth'
+                        ''
                     );
                 }
                 ?>
@@ -1160,7 +1160,7 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Description'); ?></td>
             <td  >
                 <?php
-                echo html_print_textarea('description', 3, 25, $description);
+                echo html_print_textarea('description', 2, 80, $description, 'style="padding-right: 0px !important;"');
                 ?>
             </td>
         </tr>
@@ -1276,13 +1276,13 @@ $class = 'databox filters';
                     'label',
                     $label,
                     '',
-                    50,
+                    80,
                     255,
                     true,
                     false,
                     false,
                     '',
-                    'fullwidth'
+                    ''
                 );
                 ?>
             </td>
@@ -3920,20 +3920,24 @@ print_SLA_list('100%', $action, $idItem);
 print_General_list('100%', $action, $idItem, $type);
 echo '<div class="action-buttons w100p" >';
 if ($action == 'new') {
-    html_print_submit_button(
+    $actionButtons = html_print_submit_button(
         __('Create item'),
         'create_item',
         false,
-        'class="sub wand"'
+        ['icon' => 'next'],
+        true
     );
 } else {
-    html_print_submit_button(
+    $actionButtons = html_print_submit_button(
         __('Update item'),
         'edit_item',
         false,
-        'class="sub upd"'
+        ['icon' => 'next'],
+        true
     );
 }
+
+html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 
 echo '</div>';
 echo '</form>';
@@ -3980,7 +3984,7 @@ function print_SLA_list($width, $action, $idItem=null)
         $idItem
     );
     ?>
-    <table class="databox data" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
+    <table class="info_table" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
         <thead>
             <tr>
                 <th class="header sla_list_agent_col" scope="col">
@@ -4496,7 +4500,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 
     include_once $config['homedir'].'/include/functions_html.php';
     ?>
-    <table class="databox data" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
+    <table class="info_table" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
         <thead>
             <tr>
                 <?php
@@ -7397,5 +7401,9 @@ function dialog_message(message_id) {
       }
     });
 }
+
+$(document).ready(function () {
+    $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
+});
 
 </script>

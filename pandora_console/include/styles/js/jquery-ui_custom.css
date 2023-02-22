@@ -144,6 +144,7 @@
 .ui_tpicker_second,
 .ui-slider-handle {
   border: 1px solid #aaaaaa;
+  background-color: #dadada !important;
 }
 .ui-timepicker-div dd {
   margin: 0px 15px 0px 15px;
@@ -217,6 +218,23 @@ a.ui-button:active,
   height: 1px;
   width: 50%;
   border-bottom: 4px solid #82b92e;
+}
+
+.ui-priority-secondary:hover {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  width: 100%;
+  border-bottom: 5px solid #82b92e;
+}
+
+.ui-priority-primary:hover {
+  content: "";
+  position: absolute;
+  right: 5px;
+  bottom: -5px;
+  width: 100%;
+  border-bottom: 5px solid #82b92e;
 }
 
 .ui-state-active,

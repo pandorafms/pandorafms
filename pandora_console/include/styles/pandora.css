@@ -11268,3 +11268,13 @@ form#satellite_conf_edit > fieldset.full-column {
   background-size: 24px;
   background-image: url("../../images/enable.svg");
 }
+
+.orientation-report {
+  margin-right: 10px;
+}
+
+#textarea_header_tbl,
+#textarea_firstpage_tbl,
+#textarea_footer_tbl {
+  width: 80% !important;
+}

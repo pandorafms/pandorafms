@@ -6648,7 +6648,7 @@ function html_print_extended_select_for_downtime_cron(
  *     - `wrapper`: string. Must be a valid tag.
  *     - `wrapper_attributes`: string. Valid attributes for a wrapper.
  *
- * @return array.
+ * @return array
  */
 function html_print_subtitle_table(string $caption, array $options=[])
 {

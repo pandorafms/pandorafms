@@ -521,7 +521,7 @@ if (is_ajax() === true) {
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
 
-                        $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
+                        $tmp->ack_utimestamp_raw = $tmp->ack_utimestamp;
 
                         $tmp->ack_utimestamp = ui_print_timestamp(
                             (empty($tmp->ack_utimestamp) === true) ? 0 : $tmp->ack_utimestamp,

@@ -260,7 +260,7 @@ foreach ($groups as $group_key => $group_val) {
 $groups = component_groups_get_groups_tree_recursive($groups_clean, 0, 0);
 
 $table = new stdClass();
-$table->class = 'info_table m2020';
+$table->class = 'info_table';
 $table->head = [];
 $table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
 $table->head[0] = __('Name');

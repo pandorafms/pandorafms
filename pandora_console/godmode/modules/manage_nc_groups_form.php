@@ -55,7 +55,7 @@ if ($id) {
 }
 
 $table = new stdClass();
-$table->class = 'databox m2020';
+$table->class = 'databox';
 
 if (is_metaconsole() === true) {
     $table->class = 'databox data';

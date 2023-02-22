@@ -437,7 +437,7 @@ function resource_exportation_extension_main()
     );
 
     $table = new stdClass();
-    $table->class = 'databox m2020';
+    $table->class = 'databox';
     $table->id = 'resource_exportation_table';
     $table->style = [];
     $table->style[0] = 'width: 0';

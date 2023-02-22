@@ -60,11 +60,7 @@ if (is_management_allowed() === false) {
 }
 
 $table = new stdClass();
-
-// $table->width = '100%';
-// $table->styleTable = 'margin: 10px 10px 0';
-$table->class = 'info_table m2020';
-
+$table->class = 'info_table';
 $table->head[0] = __('ID');
 $table->head[1] = __('Icon');
 $table->head[2] = __('Name');

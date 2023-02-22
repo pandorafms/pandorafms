@@ -156,7 +156,7 @@ $iterator = 0;
 
 if (empty($result) === false) {
     $table = new stdClass();
-    $table->class = 'info_table m2020';
+    $table->class = 'info_table';
 
     $table->data = [];
     $table->head = [];

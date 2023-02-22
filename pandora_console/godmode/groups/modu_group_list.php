@@ -253,7 +253,7 @@ $sql = 'SELECT *
 $groups = db_get_all_rows_sql($sql);
 
 $table = new stdClass();
-$table->class = 'info_table m2020';
+$table->class = 'info_table';
 
 if (empty($groups) === false) {
     $table->head = [];

@@ -146,7 +146,7 @@ $fields = db_get_all_rows_filter(
 );
 
 $table = new stdClass();
-$table->class = 'info_table m2020';
+$table->class = 'info_table';
 if ($fields) {
     $table->head = [];
     $table->head[0] = __('ID');

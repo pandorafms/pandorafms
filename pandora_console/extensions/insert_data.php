@@ -186,7 +186,7 @@ function mainInsertData()
     }
 
     $table = new stdClass();
-    $table->class = 'databox m2020';
+    $table->class = 'databox';
     $table->style = [];
     $table->cellstyle[0][0] = 'width: 0';
     $table->cellstyle[0][1] = 'width: 0';

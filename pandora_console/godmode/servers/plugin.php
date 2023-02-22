@@ -957,7 +957,7 @@ if (empty($create) === false || empty($view) === false) {
     if ($rows !== false) {
         $pluginTable = new stdClass();
         $pluginTable->id = 'plugin_table';
-        $pluginTable->class = (is_metaconsole() === true) ? 'databox data' : 'info_table m2020';
+        $pluginTable->class = (is_metaconsole() === true) ? 'databox data' : 'info_table';
 
         $pluginTable->head = [];
         $pluginTable->head[0] = __('Name');

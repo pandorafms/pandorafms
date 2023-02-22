@@ -58,31 +58,32 @@
 }
 
 @font-face {
-  font-family: "lato";
+  font-family: "lato-light";
   src: url("../fonts/Lato-Light.woff") format("woff");
   font-weight: 300;
 }
 
 @font-face {
-  font-family: "lato";
+  font-family: "lato-thin";
   src: url("../fonts/Lato-Thin.woff") format("woff");
   font-weight: 100;
 }
 
 @font-face {
-  font-family: "lato";
+  font-family: "lato-bold";
   src: url("../fonts/Lato-Bold.woff") format("woff");
   font-weight: 700;
 }
 
 @font-face {
-  font-family: "lato";
+  font-family: "lato-bolder";
   src: url("../fonts/Lato-Black.woff") format("woff");
   font-weight: 900;
 }
 
+/*
 @font-face {
-  font-family: "lato";
+  font-family: "lato-italic";
   src: url("../fonts/Lato-Italic.woff") format("woff");
   font-weight: 400;
   font-style: italic;
@@ -115,6 +116,7 @@
   font-weight: 900;
   font-style: italic;
 }
+*/
 
 @font-face {
   font-family: "source-code";
@@ -272,7 +274,7 @@ ul {
 
 fieldset {
   background-color: #fff;
-  border: 1px solid #e2e2e2;
+  border: 1px solid #e5e9ed;
   padding: 0.5em;
   margin-bottom: 20px;
   position: relative;
@@ -282,10 +284,7 @@ fieldset {
 fieldset legend {
   font-size: 1.1em;
   font-weight: bold;
-  line-height: 20px;
-  color: #3f3f3f;
-  display: flex;
-  align-items: center;
+  padding: 0px 10px 0px 10px;
 }
 
 td input[type="checkbox"] {
@@ -891,10 +890,6 @@ select:-internal-list-box {
   display: flex;
 }
 
-.padding-0 {
-  padding: 0 !important;
-}
-
 .padding-2 {
   padding: 2em;
 }
@@ -1071,15 +1066,11 @@ select:-internal-list-box {
 }
 
 div#page {
-  background: #fbfbfb;
-  background-image: none;
-  /* clear: both; */
   width: auto;
-  /* padding-top: 5px; */
-  /* padding-right: 3em; */
   display: flex;
   flex-direction: column;
   margin-top: 58px;
+  height: 100%;
 }
 
 body.pure {
@@ -1092,17 +1083,17 @@ div#container {
   text-align: left;
   background: #f6f7fb;
   width: 100%;
+  min-height: 100vh;
 }
 
 div#main {
   display: flex;
-  /* width: 100%; */
-  /* margin-left: 3em; */
   background-color: #f6f7fb;
   padding-bottom: 3em;
   position: relative;
-  /* margin-top: 8.8em; */
   flex-direction: column;
+  height: 100%;
+  margin: 25px;
 }
 
 textarea.conf_editor {
@@ -1751,15 +1742,13 @@ div.title_line {
   align-items: flex-end;
   justify-content: space-between;
   border-bottom: 1px solid #eee;
-  /* width: calc(100% + 3em); */
   width: -webkit-fill-available;
   width: -moz-available;
   padding-right: 0px;
-  /* margin-bottom: 20px; */
   height: 53px;
   box-sizing: border-box;
   background-color: #fff;
-  /* margin-left: -3em; */
+  margin: -25px -25px 25px -25px;
 }
 
 /* Breadcrum */
@@ -3789,7 +3778,6 @@ div.div_groups_status {
 }
 
 .databox.pies fieldset.tactical_set {
-  width: 100%;
   min-height: 285px;
 }
 
@@ -7037,8 +7025,9 @@ div.graph div.legend table {
 }
 
 .m2020 {
-  margin: 20px;
+  margin: 20px 0;
 }
+
 .snmp_view_div {
   float: left;
   padding-left: 30px;
@@ -10911,12 +10900,12 @@ pre.external_tools_output {
 .fixed_filter_bar {
   position: sticky;
   top: 114px;
-  /*margin-bottom: 10px;*/
   border: 1px solid #e5e9ed;
   background-color: #fff;
   z-index: 1;
   width: -webkit-fill-available;
   width: -moz-available;
+  margin: -25px -25px 25px -25px;
 }
 
 /*

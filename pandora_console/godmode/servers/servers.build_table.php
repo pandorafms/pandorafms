@@ -54,7 +54,7 @@ if ($servers === false) {
 }
 
 $table = new StdClass();
-$table->class = 'info_table m2020';
+$table->class = 'info_table';
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->size = [];

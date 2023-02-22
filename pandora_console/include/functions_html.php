@@ -3474,7 +3474,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     $classes = '';
     $fixedId = '';
     $iconStyle = '';
-    $spanStyle = 'margin-top: 4px;';
+    // $spanStyle = 'margin-top: 4px;';
+    $spanStyle = '';
     if (empty($name) === true) {
         $name = 'unnamed';
     }

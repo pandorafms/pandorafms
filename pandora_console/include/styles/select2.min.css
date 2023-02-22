@@ -71,7 +71,7 @@
   position: absolute;
   left: -100000px;
   width: 100%;
-  z-index: 999;
+  z-index: 1115;
 }
 .select2-results {
   display: block;
@@ -265,8 +265,8 @@
   cursor: default;
   float: left;
   margin-right: 3px;
-    margin-top: 2px;
-    height: 17px;
+  margin-top: 2px;
+  height: 17px;
   padding: 0 5px;
 }
 .select2-container--default

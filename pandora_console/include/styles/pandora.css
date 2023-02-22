@@ -10591,7 +10591,6 @@ tr.bring_next_field {
   vertical-align: middle;
   text-align: left;
   min-width: 150px !important;
-  z-index: 1115;
 }
 
 .select2-container .select2-selection--single,

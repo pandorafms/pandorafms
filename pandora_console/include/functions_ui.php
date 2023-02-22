@@ -343,7 +343,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
             [
                 'href'    => 'javascript: close_info_box(\''.$id.'\')',
                 'content' => html_print_image(
-                    'images/svg/fail.svg',
+                    'images/close@svg.svg',
                     true,
                     false,
                     false,

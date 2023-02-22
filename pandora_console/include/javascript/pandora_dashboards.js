@@ -412,7 +412,6 @@ function initialiceLayout(data) {
           widgetId: widgetId
         },
         width: size.width,
-        maxHeight: size.height,
         minHeight: size.height
       },
       onsubmit: {

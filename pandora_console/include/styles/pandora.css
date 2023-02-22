@@ -6503,7 +6503,7 @@ form#modal_form_feedback label {
   font-size: 10pt;
 }
 
-form#modal_form_feedback input[type="email"] {
+/*form#modal_form_feedback input[type="email"] {
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -6511,7 +6511,7 @@ form#modal_form_feedback input[type="email"] {
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
   margin-bottom: 4px;
-}
+}*/
 
 form#modal_form_feedback ul.wizard li {
   padding-bottom: 10px;
@@ -10591,7 +10591,6 @@ tr.bring_next_field {
   vertical-align: middle;
   text-align: left;
   min-width: 150px !important;
-  z-index: 60;
 }
 
 .select2-container .select2-selection--single,
@@ -11277,4 +11276,8 @@ form#satellite_conf_edit > fieldset.full-column {
 #textarea_firstpage_tbl,
 #textarea_footer_tbl {
   width: 80% !important;
+}
+
+div[role="dialog"] {
+  z-index: 1115;
 }

@@ -122,8 +122,6 @@ if ($fields_selected[0] != '') {
     }
 }
 
-echo '<h3>'.__('Show monitor detail fields').'</h3>';
-
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
@@ -161,6 +159,12 @@ foreach ($fields_available as $key => $available) {
     }
 }
 
+// General title.
+$generalTitleContent = [];
+$generalTitleContent[] = html_print_div([ 'style' => 'width: 10px; flex: 0 0 auto; margin-right: 5px;}', 'class' => 'section_table_title_line' ], true);
+$generalTitleContent[] = html_print_div([ 'class' => 'section_table_title', 'content' => __('Show monitor detail fields')], true);
+$titledata[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $generalTitleContent) ], true);
+$table->data['general_title'] = $titledata;
 $table->data[0][0] = '<b>'.__('Fields available').'</b>';
 $table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
@@ -202,19 +206,18 @@ $table->data[1][2] = html_print_select(
 echo '<form id="custom_status_monitor" method="post" action="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);
 
-html_print_div(
-    [
-        'class'   => 'action-buttons w100p',
-        'content' => html_print_submit_button(
-            __('Update'),
-            'update_button',
-            false,
-            [ 'icon' => 'update' ],
-            true
-        ),
-    ]
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Update'),
+        'update_button',
+        false,
+        [ 'icon' => 'update' ],
+        true
+    )
 );
+
 echo '</form>';
+
 ?>
 
 <script type="text/javascript">

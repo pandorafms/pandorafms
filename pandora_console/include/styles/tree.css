@@ -272,7 +272,7 @@ div.tree-node span {
 
 .tree-node > .node-content > .module-action-buttons {
   float: right;
-  min-width: 105px;
+  min-width: 120px;
   position: relative;
   /* top: 5px; */
 }
@@ -356,8 +356,15 @@ div#tree-controller-recipient {
 
 .node-content .module-button {
   padding: 6px;
+  margin-top: 2px;
 }
 
+.node-content .module-button.module-alerts {
+  margin: 6px;
+  width: 16px;
+  padding: 0;
+  float: right;
+}
 .node-content .module-button:hover {
   /* width: 20px; */
   background-color: #fff;

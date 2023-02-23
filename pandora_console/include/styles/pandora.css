@@ -9858,17 +9858,21 @@ div#err_msg_centralised {
 .div-col {
   width: 33%;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding-top: 15px;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .div-span {
-  width: 25%;
+  width: 100%;
+  color: #161628;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: left;
+  margin-bottom: 10px;
 }
 
 .div-input {
-  width: 75%;
+  width: 90%;
 }
 
 .renew_api_token_link {
@@ -11295,4 +11299,16 @@ div[role="dialog"] {
 button[name="go"] {
   margin-left: 10px;
   display: inline !important;
+}
+
+.module_background_state {
+  mask: url(../../images/modules@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/modules@svg.svg) no-repeat center / contain;
+  margin: 0 auto;
+}
+
+.alert_background_state {
+  mask: url(../../images/alert@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/alert@svg.svg) no-repeat center / contain;
+  margin: 0 auto;
 }

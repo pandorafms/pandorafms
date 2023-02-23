@@ -772,10 +772,19 @@ class Tree
         if ((bool) $module['alerts']) {
             // Module has alerts triggered.
             if ($module_alert_triggered === true) {
-                $module['alertsImageHTML'] = html_print_image('images/bell_orange.png', true, ['title' => __('Module alerts'), 'style' => 'filter: initial']);
+                $colorAlertButton = COL_ALERTFIRED;
             } else {
-                $module['alertsImageHTML'] = html_print_image('images/bell_green.png', true, ['title' => __('Module alerts'), 'style' => 'filter: initial']);
+                $colorAlertButton = COL_NORMAL;
             }
+
+            $module['alertsImageHTML'] = html_print_div(
+                [
+                    'title' => __('Module alerts'),
+                    'class' => 'alert_background_state main_menu_icon module-button',
+                    'style' => 'background-color: '.$colorAlertButton,
+                ],
+                true
+            );
         }
     }
 

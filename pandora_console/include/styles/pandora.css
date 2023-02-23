@@ -10826,6 +10826,7 @@ tr.bring_next_field {
   left: 250px;
   display: flex;
   align-items: center;
+  margin-left: 20px;
 }
 
 .action_buttons_right_content div {

@@ -281,7 +281,7 @@ switch ($action) {
             $server_name = $item['server_name'];
 
             // Metaconsole db connection.
-            if ($meta && empty($server_name) === false) {
+            if ($meta && empty($server_name) === false && $server_name !== 'all') {
                 $connection = metaconsole_get_connection($server_name);
                 $server_id = $connection['id'];
                 if (metaconsole_load_external_db($connection) != NOERR) {

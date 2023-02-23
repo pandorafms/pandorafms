@@ -199,22 +199,18 @@ if (is_metaconsole() === false) {
 // --------------------- form filter -----------------------------------
 $table = new StdClass();
 $table->width = '100%';
-$table->class = 'filter_table';
-$table->cellstyle['captions_agent_row'][0] = 'width: 0';
-$table->cellstyle['captions_agent_row'][1] = 'width: 200px';
-$table->cellstyle['captions_agent_row'][2] = 'width: 200px';
+$table->class = 'filter-table-adv';
 $table->data = [];
 $table->rowspan = [];
 $table->size = [];
 
-if (is_metaconsole() === true) {
-    $table->width = '96%';
-    $table->cellpadding = '0';
-    $table->cellspacing = '0';
-    $table->class = 'databox_filters';
-    $table->styleTable = 'padding:0px;margin-bottom:0px; ';
-}
-
+// if (is_metaconsole() === true) {
+// $table->width = '96%';
+// $table->cellpadding = '0';
+// $table->cellspacing = '0';
+// $table->class = 'databox_filters';
+// $table->styleTable = 'padding:0px;margin-bottom:0px; ';
+// }
 // Agent filter.
 $agent_status_arr = [];
 $agent_status_arr[AGENT_STATUS_ALL] = __('All');
@@ -225,22 +221,76 @@ $agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
 $agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
-$table->data['captions_group_row'][] = __('Search group');
-$table->data['inputs_group_row'][] = html_print_input_text('search_group', $search_group, '', 25, 30, true);
+$table->data['group_row'][] = html_print_label_input_block(
+    __('Search group'),
+    html_print_input_text('search_group', $search_group, '', 25, 30, true)
+);
 
 if (is_metaconsole() === true) {
-    $table->data['captions_group_row'][] = __('Show not init modules');
-    $table->data['inputs_group_row'][] = html_print_checkbox('show_not_init_modules', $show_not_init_modules, true, true);
+    $table->data['group_row'][] = html_print_label_input_block(
+        __('Show not init modules'),
+        html_print_checkbox(
+            'show_not_init_modules',
+            $show_not_init_modules,
+            true,
+            true
+        )
+    );
 }
 
-$table->data['captions_agent_row'][] = __('Search agent');
-$table->data['captions_agent_row'][] = __('Show not init agents');
-$table->data['captions_agent_row'][] = __('Show full hirearchy');
-$table->data['captions_agent_row'][] = __('Agent status');
-$table->data['inputs_agent_row'][] = html_print_input_text('search_agent', $search_agent, '', 25, 30, true);
-$table->data['inputs_agent_row'][] = html_print_checkbox_switch('show_not_init_agents', $show_not_init_agents, true, true);
-$table->data['inputs_agent_row'][] = html_print_checkbox_switch('serach_hirearchy', $serach_hirearchy, false, true);
-$table->data['inputs_agent_row'][] = html_print_select($agent_status_arr, 'status_agent', $status_agent, '', '', 0, true, false, true, '', false, 'width:10em').html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_modules, true);
+$table->data['agent_row'][] = html_print_label_input_block(
+    __('Search agent'),
+    html_print_input_text(
+        'search_agent',
+        $search_agent,
+        '',
+        25,
+        30,
+        true
+    )
+);
+
+$table->data['agent_row'][] = html_print_label_input_block(
+    __('Show not init agents'),
+    html_print_checkbox_switch(
+        'show_not_init_agents',
+        $show_not_init_agents,
+        true,
+        true
+    )
+);
+
+$table->data['agent_row'][] = html_print_label_input_block(
+    __('Show full hirearchy'),
+    html_print_checkbox_switch(
+        'serach_hirearchy',
+        $serach_hirearchy,
+        false,
+        true
+    )
+);
+
+$table->data['agent_row'][] = html_print_label_input_block(
+    __('Agent status'),
+    html_print_select(
+        $agent_status_arr,
+        'status_agent',
+        $status_agent,
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width:100%'
+    ).html_print_input_hidden(
+        'show_not_init_modules_hidden',
+        $show_not_init_modules,
+        true
+    )
+);
 
 // Button.
 if (is_metaconsole() === true) {
@@ -259,17 +309,38 @@ if (is_metaconsole() === false) {
     $module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
     $module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 
-    $table->data['captions_last_row'][] = __('Search module');
-    $table->data['inputs_last_row'][] = html_print_input_text('search_module', $search_module, '', 25, 30, true);
+    $table->data['last_row'][] = html_print_label_input_block(
+        __('Search module'),
+        html_print_input_text('search_module', $search_module, '', 25, 30, true)
+    );
 
-    $table->data['captions_last_row'][] = __('Show not init modules');
-    $table->data['inputs_last_row'][] = html_print_checkbox_switch('show_not_init_modules', $show_not_init_modules, true, true);
+    $table->data['last_row'][] = html_print_label_input_block(
+        __('Show not init modules'),
+        html_print_checkbox_switch('show_not_init_modules', $show_not_init_modules, true, true)
+    );
 
-    $table->data['captions_last_row'][] = __('Module status');
-    $table->data['inputs_last_row'][] = html_print_select($module_status_arr, 'status_module', $status_module, '', '', 0, true);
+    $table->data['last_row'][] = html_print_label_input_block(
+        __('Module status'),
+        html_print_select(
+            $module_status_arr,
+            'status_module',
+            $status_module,
+            '',
+            '',
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width:100%'
+        )
+    );
 }
 
-$table->data['inputs_last_row'][] = html_print_div(
+$form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
+$form_html .= html_print_table($table, true);
+$form_html .= html_print_div(
     [
         'class'   => 'action-buttons',
         'content' => html_print_submit_button(
@@ -278,17 +349,15 @@ $table->data['inputs_last_row'][] = html_print_div(
             false,
             [
                 'icon' => 'search',
-                'mode' => 'secondary mini',
+                'mode' => 'mini',
             ],
             true
         ),
     ],
     true
 );
-
-$form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
-$form_html .= html_print_table($table, true);
 $form_html .= '</form>';
+
 if (is_metaconsole() === true) {
     echo "<div class='view_tree'>";
     ui_toggle($form_html, '<span class="subsection_header_title">'.__('Show Options').'</span>');

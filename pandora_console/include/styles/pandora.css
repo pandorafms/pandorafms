@@ -11291,3 +11291,8 @@ form#satellite_conf_edit > fieldset.full-column {
 div[role="dialog"] {
   z-index: 1115;
 }
+
+button[name="go"] {
+  margin-left: 10px;
+  display: inline !important;
+}

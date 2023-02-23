@@ -752,7 +752,7 @@ function filemanager_file_explorer(
                 && ($readOnly === false)
             ) {
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
-                $data[4] .= '<input type="image" class="invert_filter" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[4] .= '<input type="image" style="margin-top: 2px;height:21px" class="invert_filter" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
                 $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['server_unique_identifier']), true);
                 $data[4] .= html_print_input_hidden('delete_file', 1, true);
@@ -857,7 +857,7 @@ function filemanager_file_explorer(
             $createFolderElements = $tabs_dialog;
             $createFolderElements .= sprintf('<form method="POST" action="%s">', $url);
             $createFolderElements .= html_print_input_text('dirname', '', '', 30, 255, true);
-            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true);
+            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, 'class="submitButton"', true);
             $createFolderElements .= html_print_input_hidden('directory', $relative_directory, true);
             $createFolderElements .= html_print_input_hidden('create_dir', 1, true);
             $createFolderElements .= html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true);
@@ -897,7 +897,7 @@ function filemanager_file_explorer(
                 $uploadFileElements .= html_print_input_hidden('upload_file', 1, true);
             }
 
-            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true);
+            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, 'class="mrgn_lft_10px submitButton" style="display: inline;"', true);
             $uploadFileElements .= html_print_input_hidden('real_directory', $real_directory, true);
             $uploadFileElements .= html_print_input_hidden('directory', $relative_directory, true);
             $uploadFileElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
@@ -918,7 +918,7 @@ function filemanager_file_explorer(
                 $createTextElements = $tabs_dialog;
                 $createTextElements .= '<form method="post" action="'.$url.'">';
                 $createTextElements .= html_print_input_text('name_file', '', '', 30, 50, true);
-                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true);
+                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, 'class="submitButton"', true);
                 $createTextElements .= html_print_input_hidden('real_directory', $real_directory, true);
                 $createTextElements .= html_print_input_hidden('directory', $relative_directory, true);
                 $createTextElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);

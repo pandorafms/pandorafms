@@ -59,6 +59,11 @@ function snmpBrowse() {
       $("#spinner").css("display", "none");
 
       // Load the SNMP tree
+      $("#snmp_tree_container").show();
+      $("#search_options").show();
+      $("#button-srcbutton")
+        .find("div")
+        .removeClass("rotation");
       $("#snmp_browser").html(data);
 
       // Manage click and select events.
@@ -84,7 +89,11 @@ function snmpBrowse() {
           errorThrown +
           "</p>";
       }
-
+      $("#snmp_tree_container").show();
+      $("#search_options").show();
+      $("#button-srcbutton")
+        .find("div")
+        .removeClass("rotation");
       $("#snmp_browser").html(htmlError);
     }
   });

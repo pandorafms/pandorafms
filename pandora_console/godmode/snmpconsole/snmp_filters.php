@@ -333,7 +333,20 @@ if ($edit_filter > -2) {
 
     echo '<div class="right w100p">';
     echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';
-    html_print_submit_button(__('Create'), 'submit_button', false, 'class="sub next"');
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        [
+            'type'  => 'data_table',
+            'class' => 'fixed_action_buttons',
+        ]
+    );
+
     echo '</form></div>';
 }
 ?>

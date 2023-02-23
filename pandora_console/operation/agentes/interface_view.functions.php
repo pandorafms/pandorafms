@@ -172,7 +172,12 @@ function print_filters($sec)
         $filters,
         __('Interface filter'),
         __('Interface filter'),
-        'ui_toggle_if_filter'
+        'ui_toggle_if_filter',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph fixed_filter_bar'
     );
 
     unset($table);

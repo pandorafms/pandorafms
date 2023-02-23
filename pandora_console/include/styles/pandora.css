@@ -10909,6 +10909,11 @@ pre.external_tools_output {
   margin: -25px -25px 25px -25px;
 }
 
+.white_table_graph.fixed_filter_bar {
+  border-radius: 0;
+  top: 110px;
+}
+
 /*
 .fixed_filter_bar tr {
   display: flex;
@@ -10929,10 +10934,7 @@ pre.external_tools_output {
   font-size: 10pt;
 }
 
-.fixed_filter_bar input,
 .filter_table input,
-.fixed_filter_bar .select2-container .select2-selection--single,
-.filter_table .select2-container .select2-selection--single,
 .table_modal_alternate input,
 table.table_modal_alternate
   span.select2

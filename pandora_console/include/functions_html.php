@@ -6732,3 +6732,18 @@ function html_print_menu_button(array $options, bool $return=false)
         $return
     );
 }
+
+
+function html_print_label_input_block(?string $label, $calbackFn):string
+{
+    $output = '<div>';
+    if ($label !== null) {
+        $output .= '<label>'.$label.'</label>';
+    }
+
+    $output .= $calbackFn;
+
+    $output .= '</div>';
+
+    return $output;
+}

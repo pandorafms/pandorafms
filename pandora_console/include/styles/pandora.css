@@ -10295,6 +10295,15 @@ button.disabled_action_button {
   visibility: hidden;
 }
 
+button div.save {
+  mask: url(../../images/save_mc.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/save_mc.png) no-repeat center / contain;
+}
+
+button div.load {
+  mask: url(../../images/logs@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/logs@svg.svg) no-repeat center / contain;
+}
 button div.camera {
   mask: url(../../images/picture.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/picture.svg) no-repeat center / contain;

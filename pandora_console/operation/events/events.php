@@ -1069,7 +1069,7 @@ if (is_ajax() === true) {
  */
 
 $load_filter_id = (int) get_parameter('filter_id', 0);
-
+$fav_menu = [];
 if ($load_filter_id === 0) {
     // Load user filter.
     $loaded_filter = db_get_row_sql(
@@ -1091,6 +1091,14 @@ if ($load_filter_id === 0) {
         'id_filter',
         $load_filter_id
     );
+
+    // Fav menu
+    $fav_menu = [
+        'id_element' => $load_filter_id,
+        'url'        => 'operation/events/events&pure=&load_filter=1&filter_id='.$load_filter_id,
+        'label'      => $loaded_filter['id_name'],
+        'section'    => 'Events',
+    ];
 }
 
 // Do not load the user filter if we come from the 24h event graph.
@@ -1581,7 +1589,8 @@ if ($pure) {
                     'link'  => '',
                     'label' => __('Events'),
                 ],
-            ]
+            ],
+            $fav_menu
         );
     } else {
         unset($onheader['rss']);

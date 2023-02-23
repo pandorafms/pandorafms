@@ -461,6 +461,44 @@ if ($access_console_node === true) {
     }
 }
 
+$favorite_menu = db_get_all_rows_sql(
+    sprintf(
+        'SELECT id_element, url, label, section
+        FROM tfavmenu_user
+        WHERE id_user = "%s"
+        ORDER BY section DESC',
+        $config['id_user']
+    )
+);
+// Favorite
+if ($favorite_menu !== false) {
+    $menu_operation['favorite']['text'] = __('Favorite');
+    $menu_operation['favorite']['id'] = 'fav-menu';
+
+    $section = '';
+    $sub = [];
+    $sub2 = [];
+    foreach ($favorite_menu as $key => $row) {
+        if ($row['section'] !== $section) {
+            $section = $row['section'];
+            $sub2 = [];
+        }
+
+        $sub[$section]['text'] = __($section);
+        $sub[$section]['type'] = 'direct';
+        $sub[$section]['subtype'] = 'nolink';
+        $sub[$section]['id'] = $row['section'];
+
+        $sub2[$row['url']]['text'] = io_safe_output($row['label']);
+        $sub[$section]['sub2'] = $sub2;
+    }
+
+    $menu_operation['favorite']['sub'] = $sub;
+}
+
+
+
+
 // Workspace.
 $menu_operation['workspace']['text'] = __('Workspace');
 $menu_operation['workspace']['sec2'] = 'operation/users/user_edit';

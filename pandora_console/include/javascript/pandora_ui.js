@@ -834,3 +834,28 @@ function unblockSubmit(button) {
   expireCookie("downloadReady");
   attempts = 30;
 }
+
+function favMenuAction(e) {
+  var data = JSON.parse(atob(e.value));
+  $.ajax({
+    method: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: {
+      page: "include/ajax/fav_menu.ajax",
+      id_element: data["id_element"],
+      url: data["url"],
+      label: data["label"],
+      section: data["section"]
+    },
+    success: function(res) {
+      if (res.success) {
+        if (res.action === "create") {
+          $("#image-fav-menu-action1").attr("src", "images/star.png");
+        } else {
+          $("#image-fav-menu-action1").attr("src", "images/star_dark.png");
+        }
+      }
+    }
+  });
+}

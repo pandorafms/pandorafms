@@ -10613,7 +10613,7 @@ tr.bring_next_field {
 }
 
 .select2-container .select2-selection--multiple {
-  height: 38px !important;
+  height: 100% !important;
   padding-left: 0px !important;
 }
 

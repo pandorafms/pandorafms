@@ -257,6 +257,7 @@ function initialiceLayout(data) {
               "<h3 style='text-align: center;padding-top: 20px;'>All changes made to this widget will be lost</h3>",
             cancel: "Cancel",
             ok: "Ok",
+            size: 400,
             onAccept: function() {
               // Continue execution.
               var nodo = event.target.offsetParent;

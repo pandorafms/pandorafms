@@ -257,17 +257,21 @@ $table->data['group'][0] = html_print_label_input_block(
     )
 );
 
-$table->data['group'][1] = html_print_label_input_block(
+$table->data['group'][0] .= html_print_label_input_block(
     __('Recursion'),
     html_print_checkbox_switch(
         'recursion',
         1,
         $recursion,
         true
-    )
+    ),
+    [
+        'div_class'   => 'add-input-reverse',
+        'label_class' => 'label-thin',
+    ]
 );
 
-$table->data['group'][2] = html_print_label_input_block(
+$table->data['group'][1] = html_print_label_input_block(
     __('Status'),
     html_print_select(
         $fields,
@@ -314,12 +318,12 @@ $searchForm .= html_print_div(
     [
         'class'   => 'action-buttons',
         'content' => html_print_submit_button(
-            __('Search'),
+            __('Filter'),
             'srcbutton',
             false,
             [
                 'icon' => 'search',
-                'mode' => 'secondary mini',
+                'mode' => 'mini',
             ],
             true
         ),

@@ -521,8 +521,14 @@ a.pandora_pagination.current:hover {
   margin: 0 1em;
 }
 
+/*
 table.filter-table-adv {
   max-width: 1024px;
+}
+*/
+
+table.filter-table-adv td {
+  vertical-align: top;
 }
 
 table.filter-table-adv td > div {
@@ -538,6 +544,18 @@ table.filter-table-adv td > div label {
   line-height: 16px;
   text-align: left;
   margin-bottom: 10px;
+}
+
+table.filter-table-adv td > div.add-input-reverse {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 5px;
+}
+
+table.filter-table-adv td > div .label-thin {
+  color: #3f3f3f;
+  font-weight: 400;
 }
 
 /*

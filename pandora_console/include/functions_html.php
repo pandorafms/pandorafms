@@ -6734,11 +6734,27 @@ function html_print_menu_button(array $options, bool $return=false)
 }
 
 
-function html_print_label_input_block(?string $label, $calbackFn):string
-{
-    $output = '<div>';
+function html_print_label_input_block(
+    ?string $label,
+    $calbackFn,
+    ?array $options=[]
+):string {
+    $div_class = '';
+    $label_class = '';
+
+    if (empty($options) === false) {
+        if (isset($options['div_class']) === true) {
+            $div_class = $options['div_class'];
+        }
+
+        if (isset($options['label_class']) === true) {
+            $label_class = $options['label_class'];
+        }
+    }
+
+    $output = '<div class="'.$div_class.'">';
     if ($label !== null) {
-        $output .= '<label>'.$label.'</label>';
+        $output .= '<label class="'.$label_class.'">'.$label.'</label>';
     }
 
     $output .= $calbackFn;

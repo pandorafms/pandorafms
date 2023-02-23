@@ -11291,3 +11291,15 @@ form#satellite_conf_edit > fieldset.full-column {
 div[role="dialog"] {
   z-index: 1115;
 }
+
+.module_background_state {
+  mask: url(../../images/modules@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/modules@svg.svg) no-repeat center / contain;
+  margin: 0 auto;
+}
+
+.alert_background_state {
+  mask: url(../../images/alert@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/alert@svg.svg) no-repeat center / contain;
+  margin: 0 auto;
+}

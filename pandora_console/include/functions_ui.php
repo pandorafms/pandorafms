@@ -6612,6 +6612,10 @@ function ui_get_docs_logo()
 
     // Default logo to open version (enterprise_installed function only works in login status).
     if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php') || !isset($config['custom_docs_logo'])) {
+        if (is_metaconsole() === true) {
+            return '../../images/icono_docs.png';
+        }
+
         return 'images/icono_docs.png';
     }
 
@@ -6634,6 +6638,10 @@ function ui_get_support_logo()
 
     // Default logo to open version (enterprise_installed function only works in login status).
     if (!file_exists(ENTERPRISE_DIR.'/load_enterprise.php') || !isset($config['custom_support_logo'])) {
+        if (is_metaconsole() === true) {
+            return '../../images/icono_support.png';
+        }
+
         return 'images/icono_support.png';
     }
 

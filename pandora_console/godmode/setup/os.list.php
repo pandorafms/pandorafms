@@ -60,11 +60,7 @@ if (is_management_allowed() === false) {
 }
 
 $table = new stdClass();
-
-// $table->width = '100%';
-// $table->styleTable = 'margin: 10px 10px 0';
-$table->class = 'info_table m2020';
-
+$table->class = 'info_table';
 $table->head[0] = __('ID');
 $table->head[1] = __('Icon');
 $table->head[2] = __('Name');
@@ -104,7 +100,7 @@ $table->data = [];
 foreach ($osList as $os) {
     $data = [];
     $data[] = $os['id_os'];
-    $data[] = html_print_div(['class' => 'main_menu_icon', 'content' => ui_print_os_icon($os['id_os'], false, true)], true);
+    $data[] = html_print_div(['class' => 'invert_filter main_menu_icon', 'content' => ui_print_os_icon($os['id_os'], false, true)], true);
     if ($is_management_allowed === true) {
         if (is_metaconsole() === true) {
             $osNameUrl = 'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=edit&tab2=builder&id_os='.$os['id_os'];

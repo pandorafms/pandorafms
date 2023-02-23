@@ -1122,7 +1122,7 @@ function resource_registration_extension_main()
     );
 
     $table = new stdClass();
-    $table->class = 'databox m2020';
+    $table->class = 'databox';
     $table->id = 'resource_registration_table';
 
     $table->data = [];

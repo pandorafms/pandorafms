@@ -2070,7 +2070,7 @@ if (is_metaconsole() === false) {
                 json_profile.val(JSON.stringify(data));
 
                 profile_text = `<a href="index.php?sec2=godmode/users/configure_profile&id=${profile}">${profile_text}</a>`;
-                group_img = `<img id="img_group_${aux}" src="" data-title="${group_text}" data-use_title_for_force_title="1" class="bot forced_title" alt="${group_text}"/>`;
+                group_img = `<img id="img_group_${aux}" src="" data-title="${group_text}" data-use_title_for_force_title="1" class="invert_filter main_menu_icon bot forced_title" alt="${group_text}"/>`;
                 group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img}${group_text}</a>`;
 
                 $('#table_profiles tr:last').before(

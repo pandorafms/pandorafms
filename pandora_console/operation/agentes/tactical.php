@@ -46,6 +46,8 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
     return;
 }
 
+ui_require_css_file('tactical');
+
 $is_admin = check_acl($config['id_user'], 0, 'PM');
 $user_strict = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
@@ -258,13 +260,13 @@ if ($is_admin) {
     include $config['homedir'].'/godmode/servers/servers.build_table.php';
 }
 
-$out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td style="width:50%;">';
-$out .= '<fieldset class="padding-0 databox tactical_set" id="total_event_graph">';
+$out = '<table cellpadding=0 cellspacing=0 class="databox pies" width=100%><tr><td style="width:50%;">';
+$out .= '<fieldset class="databox tactical_set" id="total_event_graph">';
 $out .= '<legend>'.__('Event graph').'</legend>';
 $out .= html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']);
 $out .= '</fieldset>';
 $out .= '</td><td style="width:50%;">';
-$out .= '<fieldset class="padding-0 databox tactical_set" id="graphic_event_group">
+$out .= '<fieldset class="databox tactical_set" id="graphic_event_group">
         <legend>'.__('Event graph by agent').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_graphic_event_group']).'</fieldset>';
 $out .= '</td></tr></table>';
 

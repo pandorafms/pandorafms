@@ -260,7 +260,7 @@ foreach ($groups as $group_key => $group_val) {
 $groups = component_groups_get_groups_tree_recursive($groups_clean, 0, 0);
 
 $table = new stdClass();
-$table->class = 'info_table m2020';
+$table->class = 'info_table';
 $table->head = [];
 $table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
 $table->head[0] = __('Name');
@@ -301,7 +301,7 @@ foreach ($groups as $group) {
             [
                 'onClick' => 'if(confirm(\"'.__('Are you sure?').'\")) return true; else return false;',
                 'href'    => 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg'].'&offset=0',
-                'content' => html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon']),
+                'content' => html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']),
             ],
             true
         );

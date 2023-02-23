@@ -231,25 +231,79 @@ $searchForm = '';
 $searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
 
 $table = new stdClass();
-$table->style[0] = 'width: 15%';
-$table->style[2] = 'width: 15%';
-$table->class[0] = 'databox filters bolder';
+$table->width = '100%';
+$table->class = 'nueva-clase';
 
-$table->data['group'][0] = __('Group');
-$table->data['group'][1] = html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false);
+$table->data['group'][0] = '<div>';
+$table->data['group'][0] .= '<label>'.__('Group').'</label>';
+$table->data['group'][0] .= html_print_select_groups(
+    false,
+    $access,
+    true,
+    'group_id',
+    $group_id,
+    'this.form.submit()',
+    '',
+    '',
+    true,
+    false,
+    true,
+    '',
+    false
+);
+$table->data['group'][0] .= '</div>';
 
-$table->data['group'][2] = __('Recursion');
-$table->data['group'][3] = html_print_checkbox_switch('recursion', 1, $recursion, true);
+$table->data['group'][1] = '<div>';
+$table->data['group'][1] .= '<label>'.__('Recursion').'</label>';
+$table->data['group'][1] .= html_print_checkbox_switch(
+    'recursion',
+    1,
+    $recursion,
+    true
+);
+$table->data['group'][1] .= '</div>';
 
-$table->data['status'][0] = __('Status');
-$table->data['status'][1] = html_print_select($fields, 'status', $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, true, false, true, '', false, 'width: 90px;');
+$table->data['group'][2] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $fields,
+        'status',
+        $status,
+        'this.form.submit()',
+        __('All'),
+        AGENT_STATUS_ALL,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
+);
 
-$table->data['search_fields'][0] = __('Search');
-$table->data['search_fields'][1] = html_print_input_text('search', $search, '', 35, 255, true);
+$table->data['search_fields'][0] = html_print_label_input_block(
+    __('Search'),
+    html_print_input_text(
+        'search',
+        $search,
+        '',
+        35,
+        255,
+        true
+    )
+);
 
-$table->data['search_fields'][2] = __('Search in custom fields');
-$table->data['search_fields'][3] = html_print_input_text('search_custom', $search_custom, '', 35, 255, true);
-// $table->colspan['search_fields'][3] = '2';
+$table->data['search_fields'][1] = html_print_label_input_block(
+    __('Search in custom fields'),
+    html_print_input_text(
+        'search_custom',
+        $search_custom,
+        '',
+        35,
+        255,
+        true
+    )
+);
+
 $searchForm .= html_print_table($table, true);
 $searchForm .= html_print_div(
     [
@@ -267,13 +321,18 @@ $searchForm .= html_print_div(
     ],
     true
 );
-
 $searchForm .= '</form>';
 
 ui_toggle(
     $searchForm,
     '<span class="subsection_header_title">'.__('Filters').'</span>',
-    'filter_form'
+    'filter_form',
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
 );
 
 if (empty($search) === false) {
@@ -708,7 +767,6 @@ $tableAgents = new stdClass();
 $tableAgents->cellpadding = 0;
 $tableAgents->cellspacing = 0;
 $tableAgents->id = 'agent_list';
-$tableAgents->styleTable = 'margin: 0 10px';
 $tableAgents->class = 'info_table tactical_table';
 
 $tableAgents->head = [];
@@ -888,7 +946,7 @@ foreach ($agents as $agent) {
 
     $data[2] = html_print_div(
         [
-            'class'   => 'main_menu_icon',
+            'class'   => 'invert_filter main_menu_icon',
             'content' => ui_print_os_icon($agent['id_os'], false, true),
         ],
         true
@@ -903,7 +961,10 @@ foreach ($agents as $agent) {
         true,
         'groups_small',
         '',
-        false
+        false,
+        false,
+        false,
+        'invert_filter main_menu_icon'
     );
     $data[4] .= '</a>';
     $agent['not_init_count'] = $agent['notinit_count'];

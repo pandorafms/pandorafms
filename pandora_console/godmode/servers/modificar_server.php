@@ -84,7 +84,7 @@ if (isset($_GET['server']) === true) {
 
     $table->cellpadding = 4;
     $table->cellspacing = 4;
-    $table->class = 'databox m2020';
+    $table->class = 'databox';
     $table->id = 'server_update_form';
 
     $table->data[] = [

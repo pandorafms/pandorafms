@@ -77,7 +77,7 @@ if ($id_group) {
 }
 
 $table = new stdClass();
-$table->class = 'databox m2020';
+$table->class = 'databox';
 $table->style[0] = 'font-weight: bold';
 $table->data = [];
 $table->data[0][0] = __('Name');

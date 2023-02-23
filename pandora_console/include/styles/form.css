@@ -2,6 +2,12 @@
  * Discovery css global
  */
 
+*,
+::after,
+::before {
+  box-sizing: unset !important;
+}
+
 ul.bigbuttonlist {
   min-height: 200px;
 }

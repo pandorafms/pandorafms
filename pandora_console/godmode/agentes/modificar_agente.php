@@ -654,7 +654,7 @@ if ($agents !== false) {
 
     $tableAgents = new stdClass();
     $tableAgents->id = 'agent_list';
-    $tableAgents->class = 'info_table tactical_table m2020';
+    $tableAgents->class = 'info_table tactical_table';
     $tableAgents->head = [];
     $tableAgents->data = [];
     // Header.
@@ -837,7 +837,7 @@ if ($agents !== false) {
         // Operating System icon column.
         $osIconColumn = html_print_div(
             [
-                'class'   => 'main_menu_icon',
+                'class'   => 'main_menu_icon invert_filter',
                 'content' => ui_print_os_icon($agent['id_os'], false, true),
             ],
             true
@@ -856,7 +856,7 @@ if ($agents !== false) {
         // Group icon and name column.
         $agentGroupIconColumn = html_print_div(
             [
-                'class'   => 'main_menu_icon',
+                'class'   => 'main_menu_icon invert_filter',
                 'content' => ui_print_group_icon($agent['id_grupo'], true),
             ],
             true

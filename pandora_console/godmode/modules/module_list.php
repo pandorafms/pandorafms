@@ -89,7 +89,7 @@ if ($update_module === true) {
 
 $table = new stdClass();
 $table->id = 'module_type_list';
-$table->class = 'info_table m2020';
+$table->class = 'info_table';
 $table->size = [];
 $table->size[0] = '5%';
 $table->size[1] = '5%';

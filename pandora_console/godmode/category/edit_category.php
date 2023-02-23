@@ -175,7 +175,7 @@ echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/category/e
 
 $table = new stdClass();
 $table->id = 'edit_catagory_table';
-$table->class = 'databox m2020';
+$table->class = 'databox';
 
 $table->head = [];
 if (is_metaconsole() === true) {

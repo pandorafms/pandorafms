@@ -63,7 +63,7 @@ if ($id_field) {
 }
 
 $table = new stdClass();
-$table->class = 'databox m2020';
+$table->class = 'databox';
 $table->id = 'configure_field';
 
 echo "<div id='message_set_password'  title='".__('Agent Custom Fields Information')."' class='invisible'>";

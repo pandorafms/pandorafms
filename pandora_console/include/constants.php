@@ -864,3 +864,5 @@ define(
 
 // Pandora FMS Enterprise license.
 define('LICENSE_FILE', 'customer_key');
+// Pandora HA database list.
+define('PANDORA_HA_FILE', 'pandora_ha_dbs.conf');

@@ -59,7 +59,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $table->id = 'tree_view_module_data';
     $table->style = [];
     $table->style['title'] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-    $table->style['data'] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+    $table->style['data'] = 'height: 32px; width: 70%; padding-left: 5px;font-weight: lighter;';
     $table->data = [];
 
     // Module name.
@@ -562,7 +562,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $table->id = 'tree_view_agent_detail';
     $table->style = [];
     $table->style['title'] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-    $table->style['data'] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+    $table->style['data'] = 'height: 32px; width: 70%; padding-left: 5px;font-weight: lighter;';
     $table->head = [];
     $table->data = [];
 
@@ -822,7 +822,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $table_advanced->id = 'tree_view_agent_advanced';
         $table_advanced->style = [];
         $table_advanced->style['title'] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-        $table_advanced->style['data'] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+        $table_advanced->style['data'] = 'height: 32px; width: 70%; padding-left: 5px;font-weight: lighter;';
         $table_advanced->head = [];
         $table_advanced->data = [];
 

@@ -150,9 +150,9 @@
         self._box
           .addClass("fixed-bottom-box")
           .css("position", "fixed")
-          .css("top", "115px")
+          .css("top", "112px")
           .css("right", "0")
-          .css("width", "30%");
+          .css("width", "25%");
 
         self._renderHead(head);
         self._renderContent(content);

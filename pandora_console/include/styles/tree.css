@@ -18,7 +18,7 @@
 }
 
 .tree-node .module-action-buttons img {
-  width: 20px;
+  width: 16px;
   float: right;
 }
 
@@ -43,20 +43,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 38px;
+  height: 32px;
 }
 
 .tree-node .node-icon .node-icon-container img {
   padding: 0;
-  width: 20px;
+  width: 16px;
 }
 .tree-node .node-status {
   width: 40px;
-  height: 38px;
+  height: 31px;
   border-radius: 7px 0 0 7px;
-  padding: 1px;
   box-sizing: border-box;
   position: absolute;
+  padding: 8px;
+  border-radius: 8px;
+  width: 19px;
+  height: 17px;
+  top: 6px;
+  left: 9px;
 }
 .tree-node .node-name {
   position: relative;
@@ -64,17 +69,16 @@
 }
 
 .tree-group {
-  margin-left: 24px;
+  margin-left: 40px;
   /*padding-top: 1px;*/
 }
 
 .tree-node {
   white-space: nowrap;
-  /*
-  background-image: url(../../images/tree/branch.png);
-  background-position: 0px 0px;
+  background-image: url(../../images/tree/straight@tree.svg);
+  background-position: -1px -1px;
   background-repeat: repeat-y;
-*/
+  background-size: 33px;
   min-height: 26px;
   margin-top: 1px;
 }
@@ -96,7 +100,7 @@ div.tree-node span {
   border-radius: 4px;
   width: calc(100% - 50px);
   box-sizing: border-box;
-  height: 40px;
+  height: 32px;
   font-size: 1.2em;
   display: flex;
   flex-direction: row;
@@ -118,7 +122,7 @@ div.tree-node span {
 }
 
 .leaf-icon {
-  width: 18px;
+  width: 32px;
   height: 32px;
 }
 
@@ -133,9 +137,11 @@ div.tree-node span {
 }
 
 .tree-node.leaf-open > .leaf-icon {
-  background-image: url(../../images/minus.svg);
+  /*background-image: url(../../images/minus.svg);*/
+  background-image: url(../../images/tree/corner@tree.svg);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
 }
-
 .tree-node.leaf-closed > .leaf-icon {
   background-image: url(../../images/plus.svg);
 }
@@ -150,11 +156,33 @@ div.tree-node span {
   cursor: pointer;
 }
 
+.tree-node.leaf-closed > .leaf-icon {
+  background-image: url(../../images/tree/corner_straight_plus@tree.svg);
+}
+
+.tree-node.leaf-closed:last-of-type > .leaf-icon {
+  background-image: url(../../images/tree/corner_plus@tree.svg);
+}
+
+.tree-node.leaf-open > .leaf-icon {
+  background-image: url(../../images/tree/corner_straight_minus@tree.svg);
+}
+
+.tree-node.leaf-open:last-of-type > .leaf-icon {
+  background-image: url(../../images/tree/corner_minus@tree.svg);
+}
 .tree-node > .leaf-icon {
-  background-position: 0px 11px;
+  background-position: 0px 0px;
   background-repeat: no-repeat;
   float: left;
-  margin-right: 10px;
+  /* margin-right: 10px; */
+  background-image: url(../../images/tree/corner_straight@tree.svg);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
+}
+
+.tree-node:last-of-type > .leaf-icon {
+  background-image: url(../../images/tree/corner@tree.svg);
 }
 
 .tree-node > .node-content > img {
@@ -171,11 +199,12 @@ div.tree-node span {
 .tree-node > .node-content > .agent-status.status_balls,
 .tree-node > .node-content > .status_small_balls {
   width: 1.5em;
-  border-radius: 0;
+  /*border-radius: 0;
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
   height: 38px;
   position: relative;
+    */
 }
 
 .tree-node > .node-content > .agent-status.status_balls {
@@ -194,11 +223,12 @@ div.tree-node span {
   flex: 1 1 80%;
   position: relative;
   font-weight: bold;
-  font-size: 11pt;
+  font-size: 12px;
 }
 
+.tree-node > .node-content.module-only-caption > .module-name,
 .tree-node > .node-content > .module-name-parent.module-only-caption {
-  top: 9px;
+  top: 5px;
 }
 
 .node-service > .node-service-name {
@@ -206,12 +236,9 @@ div.tree-node span {
   font-size: 11pt;
   font-weight: bold;
 }
-.tree-node > .node-content.module-only-caption > .module-name {
-  top: 7px;
-}
 
 .node-content.module:not(.module-only-caption) .module-name {
-  margin-left: 3.5em;
+  margin-left: 3em;
   font-weight: normal;
 }
 /*.node-content.module.module-only-caption:not(:first-of-type) {
@@ -219,9 +246,9 @@ div.tree-node span {
 }*/
 
 .tree-node > .node-content > .module-name-alias {
-  font-size: 12pt;
+  font-size: 14px;
   font-weight: normal;
-  top: 8px;
+  top: 4px;
   margin-left: 3.3em;
 }
 
@@ -229,7 +256,7 @@ div.tree-node span {
   margin-left: 1em;
 }
 .tree-node > .node-content > .module-name-parent {
-  font-size: 12pt;
+  font-size: 14px;
   margin-left: 0.5em;
   top: -4px;
 }
@@ -265,10 +292,10 @@ div.tree-node span {
 }
 
 .tree-node > .node-content > .tree-node-counters {
-  font-size: 1.2em;
+  font-size: 14px;
   float: right;
   position: relative;
-  top: 8px;
+  top: 5px;
   right: 10px;
 }
 
@@ -287,7 +314,7 @@ div.tree-node span {
 
 div#tree-controller-recipient {
   text-align: left;
-  width: calc((100% - 34%) - 20px);
+  width: calc((100% - 30%) - 20px);
   margin-top: 10px;
   margin-left: 20px;
 }
@@ -332,7 +359,7 @@ div#tree-controller-recipient {
 }
 
 .node-content .module-button:hover {
-  width: 20px;
+  /* width: 20px; */
   background-color: #fff;
   border-radius: 8px;
 }
@@ -343,7 +370,7 @@ div#tree-controller-recipient {
 .tree-node.leaf-open:last-child,
 .tree-node.leaf-closed:last-child,
 .tree-node.leaf-empty:last-child {
-  margin-bottom: 8px;
+  margin-bottom: 1px;
 }
 
 .tree-root > .tree-node {

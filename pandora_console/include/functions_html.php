@@ -3354,7 +3354,7 @@ function html_print_input_color($name, $value, $id='', $class=false, $return=fal
 /**
  * Action buttons.
  *
- * @param string  $content    HTML content. Usually must be buttons.
+ * @param mixed   $content    HTML content. Usually must be buttons.
  * @param array   $parameters Parameters for create the action buttons.
  *      $var['type'] => Type of action-buttons:
  *          'form_action' => Fits into form size (fixed size).
@@ -3367,8 +3367,12 @@ function html_print_input_color($name, $value, $id='', $class=false, $return=fal
  *
  * @return mixed.
  */
-function html_print_action_buttons(string $content, array $parameters=[], bool $return=false)
+function html_print_action_buttons(mixed $content, array $parameters=[], bool $return=false)
 {
+    if (is_array($content) === true) {
+        $content = implode('', $content);
+    }
+
     $typeClass = 'fixed_action_buttons ';
     switch (($parameters['type'] ?? '')) {
         case 'form_action':

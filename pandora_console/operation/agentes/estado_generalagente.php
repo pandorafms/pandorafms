@@ -160,7 +160,7 @@ $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;
 $table_status->class = 'floating_form';
 $table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px;';
 
 $agentStatusGraph = html_print_div(
     [
@@ -382,7 +382,7 @@ $table_contact->cellspacing = 0;
 $table_contact->cellpadding = 0;
 $table_contact->class = 'floating_form';
 $table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px;';
 
 $agentContactCaption = html_print_div(
     [
@@ -539,8 +539,8 @@ $data_opcional->id = 'agent_data_main';
 $data_opcional->class = 'floating_form';
 $data_opcional->cellspacing = 0;
 $data_opcional->cellpadding = 0;
-$data_opcional->style[0] = 'height: 46px; width: 25%; padding-right: 5px; font-family: \'Pandora-Bold\'; text-align: end;';
-$data_opcional->style[1] = 'height: 46px; width: 75%; padding-left: 5px; font-family: \'Pandora-Regular\';';
+$data_opcional->style[0] = 'height: 46px; width: 25%; padding-right: 5px;text-align: end;';
+$data_opcional->style[1] = 'height: 46px; width: 75%; padding-left: 5px;';
 // Gis and url address.
 $agentAdditionalContent = '';
 // Position Information.

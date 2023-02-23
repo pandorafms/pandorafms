@@ -286,7 +286,19 @@ if ($publicLink === false) {
             false,
             '',
             false,
-            $buttons
+            $buttons,
+            false,
+            '',
+            GENERIC_SIZE_TEXT,
+            '',
+            '',
+            false,
+            [
+                'id_element' => $dashboardId,
+                'url'        => 'operation/dashboard/dashboard&dashboardId='.$dashboardId,
+                'label'      => $dashboardName,
+                'section'    => 'Dashboard',
+            ]
         );
     }
 } else {

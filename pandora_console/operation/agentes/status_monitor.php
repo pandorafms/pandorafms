@@ -50,74 +50,6 @@ enterprise_include_once('include/functions_metaconsole.php');
 
 $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
-if (! defined('METACONSOLE')) {
-    $section = (string) get_parameter('section', 'view');
-
-    $buttons['fields'] = [
-        'active'    => false,
-        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields">'.html_print_image(
-            'images/custom_columns.png',
-            true,
-            [
-                'title' => __('Custom fields'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>',
-        'operation' => true,
-    ];
-
-    $buttons['view'] = [
-        'active'    => false,
-        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor">'.html_print_image(
-            'images/list.png',
-            true,
-            [
-                'title' => __('View'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>',
-        'operation' => true,
-    ];
-
-    switch ($section) {
-        case 'fields':
-            $buttons['fields']['active'] = true;
-            $subpage = ' &raquo; '.__('Custom fields');
-        break;
-
-        default:
-            $buttons['view']['active'] = true;
-        break;
-    }
-
-    // Header.
-    ui_print_standard_header(
-        __('Monitor detail').$subpage,
-        'images/agent.png',
-        false,
-        '',
-        true,
-        $buttons,
-        [
-            [
-                'link'  => '',
-                'label' => __('Monitoring'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Views'),
-            ],
-        ]
-    );
-
-    if ($section == 'fields') {
-        include_once $config['homedir'].'/godmode/agentes/status_monitor_custom_fields.php';
-        exit();
-    }
-} else {
-    $section = (string) get_parameter('sec', 'estado');
-    ui_meta_print_header(__('Monitor view'));
-}
 
 $recursion = get_parameter_switch('recursion', false);
 
@@ -222,6 +154,7 @@ if (is_numeric($ag_group)) {
 }
 
 $load_filter_id = (int) get_parameter('filter_id', 0);
+$fav_menu = [];
 
 if ($load_filter_id > 0) {
     $user_groups_fl = users_get_groups(
@@ -285,6 +218,84 @@ if ($loaded_filter['id_filter'] > 0) {
             $ag_custom_fields = json_decode(io_safe_output($ag_custom_fields), true);
         }
     }
+
+    // Fav menu
+    $fav_menu = [
+        'id_element' => $loaded_filter['id_filter'],
+        'url'        => 'operation/agentes/status_monitor&pure=&load_filter=1&filter_id='.$loaded_filter['id_filter'],
+        'label'      => $loaded_filter['id_name'],
+        'section'    => 'Modules',
+    ];
+}
+
+if (! defined('METACONSOLE')) {
+    $section = (string) get_parameter('section', 'view');
+
+    $buttons['fields'] = [
+        'active'    => false,
+        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields">'.html_print_image(
+            'images/custom_columns.png',
+            true,
+            [
+                'title' => __('Custom fields'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
+        'operation' => true,
+    ];
+
+    $buttons['view'] = [
+        'active'    => false,
+        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'title' => __('View'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
+        'operation' => true,
+    ];
+
+    switch ($section) {
+        case 'fields':
+            $buttons['fields']['active'] = true;
+            $subpage = ' &raquo; '.__('Custom fields');
+        break;
+
+        default:
+            $buttons['view']['active'] = true;
+        break;
+    }
+
+    // Header.
+    ui_print_standard_header(
+        __('Monitor detail').$subpage,
+        'images/agent.png',
+        false,
+        '',
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Views'),
+            ],
+        ],
+        $fav_menu
+    );
+
+    if ($section == 'fields') {
+        include_once $config['homedir'].'/godmode/agentes/status_monitor_custom_fields.php';
+        exit();
+    }
+} else {
+    $section = (string) get_parameter('sec', 'estado');
+    ui_meta_print_header(__('Monitor view'));
 }
 
 // Agent group selector.

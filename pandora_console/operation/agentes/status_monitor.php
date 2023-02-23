@@ -983,7 +983,17 @@ $tableFilter->data[4][2] = html_print_submit_button(
 $filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
 $filters .= html_print_table($tableFilter, true);
 $filters .= '</form>';
-ui_toggle($filters, '<span class="subsection_header_title">'.__('Filters').'</span>');
+ui_toggle(
+    $filters,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
 
 unset($table);
 // End Build Search Form.

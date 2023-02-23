@@ -1124,6 +1124,10 @@ function config_update_config()
                         $error_update[] = __('Background opacity % (login)');
                     }
 
+                    if (config_update_value('meta_background_opacity', (string) get_parameter('meta_background_opacity'), true) === false) {
+                        $error_update[] = __('Background opacity % (login)');
+                    }
+
                     if (config_update_value('meta_custom_logo_white_bg', (string) get_parameter('meta_custom_logo_white_bg'), true) === false) {
                         $error_update[] = __('Custom logo metaconsole (white background)');
                     }
@@ -1233,6 +1237,10 @@ function config_update_config()
                     }
 
                     if (config_update_value('random_background', get_parameter('random_background'), true) === false) {
+                        $error_update[] = __('Random background');
+                    }
+
+                    if (config_update_value('meta_random_background', get_parameter('meta_random_background'), true) === false) {
                         $error_update[] = __('Random background');
                     }
 
@@ -2518,6 +2526,10 @@ function config_process_config()
         config_update_value('background_opacity', 30);
     }
 
+    if (!isset($config['meta_background_opacity'])) {
+        config_update_value('meta_background_opacity', 30);
+    }
+
     if (!isset($config['meta_custom_docs_url'])) {
         config_update_value('meta_custom_docs_url', 'https://pandorafms.com/manual/');
     }
@@ -2535,7 +2547,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_splash_login'])) {
-        config_update_value('meta_custom_splash_login', 'splash_image_metaconsola.png');
+        config_update_value('meta_custom_splash_login', 'default');
     }
 
     if (!isset($config['meta_custom_title1_login'])) {
@@ -3373,6 +3385,10 @@ function config_process_config()
 
     if (!isset($config['random_background'])) {
         config_update_value('random_background', '');
+    }
+
+    if (!isset($config['meta_random_background'])) {
+        config_update_value('meta_random_background', '');
     }
 
     if (!isset($config['networkmap_max_width'])) {

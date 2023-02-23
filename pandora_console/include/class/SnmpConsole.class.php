@@ -383,12 +383,11 @@ class SnmpConsole extends HTML
                 5  => __('Other'),
             ];
 
-            $this->tableId = 'snmp_console';
-
+            $tableId = 'snmp_console';
             // Load datatables user interface.
             ui_print_datatable(
                 [
-                    'id'                  => $this->tableId,
+                    'id'                  => $tableId,
                     'class'               => 'info_table',
                     'style'               => 'width: 100%',
                     'columns'             => $columns,
@@ -490,16 +489,25 @@ class SnmpConsole extends HTML
             echo $e->getMessage();
         }
 
-        echo '<div class="w98p right">';
-        html_print_submit_button(__('Validate'), 'updatebt', false, 'class="sub ok"');
-        echo '&nbsp;';
-        html_print_submit_button(
+        $buttons[] = html_print_submit_button(
+            __('Validate'),
+            'updatebt',
+            false,
+            'class="sub ok"',
+            true
+        );
+        $buttons[] = html_print_submit_button(
             __('Delete'),
             'deletebt',
             false,
-            'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"'
+            'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"',
+            true
         );
-        echo '</div>';
+
+        html_print_action_buttons(
+            implode('', $buttons),
+            ['type' => 'form_action']
+        );
 
         echo '<div class="snmp_view_div">';
         echo '<h3>'.__('Status').'</h3>';

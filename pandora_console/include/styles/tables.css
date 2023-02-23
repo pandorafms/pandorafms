@@ -520,3 +520,44 @@ a.pandora_pagination.current:hover {
 .datatable_form {
   margin: 0 1em;
 }
+
+/*
+table.filter-table-adv {
+  max-width: 1024px;
+}
+*/
+
+table.filter-table-adv td {
+  vertical-align: top;
+}
+
+table.filter-table-adv td > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: normal;
+}
+
+table.filter-table-adv td > div label {
+  color: #161628;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+table.filter-table-adv td > div.add-input-reverse {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 5px;
+}
+
+table.filter-table-adv td > div .label-thin {
+  color: #3f3f3f;
+  font-weight: 400;
+}
+
+/*
+padding-right: calc(100% - 1024px);
+*/

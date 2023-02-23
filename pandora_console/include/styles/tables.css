@@ -521,17 +521,25 @@ a.pandora_pagination.current:hover {
   margin: 0 1em;
 }
 
-table.nueva-clase td > div {
+table.filter-table-adv {
+  max-width: 1024px;
+}
+
+table.filter-table-adv td > div {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: normal;
 }
 
-table.nueva-clase td > div label {
+table.filter-table-adv td > div label {
   color: #161628;
   font-size: 13px;
   line-height: 16px;
   text-align: left;
   margin-bottom: 10px;
 }
+
+/*
+padding-right: calc(100% - 1024px);
+*/

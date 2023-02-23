@@ -232,36 +232,40 @@ $searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/est
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'nueva-clase';
+$table->size = [];
+$table->size[0] = '33%';
+$table->size[1] = '33%';
+$table->size[2] = '33%';
+$table->class = 'filter-table-adv';
 
-$table->data['group'][0] = '<div>';
-$table->data['group'][0] .= '<label>'.__('Group').'</label>';
-$table->data['group'][0] .= html_print_select_groups(
-    false,
-    $access,
-    true,
-    'group_id',
-    $group_id,
-    'this.form.submit()',
-    '',
-    '',
-    true,
-    false,
-    true,
-    '',
-    false
+$table->data['group'][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        $access,
+        true,
+        'group_id',
+        $group_id,
+        'this.form.submit()',
+        '',
+        '',
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table->data['group'][0] .= '</div>';
 
-$table->data['group'][1] = '<div>';
-$table->data['group'][1] .= '<label>'.__('Recursion').'</label>';
-$table->data['group'][1] .= html_print_checkbox_switch(
-    'recursion',
-    1,
-    $recursion,
-    true
+$table->data['group'][1] = html_print_label_input_block(
+    __('Recursion'),
+    html_print_checkbox_switch(
+        'recursion',
+        1,
+        $recursion,
+        true
+    )
 );
-$table->data['group'][1] .= '</div>';
 
 $table->data['group'][2] = html_print_label_input_block(
     __('Status'),
@@ -276,7 +280,8 @@ $table->data['group'][2] = html_print_label_input_block(
         false,
         true,
         '',
-        false
+        false,
+        'width: 100%'
     )
 );
 

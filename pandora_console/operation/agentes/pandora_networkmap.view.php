@@ -2405,7 +2405,16 @@ if ($networkmap === false) {
             $buttons,
             false,
             '',
-            $config['item_title_size_text']
+            $config['item_title_size_text'],
+            '',
+            '',
+            false,
+            [
+                'id_element' => $networkmap['id'],
+                'url'        => 'operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$networkmap['id'],
+                'label'      => $networkmap['name'],
+                'section'    => 'Network_map',
+            ]
         );
     }
 

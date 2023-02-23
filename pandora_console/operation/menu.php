@@ -484,7 +484,7 @@ if ($favorite_menu !== false) {
             $sub2 = [];
         }
 
-        $sub[$section]['text'] = __($section);
+        $sub[$section]['text'] = __(str_replace('_', ' ', $section));
         $sub[$section]['type'] = 'direct';
         $sub[$section]['subtype'] = 'nolink';
         $sub[$section]['id'] = $row['section'];

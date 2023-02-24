@@ -1981,18 +1981,9 @@ table.databox {
   background-color: #fff;
   border-spacing: 0px;
   border-radius: 6px;
-  /*-moz-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);*/
-  /* -webkit-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%); */
-  /* box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%); */
-  border: 2px solid #c0ccdc;
-  padding: 20px;
   margin-bottom: 20px;
   width: calc(100% - 40px);
   width: -webkit-fill-available;
-  /*
-  width: -webkit-fill-available;
-  width: -moz-available;
-  */
 }
 
 .databox > tbody > tr > td {
@@ -7041,6 +7032,20 @@ div.graph div.legend table {
   line-height: 17px;
   vertical-align: top;
   width: 120px;
+  position: relative;
+}
+
+.snmp_view_div > span {
+  padding: 2px 10px 2px 10px;
+  border-radius: 10px;
+}
+
+.snmp_view_div > h3 {
+  text-transform: unset;
+}
+
+#legend_snmp_browser > tbody > tr > td {
+  vertical-align: top;
 }
 
 .display_in {

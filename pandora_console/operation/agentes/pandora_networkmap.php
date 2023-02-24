@@ -548,6 +548,15 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         $result = networkmap_delete_networkmap($id);
 
+        // Delete network map from fav menu.
+        db_process_sql_delete(
+            'tfavmenu_user',
+            [
+                'id_user'    => $config['id_user'],
+                'id_element' => $id,
+                'section'    => 'Network_map',
+            ]
+        );
         $result_txt = ui_print_result_message(
             $result,
             __('Succesfully deleted'),

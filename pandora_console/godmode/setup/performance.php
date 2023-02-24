@@ -528,6 +528,19 @@ $table_other->data[$i++][1] = html_print_input_text(
     true
 );
 
+$table_other->data[$i][0] = __('Limit of events per query');
+$table_other->data[$i++][1] = html_print_input(
+    [
+        'type'   => 'number',
+        'size'   => 5,
+        'max'    => 10000,
+        'name'   => 'events_per_query',
+        'value'  => $config['events_per_query'],
+        'return' => true,
+        'style'  => 'width:50px',
+    ]
+);
+
 $table_other->data[$i][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table_other->data[$i++][1] = html_print_input_text(
     'step_compact',

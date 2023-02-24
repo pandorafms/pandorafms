@@ -519,14 +519,21 @@ class SnmpConsole extends HTML
             __('Validate'),
             'updatebt',
             false,
-            'class="sub ok"',
+            [
+                'class' => 'sub ok',
+                'icon'  => 'next',
+            ],
             true
         );
         $buttons[] = html_print_submit_button(
             __('Delete'),
             'deletebt',
             false,
-            'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"',
+            [
+                'icon'    => 'delete',
+                'mode'    => 'secondary',
+                'onClick' => "javascript:return confirm(\''.__('Are you sure?').'\')",
+            ],
             true
         );
 
@@ -535,60 +542,33 @@ class SnmpConsole extends HTML
             ['type' => 'form_action']
         );
 
-        echo '<div class="snmp_view_div">';
-        echo '<h3>'.__('Status').'</h3>';
-        echo html_print_image(
-            'images/pixel_green.png',
-            true,
-            [
-                'width'  => '20',
-                'height' => '20',
-            ]
-        ).' - '.__('Validated');
-        echo '<br />';
-        echo html_print_image(
-            'images/pixel_red.png',
-            true,
-            [
-                'width'  => '20',
-                'height' => '20',
-            ]
-        ).' - '.__('Not validated');
-        echo '</div>';
-        echo '<div class="snmp_view_div">';
-        echo '<h3>'.__('Alert').'</h3>';
-        echo html_print_image(
-            'images/pixel_yellow.png',
-            true,
-            [
-                'width'  => '20',
-                'height' => '20',
-            ]
-        ).' - '.__('Fired');
-        echo '<br />';
-        echo html_print_image(
-            'images/pixel_gray.png',
-            true,
-            [
-                'width'  => '20',
-                'height' => '20',
-            ]
-        ).' - '.__('Not fired');
-        echo '</div>';
-        echo '<div class="snmp_view_div">';
-        echo '<h3>'.__('Action').'</h3>';
-        echo html_print_image('images/ok.png', true).' - '.__('Validate');
-        echo '<br />';
-        echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']).' - '.__('Delete');
-        echo '</div>';
-        echo '<div class="snmp_view_div">';
+        echo '<table id="legend_snmp_browser"><td><div class="snmp_view_div">';
         echo '<h3>'.__('Severity').'</h3>';
         foreach (get_priorities() as $num => $name) {
             echo '<span class="'.get_priority_class($num).'">'.$name.'</span>';
             echo '<br />';
         }
 
-        echo '</div>';
+        echo '</div></td>';
+        echo '<td><div class="snmp_view_div">';
+        echo '<h3>'.__('Status').'</h3>';
+        echo '<span class="datos_green">'.__('Validated').'</span>';
+        echo '<br />';
+        echo '<span class="datos_red">'.__('Not validated').'</span>';
+        echo '</div></td>';
+        echo '<td><div class="snmp_view_div">';
+        echo '<h3>'.__('Alert').'</h3>';
+        echo '<span class="datos_yellow">'.__('Alert').'</span>';
+        echo '<br />';
+        echo '<span class="datos_grey">'.__('Not fired').'</span>';
+        echo '</div></td>';
+        echo '<td><div class="snmp_view_div">';
+        echo '<h3>'.__('Action').'</h3>';
+        echo '<div>';
+        echo html_print_image('images/validate.svg', true, ['class' => 'main_menu_icon']).' - '.__('Validate');
+        echo '<br />';
+        echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon']).' - '.__('Delete');
+        echo '</div></div></td>';
 
         // Load own javascript file.
         echo $this->loadJS();
@@ -916,12 +896,13 @@ class SnmpConsole extends HTML
                         $tmp->action = '';
                         if ($status != 1) {
                             $tmp->action .= '<a href="#">'.html_print_image(
-                                'images/ok.png',
+                                'images/validate.svg',
                                 true,
                                 [
                                     'border'  => '0',
                                     'title'   => __('Validate'),
                                     'onclick' => 'validate_trap(\''.$tmp->id_trap.'\')',
+                                    'class'   => 'main_menu_icon',
                                 ]
                             ).'</a> ';
                         }
@@ -929,39 +910,39 @@ class SnmpConsole extends HTML
                         if ($tmp->source === '') {
                             if (\users_is_admin()) {
                                 $tmp->action .= '<a href="#">'.html_print_image(
-                                    'images/cross.png',
+                                    'images/delete.svg',
                                     true,
                                     [
                                         'border'  => '0',
                                         'title'   => __('Delete'),
-                                        'class'   => 'invert_filter',
+                                        'class'   => 'invert_filter main_menu_icon',
                                         'onclick' => 'delete_trap(\''.$tmp->id_trap.'\')',
                                     ]
                                 ).'</a> ';
                             }
                         } else {
                             $tmp->action .= '<a href="#">'.html_print_image(
-                                'images/cross.png',
+                                'images/delete.svg',
                                 true,
                                 [
                                     'border'  => '0',
                                     'title'   => __('Delete'),
-                                    'class'   => 'invert_filter',
+                                    'class'   => 'invert_filter main_menu_icon',
                                     'onclick' => 'delete_trap(\''.$tmp->id_trap.'\')',
                                 ]
                             ).'</a> ';
                         }
 
                         $tmp->action .= '<a href="javascript: toggleVisibleExtendedInfo('.$tmp->id_trap.','.$count.');">'.html_print_image(
-                            'images/eye.png',
+                            'images/see-details@svg.svg',
                             true,
                             [
                                 'alt'   => __('Show more'),
                                 'title' => __('Show more'),
-                                'class' => 'invert_filter',
+                                'class' => 'invert_filter main_menu_icon',
                             ]
                         ).'</a>';
-                        $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">'.html_print_image('images/edit.png', true, ['alt' => __('SNMP trap editor'), 'title' => __('SNMP trap editor')]).'</a>';
+                        $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">'.html_print_image('images/edit.svg', true, ['alt' => __('SNMP trap editor'), 'title' => __('SNMP trap editor'), 'class' => 'main_menu_icon']).'</a>';
 
                         $tmp->m = html_print_checkbox_extended('snmptrapid[]', $tmp->id_trap, false, false, '', 'class="chk"', true);
 

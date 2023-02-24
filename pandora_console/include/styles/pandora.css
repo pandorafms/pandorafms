@@ -7029,6 +7029,20 @@ div.graph div.legend table {
   line-height: 17px;
   vertical-align: top;
   width: 120px;
+  position: relative;
+}
+
+.snmp_view_div > span {
+  padding: 2px 10px 2px 10px;
+  border-radius: 10px;
+}
+
+.snmp_view_div > h3 {
+  text-transform: unset;
+}
+
+#legend_snmp_browser > tbody > tr > td {
+  vertical-align: top;
 }
 
 .display_in {

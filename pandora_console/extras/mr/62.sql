@@ -1,0 +1,12 @@
+START TRANSACTION;
+
+CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_user` VARCHAR(255) NOT NULL,
+  `id_element` TEXT,
+  `url` TEXT NOT NULL,
+  `label` VARCHAR(255) NOT NULL,
+  `section` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`));
+
+COMMIT;

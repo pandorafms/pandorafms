@@ -266,32 +266,68 @@ function mainModuleGroups()
         ]
     );
 
-    echo "<table cellpadding='4' cellspacing='4' class='databox filters bolder margin-bottom-10' width='100%'>
-		<tr>";
-    echo "<form method='post'
-		action='index.php?sec=view&sec2=extensions/module_groups'>";
+    $output = "<form method='post'
+    action='index.php?sec=view&sec2=extensions/module_groups'>";
 
-    echo '<td>';
-    echo __('Search by agent group').'&nbsp;';
-    html_print_input_text('agent_group_search', $agent_group_search);
-
-    echo '</td><td>';
-    echo __('Search by module group').'&nbsp;';
-    html_print_input_text('module_group_search', $module_group_search);
-
-    echo '</td><td>';
-    html_print_submit_button(
-        __('Search'),
-        'srcbutton',
-        false,
-        [
-            'icon' => 'search',
-            'mode' => 'secondary',
-        ]
+    $output .= "<table cellpadding='4' cellspacing='4' class='filter-table-adv margin-bottom-10' width='100%'><tr>";
+    $output .= '<td>';
+    $output .= html_print_label_input_block(
+        __('Search by agent group'),
+        html_print_input_text(
+            'agent_group_search',
+            $agent_group_search,
+            '',
+            50,
+            255,
+            true
+        )
     );
-    echo '</form>';
-    echo '<td>';
-    echo '</tr></table>';
+
+    $output .= '</td><td>';
+    $output .= html_print_label_input_block(
+        __('Search by module group'),
+        html_print_input_text(
+            'module_group_search',
+            $module_group_search,
+            '',
+            50,
+            255,
+            true
+        )
+    );
+    $output .= '</td>';
+    $output .= '</tr></table>';
+
+    $output .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Filter'),
+                'srcbutton',
+                false,
+                [
+                    'icon' => 'search',
+                    'mode' => 'mini',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+
+    $output .= '</form>';
+
+    ui_toggle(
+        $output,
+        '<span class="subsection_header_title">'.__('Filters').'</span>',
+        'filter_form',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph fixed_filter_bar'
+    );
 
     $cell_style = '
         min-width: 60px;
@@ -386,13 +422,24 @@ function mainModuleGroups()
         $table->headstyle = $headstyle;
         $table->data = $data;
 
-        ui_pagination($counter);
-
         echo "<div class='w100p' style='overflow-x:auto;'>";
             html_print_table($table);
         echo '</div>';
 
-        ui_pagination($counter);
+        $tablePagination = ui_pagination(
+            $counter,
+            false,
+            0,
+            0,
+            true,
+            'offset',
+            false
+        );
+
+        html_print_action_buttons(
+            '',
+            [ 'right_content' => $tablePagination ]
+        );
 
         echo "<div class='legend_basic w99p'>";
             echo '<table >';

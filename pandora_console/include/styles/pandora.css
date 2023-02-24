@@ -1981,18 +1981,9 @@ table.databox {
   background-color: #fff;
   border-spacing: 0px;
   border-radius: 6px;
-  /*-moz-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%);*/
-  /* -webkit-box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%); */
-  /* box-shadow: 0 3px 6px 0 rgb(0 0 0 / 13%); */
-  border: 2px solid #c0ccdc;
-  padding: 20px;
   margin-bottom: 20px;
   width: calc(100% - 40px);
   width: -webkit-fill-available;
-  /*
-  width: -webkit-fill-available;
-  width: -moz-available;
-  */
 }
 
 .databox > tbody > tr > td {

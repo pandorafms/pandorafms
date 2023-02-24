@@ -401,7 +401,6 @@ a.pandora_pagination.current:hover {
   flex: 1;
 }
 .filter_input_datatable label {
-  width: 93px;
   max-width: 100%;
 }
 .filter_input_datatable .select2.select2-container {
@@ -653,4 +652,15 @@ td#save_filter_form-0-1,
 td#save_filter_form-1-0 > input#text-id_name,
 td#save_filter_form-1-1 > span {
   width: 300px !important;
+}
+
+div.filter-datatable-submain > form > ul > li {
+  display: grid;
+}
+
+div.filter-datatable-submain > form > ul > li > label {
+  margin-bottom: 10px;
+  font-weight: bold;
+  line-height: 16px;
+  font-size: 13px;
 }

@@ -1547,6 +1547,12 @@ if (empty($result) === false) {
         $table->align[11] = 'left';
     }
 
+    if (check_acl($config['id_user'], 0, 'AR')) {
+        $actions_list = true;
+        $table->head[12] = __('Actions');
+        $table->align[12] = 'left';
+    }
+
     $id_type_web_content_string = db_get_value(
         'id_tipo',
         'ttipo_modulo',
@@ -2167,6 +2173,39 @@ if (empty($result) === false) {
             }
 
             $data[11] = ui_print_timestamp($row['utimestamp'], true, $option);
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
+            if (defined('METACONSOLE')) {
+                $url_edit_module = $row['server_url'].'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&';
+                $url_edit_module .= 'loginhash=auto&id_agente='.$row['id_agent'];
+                $url_edit_module .= '&tab=module&id_agent_module='.$row['id_agente_modulo'].'&edit_module=1&';
+                $url_edit_module .= 'loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']);
+
+                $url_delete_module = $row['server_url'].'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente';
+                $url_delete_module .= '&id_agente='.$row['id_agent'].'&delete_module='.$row['id_agente_modulo'];
+
+                $table->cellclass[][2] = 'action_buttons';
+                $data[12] .= '<a href="'.$url_edit_module.'">'.html_print_image(
+                    'images/config.png',
+                    true,
+                    [
+                        'alt'    => '0',
+                        'border' => '',
+                        'title'  => __('Edit'),
+                    ]
+                ).'</a>';
+                $onclick = 'onclick="javascript: if (!confirm(\''.__('Are you sure to delete?').'\')) return false;';
+                $data[12] .= '<a href="'.$url_delete_module.'" '.$onclick.'" target="_blank">'.html_print_image(
+                    'images/delete.png',
+                    true,
+                    [
+                        'alt'    => '0',
+                        'border' => '',
+                        'title'  => __('Delete'),
+                    ]
+                ).'</a>';
+            }
         }
 
         array_push($table->data, $data);

@@ -557,3 +557,100 @@ table.filter-table-adv td > div .label-thin {
   color: #3f3f3f;
   font-weight: 400;
 }
+
+/*
+padding-right: calc(100% - 1024px);
+*/
+
+div.filter-datatable-submain {
+  padding: 10px 25px;
+}
+
+div.filter-datatable-submain > form > div.filter_input {
+  max-width: 20%;
+  display: grid;
+  justify-content: initial;
+}
+
+div.filter-datatable-submain > form {
+  align-items: flex-start;
+}
+
+div.filter-datatable-submain > form > div.filter_input > label,
+div.advanced-options-events > div.filter_input > label {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+div.filter-datatable-submain > form > div.filter_input,
+div.advanced-options-events > div.filter_input {
+  margin-bottom: 10px !important;
+}
+
+.display-initial {
+  display: initial;
+  /* margin-bottom: 10px; */
+}
+
+.vert-align-bottom {
+  vertical-align: bottom;
+}
+
+label.vert-align-bottom > a.tip {
+  vertical-align: middle;
+}
+
+div.display-initial > a.tip {
+  vertical-align: bottom;
+}
+
+div.advanced-options-events > div.filter_input {
+  display: grid !important;
+}
+
+div.advanced-options-events > div.filter_input input {
+  width: 400px;
+}
+
+div.advanced-options-events > div.filter_input.large {
+  display: flex !important;
+}
+
+div.filter_input > div.datetime-adv-opt > input.hasDatepicker {
+  width: 193px !important;
+}
+
+div.filter_input > div.datetime-adv-opt > span {
+  padding: 0px 5px;
+}
+
+tr#update_save_selector {
+  display: block;
+}
+
+td#load_filter_form-0-0,
+td#load_filter_form-0-1,
+td#save_filter_form-1-0,
+td#save_filter_form-1-1 {
+  display: grid;
+}
+
+td#load_filter_form-0-0 > b,
+td#save_filter_form-1-0 > b {
+  padding-bottom: 10px;
+  font-size: 13px;
+  line-height: 16px;
+}
+
+tr#save_filter_row1 {
+  display: flex !important;
+}
+
+td#save_filter_form-0-0,
+td#save_filter_form-0-1,
+td#save_filter_form-1-0 > input#text-id_name,
+td#save_filter_form-1-1 > span {
+  width: 300px !important;
+}

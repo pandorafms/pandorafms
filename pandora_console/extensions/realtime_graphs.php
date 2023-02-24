@@ -74,61 +74,11 @@ function pandora_realtime_graphs()
         );
     }
 
-    $chart[time()]['graph'] = '0';
-    $interactive_graph = true;
-    $color = [];
-    $legend = '';
-    $long_index = [];
-    $no_data_image = '';
-
-    $canvas = '<div id="graph_container" class="graph_container">';
-    $canvas .= '<div id="chartLegend" class="chartLegend"></div>';
-
-    $width = 800;
-    $height = 300;
-
-    $data_array['realtime']['data'][0][0] = (time() - 10);
-    $data_array['realtime']['data'][0][1] = 0;
-    $data_array['realtime']['data'][1][0] = time();
-    $data_array['realtime']['data'][1][1] = 0;
-    $data_array['realtime']['color'] = 'green';
-
-    $params = [
-        'agent_module_id'   => false,
-        'period'            => 300,
-        'width'             => $width,
-        'height'            => $height,
-        'unit'              => $unit,
-        'only_image'        => $only_image,
-        'homeurl'           => $homeurl,
-        'type_graph'        => 'area',
-        'font'              => $config['fontpath'],
-        'font-size'         => $config['font_size'],
-        'array_data_create' => $data_array,
-        'show_legend'       => false,
-        'show_menu'         => false,
-    ];
-
-    $canvas .= grafico_modulo_sparse($params);
-
-    $canvas .= '</div>';
-    echo $canvas;
-
     $table = new stdClass();
     $table->width = '100%';
     $table->id = 'table-form';
-    $table->class = 'databox filters';
+    $table->class = 'filter-table-adv';
     $table->style = [];
-    $table->cellpadding = '0';
-    $table->cellspacing = '0';
-    $table->style['graph'] = 'font-weight: bold;';
-    $table->style['refresh'] = 'font-weight: bold;';
-    $table->style['incremental'] = 'font-weight: bold;';
-    $table->style['reset'] = 'font-weight: bold;';
-    $table->style['snmp_address'] = 'font-weight: bold;';
-    $table->style['snmp_community'] = 'font-weight: bold;';
-    $table->style['snmp_oid'] = 'font-weight: bold;';
-    $table->style['snmp_oid'] = 'font-weight: bold;';
     $table->data = [];
 
     $graph_fields['cpu_load'] = __('%s Server CPU', get_product_name());
@@ -158,15 +108,22 @@ function pandora_realtime_graphs()
     $refresh = get_parameter('refresh', '1000');
 
     if ($graph != 'snmp_module') {
-        $data['graph'] = __('Graph').'&nbsp;&nbsp;';
-        $data['graph'] .= html_print_select(
-            $graph_fields,
-            'graph',
-            $graph,
-            '',
-            '',
-            0,
-            true
+        $data['graph'] = html_print_label_input_block(
+            __('Graph'),
+            html_print_select(
+                $graph_fields,
+                'graph',
+                $graph,
+                '',
+                '',
+                0,
+                true,
+                false,
+                true,
+                '',
+                false,
+                'width: 100%'
+            )
         );
     }
 
@@ -179,18 +136,35 @@ function pandora_realtime_graphs()
         $agent_alias = io_safe_output(get_parameter('agent_alias', ''));
         $module_name = io_safe_output(get_parameter('module_name', ''));
         $module_incremental = get_parameter('incremental', 0);
-        $data['module_info'] = $agent_alias.': <b>'.$module_name.'</b>';
-
-        // Append all the hidden in this cell.
-        $data['module_info'] .= html_print_input_hidden(
-            'incremental',
-            $module_incremental,
-            true
+        $data['module_info'] = html_print_label_input_block(
+            $agent_alias.': '.$module_name,
+            html_print_input_hidden(
+                'incremental',
+                $module_incremental,
+                true
+            ).html_print_select(
+                ['snmp_module' => '-'],
+                'graph',
+                'snmp_module',
+                '',
+                '',
+                0,
+                true,
+                false,
+                true,
+                '',
+                false,
+                'width: 100%; display: none;'
+            )
         );
-        $data['module_info'] .= html_print_select(
-            ['snmp_module' => '-'],
-            'graph',
-            'snmp_module',
+    }
+
+    $data['refresh'] = html_print_label_input_block(
+        __('Refresh interval'),
+        html_print_select(
+            $refresh_fields,
+            'refresh',
+            $refresh,
             '',
             '',
             0,
@@ -199,33 +173,17 @@ function pandora_realtime_graphs()
             true,
             '',
             false,
-            'display: none;'
+            'width: 100%'
+        )
+    );
+
+    if ($graph != 'snmp_module') {
+        $data['incremental'] = html_print_label_input_block(
+            __('Incremental'),
+            html_print_checkbox_switch('incremental', 1, 0, true)
         );
     }
 
-    $data['refresh'] = __('Refresh interval').'&nbsp;&nbsp;';
-    $data['refresh'] .= html_print_select(
-        $refresh_fields,
-        'refresh',
-        $refresh,
-        '',
-        '',
-        0,
-        true
-    );
-    if ($graph != 'snmp_module') {
-        $data['incremental'] = __('Incremental').'&nbsp;&nbsp;';
-        $data['incremental'] .= html_print_checkbox('incremental', 1, 0, true);
-    }
-
-    $data['reset'] = html_print_button(
-        __('Clear graph'),
-        'reset',
-        false,
-        'javascript:realtimeGraphs.clearGraph();',
-        'class="sub delete mgn_tp_0" ',
-        true
-    );
     $table->data[] = $data;
 
     if ($graph == 'snmp_interface' || $graph == 'snmp_module') {
@@ -236,9 +194,71 @@ function pandora_realtime_graphs()
     html_print_input_hidden('rel_path', get_parameter('rel_path', ''));
 
     // Print the form.
-    echo '<form id="realgraph" method="post">';
-    html_print_table($table);
-    echo '</form>';
+    $searchForm = '<form id="realgraph" method="post">';
+    $searchForm .= html_print_table($table, true);
+    $searchForm .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Clear graph'),
+                'srcbutton',
+                false,
+                [
+                    'icon'    => 'delete',
+                    'mode'    => 'mini',
+                    'onClick' => 'javascript:realtimeGraphs.clearGraph();',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+    $searchForm .= '</form>';
+
+    ui_toggle(
+        $searchForm,
+        '<span class="subsection_header_title">'.__('Filters').'</span>',
+        'filter_form',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph fixed_filter_bar'
+    );
+
+    $chart[time()]['graph'] = '0';
+    $canvas = '<div id="graph_container" class="graph_container">';
+    $canvas .= '<div id="chartLegend" class="chartLegend"></div>';
+
+    $width = 800;
+    $height = 300;
+
+    $data_array['realtime']['data'][0][0] = (time() - 10);
+    $data_array['realtime']['data'][0][1] = 0;
+    $data_array['realtime']['data'][1][0] = time();
+    $data_array['realtime']['data'][1][1] = 0;
+    $data_array['realtime']['color'] = 'green';
+
+    $params = [
+        'agent_module_id'   => false,
+        'period'            => 300,
+        'width'             => $width,
+        'height'            => $height,
+        'only_image'        => false,
+        'type_graph'        => 'area',
+        'font'              => $config['fontpath'],
+        'font-size'         => $config['font_size'],
+        'array_data_create' => $data_array,
+        'show_legend'       => false,
+        'show_menu'         => false,
+        'backgroundColor'   => 'transparent',
+    ];
+
+    $canvas .= grafico_modulo_sparse($params);
+
+    $canvas .= '</div>';
+    echo $canvas;
 
     // Define a custom action to save
     // the OID selected in the SNMP browser to the form.

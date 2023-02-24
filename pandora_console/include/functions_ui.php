@@ -3449,6 +3449,14 @@ function ui_print_datatable(array $parameters)
         $parameters['paging'] = true;
     }
 
+    if (!isset($parameters['filter_main_class'])) {
+        $parameters['filter_main_class'] = '';
+    }
+
+    if (!isset($parameters['toggle_collapsed'])) {
+        $parameters['toggle_collapsed'] = true;
+    }
+
     $no_sortable_columns = json_encode([]);
     if (isset($parameters['no_sortable_columns'])) {
         $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
@@ -3559,7 +3567,7 @@ function ui_print_datatable(array $parameters)
             $filter .= $parameters['form']['html'];
         }
 
-        $filter .= '<ul class="datatable_filter content filter_table">';
+        $filter .= '<ul class="datatable_filter content filter_table no_border">';
 
         foreach ($parameters['form']['inputs'] as $input) {
             $filter .= html_print_input(($input + ['return' => true]), 'li');
@@ -3568,19 +3576,21 @@ function ui_print_datatable(array $parameters)
         $filter .= '<li>';
 
         // Extra buttons.
+        $extra_buttons = '';
         if (isset($parameters['form']['extra_buttons']) === true
             && is_array($parameters['form']['extra_buttons']) === true
         ) {
             foreach ($parameters['form']['extra_buttons'] as $button) {
-                $filter .= html_print_button(
+                $extra_buttons .= html_print_button(
                     $button['text'],
                     $button['id'],
                     false,
                     $button['onclick'],
                     [
                         'style' => ($button['style'] ?? ''),
-                        'mode'  => 'link',
+                        'mode'  => 'secondary mini',
                         'class' => $button['class'],
+                        'icon'  => $button['icon'],
                     ],
                     true
                 );
@@ -3601,7 +3611,7 @@ function ui_print_datatable(array $parameters)
                         'class' => $search_button_class,
                     ],
                     true
-                ),
+                ).$extra_buttons,
             ],
             true
         );
@@ -3612,25 +3622,27 @@ function ui_print_datatable(array $parameters)
         if (isset($parameters['form']['no_toggle']) === false) {
             $filter = ui_toggle(
                 $filter,
-                '<span class="subsection_header_title">'.__('Filter').'</span>',
+                '<span class="subsection_header_title">'.__('Filters').'</span>',
                 '',
                 '',
-                true,
+                $parameters['toggle_collapsed'],
                 false,
-                'white_box white_box_opened fixed_filter_content',
-                'no-border'
+                '',
+                'no-border filter-datatable-submain',
+                'filter-datatable-main '.$parameters['filter_main_class']
             );
         }
     } else if (isset($parameters['form_html'])) {
         $filter = ui_toggle(
             $parameters['form_html'],
-            '<span class="subsection_header_title">'.__('Filter').'</span>',
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
             '',
             '',
-            true,
+            $parameters['toggle_collapsed'],
             false,
-            'white_box white_box_opened fixed_filter_bar',
-            'no-border'
+            '',
+            'no-border filter-datatable-submain',
+            'box-float white_table_graph filter-datatable-main '.$parameters['filter_main_class']
         );
     }
 

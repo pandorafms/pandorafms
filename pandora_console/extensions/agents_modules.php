@@ -448,10 +448,8 @@ function mainAgentsModules()
     $filter_update = html_print_submit_button(__('Update item'), 'edit_item', false, 'class="sub upd"', true);
 
     $onheader = [
-        'updated_time'        => $updated_time,
-        'fullscreen'          => $fullscreen,
-        'combo_module_groups' => $filter_module_groups,
-        'combo_groups'        => $filter_groups,
+        'updated_time' => $updated_time,
+        'fullscreen'   => $fullscreen,
     ];
 
     /*
@@ -467,7 +465,7 @@ function mainAgentsModules()
             false,
             '',
             false,
-            (array) $updated_time,
+            $onheader,
             [
                 [
                     'link'  => '',
@@ -479,12 +477,6 @@ function mainAgentsModules()
                 ],
             ]
         );
-
-        echo '<table class="w100p">';
-        echo '<tr>';
-        echo "<td> <span class='float-right'>".$fullscreen['text'].'</span> </td>';
-        echo '</tr>';
-        echo '</table>';
     } else {
         if ($full_agents_id[0]) {
             $full_modules = urlencode(implode(';', $full_modules_selected));
@@ -600,6 +592,7 @@ function mainAgentsModules()
             $show_filters .= '</tr>';
         $show_filters .= '</table>';
         $show_filters .= '</form>';
+
         ui_toggle(
             $show_filters,
             __('Filters ').ui_print_help_tip(__('Secondary groups and agent subgroups will be taken into account.'), true),
@@ -758,7 +751,7 @@ function mainAgentsModules()
         return;
     }
 
-    echo '<table cellpadding="4" cellspacing="4" border="0" class="agents_modules_table w100p">';
+    echo '<table cellpadding="4" cellspacing="4" border="0" class="agents_modules_table w100p mrgn_btn_20px">';
 
     echo '<tr>';
 

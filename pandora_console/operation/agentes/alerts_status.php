@@ -439,7 +439,7 @@ if ($agent_view_page === true) {
         [
             'id'                  => 'alerts_status_datatable',
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'no_sortable_columns' => $no_sortable_columns,
@@ -457,6 +457,7 @@ if ($agent_view_page === true) {
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
             'search_button_class' => 'sub filter float-right',
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'form'                => [
                 'html' => printFormFilterAlert(
                     $id_group,

@@ -1659,6 +1659,10 @@ td.datos2_id {
   padding-bottom: 1px;
 }
 
+.p020 {
+  padding: 0 20px;
+}
+
 .w130,
 #table-agent-configuration select {
   width: 130px;
@@ -10826,6 +10830,7 @@ tr.bring_next_field {
   width: -moz-available;
   padding-right: 10px;
   left: 0;
+  height: 62px;
 }
 
 .action_buttons_right_content {
@@ -10856,7 +10861,6 @@ tr.bring_next_field {
   height: 62px;
   border-top: 1px solid #e5e9ed;
   background-color: #fff;
-  /*z-index: 10000;*/
 }
 
 .fixed_action_buttons_size > .action_buttons_background_mask {

@@ -786,7 +786,7 @@ class AgentsAlerts extends HTML
                 'name'            => 'show-modules-without-alerts',
                 'checked'         => $this->showWithoutAlertModules,
                 'input_class'     => 'flex-row',
-                'type'            => 'switch',
+                'type'            => 'checkbox',
                 'class'           => '',
                 'disabled_hidden' => true,
                 'return'          => true,

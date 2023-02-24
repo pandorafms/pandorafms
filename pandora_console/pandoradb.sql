@@ -4177,3 +4177,15 @@ CREATE TABLE IF NOT EXISTS `tmonitor_filter` (
   `ag_custom_fields` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tfavmenu_user`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_user` VARCHAR(255) NOT NULL,
+  `id_element` TEXT,
+  `url` TEXT NOT NULL,
+  `label` VARCHAR(255) NOT NULL,
+  `section` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`));

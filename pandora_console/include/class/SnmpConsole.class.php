@@ -389,7 +389,7 @@ class SnmpConsole extends HTML
                 [
                     'id'                  => $tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -420,6 +420,7 @@ class SnmpConsole extends HTML
                                 'fields'      => $show_alerts,
                                 'return'      => true,
                                 'selected'    => $this->filter_alert,
+                                'style'       => 'widht:100% !important',
                             ],
                             [
                                 'label'       => __('Severity'),
@@ -430,6 +431,7 @@ class SnmpConsole extends HTML
                                 'fields'      => $severities,
                                 'return'      => true,
                                 'selected'    => $this->filter_severity,
+                                'style'       => 'widht:100%',
                             ],
                             [
                                 'label'       => __('Free search'),
@@ -448,6 +450,7 @@ class SnmpConsole extends HTML
                                 'fields'      => $status_array,
                                 'return'      => true,
                                 'selected'    => $this->filter_status,
+                                'style'       => 'widht:100%',
                             ],
                             [
                                 'label'       => __('Group by Enterprise String/IP'),
@@ -483,6 +486,29 @@ class SnmpConsole extends HTML
                             ],
                         ],
                     ],
+                    'pagination_options'  => [
+                        [
+                            $config['block_size'],
+                            5,
+                            10,
+                            25,
+                            100,
+                            200,
+                            500,
+                            1000,
+                        ],
+                        [
+                            $config['block_size'],
+                            5,
+                            10,
+                            25,
+                            100,
+                            200,
+                            500,
+                            1000,
+                        ],
+                    ],
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                 ]
             );
         } catch (Exception $e) {

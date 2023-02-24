@@ -6647,7 +6647,7 @@ form#form-filter-interfaces ul li.select-interfaces {
 }
 
 li .select2 {
-  max-width: 400px !important;
+  width: 100% !important;
 }
 
 div.graph td.legendLabel {
@@ -10955,7 +10955,7 @@ pre.external_tools_output {
   margin-right: 10px;
   font-size: 10pt;
 }
-
+/*
 .filter_table input,
 .table_modal_alternate input,
 table.table_modal_alternate
@@ -10964,7 +10964,7 @@ table.table_modal_alternate
   > span.select2-selection {
   height: 32px !important;
 }
-
+*/
 .fixed_filter_bar .select2-selection__arrow,
 .filter_table .select2-selection__arrow,
 table.table_modal_alternate .select2-selection__arrow {

@@ -186,14 +186,14 @@ function mainInsertData()
     }
 
     $table = new stdClass();
-    $table->class = 'databox';
+    $table->class = 'databox filter-table-adv';
     $table->style = [];
     $table->cellstyle[0][0] = 'width: 0';
     $table->cellstyle[0][1] = 'width: 0';
     $table->data = [];
-    $table->data[0][0] = __('Agent');
-    $table->data[0][1] = __('Module');
-    $table->data[0][2] = __('Date');
+    $table->data[0][0] = '<label>'.__('Agent').'</label>';
+    $table->data[0][1] = '<label>'.__('Module').'</label>';
+    $table->data[0][2] = '<label>'.__('Date').'</label>';
     $params = [];
     $params['return'] = true;
     $params['show_helptip'] = true;
@@ -227,10 +227,23 @@ function mainInsertData()
     $table->data[1][2] .= '&nbsp;';
     $table->data[1][2] .= html_print_input_text('time', ($save === true) ? date(TIME_FORMAT) : $time, '', 10, 7, true);
 
-    $table->data[2][0] = __('Data');
-    $table->data[2][1] = __('CSV');
-    $table->data[3][0] = html_print_input_text('data', $data, __('Data'), 40, 60, true);
-    $table->data[3][1] = html_print_input_file('csv', true);
+    $table->data[2][0] = '<label>'.__('Data').'</label>';
+    $table->data[2][1] = '<label>'.__('CSV').'</label>';
+    $table->data[3][0] = html_print_input_text(
+        'data',
+        $data,
+        __('Data'),
+        40,
+        60,
+        true
+    );
+    $table->data[3][1] = html_print_div(
+        [
+            'class'   => '',
+            'content' => html_print_input_file('csv', true),
+        ],
+        true
+    );
 
     echo "<form method='post' enctype='multipart/form-data'>";
 

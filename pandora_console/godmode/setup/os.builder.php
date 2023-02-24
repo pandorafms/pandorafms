@@ -42,19 +42,6 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 
 $icons = get_list_os_icons_dir();
 
-echo '<form id="form_setup" method="post">';
-$table = new stdClass();
-$table->width = '100%';
-$table->class = 'databox filters';
-
-$table->style[0] = 'width: 15%';
-
-$table->data[0][0] = __('Name:');
-$table->data[0][1] = html_print_input_text('name', $name, __('Name'), 20, 30, true, false, false, '', 'w250px');
-$table->data[1][0] = __('Description');
-$table->data[1][1] = html_print_textarea('description', 5, 20, $description, '', true, 'w250px');
-$table->data[2][0] = __('Icon');
-
 $iconData = [];
 $iconData[] = html_print_select(
     $icons,
@@ -75,14 +62,32 @@ $iconData[] = html_print_div(
     true
 );
 
-$table->data[2][1] = html_print_div(
-    [
-        'style'   => 'display: flex;align-items: center;',
-        'content' => implode('', $iconData),
-    ],
-    true
+echo '<form id="form_setup" method="post">';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox filter-table-adv';
+
+// $table->style[0] = 'width: 15%';
+$table->data[0][] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text('name', $name, __('Name'), 20, 30, true, false, false, '', 'w250px')
 );
 
+$table->data[0][] = html_print_label_input_block(
+    __('Icon'),
+    html_print_div(
+        [
+            'class'   => 'flex-row-center',
+            'content' => implode('', $iconData),
+        ],
+        true
+    )
+);
+
+$table->data[1][] = html_print_label_input_block(
+    __('Description'),
+    html_print_textarea('description', 5, 20, $description, '', true, 'w250px')
+);
 
 html_print_table($table);
 

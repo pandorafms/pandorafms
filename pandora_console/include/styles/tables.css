@@ -557,6 +557,9 @@ table.filter-table-adv td > div .label-thin {
   font-weight: 400;
 }
 
+table.databox.filter-table-adv {
+  padding: 10px;
+}
 /*
 padding-right: calc(100% - 1024px);
 */

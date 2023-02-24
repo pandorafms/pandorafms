@@ -9909,14 +9909,14 @@ div#err_msg_centralised {
 .inputFile {
   background-color: #f6f7fb;
   height: 16px;
-  /*font-family: "lato";*/
-  font-size: 12px;
+  font-size: 12px !important;
   padding: 5.5pt 20pt;
   cursor: pointer;
-  color: #14524f;
+  color: #14524f !important;
   border: 2px solid #14524f;
   box-shadow: none;
   border-radius: 50px;
+  align-self: baseline;
 }
 
 .inputFile > input[type="file"] {

@@ -220,7 +220,7 @@ if ($edit_filter > -2) {
             if ($j == 1) {
                 $table->data[$j][1] .= ui_print_help_tip(__('This field contains a substring, could be part of a IP address, a numeric OID, or a plain substring').SEPARATOR_COLUMN, true);
             } else {
-                $table->data[$j][1] .= html_print_image('images/cross.png', true, ['id' => 'delete_filter_'.$f['id_snmp_filter'], 'class' => 'invert_filter', 'alt' => __('Click to remove the filter')]);
+                $table->data[$j][1] .= html_print_image('images/delete.svg', true, ['id' => 'delete_filter_'.$f['id_snmp_filter'], 'class' => 'invert_filter main_menu_icon', 'alt' => __('Click to remove the filter')]);
             }
 
             $j++;
@@ -298,7 +298,7 @@ if ($edit_filter > -2) {
                 $data = [];
                 $data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
                 $data[1] = $r['filter'];
-                $data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+                $data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/support@svg.svg', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter main_menu_icon']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
                 array_push($table->data, $data);
             }
         } else {
@@ -309,7 +309,7 @@ if ($edit_filter > -2) {
             foreach ($row as $i => $r) {
                 if ($ind2 == 0) {
                     $compose_id = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
-                    $compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+                    $compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/support@svg.svg', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter main_menu_icon']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
                     $ind2++;
                 }
 
@@ -358,7 +358,7 @@ if ($edit_filter > -2) {
 
     $(document).ready (function () {
         $('#add_filter').click(function(e) {
-            $('#filter_table').append('<tr id="filter_table-' + id + '"   class="datos"><td id="filter_table-' + id + '-0"   class="datos "></td><td id="filter_table-' + id + '-1"   class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="' + homeurl + 'images/cross.png" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title" alt="Click to delete the filter"></td></tr>');
+            $('#filter_table').append('<tr id="filter_table-' + id + '"   class="datos"><td id="filter_table-' + id + '-0"   class="datos "></td><td id="filter_table-' + id + '-1"   class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="' + homeurl + 'images/delete.svg" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title main_menu_icon" alt="Click to delete the filter"></td></tr>');
             
             id++;
 

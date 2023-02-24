@@ -463,10 +463,6 @@ function config_update_config()
                         if (config_update_value('ipam_ocuppied_warning_treshold', get_parameter('ipam_ocuppied_warning_treshold'), true) === false) {
                             $error_update[] = __('Ipam Ocuppied Manager Warning');
                         }
-
-                        if (config_update_value('sap_license', get_parameter('sap_license'), true) === false) {
-                            $error_update[] = __('SAP/R3 Plugin Licence');
-                        }
                     }
                 break;
 
@@ -846,6 +842,10 @@ function config_update_config()
 
                     if (config_update_value('report_limit', (int) get_parameter('report_limit'), true) === false) {
                         $error_update[] = __('Item limit for realtime reports)');
+                    }
+
+                    if (config_update_value('events_per_query', (int) get_parameter('events_per_query'), true) === false) {
+                        $error_update[] = __('Limit of events per query');
                     }
 
                     if (config_update_value('step_compact', (int) get_parameter('step_compact'), true) === false) {
@@ -1984,6 +1984,10 @@ function config_process_config()
 
     if (!isset($config['report_limit'])) {
         config_update_value('report_limit', 100);
+    }
+
+    if (!isset($config['events_per_query'])) {
+        config_update_value('events_per_query', 5000);
     }
 
     if (!isset($config['loginhash_pwd'])) {

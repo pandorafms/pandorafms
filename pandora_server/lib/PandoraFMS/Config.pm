@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.768";
-my $pandora_build = "230206";
+my $pandora_version = "7.0NG.769";
+my $pandora_build = "230224";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -527,33 +527,35 @@ sub pandora_load_config {
 
 	$pa_config->{"unknown_updates"} = 0; # 7.0.718
 
-	$pa_config->{"provisioningserver"} = 1; # 7.0 720
-	$pa_config->{"provisioningserver_threads"} = 1; # 7.0 720
-	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0 720
+	$pa_config->{"provisioningserver"} = 1; # 7.0.720
+	$pa_config->{"provisioningserver_threads"} = 1; # 7.0.720
+	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0.720
 	
-	$pa_config->{"autoconfigure_agents"} = 1; # 7.0 725
-	$pa_config->{"autoconfigure_agents_threshold"} = 300; #7.0 764
+	$pa_config->{"autoconfigure_agents"} = 1; # 7.0.725
+	$pa_config->{"autoconfigure_agents_threshold"} = 300; #7.0.764
 	
-	$pa_config->{'snmp_extlog'} = ""; # 7.0 726
+	$pa_config->{'snmp_extlog'} = ""; # 7.0.726
 
-	$pa_config->{"fsnmp"} = "/usr/bin/pandorafsnmp"; # 7.0 732
+	$pa_config->{"fsnmp"} = "/usr/bin/pandorafsnmp"; # 7.0.732
 
-	$pa_config->{"event_inhibit_alerts"} = 0; # 7.0 737
+	$pa_config->{"event_inhibit_alerts"} = 0; # 7.0.737
 
-	$pa_config->{"alertserver"} = 0; # 7.0 756
-	$pa_config->{"alertserver_threads"} = 1; # 7.0 756
-	$pa_config->{"alertserver_warn"} = 180; # 7.0 756
-	$pa_config->{"alertserver_queue"} = 0; # 7.0 764
+	$pa_config->{"alertserver"} = 0; # 7.0.756
+	$pa_config->{"alertserver_threads"} = 1; # 7.0.756
+	$pa_config->{"alertserver_warn"} = 180; # 7.0.756
+	$pa_config->{"alertserver_queue"} = 0; # 7.0.764
 
-	$pa_config->{'ncmserver'} = 0; # 7.0 758
-	$pa_config->{'ncmserver_threads'} = 1; # 7.0 758
-	$pa_config->{'ncm_ssh_utility'} = '/usr/share/pandora_server/util/ncm_ssh_extension'; # 7.0 758
+	$pa_config->{'ncmserver'} = 0; # 7.0.758
+	$pa_config->{'ncmserver_threads'} = 1; # 7.0.758
+	$pa_config->{'ncm_ssh_utility'} = '/usr/share/pandora_server/util/ncm_ssh_extension'; # 7.0.758
 
-	$pa_config->{"pandora_service_cmd"} = 'service pandora_server'; # 7.0 761
-	$pa_config->{"tentacle_service_cmd"} = 'service tentacle_serverd'; # 7.0 761
-	$pa_config->{"tentacle_service_watchdog"} = 1; # 7.0 761
+	$pa_config->{"pandora_service_cmd"} = 'service pandora_server'; # 7.0.761
+	$pa_config->{"tentacle_service_cmd"} = 'service tentacle_serverd'; # 7.0.761
+	$pa_config->{"tentacle_service_watchdog"} = 1; # 7.0.761
 
-	$pa_config->{"dataserver_smart_queue"} = 0; # 765.
+	$pa_config->{"dataserver_smart_queue"} = 0; # 7.0.765
+
+	$pa_config->{"unknown_block_size"} = 1000; # 7.0.769
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){

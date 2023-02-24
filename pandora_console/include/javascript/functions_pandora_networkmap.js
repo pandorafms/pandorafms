@@ -55,10 +55,30 @@ function draw_minimap() {
   var relation_min_nodes = minimap_relation;
   var relation_minimap_w = 2;
   var relation_minimap_h = 2;
-  if (graph.nodes.length > 100) {
+  if (graph.nodes.length > 100 && graph.nodes.length < 500) {
     relation_min_nodes = 0.01;
     relation_minimap_w = (graph.nodes.length / 100) * 2.5;
     relation_minimap_h = 1.5;
+  } else if (graph.nodes.length >= 500 && graph.nodes.length < 1000) {
+    if (typeof method != "undefined" && method == 4) {
+      relation_min_nodes = 0.002;
+      relation_minimap_w = (graph.nodes.length / 500) * 2.5;
+      relation_minimap_h = 3;
+    } else {
+      relation_min_nodes = 0.008;
+      relation_minimap_w = (graph.nodes.length / 500) * 2.5;
+      relation_minimap_h = 3;
+    }
+  } else if (graph.nodes.length >= 1000) {
+    if (typeof method != "undefined" && method == 4) {
+      relation_min_nodes = 0.001;
+      relation_minimap_w = (graph.nodes.length / 1000) * 4.5;
+      relation_minimap_h = 4;
+    } else {
+      relation_min_nodes = 0.0015;
+      relation_minimap_w = (graph.nodes.length / 1000) * 3.5;
+      relation_minimap_h = 3.5;
+    }
   }
 
   //Draw the items and lines
@@ -1792,10 +1812,30 @@ function init_minimap() {
   var relation_minimap_w = 2;
   var relation_minimap_h = 2;
 
-  if (graph.nodes.length > 100) {
+  if (graph.nodes.length > 100 && graph.nodes.length < 500) {
     relation_min_nodes = 0.01;
     relation_minimap_w = (graph.nodes.length / 100) * 2.5;
     relation_minimap_h = 1.5;
+  } else if (graph.nodes.length >= 500 && graph.nodes.length < 1000) {
+    if (typeof method != "undefined" && method == 4) {
+      relation_min_nodes = 0.002;
+      relation_minimap_w = (graph.nodes.length / 500) * 2.5;
+      relation_minimap_h = 3;
+    } else {
+      relation_min_nodes = 0.008;
+      relation_minimap_w = (graph.nodes.length / 500) * 2.5;
+      relation_minimap_h = 3;
+    }
+  } else if (graph.nodes.length >= 1000) {
+    if (typeof method != "undefined" && method == 4) {
+      relation_min_nodes = 0.001;
+      relation_minimap_w = (graph.nodes.length / 1000) * 4.5;
+      relation_minimap_h = 4;
+    } else {
+      relation_min_nodes = 0.0015;
+      relation_minimap_w = (graph.nodes.length / 1000) * 3.5;
+      relation_minimap_h = 3.5;
+    }
   }
 
   $("#minimap_" + networkmap_id).bind("mousemove", function(event) {
@@ -3090,6 +3130,10 @@ function init_graph(parameter_object) {
 
   if (typeof parameter_object.refresh_time != "undefined") {
     window.refresh_time = parameter_object.refresh_time;
+  }
+
+  if (typeof parameter_object.method != "undefined") {
+    window.method = parameter_object.method;
   }
 
   var rect_center_x = graph.nodes[0].x;

@@ -233,9 +233,8 @@ $searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/est
 $table = new stdClass();
 $table->width = '100%';
 $table->size = [];
-$table->size[0] = '33%';
-$table->size[1] = '33%';
-$table->size[2] = '33%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 $table->class = 'filter-table-adv';
 
 $table->data['group'][0] = html_print_label_input_block(

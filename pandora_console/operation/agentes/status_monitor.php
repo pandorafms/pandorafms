@@ -542,7 +542,7 @@ if (empty($tags) === true) {
         true,
         '',
         false,
-        'width: 150px;'
+        'width: 100%;'
     );
     $tagsElement .= ui_print_input_placeholder(
         __('Only it is show tags in use.'),
@@ -744,171 +744,203 @@ $div_custom_fields .= '</div>';
 $table = new stdClass();
 $tableFilter = new StdClass();
 $tableFilter->width = '100%';
-$tableFilter->cellspacing = 0;
-$tableFilter->cellpadding = 0;
+$tableFilter->size = [];
+$tableFilter->size[0] = '33%';
+$tableFilter->size[1] = '33%';
+$tableFilter->size[2] = '33%';
 $tableFilter->id = 'main_status_monitor_filter';
-$tableFilter->class = 'filter_table';
-$tableFilter->cellclass['inputs_second_line'][2] = 'flex flex_column wrap';
-// Defined styles.
-$tableFilter->style[0] = 'padding-right: 10px';
-$tableFilter->style[1] = 'padding-right: 10px';
-$tableFilter->style[2] = 'padding-right: 10px';
+$tableFilter->class = 'filter-table-adv';
 // Captions for first line.
-$tableFilter->data['captions_first_line'][0] = __('Group');
-$tableFilter->data['captions_first_line'][1] = __('Module group');
-$tableFilter->data['captions_first_line'][2] = __('Recursion');
-$tableFilter->data['captions_first_line'][3] = __('Search');
-// Inputs for first line.
-$tableFilter->data['inputs_first_line'][0] = html_print_select_groups(
-    $config['id_user'],
-    'AR',
-    true,
-    'ag_group',
-    $ag_group,
-    '',
-    '',
-    '0',
-    true,
-    false,
-    false,
-    '',
-    false,
-    '',
-    false,
-    false,
-    'id_grupo',
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    $not_condition
+$tableFilter->data['first_line'][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        $config['id_user'],
+        'AR',
+        true,
+        'ag_group',
+        $ag_group,
+        '',
+        '',
+        '0',
+        true,
+        false,
+        false,
+        '',
+        false,
+        '',
+        false,
+        false,
+        'id_grupo',
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        $not_condition
+    )
 );
-$tableFilter->data['inputs_first_line'][1] = html_print_select(
-    $rows_select,
-    'modulegroup',
-    $modulegroup,
-    '',
-    __($is_none),
-    -1,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 100%;'
+$tableFilter->data['first_line'][0] .= html_print_label_input_block(
+    __('Recursion'),
+    html_print_checkbox_switch(
+        'recursion',
+        1,
+        ($recursion === true || $recursion === 'true' || $recursion === '1') ? 'checked' : false,
+        true
+    ),
+    [
+        'div_class'   => 'add-input-reverse',
+        'label_class' => 'label-thin',
+    ]
 );
-$tableFilter->data['inputs_first_line'][2] = html_print_checkbox_switch(
-    'recursion',
-    1,
-    ($recursion === true || $recursion === 'true' || $recursion === '1') ? 'checked' : false,
-    true
+
+$tableFilter->data['first_line'][1] = html_print_label_input_block(
+    __('Module group'),
+    html_print_select(
+        $rows_select,
+        'modulegroup',
+        $modulegroup,
+        '',
+        __($is_none),
+        -1,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%;'
+    )
 );
-$tableFilter->data['inputs_first_line'][3] = html_print_input_text(
-    'ag_freestring',
-    $ag_freestring,
-    '',
-    40,
-    30,
-    true
+
+$tableFilter->rowspan['first_line'][2] = 3;
+$tableFilter->data['first_line'][2] = html_print_label_input_block(
+    __('Tags'),
+    $tagsElement
 );
-// Captions for second line.
-$tableFilter->data['captions_second_line'][0] = __('Monitor status');
-$tableFilter->data['captions_second_line'][1] = __('Module name');
-$tableFilter->data['captions_second_line'][2] = __('Tags');
+
 // Inputs for second line.
-$tableFilter->rowstyle['inputs_second_line'] = 'vertical-align: top;';
-$tableFilter->data['inputs_second_line'][0] = html_print_select(
-    $fields,
-    'status',
-    $status,
-    '',
-    __($is_none),
-    -1,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 150px;'
+$tableFilter->data['second_line'][0] = html_print_label_input_block(
+    __('Monitor status'),
+    html_print_select(
+        $fields,
+        'status',
+        $status,
+        '',
+        __($is_none),
+        -1,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%'
+    )
 );
 
-$tableFilter->data['inputs_second_line'][1] = html_print_autocomplete_modules(
-    'ag_modulename',
-    $ag_modulename,
-    false,
-    true,
-    '',
-    [],
-    true
+$tableFilter->data['second_line'][1] = html_print_label_input_block(
+    __('Module name'),
+    html_print_autocomplete_modules(
+        'ag_modulename',
+        $ag_modulename,
+        false,
+        true,
+        '',
+        [],
+        true
+    )
 );
 
-$tableFilter->data['inputs_second_line'][2] = $tagsElement;
+$tableFilter->data['third_line'][0] = html_print_label_input_block(
+    __('Search'),
+    html_print_input_text(
+        'ag_freestring',
+        $ag_freestring,
+        '',
+        40,
+        30,
+        true
+    )
+);
 
 // Advanced filter.
 $tableAdvancedFilter = new StdClass();
 $tableAdvancedFilter->width = '100%';
 $tableAdvancedFilter->class = 'filters';
-$tableAdvancedFilter->style = [];
-// $tableAdvancedFilter->style[0] = 'font-weight: bold;';
-$tableAdvancedFilter->cellclass['fields_advancedField_1'][4] = 'flex flex_column wrap';
-$tableAdvancedFilter->rowstyle['fields_advancedField_1'] = 'vertical-align: top;';
-// $tableAdvancedFilter->style[1] = 'font-weight: bold;';
-$tableAdvancedFilter->data['captions_advancedField_1'][0] = '<span>'.__('Server type').'</span>';
-$tableAdvancedFilter->data['captions_advancedField_1'][1] = '<span>'.__('Show monitors...').'</span>';
-$tableAdvancedFilter->data['captions_advancedField_1'][2] = '<span>'.__('Min. hours in current status').'</span>';
-$tableAdvancedFilter->data['captions_advancedField_1'][3] = '<span>'.__('Data type').'</span>';
-$tableAdvancedFilter->data['captions_advancedField_1'][4] = '<span>'.__('Not condition').'</span>';
-
-$tableAdvancedFilter->data['fields_advancedField_1'][0] = html_print_select($typemodules, 'moduletype', $moduletype, '', __($is_none), '', true, false, true, '', false, 'width: 150px;');
-$tableAdvancedFilter->data['fields_advancedField_1'][1] = html_print_select($monitor_options, 'module_option', $module_option, '', '', '', true, false, true, '', false, 'width: 150px;');
-$tableAdvancedFilter->data['fields_advancedField_1'][2] = html_print_input_text('min_hours_status', $min_hours_val, '', 12, 20, true);
-$tableAdvancedFilter->data['fields_advancedField_1'][3] = html_print_select_from_sql($sqlModuleType, 'datatype', '', '', __('All'), 0, true);
-$tableAdvancedFilter->data['fields_advancedField_1'][4] = html_print_div(
-    [
-        'class'   => 'w120px mrgn_5px mrgn_lft_0px mrgn_right_0px flex wrap',
-        'content' => html_print_input(
-            [
-                'type'    => 'switch',
-                'name'    => 'not_condition',
-                'return'  => false,
-                'checked' => ($check_not_condition === true || $check_not_condition === 'true' || $check_not_condition === '1') ? 'checked' : false,
-                'value'   => 'NOT',
-                'id'      => 'not_condition_switch',
-                'onclick' => 'changeNotConditionStatus(this)',
-            ]
-        ).ui_print_input_placeholder(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true),
-    ],
-    true
+$tableAdvancedFilter->size = [];
+$tableAdvancedFilter->size[0] = '33%';
+$tableAdvancedFilter->size[1] = '33%';
+$tableAdvancedFilter->size[2] = '33%';
+$tableAdvancedFilter->data['advancedField_1'][0] = html_print_label_input_block(
+    __('Server type'),
+    html_print_select(
+        $typemodules,
+        'moduletype',
+        $moduletype,
+        '',
+        __($is_none),
+        '',
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%;'
+    )
 );
-/*
-    '<div id="datatypebox">';
 
-    $a = db_get_all_rows_sql($sql);
+$tableAdvancedFilter->data['advancedField_1'][1] = html_print_label_input_block(
+    __('Show monitors...'),
+    html_print_select(
+        $monitor_options,
+        'module_option',
+        $module_option,
+        '',
+        '',
+        '',
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%;'
+    )
+);
 
-    $tableAdvancedFilter->data[1][1] .= '<select id="datatype" name="datatype" style="height: 28px;" ';
+$tableAdvancedFilter->data['advancedField_1'][2] = html_print_label_input_block(
+    __('Min. hours in current status'),
+    html_print_input_text('min_hours_status', $min_hours_val, '', 12, 20, true)
+);
 
-    $tableAdvancedFilter->data[1][1] .= '>';
+$tableAdvancedFilter->data['advancedField_2'][0] = html_print_label_input_block(
+    __('Data type'),
+    html_print_select_from_sql($sqlModuleType, 'datatype', '', '', __('All'), 0, true)
+);
 
-    $tableAdvancedFilter->data[1][1] .= '<option name="datatype" value="">'.__($is_none).'</option>';
+$tableAdvancedFilter->data['advancedField_2'][1] = html_print_label_input_block(
+    __('Not condition'),
+    html_print_div(
+        [
+            'class'   => 'mrgn_5px mrgn_lft_0px mrgn_right_0px flex wrap',
+            'content' => html_print_input(
+                [
+                    'type'    => 'switch',
+                    'name'    => 'not_condition',
+                    'return'  => false,
+                    'checked' => ($check_not_condition === true || $check_not_condition === 'true' || $check_not_condition === '1') ? 'checked' : false,
+                    'value'   => 'NOT',
+                    'id'      => 'not_condition_switch',
+                    'onclick' => 'changeNotConditionStatus(this)',
+                ]
+            ).ui_print_input_placeholder(
+                __('If you check this option, those elements that do NOT meet any of the requirements will be shown'),
+                true
+            ),
+        ],
+        true
+    )
+);
 
-
-    foreach ($a as $valor) {
-    $tableAdvancedFilter->data[1][1] .= '<option name="datatype" value="'.$valor['id_tipo'].'" ';
-
-    if ($valor['id_tipo'] == $datatype) {
-        $tableAdvancedFilter->data[1][1] .= 'selected';
-    }
-
-    $tableAdvancedFilter->data[1][1] .= '>'.$valor['descripcion'].'</option>';
-    }
-
-    $tableAdvancedFilter->data[1][1] .= '</select>';
-    $tableAdvancedFilter->data[1][1] .= '</div>';
-*/
-$tableAdvancedFilter->colspan[2][0] = 7;
-$tableAdvancedFilter->cellstyle[2][0] = 'padding-left: 10px;';
+$tableAdvancedFilter->colspan[2][0] = 3;
 $tableAdvancedFilter->data[2][0] = ui_toggle(
     $div_custom_fields,
     __('Agent custom fields'),
@@ -917,12 +949,10 @@ $tableAdvancedFilter->data[2][0] = ui_toggle(
     true,
     true,
     '',
-    'white-box-content',
-    'white_table_graph'
+    'white-box-content'
 );
 
-$tableFilter->colspan[3][0] = 7;
-$tableFilter->cellstyle[3][0] = 'padding-left: 10px;padding-bottom: 0px;';
+$tableFilter->colspan[3][0] = 3;
 $tableFilter->data[3][0] = ui_toggle(
     html_print_table(
         $tableAdvancedFilter,
@@ -934,13 +964,23 @@ $tableFilter->data[3][0] = ui_toggle(
     true,
     true,
     '',
-    'white-box-content',
-    'white_table_graph'
+    'white-box-content'
 );
 
-// $tableFilter->colspan[4][0] = 2;
-$tableFilter->cellstyle[4][0] = 'padding-top: 0px;';
-$tableFilter->data[4][0] = html_print_button(
+$filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
+$filters .= html_print_table($tableFilter, true);
+$buttons = html_print_submit_button(
+    __('Filter'),
+    'uptbutton',
+    false,
+    [
+        'icon' => 'search',
+        'mode' => 'mini',
+    ],
+    true
+);
+
+$buttons .= html_print_button(
     __('Load filter'),
     'load-filter',
     false,
@@ -953,8 +993,7 @@ $tableFilter->data[4][0] = html_print_button(
     true
 );
 
-
-$tableFilter->data[4][1] = html_print_button(
+$buttons .= html_print_button(
     __('Save filter'),
     'save-filter',
     false,
@@ -967,21 +1006,14 @@ $tableFilter->data[4][1] = html_print_button(
     true
 );
 
-$tableFilter->colspan[4][2] = 5;
-$tableFilter->cellstyle[4][2] = 'padding-top: 0px;';
-$tableFilter->data[4][2] = html_print_submit_button(
-    __('Filter'),
-    'uptbutton',
-    false,
+$filters .= html_print_div(
     [
-        'icon' => 'next',
-        'mode' => 'mini',
+        'class'   => 'action-buttons',
+        'content' => $buttons,
     ],
     true
 );
 
-$filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
-$filters .= html_print_table($tableFilter, true);
 $filters .= '</form>';
 ui_toggle(
     $filters,
@@ -2164,7 +2196,7 @@ if (is_metaconsole() !== true) {
 }
 
 // End Build List Result.
-echo "<div id='monitor_details_window' class='filter_table'></div>";
+echo "<div id='monitor_details_window'></div>";
 
 // Load filter div for dialog.
 echo '<div id="load-modal-filter" style="display:none"></div>';

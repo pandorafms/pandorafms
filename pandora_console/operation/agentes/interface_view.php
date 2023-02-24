@@ -99,7 +99,7 @@ if ($autosearch === true) {
         $result = agents_get_network_interfaces($selected_agents);
     }
 
-    if ($result === false) {
+    if ($result === false || empty($result) === true) {
         $result = [];
     } else {
         ui_pagination(

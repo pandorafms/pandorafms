@@ -21,111 +21,128 @@
  */
 function print_filters($sec)
 {
+    global $config;
+
     $table = new StdClass();
     $table->width = '100%';
-    $table->cellspacing = 0;
-    $table->cellpadding = 0;
-    $table->class = 'databox filters';
+    $table->rowspan = [];
+    $table->size = [];
+    $table->size[0] = '33%';
+    $table->size[1] = '33%';
+    $table->size[2] = '33%';
+    $table->class = 'filter-table-adv';
 
     if ($sec === 'view') {
-        $table->style[0] = 'font-weight: bold;';
-        $table->style[1] = 'font-weight: bold;';
-        $table->style[2] = 'font-weight: bold;';
-        $table->style[3] = 'font-weight: bold;';
-        $table->style[4] = 'font-weight: bold;';
-
-        $table->data[0][0] = __('Group');
-        $table->data[0][1] .= html_print_select_groups(
-            $config['id_user'],
-            'AR',
-            true,
-            'group_id',
-            $ag_group,
-            '',
-            '',
-            '0',
-            true,
-            false,
-            false,
-            '',
-            false,
-            '',
-            false,
-            false,
-            'id_grupo',
-            false
+        $table->data[0][0] = html_print_label_input_block(
+            __('Group'),
+            html_print_select_groups(
+                $config['id_user'],
+                'AR',
+                true,
+                'group_id',
+                '',
+                '',
+                '',
+                '0',
+                true,
+                false,
+                false,
+                '',
+                false,
+                '',
+                false,
+                false,
+                'id_grupo',
+                false
+            )
         );
 
-        $table->data[0][2] = __('Recursion');
-
-        $table->data[0][2] .= html_print_input(
+        $table->data[0][0] .= html_print_label_input_block(
+            __('Recursion'),
+            html_print_input(
+                [
+                    'type'    => 'switch',
+                    'name'    => 'recursion',
+                    'return'  => true,
+                    'checked' => false,
+                    'value'   => 1,
+                ]
+            ),
             [
-                'type'    => 'checkbox',
-                'name'    => 'recursion',
-                'return'  => true,
-                'checked' => $recursion,
-                'value'   => 1,
+                'div_class'   => 'add-input-reverse',
+                'label_class' => 'label-thin',
             ]
         );
-
-        $table->data[1][0] = __('Filter Agents');
-        $table->data[1][1] = html_print_input_text('filter_agents', '', '', 20, 255, true);
-
-        $table->data[2][0] = __('Agents');
-
-        if (empty($agents) === true || $agents == -1) {
-            $agents = [];
-        }
-
-        $table->data[2][1] = html_print_select(
-            [],
-            'selected_agents[]',
-            '',
-            '',
-            '',
-            0,
-            true,
-            true,
-            true,
-            '',
-            false,
-            'min-width: 180px; max-width: 200px;'
+        $table->rowspan[0][1] = 2;
+        $table->data[0][1] = html_print_label_input_block(
+            __('Agents'),
+            html_print_select(
+                [],
+                'selected_agents[]',
+                '',
+                '',
+                '',
+                0,
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width:100%'
+            )
         );
 
-        // Interfaces.
-        $table->data[2][3] = '<b>'.__('Interfaces').'</b>';
-        $table->data[2][4] = html_print_select(
-            [],
-            'selected_interfaces[]',
-            $selected_interfaces,
-            '',
-            '',
-            0,
-            true,
-            true,
-            true,
-            '',
-            false,
-            'min-width: 180px; max-width: 200px;'
+        $table->rowspan[0][2] = 2;
+        $table->data[0][2] = html_print_label_input_block(
+            __('Interfaces'),
+            html_print_select(
+                [],
+                'selected_interfaces[]',
+                '',
+                '',
+                '',
+                0,
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width:100%'
+            )
         );
 
-        $filters = '<form method="post" action="'.ui_get_url_refresh(
-            [
-                'selected_agents'     => $selected_agents,
-                'selected_interfaces' => $selected_interfaces,
-                'selected_group_id'   => $selected_group_id,
-            ]
-        ).'">';
+        $table->data[1][0] = html_print_label_input_block(
+            __('Filter Agents'),
+            html_print_input_text(
+                'filter_agents',
+                '',
+                '',
+                20,
+                255,
+                true
+            )
+        );
+
+        $filters = '<form method="post" action="'.ui_get_url_refresh().'">';
 
         $filters .= html_print_table($table, true);
 
-        $filters .= "<div class='height_100p right'>".html_print_submit_button(
-            __('Show'),
-            'uptbutton',
-            false,
-            'class="sub search mgn_tp_0"',
+        $filters .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Filter'),
+                    'srcbutton',
+                    false,
+                    [
+                        'icon' => 'search',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
             true
-        ).'</div>';
+        );
 
         $filters .= '</form>';
     } else {
@@ -135,7 +152,7 @@ function print_filters($sec)
         $table->data[0][1] = html_print_select(
             [],
             'selected_interfaces[]',
-            $selected_interfaces,
+            '',
             '',
             '',
             0,
@@ -147,13 +164,7 @@ function print_filters($sec)
             'min-width: 180px; max-width: 200px;'
         );
 
-        $filters = '<form method="post" action="'.ui_get_url_refresh(
-            [
-                'selected_agents'     => $selected_agents,
-                'selected_interfaces' => $selected_interfaces,
-                'selected_group_id'   => $selected_group_id,
-            ]
-        ).'">';
+        $filters = '<form method="post" action="'.ui_get_url_refresh().'">';
 
         $filters .= html_print_table($table, true);
 
@@ -170,7 +181,7 @@ function print_filters($sec)
 
     ui_toggle(
         $filters,
-        __('Interface filter'),
+        '<span class="subsection_header_title">'.__('Interface filter').'</span>',
         __('Interface filter'),
         'ui_toggle_if_filter',
         true,

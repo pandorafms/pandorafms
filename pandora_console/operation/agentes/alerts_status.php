@@ -530,18 +530,18 @@ if ($agent_view_page === true) {
     echo $html_content;
 }
 
-    // Strict user hidden.
-    echo '<div id="strict_hidden" class="invisible">';
-    html_print_input_text('strict_user_hidden', $strict_user);
+// Strict user hidden.
+echo '<div id="strict_hidden" class="invisible">';
+html_print_input_text('strict_user_hidden', $strict_user);
 
-    html_print_input_text('is_meta_hidden', (int) is_metaconsole());
-    echo '</div>';
+html_print_input_text('is_meta_hidden', (int) is_metaconsole());
+echo '</div>';
 
-    enterprise_hook('close_meta_frame');
+enterprise_hook('close_meta_frame');
 
 
-    ui_require_css_file('cluetip', 'include/styles/js/');
-    ui_require_jquery_file('cluetip');
+ui_require_css_file('cluetip', 'include/styles/js/');
+ui_require_jquery_file('cluetip');
 ?>
 
 <script type="text/javascript">

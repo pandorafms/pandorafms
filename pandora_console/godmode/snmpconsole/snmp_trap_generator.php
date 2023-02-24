@@ -79,12 +79,12 @@ if ($generate_trap) {
 $table = new stdClass();
 $traps_generator = '<form method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
 $table->width = '100%';
-$table->class = 'filter-table-adv';
+$table->class = 'filter-table-adv databox';
 $table->size = [];
 $table->data = [];
-$table->size[0] = '30%';
-$table->size[1] = '30%';
-$table->size[2] = '30%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->size[2] = '50%';
 
 $table->data[0][0] = html_print_label_input_block(
     __('Host address'),
@@ -110,7 +110,7 @@ $table->data[0][1] = html_print_label_input_block(
     )
 );
 
-$table->data[0][2] = html_print_label_input_block(
+$table->data[1][0] = html_print_label_input_block(
     __('Enterprise String'),
     html_print_input_text(
         'snmp_oid',
@@ -122,7 +122,7 @@ $table->data[0][2] = html_print_label_input_block(
     )
 );
 
-$table->data[1][1] = html_print_label_input_block(
+$table->data[1][2] = html_print_label_input_block(
     __('Value'),
     html_print_input_text(
         'snmp_value',
@@ -134,7 +134,7 @@ $table->data[1][1] = html_print_label_input_block(
     )
 );
 
-$table->data[1][2] = html_print_label_input_block(
+$table->data[2][1] = html_print_label_input_block(
     __('SNMP Agent'),
     html_print_input_text(
         'snmp_agent',
@@ -145,18 +145,6 @@ $table->data[1][2] = html_print_label_input_block(
         true
     )
 );
-/*
-    $table->data[1][3] = html_print_label_input_block(
-    __('SNMP Type'),
-    html_print_input_text(
-        'snmp_type',
-        $snmp_type,
-        '',
-        50,
-        255,
-        true
-    )
-);*/
 
 $types = [
     0 => 'Cold start (0)',
@@ -167,7 +155,7 @@ $types = [
     5 => 'EGP neighbor loss (5)',
     6 => 'Enterprise (6)',
 ];
-$table->data[1][3] = html_print_label_input_block(
+$table->data[2][2] = html_print_label_input_block(
     __('SNMP Type'),
     html_print_select(
         $types,
@@ -185,32 +173,11 @@ $table->data[1][3] = html_print_label_input_block(
     )
 );
 
-$searchForm = '<form method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
-$searchForm .= html_print_table($table, true);
-$searchForm .= html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            __('Generate trap'),
-            'btn_generate_trap',
-            false,
-            ['class' => 'sub cog'],
-            true
-        ),
-    ],
-    true
-);
-$searchForm .= html_print_input_hidden('generate_trap', 1, true);
-$searchForm .= '</form>';
+$traps_generator .= html_print_table($table, true);
+$traps_generator .= '<div class="action-buttons">'.html_print_submit_button(__('Generate trap'), 'btn_generate_trap', false, 'class="submitButton"', true).'</div>';
+$traps_generator .= html_print_input_hidden('generate_trap', 1, true);
 
-ui_toggle(
-    $searchForm,
-    '<span class="subsection_header_title">'.__('Trap').'</span>',
-    'filter_form',
-    '',
-    false,
-    false,
-    '',
-    'white-box-content',
-    'box-flat white_table_graph fixed_filter_bar'
-);
+unset($table);
+$traps_generator .= '</form>';
+
+echo $traps_generator;

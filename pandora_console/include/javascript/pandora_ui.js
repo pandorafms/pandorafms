@@ -837,6 +837,31 @@ function unblockSubmit(button) {
 
 function favMenuAction(e) {
   var data = JSON.parse(atob(e.value));
+  if (
+    data.label === "" &&
+    $(e)
+      .attr("src")
+      .endsWith("star.png") === false
+  ) {
+    $("#dialog-fav-menu").dialog({
+      title: "Please choose a title",
+      width: 330,
+      buttons: [
+        {
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next",
+          text: "Confirm",
+          click: function() {
+            data.label = $("#text-label_fav_menu").val();
+            $(e).val(btoa(JSON.stringify(data)));
+            favMenuAction(e);
+            $(this).dialog("close");
+          }
+        }
+      ]
+    });
+    return;
+  }
   $.ajax({
     method: "POST",
     url: "ajax.php",

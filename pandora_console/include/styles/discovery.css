@@ -317,3 +317,10 @@ div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitool
   bottom: -20px;
   top: auto;
 }
+#dialog-fav-menu {
+  display: none;
+}
+#dialog-fav-menu p {
+  margin: 0px;
+  padding-top: 40px;
+}

@@ -7132,5 +7132,9 @@ function ui_print_fav_menu($id_element, $url, $label, $section)
         ['onclick' => 'favMenuAction(this)']
     );
     $output .= '</span>';
+    $output .= '<div id="dialog-fav-menu">';
+    $output .= '<p><b>'.__('Title').'</b></p>';
+    $output .= html_print_input_text('label_fav_menu', '', '', 25, 255, true, false, true);
+    $output .= '</div>';
     return $output;
 }

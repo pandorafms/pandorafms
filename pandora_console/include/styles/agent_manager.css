@@ -48,7 +48,7 @@ a#qr_code_agent_view {
 .sg_source,
 .sg_target {
   width: 100%;
-  height: 110px;
+  /*height: 110px;*/
 }
 
 .sg_source select,

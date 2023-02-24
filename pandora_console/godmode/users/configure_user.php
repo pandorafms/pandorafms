@@ -1691,7 +1691,7 @@ if (is_metaconsole() === true) {
 }
 
 
-echo '<div class="max_floating_element_size mrgn_20px">';
+echo '<div class="max_floating_element_size">';
 echo '<form id="user_profile_form" name="user_profile_form" method="post" autocomplete="off" action="#">';
 
 if (!$id) {

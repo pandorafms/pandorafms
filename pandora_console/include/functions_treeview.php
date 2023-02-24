@@ -461,13 +461,17 @@ function treeview_printAlertsTable($id_module, $server_data=[], $no_head=false)
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'LW')) {
         // Actions table
         echo '<div class="w100p right_align">';
-        echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'" target="_blank">';
-            html_print_submit_button(__('Go to alerts edition'), 'upd_button', false, ['icon' => 'alert']);
-        echo '</a>';
+        html_print_button(
+            __('Go to alerts edition'),
+            'upd_button',
+            false,
+            'window.location.assign("'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'")',
+            ['icon' => 'alert']
+        );
         echo '</div>';
     }
 
-    if (!empty($server_data) && is_metaconsole()) {
+    if (empty($server_data) === false && is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 
@@ -585,7 +589,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             $urlAgent = '';
         }
     } else {
-        $urlAgent = 'window.location.assign(\'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente'].'\')';
+        $urlAgent = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente'];
     }
 
     $cellName = $agent['alias'];
@@ -713,7 +717,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
     ui_toggle(
         $eventsGraph,
-        '<span class="subsection_header_title">'.__('Events (24h)').'</span>',
+        '<span class="subsection_header_title secondary">'.__('Events (24h)').'</span>',
         '',
         '',
         false,
@@ -733,7 +737,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $access_graph .= '</div>';
         ui_toggle(
             $access_graph,
-            '<span class="subsection_header_title">'.__('Agent access rate (24h)').'</span>',
+            '<span class="subsection_header_title secondary">'.__('Agent access rate (24h)').'</span>',
             '',
             '',
             true,
@@ -812,7 +816,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $table_interfaces = html_print_table($table, true);
         $table_interfaces .= '<br>';
 
-        ui_toggle($table_interfaces, __('Interface information').' (SNMP)');
+        ui_toggle($table_interfaces, '<span class="subsection_header_title secondary">'.__('Interface information').' (SNMP)</span>');
     }
 
         // Advanced data.
@@ -906,7 +910,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     // End of table advanced.
     ui_toggle(
         html_print_table($table_advanced, true),
-        '<span class="subsection_header_title">'.__('Advanced information').'</span>',
+        '<span class="subsection_header_title secondary">'.__('Advanced information').'</span>',
         '',
         '',
         true,

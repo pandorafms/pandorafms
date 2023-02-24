@@ -1197,7 +1197,7 @@ if ($modules !== false) {
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
-        echo '<form class="datatable_form" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
+        echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
             onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
     }
 

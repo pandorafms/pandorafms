@@ -2031,17 +2031,20 @@ if ($table_events) {
 
     $tableEvents24h = new stdClass();
     $tableEvents24h->class = 'filter_table';
-    $tableEvents24h->styleTable = 'border-radius: 0;padding: 0;margin: 0 0 10px;';
+    $tableEvents24h->styleTable = 'border: 0;padding: 0;margin: 0 0 10px;';
     $tableEvents24h->width = '100%';
     $tableEvents24h->data = [];
 
-    $tableEvents24h->data[0] = __('Show all Events 24h');
-    $tableEvents24h->rowstyle[1] = 'height: 42px';
-    $tableEvents24h->data[1] = html_print_switch(
+    $tableEvents24h->data[0] = html_print_div(
         [
-            'name'  => 'all_events_24h',
-            'value' => $all_events_24h,
-            'id'    => 'checkbox-all_events_24h',
+            'class'   => 'flex-row-center',
+            'content' => '<span class="font_14px mrgn_right_10px">'.__('Show all Events 24h').'</span>'.html_print_switch(
+                [
+                    'name'  => 'all_events_24h',
+                    'value' => $all_events_24h,
+                    'id'    => 'checkbox-all_events_24h',
+                ]
+            ),
         ]
     );
 

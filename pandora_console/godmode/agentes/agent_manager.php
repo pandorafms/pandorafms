@@ -187,7 +187,7 @@ if ($disk_conf_delete === true) {
     @unlink($filename['conf']);
 }
 
-echo '<div class="max_floating_element_size mrgn_20px">';
+echo '<div class="max_floating_element_size">';
 echo '<form autocomplete="new-password" name="conf_agent" id="form_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 
 // Custom ID.
@@ -628,32 +628,38 @@ html_print_div(
 
 // Advanced options.
 $tableAdvancedAgent = new stdClass();
-$tableAdvancedAgent->class = 'floating_form primary_form';
+$tableAdvancedAgent->class = 'filter-table-adv floating_form primary_form';
 $tableAdvancedAgent->data = [];
 $tableAdvancedAgent->style = [];
 $tableAdvancedAgent->cellclass = [];
 $tableAdvancedAgent->colspan = [];
 $tableAdvancedAgent->rowspan = [];
 // Secondary groups.
-$tableAdvancedAgent->data['caption_secondary_groups'][0] = __('Secondary groups');
-$tableAdvancedAgent->data['secondary_groups'][0] = html_print_select_agent_secondary(
-    $agent,
-    $id_agente
+$tableAdvancedAgent->data['secondary_groups'][] = html_print_label_input_block(
+    __('Secondary groups'),
+    html_print_select_agent_secondary(
+        $agent,
+        $id_agente
+    )
 );
+
 // Parent agent.
-$tableAdvancedAgent->data['caption_parent_agent'][0] = __('Parent');
-$tableAdvancedAgent->rowclass['parent_agent'] = 'w540px';
-$tableAdvancedAgent->data['parent_agent'][0] = ui_print_agent_autocomplete_input($paramsParentAgent);
+$tableAdvancedAgent->data['parent_agent'][] = html_print_label_input_block(
+    __('Parent'),
+    ui_print_agent_autocomplete_input($paramsParentAgent)
+);
+
+
 if (enterprise_installed() === true) {
-    $tableAdvancedAgent->data['caption_cascade_protection'][0] = __('Cascade protection modules');
-    $tableAdvancedAgent->data['cascade_protection'][0] = html_print_checkbox_switch(
+    $cascadeProtectionContents = [];
+    $cascadeProtectionContents[] = html_print_checkbox_switch(
         'cascade_protection',
         1,
         $cascade_protection,
         true
     );
 
-    $tableAdvancedAgent->data['cascade_protection'][1] = html_print_select(
+    $cascadeProtectionContents[] = html_print_select(
         $modules_values,
         'cascade_protection_module',
         $cascade_protection_module,
@@ -665,11 +671,22 @@ if (enterprise_installed() === true) {
         true,
         'w220p'
     );
+
+    $tableAdvancedAgent->data['caption_cascade_protection'][] = html_print_label_input_block(
+        __('Cascade protection modules'),
+        html_print_div(
+            [
+                'class'   => 'flex-row-center',
+                'content' => implode('', $cascadeProtectionContents),
+            ],
+            true
+        )
+    );
 }
 
 // Module Definition (Learn mode).
-$tableAdvancedAgent->data['caption_module_definition'][0] = __('Module definition');
-$switchButtons = html_print_radio_button_extended(
+$switchButtons = [];
+$switchButtons[] = html_print_radio_button_extended(
     'modo',
     1,
     __('Learning mode'),
@@ -679,7 +696,7 @@ $switchButtons = html_print_radio_button_extended(
     '',
     true
 );
-$switchButtons .= html_print_radio_button_extended(
+$switchButtons[] = html_print_radio_button_extended(
     'modo',
     0,
     __('Normal mode'),
@@ -689,7 +706,7 @@ $switchButtons .= html_print_radio_button_extended(
     '',
     true
 );
-$switchButtons .= html_print_radio_button_extended(
+$switchButtons[] = html_print_radio_button_extended(
     'modo',
     2,
     __('Autodisable mode'),
@@ -700,65 +717,72 @@ $switchButtons .= html_print_radio_button_extended(
     true
 );
 
-$tableAdvancedAgent->data['module_definition'][0] = html_print_div(
-    [
-        'class'   => 'switch_radio_button',
-        'content' => $switchButtons,
-    ],
-    true
+$tableAdvancedAgent->data['module_definition'][] = html_print_label_input_block(
+    __('Module definition'),
+    html_print_div(
+        [
+            'class'   => 'switch_radio_button',
+            'content' => implode('', $switchButtons),
+        ],
+        true
+    )
 );
 
 // CPS - Cascade Protection Services.
-$tableAdvancedAgent->data['caption_cps_value'][0] = __('Cascade protection services');
-$tableAdvancedAgent->data['cps_value'][0] = html_print_checkbox_switch('cps', $cps_val, ($cps >= 0), true);
+$tableAdvancedAgent->data['cps_value'][] = html_print_label_input_block(
+    __('Cascade protection services'),
+    html_print_checkbox_switch('cps', $cps_val, ($cps >= 0), true)
+);
 
 // Update GIS data.
 if ((bool) $config['activate_gis'] === true) {
-    $tableAdvancedAgent->data['caption_gis'][0] = __('Update new GIS data');
-    $tableAdvancedAgent->data['gis'][0] = html_print_checkbox_switch('update_gis_data', 1, ($new_agent === true), true);
+    $tableAdvancedAgent->data['gis'][] = html_print_label_input_block(
+        __('Update new GIS data'),
+        html_print_checkbox_switch('update_gis_data', 1, ($new_agent === true), true)
+    );
 }
 
 // Agent Icons.
-$tableAdvancedAgent->data['caption_agent_icon'][0] = __('Agent icon');
-$tableAdvancedAgent->data['agent_icon'][0] = html_print_select(
-    $arraySelectIcon,
-    'icon_path',
-    $icon_path,
-    'changeIcons();',
-    __('None'),
-    '',
-    true,
-    false,
-    true,
-    'w540px'
-);
-$tableAdvancedAgent->data['agent_icon'][1] = html_print_image(
-    $path_ok,
-    true,
-    [
-        'id'    => 'icon_ok',
-        'style' => 'display:'.$display_icons.';',
-    ]
-).html_print_image(
-    $path_bad,
-    true,
-    [
-        'id'    => 'icon_bad',
-        'style' => 'display:'.$display_icons.';',
-    ]
-).html_print_image(
-    $path_warning,
-    true,
-    [
-        'id'    => 'icon_warning',
-        'style' => 'display:'.$display_icons.';',
-    ]
+$tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
+    __('Agent icon'),
+    html_print_select(
+        $arraySelectIcon,
+        'icon_path',
+        $icon_path,
+        'changeIcons();',
+        __('None'),
+        '',
+        true,
+        false,
+        true,
+        'w540px'
+    ).html_print_image(
+        $path_ok,
+        true,
+        [
+            'id'    => 'icon_ok',
+            'style' => 'display:'.$display_icons.';',
+        ]
+    ).html_print_image(
+        $path_bad,
+        true,
+        [
+            'id'    => 'icon_bad',
+            'style' => 'display:'.$display_icons.';',
+        ]
+    ).html_print_image(
+        $path_warning,
+        true,
+        [
+            'id'    => 'icon_warning',
+            'style' => 'display:'.$display_icons.';',
+        ]
+    )
 );
 
 // Url address.
-$tableAdvancedAgent->data['caption_url_description'][0] = __('Url address');
 if (enterprise_installed() === true) {
-    $tableAdvancedAgent->data['url_description'][0] = html_print_input_text(
+    $urlAddressInput = html_print_input_text(
         'url_description',
         $url_description,
         '',
@@ -774,7 +798,7 @@ if (enterprise_installed() === true) {
         'new-password'
     );
 } else {
-    $tableAdvancedAgent->data['url_description'][0] = html_print_input_text(
+    $urlAddressInput = html_print_input_text(
         'url_description',
         $url_description,
         '',
@@ -784,25 +808,32 @@ if (enterprise_installed() === true) {
     );
 }
 
+$tableAdvancedAgent->data['url_description'][] = html_print_label_input_block(
+    __('URL Address'),
+    $urlAddressInput
+);
+
 // Agent status.
-$tableAdvancedAgent->data['caption_agent_status'][0] = __('Disabled mode');
-$tableAdvancedAgent->data['agent_status'][0] = html_print_checkbox_switch(
-    'disabled',
-    1,
-    $disabled,
-    true
+$tableAdvancedAgent->data['agent_status'][] = html_print_label_input_block(
+    __('Disabled mode'),
+    html_print_checkbox_switch(
+        'disabled',
+        1,
+        $disabled,
+        true
+    )
 );
 
 // Quiet mode.
-$tableAdvancedAgent->data['caption_agent_quiet'][0] = __('Quiet');
-$tableAdvancedAgent->data['agent_quiet'][0] = html_print_checkbox_switch('quiet', 1, $quiet, true);
+$tableAdvancedAgent->data['agent_quiet'][] = html_print_label_input_block(
+    __('Quiet'),
+    html_print_checkbox_switch('quiet', 1, $quiet, true)
+);
 
 // Remote configuration.
 if ($new_agent === false && isset($filename) === true && file_exists($filename['md5']) === true) {
-    $tableAdvancedAgent->data['caption_remote_configuration'][0] = __('Remote configuration');
-    $tableAdvancedAgent->cellstyle['remote_configuration'][0] = 'display: flex; align-items: center;';
-    $tableAdvancedAgent->cellclass['remote_configuration'][0] = 'w540px';
-    $tableAdvancedAgent->data['remote_configuration'][0] = html_print_input_text(
+    $remoteConfigurationElements = [];
+    $remoteConfigurationElements[] = html_print_input_text(
         'remote_file_timestamp',
         date('F d Y H:i:s', fileatime($filename['md5'])),
         '',
@@ -814,7 +845,7 @@ if ($new_agent === false && isset($filename) === true && file_exists($filename['
         '',
         'w540px'
     );
-    $tableAdvancedAgent->data['remote_configuration'][0] .= html_print_anchor(
+    $remoteConfigurationElements[] = html_print_anchor(
         [
             'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente='.$id_agente,
             'content' => html_print_image(
@@ -829,12 +860,47 @@ if ($new_agent === false && isset($filename) === true && file_exists($filename['
         ],
         true
     );
+
+    $tableAdvancedAgent->data['remote_configuration'][] = html_print_label_input_block(
+        __('Remote configuration'),
+        html_print_div(
+            [
+                'class'   => 'flex-row-center',
+                'content' => implode('', $remoteConfigurationElements),
+            ],
+            true
+        )
+    );
 }
 
 // Safe operation mode.
-$tableAdvancedAgent->data['caption_safe_operation'][0] = __('Safe operation mode');
-$tableAdvancedAgent->data['safe_operation'][0] = html_print_checkbox_switch('safe_mode', 1, $safe_mode, true);
-$tableAdvancedAgent->data['safe_operation'][1] = html_print_select($safe_mode_modules, 'safe_mode_module', $safe_mode_module, '', '', 0, true);
+$safeOperationElements = [];
+$safeOperationElements[] = html_print_checkbox_switch(
+    'safe_mode',
+    1,
+    $safe_mode,
+    true
+);
+$safeOperationElements[] = html_print_select(
+    $safe_mode_modules,
+    'safe_mode_module',
+    $safe_mode_module,
+    '',
+    '',
+    0,
+    true
+);
+
+$tableAdvancedAgent->data['safe_operation'][] = html_print_label_input_block(
+    __('Safe operation mode'),
+    html_print_div(
+        [
+            'class'   => 'flex-row-center',
+            'content' => implode('', $safeOperationElements),
+        ],
+        true
+    )
+);
 
 if (enterprise_installed() === true) {
     ui_toggle(
@@ -844,8 +910,8 @@ if (enterprise_installed() === true) {
         '',
         true,
         false,
-        'white_box white_box_opened white_table_graph_fixed',
-        'no-border flex'
+        'white_box_content',
+        'no-border white_table_graph'
     );
 }
 

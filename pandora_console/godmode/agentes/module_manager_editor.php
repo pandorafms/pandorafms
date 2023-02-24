@@ -742,7 +742,7 @@ $outputForm .= ui_toggle(
     true,
     '',
     '',
-    'box-flat white_table_flex white_table_graph_fixed mrgn_top_20px'
+    'box-flat white_table_flex white_table_graph_fixed'
 );
 
 $outputForm .= ui_toggle(

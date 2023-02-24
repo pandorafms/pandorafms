@@ -9931,6 +9931,11 @@ select {
   box-sizing: border-box;
 }
 
+input[list],
+textarea[list],
+select[list] {
+  line-height: initial;
+}
 textarea {
   padding: 10px;
   height: auto;
@@ -10312,7 +10317,10 @@ button div.camera {
   mask: url(../../images/picture.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/picture.svg) no-repeat center / contain;
 }
-
+button div.alert {
+  mask: url(../../images/alert@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/alert@svg.svg) no-repeat center / contain;
+}
 button div.ok {
   mask: url(../../images/ok.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/ok.svg) no-repeat center / contain;
@@ -10458,7 +10466,7 @@ button.ui-button.ui-widget.submit-cancel:active {
 }
 
 .moduleIdBox {
-  height: 36px;
+  height: 35px;
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
   margin-left: -56px;

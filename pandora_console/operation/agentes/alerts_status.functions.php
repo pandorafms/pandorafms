@@ -63,7 +63,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 
     $table = new StdClass();
     $table->width = '100%';
-    $table->class = 'filter-table-adv';
+    $table->class = 'filter-table-adv p020';
     $table->size = [];
     $table->size[0] = '33%';
     $table->size[1] = '33%';

@@ -3784,7 +3784,8 @@ function ui_print_datatable(array $parameters)
                     }
                     // Move elements to table_action_buttons bar.
                     $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                    $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > #table_events_length"));
+                    $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_length"));
+                    $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dt-buttons"));
 
                     if (json.error) {
                         console.error(json.error);

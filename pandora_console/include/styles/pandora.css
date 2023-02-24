@@ -1659,6 +1659,10 @@ td.datos2_id {
   padding-bottom: 1px;
 }
 
+.p020 {
+  padding: 0 20px;
+}
+
 .w130,
 #table-agent-configuration select {
   width: 130px;

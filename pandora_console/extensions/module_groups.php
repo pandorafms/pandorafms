@@ -441,17 +441,18 @@ function mainModuleGroups()
             [ 'right_content' => $tablePagination ]
         );
 
-        echo "<div class='legend_basic w99p'>";
-            echo '<table >';
-                echo "<tr><td colspan='2' class='pdd_b_10px'><b>".__('Legend').'</b></td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module group and agent have at least one alarm fired.').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module group and agent have at least one module in critical status and the others in any status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module group and agent have at least one in unknown status and the others in green status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module group and agent have all modules in OK status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__('Blue cell when the module group and agent have all modules in not init status.').'</td></tr>';
-            echo '</table>';
-        echo '</div>';
+        $show_legend = '<div>';
+            $show_legend .= '<table>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module group and agent have at least one alarm fired.').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module group and agent have at least one module in critical status and the others in any status').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module group and agent have at least one in unknown status and the others in green status').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module group and agent have all modules in OK status').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__('Blue cell when the module group and agent have all modules in not init status.').'</td></tr>';
+            $show_legend .= '</table>';
+        $show_legend .= '</div>';
+
+        ui_toggle($show_legend, __('Legend'));
     } else {
         ui_print_info_message(['no_close' => true, 'message' => __('This table shows in columns the modules group and in rows agents group. The cell shows all modules') ]);
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined groups or module groups') ]);

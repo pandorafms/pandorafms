@@ -461,13 +461,17 @@ function treeview_printAlertsTable($id_module, $server_data=[], $no_head=false)
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'LW')) {
         // Actions table
         echo '<div class="w100p right_align">';
-        echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'" target="_blank">';
-            html_print_submit_button(__('Go to alerts edition'), 'upd_button', false, ['icon' => 'alert']);
-        echo '</a>';
+        html_print_button(
+            __('Go to alerts edition'),
+            'upd_button',
+            false,
+            'window.location.assign("'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'")',
+            ['icon' => 'alert']
+        );
         echo '</div>';
     }
 
-    if (!empty($server_data) && is_metaconsole()) {
+    if (empty($server_data) === false && is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 

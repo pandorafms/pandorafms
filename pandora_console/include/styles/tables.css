@@ -99,6 +99,10 @@
   width: -moz-available;
 }
 
+.info_table {
+  margin-bottom: 25px;
+}
+
 .info_table > tbody > tr:nth-child(even) {
   background-color: #e5e9ed;
 }

@@ -102,14 +102,19 @@ if ($autosearch === true) {
     if ($result === false || empty($result) === true) {
         $result = [];
     } else {
-        ui_pagination(
+        $pagination = ui_pagination(
             count($selected_interfaces),
             false,
             $offset,
             0,
-            false,
+            true,
             'offset',
-            true
+            false
+        );
+
+        html_print_action_buttons(
+            '',
+            [ 'right_content' => $pagination ]
         );
     }
 }

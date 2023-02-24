@@ -207,9 +207,22 @@ if ($count == 1) {
     }
 }
 
-ui_pagination($count);
-
 if (empty($result_groups) === false) {
+    $pagination = ui_pagination(
+        $count,
+        false,
+        $offset,
+        0,
+        true,
+        'offset',
+        false
+    );
+
+    html_print_action_buttons(
+        '',
+        [ 'right_content' => $pagination ]
+    );
+
     echo '<table cellpadding="0" cellspacing="0" class="databox data mrgn_top_10px" border="0" width="100%">';
         echo '<tr>';
             echo '<th colspan=2 ></th>';

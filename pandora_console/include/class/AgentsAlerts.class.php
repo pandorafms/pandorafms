@@ -525,14 +525,14 @@ class AgentsAlerts extends HTML
         }
 
         // Prepare pagination.
-        ui_pagination(
+        $tablePagination = ui_pagination(
             $nagents,
             false,
             0,
             $filter['limit'],
-            false,
-            'offset',
             true,
+            'offset',
+            false,
             '',
             '',
             [
@@ -702,21 +702,9 @@ class AgentsAlerts extends HTML
 
         echo '</table>';
 
-        ui_pagination(
-            $nagents,
-            false,
-            0,
-            0,
-            false,
-            'offset',
-            true,
-            'pagination-bottom',
+        html_print_action_buttons(
             '',
-            [
-                'count'  => '',
-                'offset' => 'offset_param',
-            ],
-            'alerts_agents'
+            ['right_content' => $tablePagination]
         );
     }
 

@@ -602,7 +602,14 @@ function mainAgentsModules()
         $show_filters .= '</form>';
         ui_toggle(
             $show_filters,
-            __('Filters ').ui_print_help_tip(__('Secondary groups and agent subgroups will be taken into account.'), true)
+            __('Filters ').ui_print_help_tip(__('Secondary groups and agent subgroups will be taken into account.'), true),
+            'filter_form',
+            '',
+            true,
+            false,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
         );
     }
 

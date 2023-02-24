@@ -51,17 +51,15 @@
   width: 16px;
 }
 .tree-node .node-status {
-  width: 40px;
-  height: 31px;
-  border-radius: 7px 0 0 7px;
   box-sizing: border-box;
   position: absolute;
-  padding: 8px;
   border-radius: 8px;
-  width: 19px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
   top: 6px;
-  left: 9px;
+  margin: 0;
+  padding: 0;
+  left: 13px;
 }
 .tree-node .node-name {
   position: relative;
@@ -315,8 +313,6 @@ div.tree-node span {
 div#tree-controller-recipient {
   text-align: left;
   width: calc((100% - 30%) - 20px);
-  margin-top: 10px;
-  margin-left: 20px;
 }
 
 .tree-controller-recipient {
@@ -383,4 +379,11 @@ div#tree-controller-recipient {
 .tree-root > .tree-node {
   margin-top: 0;
   margin-bottom: 2px;
+}
+
+.tree-node > .node-content > .agent-alerts-fired {
+  float: left;
+  position: relative;
+  left: 26px;
+  top: -5px;
 }

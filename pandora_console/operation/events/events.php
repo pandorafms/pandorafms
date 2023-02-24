@@ -1655,11 +1655,57 @@ $data = html_print_input(
         'selected'       => $id_group,
         'nothing'        => false,
         'return'         => true,
-        'size'           => '80%',
+        'size'           => '100%',
     ]
 );
 $in = '<div class="filter_input"><label>'.__('Group').'</label>';
-$in .= $data.'</div>';
+$in .= $data;
+
+// Search recursive groups.
+$data = html_print_checkbox_switch(
+    'search_recursive_groups',
+    $search_recursive_groups,
+    $search_recursive_groups,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+
+$in_group = '<div class="display-initial">';
+$in_group .= $data;
+$in_group .= '<label class="vert-align-bottom pdd_r_20px">';
+$in_group .= __('Group recursion');
+$in_group .= ui_print_help_tip(
+    __('WARNING: This could cause a performace impact.'),
+    true
+);
+$in_group .= '</label>';
+$in .= $in_group;
+
+// Search secondary groups.
+$data = html_print_checkbox_switch(
+    'search_secondary_groups',
+    $search_secondary_groups,
+    $search_secondary_groups,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+
+$in_sec_group .= $data;
+$in_sec_group .= '<label class="vert-align-bottom">';
+$in_sec_group .= __('Search in secondary groups');
+$in_sec_group .= ui_print_help_tip(
+    __('WARNING: This could cause a performace impact.'),
+    true
+);
+$in_sec_group .= '</label>';
+$in_sec_group .= '</div>';
+$in .= $in_sec_group;
+
+$in .= '</div>';
 $inputs[] = $in;
 
 // Event type.
@@ -1726,11 +1772,9 @@ $inputs[] = $in;
 
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
+
 // Search recursive groups.
-$data .= ui_print_help_tip(
-    __('Search for elements NOT containing given text.'),
-    true
-);
+$data .= '<div class="display-initial">';
 $data .= html_print_checkbox_switch(
     'not_search',
     $not_search,
@@ -1740,6 +1784,13 @@ $data .= html_print_checkbox_switch(
     'checked_slide_events(this);',
     true
 );
+
+$data .= ui_print_help_tip(
+    __('Search for elements NOT containing given text.'),
+    true
+);
+$data .= '</div>';
+
 $in = '<div class="filter_input filter_input_not_search"><label>'.__('Free search').'</label>';
 $in .= $data;
 $in .= '</div>';
@@ -1774,52 +1825,8 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-// Search recursive groups.
-$data = html_print_checkbox_switch(
-    'search_recursive_groups',
-    $search_recursive_groups,
-    $search_recursive_groups,
-    true,
-    false,
-    'checked_slide_events(this);',
-    true
-);
-
-$in = '<div class="filter_input filter_input_switch"><label>';
-$in .= __('Group recursion');
-$in .= ui_print_help_tip(
-    __('WARNING: This could cause a performace impact.'),
-    true
-);
-$in .= '</label>';
-$in .= $data;
-$in .= '</div>';
-$inputs[] = $in;
-
-// Search secondary groups.
-$data = html_print_checkbox_switch(
-    'search_secondary_groups',
-    $search_secondary_groups,
-    $search_secondary_groups,
-    true,
-    false,
-    'checked_slide_events(this);',
-    true
-);
-
-$in = '<div class="filter_input filter_input_switch"><label>';
-$in .= __('Search in secondary groups');
-$in .= ui_print_help_tip(
-    __('WARNING: This could cause a performace impact.'),
-    true
-);
-$in .= '</label>';
-$in .= $data;
-$in .= '</div>';
-$inputs[] = $in;
-
 // Trick view in table.
-$inputs[] = '<div class="w100p"></div>';
+$inputs[] = '<div class="w100p pdd_t_15px"></div>';
 
 $buttons = [];
 
@@ -1828,14 +1835,16 @@ $buttons[] = [
     'class'   => 'float-left margin-right-2',
     'text'    => __('Load filter'),
     'onclick' => '',
+    'icon'    => 'search',
 ];
 
 if ($event_w === true || $event_m === true) {
     $buttons[] = [
         'id'      => 'save-filter',
-        'class'   => 'float-left margin-right-2',
+        'class'   => 'margin-right-2',
         'text'    => __('Save filter'),
         'onclick' => '',
+        'icon'    => 'search',
     ];
 }
 
@@ -1908,8 +1917,9 @@ if ($id_agent !== null) {
 }
 
 $data = ui_print_agent_autocomplete_input($params);
-$in = '<div class="filter_input"><label>'.__('Agent search').'</label>';
-$in .= $data.'</div>';
+$in = '<div class="filter_input"><label>'.__('Agent search');
+
+$in .= '</label>'.$data.'</div>';
 $adv_inputs[] = $in;
 
 // Mixed. Metaconsole => server, Console => module.
@@ -1962,7 +1972,12 @@ $data = html_print_select(
     '',
     __('Any'),
     0,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 400px'
 );
 $in = '<div class="filter_input"><label>'.__('User ack.').'</label>';
 $in .= $data.'</div>';
@@ -1975,7 +1990,12 @@ $data = html_print_select(
     '',
     __('Any'),
     0,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 400px'
 );
 $in = '<div class="filter_input"><label>'.__('Owner').'</label>';
 $in .= $data.'</div>';
@@ -1992,7 +2012,12 @@ $data = html_print_select(
     '',
     __('All'),
     -1,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 400px'
 );
 
 $adv_inputs[] = html_print_div(
@@ -2079,7 +2104,7 @@ $adv_inputs[] = html_print_div(
     [
         'class'   => 'filter_input',
         'content' => sprintf(
-            '<label>%s</label>%s<span>:</span>%s',
+            '<label>%s</label><div class="datetime-adv-opt">%s<span>:</span>%s</div>',
             __('From (date:time)'),
             $inputDateFrom,
             $inputTimeFrom
@@ -2137,7 +2162,7 @@ $adv_inputs[] = html_print_div(
     [
         'class'   => 'filter_input',
         'content' => sprintf(
-            '<label>%s</label>%s<span>:</span>%s',
+            '<label>%s</label><div class="datetime-adv-opt">%s<span>:</span>%s</div>',
             __('To (date:time)'),
             $inputDateTo,
             $inputTimeTo
@@ -2157,7 +2182,12 @@ $custom_data_filter_type_input = html_print_select(
     '',
     false,
     -1,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 400px'
 );
 
 $adv_inputs[] = html_print_div(
@@ -2217,8 +2247,8 @@ $filter .= ui_toggle(
     '',
     true,
     true,
-    'white_box white_box_opened',
-    'no-border flex-row',
+    'white_box white_box_opened no_border',
+    'advanced-options-events no-border flex-row',
     'box-flat white_table_graph w100p'
 );
 
@@ -2451,6 +2481,7 @@ try {
                     'drawCallback'                   => 'process_datatables_callback(this, settings)',
                     'print'                          => false,
                     'csv'                            => 0,
+                    'filter_main_class'              => 'box-flat white_table_graph fixed_filter_bar',
                 ],
             ),
         ]
@@ -3172,4 +3203,13 @@ function show_instructions(id){
     });
 }
 
+$(document).ready(function () {
+    let agentLabel = $('#text-text_agent').prev();
+    let agentTip = $('#text-text_agent').next();
+    agentLabel.append(agentTip);
+
+    let moduleLabel = $('#text-module_search').prev();
+    let moduleTip = $('#text-module_search').next().next();
+    moduleLabel.append(moduleTip);
+});
 </script>

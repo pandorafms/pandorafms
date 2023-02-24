@@ -569,7 +569,7 @@ if ($load_filter_modal) {
     $table->width = '100%';
     $table->cellspacing = 4;
     $table->cellpadding = 4;
-    $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+    $table->styleTable = 'font-weight: bold; color: #555; text-align:left; border: 0px !important;';
     $table->class = 'databox';
     $filter_id_width = '200px';
     if (is_metaconsole() === true) {
@@ -581,7 +581,7 @@ if ($load_filter_modal) {
 
     $data = [];
     $table->rowid[3] = 'update_filter_row1';
-    $data[0] = __('Load filter').$jump;
+    $data[0] = '<b>'.__('Load filter').'</b>'.$jump;
     $data[0] .= html_print_select(
         $filters,
         'filter_id',
@@ -621,7 +621,7 @@ function show_filter() {
         draggable: true,
         modal: false,
         closeOnEscape: true,
-        width: 450
+        width: 550
     });
 }
 
@@ -754,9 +754,9 @@ if ($save_filter_modal) {
             $table->cellpadding = 0;
         }
 
-        $table->styleTable = 'font-weight: bold; text-align:left;';
+        $table->styleTable = 'font-weight: bold; text-align:left; border: 0px !important;';
         if (is_metaconsole() === false) {
-            $table->style[0] = 'width: 50%; width:50%;';
+            $table->style[0] = '';
         }
 
         $data = [];
@@ -782,12 +782,12 @@ if ($save_filter_modal) {
 
         $data = [];
         $table->rowid[1] = 'save_filter_row1';
-        $data[0] = __('Filter name').$jump;
+        $data[0] = '<b>'.__('Filter name').'</b>'.$jump;
         $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
         if (is_metaconsole()) {
             $data[1] = __('Save in Group').$jump;
         } else {
-            $data[1] = __('Filter group').$jump;
+            $data[1] = '<b>'.__('Filter group').'</b>'.$jump;
         }
 
         $user_groups_array = users_get_groups_for_select(
@@ -893,7 +893,8 @@ function show_save_filter() {
         resizable: true,
         draggable: true,
         modal: false,
-        closeOnEscape: true
+        closeOnEscape: true,
+        width: 700
     });
 }
 

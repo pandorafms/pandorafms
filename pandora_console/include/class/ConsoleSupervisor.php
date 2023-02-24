@@ -262,7 +262,17 @@ class ConsoleSupervisor
          * Check number of agents is equals and more than 200.
          * NOTIF.ACCESSSTASTICS.PERFORMANCE
          */
+
         $this->checkAccessStatisticsPerformance();
+
+        /*
+         * Checkc agent missing libraries.
+         * NOTIF.AGENT.LIBRARY
+         */
+
+        if ((bool) enterprise_installed() === true) {
+            $this->checkLibaryError();
+        }
     }
 
 
@@ -528,7 +538,18 @@ class ConsoleSupervisor
          * Check number of agents is equals and more than 200.
          * NOTIF.ACCESSSTASTICS.PERFORMANCE
          */
+
         $this->checkAccessStatisticsPerformance();
+
+        /*
+         * Checkc agent missing libraries.
+         * NOTIF.AGENT.LIBRARY
+         */
+
+        if ((bool) enterprise_installed() === true) {
+            $this->checkLibaryError();
+        }
+
     }
 
 
@@ -2418,7 +2439,7 @@ class ConsoleSupervisor
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
-                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
+                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
                 $message_conf_cron .= str_replace(
                     ENTERPRISE_DIR.'/meta/',
                     '',
@@ -2842,6 +2863,32 @@ class ConsoleSupervisor
             }
         }
 
+    }
+
+
+    /**
+     * Chechs if an agent has a dependency eror on omnishell
+     *
+     * @return void
+     */
+    public function checkLibaryError()
+    {
+        $sql = 'SELECT COUNT(errorlevel) from tremote_command_target WHERE errorlevel = 2';
+
+        $error_dependecies = db_get_sql($sql);
+        if ($error_dependecies > 0) {
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.AGENT.LIBRARY',
+                    'title'   => __('Agent dependency error'),
+                    'message' => __(
+                        'There are omnishell agents with dependency errors',
+                    ),
+
+                    'url'     => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
+                ]
+            );
+        }
     }
 
 

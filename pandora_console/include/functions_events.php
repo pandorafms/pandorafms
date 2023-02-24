@@ -2726,7 +2726,7 @@ function events_print_type_img(
             [
                 'title' => events_print_type_description($type, true),
                 'class' => $style,
-                'style' => 'margin-left: 30px;'.((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
+                'style' => 'margin: 0 auto;'.((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
             ],
             true
         );

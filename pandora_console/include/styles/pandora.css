@@ -5948,6 +5948,9 @@ div#bullets_modules div {
 }
 
 /* First row in agent view */
+.agent_details_first_row.agent_details_line {
+  margin: 0;
+}
 .agent_details_line {
   display: flex;
   margin: 20px 0 0;
@@ -6149,7 +6152,7 @@ div#status_pie {
 }
 
 .white_table_graph_fixed {
-  margin: 0 20px 20px;
+  margin: 0 0 20px;
 }
 
 .white_table_graph_fixed table {
@@ -11023,6 +11026,7 @@ table.table_modal_alternate
 
 .tags_available_container {
   display: flex;
+  align-items: center;
 }
 
 .tags_selected_container .select2-selection--multiple {
@@ -11035,7 +11039,8 @@ table.table_modal_alternate
   .selection
   span.select2-selection--multiple
   ul.select2-selection__rendered {
-  padding: 5px 0 !important;
+  padding: 5px 0 0 0 !important;
+  float: left;
 }
 
 .result_info_text {
@@ -11091,6 +11096,13 @@ table.table_modal_alternate
 
 span.subsection_header_title {
   height: 18px;
+}
+.subsection_header_title.secondary {
+  font-size: 14px;
+}
+
+span.subsection_header_title.secondary {
+  height: 14px;
 }
 .regular_font {
   font-family: "lato" !important;

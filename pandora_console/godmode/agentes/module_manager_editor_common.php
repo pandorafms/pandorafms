@@ -865,8 +865,7 @@ $tagsAvailableData .= html_print_image(
     [
         'id'    => 'right',
         'title' => __('Add tags to module'),
-        'class' => 'invert_filter clickable',
-        'style' => 'width: 32px;',
+        'class' => 'main_menu_icon invert_filter clickable mrgn_lft_5px',
     ]
 );
 

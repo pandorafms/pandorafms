@@ -203,7 +203,7 @@ html_print_div(
             true,
             'box-flat agent_details_col',
             'white-box-content',
-            'mrgn_lft_20px mrgn_right_20px width_available'
+            'width_available'
         ),
     ],
 );

@@ -160,7 +160,7 @@ $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;
 $table_status->class = 'floating_form';
 $table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px;';
+$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter';
 
 $agentStatusGraph = html_print_div(
     [
@@ -382,7 +382,7 @@ $table_contact->cellspacing = 0;
 $table_contact->cellpadding = 0;
 $table_contact->class = 'floating_form';
 $table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px;';
+$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter';
 
 $agentContactCaption = html_print_div(
     [
@@ -705,7 +705,7 @@ if ((bool) $config['agentaccess'] === true && $access_agent > 0) {
 
     $agentAccessRate = html_print_div(
         [
-            'class'   => 'box-flat agent_details_col mrgn_right_20px',
+            'class'   => 'box-flat agent_details_col mrgn_lft_20px',
             'id'      => 'table_access_rate',
             'content' => $agentAccessRateHeader.$agentAccessRateContent,
         ],
@@ -991,7 +991,7 @@ $agent_contact .= html_print_table($table_contact, true);
 
 $agentDetails = html_print_div(
     [
-        'class'   => 'box-flat agent_details_col mrgn_lft_20px mrgn_right_20px',
+        'class'   => 'box-flat agent_details_col',
         'content' => $table_agent,
     ],
     true
@@ -999,7 +999,7 @@ $agentDetails = html_print_div(
 
 $agentContact = html_print_div(
     [
-        'class'   => 'box-flat agent_details_col mrgn_right_20px',
+        'class'   => 'box-flat agent_details_col mrgn_lft_20px',
         'content' => $agent_contact,
     ],
     true
@@ -1032,7 +1032,7 @@ $agentEventsGraph = html_print_div(
 
 $agentEvents = html_print_div(
     [
-        'class'   => 'box-flat agent_details_col mrgn_lft_20px mrgn_right_20px',
+        'class'   => 'box-flat agent_details_col',
         'content' => $agentEventsHeader.$agentEventsGraph,
     ],
     true
@@ -1052,8 +1052,8 @@ if (isset($data_opcional) === false || isset($data_opcional->data) === false || 
         false,
         true,
         'box-flat agent_details_col agent_details_toggle agent_details_first_row w100p',
-        'mrgn_lft_20px mrgn_right_20px',
-        'mrgn_lft_20px mrgn_right_20px w100p'
+        'mrgn_right_20px',
+        'w100p'
     );
 }
 

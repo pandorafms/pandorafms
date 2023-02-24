@@ -230,14 +230,14 @@ class AgentsAlerts extends HTML
 
         $agent_modules = db_get_all_rows_sql($sql);
 
-        ui_pagination(
+        $tablePagination = ui_pagination(
             $count_agent_module[0]['COUNT(tagente_modulo.nombre)'],
             ui_get_url_refresh(),
             0,
             false,
-            false,
-            'offset',
             true,
+            'offset',
+            false,
             '',
             '',
             false,
@@ -419,6 +419,11 @@ class AgentsAlerts extends HTML
         }
 
         html_print_table($table);
+
+        html_print_action_buttons(
+            '',
+            ['right_content' => $tablePagination]
+        );
     }
 
 
@@ -781,7 +786,7 @@ class AgentsAlerts extends HTML
                 'name'            => 'show-modules-without-alerts',
                 'checked'         => $this->showWithoutAlertModules,
                 'input_class'     => 'flex-row',
-                'type'            => 'checkbox',
+                'type'            => 'switch',
                 'class'           => '',
                 'disabled_hidden' => true,
                 'return'          => true,
@@ -858,13 +863,16 @@ class AgentsAlerts extends HTML
             true
         );
 
-        // Prints the header controls.
-        $header = html_print_div(
-            [
-                'class'   => 'white_box agents_alerts_header',
-                'content' => $filterForm,
-            ],
-            true
+        $header = ui_toggle(
+            $filterForm,
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
+            'filter_form',
+            '',
+            true,
+            true,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
         );
 
         echo $header;

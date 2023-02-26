@@ -97,18 +97,26 @@ class Heatmap
      */
     protected $group = null;
 
+    /**
+     * Heatmap group.
+     *
+     * @var boolean
+     */
+    protected $dashboard = null;
+
 
     /**
      * Constructor function
      *
-     * @param integer $type     Heatmap type.
-     * @param array   $filter   Heatmap filter.
-     * @param string  $randomId Heatmap random id.
-     * @param integer $refresh  Heatmap refresh.
-     * @param integer $width    Width.
-     * @param integer $height   Height.
-     * @param string  $search   Heatmap search.
-     * @param integer $group    Heatmap group.
+     * @param integer $type      Heatmap type.
+     * @param array   $filter    Heatmap filter.
+     * @param string  $randomId  Heatmap random id.
+     * @param integer $refresh   Heatmap refresh.
+     * @param integer $width     Width.
+     * @param integer $height    Height.
+     * @param string  $search    Heatmap search.
+     * @param integer $group     Heatmap group.
+     * @param boolean $dashboard Dashboard widget.
      */
     public function __construct(
         int $type=0,
@@ -118,7 +126,8 @@ class Heatmap
         int $width=0,
         int $height=0,
         string $search=null,
-        int $group=1
+        int $group=1,
+        bool $dashboard=false
     ) {
         $this->type = $type;
         $this->filter = $filter;
@@ -128,6 +137,7 @@ class Heatmap
         $this->height = $height;
         $this->search = $search;
         $this->group = $group;
+        $this->dashboard = $dashboard;
     }
 
 

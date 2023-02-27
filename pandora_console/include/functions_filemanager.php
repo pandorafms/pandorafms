@@ -857,7 +857,7 @@ function filemanager_file_explorer(
             $createFolderElements = $tabs_dialog;
             $createFolderElements .= sprintf('<form method="POST" action="%s">', $url);
             $createFolderElements .= html_print_input_text('dirname', '', '', 30, 255, true);
-            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, 'class="submitButton"', true);
+            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
             $createFolderElements .= html_print_input_hidden('directory', $relative_directory, true);
             $createFolderElements .= html_print_input_hidden('create_dir', 1, true);
             $createFolderElements .= html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true);
@@ -897,7 +897,7 @@ function filemanager_file_explorer(
                 $uploadFileElements .= html_print_input_hidden('upload_file', 1, true);
             }
 
-            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, 'class="mrgn_lft_10px submitButton" style="display: inline;"', true);
+            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
             $uploadFileElements .= html_print_input_hidden('real_directory', $real_directory, true);
             $uploadFileElements .= html_print_input_hidden('directory', $relative_directory, true);
             $uploadFileElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
@@ -918,7 +918,7 @@ function filemanager_file_explorer(
                 $createTextElements = $tabs_dialog;
                 $createTextElements .= '<form method="post" action="'.$url.'">';
                 $createTextElements .= html_print_input_text('name_file', '', '', 30, 50, true);
-                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, 'class="submitButton"', true);
+                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
                 $createTextElements .= html_print_input_hidden('real_directory', $real_directory, true);
                 $createTextElements .= html_print_input_hidden('directory', $relative_directory, true);
                 $createTextElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);

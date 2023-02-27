@@ -200,6 +200,16 @@ if ($edit_filter > -2) {
     $table->class = 'databox filters';
     $table->data[0][0] = __('Description');
     $table->data[0][1] = html_print_input_text('description', $description, '', 60, 100, true);
+    $table->data[0][1] .= html_print_image(
+        'images/add.png',
+        true,
+        [
+            'id'    => 'add_filter',
+            'alt'   => __('Click to add new filter'),
+            'title' => __('Click to add new filter'),
+            'style' => 'height:20px',
+        ]
+    );
     $table->data[1][0] = __('Filter');
     if ($edit_filter > -1) {
         $unified_filter = db_get_value_sql('SELECT unified_filters_id FROM tsnmp_filter WHERE id_snmp_filter != 0 AND id_snmp_filter = '.$edit_filter);
@@ -245,25 +255,36 @@ if ($edit_filter > -2) {
     }
 
     html_print_table($table);
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_image(
-        'images/add.png',
-        false,
-        [
-            'id'    => 'add_filter',
-            'alt'   => __('Click to add new filter'),
-            'title' => __('Click to add new filter'),
-            'style' => 'float:left;',
-            'class' => 'invert_filter',
-        ]
-    );
+
     if ($edit_filter > -1) {
-        html_print_submit_button(__('Update'), 'submit_button', false, 'class="sub upd"');
+        $buttons[] = html_print_submit_button(
+            __('Update'),
+            'submit_button',
+            false,
+            [
+                'class' => 'sub ok',
+                'icon'  => 'next',
+            ],
+            true
+        );
     } else {
-        html_print_submit_button(__('Create'), 'submit_button', false, 'class="sub upd"');
+        $buttons[] = html_print_submit_button(
+            __('Create'),
+            'submit_button',
+            false,
+            [
+                'class' => 'sub ok',
+                'icon'  => 'next',
+            ],
+            true
+        );
     }
 
-    echo '</div>';
+    html_print_action_buttons(
+        implode('', $buttons),
+        ['type' => 'form_action']
+    );
+
     echo '</form>';
     // Overview
 } else {

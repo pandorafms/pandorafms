@@ -174,7 +174,17 @@ $table->data[2][2] = html_print_label_input_block(
 );
 
 $traps_generator .= html_print_table($table, true);
-$traps_generator .= '<div class="action-buttons">'.html_print_submit_button(__('Generate trap'), 'btn_generate_trap', false, 'class="submitButton"', true).'</div>';
+$buttons[] = html_print_submit_button(
+    __('Generate trap'),
+    'btn_generate_trap',
+    false,
+    [
+        'class' => 'sub ok submitButton',
+        'icon'  => 'next',
+    ],
+    true
+);
+$traps_generator .= '<div class="action-buttons">'.html_print_action_buttons(implode('', $buttons), ['type' => 'form_action'], true).'</div>';
 $traps_generator .= html_print_input_hidden('generate_trap', 1, true);
 
 unset($table);

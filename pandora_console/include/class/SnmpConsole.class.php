@@ -564,10 +564,13 @@ class SnmpConsole extends HTML
         echo '</div></td>';
         echo '<td><div class="snmp_view_div">';
         echo '<h3>'.__('Action').'</h3>';
-        echo '<div>';
+        echo '<div style=" display : flex;align-items : center;">';
         echo html_print_image('images/validate.svg', true, ['class' => 'main_menu_icon']).' - '.__('Validate');
+        echo '</div>';
         echo '<br />';
+        echo '<div style=" display : flex;align-items : center;">';
         echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon']).' - '.__('Delete');
+        echo '</div>';
         echo '</div></div></td>';
 
         // Load own javascript file.

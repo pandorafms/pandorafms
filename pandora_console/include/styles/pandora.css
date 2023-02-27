@@ -11327,11 +11327,6 @@ div[role="dialog"] {
   z-index: 1115;
 }
 
-button[name="go"] {
-  margin-left: 10px;
-  display: inline !important;
-}
-
 .module_background_state {
   mask: url(../../images/modules@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/modules@svg.svg) no-repeat center / contain;

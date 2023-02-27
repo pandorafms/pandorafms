@@ -237,7 +237,6 @@ function reports_delete_report($id_report)
     db_process_sql_delete(
         'tfavmenu_user',
         [
-            'id_user'    => $config['id_user'],
             'id_element' => $id_report,
             'section'    => 'Reporting',
         ]

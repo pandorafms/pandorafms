@@ -2737,7 +2737,6 @@ function agents_delete_agent($id_agents, $disableACL=false)
         db_process_sql_delete(
             'tfavmenu_user',
             [
-                'id_user'    => $config['id_user'],
                 'id_element' => $id_agent,
                 'section'    => 'Agents',
             ]

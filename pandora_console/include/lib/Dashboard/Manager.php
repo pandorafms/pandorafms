@@ -573,7 +573,6 @@ class Manager implements PublicLogin
             \db_process_sql_delete(
                 'tfavmenu_user',
                 [
-                    'id_user'    => $config['id_user'],
                     'id_element' => $this->dashboardId,
                     'section'    => 'Dashboard',
                 ]

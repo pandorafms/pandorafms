@@ -552,7 +552,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
         db_process_sql_delete(
             'tfavmenu_user',
             [
-                'id_user'    => $config['id_user'],
                 'id_element' => $id,
                 'section'    => 'Network_map',
             ]

@@ -149,6 +149,9 @@ li.sub_subMenu.selected {
 #icon_oper-events {
   background-image: url(../../images/menu/op_events.menu_gray.png);
 }
+#icon_fav-menu {
+  background-image: url(../../images/menu/fav_menu_gray.png);
+}
 
 /* users */
 #icon_oper-users {
@@ -335,6 +338,9 @@ ul li {
 }
 .selected#icon_oper-users {
   background-image: url(../../images/menu/op_workspace.menu_white.png);
+}
+.selected#icon_fav-menu {
+  background-image: url(../../images/menu/fav_menu_white.png);
 }
 .selected#icon_oper-reporting {
   background-image: url(../../images/menu/op_reporting.menu_white.png);

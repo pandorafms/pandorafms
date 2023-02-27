@@ -876,7 +876,7 @@ function favMenuAction(e) {
     success: function(res) {
       if (res.success) {
         if (res.action === "create") {
-          $("#image-fav-menu-action1").attr("src", "images/star.png");
+          $("#image-fav-menu-action1").attr("src", "images/star_fav_menu.png");
         } else {
           $("#image-fav-menu-action1").attr("src", "images/star_dark.png");
         }

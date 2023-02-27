@@ -470,7 +470,7 @@ $favorite_menu = db_get_all_rows_sql(
         $config['id_user']
     )
 );
-// Favorite
+// Favorite.
 if ($favorite_menu !== false) {
     $menu_operation['favorite']['text'] = __('Favorite');
     $menu_operation['favorite']['id'] = 'fav-menu';

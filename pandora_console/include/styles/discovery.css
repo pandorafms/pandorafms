@@ -324,3 +324,6 @@ div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitool
   margin: 0px;
   padding-top: 40px;
 }
+.fav-menu input {
+  padding: 0px;
+}

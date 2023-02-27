@@ -7125,7 +7125,7 @@ function ui_print_fav_menu($id_element, $url, $label, $section)
     $output = '<span class="fav-menu">';
     $output .= html_print_input_image(
         'fav-menu-action',
-        (($fav !== false) ? 'images/star.png' : 'images/star_dark.png'),
+        (($fav !== false) ? 'images/star_fav_menu.png' : 'images/star_dark.png'),
         base64_encode(json_encode($config_fav_menu)),
         '',
         true,

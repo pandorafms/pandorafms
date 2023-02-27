@@ -127,19 +127,21 @@ foreach ($fields_available as $key => $available) {
 $table->data[0][0] = '<b>'.__('Fields available').'</b>';
 $table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
-    'images/darrowright_green.png',
+    'images/arrow@svg.svg',
     true,
     [
         'id'    => 'right',
         'title' => __('Add fields to select'),
+        'style' => 'rotate: 180deg; width: 40px',
     ]
 ).'</a>';
 $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
-    'images/darrowleft_green.png',
+    'images/arrow@svg.svg',
     true,
     [
         'id'    => 'left',
         'title' => __('Delete fields to select'),
+        'style' => 'width: 40px',
     ]
 ).'</a>';
 

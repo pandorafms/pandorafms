@@ -639,7 +639,8 @@ tr#update_save_selector {
 td#load_filter_form-0-0,
 td#load_filter_form-0-1,
 td#save_filter_form-1-0,
-td#save_filter_form-1-1 {
+td#save_filter_form-1-1,
+td#save_filter_form-3-0 {
   display: grid;
 }
 
@@ -657,7 +658,8 @@ tr#save_filter_row1 {
 td#save_filter_form-0-0,
 td#save_filter_form-0-1,
 td#save_filter_form-1-0 > input#text-id_name,
-td#save_filter_form-1-1 > span {
+td#save_filter_form-1-1 > span,
+td#save_filter_form-3-0 > span {
   width: 300px !important;
 }
 
@@ -670,4 +672,42 @@ div.filter-datatable-submain > form > ul > li > label {
   font-weight: bold;
   line-height: 16px;
   font-size: 13px;
+}
+
+table.events-filters-create > tbody > tr > td > div > label,
+table.events-filters-create > tbody > tr > td > div.flex-row > div > label {
+  font-size: 13px;
+  line-height: 16px;
+  text-align: left;
+}
+
+table.events-filters-create > tbody > tr > td > div > input,
+table.events-filters-create > tbody > tr > td > div > div,
+table.events-filters-create > tbody > tr > td > div > select,
+table.events-filters-create > tbody > tr > td > div > span,
+table.events-filters-create > tbody > tr > td > div.flex-row > div > div {
+  margin-top: 10px;
+}
+
+table.events-filters-create
+  > tbody
+  > tr
+  > td
+  > div
+  > div
+  > .ui-autocomplete-input {
+  width: 94%;
+}
+
+table.events-filters-create > tbody > tr > td > div.flex-row > div {
+  width: 48%;
+}
+
+td:has(div > .no-margin-top) {
+  margin-top: 0px !important;
+  padding-top: 0px !important;
+}
+
+.no-margin-top {
+  margin-top: 0px !important;
 }

@@ -1382,3 +1382,40 @@ select[multiple] option:active {
   > .select2-results__option.select2-results__option--highlighted {
   background-color: #008d86;
 }
+
+.filter_summary > div,
+.filter_summary > div > div.content {
+  background-color: #222 !important;
+}
+
+ul.datatable_filter:has(li > div.action-buttons) {
+  background-color: #222 !important;
+}
+
+span.ui-dialog-title {
+  color: #fff !important;
+}
+
+span.select2-dropdown.select2-dropdown--below {
+  z-index: 1200;
+}
+
+div.fixed_filter_bar,
+div.white_table_graph_header {
+  border-radius: 0;
+  border-left: 0px;
+  border-right: 0px;
+}
+
+div.white_table_graph {
+  border-radius: 0;
+}
+
+div.white_box_opened[style*="height: 0px"],
+div.white_box_opened[style*="height:0"] {
+  border: 0px;
+}
+
+div.white_box.white_box_opened.no_border {
+  border-radius: 0px;
+}

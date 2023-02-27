@@ -2423,11 +2423,16 @@ try {
     $table_id = 'table_events';
     $form_id = 'events_form';
 
+    $show_hide_filters = '';
+    if ((int) $_GET['pure'] === 1) {
+        $show_hide_filters = 'invisible';
+    }
+
     // Print datatable.
     html_print_div(
         [
             'class'   => 'events_table_wrapper',
-            'style'   => 'margin: 10px 10px 0;',
+            'style'   => 'margin-top: 0px; margin-bottom: 0px;',
             'content' => ui_print_datatable(
                 [
                     'id'                             => $table_id,
@@ -2481,7 +2486,7 @@ try {
                     'drawCallback'                   => 'process_datatables_callback(this, settings)',
                     'print'                          => false,
                     'csv'                            => 0,
-                    'filter_main_class'              => 'box-flat white_table_graph fixed_filter_bar',
+                    'filter_main_class'              => 'box-flat white_table_graph fixed_filter_bar '.$show_hide_filters,
                 ],
             ),
         ]
@@ -3211,5 +3216,7 @@ $(document).ready(function () {
     let moduleLabel = $('#text-module_search').prev();
     let moduleTip = $('#text-module_search').next().next();
     moduleLabel.append(moduleTip);
+
+    $('.white_table_graph_header').first().append($('.filter_summary'));
 });
 </script>

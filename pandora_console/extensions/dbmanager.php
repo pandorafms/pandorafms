@@ -227,7 +227,7 @@ function dbmgr_extension_main()
                         'dbport' => $node->dbport(),
                         'dbname' => $node->dbname(),
                         'dbuser' => $node->dbuser(),
-                        'dbpass' => $node->dbpass(),
+                        'dbpass' => io_output_password($node->dbpass()),
                     ]
                 );
                 $error = '';

@@ -391,7 +391,7 @@ foreach ($actions as $action) {
 
     $data = [];
 
-    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.$action['name'].'</a>';
+    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'&offset='.$offset.'">'.$action['name'].'</a>';
     if ($action['id_group'] == 0 && $can_edit_all == false) {
         $data[0] .= ui_print_help_tip(__('You cannot edit this action, You don\'t have the permission to edit All group.'), true);
     }
@@ -467,7 +467,7 @@ if (isset($data)) {
 
 if (is_management_allowed() === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
+    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'&offset='.$offset.'">';
     html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
     html_print_input_hidden('create_alert', 1);
     echo '</form>';

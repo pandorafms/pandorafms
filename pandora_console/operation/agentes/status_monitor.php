@@ -366,7 +366,7 @@ if ($module_option !== 0) {
     }
 }
 
-if ($datatype != '') {
+if (empty($datatype) === false) {
     $sql_conditions .= sprintf(' AND ttipo_modulo.id_tipo  '.$condition_query.' '.$datatype);
 }
 
@@ -1265,15 +1265,15 @@ switch ($sortField) {
     break;
 }
 
-
-        $sql = 'SELECT
+$sql = 'SELECT
     (SELECT GROUP_CONCAT(ttag.name SEPARATOR \',\')
 		FROM ttag
 		WHERE ttag.id_tag IN (
 			SELECT ttag_module.id_tag
 			FROM ttag_module
-			WHERE ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo))
-	AS tags,
+			WHERE ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo
+        )
+    ) AS tags,
 	tagente_modulo.id_agente_modulo,
 	tagente_modulo.id_modulo,
 	tagente.intervalo AS agent_interval,
@@ -1312,7 +1312,7 @@ switch ($sortField) {
 	LIMIT '.$offset.','.$limit_sql;
 
 
-        // We do not show the modules until the user searches with the filter.
+// We do not show the modules until the user searches with the filter.
 if ($autosearch) {
     if (is_metaconsole() === false) {
         $result = db_get_all_rows_sql($sql);
@@ -1394,60 +1394,53 @@ if ($autosearch) {
     }
 }
 
-// Oracle legacy code.
-// if (($config['dbtype'] == 'oracle') && ($result !== false)) {
-// for ($i = 0; $i < count($result); $i++) {
-// unset($result[$i]['rnum']);
-// }
-// }
-        // Urls to sort the table.
-        $url_agent_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_module_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_server_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_interval = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_data = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_timestamp_up = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-        $url_timestamp_down = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+// Urls to sort the table.
+$url_agent_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_module_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_server_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_interval = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_data = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_timestamp_up = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_timestamp_down = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 
-        $url_agent_name .= '&refr='.$refr.'&datatype='.$datatype.'&moduletype='.$moduletype.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_module_name .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_server_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_interval .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_data .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_timestamp_up .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-        $url_timestamp_down .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_agent_name .= '&refr='.$refr.'&datatype='.$datatype.'&moduletype='.$moduletype.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_module_name .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_server_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_interval .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_data .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_timestamp_up .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_timestamp_down .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 
-        // Holy god...
-        $url_agent_name .= '&recursion='.$recursion;
-        $url_type .= '&recursion='.$recursion;
-        $url_module_name .= '&recursion='.$recursion;
-        $url_server_type .= '&recursion='.$recursion;
-        $url_interval .= '&recursion='.$recursion;
-        $url_status .= '&recursion='.$recursion;
-        $url_status .= '&recursion='.$recursion;
-        $url_data .= '&recursion='.$recursion;
-        $url_timestamp_up .= '&recursion='.$recursion;
-        $url_timestamp_down .= '&recursion='.$recursion;
+// Holy god...
+$url_agent_name .= '&recursion='.$recursion;
+$url_type .= '&recursion='.$recursion;
+$url_module_name .= '&recursion='.$recursion;
+$url_server_type .= '&recursion='.$recursion;
+$url_interval .= '&recursion='.$recursion;
+$url_status .= '&recursion='.$recursion;
+$url_status .= '&recursion='.$recursion;
+$url_data .= '&recursion='.$recursion;
+$url_timestamp_up .= '&recursion='.$recursion;
+$url_timestamp_down .= '&recursion='.$recursion;
 
+$url_agent_name .= '&sort_field=agent_alias&sort=';
+$url_type .= '&sort_field=type&sort=';
+$url_module_name .= '&sort_field=module_name&sort=';
+$url_server_type .= '&sort_field=moduletype&sort=';
+$url_interval .= '&sort_field=interval&sort=';
+$url_status .= '&sort_field=status&sort=';
+$url_status .= '&sort_field=last_status_change&sort=';
+$url_data .= '&sort_field=data&sort=';
+$url_timestamp_up .= '&sort_field=timestamp&sort=up';
+$url_timestamp_down .= '&sort_field=timestamp&sort=down';
 
-        $url_agent_name .= '&sort_field=agent_alias&sort=';
-        $url_type .= '&sort_field=type&sort=';
-        $url_module_name .= '&sort_field=module_name&sort=';
-        $url_server_type .= '&sort_field=moduletype&sort=';
-        $url_interval .= '&sort_field=interval&sort=';
-        $url_status .= '&sort_field=status&sort=';
-        $url_status .= '&sort_field=last_status_change&sort=';
-        $url_data .= '&sort_field=data&sort=';
-        $url_timestamp_up .= '&sort_field=timestamp&sort=up';
-        $url_timestamp_down .= '&sort_field=timestamp&sort=down';
-
-        // Start Build List Result.
+// Start Build List Result.
 if (empty($result) === false) {
     if (is_metaconsole() === true) {
         html_print_action_buttons(
@@ -1471,7 +1464,6 @@ if (empty($result) === false) {
     $table->align = [];
 
     $show_fields = explode(',', $config['status_monitor_fields']);
-
 
     if (in_array('policy', $show_fields)) {
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {

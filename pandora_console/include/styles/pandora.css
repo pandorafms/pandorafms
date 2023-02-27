@@ -9928,6 +9928,7 @@ div#err_msg_centralised {
 
 .inputFileSpan {
   padding-left: 1em;
+  font-family: monospace;
 }
 
 input,
@@ -10688,7 +10689,7 @@ tr.bring_next_field {
   .select2-selection--single
   .select2-selection__placeholder {
   color: #999;
-  line-height: 42px;
+  line-height: 36px;
 }
 
 .select2-container .select2-selection--single .select2-selection__rendered {
@@ -10980,7 +10981,7 @@ table.table_modal_alternate
   > span.select2-selection {
   height: 32px !important;
 }
-*/
+
 .fixed_filter_bar .select2-selection__arrow,
 .filter_table .select2-selection__arrow,
 table.table_modal_alternate .select2-selection__arrow {
@@ -11005,7 +11006,7 @@ table.table_modal_alternate
   .select2-selection__rendered {
   line-height: 32px !important;
 }
-
+*/
 .fixed_filter_bar
   .select2-container--default
   .select2-search--dropdown

@@ -1835,7 +1835,7 @@ $buttons[] = [
     'class'   => 'float-left margin-right-2',
     'text'    => __('Load filter'),
     'onclick' => '',
-    'icon'    => 'search',
+    'icon'    => 'load',
 ];
 
 if ($event_w === true || $event_m === true) {
@@ -1844,7 +1844,7 @@ if ($event_w === true || $event_m === true) {
         'class'   => 'margin-right-2',
         'text'    => __('Save filter'),
         'onclick' => '',
-        'icon'    => 'search',
+        'icon'    => 'save',
     ];
 }
 

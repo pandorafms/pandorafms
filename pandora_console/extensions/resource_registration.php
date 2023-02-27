@@ -1122,14 +1122,20 @@ function resource_registration_extension_main()
     );
 
     $table = new stdClass();
-    $table->class = 'databox';
+    $table->class = 'databox filter-table-adv';
     $table->id = 'resource_registration_table';
 
     $table->data = [];
-    $table->data[0][0] = __('File to upload');
-    $table->data[0][1] = __('Group filter');
-    $table->data[1][0] = html_print_input_file('resource_upload', true);
-    $table->data[1][1] = html_print_select_groups(false, 'AW', true, 'group', '', '', __('All'), 0, true);
+
+    $table->data[0][] = html_print_label_input_block(
+        __('File to upload'),
+        html_print_input_file('resource_upload', true)
+    );
+
+    $table->data[0][] = html_print_label_input_block(
+        __('Group filter'),
+        html_print_select_groups(false, 'AW', true, 'group', '', '', __('All'), 0, true)
+    );
 
     // Upload form.
     echo '<form name="submit_plugin" method="POST" enctype="multipart/form-data">';

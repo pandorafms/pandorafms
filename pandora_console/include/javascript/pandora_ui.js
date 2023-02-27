@@ -848,6 +848,10 @@ function favMenuAction(e) {
           text: "Confirm",
           click: function() {
             data.label = $("#text-label_fav_menu").val();
+            if (data.label.length > 18) {
+              data.label = data.label.slice(0, 18) + "...";
+            }
+
             $(e).val(btoa(JSON.stringify(data)));
             favMenuAction(e);
             $(this).dialog("close");

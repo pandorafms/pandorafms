@@ -1026,10 +1026,14 @@ class Diagnostics extends Wizard
 
         $unit = 'M';
 
-        $pathServerLogs = '/var/log/pandora/pandora_server.log';
+        $logs_directory = (empty($config['server_log_dir']) === false)
+            ? io_safe_output($config['server_log_dir'])
+            : '/var/log/pandora';
+
+        $pathServerLogs = $logs_directory.'/pandora_server.log';
         $servers = $this->getLogInfo($pathServerLogs);
 
-        $pathErrLogs = '/var/log/pandora/pandora_server.error';
+        $pathErrLogs = $logs_directory.'/pandora_server.error';
         $errors = $this->getLogInfo($pathErrLogs);
 
         $pathConsoleLogs = $config['homedir'].'/log/console.log';

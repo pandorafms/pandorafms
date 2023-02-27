@@ -446,13 +446,6 @@ html_print_table($table);
 
 echo '</form>';
 
-// No agent selected or no search performed.
-if ($inventory_id_agent < 0 || $submit_filter === false) {
-    echo '&nbsp;</td></tr><tr><td>';
-
-    return;
-}
-
 if ($is_metaconsole === false) {
     // Single agent selected.
     if ($inventory_id_agent > 0 && isset($agents[$inventory_id_agent]) === true) {

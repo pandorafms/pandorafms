@@ -254,8 +254,8 @@ class AgentsAlerts extends HTML
         $table->head[2]  = __('Actions');
 
         $table->style[0] = 'width: 25%;';
-        $table->style[1] = 'width: 33%;';
-        $table->style[2] = 'width: 33%;';
+        $table->style[1] = 'width: 70%;';
+        $table->style[2] = 'width: 5%;';
 
         foreach ($agent_modules as $agent_module) {
             // Let's build the table.
@@ -268,7 +268,11 @@ class AgentsAlerts extends HTML
                         'javascript:show_add_alerts(\'%s\')',
                         $uniqid
                     ),
-                    'content' => html_print_image('images/add_mc.png', true),
+                    'content' => html_print_image(
+                        'images/add_mc.png',
+                        true,
+                        ['class' => 'main_menu_icon invert_filter']
+                    ),
                 ],
                 true
             );
@@ -276,13 +280,13 @@ class AgentsAlerts extends HTML
             array_push($table->data, $data);
 
             $table2 = new stdClass();
-
             $table2->width  = '100%';
             $table2->id     = 'table_add_alert';
-            $table2->class  = 'databox filters';
+            $table2->class  = 'filter-table-adv';
+            $table2->size = [];
+            $table2->size[0] = '50%';
+            $table2->size[1] = '50%';
             $table2->data   = [];
-
-            $table2->data[0][0] = __('Actions');
 
             $groups_user = users_get_groups($this->idUser);
 
@@ -296,7 +300,7 @@ class AgentsAlerts extends HTML
                 $actions = db_get_all_rows_sql($sql);
             }
 
-            $table2->data[0][1] = html_print_select(
+            $input_actions = html_print_select(
                 index_array($actions, 'id', 'name'),
                 'action_select',
                 '',
@@ -308,24 +312,30 @@ class AgentsAlerts extends HTML
                 true,
                 '',
                 false,
-                'width: 250px;'
+                'width: 100%;'
             );
-            $table2->data[0][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
-            $table2->data[0][1] .= __('Number of alerts match from').' ';
-            $table2->data[0][1] .= html_print_input_text('fires_min', '', '', 4, 10, true);
-            $table2->data[0][1] .= ' '.__('to').' ';
-            $table2->data[0][1] .= html_print_input_text('fires_max', '', '', 4, 10, true);
-            $table2->data[0][1] .= ui_print_help_icon(
+
+            $input_actions .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
+            $input_actions .= __('Number of alerts match from').' ';
+            $input_actions .= html_print_input_text('fires_min', '', '', 4, 10, true);
+            $input_actions .= ' '.__('to').' ';
+            $input_actions .= html_print_input_text('fires_max', '', '', 4, 10, true);
+            $input_actions .= ui_print_help_icon(
                 'alert-matches',
                 true,
                 ui_get_full_url(false, false, false, false)
             );
 
-            $table2->data[0][1] .= '</span>';
+            $input_actions .= '</span>';
+
+            $table2->data[0][0] = html_print_label_input_block(
+                __('Actions'),
+                $input_actions
+            );
 
             // Check ACLs for LM users.
             if (check_acl($this->idUser, 0, 'LM')) {
-                $table2->data[0][1] .= html_print_anchor(
+                $table2->data[0][1] = html_print_anchor(
                     [
                         'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$this->pure,
                         'class'   => 'mrgn_lft_5px',
@@ -335,7 +345,6 @@ class AgentsAlerts extends HTML
                 );
             }
 
-            $table2->data[1][0] = __('Template');
             $own_info = get_user_info($this->idUser);
             if ($own_info['is_admin'] || check_acl($this->idUser, 0, 'PM')) {
                 $templates = alerts_get_alert_templates(false, ['id', 'name']);
@@ -346,22 +355,25 @@ class AgentsAlerts extends HTML
                 $templates = alerts_get_alert_templates(['id_group IN ('.$filter_groups.')'], ['id', 'name']);
             }
 
-            $table2->data[1][1] = html_print_select(
-                index_array($templates, 'id', 'name'),
-                'template',
-                '',
-                '',
-                __('Select'),
-                0,
-                true,
-                false,
-                true,
-                '',
-                false,
-                'width: 250px;'
+            $table2->data[1][0] = html_print_label_input_block(
+                __('Template'),
+                html_print_select(
+                    index_array($templates, 'id', 'name'),
+                    'template',
+                    '',
+                    '',
+                    __('Select'),
+                    0,
+                    true,
+                    false,
+                    true,
+                    '',
+                    false,
+                    'width: 100%;'
+                )
             );
 
-            $table2->data[1][1] .= html_print_anchor(
+            $table2->data[1][1] = html_print_anchor(
                 [
                     'href'    => '#',
                     'class'   => 'template_details invisible',
@@ -372,7 +384,7 @@ class AgentsAlerts extends HTML
 
             // Check ACLs for LM users.
             if (check_acl($this->idUser, 0, 'LM')) {
-                $table2->data[1][1] .= html_print_anchor(
+                $table2->data[1][1] = html_print_anchor(
                     [
                         'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$this->pure,
                         'style'   => 'margin-left:5px;',
@@ -382,18 +394,26 @@ class AgentsAlerts extends HTML
                 );
             }
 
-            $table2->data[2][0] = __('Threshold');
-            $table2->data[2][1] = html_print_input_text('module_action_threshold', '0', '', 5, 7, true);
-            $table2->data[2][1] .= ' '.__('seconds');
+            $table2->data[2][0] = html_print_label_input_block(
+                __('Threshold'),
+                html_print_input_text('module_action_threshold', '0', '', 5, 7, true)
+            );
 
             $content2 = '<form class="add_alert_form" method="post">';
-
             $content2 .= html_print_table($table2, true);
             $content2 .= html_print_div(
                 [
                     'class'   => 'action-buttons',
-                    'style'   => 'width: '.$table2->width,
-                    'content' => html_print_submit_button(__('Add alert'), 'add', false, 'class="sub wand"', true).html_print_input_hidden('create_alert', $uniqid, true),
+                    'content' => html_print_submit_button(
+                        __('Add alert'),
+                        'add',
+                        false,
+                        [
+                            'icon' => 'add',
+                            'mode' => 'mini',
+                        ],
+                        true
+                    ).html_print_input_hidden('create_alert', $uniqid, true),
                 ],
                 true
             );
@@ -1041,8 +1061,8 @@ class AgentsAlerts extends HTML
                     resizable: true,
                     draggable: true,
                     modal: true,
-                    height: 270,
-                    width: 600,
+                    height: 370,
+                    width: 450,
                     overlay: {
                         opacity: 0.5,
                         background: "black"

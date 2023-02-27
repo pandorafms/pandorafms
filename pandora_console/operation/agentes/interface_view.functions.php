@@ -716,18 +716,21 @@ function print_table(
                         $graph_link .= $params_encoded."','";
                         $graph_link .= $win_handle."', 800, 480)\">";
                         $graph_link .= html_print_image(
-                            'images/chart.png',
+                            'images/graph@svg.svg',
                             true,
                             [
                                 'title' => __('Interface traffic'),
-                                'class' => 'invert_filter',
+                                'class' => 'invert_filter main_menu_icon',
                             ]
                         ).'</a>';
                     } else {
                         $graph_link = html_print_image(
-                            'images/chart_curve.disabled.png',
+                            'images/graph@svg.svg',
                             true,
-                            ['title' => __('inOctets and outOctets must be enabled.')]
+                            [
+                                'title' => __('inOctets and outOctets must be enabled.'),
+                                'class' => 'invert_filter main_menu_icon alpha50',
+                            ]
                         );
                     }
                 } else {

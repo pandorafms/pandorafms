@@ -837,12 +837,7 @@ function unblockSubmit(button) {
 
 function favMenuAction(e) {
   var data = JSON.parse(atob(e.value));
-  if (
-    data.label === "" &&
-    $(e)
-      .attr("src")
-      .endsWith("star.png") === false
-  ) {
+  if (data.label === "" && $(e).hasClass("active") === false) {
     $("#dialog-fav-menu").dialog({
       title: "Please choose a title",
       width: 330,
@@ -877,8 +872,10 @@ function favMenuAction(e) {
       if (res.success) {
         if (res.action === "create") {
           $("#image-fav-menu-action1").attr("src", "images/star_fav_menu.png");
+          $("#image-fav-menu-action1").addClass("active");
         } else {
           $("#image-fav-menu-action1").attr("src", "images/star_dark.png");
+          $("#image-fav-menu-action1").removeClass("active");
         }
       }
     }

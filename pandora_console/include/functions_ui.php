@@ -7129,7 +7129,10 @@ function ui_print_fav_menu($id_element, $url, $label, $section)
         base64_encode(json_encode($config_fav_menu)),
         '',
         true,
-        ['onclick' => 'favMenuAction(this)']
+        [
+            'onclick' => 'favMenuAction(this)',
+            'class'   => (($fav !== false) ? 'active' : ''),
+        ]
     );
     $output .= '</span>';
     $output .= '<div id="dialog-fav-menu">';

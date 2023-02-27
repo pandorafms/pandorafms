@@ -343,26 +343,35 @@ function mainModuleGroups()
 
     if ($info && $array_module_group) {
         $table = new StdClass();
-        $table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; min-width: 230px;';
+        $table->class = 'info_table';
+        $table->style[0] = 'font-weight: bolder; min-width: 230px;';
         $table->width = '100%';
-
-        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-            $background_color = '#333';
-        } else {
-            $background_color = '#fff';
-        }
 
         $head[0] = __('Groups');
         $headstyle[0] = 'width: 20%;  font-weight: bolder;';
         foreach ($array_module_group as $key => $value) {
-            $headstyle[] = 'min-width: 60px;max-width: 5%;text-align:center; color: #ffffff; background-color: #373737; font-weight: bolder;';
-            $head[] = ui_print_truncate_text($value, GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF');
+            $headstyle[] = 'min-width: 60px;max-width: 5%;text-align:center; font-weight: bolder;';
+            $head[] = ui_print_truncate_text(
+                $value,
+                GENERIC_SIZE_TEXT,
+                true,
+                true,
+                true,
+                '&hellip;'
+            );
         }
 
         $i = 0;
         foreach ($array_for_defect as $key => $value) {
             $deep = groups_get_group_deep($key);
-            $data[$i][0] = $deep.ui_print_truncate_text($value['data']['name'], GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF');
+            $data[$i][0] = $deep.ui_print_truncate_text(
+                $value['data']['name'],
+                GENERIC_SIZE_TEXT,
+                true,
+                true,
+                true,
+                '&hellip;'
+            );
             $j = 1;
             if (isset($array_data[$key])) {
                 foreach ($value['gm'] as $k => $v) {

@@ -561,12 +561,13 @@ table.filter-table-adv td > div .label-thin {
   font-weight: 400;
 }
 
+table.filter-table-adv td input[type="radio"] {
+  height: 20px;
+}
+
 table.databox.filter-table-adv {
   padding: 10px;
 }
-/*
-padding-right: calc(100% - 1024px);
-*/
 
 div.filter-datatable-submain {
   padding: 10px 25px;

@@ -781,27 +781,28 @@ class AgentsAlerts extends HTML
             ],
         ];
 
-        if ($this->pure == 0) {
+        /*
+            if ($this->pure == 0) {
             $screenSwitchTitle  = __('Full screen mode');
             $screenSwitchClass  = 'pure_full';
             $screenSwitchPure   = 1;
             $refreshVisibility   = false;
-        } else {
+            } else {
             $screenSwitchTitle  = __('Back to normal mode');
             $screenSwitchClass  = 'pure_normal';
             $screenSwitchPure   = 0;
             $refreshVisibility   = true;
-        }
+            }
 
-        $refreshComboRates = [
+            $refreshComboRates = [
             '30'                       => __('30 seconds'),
             (string) SECONDS_1MINUTE   => __('1 minute'),
             (string) SECONDS_2MINUTES  => __('2 minutes'),
             (string) SECONDS_5MINUTES  => __('5 minutes'),
             (string) SECONDS_10MINUTES => __('10 minutes'),
-        ];
+            ];
 
-        $headerInputs[] = [
+            $headerInputs[] = [
             'id'        => 'pure',
             'arguments' => [
                 'name'   => 'pure',
@@ -809,9 +810,9 @@ class AgentsAlerts extends HTML
                 'value'  => $this->pure,
                 'return' => true,
             ],
-        ];
+            ];
 
-        $headerInputs[] = [
+            $headerInputs[] = [
             'label'          => __('Full screen'),
             'id'             => 'img-full-screen',
             'surround_start' => '<div id="full_screen_refresh_box">',
@@ -823,9 +824,9 @@ class AgentsAlerts extends HTML
                 'name'       => 'pure',
                 'attributes' => 'class="full_screen_button '.$screenSwitchClass.'" title="'.$screenSwitchTitle.'"',
             ],
-        ];
+            ];
 
-        $headerInputs[] = [
+            $headerInputs[] = [
             'label'        => __('Refresh'),
             'id'           => 'slc-refresh-rate',
             'class'        => ($refreshVisibility === true) ? '' : 'invisible',
@@ -840,7 +841,9 @@ class AgentsAlerts extends HTML
                 'script'      => 'this.form.submit()',
                 'sort'        => false,
             ],
-        ];
+            ];
+
+        */
 
         $filterForm = $this->printForm(
             [

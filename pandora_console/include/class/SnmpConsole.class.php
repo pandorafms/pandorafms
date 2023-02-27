@@ -542,14 +542,23 @@ class SnmpConsole extends HTML
             ['type' => 'form_action']
         );
 
-        echo '<table id="legend_snmp_browser"><td><div class="snmp_view_div">';
-        echo '<h3>'.__('Severity').'</h3>';
-        foreach (get_priorities() as $num => $name) {
+        echo '<table id="legend_snmp_browser"><td><div class="snmp_view_div w100p">';
+        echo '<h3 style="position: relative;left: 50%;">'.__('Severity').'</h3>';
+        echo '<div class="display-flex"><div class="flex-50">';
+        $priorities = get_priorities();
+        $half = (count($priorities) / 2);
+        $count = 0;
+        foreach ($priorities as $num => $name) {
+            if ($count == $half) {
+                echo '</div><div class="mrgn_lft_5px flex-50">';
+            }
+
             echo '<span class="'.get_priority_class($num).'">'.$name.'</span>';
             echo '<br />';
+            $count++;
         }
 
-        echo '</div></td>';
+        echo '</div></div></div></td>';
         echo '<td><div class="snmp_view_div">';
         echo '<h3>'.__('Status').'</h3>';
         echo '<span class="datos_green">'.__('Validated').'</span>';

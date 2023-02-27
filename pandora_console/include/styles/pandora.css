@@ -966,6 +966,14 @@ select:-internal-list-box {
   margin-left: 0.5em;
 }
 
+.flex-50 {
+  flex: 50%;
+}
+
+.display-flex {
+  display: flex;
+}
+
 .no-border {
   border: none;
 }
@@ -7035,7 +7043,8 @@ div.graph div.legend table {
   position: relative;
 }
 
-.snmp_view_div > span {
+.snmp_view_div > span,
+.snmp_view_div > div > div > span {
   padding: 2px 10px 2px 10px;
   border-radius: 10px;
 }

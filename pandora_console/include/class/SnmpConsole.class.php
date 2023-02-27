@@ -565,11 +565,11 @@ class SnmpConsole extends HTML
         echo '<td><div class="snmp_view_div">';
         echo '<h3>'.__('Action').'</h3>';
         echo '<div style=" display : flex;align-items : center;">';
-        echo html_print_image('images/validate.svg', true, ['class' => 'main_menu_icon']).' - '.__('Validate');
+        echo html_print_image('images/validate.svg', true, ['class' => 'main_menu_icon invert_filter']).' - '.__('Validate');
         echo '</div>';
         echo '<br />';
         echo '<div style=" display : flex;align-items : center;">';
-        echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon']).' - '.__('Delete');
+        echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).' - '.__('Delete');
         echo '</div>';
         echo '</div></div></td>';
 
@@ -905,7 +905,7 @@ class SnmpConsole extends HTML
                                     'border'  => '0',
                                     'title'   => __('Validate'),
                                     'onclick' => 'validate_trap(\''.$tmp->id_trap.'\')',
-                                    'class'   => 'main_menu_icon',
+                                    'class'   => 'invert_filter main_menu_icon',
                                 ]
                             ).'</a> ';
                         }
@@ -945,7 +945,7 @@ class SnmpConsole extends HTML
                                 'class' => 'invert_filter main_menu_icon',
                             ]
                         ).'</a>';
-                        $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">'.html_print_image('images/edit.svg', true, ['alt' => __('SNMP trap editor'), 'title' => __('SNMP trap editor'), 'class' => 'main_menu_icon']).'</a>';
+                        $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">'.html_print_image('images/edit.svg', true, ['alt' => __('SNMP trap editor'), 'title' => __('SNMP trap editor'), 'class' => 'main_menu_icon invert_filter']).'</a>';
 
                         $tmp->m = html_print_checkbox_extended('snmptrapid[]', $tmp->id_trap, false, false, '', 'class="chk"', true);
 

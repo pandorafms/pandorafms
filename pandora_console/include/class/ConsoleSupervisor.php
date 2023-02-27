@@ -583,18 +583,33 @@ class ConsoleSupervisor
             }
 
             if ($limit_value !== '' && $message !== '') {
-                $this->notify(
-                    [
-                        'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
-                        'title'   => __('Incorrect config value'),
-                        'message' => __(
-                            $message,
-                            $names[$variable],
-                            $limit_value
-                        ),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup',
-                    ]
-                );
+                if (is_metaconsole() === true) {
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                            'title'   => __('Incorrect config value'),
+                            'message' => __(
+                                $message,
+                                $names[$variable],
+                                $limit_value
+                            ),
+                            'url'     => '__url__index.php?sec=advanced&sec2=advanced/metasetup',
+                        ]
+                    );
+                } else {
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                            'title'   => __('Incorrect config value'),
+                            'message' => __(
+                                $message,
+                                $names[$variable],
+                                $limit_value
+                            ),
+                            'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup',
+                        ]
+                    );
+                }
             }
         }
 

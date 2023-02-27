@@ -239,6 +239,13 @@ $server_id = get_parameter(
     ($filter['server_id'] ?? '')
 );
 
+if (empty($id_agent) === true) {
+    $id_agent = get_parameter(
+        'id_agent',
+        ($filter['id_agent'] ?? '')
+    );
+}
+
 if (is_metaconsole() === true) {
     $servers = metaconsole_get_servers();
     if (is_array($servers) === true) {
@@ -2413,8 +2420,6 @@ try {
                     100,
                     200,
                     500,
-                    1000,
-                    -1,
                 ],
                 [
                     $config['block_size'],
@@ -2423,8 +2428,6 @@ try {
                     100,
                     200,
                     500,
-                    1000,
-                    'All',
                 ],
             ],
             'order'                          => [

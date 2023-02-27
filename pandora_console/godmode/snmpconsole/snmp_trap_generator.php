@@ -134,7 +134,7 @@ $table->data[1][2] = html_print_label_input_block(
     )
 );
 
-$table->data[2][1] = html_print_label_input_block(
+$table->data[2][0] = html_print_label_input_block(
     __('SNMP Agent'),
     html_print_input_text(
         'snmp_agent',
@@ -155,7 +155,7 @@ $types = [
     5 => 'EGP neighbor loss (5)',
     6 => 'Enterprise (6)',
 ];
-$table->data[2][2] = html_print_label_input_block(
+$table->data[2][1] = html_print_label_input_block(
     __('SNMP Type'),
     html_print_select(
         $types,

@@ -10415,6 +10415,22 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.upload_file {
+  mask: url(../../images/upload_file.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/upload_file.png) no-repeat center / contain;
+}
+
+button div.create_file {
+  mask: url(../../images/create_file.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/create_file.png) no-repeat center / contain;
+}
+
+button div.create_directory {
+  mask: url(../../images/create_directory.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/create_directory.png) no-repeat center /
+    contain;
+}
+
 button div.cog.rotation {
   animation: rotation 4s infinite linear;
 }

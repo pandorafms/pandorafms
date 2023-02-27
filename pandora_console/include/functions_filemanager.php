@@ -542,7 +542,7 @@ function filemanager_file_explorer(
                     break;
                     <?php if ($allowCreateText === true) : ?>
                     case 'create_text_file':
-                        title_action = "<?php echo __('Create a Text'); ?>";
+                        title_action = "<?php echo __('Create File'); ?>";
                         break;
                     <?php endif ?>
                 case 'upload_file':
@@ -791,7 +791,7 @@ function filemanager_file_explorer(
                 && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
                 && ($readOnly === false)
             ) {
-                $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/book_edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter']).'</a>';
+                $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/enable.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
 
             $data[4] .= '</span>';
@@ -830,10 +830,10 @@ function filemanager_file_explorer(
                     'images/create_file.png',
                     true,
                     [
-                        'title' => __('Create a Text'),
+                        'title' => __('Create File'),
                         'class' => 'invert_filter',
                     ]
-                ).'<span>'.__('Create a Text').'</span>
+                ).'<span>'.__('Create File').'</span>
                     </a>
                 </li>';
             }
@@ -937,40 +937,46 @@ function filemanager_file_explorer(
 
             echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";
 
-            echo "<a href='javascript: show_form_create_folder();'>";
-            echo html_print_image(
-                'images/create_directory.png',
-                true,
+            $buttons[] = html_print_button(
+                __('Create directory'),
+                'create_directory',
+                false,
+                'show_form_create_folder()',
                 [
-                    'title' => __('Create directory'),
-                    'class' => 'invert_filter',
-                ]
+                    'class' => 'margin-right-2 invert_filter secondary',
+                    'icon'  => 'create_directory',
+                ],
+                true,
+                false
             );
-            echo '</a>';
 
             if ($allowCreateText === true) {
-                echo "<a href='javascript: show_create_text_file();'>";
-                echo html_print_image(
-                    'images/create_file.png',
-                    true,
+                $buttons[] = html_print_button(
+                    __('Create file'),
+                    'create_text',
+                    false,
+                    'show_create_text_file()',
                     [
-                        'title' => __('Create text'),
-                        'class' => 'invert_filter',
-                    ]
+                        'class' => 'margin-right-2 invert_filter secondary',
+                        'icon'  => 'create_file',
+                    ],
+                    true,
+                    false
                 );
-                echo '</a>';
             }
 
-            echo "<a href='javascript: show_upload_file();'>";
-            echo html_print_image(
-                'images/upload_file.png',
-                true,
+            $buttons[] = html_print_button(
+                __('Upload file/s'),
+                'upload_file',
+                false,
+                'show_upload_file()',
                 [
-                    'title' => __('Upload file/s'),
-                    'class' => 'invert_filter',
-                ]
+                    'class' => 'margin-right-2 invert_filter secondary',
+                    'icon'  => 'upload_file',
+                ],
+                true,
+                false
             );
-            echo '</a>';
 
             // Show Modal Real Path
             $modal_real_path = "<div><b>Real path to plugin execution is:</b></div>
@@ -997,6 +1003,11 @@ function filemanager_file_explorer(
     }
 
     html_print_table($table);
+
+    html_print_action_buttons(
+        implode('', $buttons),
+        ['type' => 'form_action']
+    );
 }
 
 

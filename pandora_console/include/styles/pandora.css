@@ -8066,6 +8066,7 @@ div.graph div.legend table {
 .networkconsole {
   width: 100%;
   height: 100%;
+  min-height: 460px;
   position: relative;
   overflow: hidden;
   background-color: #fafafa;
@@ -9870,6 +9871,11 @@ div#err_msg_centralised {
   font-style: italic;
 }
 
+.div-4-col {
+  flex: 25%;
+  display: flex;
+  flex-direction: column;
+}
 .div-col {
   width: 33%;
   display: flex;
@@ -11262,7 +11268,11 @@ form#satellite_conf_edit > fieldset.full-column {
 .input_sub_placeholder {
   font-size: 8pt;
   color: #8a96a6;
-  /*font-family: "lato";*/
+}
+
+.input_sub_placeholder_warning {
+  color: #ffb900;
+  font-style: italic;
 }
 
 #principal_action_buttons input,

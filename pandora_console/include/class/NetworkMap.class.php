@@ -3022,17 +3022,41 @@ class NetworkMap
 
         $table = new StdClass();
         $table->id = 'node_details';
+        $table->class = 'filter-table-adv';
         $table->width = '100%';
 
         $table->data = [];
-        $table->data[0][0] = '<strong>'.__('Agent').'</strong>';
-        $table->data[0][1] = '';
-        $table->data[1][0] = '<strong>'.__('Adresses').'</strong>';
-        $table->data[1][1] = '';
-        $table->data[2][0] = '<strong>'.__('OS type').'</strong>';
-        $table->data[2][1] = '';
-        $table->data[3][0] = '<strong>'.__('Group').'</strong>';
-        $table->data[3][1] = '';
+
+        $table->data[0][] = html_print_label_input_block(
+            __('Agent'),
+            html_print_div(['id' => 'content_node_details-0-1'], true)
+        );
+
+        $table->data[0][] = html_print_label_input_block(
+            __('Adresses'),
+            html_print_div(['id' => 'content_node_details-1-1'], true)
+        );
+
+        $table->data[1][] = html_print_label_input_block(
+            __('OS type'),
+            html_print_div(['id' => 'content_node_details-2-1'], true)
+        );
+
+        $table->data[1][] = html_print_label_input_block(
+            __('Group'),
+            html_print_div(['id' => 'content_node_details-3-1'], true)
+        );
+
+        /*
+            $table->data[0][0] = '<strong>'.__('Agent').'</strong>';
+            $table->data[0][1] = '';
+            $table->data[1][0] = '<strong>'.__('Adresses').'</strong>';
+            $table->data[1][1] = '';
+            $table->data[2][0] = '<strong>'.__('OS type').'</strong>';
+            $table->data[2][1] = '';
+            $table->data[3][0] = '<strong>'.__('Group').'</strong>';
+            $table->data[3][1] = '';
+        */
 
         $output .= ui_toggle(
             html_print_table($table, true),
@@ -3071,52 +3095,75 @@ class NetworkMap
 
         $table = new StdClass();
         $table->id = 'node_options';
+        $table->class = 'filter-table-adv';
         $table->width = '100%';
 
         $table->data = [];
-        $table->data[0][0] = __('Shape');
-        $table->data[0][1] = html_print_select(
-            [
-                'circle'  => __('Circle'),
-                'square'  => __('Square'),
-                'rhombus' => __('Rhombus'),
-            ],
-            'shape',
-            '',
-            'javascript:',
-            '',
-            0,
-            true
-        ).'&nbsp;<span id="shape_icon_in_progress" class="invisible">'.html_print_image('images/spinner.gif', true).'</span><span id="shape_icon_correct" class="invisible">'.html_print_image('images/success.png', true, ['width' => '18px']).'</span><span id="shape_icon_fail" class="invisible">'.html_print_image('images/icono-bad.png', true, ['width' => '18px']).'</span>';
-        $table->data['node_name'][0] = __('Name');
-        $table->data['node_name'][1] = html_print_input_text(
-            'edit_name_node',
-            '',
-            __('name node'),
-            '20',
-            '50',
-            true
-        );
-        $table->data['node_name'][2] = html_print_button(
-            __('Update node'),
-            '',
-            false,
-            '',
-            'class="sub next"',
-            true
+        $table->data[0][] = html_print_label_input_block(
+            __('Shape'),
+            html_print_select(
+                [
+                    'circle'  => __('Circle'),
+                    'square'  => __('Square'),
+                    'rhombus' => __('Rhombus'),
+                ],
+                'shape',
+                '',
+                'javascript:',
+                '',
+                0,
+                true
+            )
         );
 
-        $table->data['fictional_node_name'][0] = __('Name');
-        $table->data['fictional_node_name'][1] = html_print_input_text(
-            'edit_name_fictional_node',
+        $table->data['node_name'][] = html_print_label_input_block(
+            __('Name'),
+            html_print_input_text(
+                'edit_name_node',
+                '',
+                __('name node'),
+                '20',
+                '50',
+                true
+            )
+        );
+
+        $table->data['fictional_node_name'][] = html_print_label_input_block(
+            __('Name'),
+            html_print_input_text(
+                'edit_name_fictional_node',
+                '',
+                __('name fictional node'),
+                '20',
+                '50',
+                true
+            )
+        );
+
+        $table->data['fictional_node_networkmap_link'][] = html_print_label_input_block(
+            __('Networkmap to link'),
+            html_print_select(
+                $list_networkmaps,
+                'edit_networkmap_to_link',
+                '',
+                '',
+                '',
+                0,
+                true
+            )
+        );
+
+        $table->data['fictional_node_networkmap_link'][] = html_print_button(
+            __('Update fictional node'),
             '',
-            __('name fictional node'),
-            '20',
-            '50',
+            false,
+            'add_fictional_node();',
+            ['mode' => 'link'],
             true
         );
-        $table->data['fictional_node_networkmap_link'][0] = __('Networkmap to link');
-        $table->data['fictional_node_networkmap_link'][1] = html_print_select(
+        /*
+            $table->data['fictional_node_networkmap_link'][0] = __('Networkmap to link');
+            $table->data['fictional_node_networkmap_link'][1] = html_print_select(
             $list_networkmaps,
             'edit_networkmap_to_link',
             '',
@@ -3124,19 +3171,37 @@ class NetworkMap
             '',
             0,
             true
-        );
-        $table->data['fictional_node_update_button'][0] = '';
-        $table->data['fictional_node_update_button'][1] = html_print_button(
+            );
+
+            $table->data['fictional_node_update_button'][0] = '';
+            $table->data['fictional_node_update_button'][1] = html_print_button(
             __('Update fictional node'),
             '',
             false,
             'add_fictional_node();',
-            'class="sub next"',
+            ['icon' => 'next'],
+            true
+            );
+        */
+
+        $nodeUpdateTable = html_print_table($table, true);
+        $nodeUpdateTable .= html_print_div(
+            [
+                'class'   => 'action-buttons w100p float-right',
+                'content' => html_print_button(
+                    __('Update node'),
+                    '',
+                    false,
+                    'update_node_name()',
+                    ['icon' => 'next'],
+                    true
+                ),
+            ],
             true
         );
 
         $output .= ui_toggle(
-            html_print_table($table, true),
+            $nodeUpdateTable,
             __('Node options'),
             __('Node options'),
             '',
@@ -3210,9 +3275,9 @@ class NetworkMap
         $table->data['template_row']['node_target'] = '';
         $table->data['template_row']['edit'] = '';
 
-        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none">'.html_print_image('images/dot_green.png', true).'</span><span class="edit_icon_fail" style="display: none" >'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress" style="display: none">'.html_print_image('images/spinner.gif', true).'</span>';
+        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none">'.html_print_image('images/pixel_green.png', true, ['class' => 'main_menu_icon']).'</span><span class="edit_icon_fail" style="display: none" >'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress" style="display: none">'.html_print_image('images/spinner.gif', true).'</span>';
         // <span class="edit_icon"><a class="edit_icon_link" title="'.__('Update').'" href="#">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a></span>';
-        $table->data['template_row']['edit'] .= '<a class="delete_icon" href="#">'.html_print_image('images/delete.png', true, ['class' => 'invert_filter']).'</a>';
+        $table->data['template_row']['edit'] .= '<a class="delete_icon" href="#">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter', 'style' => 'padding: 10px']).'</a>';
 
         $table->colspan['no_relations']['0'] = 5;
         $table->cellstyle['no_relations']['0'] = 'text-align: center;';
@@ -3434,7 +3499,7 @@ class NetworkMap
             '',
             false,
             'add_fictional_node();',
-            'class="sub"',
+            ['type' => 'link'],
             true
         );
         $add_agent_node_html = html_print_table($table, true);
@@ -3691,7 +3756,7 @@ class NetworkMap
             $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
             $output .= ' class="absolute right_10px top_10px">';
             $output .= '<a title="'.__('Hide Labels').'" href="javascript: hide_labels();">';
-            $output .= html_print_image('/images/icono_borrar.png', true, ['id' => 'image_hide_show_labels']);
+            $output .= html_print_image('/images/disable.svg', true, ['id' => 'image_hide_show_labels', 'class' => 'main_menu_icon invert_filter']);
             $output .= '</a></div>';
 
             $output .= '<div id="holding_spinner_'.$networkmap['id'].'" ';

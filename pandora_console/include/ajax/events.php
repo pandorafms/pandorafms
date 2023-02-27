@@ -571,7 +571,7 @@ if ($load_filter_modal) {
     $table->cellpadding = 4;
     $table->styleTable = 'font-weight: bold; color: #555; text-align:left; border: 0px !important;';
     $table->class = 'databox';
-    $filter_id_width = '200px';
+    $filter_id_width = '300px';
     if (is_metaconsole() === true) {
         $table->cellspacing = 0;
         $table->cellpadding = 0;
@@ -596,32 +596,39 @@ if ($load_filter_modal) {
         false,
         'margin-left:5px; width:'.$filter_id_width.';'
     );
-    $data[1] = html_print_submit_button(
-        __('Load filter'),
-        'load_filter',
-        false,
-        [
-            'icon' => 'update',
-            'mode' => 'secondary mini',
-        ],
-        true
-    );
-    $data[1] .= html_print_input_hidden('load_filter', 1, true);
+
     $table->data[] = $data;
     $table->rowclass[] = '';
 
     html_print_table($table);
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Load filter'),
+                'load_filter',
+                false,
+                [
+                    'icon' => 'update',
+                    'mode' => 'secondary mini',
+                ],
+                true
+            ).html_print_input_hidden('load_filter', 1, true),
+        ]
+    );
     echo '</form>';
     echo '</div>';
     ?>
 <script type="text/javascript">
 function show_filter() {
     $("#load-filter-select").dialog({
+        title: 'Load filter',
         resizable: true,
         draggable: true,
         modal: false,
         closeOnEscape: true,
-        width: 550
+        width: 340
     });
 }
 
@@ -764,24 +771,26 @@ if ($save_filter_modal) {
         $data[0] = html_print_radio_button(
             'filter_mode',
             'new',
-            '',
+            __('New filter'),
             true,
             true
-        ).__('New filter').'';
+        );
 
         $data[1] = html_print_radio_button(
             'filter_mode',
             'update',
-            '',
+            __('Update filter'),
             false,
             true
-        ).__('Update filter').'';
+        );
 
         $table->data[] = $data;
         $table->rowclass[] = '';
 
         $data = [];
         $table->rowid[1] = 'save_filter_row1';
+        $table->size[0] = '50%';
+        $table->size[1] = '50%';
         $data[0] = '<b>'.__('Filter name').'</b>'.$jump;
         $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
         if (is_metaconsole()) {
@@ -832,14 +841,10 @@ if ($save_filter_modal) {
             '',
             '',
             0,
-            true
-        );
-        $data[1] = html_print_submit_button(
-            __('Update filter'),
-            'update_filter',
+            true,
             false,
-            'class="sub upd" onclick="save_update_filter();"',
-            true
+            true,
+            'w130'
         );
 
         $table->data[] = $data;
@@ -863,10 +868,28 @@ if ($save_filter_modal) {
                 ),
             ]
         );
+
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Update filter'),
+                    'update_filter',
+                    false,
+                    [
+                        'icon'    => 'update',
+                        'mode'    => 'secondary mini',
+                        'onClick' => 'save_update_filter();',
+                    ],
+                    true
+                ),
+            ]
+        );
     } else {
         include 'general/noaccess.php';
     }
 
+    $modal_title = __('Save/Update filters');
     echo '</div>';
     ?>
 <script type="text/javascript">
@@ -874,22 +897,26 @@ function show_save_filter() {
     $('#save_filter_row1').show();
     $('#save_filter_row2').show();
     $('#update_filter_row1').hide();
+    $('#button-update_filter').hide();
     // Filter save mode selector
     $("[name='filter_mode']").click(function() {
         if ($(this).val() == 'new') {
             $('#save_filter_row1').show();
             $('#save_filter_row2').show();
-            $('#submit-save_filter').show();
+            $('#button-save_filter').show();
             $('#update_filter_row1').hide();
+            $('#button-update_filter').hide();
         }
         else {
             $('#save_filter_row1').hide();
             $('#save_filter_row2').hide();
             $('#update_filter_row1').show();
-            $('#submit-save_filter').hide();
+            $('#button-update_filter').show();
+            $('#button-save_filter').hide();
         }
     });
     $("#save-filter-select").dialog({
+        title: '<?php echo $modal_title; ?>',
         resizable: true,
         draggable: true,
         modal: false,

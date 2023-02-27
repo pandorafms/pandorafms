@@ -258,14 +258,21 @@ class ConsoleSupervisor
             $this->checkSyncQueueStatus();
         }
 
-                /*
-                 * Checkc agent missing libraries.
-                 * NOTIF.AGENT.LIBRARY
-                 */
+        /*
+         * Check number of agents is equals and more than 200.
+         * NOTIF.ACCESSSTASTICS.PERFORMANCE
+         */
+
+        $this->checkAccessStatisticsPerformance();
+
+        /*
+         * Checkc agent missing libraries.
+         * NOTIF.AGENT.LIBRARY
+         */
+
         if ((bool) enterprise_installed() === true) {
             $this->checkLibaryError();
         }
-
     }
 
 
@@ -528,12 +535,21 @@ class ConsoleSupervisor
         }
 
         /*
+         * Check number of agents is equals and more than 200.
+         * NOTIF.ACCESSSTASTICS.PERFORMANCE
+         */
+
+        $this->checkAccessStatisticsPerformance();
+
+        /*
          * Checkc agent missing libraries.
          * NOTIF.AGENT.LIBRARY
          */
+
         if ((bool) enterprise_installed() === true) {
             $this->checkLibaryError();
         }
+
     }
 
 
@@ -545,6 +561,34 @@ class ConsoleSupervisor
     public function maintenanceOperations()
     {
 
+    }
+
+
+    /**
+     * Check number of agents and disable agentaccess token if number
+     * is equals and more than 200.
+     *
+     * @return void
+     */
+    public function checkAccessStatisticsPerformance()
+    {
+        $total_agents = db_get_value('count(*)', 'tagente');
+
+        if ($total_agents >= 200) {
+            db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.ACCESSSTASTICS.PERFORMANCE',
+                    'title'   => __('Access statistics performance'),
+                    'message' => __(
+                        'Usage of agent access statistics IS NOT RECOMMENDED on systems with more than 200 agents due performance penalty'
+                    ),
+                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
+        }
     }
 
 

@@ -98,6 +98,10 @@ echo '</div>';
 ?>
 <script type="text/javascript">
     $(document).ready(function() {
+        const menuTypeClass = '<?php echo $menuTypeClass; ?>';
+        if (menuTypeClass === 'classic' && menuTypeClass !== localStorage.getItem('menuType')) {
+            localStorage.setItem('menuType', 'classic');
+        }
         const tab = '<?php echo $tab_active; ?>';
 
         if (tab === 'management') {
@@ -443,8 +447,12 @@ echo '</div>';
          * @return (int) The position (in px).
          */
         function menu_calculate_top(index, item_height) {
-            const result = index * item_height;
-            return 133 + result;
+            const height_position = index * item_height;
+            const height_logo = $('.logo_green').outerHeight(true);
+            const height_tabs = $('#menu_tabs').outerHeight(true);
+            const padding_menu = parseInt($('.godmode').css('padding-top'));
+
+            return height_logo + height_tabs + padding_menu + height_position;
         }
     });
 </script>

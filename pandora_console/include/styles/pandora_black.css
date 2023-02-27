@@ -1239,7 +1239,16 @@ input[type="image"] {
   font-family: source-code, mono, monospace;
 }
 
-* table about dialog */ .table-about {
+.title-blue {
+  text-transform: none !important;
+  font-size: 1em !important;
+  margin: 0px !important;
+  padding: 0px !important;
+  color: #95a3bf;
+}
+
+/* Table about dialog */
+.table-about {
   background-color: #222 !important;
   width: 100%;
   border-collapse: collapse;

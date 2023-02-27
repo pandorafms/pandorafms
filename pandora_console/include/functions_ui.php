@@ -3437,8 +3437,8 @@ function ui_print_datatable(array $parameters)
         throw new Exception('[ui_print_datatable]: Columns and columns names must have same length');
     }
 
-    if (!isset($parameters['ajax_url'])) {
-        throw new Exception('[ui_print_datatable]: Parameter ajax_url is required');
+    if (!isset($parameters['ajax_url']) && !isset($parameters['data_element'])) {
+        throw new Exception('[ui_print_datatable]: Parameter ajax_url or data_element is required');
     }
 
     if (!isset($parameters['default_pagination'])) {
@@ -3702,18 +3702,6 @@ function ui_print_datatable(array $parameters)
         $pagination_class = $parameters['pagination_class'];
     }
 
-    // Javascript controller.
-    $js = '<script type="text/javascript">
-    $(document).ready(function(){
-        $.fn.dataTable.ext.errMode = "none";
-        $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
-
-        var settings_datatable = {
-            drawCallback: function(settings) {';
-    if (isset($parameters['drawCallback'])) {
-        $js .= $parameters['drawCallback'];
-    }
-
     $columns = '';
     for ($i = 1; $i <= (count($parameters['columns']) - 3); $i++) {
         if ($i != (count($parameters['columns']) - 3)) {
@@ -3730,24 +3718,162 @@ function ui_print_datatable(array $parameters)
         $export_columns = ',columns: \'th:not(:last-child)\'';
     }
 
-    $js .= '
-                if (dt_'.$table_id.'.page.info().pages > 1) {
+    if (isset($parameters['ajax_url'])) {
+        $type_data = 'ajax: {
+            url: "'.ui_get_full_url('ajax.php', false, false, false).'",
+            type: "POST",
+            dataSrc: function (json) {
+                if($("#'.$form_id.'_search_bt") != undefined) {
+                    $("#'.$form_id.'_loading").remove();
+                }
+
+                // Move elements to table_action_buttons bar.
+                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_length"));
+                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dt-buttons"));
+
+                if (json.error) {
+                    console.error(json.error);
+                    $("#error-'.$table_id.'").html(json.error);
+                    $("#error-'.$table_id.'").dialog({
+                        title: "Filter failed",
+                        width: 630,
+                        resizable: true,
+                        draggable: true,
+                        modal: false,
+                        closeOnEscape: true,
+                        buttons: {
+                            "Ok" : function () {
+                                $(this).dialog("close");
+                            }
+                        }
+                    }).parent().addClass("ui-state-error");
+                } else {';
+
+        if (isset($parameters['ajax_return_operation']) === true
+            && empty($parameters['ajax_return_operation']) === false
+            && isset($parameters['ajax_return_operation_function']) === true
+            && empty($parameters['ajax_return_operation_function']) === false
+        ) {
+            $type_data .= '
+        if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
+            '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
+        }
+    ';
+        }
+
+        if (isset($parameters['ajax_postprocess'])) {
+            $type_data .= '
+                if (json.data) {
+                    json.data.forEach(function(item) {
+                        '.$parameters['ajax_postprocess'].'
+                    });
+                } else {
+                    json.data = {};
+                }';
+        }
+
+        $type_data .= '
+                    return json.data;
+                }
+            },
+            data: function (data) {
+                if($("#button-'.$form_id.'_search_bt") != undefined) {
+                    var loading = \''.html_print_image(
+                    'images/spinner.gif',
+                    true,
+                    [
+                        'id'    => $form_id.'_loading',
+                        'class' => 'loading-search-datatables-button',
+                    ]
+                ).'\';
+                    $("#button-'.$form_id.'_search_bt").parent().append(loading);
+                }
+
+                inputs = $("#'.$form_id.' :input");
+
+                values = {};
+                inputs.each(function() {
+                    values[this.name] = $(this).val();
+                })
+
+                $.extend(data, {
+                    filter: values,'."\n";
+
+        if (is_array($parameters['ajax_data'])) {
+            foreach ($parameters['ajax_data'] as $k => $v) {
+                $type_data .= $k.':'.json_encode($v).",\n";
+            }
+        }
+
+        $type_data .= 'page: "'.$parameters['ajax_url'].'"
+                });
+
+                return data;
+            }
+        },';
+    } else {
+        $type_data = 'data: '.json_encode($parameters['data_element']).',';
+    }
+
+    $serverside = 'true';
+    if (isset($parameters['data_element'])) {
+        $serverside = 'false';
+    }
+
+    // Javascript controller.
+    $js = '<script type="text/javascript">
+    $(document).ready(function(){
+        $.fn.dataTable.ext.errMode = "none";
+        $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
+
+        var settings_datatable = {
+            drawCallback: function(settings) {';
+
+    if (!isset($parameters['data_element'])) {
+        $js .= 'if (dt_'.$table_id.'.page.info().pages > 1) {
                     $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
                 } else {
                     $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
-                }
-            },
+                }';
+    }
+
+    if (isset($parameters['drawCallback'])) {
+        $js .= $parameters['drawCallback'];
+    }
+
+    $dom_elements = '"plfrtiBp"';
+    if (isset($parameters['dom_elements'])) {
+        $dom_elements = '"'.$parameters['dom_elements'].'"';
+    }
+
+    $searching = 'false';
+    if (isset($parameters['searching']) && $parameters['searching'] === true) {
+        $searching = 'true';
+    }
+
+    $ordering = 'true';
+    if (isset($parameters['ordering']) && $parameters['ordering'] === false) {
+        $ordering = 'false';
+    }
+
+    $js .= '},';
+
+    $languaje = substr(get_user_language(), 0, 2);
+
+    $js .= '
             processing: true,
-            serverSide: true,
+            serverSide: '.$serverside.',
             paging: '.$parameters['paging'].',
             pageLength: '.$parameters['default_pagination'].',
-            searching: false,
+            searching: '.$searching.',
             responsive: true,
-            dom: "frtBpl",
+            dom: '.$dom_elements.',
             language: {
+                url: "/pandora_console/include/javascript/i18n/dataTables.'.$languaje.'.json",
                 processing:"'.$processing.'",
                 zeroRecords:"'.$zeroRecords.'",
-                emptyYable:"'.$emptyTable.'",
+                emptyTable:"'.$emptyTable.'",
             },
             buttons: '.$parameters['csv'].'== 1 ? [
                 {
@@ -3772,102 +3898,11 @@ function ui_print_datatable(array $parameters)
                 }
             ] : [],
             lengthMenu: '.json_encode($pagination_options).',
-            ajax: {
-                url: "'.ui_get_full_url('ajax.php', false, false, false).'",
-                type: "POST",
-                dataSrc: function (json) {
-                    if($("#button-'.$form_id.'_search_bt") != undefined) {
-                        $("#'.$form_id.'_loading").remove();
-                    }
-                    // Move elements to table_action_buttons bar.
-                    $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                    $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_length"));
-                    $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dt-buttons"));
-
-                    if (json.error) {
-                        console.error(json.error);
-                        $("#error-'.$table_id.'").html(json.error);
-                        $("#error-'.$table_id.'").dialog({
-                            title: "Filter failed",
-                            width: 630,
-                            resizable: true,
-                            draggable: true,
-                            modal: false,
-                            closeOnEscape: true,
-                            buttons: {
-                                "Ok" : function () {
-                                    $(this).dialog("close");
-                                }
-                            }
-                        }).parent().addClass("ui-state-error");
-                    } else {';
-
-    if (isset($parameters['ajax_return_operation']) === true
-        && empty($parameters['ajax_return_operation']) === false
-        && isset($parameters['ajax_return_operation_function']) === true
-        && empty($parameters['ajax_return_operation_function']) === false
-    ) {
-        $js .= '
-            if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
-                '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
-            }
-        ';
-    }
-
-    if (isset($parameters['ajax_postprocess'])) {
-        $js .= '
-                    if (json.data) {
-                        json.data.forEach(function(item) {
-                            '.$parameters['ajax_postprocess'].'
-                        });
-                    } else {
-                        json.data = {};
-                    }';
-    }
-
-    $js .= '
-                        return json.data;
-                    }
-                },
-                data: function (data) {
-                    if($("#button-'.$form_id.'_search_bt") != undefined) {
-                        var loading = \''.html_print_image(
-                        'images/spinner.gif',
-                        true,
-                        [
-                            'id'    => $form_id.'_loading',
-                            'class' => 'loading-search-datatables-button',
-                        ]
-                    ).'\';
-                        $("#button-'.$form_id.'_search_bt").parent().append(loading);
-                    }
-
-                    inputs = $("#'.$form_id.' :input");
-
-                    values = {};
-                    inputs.each(function() {
-                        values[this.name] = $(this).val();
-                    })
-
-                    $.extend(data, {
-                        filter: values,'."\n";
-
-    if (is_array($parameters['ajax_data'])) {
-        foreach ($parameters['ajax_data'] as $k => $v) {
-            $js .= $k.':'.json_encode($v).",\n";
-        }
-    }
-
-    $js .= 'page: "'.$parameters['ajax_url'].'"
-                    });
-
-                    return data;
-                }
-            },
-            "columnDefs": [
+            columnDefs: [
                 { className: "no-class", targets: "_all" },
                 { bSortable: false, targets: '.$no_sortable_columns.' }
             ],
+            ordering: '.$ordering.',
             columns: [';
 
     foreach ($parameters['datacolumns'] as $data) {
@@ -3880,7 +3915,9 @@ function ui_print_datatable(array $parameters)
 
             $js .= '
             ],
-            order: [[ '.$order.' ]]
+            order: [[ '.$order.' ]],';
+            $js .= $type_data;
+            $js .= '
         };
 
         dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
@@ -4210,6 +4247,7 @@ function ui_print_event_priority(
  * @param boolean|null $switch_on         Switch enabled disabled or depending on hidden_Default.
  * @param string|null  $switch_name       Use custom switch input name or generate one.
  * @param boolean|null $disableToggle     If True, the toggle is disabled.
+ * @param string       $id_table          ID of the table to apply w100p class.
  *
  * @return string HTML.
  */
@@ -4232,7 +4270,8 @@ function ui_toggle(
     $toggl_attr='',
     $switch_on=null,
     $switch_name=null,
-    $disableToggle=false
+    $disableToggle=false,
+    $id_table=false
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -4365,6 +4404,11 @@ function ui_toggle(
     $output .= '</div>';
     $output .= '</div>';
 
+    $class_table = '';
+    if ($id_table !== false) {
+        $class_table = '                $("#'.$id_table.'_wrapper").addClass("w100p");'."\n";
+    }
+
     if ($disableToggle === false) {
         // JQuery Toggle.
         $output .= '<script type="text/javascript">'."\n";
@@ -4372,7 +4416,6 @@ function ui_toggle(
         $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
         $output .= '	/* <![CDATA[ */'."\n";
         $output .= "	$(document).ready (function () {\n";
-        $output .= "        $('#image_".$uniqid."').addClass('main_menu_icon');\n";
         $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
         $output .= '            if (is_metaconsole == 0) {';
         $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
@@ -4393,24 +4436,22 @@ function ui_toggle(
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
         $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
-        $output .= "				$('#image_".$uniqid."').css('rotate','90deg');\n";
         $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
+        $output .= $class_table;
         $output .= "			}\n";
         $output .= "			else {\n";
         $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
         $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
-        $output .= "				$('#image_".$uniqid."').css('rotate','180deg');\n";
         $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
         $output .= "			}\n";
         $output .= "		});\n";
         $output .= "	});\n";
         $output .= '/* ]]> */';
         $output .= '</script>';
+        $output .= '</div>';
     }
-
-    $output .= '</div>';
 
     if (!$return) {
         echo $output;

@@ -437,18 +437,35 @@ function resource_exportation_extension_main()
     );
 
     $table = new stdClass();
-    $table->class = 'databox';
+    $table->class = 'databox filter-table-adv';
     $table->id = 'resource_exportation_table';
     $table->style = [];
-    $table->style[0] = 'width: 0';
-    $table->style[1] = 'width: 0';
+    $table->style[0] = 'width: 30%';
+    $table->style[1] = 'vertical-align: bottom;';
     $table->data = [];
-    $table->data[0][0] = __('Report');
-    $table->data[0][1] = html_print_select_from_sql('SELECT id_report, name FROM treport', 'report', '', '', '', 0, true);
-    $table->data[0][2] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'report\');', ['icon' => 'cog', 'mode' => 'secondary mini'], true);
-    $table->data[1][0] = __('Visual console');
-    $table->data[1][1] = html_print_select_from_sql('SELECT id, name FROM tlayout', 'visual_console', '', '', '', 0, true);
-    $table->data[1][2] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'visual_console\');', ['icon' => 'cog', 'mode' => 'secondary mini'], true);
+    $table->data[0][] = html_print_label_input_block(
+        __('Report'),
+        html_print_div(
+            [
+                'class'   => 'flex-content-left',
+                'content' => html_print_select_from_sql('SELECT id_report, name FROM treport', 'report', '', '', '', 0, true),
+            ],
+            true
+        )
+    );
+    $table->data[0][] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'report\');', ['mode' => 'link'], true);
+
+    $table->data[1][] = html_print_label_input_block(
+        __('Visual console'),
+        html_print_div(
+            [
+                'class'   => 'flex-content-left',
+                'content' => html_print_select_from_sql('SELECT id, name FROM tlayout', 'visual_console', '', '', '', 0, true),
+            ],
+            true
+        )
+    );
+    $table->data[1][] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'visual_console\');', ['mode' => 'link'], true);
 
     if ($hook_enterprise === true) {
         add_rows_for_enterprise($table->data);

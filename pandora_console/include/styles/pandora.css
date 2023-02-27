@@ -635,10 +635,6 @@ select:-internal-list-box {
   width: 20%;
 }
 
-.w21p {
-  width: 21%;
-}
-
 .w22p {
   width: 22%;
 }
@@ -9193,6 +9189,9 @@ div.stat-win-spinner img {
   line-height: 12pt;
 }
 
+.line_height_26 {
+  line-height: 26px;
+}
 .line_height_0pt {
   line-height: 10pt !important;
 }
@@ -11331,6 +11330,10 @@ div[role="dialog"] {
   z-index: 1115;
 }
 
+button[name="go"] {
+  margin-left: 10px;
+  display: inline !important;
+}
 .module_background_state {
   mask: url(../../images/modules@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/modules@svg.svg) no-repeat center / contain;

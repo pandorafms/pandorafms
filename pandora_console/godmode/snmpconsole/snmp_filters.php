@@ -208,6 +208,7 @@ if ($edit_filter > -2) {
             'alt'   => __('Click to add new filter'),
             'title' => __('Click to add new filter'),
             'style' => 'height:20px',
+            'class' => 'invert_filter',
         ]
     );
     $table->data[1][0] = __('Filter');

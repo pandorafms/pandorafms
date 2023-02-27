@@ -162,6 +162,7 @@ class AuditLog extends HTML
                 'id'      => 'load-filter',
                 'class'   => 'float-left margin-right-2 margin-left-2 sub config',
                 'text'    => __('Load filter'),
+                'icon'    => 'load',
                 'onclick' => '',
             ];
 
@@ -169,6 +170,7 @@ class AuditLog extends HTML
                 'id'      => 'save-filter',
                 'class'   => 'float-left margin-right-2 sub wand',
                 'text'    => __('Save filter'),
+                'icon'    => 'save',
                 'onclick' => '',
             ];
 
@@ -181,7 +183,7 @@ class AuditLog extends HTML
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -199,21 +201,21 @@ class AuditLog extends HTML
                             [
                                 'label' => __('Free search').ui_print_help_tip(__('Search filter by User, Action, Date, Source IP or Comments fields content'), true),
                                 'type'  => 'text',
-                                'class' => 'w200px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_text',
                                 'name'  => 'filter_text',
                             ],
                             [
                                 'label' => __('Max. hours old'),
                                 'type'  => 'text',
-                                'class' => 'w100px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_period',
                                 'name'  => 'filter_period',
                             ],
                             [
                                 'label' => __('IP'),
                                 'type'  => 'text',
-                                'class' => 'w100px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_ip',
                                 'name'  => 'filter_ip',
                             ],
@@ -241,6 +243,7 @@ class AuditLog extends HTML
                             ],
                         ],
                     ],
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                 ]
             );
         } catch (Exception $e) {
@@ -254,6 +257,8 @@ class AuditLog extends HTML
 
         // Load own javascript file.
         echo $this->loadJS();
+
+        html_print_action_buttons([], ['type' => 'form_action']);
     }
 
 

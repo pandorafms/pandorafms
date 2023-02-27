@@ -1419,3 +1419,7 @@ div.white_box_opened[style*="height:0"] {
 div.white_box.white_box_opened.no_border {
   border-radius: 0px;
 }
+
+table.filter-table-adv td > div label {
+  color: white !important;
+}

@@ -6754,9 +6754,13 @@ function html_print_label_input_block(
         if (isset($options['label_class']) === true) {
             $label_class = $options['label_class'];
         }
+
+        if (isset($options['div_id']) === true) {
+            $div_id = 'id="'.$options['div_id'].'"';
+        }
     }
 
-    $output = '<div class="'.$div_class.'">';
+    $output = '<div class="'.$div_class.'" '.$div_id.'>';
     if ($label !== null) {
         $output .= '<label class="'.$label_class.'">'.$label.'</label>';
     }

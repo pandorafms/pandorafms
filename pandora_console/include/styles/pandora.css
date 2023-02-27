@@ -966,6 +966,14 @@ select:-internal-list-box {
   margin-left: 0.5em;
 }
 
+.flex-50 {
+  flex: 50%;
+}
+
+.display-flex {
+  display: flex;
+}
+
 .no-border {
   border: none;
 }
@@ -7035,7 +7043,8 @@ div.graph div.legend table {
   position: relative;
 }
 
-.snmp_view_div > span {
+.snmp_view_div > span,
+.snmp_view_div > div > div > span {
   padding: 2px 10px 2px 10px;
   border-radius: 10px;
 }
@@ -10412,6 +10421,22 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.upload_file {
+  mask: url(../../images/upload_file.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/upload_file.png) no-repeat center / contain;
+}
+
+button div.create_file {
+  mask: url(../../images/create_file.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/create_file.png) no-repeat center / contain;
+}
+
+button div.create_directory {
+  mask: url(../../images/create_directory.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/create_directory.png) no-repeat center /
+    contain;
+}
+
 button div.cog.rotation {
   animation: rotation 4s infinite linear;
 }
@@ -11341,10 +11366,6 @@ div[role="dialog"] {
   z-index: 1115;
 }
 
-button[name="go"] {
-  margin-left: 10px;
-  display: inline !important;
-}
 .module_background_state {
   mask: url(../../images/modules@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/modules@svg.svg) no-repeat center / contain;

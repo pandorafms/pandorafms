@@ -3574,8 +3574,7 @@ function ui_print_datatable(array $parameters)
             $filter .= html_print_input(($input + ['return' => true]), 'li');
         }
 
-        $filter .= '<li>';
-
+        $filter .= '</ul>';
         // Extra buttons.
         $extra_buttons = '';
         if (isset($parameters['form']['extra_buttons']) === true
@@ -3617,9 +3616,7 @@ function ui_print_datatable(array $parameters)
             true
         );
 
-        $filter .= '</li>';
-
-        $filter .= '</ul><div id="both"></div></form>';
+        $filter .= '<div id="both"></div></form>';
         if (isset($parameters['form']['no_toggle']) === false) {
             $filter = ui_toggle(
                 $filter,

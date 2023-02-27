@@ -576,13 +576,13 @@ if ($is_metaconsole === false) {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 100%',
+                            'style'               => 'width: 99%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
                             'data_element'        => $data,
                             'searching'           => true,
-                            'dom_elements'        => 'lftipB',
+                            'dom_elements'        => 'lftip',
                             'order'               => [
                                 'field'     => $columns[0],
                                 'direction' => 'asc',
@@ -614,6 +614,7 @@ if ($is_metaconsole === false) {
                         '',
                         null,
                         null,
+                        false,
                         $id_table
                     );
                 }
@@ -662,13 +663,13 @@ if ($is_metaconsole === false) {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 100%',
+                            'style'               => 'width: 99%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
                             'data_element'        => $data,
                             'searching'           => true,
-                            'dom_elements'        => 'lftipB',
+                            'dom_elements'        => 'lftip',
                             'order'               => [
                                 'field'     => $columns[0],
                                 'direction' => 'asc',
@@ -700,6 +701,7 @@ if ($is_metaconsole === false) {
                         '',
                         null,
                         null,
+                        false,
                         $id_table
                     );
                 }
@@ -948,6 +950,7 @@ if ($is_metaconsole === false) {
                             '',
                             null,
                             null,
+                            false,
                             $id_table
                         );
                     }
@@ -1058,6 +1061,7 @@ if ($is_metaconsole === false) {
                             '',
                             null,
                             null,
+                            false,
                             $id_table
                         );
                     }

@@ -816,7 +816,7 @@ foreach ($info as $user_id => $user_info) {
                     $toDoClass  = 'filter_none';
                 }
 
-                $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
+                $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'&offset='.$offset.'" class="inline">';
                 $data[6] .= html_print_input_hidden(
                     'id',
                     $user_info['id_user'],
@@ -874,7 +874,8 @@ foreach ($info as $user_id => $user_info) {
                 && $user_info['id_user'] != $config['id_user']
                 && isset($user_info['not_delete']) === false
             ) {
-                $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
+                $offset_delete = ($offset >= count($info) - 1) ? ($offset - $config['block_size']) : $offset;
+                $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'&offset='.$offset_delete.'" class="inline">';
                 $data[6] .= html_print_input_hidden(
                     'delete_user',
                     $user_info['id_user'],

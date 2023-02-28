@@ -10555,7 +10555,8 @@ table#simple tr td,
 table#advanced tr td,
 table.principal_table tr td,
 .white_table_flex > table tr td,
-.table_section table tr td {
+.table_section table tr td,
+#agent_controls {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -11366,4 +11367,14 @@ div[role="dialog"] {
   mask: url(../../images/alert@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/alert@svg.svg) no-repeat center / contain;
   margin: 0 auto;
+}
+
+.flex-colum-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flex-colum-center > img {
+  margin: 5px;
 }

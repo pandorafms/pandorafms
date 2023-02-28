@@ -3842,7 +3842,7 @@ function ui_print_datatable(array $parameters)
         $js .= $parameters['drawCallback'];
     }
 
-    $dom_elements = '"plfrtiBp"';
+    $dom_elements = '"plfrtiB"';
     if (isset($parameters['dom_elements'])) {
         $dom_elements = '"'.$parameters['dom_elements'].'"';
     }

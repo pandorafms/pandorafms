@@ -1534,63 +1534,62 @@ function snmp_browser_print_create_module_massive(
     $table = new stdClass();
     $table->width = '100%';
     $table->data = [];
+    $table->class = 'filter-table-adv databox';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
 
-    $table->data[0][0] = __('Filter group')."<div id='loading_group' class='loading_div invisible left'><img src='images/spinner.gif'></div>";
-
-    $table->data[0][1] = html_print_select_groups(
-        false,
-        'RR',
-        users_can_manage_group_all('RR'),
-        'group',
-        '',
-        '',
-        '',
-        0,
-        true,
-        false,
-        false,
-        '',
-        false,
-        false,
-        false,
-        false,
-        $keys_field,
-        $strict_user
+    $table->data[0][0] = html_print_label_input_block(
+        __('Filter group')."<div id='loading_group' class='loading_div invisible left'><img src='images/spinner.gif'></div>",
+        html_print_select_groups(
+            false,
+            'RR',
+            users_can_manage_group_all('RR'),
+            'group',
+            '',
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            $keys_field,
+            $strict_user
+        )
     );
 
-    $table->data[1][0] = __('Search')."<div id='loading_filter' class='loading_div invisible left'><img src='images/spinner.gif'></div>";
-    $table->data[1][1] = html_print_input_text(
-        'filter',
-        '',
-        '',
-        20,
-        150,
-        true
+    $table->data[0][1] = html_print_label_input_block(
+        __('Search')."<div id='loading_filter' class='loading_div invisible left'><img src='images/spinner.gif'></div>",
+        html_print_input_text(
+            'filter',
+            '',
+            '',
+            false,
+            150,
+            true
+        )
     );
+    $attr = [
+        'id'    => 'image-select_all_available',
+        'title' => __('Select all'),
+        'style' => 'cursor: pointer;',
+    ];
+    $table->data[1][0] = '<b>'.__($target_item.' available').'</b>&nbsp;&nbsp;'.html_print_image('images/tick.png', true, $attr, false, true);
 
-    $table->data[2][0] = '<b>'.__($target_item.' available').'</b><br> '.__('Select all').html_print_checkbox_switch('select_all_left', 1, false, true);
-    $table->data[2][1] = '';
-    $table->data[2][2] = '<b>'.__($target_item.' to apply').'</b><br> '.__('Select all').html_print_checkbox_switch('select_all_right', 1, false, true);
-
-    $table->data[3][0] = html_print_select(
-        [],
-        'id_item[]',
-        0,
-        false,
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'width: 100%;',
-        []
-    );
+    $attr = [
+        'id'    => 'image-select_all_apply',
+        'title' => __('Select all'),
+        'style' => 'cursor: pointer;',
+    ];
+    $table->data[1][1] = '<b>'.__($target_item.' to apply').'</b>&nbsp;&nbsp;'.html_print_image('images/tick.png', true, $attr, false, true);
 
     if ($target == 'policy') {
         if (enterprise_installed()) {
-            $table->data[4][0] = html_print_button(
+            $table->data[2][0] = html_print_button(
                 __('Create new policy'),
                 'snmp_browser_create_policy',
                 false,
@@ -1600,7 +1599,7 @@ function snmp_browser_print_create_module_massive(
             );
         }
 
-        $table->data[4][1] = html_print_div(
+        $table->data[2][1] = html_print_div(
             [
                 'style' => 'display:none',
                 'id'    => 'policy_modal',
@@ -1609,38 +1608,88 @@ function snmp_browser_print_create_module_massive(
         );
     }
 
-    $table->cellstyle[3][1] = 'text-align: center';
-    $table->data[3][1] = html_print_image(
-        'images/darrowright.png',
+    // Container with all agents list.
+    $AgentsFullList = html_print_div(
+        [
+            'content' => html_print_select(
+                [],
+                'id_item[]',
+                0,
+                false,
+                '',
+                '',
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width: 100%;'
+            ),
+            'style'   => 'width:45% !important',
+        ],
+        true
+    );
+
+    $controls[] = html_print_image(
+        'images/plus.svg',
         true,
         [
             'id'    => 'right',
             'title' => __('Add'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
-    ).'<br /><br /><br /><br />'.html_print_image(
-        'images/darrowleft.png',
+    );
+
+    $controls[] = html_print_image(
+        'images/minus.svg',
         true,
         [
             'id'    => 'left',
             'title' => __('Undo'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     );
-    $table->data[3][2] = html_print_select(
-        [],
-        'id_item2[]',
-        0,
-        false,
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'width: 100%;',
-        []
+
+    // Container with controls.
+    $AgentsControls = html_print_div(
+        [
+            'content' => implode('', $controls),
+            'style'   => 'width:10% !important',
+            'class'   => 'flex-colum-center',
+        ],
+        true
+    );
+
+    // Container with selected agents list.
+    $AgentsSelectedList = html_print_div(
+        [
+            'content' => html_print_select(
+                [],
+                'id_item2[]',
+                0,
+                false,
+                '',
+                '',
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width: 100%;'
+            ),
+            'style'   => 'width:45% !important',
+        ],
+        true
+    );
+
+    $table->colspan[3][0] = 2;
+    $table->data[3][0] = html_print_div(
+        [
+            'id'      => 'agent_controls',
+            'content' => $AgentsFullList.$AgentsControls.$AgentsSelectedList,
+            'style'   => 'width:100% !important',
+        ],
+        true
     );
 
     $output .= html_print_table($table, true);
@@ -1716,31 +1765,50 @@ function snmp_browser_print_create_policy()
     $description = get_parameter('description');
 
     $table->width = '100%';
-    $table->class = 'databox filters bold_top';
+    $table->class = 'filter-table-adv databox';
     $table->style = [];
     $table->data = [];
-    $table->data[0][0] = __('Name');
-    $table->data[0][1] = html_print_input_text('name', $name, '', '60%', 150, true);
+    $table->size[0] = '100%';
+    $table->size[1] = '100%';
+    $table->size[2] = '100%';
 
-    $table->data[1][0] = __('Group');
-    $table->data[1][1] = '<div class="flex flex-row"><div class="w90p">';
-    $table->data[1][1] .= html_print_select_groups(
-        false,
-        'AW',
-        false,
-        'id_group',
-        $id_group,
-        '',
-        '',
-        '',
-        true
-    ).'</div>';
-    $table->data[1][1] .= ' <span id="group_preview">';
-    $table->data[1][1] .= ui_print_group_icon($id_group, true, 'groups_small', '', false);
-    $table->data[1][1] .= '</span></div>';
+    $table->data[0][0] = html_print_label_input_block(
+        __('Name'),
+        html_print_input_text(
+            'name',
+            $name,
+            '',
+            '60%',
+            150,
+            true
+        )
+    );
 
-    $table->data[2][0] = __('Description');
-    $table->data[2][1] = html_print_textarea('description', 3, 30, $description, '', true);
+    $table->data[1][0] = html_print_label_input_block(
+        __('Group'),
+        '<div class="flex flex-row"><div class="w90p">'.html_print_select_groups(
+            false,
+            'AW',
+            false,
+            'id_group',
+            $id_group,
+            '',
+            '',
+            '',
+            true
+        ).'</div><span id="group_preview">'.ui_print_group_icon(
+            $id_group,
+            true,
+            'groups_small',
+            '',
+            false
+        ).'</span></div>'
+    );
+
+    $table->data[2][0] = html_print_label_input_block(
+        __('Description'),
+        html_print_textarea('description', 3, 30, $description, '', true)
+    );
 
     $output = '<form method="post" id="snmp_browser_add_policy_form">';
     $output .= html_print_table($table, true);

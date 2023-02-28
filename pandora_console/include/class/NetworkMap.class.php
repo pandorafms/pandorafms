@@ -3047,17 +3047,6 @@ class NetworkMap
             html_print_div(['id' => 'content_node_details-3-1'], true)
         );
 
-        /*
-            $table->data[0][0] = '<strong>'.__('Agent').'</strong>';
-            $table->data[0][1] = '';
-            $table->data[1][0] = '<strong>'.__('Adresses').'</strong>';
-            $table->data[1][1] = '';
-            $table->data[2][0] = '<strong>'.__('OS type').'</strong>';
-            $table->data[2][1] = '';
-            $table->data[3][0] = '<strong>'.__('Group').'</strong>';
-            $table->data[3][1] = '';
-        */
-
         $output .= ui_toggle(
             html_print_table($table, true),
             __('Node Details'),
@@ -3153,12 +3142,13 @@ class NetworkMap
             )
         );
 
-        $table->data['fictional_node_networkmap_link'][] = html_print_button(
+        $buttons = [];
+        $buttons[] = html_print_button(
             __('Update fictional node'),
-            '',
+            'upd_fictional_node',
             false,
-            'add_fictional_node();',
-            ['mode' => 'link'],
+            '',
+            ['icon' => 'next'],
             true
         );
         /*
@@ -3184,18 +3174,20 @@ class NetworkMap
             );
         */
 
+        $buttons[] = html_print_button(
+            __('Update node'),
+            'upd_only_node',
+            false,
+            'update_node_name()',
+            ['icon' => 'next'],
+            true
+        );
+
         $nodeUpdateTable = html_print_table($table, true);
         $nodeUpdateTable .= html_print_div(
             [
                 'class'   => 'action-buttons w100p float-right',
-                'content' => html_print_button(
-                    __('Update node'),
-                    '',
-                    false,
-                    'update_node_name()',
-                    ['icon' => 'next'],
-                    true
-                ),
+                'content' => implode('', $buttons),
             ],
             true
         );

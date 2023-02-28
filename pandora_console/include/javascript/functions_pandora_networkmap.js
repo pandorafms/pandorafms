@@ -839,6 +839,11 @@ function edit_node(data_node, dblClick) {
       "onclick",
       "update_fictional_node(" + node_selected.id_db + ");"
     );
+    console.log("cimborrio");
+    $("#button-upd_fictional_node").attr(
+      "onclick",
+      "update_fictional_node(" + node_selected.id_db + ");"
+    );
 
     $("#node_options-node_name-2 input").attr(
       "onclick",
@@ -934,18 +939,22 @@ function edit_node(data_node, dblClick) {
       //Fictional node
       $("#node_options-fictional_node_name").css("display", "");
       $("input[name='edit_name_fictional_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
-      $("#node_options-fictional_node_networkmap_link").css("display", "");
+      $("#node_options-fictional_node_networkmap_link-0").css("display", "");
       $("#edit_networkmap_to_link").val(node_selected.networkmap_id);
       $("#edit_networkmap_to_link").trigger("change");
-      $("#node_options-fictional_node_update_button").css("display", "");
+      $("#button-upd_fictional_node").css("display", "");
       $("#node_options-node_name").css("display", "none");
-      $("#node_options-node_update_button").css("display", "none");
+      $("#button-upd_only_node").css("display", "none");
     } else {
       $("input[name='edit_name_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
       $("#node_options-fictional_node_name").css("display", "none");
-      $("#node_options-fictional_node_networkmap_link").css("display", "none");
-      $("#node_options-fictional_node_update_button").css("display", "none");
+      $("#node_options-fictional_node_networkmap_link-0").css(
+        "display",
+        "none"
+      );
       $("#node_options-node_name").css("display", "");
+      $("#button-upd_fictional_node").css("display", "none");
+      $("#button-upd_only_node").css("display", "");
     }
 
     //Clean

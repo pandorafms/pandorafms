@@ -74,7 +74,8 @@ $readonly = false;
 ui_require_css_file('events');
 ui_require_css_file('tables');
 if (is_metaconsole() === true) {
-    ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+    ui_require_css_file('meta_tables', ENTERPRISE_DIR.'/meta/styles/');
+    ui_require_css_file('meta_events', ENTERPRISE_DIR.'/meta/styles/');
 }
 
 // Load extra javascript.
@@ -1418,7 +1419,7 @@ if ($pure) {
 } else {
     if (is_metaconsole() === true) {
         // Load metaconsole frame.
-        enterprise_hook('open_meta_frame');
+        // enterprise_hook('open_meta_frame');
     }
 
     // Header.
@@ -1567,7 +1568,12 @@ if ($pure) {
         break;
     }
 
-    if (is_metaconsole() === false) {
+    if (is_metaconsole() === true) {
+        unset($onheader['rss']);
+        unset($onheader['sound_event']);
+        unset($onheader['fullscreen']);
+    }
+
         unset($onheader['history']);
         ui_print_standard_header(
             __('Events list'),
@@ -1583,12 +1589,6 @@ if ($pure) {
                 ],
             ]
         );
-    } else {
-        unset($onheader['rss']);
-        unset($onheader['sound_event']);
-        unset($onheader['fullscreen']);
-        ui_meta_print_header(__('Events'), $section_string, $onheader);
-    }
 }
 
 if (enterprise_installed() === true) {
@@ -2578,8 +2578,7 @@ if (check_acl(
 }
 
 // Close viewer.
-enterprise_hook('close_meta_frame');
-
+// enterprise_hook('close_meta_frame');
 // Datepicker requirements.
 ui_require_css_file('datepicker');
 ui_include_time_picker();

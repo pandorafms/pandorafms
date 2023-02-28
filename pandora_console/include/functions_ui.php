@@ -4937,13 +4937,13 @@ function ui_print_standard_header(
         true
     );
     // Create the header.
-    if (is_metaconsole() === true) {
-        $output = ui_meta_print_header(
-            $title,
-            false,
-            $options
-        );
-    } else {
+    // if (is_metaconsole() === true) {
+    // $output = ui_meta_print_header(
+    // $title,
+    // false,
+    // $options
+    // );
+    // } else {
         $output = ui_print_page_header(
             $title,
             $icon,
@@ -4957,8 +4957,7 @@ function ui_print_standard_header(
             '',
             $headerInformation->printHeader(true)
         );
-    }
-
+    // }
     if ($return !== true) {
         echo $output;
     } else {

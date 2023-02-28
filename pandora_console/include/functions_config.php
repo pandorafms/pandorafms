@@ -844,6 +844,10 @@ function config_update_config()
                         $error_update[] = __('Item limit for realtime reports)');
                     }
 
+                    if (config_update_value('events_per_query', (int) get_parameter('events_per_query'), true) === false) {
+                        $error_update[] = __('Limit of events per query');
+                    }
+
                     if (config_update_value('step_compact', (int) get_parameter('step_compact'), true) === false) {
                         $error_update[] = __('Compact interpolation in hours (1 Fine-20 bad)');
                     }
@@ -1982,6 +1986,10 @@ function config_process_config()
         config_update_value('report_limit', 100);
     }
 
+    if (!isset($config['events_per_query'])) {
+        config_update_value('events_per_query', 5000);
+    }
+
     if (!isset($config['loginhash_pwd'])) {
         config_update_value('loginhash_pwd', io_input_password((rand(0, 1000) * rand(0, 1000)).'pandorahash'));
     }
@@ -2287,6 +2295,96 @@ function config_process_config()
 
     if (!isset($config['2Fa_auth'])) {
         config_update_value('2Fa_auth', '');
+    }
+
+    if (isset($config['performance_variables_control']) === false) {
+        config_update_value(
+            'performance_variables_control',
+            json_encode(
+                [
+                    'event_purge'                      => [
+                        'max' => 45,
+                        'min' => 1,
+                    ],
+                    'trap_purge'                       => [
+                        'max' => 45,
+                        'min' => 1,
+                    ],
+                    'audit_purge'                      => [
+                        'max' => 365,
+                        'min' => 7,
+                    ],
+                    'string_purge'                     => [
+                        'max' => 365,
+                        'min' => 7,
+                    ],
+                    'gis_purge'                        => [
+                        'max' => 365,
+                        'min' => 7,
+                    ],
+                    'days_purge'                       => [
+                        'max' => 365,
+                        'min' => 7,
+                    ],
+                    'days_compact'                     => [
+                        'max' => 365,
+                        'min' => 0,
+                    ],
+                    'days_delete_unknown'              => [
+                        'max' => 90,
+                        'min' => 0,
+                    ],
+                    'days_delete_not_initialized'      => [
+                        'max' => 90,
+                        'min' => 0,
+                    ],
+                    'days_autodisable_deletion'        => [
+                        'max' => 90,
+                        'min' => 0,
+                    ],
+                    'delete_old_network_matrix'        => [
+                        'max' => 30,
+                        'min' => 1,
+                    ],
+                    'report_limit'                     => [
+                        'max' => 500,
+                        'min' => 1,
+                    ],
+                    'event_view_hr'                    => [
+                        'max' => 360,
+                        'min' => 1,
+                    ],
+                    'big_operation_step_datos_purge'   => [
+                        'max' => 10000,
+                        'min' => 100,
+                    ],
+                    'small_operation_step_datos_purge' => [
+                        'max' => 10000,
+                        'min' => 100,
+                    ],
+                    'row_limit_csv'                    => [
+                        'max' => 1000000,
+                        'min' => 1,
+                    ],
+                    'limit_parameters_massive'         => [
+                        'max' => 2000,
+                        'min' => 100,
+                    ],
+                    'block_size'                       => [
+                        'max' => 200,
+                        'min' => 10,
+                    ],
+                    'short_module_graph_data'          => [
+                        'max' => 20,
+                        'min' => 1,
+                    ],
+                    'graph_precision'                  => [
+                        'max' => 5,
+                        'min' => 1,
+                    ],
+                ]
+            )
+        );
     }
 
     if (isset($config['agent_wizard_defaults']) === false) {

@@ -2018,7 +2018,7 @@ function events_change_status(
     // Update ack info if the new status is validated.
     $ack_utimestamp = 0;
     $ack_user = $config['id_user'];
-    if ((int) $new_status === EVENT_STATUS_VALIDATED) {
+    if ((int) $new_status === EVENT_STATUS_VALIDATED || (int) $new_status === EVENT_STATUS_INPROCESS) {
         $ack_utimestamp = time();
     }
 
@@ -4814,7 +4814,7 @@ function events_page_general($event)
     $data = [];
     $data[0] = __('Acknowledged by');
 
-    if ($event['estado'] == 1) {
+    if ($event['estado'] == 1 || $event['estado'] == 2) {
         if (empty($event['id_usuario']) === true) {
             $user_ack = __('Autovalidated');
         } else {
@@ -4948,7 +4948,7 @@ function events_page_general_acknowledged($event_id)
     global $config;
     $Acknowledged = '';
     $event = db_get_row('tevento', 'id_evento', $event_id);
-    if ($event !== false && $event['estado'] == 1) {
+    if ($event !== false && ($event['estado'] == 1 || $event['estado'] == 2)) {
         $user_ack = db_get_value(
             'fullname',
             'tusuario',

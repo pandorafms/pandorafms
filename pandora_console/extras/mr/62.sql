@@ -15,4 +15,7 @@ CREATE TABLE IF NOT EXISTS `tagent_filter` (
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+CREATE INDEX agente_modulo_estado ON tevento (estado, id_agentmodule);
+CREATE INDEX idx_disabled ON talert_template_modules (disabled);
+
 COMMIT;

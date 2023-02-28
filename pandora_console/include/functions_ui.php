@@ -2535,6 +2535,7 @@ function ui_print_input_placeholder(
     $attibutes[] = 'class="'.((isset($options['class']) === true) ? $options['class'] : 'input_sub_placeholder').'"';
     $attibutes[] = (isset($options['rawattributes']) === true) ? $options['rawattributes'] : '';
     $attibutes[] = (isset($options['style']) === true) ? 'style="'.$options['style'].'"' : '';
+    $attibutes[] = (isset($options['id']) === true) ? 'id="'.$options['id'].'"' : '';
     $attibutes[] = (isset($options['title']) === true) ? 'title="'.$options['title'].'"' : '';
 
     $output = sprintf(

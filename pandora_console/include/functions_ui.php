@@ -3958,7 +3958,7 @@ function ui_print_datatable(array $parameters)
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');
         if (is_metaconsole()) {
-            ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+            ui_require_css_file('meta_tables', ENTERPRISE_DIR.'/include/styles/');
         }
 
         ui_require_javascript_file('datatables.min');
@@ -3986,10 +3986,10 @@ function ui_print_datatable(array $parameters)
         );
         $output .= '"/>';
         if (is_metaconsole() === true) {
-            // Load tables_meta.css.
+            // Load meta_tables.css.
             $output .= '<link rel="stylesheet" href="';
             $output .= ui_get_full_url(
-                ENTERPRISE_DIR.'/include/styles/tables_meta.css',
+                ENTERPRISE_DIR.'/include/styles/meta_tables.css',
                 false,
                 false,
                 false

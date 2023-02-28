@@ -269,25 +269,12 @@ $table->cellspacing = 0;
 $table->cellpadding = 0;
 $table->size[0] = '50%';
 $table->size[1] = '50%';
-$table->class = 'databox filters events-filters-create';
+$table->class = 'databox filters events-filters-create pdd_10px';
 $table->style[0] = 'vertical-align: top;';
 $table->rowspan = [];
 $table->rowspan[3][0] = 2;
 
 $table->valign[1] = 'top';
-
-if (is_metaconsole()) {
-    if ($id) {
-        $table->head[0] = __('Update Filter');
-    } else {
-        $table->head[0] = __('Create Filter');
-    }
-
-    $table->head_colspan[0] = 4;
-    $table->headstyle[0] = 'text-align: center';
-    $table->style[0] = '';
-    $table->valign[1] = '';
-}
 
 $table->data = [];
 

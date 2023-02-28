@@ -1161,6 +1161,10 @@ p.center {
   margin-bottom: 10px;
 }
 
+.margin-lr-10 {
+  margin-left: 10px;
+  margin-right: 10px;
+}
 .img_help {
   cursor: help;
   margin: 0 5px;
@@ -9170,11 +9174,12 @@ div.stat-win-spinner img {
   font-size: 11pt;
 }
 
-.checkbox-random-name {
+/*.checkbox-random-name {
   width: 100px !important;
   margin-left: 20px;
 }
 
+*/
 .btn_update_online_open {
   float: right;
   margin-bottom: 20px;
@@ -11377,4 +11382,21 @@ div[role="dialog"] {
   mask: url(../../images/alert@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/alert@svg.svg) no-repeat center / contain;
   margin: 0 auto;
+}
+
+.filter-list-adv .wizard li {
+  display: grid;
+}
+
+.filter-list-adv .wizard li label {
+  color: #161628;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 16px;
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.filter-list-adv fieldset.several-fields {
+  margin-left: 10px;
 }

@@ -6290,7 +6290,7 @@ function ui_print_agent_autocomplete_input($parameters)
         true
     );
     if ($show_helptip) {
-        $html .= ui_print_help_tip($helptip_text, true);
+        $html .= ui_print_input_placeholder($helptip_text, true);
     }
 
     if ($print_hidden_input_idagent) {

@@ -372,8 +372,9 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     );
 }
 
+$offset = (int) get_parameter('offset', 0);
 
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'&offset='.$offset.'">';
 $table_html = html_print_table($table, true);
 
 echo $table_html;

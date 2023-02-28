@@ -1147,9 +1147,10 @@ if ($step == 2) {
     echo ui_get_using_system_timezone_warning();
 }
 
+$offset = (int) get_parameter('offset');
 // If it's the last step it will redirect to template lists.
 if ($step >= LAST_STEP) {
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_templates&pure='.$pure.'">';
+    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_templates&pure='.$pure.'&offset='.$offset.'">';
 } else {
     echo '<form method="post">';
 }

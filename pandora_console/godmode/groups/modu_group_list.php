@@ -273,18 +273,18 @@ if (empty($groups) === false) {
     }
 
     $table->data = [];
-
+    $offset_delete = ($offset >= $total_groups - 1) ? ($offset - $config['block_size']) : $offset;
     foreach ($groups as $id_group) {
         $data = [];
         $data[0] = $id_group['id_mg'];
 
         if ($is_management_allowed === true) {
-            $data[1] = '<strong><a href="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group&id_group='.$id_group['id_mg'].'">'.ui_print_truncate_text($id_group['name'], GENERIC_SIZE_TEXT).'</a></strong>';
+            $data[1] = '<strong><a href="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group&id_group='.$id_group['id_mg'].'&offset='.$offset.'">'.ui_print_truncate_text($id_group['name'], GENERIC_SIZE_TEXT).'</a></strong>';
             if (is_metaconsole() === true) {
-                $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
+                $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1&offset='.$offset_delete.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
             } else {
                 $table->cellclass[][2] = 'table_action_buttons';
-                $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
+                $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1&offset='.$offset_delete.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
             }
         } else {
             $data[1] = '<strong>';

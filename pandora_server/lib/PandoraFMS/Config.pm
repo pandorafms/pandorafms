@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.769";
-my $pandora_build = "230227";
+my $pandora_build = "230228";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -64,7 +64,6 @@ sub help_screen {
 	print "	-d        :  Debug mode activated. Writes extensive information in the logfile \n";
 	print "	-D        :  Daemon mode (runs in background)\n";
 	print "	-P <file> :  Store PID to file.\n";
-	print "	-S <install|uninstall|run>:  Manage the win32 service.\n";
 	print "	-h        :  This screen. Shows a little help screen \n";
 	print " \n";
 	exit;
@@ -110,9 +109,6 @@ sub pandora_init {
 		}
 		elsif ($parametro =~ m/-D\z/) {
 			$pa_config->{"daemon"}=1;
-		}
-		elsif ($parametro =~ m/^-S\z/i) {
-			$pa_config->{'win32_service'}= clean_blank($ARGV[$ax+1]);
 		}
 		else {
 			($pa_config->{"pandora_path"} = $parametro);

@@ -2179,12 +2179,13 @@ if (empty($result) === false) {
 
             $table->cellclass[][2] = 'action_buttons';
             $data[12] .= '<a href="'.$url_edit_module.'">'.html_print_image(
-                'images/config.png',
+                'images/edit.svg',
                 true,
                 [
                     'alt'    => '0',
                     'border' => '',
                     'title'  => __('Edit'),
+                    'class'  => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
 
@@ -2194,12 +2195,13 @@ if (empty($result) === false) {
 
                 $onclick = 'onclick="javascript: if (!confirm(\''.__('Are you sure to delete?').'\')) return false;';
                 $data[12] .= '<a href="'.$url_delete_module.'" '.$onclick.'" target="_blank">'.html_print_image(
-                    'images/delete.png',
+                    'images/delete.svg',
                     true,
                     [
                         'alt'    => '0',
                         'border' => '',
                         'title'  => __('Delete'),
+                        'class'  => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>';
             }

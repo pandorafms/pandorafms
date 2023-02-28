@@ -57,6 +57,7 @@ $custom_id = '';
 
 $create_group = (bool) get_parameter('create_group');
 $id_group = (int) get_parameter('id_group');
+$offset = (int) get_parameter('offset', 0);
 
 if ($id_group) {
     $group = db_get_row('tmodule_group', 'id_mg', $id_group);
@@ -86,9 +87,9 @@ $table->data[1][0] = html_print_input_text('name', $name, '', 35, 100, true);
 
 echo '</span>';
 if (is_metaconsole() === true) {
-    $formUrl = 'index.php?sec=advanced&sec2=advanced/component_management&tab=module_group';
+    $formUrl = 'index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&offset='.$offset;
 } else {
-    $formUrl = 'index.php?sec=gmodules&sec2=godmode/groups/modu_group_list';
+    $formUrl = 'index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&offset='.$offset;
 }
 
 echo '<form name="grupo" method="POST" action="'.$formUrl.'">';

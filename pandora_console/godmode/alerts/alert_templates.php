@@ -352,7 +352,8 @@ if ($search_string) {
     $filter[] = "(name LIKE '%".$search_string."%' OR description LIKE '%".$search_string."%' OR value LIKE '%".$search_string."%')";
 }
 
-$filter['offset'] = (int) get_parameter('offset');
+$offset = (int) get_parameter('offset');
+$filter['offset'] = $offset;
 $filter['limit'] = (int) $config['block_size'];
 if (!is_user_admin($config['id_user'])) {
     $filter['id_group'] = array_keys(users_get_groups(false, 'LM'));
@@ -420,7 +421,7 @@ foreach ($templates as $template) {
         && check_acl($config['id_user'], $template['id_group'], 'LM')
     ) {
         $table->cellclass[][4] = 'table_action_buttons';
-        $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" class="float-left inline_line">';
+        $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'&offset='.$offset.'" class="float-left inline_line">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);
         $data[4] .= html_print_input_image(

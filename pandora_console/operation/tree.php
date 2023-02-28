@@ -138,8 +138,6 @@ if ($strict_acl === false) {
     }
 }
 
-enterprise_hook('open_meta_frame');
-
 $header_title = __('Tree view');
 $header_sub_title = __('Sort the agents by %s');
 switch ($tab) {
@@ -206,16 +204,10 @@ $table->data = [];
 $table->rowspan = [];
 $table->size = [];
 
-// if (is_metaconsole() === true) {
-// $table->width = '96%';
-// $table->cellpadding = '0';
-// $table->cellspacing = '0';
-// $table->class = 'databox_filters';
-// $table->styleTable = 'padding:0px;margin-bottom:0px; ';
-// }
 // Agent filter.
 $agent_status_arr = [];
 $agent_status_arr[AGENT_STATUS_ALL] = __('All');
+
 // Default.
 $agent_status_arr[AGENT_STATUS_NORMAL] = __('Normal');
 $agent_status_arr[AGENT_STATUS_WARNING] = __('Warning');
@@ -360,23 +352,17 @@ $form_html .= html_print_div(
 );
 $form_html .= '</form>';
 
-if (is_metaconsole() === true) {
-    echo "<div class='view_tree'>";
-    ui_toggle($form_html, '<span class="subsection_header_title">'.__('Show Options').'</span>');
-    echo '<br>';
-} else {
-    ui_toggle(
-        $form_html,
-        '<span class="subsection_header_title">'.__('Tree search').'</span>',
-        'tree_search',
-        false,
-        true,
-        false,
-        '',
-        'white-box-content',
-        'box-flat white_table_graph fixed_filter_bar'
-    );
-}
+ui_toggle(
+    $form_html,
+    '<span class="subsection_header_title">'.__('Tree search').'</span>',
+    'tree_search',
+    false,
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
 
 html_print_input_hidden('group-id', $group_id);
 html_print_input_hidden('tag-id', $tag_id);
@@ -392,16 +378,7 @@ if (is_metaconsole() === true) {
 }
 
 ui_print_spinner(__('Loading'));
-/*
-    html_print_image(
-    'images/spinner.gif',
-    false,
-    [
-        'class' => 'loading_tree',
-        'style' => 'display: none;',
-    ]
-    );
-*/
+
 html_print_div(
     [
         'id'      => 'tree-controller-recipient',
@@ -413,7 +390,6 @@ if (is_metaconsole() === true) {
     echo '</div>';
 }
 
-enterprise_hook('close_meta_frame');
 $infoHeadTitle = 'Sombra oscura';
 ?>
 

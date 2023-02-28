@@ -225,7 +225,6 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     } else {
         // Only profiles that can be viewed by the user.
         $group_um = users_get_groups_UM($config['id_user']);
-        hd($group_um, true);
         if (isset($group_um[0]) === true) {
             $group_um_string = implode(',', array_keys(users_get_groups($config['id_user'], 'um', true)));
         } else {
@@ -239,7 +238,6 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
             $id,
             $group_um_string
         );
-        hd($sql, true);
         $result = db_get_all_rows_sql($sql);
     }
 

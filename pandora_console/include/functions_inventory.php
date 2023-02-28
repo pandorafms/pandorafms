@@ -718,7 +718,7 @@ function inventory_get_datatable(
     }
 
     if (array_search(-1, $agents_ids) === false) {
-        array_push($where, 'id_agente IN ('.implode(',', $agents_ids).')');
+        array_push($where, 'tagent_module_inventory.id_agente IN ('.implode(',', $agents_ids).')');
     }
 
     if ($inventory_module_name[0] !== '0'
@@ -732,75 +732,61 @@ function inventory_get_datatable(
         array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
     }
 
-    $sql = 'SELECT *
-        FROM tmodule_inventory, tagent_module_inventory 
-        WHERE 
-            '.implode(' AND ', $where).'
-        ORDER BY tmodule_inventory.id_module_inventory LIMIT '.$offset.', '.$config['block_size'];
-
-    $sql_count = 'SELECT COUNT(*)
-        FROM tmodule_inventory, tagent_module_inventory 
-        WHERE '.implode(' AND ', $where);
+    $sql = sprintf(
+        'SELECT tmodule_inventory.*,
+            tagent_module_inventory.*,
+            tagente.alias as name_agent
+        FROM tmodule_inventory
+        INNER JOIN tagent_module_inventory
+            ON tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory
+        LEFT JOIN tagente
+            ON tagente.id_agente = tagent_module_inventory.id_agente
+        WHERE %s
+        ORDER BY tmodule_inventory.id_module_inventory 
+        LIMIT %d, %d',
+        implode(' AND ', $where),
+        $offset,
+        $config['block_size']
+    );
 
     $rows = db_get_all_rows_sql($sql);
-    $count = db_get_sql($sql_count);
 
     if ($order_by_agent === false) {
         $modules = [];
-        $module_rows = [];
-
         foreach ($rows as $row) {
-            array_push($modules, $row['name']);
-        }
-
-        foreach ($modules as $module) {
-            $rows_tmp = [];
-            foreach ($rows as $row) {
-                if ($row['name'] === $module) {
-                    $agent_name = db_get_value_sql(
-                        'SELECT alias
-                        FROM tagente
-                        WHERE id_agente = '.$row['id_agente']
-                    );
-
-                    $row['name_agent'] = $agent_name;
-                    array_push($rows_tmp, $row);
-                    $module_rows[$module] = $rows_tmp;
+            $data_rows = explode(PHP_EOL, $row['data']);
+            foreach ($data_rows as $data_key => $data_value) {
+                if (empty($data_value) === false) {
+                    $row['data'] = $data_value;
+                    $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
                 }
             }
         }
 
-        return $module_rows;
+        return $modules;
     } else {
         $agents_rows = [];
         $agent_data = [];
         $rows_tmp = [];
         foreach ($rows as $row) {
-            $agent_name = db_get_value_sql(
-                'SELECT alias
-                FROM tagente
-                WHERE id_agente = '.$row['id_agente']
-            );
-            $row['name_agent'] = $agent_name;
             $agent_data[$row['id_agente']][] = $row;
         }
 
         foreach ($agent_data as $id_agent => $rows) {
-            $agent_name = db_get_value_sql(
-                'SELECT alias
-                FROM tagente
-                WHERE id_agente = '.$id_agent
-            );
-
-            $rows_tmp['agent'] = $agent_name;
-
+            $rows_tmp['agent'] = $row['name_agent'];
             foreach ($rows as $row) {
                 if ($utimestamp > 0) {
                     $data_row = db_get_row_sql(
-                        "SELECT data, timestamp
-                                                FROM tagente_datos_inventory
-                                                WHERE utimestamp <= '".$utimestamp."'
-                                                AND id_agent_module_inventory = ".$row['id_agent_module_inventory'].' ORDER BY utimestamp DESC'
+                        sprintf(
+                            'SELECT `data`,
+                                `timestamp`
+                            FROM tagente_datos_inventory
+                            WHERE utimestamp <= "%s"
+                                AND id_agent_module_inventory = %d
+                            ORDER BY utimestamp DESC',
+                            $utimestamp,
+                            $row['id_agent_module_inventory']
+                        )
                     );
 
                     if ($data_row !== false) {
@@ -818,6 +804,63 @@ function inventory_get_datatable(
 
         return $agents_rows;
     }
+}
+
+
+function get_data_basic_info_sql($params, $count=false)
+{
+    $where = 'WHERE 1=1 ';
+    if ($params['id_agent'] > 0) {
+        $where .= sprintf(' AND id_agente = %d', $params['id_agent']);
+    }
+
+    if ($params['search'] > 0) {
+        $where .= sprintf(
+            ' AND ( alias LIKE "%%%s%%" )',
+            $params['search']
+        );
+    }
+
+    $limit_condition = '';
+    $order_condition = '';
+    $fields = 'count(*)';
+    if ($count !== true) {
+        $fields = '*';
+
+        $limit_condition = sprintf(
+            'LIMIT %d, %d',
+            $params['start'],
+            $params['length']
+        );
+
+        $order_condition = sprintf('ORDER BY %s', $params['order']);
+    }
+
+    $sql = sprintf(
+        'SELECT %s
+        FROM tagente
+        %s
+        %s
+        %s',
+        $fields,
+        $where,
+        $order_condition,
+        $limit_condition
+    );
+
+    if ($count !== true) {
+        $result = db_get_all_rows_sql($sql);
+        if ($result === false) {
+            $result = [];
+        }
+    } else {
+        $result = db_get_sql($sql);
+        if ($result === false) {
+            $result = 0;
+        }
+    }
+
+    return $result;
 }
 
 

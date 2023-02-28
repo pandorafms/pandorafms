@@ -3728,11 +3728,6 @@ function ui_print_datatable(array $parameters)
                     $("#'.$form_id.'_loading").remove();
                 }
 
-                // Move elements to table_action_buttons bar.
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_length"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dt-buttons"));
-
                 if (json.error) {
                     console.error(json.error);
                     $("#error-'.$table_id.'").html(json.error);
@@ -3904,6 +3899,13 @@ function ui_print_datatable(array $parameters)
                 { bSortable: false, targets: '.$no_sortable_columns.' }
             ],
             ordering: '.$ordering.',
+            initComplete: function(settings, json) {
+                // Move elements to table_action_buttons bar.
+                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_length"));
+                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dt-buttons"));
+                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
+            },
             columns: [';
 
     foreach ($parameters['datacolumns'] as $data) {
@@ -3926,8 +3928,6 @@ function ui_print_datatable(array $parameters)
         $("#button-'.$form_id.'_search_bt").click(function (){
             dt_'.$table_id.'.draw().page(0)
         });
-
-        //$(".action_buttons_right_content").html($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
         ';
 
     if (isset($parameters['caption']) === true
@@ -4407,7 +4407,7 @@ function ui_toggle(
 
     $class_table = '';
     if ($id_table !== false) {
-        $class_table = '                $("#'.$id_table.'_wrapper").addClass("w100p");'."\n";
+        $class_table = '$("#'.$id_table.'_wrapper").addClass("w100p");'."\n";
     }
 
     if ($disableToggle === false) {

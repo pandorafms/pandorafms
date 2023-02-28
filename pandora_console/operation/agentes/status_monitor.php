@@ -50,7 +50,9 @@ enterprise_include_once('include/functions_metaconsole.php');
 
 $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
-if (! defined('METACONSOLE')) {
+$buttons = [];
+$subpage = '';
+if (is_metaconsole() === false) {
     $section = (string) get_parameter('section', 'view');
 
     $buttons['fields'] = [
@@ -89,34 +91,36 @@ if (! defined('METACONSOLE')) {
             $buttons['view']['active'] = true;
         break;
     }
+}
 
-    // Header.
-    ui_print_standard_header(
-        __('Monitor detail').$subpage,
-        'images/agent.png',
-        false,
-        '',
-        true,
-        $buttons,
+// Header.
+ui_print_standard_header(
+    __('Monitor detail').$subpage,
+    'images/agent.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Monitoring'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Views'),
-            ],
-        ]
-    );
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Views'),
+        ],
+    ]
+);
 
+
+if (is_metaconsole() === false) {
     if ($section == 'fields') {
         include_once $config['homedir'].'/godmode/agentes/status_monitor_custom_fields.php';
         exit();
     }
 } else {
     $section = (string) get_parameter('sec', 'estado');
-    ui_meta_print_header(__('Monitor view'));
 }
 
 $recursion = get_parameter_switch('recursion', false);
@@ -190,8 +194,6 @@ if ($id_module) {
     $ag_modulename = modules_get_agentmodule_name($id_module);
     $ag_freestring = modules_get_agentmodule_agent_alias($id_module);
 }
-
-enterprise_hook('open_meta_frame');
 
 // Get Groups and profiles from user.
 $user_groups = implode(',', array_keys(users_get_groups(false, 'AR', false)));
@@ -2239,8 +2241,6 @@ echo "<div id='monitor_details_window'></div>";
 // Load filter div for dialog.
 echo '<div id="load-modal-filter" style="display:none"></div>';
 echo '<div id="save-modal-filter" style="display:none"></div>';
-
-enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file('pandora_modules');
 

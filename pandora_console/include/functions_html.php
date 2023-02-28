@@ -1880,10 +1880,10 @@ function html_print_extended_select_for_unit(
             'font-size: xx-small;'.$select_style
         );
         echo ' <a href="javascript:">'.html_print_image(
-            'images/pencil.png',
+            'images/edit.svg',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
                 'style' => 'width: 18px;',
@@ -1896,10 +1896,10 @@ function html_print_extended_select_for_unit(
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
         echo ' <a href="javascript:">'.html_print_image(
-            'images/default_list.png',
+            'images/logs@svg.svg',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('List'),
                 'title' => __('List'),
                 'style' => 'width: 18px;',
@@ -1991,10 +1991,10 @@ function html_print_extended_select_for_post_process(
             $style
         );
         echo ' <a href="javascript:">'.html_print_image(
-            'images/pencil.png',
+            'images/edit.svg',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
                 'style' => 'width: 18px;',
@@ -2007,10 +2007,10 @@ function html_print_extended_select_for_post_process(
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
         echo ' <a href="javascript:">'.html_print_image(
-            'images/default_list.png',
+            'images/logs@svg.svg',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('List'),
                 'title' => __('List'),
                 'style' => 'width: 18px;',
@@ -2144,10 +2144,10 @@ function html_print_extended_select_for_time(
             [
                 'href'    => 'javascript:',
                 'content' => html_print_image(
-                    'images/pencil.png',
+                    'images/edit.svg',
                     true,
                     [
-                        'class' => $uniq_name.'_toggler '.$class.' invert_filter',
+                        'class' => $uniq_name.'_toggler '.$class.' main_menu_icon invert_filter',
                         'alt'   => __('Custom'),
                         'title' => __('Custom'),
                         'style' => 'width: 18px; margin-bottom: -5px; margin-left: 10px; padding-top: 10px;'.$style_icon,
@@ -2190,10 +2190,10 @@ function html_print_extended_select_for_time(
             false
         );
         echo ' <a href="javascript:">'.html_print_image(
-            'images/list.png',
+            'images/logs@svg.svg',
             true,
             [
-                'class' => $uniq_name.'_toggler invert_filter',
+                'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('List'),
                 'title' => __('List'),
                 'style' => 'width: 18px;margin-bottom: -5px; padding-top: 10px;'.$style_icon,
@@ -6592,10 +6592,10 @@ function html_print_extended_select_for_downtime_cron(
             'font-size: xx-small;'.$select_style
         );
         echo ' <a href="javascript:">'.html_print_image(
-            'images/pencil.png',
+            'images/edit.svg',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
                 'style' => 'width: 18px;',
@@ -6610,10 +6610,10 @@ function html_print_extended_select_for_downtime_cron(
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
         echo ' <a href="javascript:">'.$help_tooltip.'&nbsp'.html_print_image(
-            'images/default_list.png',
+            'images/logs@svg.svg',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('List'),
                 'title' => __('List'),
                 'style' => 'width: 18px;',
@@ -6745,6 +6745,7 @@ function html_print_label_input_block(
 ):string {
     $div_class = '';
     $label_class = '';
+    $div_id = '';
 
     if (empty($options) === false) {
         if (isset($options['div_class']) === true) {

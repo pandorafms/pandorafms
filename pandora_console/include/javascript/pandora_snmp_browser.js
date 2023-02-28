@@ -613,7 +613,9 @@ function snmp_browser_create_modules(module_target, return_post = true) {
   var oids = [];
   id_check.forEach(function(product, index) {
     var oid = $("#" + product)
-      .siblings("a")
+      .parent()
+      .parent()
+      .find("a")
       .attr("href");
     if (oid.indexOf('javascript: snmpGet("') != -1) {
       oid = oid.replace('javascript: snmpGet("', "");
@@ -657,23 +659,29 @@ function snmp_browser_create_modules(module_target, return_post = true) {
     params["page"] = "include/ajax/snmp_browser.ajax";
     params["snmp_extradata"] = snmp_data;
 
-    $("input[name=create_modules_" + module_target + "]").removeClass(
+    $("button[name=create_modules_" + module_target + "]").removeClass(
       "sub add"
     );
-    $("input[name=create_modules_" + module_target + "]").addClass("sub spinn");
+    $("button[name=create_modules_" + module_target + "]").addClass(
+      "sub spinn"
+    );
 
     $("#dialog_error").on("dialogclose", function(event) {
-      $("input[name=create_modules_" + module_target + "]").removeClass(
+      $("button[name=create_modules_" + module_target + "]").removeClass(
         "sub spinn"
       );
-      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+      $("button[name=create_modules_" + module_target + "]").addClass(
+        "sub add"
+      );
     });
 
     $("#dialog_success").on("dialogclose", function(event) {
-      $("input[name=create_modules_" + module_target + "]").removeClass(
+      $("button[name=create_modules_" + module_target + "]").removeClass(
         "sub spinn"
       );
-      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+      $("button[name=create_modules_" + module_target + "]").addClass(
+        "sub add"
+      );
     });
 
     $.ajax({

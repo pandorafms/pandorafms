@@ -314,37 +314,41 @@ if ($edit_filter > -2) {
     $table->size[2] = '65px';
     $table->align[2] = 'center';
 
-    foreach ($aglomerate_result as $ind => $row) {
-        if ($ind == 0) {
-            foreach ($row as $r) {
-                $data = [];
-                $data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
-                $data[1] = $r['filter'];
-                $data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/support@svg.svg', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter main_menu_icon']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
-                array_push($table->data, $data);
-            }
-        } else {
-            $ind2 = 0;
-            $compose_filter = [];
-            $compose_id = '';
-            $compose_action = '';
-            foreach ($row as $i => $r) {
-                if ($ind2 == 0) {
-                    $compose_id = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
-                    $compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/support@svg.svg', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter main_menu_icon']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
-                    $ind2++;
+    if (empty($aglomerate_result) === false) {
+        foreach ($aglomerate_result as $ind => $row) {
+            if ($ind == 0) {
+                foreach ($row as $r) {
+                    $data = [];
+                    $data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
+                    $data[1] = $r['filter'];
+                    $data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/support@svg.svg', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter main_menu_icon']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
+                    array_push($table->data, $data);
+                }
+            } else {
+                $ind2 = 0;
+                $compose_filter = [];
+                $compose_id = '';
+                $compose_action = '';
+                foreach ($row as $i => $r) {
+                    if ($ind2 == 0) {
+                        $compose_id = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
+                        $compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/support@svg.svg', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter main_menu_icon']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
+                        $ind2++;
+                    }
+
+                    $compose_filter[] = $r['filter'];
                 }
 
-                $compose_filter[] = $r['filter'];
+                $data = [];
+                $data[0] = $compose_id;
+                $data[1] = implode(' AND ', $compose_filter);
+                $data[2] = $compose_action;
+                $table->cellclass[][2] = 'table_action_buttons';
+                array_push($table->data, $data);
             }
-
-            $data = [];
-            $data[0] = $compose_id;
-            $data[1] = implode(' AND ', $compose_filter);
-            $data[2] = $compose_action;
-            $table->cellclass[][2] = 'table_action_buttons';
-            array_push($table->data, $data);
         }
+    } else {
+        ui_print_info_message(['no_close' => true, 'message' => __('There are no SNMP Filters defined yet.') ]);
     }
 
     if (!empty($table->data)) {

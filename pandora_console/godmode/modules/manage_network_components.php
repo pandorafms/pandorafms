@@ -606,9 +606,10 @@ if ((bool) $id !== false || $new_component
 $search_id_group = (int) get_parameter('search_id_group');
 $search_string = (string) get_parameter('search_string');
 
+$offset = (int) get_parameter('offset');
 $url = ui_get_url_refresh(
     [
-        'offset'          => false,
+        'offset'          => $offset,
         'search_string'   => $search_string,
         'search_id_group' => $search_id_group,
         'id'              => $id,
@@ -616,7 +617,7 @@ $url = ui_get_url_refresh(
     true,
     false
 );
-
+$name_url = 'index.php?sec=templates&sec2=godmode/modules/manage_network_components';
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
@@ -721,6 +722,8 @@ $total_components = network_components_get_network_components(
     'COUNT(*) AS total'
 );
 $total_components = $total_components[0]['total'];
+$offset_delete = ($offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
+ui_pagination($total_components, $name_url);
 $filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = network_components_get_network_components(
@@ -799,7 +802,7 @@ foreach ($components as $component) {
             true
         );
 
-        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
+        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'&offset='.$offset.'">';
         $data[0] .= io_safe_output($component['name']);
         $data[0] .= '</a>';
     } else {
@@ -818,7 +821,7 @@ foreach ($components as $component) {
 
         $data[6] = html_print_anchor(
             [
-                'href'    => $url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'],
+                'href'    => $url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'&offset='.$offset,
                 'content' => html_print_image(
                     'images/copy.svg',
                     true,
@@ -833,7 +836,7 @@ foreach ($components as $component) {
 
         $data[6] .= html_print_anchor(
             [
-                'href'    => $url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string,
+                'href'    => $url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'&offset='.$offset_delete,
                 'onClick' => 'if (! confirm (\''.__('Are you sure?').'\')) return false',
                 'content' => html_print_image(
                     'images/delete.svg',
@@ -866,8 +869,6 @@ html_print_table($table);
 html_print_input_hidden('multiple_delete', 1);
 echo '</form>';
 
-$actionButtons = [];
-
 if (isset($data) === false) {
     ui_print_info_message(
         [
@@ -877,6 +878,7 @@ if (isset($data) === false) {
     );
 }
 
+$actionButtons = [];
 if ($is_management_allowed === true) {
     $actionButtons[] = html_print_submit_button(
         __('Create'),

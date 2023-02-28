@@ -207,14 +207,14 @@ if (empty($tag_name) === false) {
 
 // If the user has filtered the view.
 $filter_performed = !empty($filter);
-
-$filter['offset'] = (int) get_parameter('offset');
+$offset = (int) get_parameter('offset');
+$filter['offset'] = $offset;
 $filter['limit'] = (int) $config['block_size'];
 
 // Statements for pagination.
-$url = ui_get_url_refresh();
+$url = 'index.php?sec=gusuarios&sec2=godmode/tag/tag';
 $total_tags = tags_get_tag_count($filter);
-
+$offset_delete = ($offset >= ($total_tags - 1)) ? ($offset - $config['block_size']) : $offset;
 $result = tags_search_tag(false, $filter);
 
 // Filter form.
@@ -392,7 +392,7 @@ if (empty($result) === false) {
                 ]
             );
             $data[6] .= '</a>';
-            $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
+            $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'&offset='.$offset_delete.'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
                 'images/cross.png',
                 true,
                 [

@@ -2279,7 +2279,7 @@ if ($process_buffers === true) {
         '',
         true,
         true,
-        'white_box white_box_opened fixed_filter_bar',
+        'white_box white_box_opened no_border',
         'no-border flex-row'
     );
 

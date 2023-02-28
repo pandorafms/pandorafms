@@ -74,7 +74,8 @@ $readonly = false;
 ui_require_css_file('events');
 ui_require_css_file('tables');
 if (is_metaconsole() === true) {
-    ui_require_css_file('meta_tables', ENTERPRISE_DIR.'/meta/styles/');
+    ui_require_css_file('tables');
+    // ui_require_css_file('meta_tables', ENTERPRISE_DIR.'/meta/styles/');
     ui_require_css_file('meta_events', ENTERPRISE_DIR.'/meta/styles/');
 }
 

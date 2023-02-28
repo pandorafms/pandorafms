@@ -11367,3 +11367,7 @@ div[role="dialog"] {
   -webkit-mask: url(../../images/alert@svg.svg) no-repeat center / contain;
   margin: 0 auto;
 }
+
+.display-grid {
+  display: grid;
+}

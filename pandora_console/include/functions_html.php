@@ -6745,6 +6745,7 @@ function html_print_label_input_block(
 ):string {
     $div_class = '';
     $label_class = '';
+    $div_id = '';
 
     if (empty($options) === false) {
         if (isset($options['div_class']) === true) {

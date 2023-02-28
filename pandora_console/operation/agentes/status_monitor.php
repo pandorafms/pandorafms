@@ -227,7 +227,7 @@ if ($load_filter_id > 0) {
     $user_groups_fl = users_get_groups(
         $config['id_user'],
         'AR',
-        users_can_manage_group_all(),
+        users_can_manage_group_all('AR'),
         true
     );
 
@@ -286,6 +286,8 @@ if ($loaded_filter['id_filter'] > 0) {
         }
     }
 }
+
+$all_groups = [];
 
 // Agent group selector.
 if (!$is_metaconsole) {
@@ -937,7 +939,7 @@ $table->data[4][0] = html_print_button(
 
 $table->cellstyle[4][0] .= 'padding-top: 0px;';
 $table->data[4][0] .= html_print_button(
-    __('Save filter'),
+    __('Manage filter'),
     'save-filter',
     false,
     '',

@@ -38,6 +38,7 @@ $save_filter_modal = get_parameter('save_filter_modal', 0);
 $get_agent_filters = get_parameter('get_agent_filters', 0);
 $save_agent_filter = get_parameter('save_agent_filter', 0);
 $update_agent_filter = get_parameter('update_agent_filter', 0);
+$delete_agent_filter = get_parameter('delete_agent_filter', 0);
 
 if (https_is_running()) {
     header('Content-type: application/json');
@@ -365,6 +366,7 @@ if ($save_agent_filter) {
     $values['policies'] = json_encode(get_parameter('policies'));
     $values['search_custom'] = get_parameter('search_custom');
     $values['ag_custom_fields'] = get_parameter('ag_custom_fields');
+    $values['id_group_filter'] = get_parameter('id_group_filter');
 
     $exists = (bool) db_get_value_filter(
         'id_filter',
@@ -411,8 +413,40 @@ if ($update_agent_filter) {
     }
 }
 
+if ($delete_agent_filter) {
+    $id = get_parameter('id');
+
+    $user_groups = users_get_groups(
+        $config['id_user'],
+        'AW',
+        users_can_manage_group_all('AW'),
+        true
+    );
+
+    $sql = 'DELETE
+        FROM tagent_filter
+        WHERE id_filter = '.$id.' AND id_group_filter IN ('.implode(',', array_keys($user_groups)).')';
+
+    $agent_filters = db_process_sql($sql);
+
+    if ($agent_filters === false) {
+        echo 'error';
+    } else {
+        echo 'ok';
+    }
+}
+
 if ($get_agent_filters) {
-    $sql = 'SELECT id_filter, id_name FROM tagent_filter';
+    $user_groups = users_get_groups(
+        $config['id_user'],
+        'AR',
+        users_can_manage_group_all('AR'),
+        true
+    );
+
+    $sql = 'SELECT id_filter, id_name
+        FROM tagent_filter
+        WHERE id_group_filter IN ('.implode(',', array_keys($user_groups)).')';
 
     $agent_filters = db_get_all_rows_sql($sql);
 
@@ -431,7 +465,7 @@ if ((int) $load_filter_modal === 1) {
     $user_groups = users_get_groups(
         $config['id_user'],
         'AR',
-        users_can_manage_group_all(),
+        users_can_manage_group_all('AR'),
         true
     );
 
@@ -439,11 +473,11 @@ if ((int) $load_filter_modal === 1) {
         FROM tagent_filter
         WHERE id_group_filter IN ('.implode(',', array_keys($user_groups)).')';
 
-    $event_filters = db_get_all_rows_sql($sql);
+    $agent_filters = db_get_all_rows_sql($sql);
 
     $filters = [];
-    foreach ($event_filters as $event_filter) {
-        $filters[$event_filter['id_filter']] = $event_filter['id_name'];
+    foreach ($agent_filters as $agent_filter) {
+        $filters[$agent_filter['id_filter']] = $agent_filter['id_name'];
     }
 
     echo '<div id="load-filter-select" class="load-filter-modal">';
@@ -560,7 +594,7 @@ if ($save_filter_modal) {
             '',
             false,
             true
-        ).__('Update filter').'';
+        ).__('Update/delete filter').'';
 
         $table->data[] = $data;
         $table->rowclass[] = '';
@@ -578,8 +612,8 @@ if ($save_filter_modal) {
 
         $user_groups_array = users_get_groups_for_select(
             $config['id_user'],
-            'EW',
-            users_can_manage_group_all(),
+            'AW',
+            users_can_manage_group_all('AW'),
             true
         );
 
@@ -607,9 +641,19 @@ if ($save_filter_modal) {
 
         $data = [];
         $table->rowid[3] = 'update_filter_row1';
-        $data[0] = __('Overwrite filter').$jump;
+        $data[0] = __('Filter').$jump;
 
-        $sql = 'SELECT id_filter, id_name FROM tagent_filter';
+        $user_groups = users_get_groups(
+            $config['id_user'],
+            'AW',
+            users_can_manage_group_all('AW'),
+            true
+        );
+
+        $sql = 'SELECT id_filter, id_name
+            FROM tagent_filter
+            WHERE id_group_filter IN ('.implode(',', array_keys($user_groups)).')';
+
         $agent_filters = db_get_all_rows_sql($sql);
 
         $_filters_update = [];
@@ -629,21 +673,30 @@ if ($save_filter_modal) {
             0,
             true
         );
-        $data[1] = html_print_submit_button(
-            __('Update filter'),
-            'update_filter',
-            false,
-            'class="sub upd" onclick="save_update_filter();"',
-            true
-        );
 
         $table->data[] = $data;
         $table->rowclass[] = '';
 
         html_print_table($table);
-        echo '<div>';
+        echo '<div id="update_delete_row"><br>';
             echo html_print_submit_button(
-                __('Save filter'),
+                __('Update filter'),
+                'update_filter',
+                false,
+                'class="sub upd" onclick="save_update_filter();"',
+                true
+            );
+            echo html_print_submit_button(
+                __('Delete filter'),
+                'delete_filter',
+                false,
+                'class="sub delete float-right" onclick="save_delete_filter();"',
+                true
+            );
+        echo '</div>';
+        echo '<div><br>';
+            echo html_print_submit_button(
+                __('Save current filter'),
                 'save_filter',
                 false,
                 'class="sub upd float-right" onclick="save_new_filter();"',
@@ -662,6 +715,7 @@ function show_save_filter() {
     $('#save_filter_row1').show();
     $('#save_filter_row2').show();
     $('#update_filter_row1').hide();
+    $('#update_delete_row').hide();
     // Filter save mode selector
     $("[name='filter_mode']").click(function() {
         if ($(this).val() == 'new') {
@@ -669,12 +723,14 @@ function show_save_filter() {
             $('#save_filter_row2').show();
             $('#submit-save_filter').show();
             $('#update_filter_row1').hide();
+            $('#update_delete_row').hide();
         }
         else {
             $('#save_filter_row1').hide();
             $('#save_filter_row2').hide();
             $('#update_filter_row1').show();
             $('#submit-save_filter').hide();
+            $('#update_delete_row').show();
         }
     });
     $("#save-filter-select").dialog({
@@ -726,7 +782,9 @@ function save_new_filter() {
             "policies" : $("#policies").val(),
             "search_custom" : $("#text-search_custom").val(),
             "ag_custom_fields": JSON.stringify(ag_custom_fields),
+            "id_group_filter": $("#id_group_filter_dialog").val(),
         },
+
         function (data) {
             $("#info_box").hide();
             if (data == 'error') {
@@ -758,6 +816,27 @@ function save_new_filter() {
                         return false;
                 }).show();
             }
+
+            // First remove all options of filters select.
+            $('#filter_id').find('option').remove().end();
+
+            // Add 'none' option.
+            $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('None')."'"; ?> ).attr ("value", 0));    
+
+            // Reload filters select.
+            jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                {
+                    "page" : "include/ajax/agent",
+                    "get_agent_filters" : 1
+                },
+                function (data) {
+                    jQuery.each (data, function (i, val) {
+                        s = js_html_entity_decode(val);
+                        $('#filter_id').append($('<option></option>').html (s).attr("value", i));
+                    });
+                },
+                "json"
+            );
 
             // Close dialog.
             $("#save-filter-select").dialog('close');
@@ -793,10 +872,10 @@ function save_update_filter() {
             "group_id" : $("#group_id").val(),
             "recursion" : $("#checkbox-recursion").is(':checked'),
             "status" : $("#status").val(),
-            "search" : $("#search").val(),
+            "search" : $("#text-search").val(),
             "id_os" : $("#os").val(),
             "policies" : $("#policies").val(),
-            "search_custom" : $("#search_custom").val(),
+            "search_custom" : $("#text-search_custom").val(),
             "ag_custom_fields": JSON.stringify(ag_custom_fields),
         },
         function (data) {
@@ -821,11 +900,13 @@ function save_update_filter() {
             }
         });
         
-        // First remove all options of filters select
+        // First remove all options of filters select.
         $('#filter_id').find('option').remove().end();
-        // Add 'none' option the first
-        $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('none')."'"; ?> ).attr ("value", 0));    
-        // Reload filters select
+
+        // Add 'none' option.
+        $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('None')."'"; ?> ).attr ("value", 0));    
+
+        // Reload filters select.
         jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
             {
                 "page" : "include/ajax/agent",
@@ -853,7 +934,69 @@ function save_update_filter() {
         $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + name_filter_update);
         return false;
 }
-    
+
+function save_delete_filter() {
+    var id_filter_update =  $("#overwrite_filter").val();
+
+    jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        {
+            "page" : "include/ajax/agent",
+            "delete_agent_filter" : 1,
+            "id" : $("#overwrite_filter").val(),
+        },
+        function (data) {
+            $(".info_box").hide();
+            if (data == 'ok') {
+                $(".info_box").filter(function(i, item) {
+                    if ($(item).data('type_info_box') == "success_update_filter") {
+                        return true;
+                    }
+                    else
+                        return false;
+                }).show();
+            }
+            else {
+                $(".info_box").filter(function(i, item) {
+                    if ($(item).data('type_info_box') == "error_create_filter") {
+                        return true;
+                    }
+                    else
+                        return false;
+                }).show();
+            }
+        });
+        
+        // First remove all options of filters select.
+        $('#filter_id').find('option').remove().end();
+
+        // Add 'none' option.
+        $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('None')."'"; ?> ).attr ("value", 0));    
+
+        // Reload filters select.
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {
+                "page" : "include/ajax/agent",
+                "get_agent_filters" : 1
+            },
+            function (data) {
+                jQuery.each (data, function (i, val) {
+                    s = js_html_entity_decode(val);
+                    if (i == id_filter_update) {
+                        $('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+                    }
+                    else {
+                        $('#filter_id').append ($('<option></option>').html (s).attr ("value", i));
+                    }
+                });
+            },
+            "json"
+        );
+            
+        // Close dialog
+        $('.ui-dialog-titlebar-close').trigger('click');
+
+        return false;
+}
 
 $(document).ready(function() {
     show_save_filter();

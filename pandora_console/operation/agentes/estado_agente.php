@@ -319,11 +319,11 @@ $table->data[0][0] .= '<div class="flex flex-row-vcenter w290px"><div class="w20
 
 $groups = users_get_groups(false, $access);
 
-$table->data[0][0] .= html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false);
+$table->data[0][0] .= html_print_select_groups(false, $access, true, 'group_id', $group_id, '', '', '', true, false, true, '', false);
 
 //$table->data[0][1] .= '&nbsp;&nbsp;';
 
-$table->data[0][0] .= __('Recursion').'&nbsp;'.'&nbsp;'.'&nbsp;';
+$table->data[0][0] .= '<br>'.__('Recursion').'&nbsp;'.'&nbsp;'.'&nbsp;';
 $table->data[0][0] .= html_print_input(
     [
         'type'    => 'checkbox',
@@ -348,7 +348,7 @@ $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $table->data[0][1] = __('Status').'&nbsp;'.'&nbsp;'.'&nbsp;';
-$table->data[0][1] .= html_print_select($fields, 'status', $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, true, false, true, '', false, 'width: 90px;');
+$table->data[0][1] .= html_print_select($fields, 'status', $status, '', __('All'), AGENT_STATUS_ALL, true, false, true, '', false, 'width: 90px;');
 
 $table->data[0][2] = __('Search').'&nbsp;'.'&nbsp;'.'&nbsp;';
 $table->data[0][2] .= html_print_input_text('search', $search, '', 15, 255, true);
@@ -364,7 +364,7 @@ foreach ($pre_fields as $key => $value) {
     $fields[$value['id_os']] = $value['name'];
 }
 
-$table->data[1][0] .= html_print_select($fields, 'os', $os, 'this.form.submit()', 'All', 0, true);
+$table->data[1][0] .= html_print_select($fields, 'os', $os, '', 'All', 0, true);
 
 $table->data[1][1] = __('Policies').'&nbsp;';
 
@@ -446,7 +446,7 @@ $table->data[4][0] = html_print_button(
 
 $table->cellstyle[4][0] .= 'padding-top: 0px;';
 $table->data[4][0] .= html_print_button(
-    __('Save filter'),
+    __('Manage filter'),
     'save-filter',
     false,
     '',

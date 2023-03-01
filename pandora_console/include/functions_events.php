@@ -5826,3 +5826,58 @@ function get_events_get_response_target(
         }
     }
 }
+
+
+/**
+ * Gets the count of events by criticity.
+ *
+ * @param integer $utimestamp  Utimestamp to search.
+ * @param integer $eventType   Event type.
+ * @param array   $groupId     Groups.
+ * @param integer $eventStatus Event status.
+ * @param array   $criticityId Criticity to search.
+ *
+ * @return array
+ */
+function get_count_event_criticity(
+    $utimestamp,
+    $eventType,
+    $groupId,
+    $eventStatus,
+    $criticityId
+) {
+    $type = ' ';
+    if ($eventType !== '0') {
+        $type = 'AND event_type = "'.$eventType.'"';
+    }
+
+        $groups = ' ';
+    if ((int) $groupId !== 0) {
+        $groups = 'AND id_grupo IN ('.$groupId.')';
+    }
+
+        $status = ' ';
+    if ((int) $eventStatus !== -1) {
+        $status = 'AND estado = '.$eventStatus;
+    }
+
+        $criticity = ' ';
+    if (empty($criticityId) === false) {
+        $criticity = 'AND criticity IN ('.$criticityId.')';
+    }
+
+    $sql_meta = sprintf(
+        'SELECT COUNT(id_evento) AS count,
+        criticity
+        FROM tevento
+        WHERE utimestamp >= %d %s %s %s %s
+        GROUP BY criticity',
+        $utimestamp,
+        $type,
+        $groups,
+        $status,
+        $criticity
+    );
+
+    return db_get_all_rows_sql($sql_meta);
+}

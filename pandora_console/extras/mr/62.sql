@@ -60,4 +60,7 @@ UPDATE `ttipo_modulo` SET `icon` = 'remote-execution-incremental-data@svg.svg' W
 UPDATE `ttipo_modulo` SET `icon` = 'server-web@svg.svg' WHERE `id_tipo` = 38;
 UPDATE `ttipo_modulo` SET `icon` = 'keepalive@svg.svg' WHERE `id_tipo` = 100;
 
+CREATE INDEX agente_modulo_estado ON tevento (estado, id_agentmodule);
+CREATE INDEX idx_disabled ON talert_template_modules (disabled);
+
 COMMIT;

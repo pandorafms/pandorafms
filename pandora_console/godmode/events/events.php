@@ -31,7 +31,7 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
+
 
 if (!check_acl($config['id_user'], 0, 'EW') && !check_acl($config['id_user'], 0, 'EM') && ! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
@@ -125,28 +125,25 @@ switch ($section) {
     break;
 }
 
-if (is_metaconsole() === false) {
-    ui_print_standard_header(
-        $subpage,
-        'images/gm_events.png',
-        false,
-        '',
-        true,
-        (array) $buttons,
+ui_print_standard_header(
+    $subpage,
+    'images/gm_events.png',
+    false,
+    '',
+    true,
+    (array) $buttons,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Configuration'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Events'),
-            ],
-        ]
-    );
-} else {
-    ui_meta_print_header(__('Manage events').$subpage, '', $buttons);
-}
+            'link'  => '',
+            'label' => __('Configuration'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Events'),
+        ],
+    ]
+);
+
 
 require_once $config['homedir'].'/include/functions_events.php';
 
@@ -168,5 +165,3 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/events/event_responses.php';
     break;
 }
-
-enterprise_hook('close_meta_frame');

@@ -1158,7 +1158,6 @@ if (check_login()) {
                 }
             }
 
-            hd($data[4], true);
             // Module thresholds.
             $data[5] = '';
             if ((int) $module['id_tipo_modulo'] !== 25) {

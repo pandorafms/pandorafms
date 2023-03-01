@@ -184,34 +184,26 @@ if ($idAgent != 0) {
 
     $print_agent = true;
 
-    if (is_metaconsole() === false) {
-        // Header.
-        ui_print_standard_header(
-            __('Alert detail'),
-            'images/op_alerts.png',
-            false,
-            '',
-            false,
-            [],
+    // Header.
+    ui_print_standard_header(
+        __('Alert detail'),
+        'images/op_alerts.png',
+        false,
+        '',
+        false,
+        [],
+        [
             [
-                [
-                    'link'  => '',
-                    'label' => __('Monitoring'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('Views'),
-                ],
-            ]
-        );
-    } else {
-        ui_meta_print_header(__('Alerts view'));
-    }
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Views'),
+            ],
+        ]
+    );
 }
-
-
-enterprise_hook('open_meta_frame');
-
 
 $alerts = [];
 
@@ -237,7 +229,6 @@ if (is_metaconsole() === false) {
             [
                 'title' => __('Standby'),
                 'text'  => __('Standby'),
-                'style' => 'max-width: 5%;',
             ],
         );
 
@@ -252,7 +243,6 @@ if (is_metaconsole() === false) {
                 [
                     'title' => __('Policy'),
                     'text'  => __('Policy'),
-                    'style' => 'max-width: 5%;vertical-align: baseline;',
                 ]
             );
 
@@ -278,26 +268,11 @@ if (is_metaconsole() === false) {
     if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
         array_push(
             $column_names,
-            [
-                'text'  => 'Module',
-                'style' => 'min-width: 15%;vertical-align: baseline;',
-            ],
-            [
-                'text'  => 'Template',
-                'style' => 'min-width: 10%;vertical-align: baseline;',
-            ],
-            [
-                'text'  => 'Operation',
-                'style' => 'min-width: 15%;vertical-align: baseline;',
-            ],
-            [
-                'text'  => 'Last fired',
-                'style' => 'min-width: 15%;',
-            ],
-            [
-                'text'  => 'Status',
-                'style' => 'width: 5%;',
-            ]
+            ['text' => 'Module'],
+            ['text' => 'Template'],
+            ['text' => 'Operation'],
+            ['text' => 'Last fired'],
+            ['text' => 'Status']
         );
 
         $columns = array_merge(
@@ -439,7 +414,7 @@ if ($agent_view_page === true) {
         [
             'id'                  => 'alerts_status_datatable',
             'class'               => 'info_table',
-            'style'               => 'width: 99%',
+            'style'               => 'width: 99%;',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'no_sortable_columns' => $no_sortable_columns,
@@ -537,9 +512,6 @@ html_print_input_text('strict_user_hidden', $strict_user);
 
 html_print_input_text('is_meta_hidden', (int) is_metaconsole());
 echo '</div>';
-
-enterprise_hook('close_meta_frame');
-
 
 ui_require_css_file('cluetip', 'include/styles/js/');
 ui_require_jquery_file('cluetip');

@@ -955,29 +955,42 @@ class DiscoveryTaskList extends HTML
                     )
                     ) {
                         if ($ipam === true) {
-                            $data[9] .= '<a href="'.ui_get_full_url(
-                                sprintf(
-                                    'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=edit&id=%d',
-                                    $tipam_task_id
-                                )
-                            ).'">'.html_print_image(
-                                'images/config.png',
-                                true,
-                                [
-                                    'title' => __('Edit task'),
-                                    'class' => 'invert_filter',
-                                ]
-                            ).'</a>';
-                            $data[9] .= '<a href="'.ui_get_full_url(
-                                'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=delete&id='.$tipam_task_id
-                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                                'images/cross.png',
-                                true,
-                                [
-                                    'title' => __('Delete task'),
-                                    'class' => 'invert_filter',
-                                ]
-                            ).'</a>';
+                            if (empty($tipam_task_id) === false) {
+                                $data[9] .= '<a href="'.ui_get_full_url(
+                                    sprintf(
+                                        'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=edit&id=%d',
+                                        $tipam_task_id
+                                    )
+                                ).'">'.html_print_image(
+                                    'images/config.png',
+                                    true,
+                                    [
+                                        'title' => __('Edit task'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ).'</a>';
+                                $data[9] .= '<a href="'.ui_get_full_url(
+                                    'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=delete&id='.$tipam_task_id
+                                ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                    'images/cross.png',
+                                    true,
+                                    [
+                                        'title' => __('Delete task'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ).'</a>';
+                            } else {
+                                $data[9] .= '<a href="'.ui_get_full_url(
+                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
+                                ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                    'images/cross.png',
+                                    true,
+                                    [
+                                        'title' => __('Delete task'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ).'</a>';
+                            }
                         } else {
                             // Check if is a H&D, Cloud or Application or IPAM.
                             $data[9] .= '<a href="'.ui_get_full_url(

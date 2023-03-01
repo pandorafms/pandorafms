@@ -9892,6 +9892,11 @@ div#err_msg_centralised {
   font-style: italic;
 }
 
+.div-2-col {
+  flex: 50%;
+  display: flex;
+  flex-direction: column;
+}
 .div-4-col {
   flex: 25%;
   display: flex;

@@ -20,7 +20,7 @@ ui_require_css_file('first_task');
 <?php if ((bool) $agent_w === true) { ?>
     <div class="new_task">
         <div class="image_task">
-            <?php echo html_print_image('images/first_task/icono_grande_servicios.png', true, ['title' => __('Services')]); ?>
+            <?php echo html_print_image('images/item-service.svg', true, ['title' => __('Services'), 'class' => 'w120px']); ?>
         </div>
         <div class="text_task">
             <h3> <?php echo __('Create Services'); ?></h3>
@@ -37,7 +37,17 @@ ui_require_css_file('first_task');
                 ?>
             </p>
             <form action="index.php?sec=estado&sec2=enterprise/godmode/services/services.service&action=new_service" method="post">
-                <input type="submit" class="button_task" value="<?php echo __('Create Services'); ?>" />
+                <?php
+                html_print_action_buttons(
+                    html_print_submit_button(
+                        __('Create a service'),
+                        'button_task',
+                        false,
+                        ['icon' => 'wand'],
+                        true
+                    )
+                );
+                ?>
             </form>
         </div>
     </div>

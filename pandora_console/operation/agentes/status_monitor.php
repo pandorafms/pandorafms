@@ -2109,7 +2109,7 @@ if (empty($result) === false) {
                 } else {
                     $sub_string = substr(io_safe_output($row['datos']), 0, 12);
                     if ($module_value == $sub_string) {
-                        if ($module_value == 0 && !$sub_string) {
+                        if ((empty($module_value) === true || $module_value == 0) && !$sub_string) {
                             $salida = 0;
                         } else {
                             $data_macro = modules_get_unit_macro($row['datos'], $row['unit']);

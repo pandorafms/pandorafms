@@ -53,6 +53,8 @@ $row = 0;
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden('update_config', 1);
 
+$performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
 // ----------------------------------------------------------------------
 // BEHAVIOUR CONFIGURATION
 // ----------------------------------------------------------------------
@@ -64,7 +66,18 @@ $table_behaviour->size[0] = '50%';
 $table_behaviour->data = [];
 
 $table_behaviour->data[$row][0] = __('Block size for pagination');
-$table_behaviour->data[$row][1] = html_print_input_text('block_size', $config['global_block_size'], '', 5, 5, true);
+$table_behaviour->data[$row][1] = html_print_input(
+    [
+        'type'   => 'number',
+        'size'   => 5,
+        'max'    => $performance_variables_control['block_size']->max,
+        'name'   => 'block_size',
+        'value'  => $config['global_block_size'],
+        'return' => true,
+        'min'    => $performance_variables_control['block_size']->min,
+        'style'  => 'width:50px',
+    ]
+);
 $row++;
 
 $values = [];
@@ -904,16 +917,19 @@ if (enterprise_installed() === false) {
 }
 
 $table_chars->data[$row][0] = __('Data precision');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_precision',
-    $config['graph_precision'],
-    '',
-    5,
-    5,
-    true,
-    $disabled_graph_precision,
-    false,
-    'onChange="change_precision()"'
+$table_chars->data[$row][1] = html_print_input(
+    [
+        'type'                                        => 'number',
+        'size'                                        => 5,
+        'max'                                         => $performance_variables_control['graph_precision']->max,
+        'name'                                        => 'graph_precision',
+        'value'                                       => $config['graph_precision'],
+        'return'                                      => true,
+        'min'                                         => $performance_variables_control['graph_precision']->min,
+        'style'                                       => 'width:50px',
+        ($disabled_graph_precision) ? 'readonly' : '' => 'readonly',
+        'onchange'                                    => 'change_precision()',
+    ]
 );
 $row++;
 
@@ -922,17 +938,21 @@ if (isset($config['short_module_graph_data']) === false) {
 }
 
 $table_chars->data[$row][0] = __('Data precision in graphs');
-$table_chars->data[$row][1] = html_print_input_text(
-    'short_module_graph_data',
-    $config['short_module_graph_data'],
-    '',
-    5,
-    5,
-    true,
-    $disabled_graph_precision,
-    false,
-    'onChange="change_precision()"'
+$table_chars->data[$row][1] = html_print_input(
+    [
+        'type'                                        => 'number',
+        'size'                                        => 5,
+        'max'                                         => $performance_variables_control['short_module_graph_data']->max,
+        'name'                                        => 'short_module_graph_data',
+        'value'                                       => $config['short_module_graph_data'],
+        'return'                                      => true,
+        'min'                                         => $performance_variables_control['short_module_graph_data']->min,
+        'style'                                       => 'width:50px',
+        ($disabled_graph_precision) ? 'readonly' : '' => 'readonly',
+        'onchange'                                    => 'change_precision()',
+    ]
 );
+
 $row++;
 
 $table_chars->data[$row][0] = __(

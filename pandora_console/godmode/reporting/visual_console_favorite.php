@@ -113,32 +113,24 @@ if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     ];
 }
 
-if ($is_metaconsole === false) {
-    ui_print_standard_header(
-        __('Favourite Visual Console'),
-        'images/op_reporting.png',
-        false,
-        '',
-        true,
-        $buttons,
+ui_print_standard_header(
+    __('Favourite Visual Console'),
+    'images/op_reporting.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Topology maps'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Visual console'),
-            ],
-        ]
-    );
-} else {
-    ui_meta_print_header(
-        __('Visual console').' &raquo; '.$visualConsoleName,
-        '',
-        $buttons
-    );
-}
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Visual console'),
+        ],
+    ]
+);
 
 $search    = (string) get_parameter('search', '');
 $ag_group  = (int) get_parameter('ag_group', 0);

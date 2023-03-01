@@ -43,7 +43,11 @@ class Group extends Entity
      *
      * @var array
      */
-    private static $ajaxMethods = ['getGroupsForSelect'];
+    private static $ajaxMethods = [
+        'getGroupsForSelect',
+        'distributionBySoGraph',
+        'groupEventsByAgent',
+    ];
 
 
     /**
@@ -470,6 +474,34 @@ class Group extends Entity
                 ],
             ]
         );
+    }
+
+
+    public static function distributionBySoGraph()
+    {
+        global $config;
+        $id_group = get_parameter('id_group', '');
+        include_once $config['homedir'].'/include/functions_graph.php';
+
+        $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+        $out .= graph_so_by_group($id_group);
+        $out .= '<div>';
+        echo $out;
+        return;
+    }
+
+
+    public static function groupEventsByAgent()
+    {
+        global $config;
+        $id_group = get_parameter('id_group', '');
+        include_once $config['homedir'].'/include/functions_graph.php';
+
+        $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+        $out .= graph_events_agent_by_group($id_group, 300, 200, true, true);
+        $out .= '<div>';
+        echo $out;
+        return;
     }
 
 

@@ -1,0 +1,15 @@
+.tactical_group_left_column {
+  vertical-align: top;
+  min-width: 30em;
+  width: 30%;
+  padding-top: 0px;
+}
+.tactical_group_right_column {
+  width: 40%;
+  vertical-align: top;
+  min-width: 30em;
+  padding-top: 0px;
+}
+rect {
+  cursor: pointer;
+}

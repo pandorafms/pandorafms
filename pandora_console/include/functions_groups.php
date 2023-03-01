@@ -1276,7 +1276,7 @@ function groups_get_not_init_agents($group, $agent_filter=[], $module_filter=[],
  *
  * @return integer Number of monitors.
  */
-function groups_get_monitors_counter($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false)
+function groups_get_monitors_counter($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false, $secondary_group=true)
 {
     if (empty($group)) {
         return 0;
@@ -1291,7 +1291,11 @@ function groups_get_monitors_counter($group, $agent_filter=[], $module_filter=[]
     }
 
     $group_str = implode(',', $groups);
-    $groups_clause = "AND (ta.id_grupo IN ($group_str) OR tasg.id_group IN ($group_str))";
+    if ($secondary_group === true) {
+        $groups_clause = "AND (ta.id_grupo IN ($group_str) OR tasg.id_group IN ($group_str))";
+    } else {
+        $groups_clause = "AND (ta.id_grupo IN ($group_str))";
+    }
 
     $tags_clause = '';
 
@@ -1401,10 +1405,12 @@ function groups_get_monitors_counter($group, $agent_filter=[], $module_filter=[]
 					ON tam.id_agente_modulo = tae.id_agente_modulo
 						$modules_clause
 				INNER JOIN tagente ta
-					ON tam.id_agente = ta.id_agente
-				LEFT JOIN tagent_secondary_group tasg
-					ON ta.id_agente = tasg.id_agent
-						AND ta.disabled = 0
+					ON tam.id_agente = ta.id_agente";
+        if ($secondary_group === true) {
+            $sql .= ' LEFT JOIN tagent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
+        }
+
+        $sql .= "AND ta.disabled = 0
 						$agent_name_filter
 						$agents_clause
 				WHERE tam.disabled = 0
@@ -1450,8 +1456,9 @@ function groups_get_monitors_counter($group, $agent_filter=[], $module_filter=[]
         }
 
         $status_columns_str = implode(',', $status_columns_array);
+        $status_columns_str_sum = implode('+', $status_columns_array);
 
-        $sql = "SELECT SUM($status_columns_str) FROM
+        $sql = "SELECT SUM($status_columns_str_sum) FROM
 			(SELECT DISTINCT(ta.id_agente), $status_columns_str
 				FROM tagente ta LEFT JOIN tagent_secondary_group tasg
 					ON ta.id_agente = tasg.id_agent
@@ -1486,11 +1493,11 @@ function groups_get_monitors_counter($group, $agent_filter=[], $module_filter=[]
  *
  * @return integer Number of monitors.
  */
-function groups_get_total_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false)
+function groups_get_total_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false, $secondary_group=true)
 {
     // Always modify the module status filter
     $module_filter['status'] = AGENT_MODULE_STATUS_ALL;
-    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime);
+    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime, $secondary_group);
 }
 
 
@@ -1511,11 +1518,11 @@ function groups_get_total_monitors($group, $agent_filter=[], $module_filter=[], 
  *
  * @return integer Number of monitors.
  */
-function groups_get_normal_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false)
+function groups_get_normal_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false, $secondary_group=true)
 {
     // Always modify the module status filter
     $module_filter['status'] = AGENT_MODULE_STATUS_NORMAL;
-    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime);
+    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime, $secondary_group);
 }
 
 
@@ -1536,11 +1543,11 @@ function groups_get_normal_monitors($group, $agent_filter=[], $module_filter=[],
  *
  * @return integer Number of monitors.
  */
-function groups_get_critical_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false)
+function groups_get_critical_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false, $secondary_group=true)
 {
     // Always modify the module status filter
     $module_filter['status'] = AGENT_MODULE_STATUS_CRITICAL_BAD;
-    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime);
+    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime, $secondary_group);
 }
 
 
@@ -1561,11 +1568,11 @@ function groups_get_critical_monitors($group, $agent_filter=[], $module_filter=[
  *
  * @return integer Number of monitors.
  */
-function groups_get_warning_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false)
+function groups_get_warning_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false, $secondary_group=true)
 {
     // Always modify the module status filter
     $module_filter['status'] = AGENT_MODULE_STATUS_WARNING;
-    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime);
+    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime, $secondary_group);
 }
 
 
@@ -1586,11 +1593,11 @@ function groups_get_warning_monitors($group, $agent_filter=[], $module_filter=[]
  *
  * @return integer Number of monitors.
  */
-function groups_get_unknown_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false)
+function groups_get_unknown_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false, $secondary_group=true)
 {
     // Always modify the module status filter
     $module_filter['status'] = AGENT_MODULE_STATUS_UNKNOWN;
-    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime);
+    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime, $secondary_group);
 }
 
 
@@ -1611,11 +1618,11 @@ function groups_get_unknown_monitors($group, $agent_filter=[], $module_filter=[]
  *
  * @return integer Number of monitors.
  */
-function groups_get_not_init_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false)
+function groups_get_not_init_monitors($group, $agent_filter=[], $module_filter=[], $strict_user=false, $groups_and_tags=false, $realtime=false, $secondary_group=true)
 {
     // Always modify the module status filter
     $module_filter['status'] = AGENT_MODULE_STATUS_NOT_INIT;
-    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime);
+    return groups_get_monitors_counter($group, $agent_filter, $module_filter, $strict_user, $groups_and_tags, $realtime, $secondary_group);
 }
 
 
@@ -1746,7 +1753,7 @@ function groups_monitor_total_counters($group_array, $search_in_testado=false)
 }
 
 
-function groups_agents_total_counters($group_array)
+function groups_agents_total_counters($group_array, $secondary_groups=true)
 {
     $default_total = [
         'ok'       => 0,
@@ -1763,30 +1770,36 @@ function groups_agents_total_counters($group_array)
     }
 
     $group_clause = implode(',', $group_array);
-    $group_clause = "(tasg.id_group IN ($group_clause) OR ta.id_grupo IN ($group_clause))";
+    if ($secondary_groups === true) {
+        $group_clause = "(tasg.id_group IN ($group_clause) OR ta.id_grupo IN ($group_clause))";
+    } else {
+        $group_clause = "(ta.id_grupo IN ($group_clause))";
+    }
 
     $condition_critical = agents_get_status_clause(AGENT_STATUS_CRITICAL);
     $condition_warning = agents_get_status_clause(AGENT_STATUS_WARNING);
     $condition_unknown = agents_get_status_clause(AGENT_STATUS_UNKNOWN);
     $condition_not_init = agents_get_status_clause(AGENT_STATUS_NOT_INIT);
     $condition_normal = agents_get_status_clause(AGENT_STATUS_NORMAL);
+
     $sql = "SELECT SUM(IF($condition_normal, 1, 0)) AS ok,
 			SUM(IF($condition_critical, 1, 0)) AS critical,
 			SUM(IF($condition_warning, 1, 0)) AS warning,
 			SUM(IF($condition_unknown, 1, 0)) AS unknown,
 			SUM(IF($condition_not_init, 1, 0)) AS not_init,
 			COUNT(ta.id_agente) AS total
-		FROM tagente ta
-		WHERE ta.disabled = 0
+            FROM tagente ta
+            WHERE ta.disabled = 0
 			AND ta.id_agente IN (
-				SELECT ta.id_agente FROM tagente ta
-				LEFT JOIN tagent_secondary_group tasg
-					ON ta.id_agente = tasg.id_agent
-				WHERE ta.disabled = 0
-					AND $group_clause
-				GROUP BY ta.id_agente
-			)
-	";
+            SELECT ta.id_agente FROM tagente ta";
+    if ($secondary_groups === true) {
+        $sql .= ' LEFT JOIN tagent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
+    }
+
+    $sql .= " WHERE ta.disabled = 0
+			  AND $group_clause
+			  GROUP BY ta.id_agente
+			)";
 
     $agents = db_get_row_sql($sql);
 
@@ -2437,4 +2450,376 @@ function groups_get_group_deep($id_group)
     }
 
     return $deep;
+}
+
+
+function groups_get_heat_map_agents(array $id_group, float $width=0, float $height=0)
+{
+    ui_require_css_file('heatmap');
+
+    if (is_array($id_group) === false) {
+        $id_group = [$id_group];
+    }
+
+    $sql = 'SELECT * FROM tagente WHERE id_grupo IN('.implode(',', $id_group).')';
+
+    $all_agents = db_get_all_rows_sql($sql);
+    hd($sql, true);
+    if (empty($all_agents)) {
+        return null;
+    }
+
+    $total_agents = count($all_agents);
+
+    // Best square.
+    $high = (float) max($width, $height);
+    $low = 0.0;
+
+    while (abs($high - $low) > 0.000001) {
+        $mid = (($high + $low) / 2.0);
+        $midval = (floor($width / $mid) * floor($height / $mid));
+        if ($midval >= $total_agents) {
+            $low = $mid;
+        } else {
+            $high = $mid;
+        }
+    }
+
+    $square_length = min(($width / floor($width / $low)), ($height / floor($height / $low)));
+
+    // Print starmap.
+    $html = sprintf(
+        '<svg id="svg_%s" style="width: %spx; height: %spx;">',
+        $id_group,
+        $width,
+        $height
+    );
+
+    $html .= '<g>';
+    $row = 0;
+    $column = 0;
+    $x = 0;
+    $y = 0;
+    $cont = 1;
+
+    foreach ($all_agents as $key => $value) {
+        // Colour by status.
+        $status = agents_get_status_from_counts($value);
+
+        switch ($status) {
+            case 5:
+                // Not init status.
+                $status = 'notinit';
+            break;
+
+            case 1:
+                // Critical status.
+                $status = 'critical';
+            break;
+
+            case 2:
+                // Warning status.
+                $status = 'warning';
+            break;
+
+            case 0:
+                // Normal status.
+                $status = 'normal';
+            break;
+
+            case 3:
+            case -1:
+            default:
+                // Unknown status.
+                $status = 'unknown';
+            break;
+        }
+
+        $html .= sprintf(
+            '<rect id="%s" x="%s" y="%s" row="%s" col="%s" width="%s" height="%s" class="%s_%s" onclick="showInfoAgent('.$value['id_agente'].')"></rect>',
+            'rect_'.$cont,
+            $x,
+            $y,
+            $row,
+            $column,
+            $square_length,
+            $square_length,
+            $status,
+            random_int(1, 10)
+        );
+
+        $y += $square_length;
+        $row++;
+        if ((int) ($y + $square_length) > (int) $height) {
+            $y = 0;
+            $x += $square_length;
+            $row = 0;
+            $column++;
+        }
+
+        if ((int) ($x + $square_length) > (int) $width) {
+            $x = 0;
+            $y += $square_length;
+            $column = 0;
+            $row++;
+        }
+
+        $cont++;
+    }
+    ?>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            const total_modules = '<?php echo $total_agents; ?>';
+
+            function getRandomInteger(min, max) {
+                return Math.floor(Math.random() * max) + min;
+            }
+
+            function oneSquare(solid, time) {
+                var randomPoint = getRandomInteger(1, total_modules);
+                let target = $(`#rect_${randomPoint}`);
+                let class_name = target.attr('class');
+                class_name = class_name.split('_')[0];
+                setTimeout(function() {
+                    target.removeClass();
+                    target.addClass(`${class_name}_${solid}`);
+                    oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                }, time);
+            }
+
+            let cont = 0;
+            while (cont < Math.ceil(total_modules / 3)) {
+                oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                cont ++;
+            }
+        });
+    </script>
+    <?php
+    $html .= '</g>';
+    $html .= '</svg>';
+
+    return $html;
+}
+
+
+function tactical_groups_get_agents_and_monitoring($id_groups)
+{
+    global $config;
+
+    $data = [
+        'total_agents'  => groups_agents_total_counters($id_groups, false)['total'],
+        'monitor_total' => groups_get_total_monitors($id_groups, [], [], false, false, false, false),
+    ];
+
+    // Link URLS
+    $urls = [];
+    $urls['total_agents'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60';
+    $urls['monitor_total'] = $config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1';
+
+    $table_am = html_get_predefined_table();
+    $tdata = [];
+    $tdata[0] = html_print_image('images/agent.png', true, ['title' => __('Total agents'), 'class' => 'invert_filter'], false, false, false, true);
+    $tdata[1] = $data['total_agents'] <= 0 ? '-' : $data['total_agents'];
+    $tdata[1] = '<a class="big_data" href="'.$urls['total_agents'].'">'.$tdata[1].'</a>';
+
+    if ($data['total_agents'] > 500 && !enterprise_installed()) {
+        $tdata[2] = "<div id='agentsmodal' class='publienterprise' title='".__('Enterprise version not installed')."'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+    }
+
+    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Monitor checks'), 'class' => 'invert_filter'], false, false, false, true);
+    $tdata[4] = $data['monitor_total'] <= 0 ? '-' : $data['monitor_total'];
+    $tdata[4] = '<a class="big_data" href="'.$urls['monitor_total'].'">'.$tdata[4].'</a>';
+
+    /*
+        Hello there! :)
+        We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+        You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+    */
+    if ($data['total_agents']) {
+        if (($data['monitor_total'] / $data['total_agents'] > 100) && !enterprise_installed()) {
+            $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        }
+    }
+
+    $table_am->rowclass[] = '';
+    $table_am->data[] = $tdata;
+
+    $output = '<fieldset class="databox tactical_set">
+                <legend>'.__('Total agents and monitors').'</legend>'.html_print_table($table_am, true).'</fieldset>';
+
+    return $output;
+}
+
+
+function tactical_groups_get_stats_alerts($id_groups)
+{
+    global $config;
+
+    $alerts = groups_monitor_alerts_total_counters($id_groups);
+    $data = [
+        'monitor_alerts'       => $alerts['total'],
+        'monitor_alerts_fired' => $alerts['fired'],
+
+    ];
+
+    $urls = [];
+    $urls['monitor_alerts'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60';
+    $urls['monitor_alerts_fired'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&disabled=fired';
+
+    // Alerts table.
+    $table_al = html_get_predefined_table();
+
+    $tdata = [];
+    $tdata[0] = html_print_image('images/bell.png', true, ['title' => __('Defined alerts'), 'class' => 'invert_filter'], false, false, false, true);
+    $tdata[1] = $data['monitor_alerts'] <= 0 ? '-' : $data['monitor_alerts'];
+    $tdata[1] = '<a class="big_data" href="'.$urls['monitor_alerts'].'">'.$tdata[1].'</a>';
+
+    /*
+        Hello there! :)
+        We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+        You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+    */
+
+    if ($data['monitor_alerts'] > $data['total_agents'] && !enterprise_installed()) {
+        $tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+    }
+
+    $tdata[3] = html_print_image(
+        'images/bell_error.png',
+        true,
+        [
+            'title' => __('Fired alerts'),
+            'class' => 'invert_filter',
+        ],
+        false,
+        false,
+        false,
+        true
+    );
+    $tdata[4] = $data['monitor_alerts_fired'] <= 0 ? '-' : $data['monitor_alerts_fired'];
+    $tdata[4] = '<a style="color: '.COL_ALERTFIRED.';" class="big_data" href="'.$urls['monitor_alerts_fired'].'">'.$tdata[4].'</a>';
+    $table_al->rowclass[] = '';
+    $table_al->data[] = $tdata;
+
+    if (!is_metaconsole()) {
+        $output = '<fieldset class="databox tactical_set">
+                    <legend>'.__('Defined and fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
+    } else {
+        // Remove the defined alerts cause with the new cache table is difficult to retrieve them.
+        unset($table_al->data[0][0], $table_al->data[0][1]);
+
+        $table_al->class = 'tactical_view';
+        $table_al->style = [];
+        $output = '<fieldset class="tactical_set">
+                    <legend>'.__('Fired alerts').'</legend>'.html_print_table($table_al, true).'</fieldset>';
+    }
+
+    return $output;
+}
+
+
+function groups_get_stats_modules_status($id_groups, $graph_width=250, $graph_height=150, $links=false, $data_agents=false)
+{
+    global $config;
+
+    $data = [
+        'monitor_critical' => groups_get_critical_monitors($id_groups, [], [], false, false, false, false),
+        'monitor_warning'  => groups_get_warning_monitors($id_groups, [], [], false, false, false, false),
+        'monitor_ok'       => groups_get_normal_monitors($id_groups, [], [], false, false, false, false),
+        'monitor_unknown'  => groups_get_unknown_monitors($id_groups, [], [], false, false, false, false),
+        'monitor_not_init' => groups_get_not_init_monitors($id_groups, [], [], false, false, false, false),
+    ];
+
+    // Link URLS.
+    if ($links === false) {
+        $urls = [];
+        $urls['monitor_critical'] = $config['homeurl'].'index.php?'.'sec=view&amp;sec2=operation/agentes/status_monitor&amp;'.'refr=60&amp;status='.AGENT_MODULE_STATUS_CRITICAL_BAD.'&pure='.$config['pure'].'&recursion=1&ag_group='.$id_group;
+        $urls['monitor_warning'] = $config['homeurl'].'index.php?'.'sec=view&amp;sec2=operation/agentes/status_monitor&amp;'.'refr=60&amp;status='.AGENT_MODULE_STATUS_WARNING.'&pure='.$config['pure'].'&recursion=1&ag_group='.$id_group;
+        $urls['monitor_ok'] = $config['homeurl'].'index.php?'.'sec=view&amp;sec2=operation/agentes/status_monitor&amp;'.'refr=60&amp;status='.AGENT_MODULE_STATUS_NORMAL.'&pure='.$config['pure'].'&recursion=1&ag_group='.$id_group;
+        $urls['monitor_unknown'] = $config['homeurl'].'index.php?'.'sec=view&amp;sec2=operation/agentes/status_monitor&amp;'.'refr=60&amp;status='.AGENT_MODULE_STATUS_UNKNOWN.'&pure='.$config['pure'].'&recursion=1&ag_group='.$id_group;
+        $urls['monitor_not_init'] = $config['homeurl'].'index.php?'.'sec=view&amp;sec2=operation/agentes/status_monitor&amp;'.'refr=60&amp;status='.AGENT_MODULE_STATUS_NOT_INIT.'&pure='.$config['pure'].'&recursion=1&ag_group='.$id_group;
+    } else {
+        $urls = [];
+        $urls['monitor_critical'] = $links['monitor_critical'];
+        $urls['monitor_warning'] = $links['monitor_warning'];
+        $urls['monitor_ok'] = $links['monitor_ok'];
+        $urls['monitor_unknown'] = $links['monitor_unknown'];
+        $urls['monitor_not_init'] = $links['monitor_not_init'];
+    }
+
+    // Fixed width non interactive charts
+    $status_chart_width = $graph_width;
+
+    // Modules by status table
+    $table_mbs = html_get_predefined_table();
+
+    $tdata = [];
+    $tdata[0] = html_print_image('images/module_critical.png', true, ['title' => __('Monitor critical')], false, false, false, true);
+    $tdata[1] = $data['monitor_critical'] <= 0 ? '-' : $data['monitor_critical'];
+    $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="big_data line_heigth_initial" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
+
+    $tdata[2] = html_print_image('images/module_warning.png', true, ['title' => __('Monitor warning')], false, false, false, true);
+    $tdata[3] = $data['monitor_warning'] <= 0 ? '-' : $data['monitor_warning'];
+    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="big_data line_heigth_initial" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
+    $table_mbs->rowclass[] = '';
+    $table_mbs->data[] = $tdata;
+
+    $tdata = [];
+    $tdata[0] = html_print_image('images/module_ok.png', true, ['title' => __('Monitor normal')], false, false, false, true);
+    $tdata[1] = $data['monitor_ok'] <= 0 ? '-' : $data['monitor_ok'];
+    $tdata[1] = '<a style="color: '.COL_NORMAL.';" class="big_data" href="'.$urls['monitor_ok'].'">'.$tdata[1].'</a>';
+
+    $tdata[2] = html_print_image('images/module_unknown.png', true, ['title' => __('Monitor unknown')], false, false, false, true);
+    $tdata[3] = $data['monitor_unknown'] <= 0 ? '-' : $data['monitor_unknown'];
+    $tdata[3] = '<a style="color: '.COL_UNKNOWN.';" class="big_data line_heigth_initial" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
+    $table_mbs->rowclass[] = '';
+    $table_mbs->data[] = $tdata;
+
+    $tdata = [];
+    $tdata[0] = html_print_image('images/module_notinit.png', true, ['title' => __('Monitor not init')], false, false, false, true);
+    $tdata[1] = $data['monitor_not_init'] <= 0 ? '-' : $data['monitor_not_init'];
+    $tdata[1] = '<a style="color: '.COL_NOTINIT.';" class="big_data line_heigth_initial" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
+
+    $tdata[2] = $tdata[3] = '';
+    $table_mbs->rowclass[] = '';
+    $table_mbs->data[] = $tdata;
+
+    if ($data['monitor_checks'] > 0) {
+        $tdata = [];
+        $table_mbs->colspan[count($table_mbs->data)][0] = 4;
+        $table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
+        $tdata[0] = '<div id="outter_status_pie" style="height: '.$graph_height.'px">'.'<div id="status_pie" style="margin: auto; width: '.$status_chart_width.'px;">'.graph_agent_status(false, $graph_width, $graph_height, true, true, $data_agents).'</div></div>';
+        $table_mbs->rowclass[] = '';
+        $table_mbs->data[] = $tdata;
+    }
+
+    if (!is_metaconsole()) {
+        $output = '
+            <fieldset class="databox tactical_set">
+                <legend>'.__('Monitors by status').'</legend>'.html_print_table($table_mbs, true).'</fieldset>';
+    } else {
+        $table_mbs->class = 'tactical_view';
+        $table_mbs->style = [];
+        $output = '
+            <fieldset class="tactical_set">
+                <legend>'.__('Monitors by status').'</legend>'.html_print_table($table_mbs, true).'</fieldset>';
+    }
+
+    return $output;
+}
+
+
+function groups_get_agents_group($id_groups)
+{
+    global $config;
+
+    if (is_array($id_groups) === false) {
+        $id_groups = [$id_groups];
+    }
+
+    if ($rows === false) {
+        $rows = [];
+    }
+
+    return $rows;
 }

@@ -16,7 +16,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
 $id_report = (int) get_parameter('id');
 
 if (! $id_report) {
@@ -205,36 +204,25 @@ if (!defined('METACONSOLE')) {
     }
 }
 
-// Page header for metaconsole
-if (is_metaconsole()) {
-    // Bread crumbs
-    ui_meta_add_breadcrumb(['link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder', 'text' => __('Reporting')]);
-
-    ui_meta_print_page_header($nav_bar);
-
-    // Print header
-    ui_meta_print_header(__('Reporting'), '', $options);
-} else {
-    // Header.
-    ui_print_standard_header(
-        reporting_get_name($id_report),
-        'images/op_reporting.png',
-        false,
-        '',
-        false,
-        $options,
+// Header.
+ui_print_standard_header(
+    reporting_get_name($id_report),
+    'images/op_reporting.png',
+    false,
+    '',
+    false,
+    $options,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Reporting'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Custom reports'),
-            ],
-        ]
-    );
-}
+            'link'  => '',
+            'label' => __('Reporting'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Custom reports'),
+        ],
+    ]
+);
 
 // ------------------- END HEADER ---------------------------------------
 // ------------------------ INIT FORM -----------------------------------
@@ -426,6 +414,4 @@ if ($datetime === false || $datetime == -1) {
     ui_print_error_message(__('Invalid date selected'));
     return;
 }
-
-enterprise_hook('close_meta_frame');
 

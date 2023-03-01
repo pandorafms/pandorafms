@@ -1040,7 +1040,7 @@ html_print_input_hidden('id_item', $idItem);
 $class = 'databox filters';
 
 ?>
-<table   class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
+<table id="table_item_edit_reporting"  class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
     <?php
     if (defined('METACONSOLE')) {
         echo '<thead>
@@ -2458,7 +2458,7 @@ $class = 'databox filters';
         </tr>
         <tr id="row_order_uptodown"   class="datos">
             <td class="bolder"><?php echo __('Order'); ?></td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Ascending');
                 html_print_radio_button(
@@ -2517,7 +2517,7 @@ $class = 'databox filters';
 
         <tr id="row_max_min_avg"   class="datos">
             <td class="bolder"><?php echo __('Display'); ?></td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Max');
                 html_print_radio_button(
@@ -3196,7 +3196,7 @@ $class = 'databox filters';
             echo __('Priority mode');
             ?>
             </td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Priority ok mode');
                 echo '<span class="mrgn_lft_5px"></span>';
@@ -3249,7 +3249,7 @@ $class = 'databox filters';
             echo __('Failover type');
             ?>
             </td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Failover normal');
                 echo '<span class="mrgn_lft_5px"></span>';
@@ -3358,7 +3358,7 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_visual_format"   class="datos advanced_elements">
-            <td class="bolder" colspan="2">
+            <td class="bolder flex-row-center" colspan="2">
                 <?php
                 if ($visual_format == 1) {
                     $visual_format_table = true;

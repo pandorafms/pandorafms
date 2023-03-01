@@ -47,6 +47,8 @@ if (is_ajax()) {
     exit();
 }
 
+$performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
 $table = new StdClass();
 $table->class = 'databox filters';
 $table->id = 'setup_general';
@@ -512,13 +514,17 @@ $table->data[$i++][1] = html_print_checkbox_switch(
 );
 
 $table->data[$i][0] = __('Limit for bulk operations');
-$table->data[$i++][1] = html_print_input_text(
-    'limit_parameters_massive',
-    $config['limit_parameters_massive'],
-    '',
-    10,
-    10,
-    true
+$table->data[$i++][1] = html_print_input(
+    [
+        'type'   => 'number',
+        'size'   => 5,
+        'max'    => $performance_variables_control['limit_parameters_massive']->max,
+        'name'   => 'limit_parameters_massive',
+        'value'  => $config['limit_parameters_massive'],
+        'return' => true,
+        'min'    => $performance_variables_control['limit_parameters_massive']->min,
+        'style'  => 'width:50px',
+    ]
 );
 
 $table->data[$i][0] = __('Include agents manually disabled');

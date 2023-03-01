@@ -118,12 +118,12 @@ sub check_lib_version {
 
 	$plugin_version = "0NG.0" if empty($plugin_version);
 
-	my ($main,$oum) = split /NG./, $plugin_version;
+	my ($main,$oum) = ($plugin_version =~ m/(\d*\.?\d+)NG\.(\d*\.?\d+)/);
 
 	$main = 0 if empty($main) || !looks_like_number($main);
 	$oum  = 0 if empty($oum)  || !looks_like_number($oum);
 
-	my ($libmain,$liboum) = split /NG./, $pandora_version;
+	my ($libmain,$liboum) =  ($pandora_version =~ m/(\d*\.?\d+)NG\.(\d*\.?\d+)/);
 
 	if (($liboum < $oum)
 	||  ($libmain != $main)) {

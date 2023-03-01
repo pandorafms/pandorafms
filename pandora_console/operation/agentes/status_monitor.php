@@ -1388,7 +1388,7 @@ if ($autosearch) {
         }
 
         if ($count_modules > $config['block_size']) {
-            $tablePagination = ui_pagination($count_modules, false, $offset, 0, true);
+            $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', false);
         }
 
         // Get number of elements of the pagination.

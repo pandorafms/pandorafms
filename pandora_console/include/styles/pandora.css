@@ -299,6 +299,10 @@ input[type="image"] {
   background-color: transparent;
 }
 
+.container-div-input-password input {
+  width: 100%;
+}
+
 table,
 img {
   border: 0px;
@@ -11362,14 +11366,14 @@ form#satellite_conf_edit > fieldset.full-column {
 }
 
 .show-hide-pass {
-  position: relative;
-  right: 48px;
-  top: 14px;
+  position: absolute;
+  right: 12px;
+  top: 4px;
   border: 0;
   outline: none;
   margin: 0;
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
   cursor: pointer;
   display: inline-block;
 }

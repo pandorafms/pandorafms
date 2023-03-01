@@ -68,10 +68,6 @@ $buttons['create_message'] = [
 ];
 
 if (is_ajax() === false) {
-    if (is_metaconsole() === true) {
-        enterprise_hook('open_meta_frame');
-    }
-
     // Header.
     ui_print_standard_header(
         $tabSelectedMessage,
@@ -322,10 +318,6 @@ if (empty($messages) === false) {
             'content' => $outputButton,
         ]
     );
-
-    if (is_ajax() !== true && is_metaconsole() === true) {
-        enterprise_hook('close_meta_frame');
-    }
 
     ?>
 

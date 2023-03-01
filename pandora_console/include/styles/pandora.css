@@ -11432,3 +11432,7 @@ div[role="dialog"] {
 .flex-colum-center > img {
   margin: 5px;
 }
+
+.space-between {
+  justify-content: space-between;
+}

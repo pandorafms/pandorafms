@@ -731,3 +731,14 @@ tr.datos2 > td.datos2 > div > div {
 .dataTables_wrapper .dataTables_filter input {
   margin: 0.5em;
 }
+
+.label-ipam {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#text-vrf_name {
+  width: 100%;
+}

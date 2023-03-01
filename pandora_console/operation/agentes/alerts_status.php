@@ -222,69 +222,69 @@ if (empty($free_search) === false) {
 $columns = [];
 $column_names = [];
 
-if (is_metaconsole() === false) {
-    if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
+
+if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
+    array_unshift(
+        $column_names,
+        [
+            'title' => __('Standby'),
+            'text'  => __('Standby'),
+        ],
+    );
+
+    $columns = array_merge(
+        ['standby'],
+        $columns
+    );
+
+    if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
         array_unshift(
             $column_names,
             [
-                'title' => __('Standby'),
-                'text'  => __('Standby'),
-            ],
+                'title' => __('Policy'),
+                'text'  => __('Policy'),
+            ]
         );
 
         $columns = array_merge(
-            ['standby'],
+            ['policy'],
             $columns
         );
-
-        if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-            array_unshift(
-                $column_names,
-                [
-                    'title' => __('Policy'),
-                    'text'  => __('Policy'),
-                ]
-            );
-
-            $columns = array_merge(
-                ['policy'],
-                $columns
-            );
-        }
-
-        if ($print_agent === true) {
-            array_push(
-                $column_names,
-                ['text' => 'Agent']
-            );
-
-            $columns = array_merge(
-                $columns,
-                ['agent_name']
-            );
-        }
     }
 
-    if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
+    if ($print_agent === true) {
         array_push(
             $column_names,
-            ['text' => 'Module'],
-            ['text' => 'Template'],
-            ['text' => 'Operation'],
-            ['text' => 'Last fired'],
-            ['text' => 'Status']
+            ['text' => 'Agent']
         );
 
         $columns = array_merge(
             $columns,
-            ['agent_module_name'],
-            ['template_name'],
-            ['operation'],
-            ['last_fired'],
-            ['status']
+            ['agent_name']
         );
     }
 }
+
+if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
+    array_push(
+        $column_names,
+        ['text' => 'Module'],
+        ['text' => 'Template'],
+        ['text' => 'Operation'],
+        ['text' => 'Last fired'],
+        ['text' => 'Status']
+    );
+
+    $columns = array_merge(
+        $columns,
+        ['agent_module_name'],
+        ['template_name'],
+        ['operation'],
+        ['last_fired'],
+        ['status']
+    );
+}
+
 
 if ($print_agent === true) {
     array_push(
@@ -450,7 +450,7 @@ if ($agent_view_page === true) {
     );
 }
 
-if ((is_metaconsole() === false) && ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
+if (((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
     if ($agent_view_page === true) {
         html_print_div(
             [

@@ -102,7 +102,6 @@ global $config;
 // Login check.
 check_login();
 
-enterprise_hook('open_meta_frame');
 $report_r = check_acl($config['id_user'], 0, 'RR');
 $report_w = check_acl($config['id_user'], 0, 'RW');
 $report_m = check_acl($config['id_user'], 0, 'RM');
@@ -544,42 +543,25 @@ switch ($action) {
             break;
         }
 
-        // Page header for metaconsole.
-        if ($enterpriseEnable && defined('METACONSOLE')) {
-            // Bread crumbs.
-            ui_meta_add_breadcrumb(
+        // Header.
+        ui_print_standard_header(
+            __('List of reports'),
+            'images/op_reporting.png',
+            false,
+            '',
+            false,
+            $buttons,
+            [
                 [
-                    'link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure,
-                    'text' => __('Reporting'),
-                ]
-            );
-
-            ui_meta_print_page_header($nav_bar);
-
-            // Print header.
-            ui_meta_print_header(__('Reporting'), '', $buttons);
-        } else {
-            // Header.
-            ui_print_standard_header(
-                __('List of reports'),
-                'images/op_reporting.png',
-                false,
-                '',
-                false,
-                $buttons,
+                    'link'  => '',
+                    'label' => __('Reporting'),
+                ],
                 [
-                    [
-                        'link'  => '',
-                        'label' => __('Reporting'),
-                    ],
-                    [
-                        'link'  => '',
-                        'label' => __('Custom reports'),
-                    ],
-                ]
-            );
-        }
-
+                    'link'  => '',
+                    'label' => __('Custom reports'),
+                ],
+            ]
+        );
 
         if ($action == 'delete_report') {
             $delete = false;
@@ -1394,8 +1376,6 @@ switch ($action) {
                 true
             );
         }
-
-        enterprise_hook('close_meta_frame');
     return;
 
         break;
@@ -3648,41 +3628,25 @@ switch ($action) {
                 break;
             }
 
-            // Page header for metaconsole.
-            if ($enterpriseEnable && defined('METACONSOLE')) {
-                // Bread crumbs.
-                ui_meta_add_breadcrumb(
+            // Header.
+            ui_print_standard_header(
+                $subsection,
+                'images/op_reporting.png',
+                false,
+                '',
+                false,
+                $buttons,
+                [
                     [
-                        'link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure,
-                        'text' => __('Reporting'),
-                    ]
-                );
-
-                ui_meta_print_page_header($nav_bar);
-
-                // Print header.
-                ui_meta_print_header(__('Reporting'), '', $buttons);
-            } else {
-                // Header.
-                ui_print_standard_header(
-                    $subsection,
-                    'images/op_reporting.png',
-                    false,
-                    '',
-                    false,
-                    $buttons,
+                        'link'  => '',
+                        'label' => __('Reporting'),
+                    ],
                     [
-                        [
-                            'link'  => '',
-                            'label' => __('Reporting'),
-                        ],
-                        [
-                            'link'  => '',
-                            'label' => __('Custom reports'),
-                        ],
-                    ]
-                );
-            }
+                        'link'  => '',
+                        'label' => __('Custom reports'),
+                    ],
+                ]
+            );
 
             reporting_enterprise_select_main_tab($action);
         }
@@ -3759,44 +3723,28 @@ if ($idReport != 0) {
     $textReportName = __('Create Custom Report');
 }
 
-// Page header for metaconsole.
-if ($enterpriseEnable && defined('METACONSOLE')) {
-    // Bread crumbs.
-    ui_meta_add_breadcrumb(
+$tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
+
+if ($action !== 'update') {
+    // Header.
+    ui_print_standard_header(
+        $textReportName,
+        'images/op_reporting.png',
+        false,
+        $tab_builder,
+        false,
+        $buttons,
         [
-            'link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure,
-            'text' => __('Reporting'),
+            [
+                'link'  => '',
+                'label' => __('Reporting'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Custom reports'),
+            ],
         ]
     );
-
-    ui_meta_print_page_header($nav_bar);
-
-    // Print header.
-    ui_meta_print_header(__('Reporting').$textReportName, '', $buttons);
-} else {
-    $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
-
-    if ($action !== 'update' && is_metaconsole() === false) {
-        // Header.
-        ui_print_standard_header(
-            $textReportName,
-            'images/op_reporting.png',
-            false,
-            $tab_builder,
-            false,
-            $buttons,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Reporting'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('Custom reports'),
-                ],
-            ]
-        );
-    }
 }
 
 if ($resultOperationDB !== null) {
@@ -3865,5 +3813,3 @@ switch ($activeTab) {
         reporting_enterprise_select_tab($activeTab);
     break;
 }
-
-enterprise_hook('close_meta_frame');

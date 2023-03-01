@@ -199,7 +199,7 @@ if ($load_filter_id > 0) {
     $user_groups_fl = users_get_groups(
         $config['id_user'],
         'AR',
-        users_can_manage_group_all(),
+        users_can_manage_group_all('AR'),
         true
     );
 

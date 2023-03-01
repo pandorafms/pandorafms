@@ -229,7 +229,7 @@ ui_print_standard_header(
 $table = new stdClass();
 $table->id = 'controls_table';
 $table->width = '100%';
-$table->class = 'databox';
+$table->class = 'filter-table-adv';
 if (defined('METACONSOLE')) {
     $table->width = '100%';
     $table->class = 'databox filters';
@@ -240,7 +240,7 @@ if (defined('METACONSOLE')) {
 }
 
 $table->style = [];
-$table->style[0] = 'width: 60px;';
+$table->style[0] = 'vertical-align: middle';
 $table->rowspan[0][0] = 2;
 
 // Set initial conditions for these controls, later will be modified by javascript
@@ -257,9 +257,7 @@ if (!$enable_init_date) {
 }
 
 $table->size = [];
-$table->size[0] = '60px';
 $table->colspan[0][1] = 2;
-$table->style[0] = 'text-align:center;';
 $table->data = [];
 $table->data[0][0] = html_print_image(
     'images/reporting32.png',
@@ -276,7 +274,7 @@ if (reporting_get_description($id_report)) {
     $table->data[0][1] = '<div class="float-left">'.reporting_get_name($id_report).'</div>';
 }
 
-$table->data[0][1] .= '<div class="flex-content-right">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true).'</br>';
+$table->data[0][1] .= '<div class="float-right">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true).'</br>';
 
 $html_menu_export = enterprise_hook('reporting_print_button_export');
 if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
@@ -296,12 +294,42 @@ $table->data[1][2] = '<div style="display:'.$display_item.'" id="string_items">'
 $table->data[1][2] .= '<div style="display:'.$display_to.'" id="string_to">'.__('to').':</div>';
 $table->data[1][2] .= html_print_input_text('date', $date, '', 12, 10, true).' ';
 $table->data[1][2] .= html_print_input_text('time', $time, '', 10, 7, true).' ';
-$table->data[1][2] .= html_print_submit_button(__('Update'), 'date_submit', false, 'class="sub next"', true);
 
-echo '<form method="post" action="'.$url.'&pure='.$config['pure'].'" class="mrgn_right_0px">';
-html_print_table($table);
-html_print_input_hidden('id_report', $id_report);
-echo '</form>';
+$searchForm = '<form method="post" action="'.$url.'&pure='.$config['pure'].'" class="mrgn_right_0px">';
+$searchForm .= html_print_table($table, true);
+$searchForm .= html_print_input_hidden('id_report', $id_report, true);
+
+$Actionbuttons .= html_print_submit_button(
+    __('Update'),
+    'date_submit',
+    false,
+    [
+        'mode' => 'mini',
+        'icon' => 'next',
+    ],
+    true
+);
+
+$searchForm .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $Actionbuttons,
+    ],
+    true
+);
+$searchForm .= '</form>';
+
+ui_toggle(
+    $searchForm,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
+    '',
+    false,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
 // ------------------------ END FORM ------------------------------------
 if ($enable_init_date) {
     if ($datetime_init > $datetime) {

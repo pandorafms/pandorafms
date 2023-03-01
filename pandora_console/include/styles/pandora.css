@@ -11436,3 +11436,17 @@ div[role="dialog"] {
 .space-between {
   justify-content: space-between;
 }
+
+#table_item_reporting > tbody > tr > td:first-child,
+#add_advanced_table > tbody > tr > td:first-child,
+#table_item_edit_reporting > tbody > tr > td:first-child,
+.row-title-font > td,
+.row-title-font > td > div > div > b,
+.td-title-font {
+  font-size: 13px;
+  line-height: 16px;
+  color: #161628;
+  text-align: left;
+  margin-bottom: 10px;
+  font-weight: bold;
+}

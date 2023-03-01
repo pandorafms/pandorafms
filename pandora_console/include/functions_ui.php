@@ -2491,7 +2491,7 @@ function ui_print_session_action_icon($action, $return=false)
 function ui_print_help_tip(
     $text,
     $return=false,
-    $img='images/tip_help.png',
+    $img='images/info@svg.svg',
     $is_relative=false,
     $style='',
     $blink=false
@@ -2503,6 +2503,7 @@ function ui_print_help_tip(
         [
             'title' => $text,
             'class' => $blink === true ? 'blink' : '',
+            'style' => 'width: 16px; height: 16px;',
         ],
         false,
         $is_relative && is_metaconsole()

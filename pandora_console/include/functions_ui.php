@@ -4277,12 +4277,14 @@ function ui_toggle(
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
+    $rotateA = '90deg';
+    $rotateB = '180deg';
 
     if (empty($img_a) === false) {
         $image_a = html_print_image(
             $img_a,
             true,
-            [ 'style' => 'rotate: 90deg;' ],
+            [ 'style' => 'rotate: '.$rotateA ],
             true
         );
     } else {
@@ -4293,7 +4295,7 @@ function ui_toggle(
         $image_b = html_print_image(
             $img_b,
             true,
-            [ 'style' => 'rotate: 180deg;' ],
+            [ 'style' => 'rotate: '.$rotateB ],
             true
         );
     } else {
@@ -4304,11 +4306,11 @@ function ui_toggle(
     $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-available;';
     $style = 'overflow:hidden;';
     if ($hidden_default === true) {
-        $imageRotate = '180deg';
+        $imageRotate = $rotateB;
         $style .= 'height:0;position:absolute;';
         $original = $img_b;
     } else {
-        $imageRotate = '90deg';
+        $imageRotate = $rotateA;
         $style .= 'height:auto;position:relative;';
         $original = $img_a;
     }
@@ -4433,11 +4435,12 @@ function ui_toggle(
         $output .= "		    }\n";
         $output .= "		});\n";
         $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
+        $output .= "				console.log('#image_".$uniqid."');";
         $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
         $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
+        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
         $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
         $output .= $class_table;
         $output .= "			}\n";
@@ -4445,7 +4448,7 @@ function ui_toggle(
         $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
+        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
         $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
         $output .= "			}\n";
         $output .= "		});\n";
@@ -7103,6 +7106,7 @@ function ui_print_spinner(string $text='Loading', bool $return=false)
                 'images/spinner.gif',
                 true,
                 [
+                    'class'  => 'main_menu_icon',
                     'border' => '0',
                     'width'  => '25px',
                     'heigth' => '25px',

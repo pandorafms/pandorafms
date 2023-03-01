@@ -727,3 +727,7 @@ tr.datos2 > td.datos2 > div > div {
 .mgn_tp_0_imp {
   margin-top: 0px !important;
 }
+
+.dataTables_wrapper .dataTables_filter input {
+  margin: 0.5em;
+}

@@ -337,18 +337,14 @@ function add_module_massive_controller(target = 'agent')
     });
 
     // Select all Items.
-    $("#checkbox-select_all_left").change(function () {
-        if ($("#checkbox-select_all_left").prop('checked') == true) {
-            $('#id_item option').map(function() {
-                $(this).prop('selected', true);
-            });
-        } else {
-            $('#id_item option').map(function() {
-                $(this).prop('selected', false);
-            });
-        }
+    $("#image-select_all_available").click(function (event) {
+        event.preventDefault();
+        $('#id_item>option').prop('selected', true);
+    })
 
-        return false;
+    $("#image-select_all_apply").click(function (event) {
+        event.preventDefault();
+        $('#id_item2>option').prop('selected', true);
     });
 
     $("#checkbox-select_all_right").change(function () {

@@ -96,7 +96,10 @@ class AuditLog extends HTML
         // Datatables list.
         try {
             $columns = [
-                'id_usuario',
+                [
+                    'text'  => 'id_usuario',
+                    'class' => 'w50px',
+                ],
                 'accion',
                 'fecha',
                 'ip_origen',
@@ -206,11 +209,23 @@ class AuditLog extends HTML
                                 'name'  => 'filter_text',
                             ],
                             [
-                                'label' => __('Max. hours old'),
-                                'type'  => 'text',
-                                'class' => 'w100p',
-                                'id'    => 'filter_period',
-                                'name'  => 'filter_period',
+                                'label'          => __('Max. hours old'),
+                                'type'           => 'select',
+                                'class'          => 'w20px',
+                                'select2_enable' => true,
+                                'sort'           => false,
+                                'selected'       => 168,
+                                'fields'         => [
+                                    24   => __('1 day'),
+                                    168  => __('7 days'),
+                                    360  => __('15 days'),
+                                    744  => __('1 month'),
+                                    2160 => __('3 months'),
+                                    4320 => __('6 months'),
+                                    8760 => __('1 Year'),
+                                ],
+                                'id'             => 'filter_period',
+                                'name'           => 'filter_period',
                             ],
                             [
                                 'label' => __('IP'),
@@ -225,7 +240,7 @@ class AuditLog extends HTML
                                 'nothing'       => __('All'),
                                 'nothing_value' => '-1',
                                 'sql'           => 'SELECT DISTINCT(accion), accion AS text FROM tsesion',
-                                'class'         => 'mw250px',
+                                'class'         => 'mw200px',
                                 'id'            => 'filter_type',
                                 'name'          => 'filter_type',
                             ],
@@ -237,7 +252,7 @@ class AuditLog extends HTML
                                 'sql'           => 'SELECT id_user, id_user AS text FROM tusuario UNION SELECT "SYSTEM"
                                                     AS id_user, "SYSTEM" AS text UNION SELECT "N/A"
                                                     AS id_user, "N/A" AS text',
-                                'class'         => 'mw250px',
+                                'class'         => 'mw200px',
                                 'id'            => 'filter_user',
                                 'name'          => 'filter_user',
                             ],
@@ -351,9 +366,12 @@ class AuditLog extends HTML
                     ).ui_print_timestamp($tmp->utimestamp, true);
 
                     if (enterprise_installed() === true) {
-                        $tmp->security     = enterprise_hook('cell1EntepriseAudit', [$tmp->id_sesion]);
-                        $tmp->action       = enterprise_hook('cell2EntepriseAudit', []);
-                        $tmp->extendedInfo = enterprise_hook('rowEnterpriseAudit', [$tmp->id_sesion]);
+                        $extendedInfo = enterprise_hook('rowEnterpriseAudit', [$tmp->id_sesion]);
+                        if (empty($extendedInfo) === false) {
+                            $tmp->security     = enterprise_hook('cell1EntepriseAudit', [$tmp->id_sesion]);
+                            $tmp->action       = enterprise_hook('cell2EntepriseAudit', []);
+                            $tmp->extendedInfo = $extendedInfo;
+                        }
                     }
 
                     $carry[] = $tmp;

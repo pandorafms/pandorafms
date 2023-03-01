@@ -11449,9 +11449,12 @@ div[role="dialog"] {
 #table_item_reporting > tbody > tr > td:first-child,
 #add_advanced_table > tbody > tr > td:first-child,
 #table_item_edit_reporting > tbody > tr > td:first-child,
+#add_alert_table > tbody > tr > td:first-child,
+.row-title-font-child > td:first-child,
 .row-title-font > td,
-.row-title-font > td > div > div > b,
-.td-title-font {
+.row-title-font > td > div,
+.td-title-font > b,
+.row-title-font > td > div > div > b {
   font-size: 13px;
   line-height: 16px;
   color: #161628;

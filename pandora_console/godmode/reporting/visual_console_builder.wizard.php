@@ -82,7 +82,7 @@ require_once $config['homedir'].'/include/functions_agents.php';
 $table = new stdClass();
 $table->id = 'wizard_table';
 $table->head = [];
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     $metaconsole_hack = '';
     $table->width = '100%';
     $table->class = 'databox filters';

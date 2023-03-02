@@ -281,7 +281,7 @@ switch ($action) {
             $server_name = $item['server_name'];
 
             // Metaconsole db connection.
-            if ($meta && empty($server_name) === false) {
+            if ($meta && empty($server_name) === false && $server_name !== 'all') {
                 $connection = metaconsole_get_connection($server_name);
                 $server_id = $connection['id'];
                 if (metaconsole_load_external_db($connection) != NOERR) {
@@ -1220,6 +1220,29 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers,
+                    'combo_server',
+                    $server_name,
+                    '',
+                    $nothing,
+                    $nothing_value
+                );
+                ?>
+            </td>
+        </tr>
+            <?php
+        }
+        ?>
+
+        <?php
+        $servers_all_opt = array_merge(['all' => 'All nodes'], $servers);
+        if ($meta) {
+            ?>
+        <tr id="row_servers_all_opt"   class="datos">
+            <td class="bolder"><?php echo __('Server'); ?></td>
+            <td  >
+                <?php
+                html_print_select(
+                    $servers_all_opt,
                     'combo_server',
                     $server_name,
                     '',
@@ -6338,6 +6361,7 @@ function chooseType() {
     $("#row_alert_templates").hide();
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
+    $("#row_servers_all_opt").hide();
     $("#row_multiple_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
@@ -6652,7 +6676,7 @@ function chooseType() {
             $("#row_header").show();
             $("#row_custom").show();
             $("#row_custom_example").show();
-            $("#row_servers").show();
+            $("#row_servers_all_opt").show();
             $("#row_historical_db_check").show();
             break;
 

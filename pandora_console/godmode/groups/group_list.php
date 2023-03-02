@@ -274,8 +274,6 @@ if (is_ajax() === true) {
     return;
 }
 
-enterprise_hook('open_meta_frame');
-
 $tab = (string) get_parameter('tab', 'groups');
 
 if ($tab !== 'credbox'
@@ -990,7 +988,6 @@ if ($is_management_allowed === true
 
 ui_require_javascript_file('TreeController', 'include/javascript/tree/');
 
-enterprise_hook('close_meta_frame');
 $tab = 'group_edition';
 
 ?>

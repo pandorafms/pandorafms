@@ -132,32 +132,24 @@ class AuditLog extends HTML
 
             $this->tableId = 'audit_logs';
 
-            // Header (only in Node).
-            if (is_metaconsole() === false) {
-                ui_print_standard_header(
-                    __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
-                    'images/gm_log.png',
-                    false,
-                    '',
-                    false,
-                    [],
+            ui_print_standard_header(
+                __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
+                'images/gm_log.png',
+                false,
+                '',
+                false,
+                [],
+                [
                     [
-                        [
-                            'link'  => '',
-                            'label' => __('Admin Tools'),
-                        ],
-                        [
-                            'link'  => '',
-                            'label' => __('System Audit log'),
-                        ],
-                    ]
-                );
-            }
-
-            if (is_metaconsole() === true) {
-                // Only in case of Metaconsole, format the frame.
-                open_meta_frame();
-            }
+                        'link'  => '',
+                        'label' => __('Admin Tools'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('System Audit log'),
+                    ],
+                ]
+            );
 
             $buttons = [];
 
@@ -263,11 +255,6 @@ class AuditLog extends HTML
             );
         } catch (Exception $e) {
             echo $e->getMessage();
-        }
-
-        if (is_metaconsole() === true) {
-            // Close the frame.
-            close_meta_frame();
         }
 
         // Load own javascript file.

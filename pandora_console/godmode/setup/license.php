@@ -42,22 +42,24 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 
 $update_settings = (bool) get_parameter_post('update_settings');
 
-if (is_metaconsole()) {
-    // Metaconsole.
-    ui_require_javascript_file_enterprise('load_enterprise', true);
-    enterprise_include_once('include/functions_license.php');
-} else {
-    ui_print_page_header(
-        __('License management'),
-        'images/extensions.png',
-        false,
-        '',
-        true
-    );
+ui_require_javascript_file_enterprise('load_enterprise', is_metaconsole() === true);
+enterprise_include_once('include/functions_license.php');
 
-    ui_require_javascript_file_enterprise('load_enterprise');
-    enterprise_include_once('include/functions_license.php');
-}
+// Header.
+ui_print_standard_header(
+    __('License management'),
+    'images/extensions.png',
+    false,
+    '',
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('License'),
+        ],
+    ]
+);
 
 enterprise_include_once('include/functions_crypto.php');
 
@@ -135,81 +137,201 @@ if (enterprise_installed()) {
 
 </script>
 <?php
-echo '<form method="post" id="form-license">';
+echo '<form method="post" id="form-license" class="max_floating_element_size">';
 // Retrieve UM url configured (or default).
 $url = get_um_url();
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
-
-if (is_metaconsole()) {
-    $table->head[0] = __('Licence');
-    $table->head_colspan[0] = 3;
-    $table->headstyle[0] = 'text-align: center';
-    $table->style[0] = 'font-weight: bold;';
-}
-
+$table->class = 'databox filter-table-adv';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 $table->data = [];
+$table->colspan = [];
 
-$table->data[0][0] = '<strong>'.__('Customer key').'</strong>';
-$table->data[0][1] = html_print_textarea('keys[customer_key]', 10, 255, $settings->customer_key, 'style="width: 450px" class="height_50px w450px"', true);
+$table->colspan[0][0] = 2;
+$table->data[-1][0] = '<div class="section_table_title">'.__('Licence').'</div>';
 
-$table->data[1][0] = '<strong>'.__($license['expiry_caption']).'</strong>';
-$table->data[1][1] = html_print_input_text('expires', $license['expiry_date'], '', 10, 255, true, true);
-
-$table->data[2][0] = '<strong>'.__('Platform Limit').'</strong>';
-$table->data[2][1] = html_print_input_text('expires', $license['limit'], '', 10, 255, true, true).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'));
-
-$table->data[3][0] = '<strong>'.__('Current Platform Count').'</strong>';
-$table->data[3][1] = html_print_input_text('expires', $license['count'], '', 10, 255, true, true).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'));
-
-$table->data[4][0] = '<strong>'.__('Current Platform Count (enabled: items)').'</strong>';
-$table->data[4][1] = html_print_input_text('expires', $license['count_enabled'], '', 10, 255, true, true).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'));
-
-$table->data[5][0] = '<strong>'.__('Current Platform Count (disabled: items)').'</strong>';
-$table->data[5][1] = html_print_input_text('expires', $license['count_disabled'], '', 10, 255, true, true).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'));
-
-$table->data[6][0] = '<strong>'.__('License Mode').'</strong>';
-$table->data[6][1] = html_print_input_text('expires', $license['license_mode'], '', 10, 255, true, true);
-
-$table->data[7][0] = '<strong>'.__('NMS').'</strong>';
-$table->data[7][1] = html_print_input_text('expires', ($license['nms'] == 1 ? __('enabled') : __('disabled')), '', 10, 255, true, true);
-
-$table->data[8][0] = '<strong>'.__('Satellite').'</strong>';
-$table->data[8][1] = html_print_input_text('expires', ($license['dhpm'] == 1 ? __('enabled') : __('disabled')), '', 10, 255, true, true);
-
-if ($license['dhpm'] == 1) {
-    $table->data[9][0] = '<strong>'.__('License encryption key').'</strong>'.ui_print_help_tip(
-        __('This key is used to encrypt your Pandora FMS license when it is shared with other Pandora FMS components'),
+$table->colspan[0][0] = 2;
+$table->data[0][0] = html_print_label_input_block(
+    __('Customer key'),
+    html_print_textarea(
+        'keys[customer_key]',
+        10,
+        255,
+        $settings->customer_key,
+        'style="width: 100%; height:80px;"',
         true
-    );
-    $table->data[9][1] = html_print_input_password(
-        'license_encryption_key',
-        io_safe_output($settings->license_encryption_key),
+    )
+);
+
+$table->data[1][0] = html_print_label_input_block(
+    __($license['expiry_caption']),
+    html_print_input_text(
+        'expires',
+        $license['expiry_date'],
         '',
         10,
         255,
         true,
-        false
+        true
+    )
+);
+
+$table->data[1][1] = html_print_label_input_block(
+    __('Platform Limit'),
+    html_print_input_text(
+        'expires',
+        $license['limit'],
+        '',
+        10,
+        255,
+        true,
+        true
+    ).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
+);
+
+$table->data[2][0] = html_print_label_input_block(
+    __('Current Platform Count'),
+    html_print_input_text(
+        'expires',
+        $license['count'],
+        '',
+        10,
+        255,
+        true,
+        true
+    ).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
+);
+
+$table->data[2][1] = html_print_label_input_block(
+    __('Current Platform Count (enabled: items)'),
+    html_print_input_text(
+        'expires',
+        $license['count_enabled'],
+        '',
+        10,
+        255,
+        true,
+        true
+    ).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
+);
+
+$table->data[3][0] = html_print_label_input_block(
+    __('Current Platform Count (disabled: items)'),
+    html_print_input_text(
+        'expires',
+        $license['count_disabled'],
+        '',
+        10,
+        255,
+        true,
+        true
+    ).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
+);
+
+$table->data[3][1] = html_print_label_input_block(
+    __('License Mode'),
+    html_print_input_text(
+        'expires',
+        $license['license_mode'],
+        '',
+        10,
+        255,
+        true,
+        true
+    )
+);
+
+$table->data[4][0] = html_print_label_input_block(
+    __('NMS'),
+    html_print_input_text(
+        'expires',
+        ($license['nms'] == 1 ? __('enabled') : __('disabled')),
+        '',
+        10,
+        255,
+        true,
+        true
+    )
+);
+
+$table->data[4][1] = html_print_label_input_block(
+    __('Satellite'),
+    html_print_input_text(
+        'expires',
+        ($license['dhpm'] == 1 ? __('enabled') : __('disabled')),
+        '',
+        10,
+        255,
+        true,
+        true
+    )
+);
+
+$table->data[5][0] = html_print_label_input_block(
+    __('Licensed to'),
+    html_print_input_text(
+        'licensed_to',
+        $license['licensed_to'],
+        '',
+        64,
+        255,
+        true,
+        true
+    )
+);
+
+if ($license['dhpm'] == 1) {
+    $table->data[5][1] = html_print_label_input_block(
+        __('License encryption key').'</strong>'.ui_print_help_tip(
+            __('This key is used to encrypt your Pandora FMS license when it is shared with other Pandora FMS components'),
+            true
+        ),
+        html_print_input_password(
+            'license_encryption_key',
+            io_safe_output($settings->license_encryption_key),
+            '',
+            10,
+            255,
+            true,
+            false
+        )
     );
 }
-
-$table->data[10][0] = '<strong>'.__('Licensed to').'</strong>';
-$table->data[10][1] = html_print_input_text('licensed_to', $license['licensed_to'], '', 64, 255, true, true);
 
 html_print_table($table);
 
 // If DESTDIR is defined the enterprise license is expired.
 if (enterprise_installed() || defined('DESTDIR')) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_input_hidden('update_settings', 1);
-    html_print_submit_button(__('Validate'), 'update_button', false, 'class="sub upd"');
-    echo '&nbsp;&nbsp;';
-    html_print_button(__('Request new license'), 'license', false, 'generate_request_code()', [ 'fixed_id' => 'button-', 'icon' => 'next']);
-    echo '</div>';
+    $buttons = html_print_input_hidden('update_settings', 1, true);
+    $buttons .= html_print_submit_button(
+        __('Validate'),
+        'update_button',
+        false,
+        ['icon' => 'next'],
+        true
+    );
+    $buttons .= html_print_button(
+        __('Request new license'),
+        'license',
+        false,
+        'generate_request_code()',
+        [
+            'fixed_id' => 'button-',
+            'icon'     => 'next',
+            'mode'     => 'secondary',
+        ],
+        true
+    );
+
+    html_print_action_buttons(
+        $buttons
+    );
 }
 
+echo '</form>';
 if (is_metaconsole()) {
     ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
     ui_require_css_file('register', 'include/styles/');
@@ -220,7 +342,6 @@ if (is_metaconsole()) {
 }
 
 if (enterprise_hook('print_activate_licence_dialog') == ENTERPRISE_NOT_HOOK) {
-    echo '</form>';
     echo '<div id="code_license_dialog" class="invisible left" title="'.__('Request new license').'">';
     echo '<div id="logo">';
     html_print_image(ui_get_custom_header_logo(true));

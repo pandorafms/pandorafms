@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -121,11 +121,11 @@ if ($aclRead === false && $aclWrite === false && $aclManage === false) {
 $options = [];
 
 $options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder">'.html_print_image(
-    'images/visual_console.png',
+    'images/logs@svg.svg',
     true,
     [
         'title' => __('Visual consoles list'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 
@@ -149,29 +149,29 @@ if ($aclWrite === true || $aclManage === true) {
     $options['public_link']['text'] = '<a href="'.ui_get_full_url(
         'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user']
     ).'" target="_blank">'.html_print_image(
-        'images/camera_mc.png',
+        'images/item-icon.svg',
         true,
         [
             'title' => __('Show link to public Visual Console'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
     $options['public_link']['active'] = false;
 
     $options['data']['text'] = '<a href="'.$baseUrl.'&tab=data&id_visual_console='.$visualConsoleId.'">'.html_print_image(
-        'images/op_reporting.png',
+        'images/bars-graph.svg',
         true,
         [
             'title' => __('Main data'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
     $options['list_elements']['text'] = '<a href="'.$baseUrl.'&tab=list_elements&id_visual_console='.$visualConsoleId.'">'.html_print_image(
-        'images/list.png',
+        'images/edit_columns@svg.svg',
         true,
         [
             'title' => __('List elements'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
@@ -181,27 +181,27 @@ if ($aclWrite === true || $aclManage === true) {
             true,
             [
                 'title' => __('Services wizard'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
     }
 
     $options['wizard']['text'] = '<a href="'.$baseUrl.'&tab=wizard&id_visual_console='.$visualConsoleId.'">'.html_print_image(
-        'images/wand.png',
+        'images/wizard@svg.svg',
         true,
         [
             'title' => __('Wizard'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 }
 
 $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr.'">'.html_print_image(
-    'images/eye.png',
+    'images/enable.svg',
     true,
     [
         'title' => __('View'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 $options['view']['active'] = true;
@@ -209,11 +209,11 @@ $options['view']['active'] = true;
 if (is_metaconsole() === false) {
     if (!$config['pure']) {
         $options['pure']['text'] = '<a id ="full_screen" href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
-            'images/full_screen.png',
+            'images/fullscreen@svg.svg',
             true,
             [
                 'title' => __('Full screen mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
 

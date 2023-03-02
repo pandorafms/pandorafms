@@ -6749,21 +6749,29 @@ function html_print_label_input_block(
     $label_class = '';
     $div_id = '';
 
+    $divAttributes = [];
+
     if (empty($options) === false) {
         if (isset($options['div_class']) === true) {
-            $div_class = $options['div_class'];
+            $divAttributes[] = 'class="'.$options['div_class'].'"';
+        }
+
+        if (isset($options['div_id']) === true) {
+            $divAttributes[] = 'id="'.$options['div_id'].'"';
+        }
+
+        if (isset($options['div_style']) === true) {
+            $divAttributes[] = 'style="'.$options['div_style'].'"';
         }
 
         if (isset($options['label_class']) === true) {
             $label_class = $options['label_class'];
         }
-
-        if (isset($options['div_id']) === true) {
-            $div_id = 'id="'.$options['div_id'].'"';
-        }
     }
 
-    $output = '<div class="'.$div_class.'" '.$div_id.'>';
+    $content = (empty($divAttributes) === false) ? implode(' ', $divAttributes) : '';
+
+    $output = '<div '.$content.'>';
     if ($label !== null) {
         $output .= '<label class="'.$label_class.'">'.$label.'</label>';
     }

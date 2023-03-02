@@ -138,13 +138,13 @@ div.arrow_box:before {
 #menu_tab_frame_view_bc .breadcrumbs_container {
   align-self: flex-start;
 }
-
+/*
 .breadcrumbs_container {
   padding-top: 4px;
   text-indent: 0.25em;
   padding-left: 2.5em;
 }
-
+*/
 .breadcrumb_link {
   color: #848484;
   font-size: 10pt;

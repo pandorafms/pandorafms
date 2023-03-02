@@ -48,8 +48,6 @@ if (is_ajax()) {
     }
 }
 
-enterprise_hook('open_meta_frame');
-
 if (defined('METACONSOLE')) {
     $sec = 'advanced';
 } else {
@@ -411,8 +409,6 @@ if ($is_management_allowed === true) {
 }
 
 echo '</form>';
-
-enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file('pandora_alerts');
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');

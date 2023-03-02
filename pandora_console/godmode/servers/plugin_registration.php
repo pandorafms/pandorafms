@@ -50,7 +50,6 @@ ui_require_css_file('first_task');
 
 if (is_metaconsole() === true) {
     enterprise_include_once('meta/include/functions_components_meta.php');
-    enterprise_hook('open_meta_frame');
     components_meta_print_header();
     $sec = 'advanced';
     $management_allowed = is_management_allowed();
@@ -564,8 +563,4 @@ if ($error !== null && $error !== '') {
             false
         )
     );
-}
-
-if (is_metaconsole() === true) {
-    enterprise_hook('close_meta_frame');
 }

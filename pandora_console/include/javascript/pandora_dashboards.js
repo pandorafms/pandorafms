@@ -583,7 +583,7 @@ function initialiceLayout(data) {
       success: function(data) {
         $("#modal-add-widget").empty();
         $("#modal-add-widget").append(data);
-        $("a.pagination").click(function() {
+        $("a.pandora_pagination").click(function() {
           var offset = $(this)
             .attr("href")
             .split("=")

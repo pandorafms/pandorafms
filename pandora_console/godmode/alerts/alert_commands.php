@@ -566,8 +566,6 @@ tyle='display:none;'>";
     echo '</div>';
 }
 
-enterprise_hook('open_meta_frame');
-
 if ($update_command) {
     include_once 'configure_alert_command.php';
     return;
@@ -835,8 +833,6 @@ if (users_is_admin() === true) {
     echo '</form>';
     echo '</div>';
 }
-
-enterprise_hook('close_meta_frame');
 
 ?>
 

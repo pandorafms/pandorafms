@@ -33,7 +33,6 @@ $management_allowed = is_management_allowed();
 if (is_metaconsole() === true) {
     $sec = 'advanced';
     enterprise_include_once('meta/include/functions_components_meta.php');
-    enterprise_hook('open_meta_frame');
     components_meta_print_header();
 
     if ($management_allowed === false) {
@@ -375,7 +374,6 @@ if ($result === false) {
 }
 
 if (is_metaconsole() === true) {
-    enterprise_hook('close_meta_frame');
     echo '<div id="deploy_messages" class="invisible">';
     echo '<span>'.__(
         'The configurations of inventory modules from the nodes have been unified.

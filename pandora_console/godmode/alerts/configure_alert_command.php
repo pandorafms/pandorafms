@@ -36,8 +36,6 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -392,7 +390,6 @@ if ($is_management_allowed === true) {
 
 echo '</form>';
 
-enterprise_hook('close_meta_frame');
 ?>
 
 <script type="text/javascript">

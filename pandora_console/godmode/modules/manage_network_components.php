@@ -30,8 +30,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -933,8 +931,6 @@ html_print_action_buttons(
         'right_content' => $tablePagination,
     ]
 );
-
-enterprise_hook('close_meta_frame');
 
 ?>
 <script type="text/javascript">

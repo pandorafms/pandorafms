@@ -324,7 +324,7 @@ ui_toggle(
     '<span class="subsection_header_title">'.__('Filters').'</span>',
     'filter_form',
     '',
-    false,
+    true,
     false,
     '',
     'white-box-content',

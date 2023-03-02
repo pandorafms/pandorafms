@@ -222,8 +222,6 @@ if (is_ajax() === true) {
     }
 }
 
-enterprise_hook('open_meta_frame');
-
 $tab = get_parameter('tab', 'user');
 
 // Save autorefresh list.
@@ -1885,8 +1883,6 @@ if ((bool) check_acl($config['id_user'], 0, 'UM') === true) {
 html_print_action_buttons(implode('', $actionButtons), ['type' => 'form_action']);
 
 echo '</div>';
-
-enterprise_hook('close_meta_frame');
 
 // This is an image generated for JS.
 $delete_image = html_print_input_image(

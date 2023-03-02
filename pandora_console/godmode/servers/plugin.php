@@ -332,8 +332,6 @@ if ($filemanager) {
 $sec = 'gservers';
 
 if (empty($create) === false || empty($view) === false) {
-    enterprise_hook('open_meta_frame');
-
     $management_allowed = is_management_allowed();
 
     if (is_metaconsole() === true) {
@@ -708,11 +706,7 @@ if (empty($create) === false || empty($view) === false) {
     if (defined('METACONSOLE')) {
         echo '</td></tr>';
     }
-
-    enterprise_hook('close_meta_frame');
 } else {
-    enterprise_hook('open_meta_frame');
-
     if (defined('METACONSOLE')) {
         components_meta_print_header();
         $sec = 'advanced';
@@ -1087,8 +1081,6 @@ if (empty($create) === false || empty($view) === false) {
     // The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'.
     echo "<div id='dialog_locked' title='".__('List of modules and components created by "%s" ')."' class='invisible left'>";
     echo '</div>';
-
-    enterprise_hook('close_meta_frame');
 }
 
 ui_require_javascript_file('pandora_modules');

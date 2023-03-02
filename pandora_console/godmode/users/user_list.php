@@ -132,8 +132,6 @@ if (is_ajax()) {
     }
 }
 
-enterprise_hook('open_meta_frame');
-
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $tab = get_parameter('tab', 'user');
@@ -1050,8 +1048,6 @@ if ($is_management_allowed === true) {
         ],
     );
 }
-
-enterprise_hook('close_meta_frame');
 
 ?>
 <script type="text/javascript">

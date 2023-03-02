@@ -4179,3 +4179,13 @@ CREATE TABLE IF NOT EXISTS `tmonitor_filter` (
   `ag_custom_fields` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tevent_sound`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tevent_sound` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `name` TEXT NULL,
+    `sound` TEXT NULL,
+    `active` TINYINT NOT NULL DEFAULT '1',
+PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;

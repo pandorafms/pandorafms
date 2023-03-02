@@ -2464,7 +2464,6 @@ function groups_get_heat_map_agents(array $id_group, float $width=0, float $heig
     $sql = 'SELECT * FROM tagente WHERE id_grupo IN('.implode(',', $id_group).')';
 
     $all_agents = db_get_all_rows_sql($sql);
-    hd($sql, true);
     if (empty($all_agents)) {
         return null;
     }
@@ -2806,20 +2805,4 @@ function groups_get_stats_modules_status($id_groups, $graph_width=250, $graph_he
     }
 
     return $output;
-}
-
-
-function groups_get_agents_group($id_groups)
-{
-    global $config;
-
-    if (is_array($id_groups) === false) {
-        $id_groups = [$id_groups];
-    }
-
-    if ($rows === false) {
-        $rows = [];
-    }
-
-    return $rows;
 }

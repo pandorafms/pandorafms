@@ -160,7 +160,7 @@ ui_toggle(
 echo '</td>';
 echo '</tr>';
 echo '</table>';
-
+echo '<div id="modal-info-agent"></div>'
 
 ?>
 <script type="text/javascript">

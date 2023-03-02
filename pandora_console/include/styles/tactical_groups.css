@@ -13,3 +13,13 @@
 rect {
   cursor: pointer;
 }
+.info-agent {
+  width: 100%;
+  max-height: 400px;
+}
+.info-agent table {
+  width: 100%;
+}
+#modal-info-agent {
+  display: none;
+}

@@ -47,6 +47,7 @@ class Group extends Entity
         'getGroupsForSelect',
         'distributionBySoGraph',
         'groupEventsByAgent',
+        'loadInfoAgent',
     ];
 
 
@@ -502,6 +503,76 @@ class Group extends Entity
         $out .= '<div>';
         echo $out;
         return;
+    }
+
+
+    public static function loadInfoAgent()
+    {
+        $extradata = get_parameter('extradata', '');
+        echo '<div class="info-agent">';
+
+        if (empty($extradata) === false) {
+            $extradata = json_decode(io_safe_output($extradata), true);
+            $agent = agents_get_agent($extradata['idAgent']);
+
+            if (is_array($agent)) {
+                $status_img = agents_tree_view_status_img(
+                    $agent['critical_count'],
+                    $agent['warning_count'],
+                    $agent['unknown_count'],
+                    $agent['total_count'],
+                    $agent['notinit_count']
+                );
+                $table = new \stdClass();
+                $table->class = 'table_modal_alternate';
+                $table->data = [
+                    [
+                        __('Id'),
+                        $agent['id_agente'],
+                    ],
+                    [
+                        __('Agent name'),
+                        '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent['id_agente'].'"><b>'.$agent['nombre'].'</b></a>',
+                    ],
+                    [
+                        __('Alias'),
+                        $agent['alias'],
+                    ],
+                    [
+                        __('Ip Address'),
+                        $agent['direccion'],
+                    ],
+                    [
+                        __('Status'),
+                        $status_img,
+                    ],
+                    [
+                        __('Group'),
+                        groups_get_name($agent['id_grupo']),
+                    ],
+                    [
+                        __('Interval'),
+                        $agent['intervalo'],
+                    ],
+                    [
+                        __('Operative system'),
+                        get_os_name($agent['id_os']),
+                    ],
+                    [
+                        __('Server name'),
+                        $agent['server_name'],
+                    ],
+                    [
+                        __('Description'),
+                        $agent['comentarios'],
+                    ],
+                ];
+
+                html_print_table($table);
+            }
+        }
+
+        echo '</div>';
     }
 
 

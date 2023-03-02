@@ -3657,7 +3657,7 @@ class NetworkMap
             $output .= '" charset="utf-8"></script>';
 
             $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
-            $output .= 'class="border_1px_dd" style="';
+            $output .= 'class="border_1px_dd" style="background-color: #fff; ';
 
             if ($this->fullSize) {
                 $output .= ' width:100%';

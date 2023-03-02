@@ -2476,7 +2476,8 @@ function html_print_input_text_extended(
     $password=false,
     $function='',
     $autocomplete='off',
-    $disabled=false
+    $disabled=false,
+    $hide_div_eye=false,
 ) {
     global $config;
     static $idcounter = 0;
@@ -2551,7 +2552,7 @@ function html_print_input_text_extended(
             }
 
             // Only for password inputs.
-            if (($attribute === 'class') && ($password === true)) {
+            if (($attribute === 'class') && ($password === true) && ($hide_div_eye === false)) {
                 $attr_value .= ' show-hide-pass-background';
                 $hasClass = true;
             }
@@ -2563,7 +2564,7 @@ function html_print_input_text_extended(
         $attributes = [];
     }
 
-    if (($hasClass === false) && ($password === true)) {
+    if (($hasClass === false) && ($password === true) && ($hide_div_eye === false)) {
         $output .= 'class="show-hide-pass-background" ';
     }
 
@@ -2615,7 +2616,7 @@ function html_print_input_text_extended(
 
     $output .= $function.'/>';
 
-    if ($password === true) {
+    if ($password === true && $hide_div_eye === false) {
         $output .= html_print_div(
             [
                 'id'      => 'show-hide-'.$id,
@@ -2800,7 +2801,8 @@ function html_print_input_password(
     $disabled=false,
     $required=false,
     $class='',
-    $autocomplete='off'
+    $autocomplete='off',
+    $hide_div_eye=false,
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2831,7 +2833,7 @@ function html_print_input_password(
         }
     }
 
-    return '<div class="relative container-div-input-password">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete).'</div>';
+    return '<div class="relative container-div-input-password">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
 }
 
 
@@ -6747,21 +6749,29 @@ function html_print_label_input_block(
     $label_class = '';
     $div_id = '';
 
+    $divAttributes = [];
+
     if (empty($options) === false) {
         if (isset($options['div_class']) === true) {
-            $div_class = $options['div_class'];
+            $divAttributes[] = 'class="'.$options['div_class'].'"';
+        }
+
+        if (isset($options['div_id']) === true) {
+            $divAttributes[] = 'id="'.$options['div_id'].'"';
+        }
+
+        if (isset($options['div_style']) === true) {
+            $divAttributes[] = 'style="'.$options['div_style'].'"';
         }
 
         if (isset($options['label_class']) === true) {
             $label_class = $options['label_class'];
         }
-
-        if (isset($options['div_id']) === true) {
-            $div_id = 'id="'.$options['div_id'].'"';
-        }
     }
 
-    $output = '<div class="'.$div_class.'" '.$div_id.'>';
+    $content = (empty($divAttributes) === false) ? implode(' ', $divAttributes) : '';
+
+    $output = '<div '.$content.'>';
     if ($label !== null) {
         $output .= '<label class="'.$label_class.'">'.$label.'</label>';
     }

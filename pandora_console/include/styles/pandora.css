@@ -312,15 +312,17 @@ table pre {
   white-space: pre-wrap;
 }
 
-tr:first-child > th {
+/* tr:first-child > th {
   background-color: #373737;
-}
+} */
 
 th {
-  color: #fff;
-  background-color: #666;
+  /* color: #fff; */
+  /* background-color: #666; */
+  color: #000;
   font-size: 7.5pt;
   letter-spacing: 0.3pt;
+  border-bottom: 1px solid #e2e2e2;
 }
 
 pre .color_333 {
@@ -2021,8 +2023,11 @@ table.databox {
 .databox > tbody > tr > th,
 .databox > thead > tr > th a {
   padding: 9px 7px;
-  font-weight: normal;
-  color: #fff;
+  /* font-weight: normal; */
+  font-weight: bold;
+  font-size: 9pt;
+  line-height: 16pt;
+  /* color: #fff; */
   text-align: center;
 }
 
@@ -10003,6 +10008,10 @@ select:disabled,
   background-color: #e5e9ed;
   color: #8a96a6;
 }
+
+/* input[type="password"] {
+  background-color: #f6f7fb;
+} */
 
 input:not([type="image"]):focus,
 textarea:focus,

@@ -195,3 +195,18 @@ ul.wizard li.mrgn_0px {
 ul.wizard li.pdd_0px {
   padding: 0;
 }
+
+li#textarea-create-site > textarea {
+  width: 100%;
+}
+
+form#create_site > ul.wizard > li > label {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+select[multiple] {
+  min-height: 20em;
+}

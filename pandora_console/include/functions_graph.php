@@ -5341,7 +5341,7 @@ function get_baseline_data(
 }
 
 
-function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true)
+function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, $noWaterMark=true)
 {
     global $config;
 
@@ -5379,10 +5379,12 @@ function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true)
         $data[] = $row['count'];
     }
 
-    $water_mark = [
-        'file' => $config['homedir'].'/images/logo_vertical_water.png',
-        'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-    ];
+    if ($noWaterMark === false) {
+        $water_mark = [
+            'file' => $config['homedir'].'/images/logo_vertical_water.png',
+            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+        ];
+    }
 
     $options = [
         'width'     => $width,

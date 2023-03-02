@@ -23,3 +23,6 @@ rect {
 #modal-info-agent {
   display: none;
 }
+#list_agents_tactical_wrapper {
+  max-height: 600px;
+}

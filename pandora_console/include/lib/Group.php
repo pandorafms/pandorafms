@@ -48,6 +48,7 @@ class Group extends Entity
         'distributionBySoGraph',
         'groupEventsByAgent',
         'loadInfoAgent',
+        'getAgentsByGroup',
     ];
 
 
@@ -573,6 +574,152 @@ class Group extends Entity
         }
 
         echo '</div>';
+    }
+
+
+    public static function getAgentsByGroup()
+    {
+        global $config;
+
+        $data = [];
+        $id_group = get_parameter('id_group', '');
+        $id_groups = [$id_group];
+        $groups = groups_get_children($id_group);
+
+        if (count($groups) > 0) {
+            $id_groups = [];
+            foreach ($groups as $key => $value) {
+                $id_groups[] = $value['id_grupo'];
+            }
+        }
+
+        $start  = get_parameter('start', 0);
+        $length = get_parameter('length', $config['block_size']);
+        $orderDatatable = get_datatable_order(true);
+        $pagination = '';
+        $order = '';
+
+        try {
+            ob_start();
+            if (isset($orderDatatable)) {
+                switch ($orderDatatable['field']) {
+                    case 'alerts':
+                        $orderDatatable['field'] = 'fired_count';
+                    break;
+
+                    case 'status':
+                        $orderDatatable['field'] = 'total_count';
+
+                    default:
+                        $orderDatatable['field'] = $orderDatatable['field'];
+                    break;
+                }
+
+                $order = sprintf(
+                    ' ORDER BY %s %s',
+                    $orderDatatable['field'],
+                    $orderDatatable['direction']
+                );
+            }
+
+            if (isset($length) && $length > 0
+                && isset($start) && $start >= 0
+            ) {
+                $pagination = sprintf(
+                    ' LIMIT %d OFFSET %d ',
+                    $length,
+                    $start
+                );
+            }
+
+            $sql = sprintf(
+                'SELECT alias,
+                        critical_count,
+                        warning_count,
+                        unknown_count,
+                        total_count,
+                        notinit_count,
+                        ultimo_contacto_remoto,
+                        fired_count
+                FROM tagente t
+                WHERE disabled = 0 AND
+                total_count <> notinit_count AND
+                id_grupo IN (%s)
+                %s %s',
+                implode(',', $id_groups),
+                $order,
+                $pagination
+            );
+
+            $data = db_get_all_rows_sql($sql);
+
+            $sql = sprintf(
+                'SELECT alias,
+                        critical_count,
+                        warning_count,
+                        unknown_count,
+                        total_count,
+                        notinit_count,
+                        ultimo_contacto_remoto,
+                        fired_count
+                FROM tagente t
+                WHERE disabled = 0 AND
+                total_count <> notinit_count AND
+                id_grupo IN (%s)
+                %s',
+                implode(',', $id_groups),
+                $order,
+            );
+
+            $count_agents = db_get_num_rows($sql);
+
+            foreach ($data as $key => $agent) {
+                $status_img = agents_tree_view_status_img(
+                    $agent['critical_count'],
+                    $agent['warning_count'],
+                    $agent['unknown_count'],
+                    $agent['total_count'],
+                    $agent['notinit_count']
+                );
+                $data[$key]['alias'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent['id_agente'].'"><b>'.$agent['alias'].'</b></a>';
+                $data[$key]['status'] = $status_img;
+                $data[$key]['alerts'] = agents_tree_view_alert_img($agent['fired_count']);
+            }
+
+            if (empty($data) === true) {
+                $total = 0;
+                $data = [];
+            } else {
+                $total = $count_agents;
+            }
+
+            echo json_encode(
+                [
+                    'data'            => $data,
+                    'recordsTotal'    => $total,
+                    'recordsFiltered' => $total,
+                ]
+            );
+            // Capture output.
+            $response = ob_get_clean();
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+            exit;
+        }
+
+        json_decode($response);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            echo $response;
+        } else {
+            echo json_encode(
+                [
+                    'success' => false,
+                    'error'   => $response,
+                ]
+            );
+        }
+
+        exit;
     }
 
 

@@ -26,9 +26,6 @@
  * ============================================================================
  */
 
-// Test id group.
-$id_group = 9;
-
 global $config;
 
 check_login();
@@ -39,6 +36,11 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
+    return;
+}
+
+$id_group = get_parameter('id', '');
+if (empty($id_group) === true) {
     return;
 }
 
@@ -132,7 +134,7 @@ $events_by_agents_group .= '</td></tr></table>';
 $table_col2->data[2][0] = $events_by_agents_group;
 ui_toggle(
     html_print_table($table_col2, true),
-    __('Alerts'),
+    __('Alerts and events'),
     '',
     '',
     false,
@@ -146,8 +148,46 @@ $table_col3->data = [];
 $table_col3->rowclass[] = '';
 $table_col3->headstyle[0] = 'text-align:center;';
 $table_col3->width = '100%';
-$table_col3->data[0][0] = 'En desarrollo';
 
+try {
+    $columns = [
+        'alias',
+        'status',
+        'alerts',
+        'ultimo_contacto_remoto',
+    ];
+
+    $columnNames = [
+        __('Alias'),
+        __('Status'),
+        __('Alerts'),
+        __('Ultimo contacto remoto'),
+    ];
+
+    // Load datatables user interface.
+    $table_col3->data[3][0] = ui_print_datatable(
+        [
+            'id'                  => 'list_agents_tactical',
+            'class'               => 'info_table',
+            'style'               => 'width: 100%',
+            'columns'             => $columns,
+            'column_names'        => $columnNames,
+            'return'              => true,
+            'ajax_url'            => 'include/ajax/group',
+            'ajax_data'           => [
+                'method'   => 'getAgentsByGroup',
+                'id_group' => $id_group,
+            ],
+            'no_sortable_columns' => [-1],
+            'order'               => [
+                'field'     => 'alias',
+                'direction' => 'asc',
+            ],
+        ]
+    );
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
 
 ui_toggle(
     html_print_table($table_col3, true),

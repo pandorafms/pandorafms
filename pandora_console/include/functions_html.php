@@ -3568,7 +3568,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $parameters[] = (empty($name) === false) ? ' name="'.$name.'"' : '';
         $parameters[] = 'id="'.$mainId.'"';
         $parameters[] = (empty($label) === false) ? ' value="'.$label.'"' : '';
-        $parameters[] = (empty($script) === false) ? ' onClick="'.$script.'"' : '';
+        $parameters[] = (empty($script) === false) ? " onClick='".$script."'" : '';
         $parameters[] = ($disabled === true) ? ' disabled' : '';
         $parameters[] = (empty($attributes) === false) ? $attributes : '';
 

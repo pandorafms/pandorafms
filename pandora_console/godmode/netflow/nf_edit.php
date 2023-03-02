@@ -19,8 +19,6 @@ require_once $config['homedir'].'/include/functions_netflow.php';
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -217,8 +215,6 @@ echo "<div class='mrgn_right_5px right'>";
 html_print_submit_button(__('Create filter'), 'crt', false, 'class="sub wand"');
 echo '</div>';
 echo '</form>';
-
-enterprise_hook('close_meta_frame');
 
 ?>
 

@@ -1418,11 +1418,6 @@ if ($pure) {
     // Floating menu - End.
     ui_require_jquery_file('countdown');
 } else {
-    if (is_metaconsole() === true) {
-        // Load metaconsole frame.
-        // enterprise_hook('open_meta_frame');
-    }
-
     // Header.
     $pss = get_user_info($config['id_user']);
     $hashup = md5($config['id_user'].$pss['password']);
@@ -2578,8 +2573,6 @@ if (check_acl(
     echo '</div>';
 }
 
-// Close viewer.
-// enterprise_hook('close_meta_frame');
 // Datepicker requirements.
 ui_require_css_file('datepicker');
 ui_include_time_picker();

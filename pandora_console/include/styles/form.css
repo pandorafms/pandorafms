@@ -114,60 +114,6 @@ div.arrow_box:before {
 }
 
 /*
- * Breadcrum
- */
-
-#menu_tab_frame_view_bc {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 2px solid #82b92e;
-  max-height: 70px;
-  min-height: 55px;
-  width: 100%;
-  padding-right: 0px;
-  margin-left: 0px;
-  margin-bottom: 20px;
-  height: 55px;
-  box-sizing: border-box;
-  background-color: #fafafa;
-  border-top-right-radius: 7px;
-  border-top-left-radius: 7px;
-  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);
-}
-
-#menu_tab_frame_view_bc .breadcrumbs_container {
-  align-self: flex-start;
-}
-/*
-.breadcrumbs_container {
-  padding-top: 4px;
-  text-indent: 0.25em;
-  padding-left: 2.5em;
-}
-*/
-.breadcrumb_link {
-  color: #848484;
-  font-size: 10pt;
-  text-decoration: none;
-}
-
-span.breadcrumb_link {
-  color: #d0d0d0;
-  font-size: 12pt;
-}
-
-.breadcrumb_link.selected {
-  color: #95b750;
-}
-
-.breadcrumb_link.selected:hover {
-  color: #95b750;
-}
-.breadcrumb_link:hover {
-  color: #95b750;
-}
-
-/*
  * Discovery forms structure
  */
 

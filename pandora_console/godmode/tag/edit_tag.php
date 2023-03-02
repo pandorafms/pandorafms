@@ -13,8 +13,6 @@
 // GNU General Public License for more details.
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 // Include functions code
 require_once $config['homedir'].'/include/functions_tags.php';
 
@@ -286,5 +284,3 @@ if (defined('METACONSOLE')) {
         echo '</table>';
 
         echo '</form>';
-
-        enterprise_hook('close_meta_frame');

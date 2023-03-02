@@ -49,14 +49,6 @@ $delete = (int) get_parameter('delete_tag', 0);
 $tag_name = (string) get_parameter('tag_name', '');
 $tab = (string) get_parameter('tab', 'list');
 
-if ($delete !== 0 && is_metaconsole() === true) {
-    open_meta_frame();
-}
-
-if ($tag_name != '' && is_metaconsole() === true) {
-    open_meta_frame();
-}
-
 // Metaconsole nodes.
 $servers = false;
 if (is_metaconsole() === true) {
@@ -430,10 +422,6 @@ if ($is_management_allowed === true) {
     echo '</td>';
     echo '</tr>';
     echo '</table>';
-}
-
-if ($delete != 0 && is_metaconsole() === true) {
-    close_meta_frame();
 }
 
 ?>

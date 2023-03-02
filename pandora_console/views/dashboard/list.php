@@ -36,12 +36,19 @@ if ((bool) \is_metaconsole() === true) {
     \ui_require_css_file('meta_dashboards');
 }
 
-\ui_print_page_header(
+ui_print_standard_header(
     __('Dashboards'),
     '',
     false,
     '',
-    false
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Dashboards'),
+        ],
+    ]
 );
 
 if (isset($resultDelete) === true) {
@@ -115,7 +122,6 @@ if (empty($dashboards) === true) {
 
     $table->data = [];
 
-    \ui_pagination($count, false, $offset);
     foreach ($dashboards as $dashboard) {
         $data = [];
 
@@ -198,24 +204,24 @@ if (empty($dashboards) === true) {
     }
 
     \html_print_table($table);
-    \ui_pagination(
+    $tablePagination = \ui_pagination(
         $count,
         false,
         $offset,
         0,
-        false,
-        'offset',
         true,
+        'offset',
+        false,
         'pagination-bottom'
     );
 }
 
+$input_button = '';
 if ($writeDashboards === 1) {
     $text = __('Create a new dashboard');
 
     // Button for display modal options dashboard.
-    $output = '<div class="action-buttons" onclick=\'';
-    $output .= 'show_option_dialog('.json_encode(
+    $onclick = 'show_option_dialog('.json_encode(
         [
             'title'      => $text,
             'btn_text'   => __('Ok'),
@@ -224,21 +230,31 @@ if ($writeDashboards === 1) {
             'url_ajax'   => ui_get_full_url('ajax.php'),
         ]
     );
-    $output .= ')\'>';
-    $output .= html_print_button(
+    $onclick .= ')';
+
+    $input_button = html_print_button(
         __('New dashboard'),
         '',
         false,
-        '',
-        'class="sub next"',
+        $onclick,
+        ['icon' => 'add'],
         true
     );
+
     $output .= '</div>';
 
     echo $output;
 
     // Div for modal update dashboard.
     echo '<div id="modal-update-dashboard" class="invisible"></div>';
-
-    ui_require_javascript_file('pandora_dashboards');
 }
+
+html_print_action_buttons(
+    $input_button,
+    [
+        'type'          => 'form_action',
+        'right_content' => $tablePagination,
+    ]
+);
+
+ui_require_javascript_file('pandora_dashboards');

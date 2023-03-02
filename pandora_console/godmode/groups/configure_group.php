@@ -31,8 +31,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -247,8 +245,6 @@ if ($id_group) {
 
 echo '</div>';
 echo '</form>';
-
-enterprise_hook('close_meta_frame');
 
 ?>
 <script language="javascript" type="text/javascript">

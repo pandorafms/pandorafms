@@ -15,8 +15,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -127,5 +125,3 @@ html_print_action_buttons(
     ['type' => 'form_action']
 );
 echo '</form>';
-
-enterprise_hook('close_meta_frame');

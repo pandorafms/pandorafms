@@ -10646,6 +10646,10 @@ table tr td:first-child {
   margin-left: 5px;
 }
 
+button span {
+  pointer-events: none;
+}
+
 input[type="color"] {
   background: transparent;
   box-sizing: initial;

@@ -28,8 +28,6 @@
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 // Include functions code.
 require_once $config['homedir'].'/include/functions_categories.php';
 
@@ -225,5 +223,3 @@ html_print_action_buttons(
 );
 
 echo '</form>';
-
-enterprise_hook('close_meta_frame');

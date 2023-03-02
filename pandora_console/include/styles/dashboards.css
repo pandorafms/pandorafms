@@ -21,13 +21,6 @@
   margin-left: 20px;
 }
 
-ul.mn {
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  justify-content: center;
-}
-
 #menu_tab {
   margin: 0px;
 }

@@ -37,10 +37,6 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
-if (is_metaconsole() === true) {
-    enterprise_hook('open_meta_frame');
-}
-
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -1203,10 +1199,6 @@ if (!$disabled) {
 
 echo '</div>';
 echo '</form>';
-
-if (is_metaconsole() === true) {
-    enterprise_hook('close_meta_frame');
-}
 
 ui_require_javascript_file('pandora_alerts');
 ui_include_time_picker();

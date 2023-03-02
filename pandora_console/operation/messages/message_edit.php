@@ -81,11 +81,6 @@ $buttons['create_message'] = [
     ).'</a>',
 ];
 
-// Header.
-if (is_metaconsole() === true) {
-    enterprise_hook('open_meta_frame');
-}
-
 ui_print_standard_header(
     __('Compose message'),
     'images/email_mc.png',
@@ -416,6 +411,3 @@ html_print_div(
 
 echo '</form>';
 echo $jsOutput;
-if (is_metaconsole() === true) {
-    enterprise_hook('close_meta_frame');
-}

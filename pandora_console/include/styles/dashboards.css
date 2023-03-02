@@ -28,6 +28,10 @@ ul.mn {
   justify-content: center;
 }
 
+#menu_tab {
+  margin: 0px;
+}
+
 #menu_tab li.nomn.tab_operation img,
 #menu_tab li.nomn.tab_godmode img,
 #menu_tab li.nomn_high.tab_operation img,
@@ -111,8 +115,6 @@ h1 {
 }
 
 .grid-stack-item .grid-stack-item-content .header-widget {
-  background-color: black;
-  color: #fff;
   display: flex;
   flex-direction: row;
   align-items: center;

@@ -77,7 +77,7 @@ if ($generate_trap) {
 }
 
 $table = new stdClass();
-$traps_generator = '<form method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
+$traps_generator = '<form class="max_floating_element_size" method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
 $table->width = '100%';
 $table->class = 'filter-table-adv databox';
 $table->size = [];

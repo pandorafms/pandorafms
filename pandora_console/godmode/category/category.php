@@ -32,8 +32,6 @@ global $config;
 // Check login and ACLs.
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -70,30 +68,24 @@ $buttons = [
 
 $buttons[$tab]['active'] = true;
 
-// Header.
-if (is_metaconsole() === true) {
-    ui_meta_print_header(__('Categories configuration'), __('List'), $buttons);
-} else {
-    ui_print_standard_header(
-        __('Categories configuration'),
-        'images/gm_modules.png',
-        false,
-        '',
-        true,
-        $buttons,
+ui_print_standard_header(
+    __('Categories configuration'),
+    'images/gm_modules.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Resources'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Module categories'),
-            ],
-        ]
-    );
-}
-
+            'link'  => '',
+            'label' => __('Resources'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Module categories'),
+        ],
+    ]
+);
 
 $is_management_allowed = true;
 if (is_management_allowed() === false) {
@@ -277,6 +269,4 @@ if ($is_management_allowed === true) {
     );
 
     echo '</form>';
-
-    enterprise_hook('close_meta_frame');
 }

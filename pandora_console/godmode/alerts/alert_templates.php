@@ -21,8 +21,6 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (is_ajax()) {
     $get_template_tooltip = (bool) get_parameter('get_template_tooltip');
 
@@ -124,7 +122,7 @@ $sec = (is_metaconsole() === true) ? 'advanced' : 'galertas';
 // case delete_templete action is performed.
 if (!$delete_template) {
     // Header.
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         alerts_meta_print_header();
     } else {
         ui_print_page_header(
@@ -485,5 +483,3 @@ if (is_management_allowed() === true) {
     echo '</form>';
     echo '</div>';
 }
-
-enterprise_hook('close_meta_frame');

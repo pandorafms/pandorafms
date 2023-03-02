@@ -76,10 +76,6 @@ function dbmgr_extension_main()
 
     global $config;
 
-    if (is_metaconsole() === true) {
-        open_meta_frame();
-    }
-
     if (!is_user_admin($config['id_user'])) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
@@ -92,7 +88,21 @@ function dbmgr_extension_main()
     $sql = (string) get_parameter('sql');
     $node_id = (int) get_parameter('node_id', -1);
 
-    ui_print_page_header(__('Database interface'), 'images/gm_db.png', false, false, true);
+    // Header.
+    ui_print_standard_header(
+        __('Database interface'),
+        'images/gm_db.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Extensions'),
+            ],
+        ]
+    );
 
     if (is_metaconsole() === true) {
         $img = '../../images/warning_modern.png';
@@ -284,10 +294,6 @@ function dbmgr_extension_main()
 
     html_print_table($table);
     echo '</div>';
-
-    if (is_metaconsole()) {
-        close_meta_frame();
-    }
 
 }
 

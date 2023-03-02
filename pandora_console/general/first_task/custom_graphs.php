@@ -15,9 +15,6 @@ global $config;
 check_login();
 ui_require_css_file('first_task');
 ?>
-<?php
-ui_print_info_message(['no_close' => true, 'message' => __('There are no custom graphs defined yet.') ]);
-?>
 
 <div class="new_task">
     <div class="image_task">
@@ -36,7 +33,17 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no custom 
             ?>
     </p>
         <form action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder" method="post">
-            <input type="submit" class="button_task" value="<?php echo __('Create Custom Graph'); ?>" />
+            <?php
+            html_print_action_buttons(
+                html_print_submit_button(
+                    __('Create Custom Graph'),
+                    'button_task',
+                    false,
+                    ['icon' => 'wand'],
+                    true
+                )
+            );
+            ?>
         </form>
     </div>
 </div>

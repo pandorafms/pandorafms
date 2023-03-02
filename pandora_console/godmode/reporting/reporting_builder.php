@@ -821,7 +821,7 @@ switch ($action) {
                 [
                     'class'   => 'action-buttons',
                     'content' => html_print_submit_button(
-                        __('Search'),
+                        __('Filter'),
                         'search_submit',
                         false,
                         [

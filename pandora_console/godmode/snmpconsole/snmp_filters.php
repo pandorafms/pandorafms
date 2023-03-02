@@ -198,10 +198,12 @@ if ($edit_filter > -2) {
     $table->id = 'filter_table';
     $table->width = '100%';
     $table->class = 'databox filters';
+    $table->rowclass[0] = 'row-title-font-child';
+    $table->rowclass[1] = 'row-title-font-child';
     $table->data[0][0] = __('Description');
     $table->data[0][1] = html_print_input_text('description', $description, '', 60, 100, true);
     $table->data[0][1] .= html_print_image(
-        'images/add.png',
+        'images/plus.png',
         true,
         [
             'id'    => 'add_filter',
@@ -243,7 +245,7 @@ if ($edit_filter > -2) {
     }
 
     $index++;
-    echo '<form action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters" method="post">';
+    echo '<form class="max_floating_element_size" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters" method="post">';
     html_print_input_hidden('update_filter', $edit_filter);
     html_print_input_hidden('index_post', $index);
     if ($edit_filter > -1) {

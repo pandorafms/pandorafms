@@ -735,6 +735,12 @@ tr.datos2 > td.datos2 > div > div > label {
   margin-bottom: 10px;
 }
 
+.label-ipam-calculator {
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: bold;
+}
+
 #text-vrf_name {
   width: 100%;
 }
@@ -757,4 +763,30 @@ table.filter-table-adv td div.inline-radio-button input[type="radio"] {
   color: #333333;
   padding-left: 12px;
   margin-right: 10px;
+}
+
+.select2-w100p > span.select2 {
+  width: 100% !important;
+}
+
+form#create_site > ul {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.select-ips-ipam > select {
+  min-height: 19.8em !important;
+}
+
+div.margin-top-50p {
+  margin-top: 50% !important;
+}
+
+.line-height-normal {
+  line-height: normal;
+}
+
+div[id^="auto-os-"] > img {
+  width: 20px;
+  height: 20px;
 }

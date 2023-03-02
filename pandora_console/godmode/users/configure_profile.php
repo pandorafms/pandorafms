@@ -27,8 +27,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -436,8 +434,6 @@ if ($id_profile || $new_profile) {
 
     echo '</form>';
 }
-
-enterprise_hook('close_meta_frame');
 
 ?>
 

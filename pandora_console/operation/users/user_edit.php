@@ -1052,8 +1052,6 @@ if (!empty($table->data)) {
 // Close edit_user_profiles.
 echo '</div>';
 
-enterprise_hook('close_meta_frame');
-
 if (is_metaconsole() === false) {
     ?>
 

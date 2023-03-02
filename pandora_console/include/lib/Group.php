@@ -486,7 +486,7 @@ class Group extends Entity
         include_once $config['homedir'].'/include/functions_graph.php';
 
         $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
-        $out .= graph_so_by_group($id_group);
+        $out .= graph_so_by_group($id_group, 300, 200, false, false);
         $out .= '<div>';
         echo $out;
         return;
@@ -500,7 +500,7 @@ class Group extends Entity
         include_once $config['homedir'].'/include/functions_graph.php';
 
         $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
-        $out .= graph_events_agent_by_group($id_group, 300, 200, true, true);
+        $out .= graph_events_agent_by_group($id_group, 300, 200, false, true, true);
         $out .= '<div>';
         echo $out;
         return;
@@ -633,7 +633,8 @@ class Group extends Entity
             }
 
             $sql = sprintf(
-                'SELECT alias,
+                'SELECT id_agente,
+                        alias,
                         critical_count,
                         warning_count,
                         unknown_count,
@@ -654,7 +655,9 @@ class Group extends Entity
             $data = db_get_all_rows_sql($sql);
 
             $sql = sprintf(
-                'SELECT alias,
+                'SELECT
+                        id_agente,
+                        alias,
                         critical_count,
                         warning_count,
                         unknown_count,

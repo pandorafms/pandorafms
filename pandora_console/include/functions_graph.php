@@ -5379,11 +5379,13 @@ function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, 
         $data[] = $row['count'];
     }
 
-    if ($noWaterMark === false) {
+    if ($noWaterMark === true) {
         $water_mark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
             'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
         ];
+    } else {
+        $water_mark = [];
     }
 
     $options = [
@@ -5448,7 +5450,7 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         'SELECT DISTINCT(id_agente) AS id_agente,
                 COUNT(id_agente) AS count
             FROM tevento te
-            WHERE 1=1  AND estado = 0 %s %s
+            WHERE 1=1  %s %s
             GROUP BY id_agente
             ORDER BY count DESC LIMIT 8',
         $tags_condition,
@@ -5492,7 +5494,7 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
 
     // Sort the data.
     arsort($data);
-    if ($noWaterMark) {
+    if ($noWaterMark === true) {
         $water_mark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
             'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),

@@ -47,7 +47,7 @@ if (empty($id_group) === true) {
 if (is_metaconsole() === false) {
     // Header.
     ui_print_standard_header(
-        __('View tactic'),
+        __(groups_get_name($id_group)),
         'images/group.png',
         false,
         '',
@@ -89,7 +89,7 @@ $table_col1->data = [];
 $table_col1->rowclass[] = '';
 $table_col1->headstyle[0] = 'text-align:center;';
 $table_col1->width = '100%';
-$table_col1->data[0][0] = groups_get_heat_map_agents($id_groups, 320, 100);
+$table_col1->data[0][0] = groups_get_heat_map_agents($id_groups, 450, 100);
 $table_col1->data[1][0] = tactical_groups_get_agents_and_monitoring($id_groups);
 
 $distribution_by_so = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td style="width:50%;">';

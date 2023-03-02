@@ -813,31 +813,31 @@ $buttons = [];
 
 $buttons['consoles_list'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/visual_console.png', true, ['title' => __('Visual consoles list'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Visual consoles list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['public_link'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public Visual Console'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['data'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=data&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=data&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/bars-graph.svg', true, ['title' => __('Main data'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['list_elements'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=list_elements&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/list.png', true, ['title' => __('List elements'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=list_elements&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/edit_columns@svg.svg', true, ['title' => __('List elements'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 
 if (enterprise_installed()) {
     $buttons['wizard_services'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=wizard_services&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand_services.png', true, ['title' => __('Services wizard'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$url_base.$action.'&tab=wizard_services&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand_services.png', true, ['title' => __('Services wizard'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ];
 }
 
 $buttons['wizard'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand.png', true, ['title' => __('Wizard'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wizard@svg.svg', true, ['title' => __('Wizard'), 'class' => 'invert_filter']).'</a>',
 ];
 if ($config['legacy_vc']) {
     $buttons['editor'] = [
@@ -848,7 +848,7 @@ if ($config['legacy_vc']) {
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/eye.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/enable.svg', true, ['title' => __('View'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 
 if ($idVisualConsole === false) {

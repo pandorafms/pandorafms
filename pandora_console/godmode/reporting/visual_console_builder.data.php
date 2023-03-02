@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -90,14 +90,49 @@ switch ($action) {
     case 'edit':
     default:
         if (is_metaconsole() === false) {
-            echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=".$activeTab.'&id_visual_console='.$idVisualConsole."' enctype='multipart/form-data'>";
-            html_print_input_hidden('action', 'update');
+            $formAction = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$idVisualConsole;
+            $formHidden = html_print_input_hidden('action', 'update', true);
         } else {
-            echo "<form id='back' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab=".$activeTab.'&id_visual_console='.$idVisualConsole."&action=visualmap' method='post' enctype='multipart/form-data' >";
-            html_print_input_hidden('action2', 'update');
+            $formAction = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab='.$activeTab.'&id_visual_console='.$idVisualConsole.'&action=visualmap';
+            $formHidden = html_print_input_hidden('action2', 'update', true);
         }
     break;
 }
+
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('RW') === true) {
+    $return_all_group = true;
+}
+
+$backgrounds_list = list_files(
+    $config['homedir'].'/images/console/background/',
+    'jpg',
+    1,
+    0
+);
+$backgrounds_list = array_merge(
+    $backgrounds_list,
+    list_files($config['homedir'].'/images/console/background/', 'png', 1, 0)
+);
+
+$backgroundPreviewImages = [];
+if ($action === 'new') {
+    $backgroundPreviewImages[] = html_print_image('', true, ['id' => 'imagen2', 'class' => 'invisible']);
+} else {
+    if (is_metaconsole() === true) {
+        $backgroundPreviewImages[] = html_print_image('../../images/console/background/'.$background, true, ['id' => 'imagen2', 'style' => 'width: 230px']);
+    } else {
+        $backgroundPreviewImages[] = html_print_image('images/console/background/'.$background, true, ['id' => 'imagen2', 'style' => 'width: 230px']);
+    }
+}
+
+$backgroundPreviewImages[] = html_print_image('', true, ['id' => 'imagen', 'class' => 'invisible']);
+
+// Form.
+echo '<form id="back" class="max_floating_element_size" method="POST" action="'.$formAction.'" enctype="multipart/form-data">';
+echo $formHidden;
 
 $table = new stdClass();
 $table->width = '100%';
@@ -110,104 +145,93 @@ if (is_metaconsole() === true) {
     $table->align[1] = 'left';
 }
 
-$table->class = 'databox filters';
-$table->size[0] = '20%';
-$table->size[1] = '100%';
-$table->style[1] = 'display: flex;flex-direction: row;flex-wrap: wrap;align-items: center;';
+$table->class = 'databox filter-table-adv';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+
 $table->data = [];
-$table->data[0][0] = __('Name:').ui_print_help_tip(__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
 
-$table->data[0][1] = html_print_input_text(
-    'name',
-    $visualConsoleName,
-    '',
-    80,
-    100,
-    true
+$table->data[0][] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text(
+        'name',
+        $visualConsoleName,
+        '',
+        80,
+        100,
+        true
+    )
 );
 
-$table->rowspan[0][2] = 6;
+$table->data[0][] = html_print_label_input_block(
+    __('Group'),
+    html_print_input(
+        [
+            'type'           => 'select_groups',
+            'id_user'        => $config['id_user'],
+            'privilege'      => 'RW',
+            'returnAllGroup' => $return_all_group,
+            'name'           => 'id_group',
+            'selected'       => $idGroup,
+            'script'         => '',
+            'nothing'        => '',
+            'nothing_value'  => '',
+            'return'         => true,
+            'required'       => true,
+        ]
+    )
+);
+
+$table->data[1][0] = html_print_label_input_block(
+    __('Background'),
+    html_print_select(
+        $backgrounds_list,
+        'background',
+        io_safe_output($background),
+        '',
+        'None',
+        'None.png',
+        true
+    )
+);
+
+$table->rowspan[1][1] = 2;
+$table->data[1][1] = html_print_label_input_block(
+    __('Background preview'),
+    implode('', $backgroundPreviewImages)
+);
+
+$table->data[2][] = html_print_label_input_block(
+    __('Background image'),
+    html_print_input_file(
+        'background_image',
+        true
+    )
+);
+
 if ($action === 'new') {
-    $table->data[0][2] = '<img id="imagen2" class="invisible" src="">';
-    $table->data[0][2] .= '<img id="imagen" class="invisible" src="">';
-} else {
-    if (is_metaconsole() === true) {
-        $table->data[0][2] = '<img id="imagen2" style="width:230px;"
-		src="../../images/console/background/'.$background.'">';
-    } else {
-        $table->data[0][2] = '<img id="imagen2" style="width:230px;"
-		src="images/console/background/'.$background.'">';
-    }
-
-    $table->data[0][2] .= '<img id="imagen" class="invisible" src="">';
-}
-
-$table->data[1][0] = __('Group');
-
-$return_all_group = false;
-
-if (users_can_manage_group_all('RW') === true) {
-    $return_all_group = true;
-}
-
-$table->data[1][1] = '<div class="w250px">'.html_print_input(
-    [
-        'type'           => 'select_groups',
-        'id_user'        => $config['id_user'],
-        'privilege'      => 'RW',
-        'returnAllGroup' => $return_all_group,
-        'name'           => 'id_group',
-        'selected'       => $idGroup,
-        'script'         => '',
-        'nothing'        => '',
-        'nothing_value'  => '',
-        'return'         => true,
-        'required'       => true,
-    ]
-).'</div>';
-$backgrounds_list = list_files(
-    $config['homedir'].'/images/console/background/',
-    'jpg',
-    1,
-    0
-);
-$backgrounds_list = array_merge(
-    $backgrounds_list,
-    list_files($config['homedir'].'/images/console/background/', 'png', 1, 0)
-);
-$table->data[2][0] = __('Background');
-$table->data[2][1] = html_print_select(
-    $backgrounds_list,
-    'background',
-    io_safe_output($background),
-    '',
-    'None',
-    'None.png',
-    true
-);
-$table->data[3][0] = __('Background image');
-$table->data[3][1] = html_print_input_file('background_image', true);
-$table->data[4][0] = __('Background color');
-
-if ($action == 'new') {
-    $table->data[4][1] .= html_print_input_text(
+    $backgroundColorInput = html_print_input_color(
         'background_color',
         'white',
-        '',
-        8,
-        8,
+        'background_color',
+        false,
         true
     );
 } else {
-    $table->data[4][1] .= html_print_input_text(
+    $backgroundColorInput = html_print_input_color(
         'background_color',
         $background_color,
-        '',
-        8,
-        8,
+        'background_color',
+        false,
         true
     );
 }
+
+$table->data[3][] = html_print_label_input_block(
+    __('Background color'),
+    $backgroundColorInput
+);
 
 if ($idVisualConsole) {
     $preimageh = db_get_value_sql('select height from tlayout where id ='.$idVisualConsole);
@@ -217,9 +241,17 @@ if ($idVisualConsole) {
     $preimagew = 1024;
 }
 
-$table->data[5][0] = __('Layout size').': <span id="preimagew">'.$preimagew.'</span> x <span id="preimageh">'.$preimageh.'</span>';
+$layoutSizeElements = [];
 
-$table->data[5][1] = html_print_button(
+$layoutSizeElements[] = html_print_div(
+    [
+        'class'   => 'preimage_container',
+        'content' => '<span id="preimagew">'.$preimagew.'</span><span>x</span><span id="preimageh">'.$preimageh.'</span>',
+    ],
+    true
+);
+
+$layoutSizeElements[] = html_print_button(
     __('Set custom size'),
     'modsize',
     false,
@@ -232,10 +264,9 @@ $table->data[5][1] = html_print_button(
     true
 );
 
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.html_print_input_text('width', $preimagew, '', 10, 10, true, false).' x '.html_print_input_text('height', $preimageh, '', 10, 10, true, false).'</span>';
-
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">';
-$table->data[5][1] .= html_print_button(
+$layoutSizeElements[] = '<span class="opt" style="visibility:hidden;">'.html_print_input_text('width', $preimagew, '', 8, 10, true, false).' x '.html_print_input_text('height', $preimageh, '', 8, 10, true, false).'</span>';
+$layoutSizeElements[] = '<span class="opt" style="visibility:hidden;">';
+$layoutSizeElements[] = html_print_button(
     __('Get default image size'),
     'getsize',
     false,
@@ -247,13 +278,38 @@ $table->data[5][1] .= html_print_button(
     ],
     true
 );
-$table->data[5][1] .= '</span>';
+$layoutSizeElements[] = '</span>';
 
-$table->data[6][0] = __('Favourite visual console');
-$table->data[6][1] = html_print_checkbox('is_favourite', 0, $is_favourite, true);
+$table->data[4][] = html_print_label_input_block(
+    __('Layout size'),
+    html_print_div(
+        [
+            'class'   => 'flex flex-items-center',
+            'content' => implode('', $layoutSizeElements),
+        ],
+        true
+    )
+);
 
-$table->data[7][0] = __('Auto adjust to screen in fullscreen');
-$table->data[7][1] = html_print_checkbox('auto_adjust', 0, $auto_adjust, true);
+$table->data[5][] = html_print_label_input_block(
+    __('Favourite visual console'),
+    html_print_checkbox_switch(
+        'is_favourite',
+        0,
+        $is_favourite,
+        true
+    )
+);
+
+$table->data[6][] = html_print_label_input_block(
+    __('Auto adjust to screen in fullscreen'),
+    html_print_checkbox_switch(
+        'auto_adjust',
+        0,
+        $auto_adjust,
+        true
+    )
+);
 
 if ($action === 'new') {
     $textButtonSubmit = __('Save');
@@ -265,17 +321,14 @@ if ($action === 'new') {
 
 html_print_table($table);
 
-html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            $textButtonSubmit,
-            'update_layout',
-            false,
-            [ 'icon' => $classButtonSubmit ],
-            true
-        ),
-    ]
+html_print_action_buttons(
+    html_print_submit_button(
+        $textButtonSubmit,
+        'update_layout',
+        false,
+        [ 'icon' => $classButtonSubmit ],
+        true
+    )
 );
 
 echo '</form>';
@@ -440,7 +493,7 @@ $(document).ready (function () {
         readURL(this);
     });
         
-    $("#text-background_color").attachColorPicker();
+    //$("#text-background_color").attachColorPicker();
 
     if($("#checkbox-is_favourite").is(":checked")) {
         $("#hidden-is_favourite_sent").val(1);

@@ -5418,14 +5418,7 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
     define('NUM_PIECES_PIE_2', 6);
 
     // Add tags condition to filter.
-    $tags_condition = tags_get_acl_tags(
-        $config['id_user'],
-        0,
-        'ER',
-        'event_condition',
-        'AND'
-    );
-
+    $tags_condition = '';
     if ($time_limit && $config['event_view_hr']) {
         $tags_condition .= ' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
     }

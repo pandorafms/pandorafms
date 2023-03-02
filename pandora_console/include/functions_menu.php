@@ -508,6 +508,14 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=wizard']['text'] = __('Templates wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=edit']['text'] = __('Edit custom reports');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=list_items&action=edit']['text'] = __('List items');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=item_editor&action=new']['text'] = __('Edit item');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=edit']['text'] = __('Wizard');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard_sla&action=edit']['text'] = __('Wizard sla');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=global&action=edit']['text'] = __('Global custom reports');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=advanced&action=edit']['text'] = __('Avanced options');
+
     if ($config['activate_gis']) {
         $menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
     }
@@ -789,6 +797,7 @@ if (is_ajax()) {
         $db_fragmentation = json_decode($d->getTablesFragmentation());
         $sys_info = json_decode($d->getSystemInfo());
         $php_sys = json_decode($d->getPHPSetup());
+        $system_date = json_decode($d->getSystemDate());
 
         $fragmentation_status = '';
         if ($db_fragmentation->data->tablesFragmentationStatus->status === 1) {
@@ -1020,6 +1029,14 @@ if (is_ajax()) {
                                 </th>
                                 <th style="width: 85%;">
                                     <p>'.$sys_info->data->ipInfo->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%;">
+                                    <p><span>'.$system_date->data->date->name.'</span></p>
+                                </th>
+                                <th style="width: 85%;">
+                                    <p>'.$system_date->data->date->value.'</p>
                                 </th>
                             </tr>
                         </tbody>

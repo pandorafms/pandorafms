@@ -239,6 +239,13 @@ $server_id = get_parameter(
     ($filter['server_id'] ?? '')
 );
 
+if (empty($id_agent) === true) {
+    $id_agent = get_parameter(
+        'id_agent',
+        ($filter['id_agent'] ?? '')
+    );
+}
+
 if (is_metaconsole() === true) {
     $servers = metaconsole_get_servers();
     if (is_array($servers) === true) {
@@ -350,7 +357,7 @@ if (is_ajax() === true) {
                 'te.warning_instructions',
                 'te.unknown_instructions',
                 'te.owner_user',
-                'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp',
+                'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp',
                 'te.custom_data',
                 'te.data',
                 'te.module_status',
@@ -380,7 +387,7 @@ if (is_ajax() === true) {
                             $order['field'] = 'agent_name';
                         break;
 
-                        case 'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp':
+                        case 'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp':
                             $order['field'] = 'ack_utimestamp';
                         break;
 
@@ -521,14 +528,14 @@ if (is_ajax() === true) {
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
 
-                        $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
+                        $tmp->ack_utimestamp_raw = $tmp->ack_utimestamp;
 
                         $tmp->ack_utimestamp = ui_print_timestamp(
-                            (int) $tmp->ack_utimestamp,
+                            (empty($tmp->ack_utimestamp) === true) ? 0 : $tmp->ack_utimestamp,
                             true
                         );
                         $tmp->timestamp = ui_print_timestamp(
-                            $tmp->timestamp,
+                            $tmp->utimestamp,
                             true
                         );
 
@@ -1475,7 +1482,24 @@ if ($pure) {
 
     // Accoustic console.
     $sound_event['active'] = false;
-    $sound_event['text'] = '<a href="javascript: openSoundEventWindow();">'.html_print_image(
+
+    // Sound Events.
+    $data_sound = base64_encode(
+        json_encode(
+            [
+                'title'        => __('Sound Console'),
+                'start'        => __('Start'),
+                'stop'         => __('Stop'),
+                'noAlert'      => __('No alert'),
+                'silenceAlarm' => __('Silence alarm'),
+                'url'          => ui_get_full_url('ajax.php'),
+                'page'         => 'include/ajax/events',
+                'urlSound'     => 'include/sounds/',
+            ]
+        )
+    );
+
+    $sound_event['text'] = '<a href="javascript: openSoundEventModal(`'.$data_sound.'`);">'.html_print_image(
         'images/sound.png',
         true,
         [
@@ -1565,27 +1589,6 @@ if ($pure) {
         unset($onheader['fullscreen']);
         ui_meta_print_header(__('Events'), $section_string, $onheader);
     }
-
-    ?>
-    <script type="text/javascript">
-        function openSoundEventWindow() {
-            url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
-            // devicePixelRatio knows how much zoom browser applied.
-            var windowScale = parseFloat(window.devicePixelRatio);
-            var defaultWidth = 630;
-            var defaultHeight = 630;
-            // If the scale is 1, no zoom has been applied.
-            var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
-            var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
-
-            window.open(
-                url,
-                '<?php __('Sound Alerts'); ?>',
-                'width='+windowWidth+', height='+windowHeight+', resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'
-            );
-        }
-    </script>
-    <?php
 }
 
 if (enterprise_installed() === true) {
@@ -2417,8 +2420,6 @@ try {
                     100,
                     200,
                     500,
-                    1000,
-                    -1,
                 ],
                 [
                     $config['block_size'],
@@ -2427,8 +2428,6 @@ try {
                     100,
                     200,
                     500,
-                    1000,
-                    'All',
                 ],
             ],
             'order'                          => [

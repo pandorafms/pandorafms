@@ -198,6 +198,16 @@ function returnError($typeError, $returnType='string')
             );
         break;
 
+        case 'license_error':
+            returnData(
+                $returnType,
+                [
+                    'type' => 'string',
+                    'data' => __('License not allowed for this operation.'),
+                ]
+            );
+        break;
+
         default:
             returnData(
                 $returnType,
@@ -11061,20 +11071,55 @@ function api_set_event_validate_filter($trash1, $trash2, $other, $trash3)
 
 function api_set_validate_events($id_event, $trash1, $other, $return_type, $user_in_db)
 {
-    $text = $other['data'];
+    $node_int = 0;
+    if ($other['type'] == 'string') {
+        returnError('Parameter error.');
+        return;
+    } else if ($other['type'] == 'array') {
+        $text = $other['data'][0];
+        if (is_metaconsole() === true) {
+            if (isset($other['data'][1]) === true
+                && empty($other['data'][1]) === false
+            ) {
+                $node_int = $other['data'][1];
+            }
+        }
+    }
 
-    // Set off the standby mode when close an event
-    $event = events_get_event($id_event);
-    alerts_agent_module_standby($event['id_alert_am'], 0);
+    try {
+        if (is_metaconsole() === true
+            && (int) $node_int > 0
+        ) {
+            $node = new Node($node_int);
+            $node->connect();
+        }
 
-    $result = events_change_status($id_event, EVENT_VALIDATE);
+        // Set off the standby mode when close an event
+        $event = events_get_event($id_event);
+        alerts_agent_module_standby($event['id_alert_am'], 0);
+        $result = events_change_status($id_event, EVENT_VALIDATE);
 
-    if ($result) {
         if (!empty($text)) {
             // Set the comment for the validation
             events_comment($id_event, $text);
         }
+    } catch (\Exception $e) {
+        if (is_metaconsole() === true
+            && $node_int > 0
+        ) {
+            $node->disconnect();
+        }
 
+        $result = false;
+    } finally {
+        if (is_metaconsole() === true
+            && $node_int > 0
+        ) {
+            $node->disconnect();
+        }
+    }
+
+    if ($result) {
         returnData(
             'string',
             [
@@ -12471,9 +12516,26 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType)
         return;
     }
 
-    $partial = tactical_status_modules_agents($config['id_user'], false, 'AR');
+    if ($id_group) {
+        $groups_clause = '1 = 1';
+        if (!users_is_admin($config['id_user'])) {
+            $user_groups = implode(',', array_keys(users_get_groups()));
+            $groups_clause = "(ta.id_grupo IN ($user_groups) OR tasg.id_group IN ($user_groups))";
+        }
 
-    $total = (int) $partial['_monitor_total_'];
+        $sql = "SELECT COUNT(DISTINCT(id_agente_modulo))
+        FROM tagente_modulo tam, tagente ta
+        LEFT JOIN tagent_secondary_group tasg
+            ON ta.id_agente = tasg.id_agent
+        WHERE tam.id_agente = ta.id_agente AND id_module_group = $id_group
+            AND delete_pending = 0 AND $groups_clause";
+
+        $total = db_get_value_sql($sql);
+    } else {
+        $partial = tactical_status_modules_agents($config['id_user'], false, 'AR');
+
+        $total = (int) $partial['_monitor_total_'];
+    }
 
     $data = [
         'type' => 'string',

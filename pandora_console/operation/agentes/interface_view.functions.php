@@ -68,13 +68,16 @@ function print_filters($sec)
             ]
         );
 
-        $table->data[1][0] = __('Agents');
+        $table->data[1][0] = __('Filter Agents');
+        $table->data[1][1] = html_print_input_text('filter_agents', '', '', 20, 255, true);
+
+        $table->data[2][0] = __('Agents');
 
         if (empty($agents) === true || $agents == -1) {
             $agents = [];
         }
 
-        $table->data[1][1] = html_print_select(
+        $table->data[2][1] = html_print_select(
             [],
             'selected_agents[]',
             '',
@@ -90,8 +93,8 @@ function print_filters($sec)
         );
 
         // Interfaces.
-        $table->data[1][3] = '<b>'.__('Interfaces').'</b>';
-        $table->data[1][4] = html_print_select(
+        $table->data[2][3] = '<b>'.__('Interfaces').'</b>';
+        $table->data[2][4] = html_print_select(
             [],
             'selected_interfaces[]',
             $selected_interfaces,
@@ -536,8 +539,10 @@ function print_table(
             $select_if_usage_module_data_out_down
         );
 
-        $table->head[8] = __('Last data');
-        $table->head[8] .= ui_get_sorting_arrows(
+        $table->head[8] = __('Graph');
+
+        $table->head[9] = __('Last data');
+        $table->head[9] .= ui_get_sorting_arrows(
             $last_data.'up',
             $last_data.'down',
             $select_if_last_data_up,
@@ -677,6 +682,42 @@ function print_table(
                     $table_data[$loop_index]['if_agent_name'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent_interfaces['agent_id'].'">'.$agent_interfaces['agent_alias'].'</a>';
                 }
 
+                $all_groups = agents_get_all_groups_agent($agent_interfaces['agent_id']);
+                $permission = check_acl_one_of_groups($config['id_user'], $all_groups, 'RR');
+
+                if ($permission) {
+                    if ($agent_interfaces['traffic']['in'] > 0 && $agent_interfaces['traffic']['out'] > 0) {
+                        $params = [
+                            'interface_name'     => $agent_interfaces['if_name'],
+                            'agent_id'           => $agent_interfaces['agent_id'],
+                            'traffic_module_in'  => $agent_interfaces['traffic']['in'],
+                            'traffic_module_out' => $agent_interfaces['traffic']['out'],
+                        ];
+                        $params_json = json_encode($params);
+                        $params_encoded = base64_encode($params_json);
+                        $win_handle = dechex(crc32($interface['status_module_id'].$agent_interfaces['if_name']));
+                        $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=";
+                        $graph_link .= $params_encoded."','";
+                        $graph_link .= $win_handle."', 800, 480)\">";
+                        $graph_link .= html_print_image(
+                            'images/chart.png',
+                            true,
+                            [
+                                'title' => __('Interface traffic'),
+                                'class' => 'invert_filter',
+                            ]
+                        ).'</a>';
+                    } else {
+                        $graph_link = html_print_image(
+                            'images/chart_curve.disabled.png',
+                            true,
+                            ['title' => __('inOctets and outOctets must be enabled.')]
+                        );
+                    }
+                } else {
+                    $graph_link = '';
+                }
+
                 $table_data[$loop_index]['if_name'] = $agent_interfaces['if_name'];
                 $table_data[$loop_index]['if_status_image'] = $agent_interfaces['status_image'];
                 $table_data[$loop_index]['if_speed_data'] = ($if_speed_value === null) ? __('N/A') : $if_speed_value.' '.$if_speed_unit;
@@ -684,6 +725,7 @@ function print_table(
                 $table_data[$loop_index]['if_out_octets'] = ($ifOutOctets['datos'] === null) ? __('N/A') : $ifOutOctets['datos'];
                 $table_data[$loop_index]['if_usage_module_data_in'] = ($usage_module_data_in['datos'] === null) ? __('N/A') : $usage_module_data_in['datos'];
                 $table_data[$loop_index]['if_usage_module_data_out'] = ($usage_module_data_out['datos'] === null) ? __('N/A') : $usage_module_data_out['datos'];
+                $table_data[$loop_index]['if_graph'] = $graph_link;
                 $table_data[$loop_index]['if_last_data'] = human_time_comparation($agent_interfaces['last_contact']);
 
                 $loop_index++;

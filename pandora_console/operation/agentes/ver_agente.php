@@ -1411,8 +1411,8 @@ $agent_interfaces = agents_get_network_interfaces(
 
 if (isset($agent_interfaces) !== true
     || isset($agent_interfaces[$id_agente]) !== true
-    || is_array($agent_interfaces[$id_agente]['interfaces']) !== true
-    || is_object($agent_interfaces[$id_agente]['interfaces']) !== true
+    || (is_array($agent_interfaces[$id_agente]['interfaces']) !== true
+    && is_object($agent_interfaces[$id_agente]['interfaces']) !== true)
 ) {
     $agent_interfaces_count = 0;
 } else {
@@ -1473,9 +1473,11 @@ if ($tab == 'inventory') {
 }
 
 // Collection.
-$collectiontab = enterprise_hook('collection_tab');
-if ($collectiontab == -1) {
-    $collectiontab = '';
+if ((int) $config['license_nms'] !== 1) {
+    $collectiontab = enterprise_hook('collection_tab');
+    if ($collectiontab == -1) {
+        $collectiontab = '';
+    }
 }
 
 

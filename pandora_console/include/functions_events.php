@@ -2018,7 +2018,7 @@ function events_change_status(
     // Update ack info if the new status is validated.
     $ack_utimestamp = 0;
     $ack_user = $config['id_user'];
-    if ((int) $new_status === EVENT_STATUS_VALIDATED) {
+    if ((int) $new_status === EVENT_STATUS_VALIDATED || (int) $new_status === EVENT_STATUS_INPROCESS) {
         $ack_utimestamp = time();
     }
 
@@ -4814,7 +4814,7 @@ function events_page_general($event)
     $data = [];
     $data[0] = __('Acknowledged by');
 
-    if ($event['estado'] == 1) {
+    if ($event['estado'] == 1 || $event['estado'] == 2) {
         if (empty($event['id_usuario']) === true) {
             $user_ack = __('Autovalidated');
         } else {
@@ -4948,8 +4948,7 @@ function events_page_general_acknowledged($event_id)
     global $config;
     $Acknowledged = '';
     $event = db_get_row('tevento', 'id_evento', $event_id);
-    hd($event['ack_utimestamp'], true);
-    if ($event !== false && $event['estado'] == 1) {
+    if ($event !== false && ($event['estado'] == 1 || $event['estado'] == 2)) {
         $user_ack = db_get_value(
             'fullname',
             'tusuario',
@@ -5826,4 +5825,59 @@ function get_events_get_response_target(
             $node->disconnect();
         }
     }
+}
+
+
+/**
+ * Gets the count of events by criticity.
+ *
+ * @param integer $utimestamp  Utimestamp to search.
+ * @param integer $eventType   Event type.
+ * @param array   $groupId     Groups.
+ * @param integer $eventStatus Event status.
+ * @param array   $criticityId Criticity to search.
+ *
+ * @return array
+ */
+function get_count_event_criticity(
+    $utimestamp,
+    $eventType,
+    $groupId,
+    $eventStatus,
+    $criticityId
+) {
+    $type = ' ';
+    if ($eventType !== '0') {
+        $type = 'AND event_type = "'.$eventType.'"';
+    }
+
+        $groups = ' ';
+    if ((int) $groupId !== 0) {
+        $groups = 'AND id_grupo IN ('.$groupId.')';
+    }
+
+        $status = ' ';
+    if ((int) $eventStatus !== -1) {
+        $status = 'AND estado = '.$eventStatus;
+    }
+
+        $criticity = ' ';
+    if (empty($criticityId) === false) {
+        $criticity = 'AND criticity IN ('.$criticityId.')';
+    }
+
+    $sql_meta = sprintf(
+        'SELECT COUNT(id_evento) AS count,
+        criticity
+        FROM tevento
+        WHERE utimestamp >= %d %s %s %s %s
+        GROUP BY criticity',
+        $utimestamp,
+        $type,
+        $groups,
+        $status,
+        $criticity
+    );
+
+    return db_get_all_rows_sql($sql_meta);
 }

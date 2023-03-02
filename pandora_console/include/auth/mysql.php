@@ -360,7 +360,7 @@ function process_user_login_remote($login, $pass, $api=false)
         }
 
         $user_info = [
-            'fullname' => $login,
+            'fullname' => db_escape_string_sql($login),
             'comments' => 'Imported from '.$config['auth'],
         ];
 
@@ -398,7 +398,7 @@ function process_user_login_remote($login, $pass, $api=false)
             $config['auth_error'] = __('User not found in database or incorrect password');
             return false;
         } else {
-            $user_info['fullname'] = $sr['cn'][0];
+            $user_info['fullname'] = db_escape_string_sql($sr['cn'][0]);
             $user_info['email'] = $sr['mail'][0];
 
             // Create the user.
@@ -1565,7 +1565,7 @@ function local_ldap_search(
 
     $filter = '';
     if (!empty($access_attr) && !empty($user)) {
-        $filter = " -s sub '(".$access_attr.'='.$user.")' ";
+        $filter = ' -s sub '.escapeshellarg('('.$access_attr.'='.$user.')');
     }
 
     $tls = '';
@@ -1591,7 +1591,7 @@ function local_ldap_search(
         $ldap_admin_pass = ' -w '.escapeshellarg($ldap_admin_pass);
     }
 
-    $dn = " -b '".$dn."'";
+    $dn = ' -b '.escapeshellarg($dn);
     $ldapsearch_command = 'ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
     $shell_ldap_search = explode("\n", shell_exec($ldapsearch_command));
     foreach ($shell_ldap_search as $line) {

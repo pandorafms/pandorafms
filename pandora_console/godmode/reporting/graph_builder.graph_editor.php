@@ -417,9 +417,8 @@ ui_require_jquery_file('autocomplete');
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
     $(document).data('text_for_module', $("#none_text").html());
-    
-    
-    $("#submit-add").click(function() {
+
+    $("#button-submit-add").click(function() {
         if($('#filtered-module-modules-modules')[0].value == "" || $('#filtered-module-modules-modules')[0].value == "0") {
             alert("<?php echo __('Please, select a module'); ?>");
             return false;
@@ -434,35 +433,34 @@ $(document).ready (function () {
 
         $("#agentmodules").submit( function(eventObj) {
         $("<input />").attr("type", "hidden")
-          .attr("value", agents_selected)
-          .attr("name", "id_agents")
-          .appendTo("#agentmodules");
-          $("<input />").attr("type", "hidden")
-          .attr("value", modules_selected)
-          .attr("name", "id_modules")
-          .appendTo("#agentmodules");
+            .attr("value", agents_selected)
+            .attr("name", "id_agents")
+            .appendTo("#agentmodules");
+        $("<input />").attr("type", "hidden")
+            .attr("value", modules_selected)
+            .attr("name", "id_modules")
+            .appendTo("#agentmodules");
         return true;
-  });
+    });
     });
 });
 
 function added_ids_sorted_items_to_hidden_input() {
     var ids = '';
     var first = true;
-    
+
     $("input.selected_check:checked").each(function(i, val) {
         if (!first)
             ids = ids + '|';
         first = false;
-        
+
         ids = ids + $(val).val();
     });
-    
+
     $("input[name='ids_items_to_sort']").val(ids);
-    
+
     if (ids == '') {
         alert("<?php echo __('Please select any item to order'); ?>");
-        
         return false;
     }
     else {

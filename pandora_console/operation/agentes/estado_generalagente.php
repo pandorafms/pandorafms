@@ -401,7 +401,7 @@ $table_contact->data[] = $data;
 
 $data = [];
 $data[0] = '<b>'.__('Group').'</b>';
-$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent['id_grupo'].'">'.groups_get_name($agent['id_grupo']).'</a>';
+$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$agent['id_grupo'].'">'.groups_get_name($agent['id_grupo']).'</a>';
 $table_contact->data[] = $data;
 
 $data = [];

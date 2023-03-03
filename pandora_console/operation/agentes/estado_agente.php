@@ -362,42 +362,37 @@ $table->data['search_fields'][1] = html_print_label_input_block(
     )
 );
 
-/*
-    $table->data[1][0] = __('Operating System').'&nbsp;';
-
-    $pre_fields = db_get_all_rows_sql(
+$pre_fields = db_get_all_rows_sql(
     'select distinct(tagente.id_os),tconfig_os.name from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os'
-    );
-    $fields = [];
-
-    foreach ($pre_fields as $key => $value) {
+);
+$fields = [];
+foreach ($pre_fields as $key => $value) {
     $fields[$value['id_os']] = $value['name'];
-    }
+}
 
-    $table->data[1][0] .= html_print_select($fields, 'os', $os, '', 'All', 0, true);
+$table->data[1][0] = html_print_label_input_block(
+    __('Operating System'),
+    html_print_select($fields, 'os', $os, '', 'All', 0, true)
+);
 
-    $table->data[1][1] = __('Policies').'&nbsp;';
-
-    $pre_fields = policies_get_policies(false, ['id', 'name']);
-    $fields = [];
-
-    foreach ($pre_fields as $value) {
+$pre_fields = policies_get_policies(false, ['id', 'name']);
+$fields = [];
+foreach ($pre_fields as $value) {
     $fields[$value['id']] = $value['name'];
-    }
+}
 
-    $table->data[1][1] .= html_print_select($fields, 'policies[]', $policies, '', 'All', 0, true, true);
+$table->data[1][1] = html_print_label_input_block(
+    __('Policies'),
+    html_print_select($fields, 'policies[]', $policies, '', 'All', 0, true, true)
+);
 
-    $table->data[1][2] = __('Search in custom fields').'&nbsp;'.'&nbsp;'.'&nbsp;';
-    $table->data[1][2] .= html_print_input_text('search_custom', $search_custom, '', 15, 255, true);
-
-
-    $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
-    if ($custom_fields === false) {
+$custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
+if ($custom_fields === false) {
     $custom_fields = [];
-    }
+}
 
-    $div_custom_fields = '<div class="flex-row">';
-    foreach ($custom_fields as $custom_field) {
+$div_custom_fields = '<div class="flex-row">';
+foreach ($custom_fields as $custom_field) {
     $custom_field_value = '';
     if (empty($ag_custom_fields) === false) {
         $custom_field_value = $ag_custom_fields[$custom_field['id_field']];
@@ -426,11 +421,10 @@ $table->data['search_fields'][1] = html_print_label_input_block(
         'div-input'
     );
     $div_custom_fields .= '</div></div>';
-    }
+}
 
-    $table->colspan[2][0] = 7;
-    $table->cellstyle[2][0] = 'padding-left: 10px;';
-    $table->data[2][0] = ui_toggle(
+$table->colspan[2][0] = 2;
+$table->data[2][0] = ui_toggle(
     $div_custom_fields,
     __('Agent custom fields'),
     '',
@@ -440,54 +434,50 @@ $table->data['search_fields'][1] = html_print_label_input_block(
     '',
     'white-box-content',
     'white_table_graph'
-    );
+);
 
 
-    $table->colspan[4][0] = 4;
-    $table->cellstyle[4][0] = 'padding-top: 0px;';
-    $table->data[4][0] = html_print_button(
+
+$buttons = html_print_submit_button(
+    __('Filter'),
+    'srcbutton',
+    false,
+    [
+        'icon' => 'search',
+        'mode' => 'mini',
+    ],
+    true
+);
+
+$buttons .= html_print_button(
     __('Load filter'),
     'load-filter',
     false,
     '',
-    'class="float-left margin-right-2 sub config"',
+    [
+        'icon' => 'load',
+        'mode' => 'mini secondary',
+    ],
     true
-    );
+);
 
-    $table->cellstyle[4][0] .= 'padding-top: 0px;';
-    $table->data[4][0] .= html_print_button(
+$buttons .= html_print_button(
     __('Manage filter'),
     'save-filter',
     false,
     '',
-    'class="float-left margin-right-2 sub wand"',
+    [
+        'icon' => 'wand',
+        'mode' => 'mini secondary',
+    ],
     true
-    );
-
-    $table->cellstyle[4][2] = 'padding-top: 0px;';
-    $table->data[4][2] = html_print_submit_button(
-    __('Search'),
-    'srcbutton',
-    '',
-    ['class' => 'sub search'],
-    true
-    );
-*/
+);
 
 $searchForm .= html_print_table($table, true);
 $searchForm .= html_print_div(
     [
         'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            __('Filter'),
-            'srcbutton',
-            false,
-            [
-                'icon' => 'search',
-                'mode' => 'mini',
-            ],
-            true
-        ),
+        'content' => $buttons,
     ],
     true
 );
@@ -1079,7 +1069,7 @@ $tableAgents->head[10] .= ui_get_sorting_arrows($url_up_last_status_change, $url
 $tableAgents->size[10] = '10%';
 
 $tableAgents->head[11] = '<span>'.__('Agent events').'</span>';
-$tableAgents->head[11] = '4%';
+$tableAgents->size[11] = '4%';
 
 $tableAgents->align = [];
 
@@ -1200,7 +1190,7 @@ foreach ($agents as $agent) {
 
     $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]').'</span>';
 
-    $data[12] = '';
+    $data[2] = '';
 
     if (enterprise_installed()) {
         enterprise_include_once('include/functions_config_agents.php');
@@ -1279,9 +1269,6 @@ foreach ($agents as $agent) {
         ]
     ).'</a>';
 
-    // This old code was returning "never" on agents without modules, BAD !!
-    // And does not print outdated agents in red. WRONG !!!!
-    // $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
     array_push($tableAgents->data, $data);
 }
 

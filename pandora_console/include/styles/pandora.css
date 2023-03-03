@@ -27,6 +27,11 @@
  * ============================================================================
  */
 
+:root {
+  --primary-color: #14524f;
+  --secondary-color: #ffffff;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - GENERAL STYLES 												-
@@ -1390,7 +1395,7 @@ div#menu_container {
 div#menu {
   width: 45px;
   float: left;
-  z-index: 2000;
+  z-index: 2;
   position: absolute;
 }
 
@@ -1405,7 +1410,7 @@ div#head {
   min-width: 882px;
   background-color: #fff;
   color: #000;
-  z-index: 1111;
+  z-index: 1;
 }
 
 .fixed_header {
@@ -1762,7 +1767,7 @@ div.title_line {
 #menu_tab_frame_view_bc {
   position: sticky;
   top: 59px;
-  z-index: 1000;
+  z-index: 1;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -1811,7 +1816,7 @@ div.title_line {
 }
 
 .breadcrumb_active {
-  color: #14524f;
+  color: var(--primary-color);
   font-size: 10pt;
 }
 
@@ -2056,22 +2061,6 @@ table.databox {
 
 .databox.data > tbody > tr:last-child > td:last-child {
   border-bottom-right-radius: 4px;
-}
-
-.databox.data > thead > tr:first-child > th:first-child {
-  border-left: 1px solid #e2e2e2;
-  border-top-left-radius: 4px;
-  border-color: #373737;
-}
-
-.databox.data > thead > tr:first-child > th:last-child {
-  border-right: 1px solid #e2e2e2;
-  border-top-right-radius: 4px;
-  border-color: #373737;
-}
-
-.databox.data {
-  border: none;
 }
 
 .tabletitle {
@@ -2774,7 +2763,10 @@ td.cellBig {
   position: fixed;
   top: 120px;
   right: 10px;
-  z-index: 100;
+}
+
+.info_box_container:not(.info_box_information) {
+  z-index: 1;
 }
 
 .info_box_container.info_box_information {
@@ -3844,13 +3836,13 @@ div.div_groups_status {
 }
 
 #menu_tab li:hover {
-  box-shadow: inset 0px 4px #14524f;
+  box-shadow: inset 0px 4px var(--primary-color);
 }
 
 #menu_tab li.nomn_high,
 #menu_tab li.nomn_high span {
   color: #fff;
-  box-shadow: inset 0px 4px #14524f;
+  box-shadow: inset 0px 4px var(--primary-color);
   background-color: #fff;
 }
 
@@ -5128,19 +5120,22 @@ input:checked + .p-slider:before {
   right: 4px;
   border: none;
   outline: none;
-  background: url("../../images/to_top_menu.png") no-repeat center;
-  background-color: #82b92e;
-  width: 27px;
-  height: 27px;
+  transform: rotate(90deg);
+  background-color: #fff;
+  border: 2px solid var(--primary-color);
+  width: 25px;
+  height: 25px;
   cursor: pointer;
   border-radius: 5px;
   z-index: 10;
 }
 
 #top_btn:hover {
-  background: url("../../images/to_top_menu_hover.png") no-repeat center;
-  background-color: #fff;
-  border: 2px solid #82b92e;
+  background-color: var(--primary-color);
+}
+
+#top_btn:hover > svg > g {
+  filter: brightness(0) invert(1);
 }
 
 /* New white rounded boxes */
@@ -9956,8 +9951,8 @@ div#err_msg_centralised {
   font-size: 12px !important;
   padding: 5.5pt 20pt;
   cursor: pointer;
-  color: #14524f !important;
-  border: 2px solid #14524f;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color);
   box-shadow: none;
   border-radius: 50px;
   align-self: baseline;
@@ -10039,7 +10034,7 @@ input[type="button"],
 input[type="submit"] {
   width: 175px;
   height: 45px;
-  background-color: #14524f;
+  background-color: var(--primary-color);
   box-shadow: 0px 3px 6px #c7c7c7;
   letter-spacing: 0px;
   color: #ffffff;
@@ -10065,8 +10060,8 @@ input[type="submit"].secondary {
   width: 175px;
   height: 45px;
   background-color: #ffffff;
-  border: 2px solid #14524f;
-  color: #14524f;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
 }
 
 input[type="button"].secondary:hover,
@@ -10098,7 +10093,7 @@ button.submitButton {
   line-height: 24px;
   box-shadow: 0px 3px 6px #c7c7c7;
   color: #fff;
-  border: 2px solid #14524f;
+  border: 2px solid var(--primary-color);
   border-radius: 8px;
   padding: 0 10px;
   cursor: pointer;
@@ -10108,7 +10103,7 @@ button.submitButton {
 button.buttonButton.mini,
 button.submitButton.mini {
   height: 32px;
-  border: 2px solid #14524f;
+  border: 2px solid var(--primary-color);
 }
 
 button.buttonButton > div.mini,
@@ -10121,8 +10116,8 @@ button.buttonButton:not(.secondary):not(.link),
 button.submitButton:not(.secondary):not(.link) {
   background: linear-gradient(
     90deg,
-    #14524f 0%,
-    #14524f 49%,
+    var(--primary-color) 0%,
+    var(--primary-color) 49%,
     #1d7873 50%,
     #1d7873 100%
   );
@@ -10300,14 +10295,14 @@ button.submitButton.link-create-item {
 button.buttonButton.secondary,
 button.submitButton.secondary {
   background-color: #fff;
-  color: #14524f;
-  border: 2px solid #14524f;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
   box-shadow: none;
 }
 
 button.buttonButton.secondary > div,
 button.submitButton.secondary > div {
-  background-color: #14524f !important;
+  background-color: var(--primary-color) !important;
 }
 
 button.buttonButton.secondary:hover,
@@ -10335,7 +10330,7 @@ button.submitButton.secondary:active > div {
 button.buttonButton.link,
 button.submitButton.link {
   background-color: rgba(0, 0, 0, 0);
-  color: #14524f;
+  color: var(--primary-color);
   border: 0;
   box-shadow: none;
   justify-content: flex-start;
@@ -10344,7 +10339,7 @@ button.submitButton.link {
 
 button.buttonButton.link > div,
 button.submitButton.link > div {
-  background-color: #14524f !important;
+  background-color: var(--primary-color) !important;
 }
 
 button.buttonButton.link:hover,
@@ -10517,9 +10512,9 @@ button.ui-button-text-only.ui-widget.sub {
 }
 
 button.ui-button.ui-widget.submit-next {
-  background-color: #14524f;
+  background-color: var(--primary-color);
   color: #fff;
-  border: 1px solid #14524f;
+  border: 1px solid var(--primary-color);
 }
 
 button.ui-button.ui-widget.submit-next:hover {
@@ -10534,7 +10529,7 @@ button.ui-button.ui-widget.submit-next:active {
 
 button.ui-button.ui-widget.submit-cancel {
   background-color: #fff;
-  color: #14524f;
+  color: var(--primary-color);
   border: 0;
   box-shadow: none;
 }
@@ -11252,11 +11247,11 @@ span.subsection_header_title.secondary {
   font-size: 15px !important;
   margin-bottom: 5px;
   margin-left: 9px;
-  color: #14524f;
+  color: var(--primary-color);
 }
 
 .table-about h2 span {
-  color: #14524f;
+  color: var(--primary-color);
   font-size: large;
   font-weight: bolder;
 }

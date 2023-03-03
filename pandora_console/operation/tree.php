@@ -288,8 +288,10 @@ $table->data['agent_row'][] = html_print_label_input_block(
 
 // Button.
 if (is_metaconsole() === true) {
-    $table->data['captions_disabled_row'][] = __('Show only disabled');
-    $table->data['inputs_disabled_row'][] = html_print_checkbox('show_disabled', $show_disabled, false, true);
+    $table->data['captions_disabled_row'][] = html_print_label_input_block(
+        __('Show only disabled'),
+        html_print_checkbox('show_disabled', $show_disabled, false, true)
+    );
 }
 
 if (is_metaconsole() === false) {

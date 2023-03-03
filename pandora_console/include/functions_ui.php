@@ -1503,7 +1503,7 @@ function ui_print_help_icon(
     $help_id,
     $return=false,
     $home_url='',
-    $image='images/help_green.png',
+    $image='images/info@svg.svg',
     $is_relative=false,
     $id=''
 ) {
@@ -1533,7 +1533,7 @@ function ui_print_help_icon(
         $image,
         true,
         [
-            'class'   => 'img_help',
+            'class'   => 'img_help main_menu_icon',
             'title'   => __('Help'),
             'onclick' => "open_help ('".ui_get_full_url($help_handler)."')",
             'id'      => $id,
@@ -6990,7 +6990,7 @@ function ui_query_result_editor($name='default')
                 __('Execute query'),
                 'execute_query',
                 false,
-                'class="sub next"',
+                ['icon' => 'next'],
                 true
             ),
         ],

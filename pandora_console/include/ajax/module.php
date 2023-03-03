@@ -1962,7 +1962,8 @@ if (check_login()) {
                     true,
                     false,
                     false
-                )
+                ),
+                ['div_class' => 'filter-group-dialog']
             );
 
             $table->rowid[2] = 'save_filter_row2';
@@ -2056,6 +2057,7 @@ if (check_login()) {
         $('#save_filter_row2').hide();
         $('#update_filter_row').hide();
         $('#update_delete_row').hide();
+        $('.filter-group-dialog').show();
         // Filter save mode selector
         $("[name='filter_mode']").click(function() {
             if ($(this).val() == 'new') {
@@ -2063,12 +2065,14 @@ if (check_login()) {
                 $('#submit-save_filter').show();
                 $('#update_filter_row').hide();
                 $('#update_delete_row').hide();
+                $('.filter-group-dialog').show();
             }
             else {
                 $('#save_filter_row2').show();
                 $('#update_filter_row').show();
                 $('#submit-save_filter').hide();
                 $('#update_delete_row').show();
+                $('.filter-group-dialog').hide();
             }
         });
         $("#save-filter-select").dialog({

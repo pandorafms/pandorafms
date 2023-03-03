@@ -1,9 +1,9 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2014-2021 Artica Soluciones Tecnologicas, http://www.artica.es
--- Please see http://www.pandorafms.org for full contribution list
+-- Copyright (c) 2014-2023 Artica PFMS
+-- Please see http://www.pandorafms.com 
 
--- Database Data for Pandora FMS 5.1
+-- Database Data for Pandora FMS NG
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
@@ -45,8 +45,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('graph_res','5'),
 ('step_compact','1'),
 ('db_scheme_first_version', '6.0dev'),
-('db_scheme_version','6.0RC1'),
-('db_scheme_build','PD150908'),
+('db_scheme_version','7.0NG'),
+('db_scheme_build','PD230303'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),

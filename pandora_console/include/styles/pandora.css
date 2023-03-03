@@ -11176,6 +11176,13 @@ table.table_modal_alternate
   height: 20px;
 }
 
+.main_menu_icon.arrow_up {
+  transform: rotate(90deg);
+}
+
+.main_menu_icon.arrow_down {
+  transform: rotate(270deg);
+}
 .after_input_icon {
   width: 32px;
   margin-left: 10px;

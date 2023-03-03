@@ -176,18 +176,18 @@ if ($view_graph) {
             'graph_list'   => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
-                    'images/list.png',
+                    'images/logs@svg.svg',
                     true,
                     [
                         'title' => __('Graph list'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ],
             'main'         => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image(
-                    'images/chart.png',
+                    'images/graph@svg.svg',
                     true,
                     [
                         'title' => __('Main data'),
@@ -202,7 +202,7 @@ if ($view_graph) {
                     true,
                     [
                         'title' => __('Graph editor'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ],
@@ -211,37 +211,37 @@ if ($view_graph) {
         $options = [
             'graph_list' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/list.png', true, ['title' => __('Graph list')]).'</a>',
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Graph list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
             ],
         ];
     }
 
     $options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
-        'images/eye.png',
+        'images/enable.svg',
         true,
         [
             'title' => __('View graph'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
     $options['view']['active'] = true;
 
     if ($config['pure'] == 0) {
         $options['screen']['text'] = "<a href='$url&pure=1'>".html_print_image(
-            'images/full_screen.png',
+            'images/fullscreen@svg.svg',
             true,
             [
                 'title' => __('Full screen mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
     } else {
         $options['screen']['text'] = "<a href='$url&pure=0'>".html_print_image(
-            'images/normal_screen.png',
+            'images/exit_fullscreen@svg.svg',
             true,
             [
                 'title' => __('Back to normal mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
 

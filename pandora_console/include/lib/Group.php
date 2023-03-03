@@ -479,6 +479,11 @@ class Group extends Entity
     }
 
 
+    /**
+     * Draw a graph distribution so by group.
+     *
+     * @return void
+     */
     public static function distributionBySoGraph()
     {
         global $config;
@@ -493,6 +498,11 @@ class Group extends Entity
     }
 
 
+    /**
+     * Draw a graph events agent by group.
+     *
+     * @return void
+     */
     public static function groupEventsByAgent()
     {
         global $config;
@@ -507,6 +517,11 @@ class Group extends Entity
     }
 
 
+    /**
+     * Draw in modal a agent info
+     *
+     * @return void
+     */
     public static function loadInfoAgent()
     {
         $extradata = get_parameter('extradata', '');
@@ -577,6 +592,11 @@ class Group extends Entity
     }
 
 
+    /**
+     * Get agents by group  for datatable.
+     *
+     * @return void
+     */
     public static function getAgentsByGroup()
     {
         global $config;

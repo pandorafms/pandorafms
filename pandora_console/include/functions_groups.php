@@ -1642,7 +1642,7 @@ function groups_monitor_fired_alerts($group_array)
 }
 
 
-function groups_monitor_alerts_total_counters($group_array)
+function groups_monitor_alerts_total_counters($group_array, $secondary_group=true)
 {
     // If there are not groups to query, we jump to nextone
     $default_total = [
@@ -1656,26 +1656,32 @@ function groups_monitor_alerts_total_counters($group_array)
     }
 
     $group_clause = implode(',', $group_array);
-    $group_clause = "(tasg.id_group IN ($group_clause) OR ta.id_grupo IN ($group_clause))";
+    if ($secondary_group === true) {
+        $group_clause = "(tasg.id_group IN ($group_clause) OR ta.id_grupo IN ($group_clause))";
+    } else {
+        $group_clause = "(ta.id_grupo IN ($group_clause))";
+    }
 
-    $alerts = db_get_row_sql(
-        "SELECT
-			COUNT(tatm.id) AS total,
-			SUM(IF(tatm.times_fired > 0, 1, 0)) AS fired
-		FROM talert_template_modules tatm
-		INNER JOIN tagente_modulo tam
-			ON tatm.id_agent_module = tam.id_agente_modulo
-		INNER JOIN tagente ta
-			ON ta.id_agente = tam.id_agente
-		WHERE ta.id_agente IN (
-			SELECT ta.id_agente
-			FROM tagente ta
-			LEFT JOIN tagent_secondary_group tasg
-				ON ta.id_agente = tasg.id_agent
-			WHERE ta.disabled = 0
-				AND $group_clause
-		) AND tam.disabled = 0"
-    );
+    $sql = 'SELECT
+                COUNT(tatm.id) AS total,
+                SUM(IF(tatm.times_fired > 0, 1, 0)) AS fired
+            FROM talert_template_modules tatm
+            INNER JOIN tagente_modulo tam
+                ON tatm.id_agent_module = tam.id_agente_modulo
+            INNER JOIN tagente ta
+                ON ta.id_agente = tam.id_agente
+            WHERE ta.id_agente IN (
+                SELECT ta.id_agente
+                FROM tagente ta';
+    if ($secondary_group === true) {
+        $sql .= ' LEFT JOIN tagent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
+    }
+
+    $sql .= " WHERE ta.disabled = 0
+                    AND $group_clause
+            ) AND tam.disabled = 0";
+
+    $alerts = db_get_row_sql($sql);
 
     return ($alerts === false) ? $default_total : $alerts;
 }
@@ -2453,6 +2459,15 @@ function groups_get_group_deep($id_group)
 }
 
 
+/**
+ * Heat map from agents by group
+ *
+ * @param array   $id_group
+ * @param integer $width
+ * @param integer $height
+ *
+ * @return string Html Graph.
+ */
 function groups_get_heat_map_agents(array $id_group, float $width=0, float $height=0)
 {
     ui_require_css_file('heatmap');
@@ -2568,14 +2583,14 @@ function groups_get_heat_map_agents(array $id_group, float $width=0, float $heig
     ?>
     <script type="text/javascript">
         $(document).ready(function() {
-            const total_modules = '<?php echo $total_agents; ?>';
+            const total_agents = '<?php echo $total_agents; ?>';
 
             function getRandomInteger(min, max) {
                 return Math.floor(Math.random() * max) + min;
             }
 
             function oneSquare(solid, time) {
-                var randomPoint = getRandomInteger(1, total_modules);
+                var randomPoint = getRandomInteger(1, total_agents);
                 let target = $(`#rect_${randomPoint}`);
                 let class_name = target.attr('class');
                 class_name = class_name.split('_')[0];
@@ -2587,7 +2602,7 @@ function groups_get_heat_map_agents(array $id_group, float $width=0, float $heig
             }
 
             let cont = 0;
-            while (cont < Math.ceil(total_modules / 3)) {
+            while (cont < Math.ceil(total_agents / 3)) {
                 oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
                 cont ++;
             }
@@ -2601,6 +2616,13 @@ function groups_get_heat_map_agents(array $id_group, float $width=0, float $heig
 }
 
 
+/**
+ * Return html count from agents and monitoring by group.
+ *
+ * @param [type] $id_groups
+ *
+ * @return string Html
+ */
 function tactical_groups_get_agents_and_monitoring($id_groups)
 {
     global $config;
@@ -2650,11 +2672,17 @@ function tactical_groups_get_agents_and_monitoring($id_groups)
 }
 
 
+/**
+ * Return html count from stats alerts by group.
+ *
+ * @param  [type] $id_groups
+ * @return string Html.
+ */
 function tactical_groups_get_stats_alerts($id_groups)
 {
     global $config;
 
-    $alerts = groups_monitor_alerts_total_counters($id_groups);
+    $alerts = groups_monitor_alerts_total_counters($id_groups, false);
     $data = [
         'monitor_alerts'       => $alerts['total'],
         'monitor_alerts_fired' => $alerts['fired'],
@@ -2717,6 +2745,16 @@ function tactical_groups_get_stats_alerts($id_groups)
 }
 
 
+/**
+ * Return html count from stats modules by group.
+ *
+ * @param  [type]  $id_groups
+ * @param  integer $graph_width
+ * @param  integer $graph_height
+ * @param  boolean $links
+ * @param  boolean $data_agents
+ * @return void
+ */
 function groups_get_stats_modules_status($id_groups, $graph_width=250, $graph_height=150, $links=false, $data_agents=false)
 {
     global $config;

@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, load_modal */
 function showInfoAgent(id_agent) {
   load_modal({
     target: $("#modal-info-agent"),

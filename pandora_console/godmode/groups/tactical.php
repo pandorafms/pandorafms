@@ -30,9 +30,29 @@ global $config;
 
 check_login();
 
+if (! check_acl($config['id_user'], 0, 'AR')) {
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Tactical View Group'
+    );
+    include 'general/noaccess.php';
+    return;
+}
+
+
 
 $id_group = get_parameter('id_group', '');
 if (empty($id_group) === true) {
+    return;
+}
+
+$user_groups_acl = users_get_groups(false, 'AR');
+if (in_array(groups_get_name($id_group), $user_groups_acl) === false) {
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Tactical View Group'
+    );
+    include 'general/noaccess.php';
     return;
 }
 
@@ -84,9 +104,9 @@ $table_col1->width = '100%';
 $table_col1->data[0][0] = groups_get_heat_map_agents($id_groups, 450, 100);
 $table_col1->data[1][0] = tactical_groups_get_agents_and_monitoring($id_groups);
 
-$distribution_by_so = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td style="width:50%;">';
+$distribution_by_so = '<table cellpadding=0 cellspacing=0 class="databox pies graph-distribution-so" width=100%><tr><td style="width:50%;">';
 $distribution_by_so .= '<fieldset class="padding-0 databox tactical_set" id="distribution_by_so_graph">';
-$distribution_by_so .= '<legend>'.__('Distribution by so').'</legend>';
+$distribution_by_so .= '<legend>'.__('Distribution by os').'</legend>';
 $distribution_by_so .= html_print_image('images/spinner.gif', true, ['id' => 'spinner_distribution_by_so_graph']);
 $distribution_by_so .= '</fieldset>';
 $distribution_by_so .= '</td></tr></table>';
@@ -214,6 +234,13 @@ echo '<div id="modal-info-agent"></div>'
             success: function(data) {
                 $("#spinner_events_by_agents_group_graph").hide();
                 $("#events_by_agents_group_graph").append(data);
+                const canvas = $('#events_by_agents_group_graph canvas')[0];
+                canvas.addEventListener('click', function(event) {
+                var middle_canvas = $('#events_by_agents_group_graph canvas').width() / 2;
+                if(event.layerX < middle_canvas){
+                    window.location.replace("index.php?sec=eventos&sec2=operation/events/events&filter[id_group_filter]=<?php echo $id_group; ?>")
+                }
+                });
             }
         });
 

@@ -5341,6 +5341,16 @@ function get_baseline_data(
 }
 
 
+/**
+ * Draw graph SO agents by group.
+ *
+ * @param  [type]  $id_group
+ * @param  integer $width
+ * @param  integer $height
+ * @param  boolean $recursive
+ * @param  boolean $noWaterMark
+ * @return string Graph
+ */
 function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, $noWaterMark=true)
 {
     global $config;
@@ -5408,6 +5418,17 @@ function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, 
 }
 
 
+/**
+ * Draw graph events by group
+ *
+ * @param  [type]  $id_group
+ * @param  integer $width
+ * @param  integer $height
+ * @param  boolean $noWaterMark
+ * @param  boolean $time_limit
+ * @param  boolean $recursive
+ * @return string Graph
+ */
 function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWaterMark=true, $time_limit=false, $recursive=true)
 {
     global $config;
@@ -5443,7 +5464,8 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         'SELECT DISTINCT(id_agente) AS id_agente,
                 COUNT(id_agente) AS count
             FROM tevento te
-            WHERE 1=1  %s %s
+            WHERE 1=1  AND estado = 0
+            %s %s
             GROUP BY id_agente
             ORDER BY count DESC LIMIT 8',
         $tags_condition,

@@ -2367,3 +2367,35 @@ function observerInputPassword(name) {
     observer.observe(input, { attributes: true });
   });
 }
+
+function scrollFunction() {
+  if (
+    document.body.scrollTop > 400 ||
+    document.documentElement.scrollTop > 400
+  ) {
+    if (document.getElementById("top_btn")) {
+      document.getElementById("top_btn").style.display = "block";
+    }
+  } else {
+    if (document.getElementById("top_btn")) {
+      document.getElementById("top_btn").style.display = "none";
+    }
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document.
+function topFunction() {
+  /*
+   * Safari.
+   * document.body.scrollTop = 0;
+   * For Chrome, Firefox, IE and Opera.
+   * document.documentElement.scrollTop = 0;
+   */
+
+  $("HTML, BODY").animate(
+    {
+      scrollTop: 0
+    },
+    500
+  );
+}

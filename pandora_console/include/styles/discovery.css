@@ -113,7 +113,7 @@ div.arrow_box:before {
 #menu_tab_frame_view_bc {
   display: flex;
   justify-content: space-between;
-  border-bottom: 2px solid #14524f;
+  border-bottom: 2px solid var(--primary-color);
   max-height: 70px;
   min-height: 55px;
   width: 100%;
@@ -150,15 +150,15 @@ span.breadcrumb_link {
 }
 
 .breadcrumb_link.selected {
-  color: #14524f;
+  color: var(--primary-color);
 }
 
 .breadcrumb_link.selected:hover {
-  color: #14524f;
+  color: var(--primary-color);
   text-decoration: none;
 }
 .breadcrumb_link:hover {
-  color: #14524f;
+  color: var(--primary-color);
   text-decoration: none;
 }
 

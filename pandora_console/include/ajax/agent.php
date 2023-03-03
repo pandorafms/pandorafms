@@ -486,50 +486,48 @@ if ((int) $load_filter_modal === 1) {
     $table = new StdClass;
     $table->id = 'load_filter_form';
     $table->width = '100%';
-    $table->cellspacing = 4;
-    $table->cellpadding = 4;
-    $table->class = 'databox';
-    if (is_metaconsole()) {
-        $table->cellspacing = 0;
-        $table->cellpadding = 0;
-        $table->class = 'databox filters';
-    }
-
-    $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-    $filter_id_width = '200px';
-    if (is_metaconsole()) {
-        $filter_id_width = '150px';
-    }
+    $table->class = 'filter-table-adv';
 
     $data = [];
     $table->rowid[3] = 'update_filter_row1';
-    $data[0] = __('Load filter').$jump;
-    $data[0] .= html_print_select(
-        $filters,
-        'filter_id',
-        $current,
-        '',
-        __('None'),
-        0,
-        true,
-        false,
-        true,
-        '',
-        false,
-        'margin-left:5px; width:'.$filter_id_width.';'
+    $data[0] = html_print_label_input_block(
+        __('Load filter'),
+        html_print_select(
+            $filters,
+            'filter_id',
+            $current,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            true,
+            '',
+            false
+        )
     );
 
-    $data[1] = html_print_submit_button(
-        __('Load filter'),
-        'load_filter',
-        false,
-        'class="sub upd"',
-        true
-    );
-    $data[1] .= html_print_input_hidden('load_filter', 1, true);
     $table->data[] = $data;
     $table->rowclass[] = '';
+
     html_print_table($table);
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Load filter'),
+                'srcbutton',
+                false,
+                [
+                    'icon' => 'search',
+                    'mode' => 'mini',
+                ],
+                true
+            ),
+        ],
+        false
+    );
+    echo html_print_input_hidden('load_filter', 1, true);
     echo '</form>';
     echo '</div>';
     ?>
@@ -562,52 +560,44 @@ if ($save_filter_modal) {
         $table = new StdClass;
         $table->id = 'save_filter_form';
         $table->width = '100%';
-        $table->cellspacing = 4;
-        $table->cellpadding = 4;
-        $table->class = 'databox';
-
-        if (is_metaconsole() === true) {
-            $table->class = 'databox filters';
-            $table->cellspacing = 0;
-            $table->cellpadding = 0;
-        }
-
-        $table->styleTable = 'font-weight: bold; text-align:left;';
-
-        if (is_metaconsole() === true) {
-            $table->style[0] = 'width: 50%; width:50%;';
-        }
-
+        $table->size = [];
+        $table->size[0] = '50%';
+        $table->size[1] = '50%';
+        $table->class = 'filter-table-adv';
         $data = [];
+
         $table->rowid[0] = 'update_save_selector';
-        $data[0] = html_print_radio_button(
-            'filter_mode',
-            'new',
-            '',
-            true,
-            true
-        ).__('New filter').'';
+        $data[0][0] = html_print_label_input_block(
+            __('New filter'),
+            html_print_radio_button(
+                'filter_mode',
+                'new',
+                '',
+                true,
+                true
+            )
+        );
 
-        $data[1] = html_print_radio_button(
-            'filter_mode',
-            'update',
-            '',
-            false,
-            true
-        ).__('Update/delete filter').'';
+        $data[0][1] = html_print_label_input_block(
+            __('Update/delete filter'),
+            html_print_radio_button(
+                'filter_mode',
+                'update',
+                '',
+                false,
+                true
+            )
+        );
 
-        $table->data[] = $data;
-        $table->rowclass[] = '';
-
-        $data = [];
         $table->rowid[1] = 'save_filter_row1';
-        $data[0] = __('Filter name').$jump;
-        $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
+        $data[1][0] = html_print_label_input_block(
+            __('Filter name'),
+            html_print_input_text('id_name', '', '', 15, 255, true)
+        );
 
+        $labelInput = __('Filter group');
         if (is_metaconsole() === true) {
-            $data[1] = __('Save in Group').$jump;
-        } else {
-            $data[1] = __('Filter group').$jump;
+            $labelInput = __('Save in Group');
         }
 
         $user_groups_array = users_get_groups_for_select(
@@ -617,32 +607,26 @@ if ($save_filter_modal) {
             true
         );
 
-        $data[1] .= html_print_select(
-            $user_groups_array,
-            'id_group_filter_dialog',
-            $id_group_filter,
-            '',
-            '',
-            0,
-            true,
-            false,
-            false,
-            'w130'
+        $data[1][1] = html_print_label_input_block(
+            $labelInput,
+            html_print_select(
+                $user_groups_array,
+                'id_group_filter_dialog',
+                $id_group_filter,
+                '',
+                '',
+                0,
+                true,
+                false,
+                false
+            ),
+            ['div_class' => 'filter-group-dialog']
         );
 
-        $table->data[] = $data;
-        $table->rowclass[] = '';
-
-        $data = [];
         $table->rowid[2] = 'save_filter_row2';
 
         $table->data[] = $data;
         $table->rowclass[] = '';
-
-        $data = [];
-        $table->rowid[3] = 'update_filter_row1';
-        $data[0] = __('Filter').$jump;
-
         $user_groups = users_get_groups(
             $config['id_user'],
             'AW',
@@ -664,45 +648,73 @@ if ($save_filter_modal) {
             }
         }
 
-        $data[0] .= html_print_select(
-            $_filters_update,
-            'overwrite_filter',
-            '',
-            '',
-            '',
-            0,
+        $data[2][0] = html_print_label_input_block(
+            __('Filter'),
+            html_print_select(
+                $_filters_update,
+                'overwrite_filter',
+                '',
+                '',
+                '',
+                0,
+                true
+            )
+        );
+
+        $table->data = $data;
+
+        html_print_table($table);
+        html_print_div(
+            [
+                'id'      => 'submit-save_filter',
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Save current filter'),
+                    'srcbutton',
+                    false,
+                    [
+                        'icon'    => 'search',
+                        'mode'    => 'mini',
+                        'onclick' => 'save_new_filter();',
+                    ],
+                    true
+                ),
+            ],
+            false
+        );
+
+        $input_actions = html_print_submit_button(
+            __('Delete filter'),
+            'delete_filter',
+            false,
+            [
+                'icon'    => 'delete',
+                'mode'    => 'mini',
+                'onclick' => 'save_delete_filter();',
+            ],
             true
         );
 
-        $table->data[] = $data;
-        $table->rowclass[] = '';
+        $input_actions .= html_print_submit_button(
+            __('Update filter'),
+            'srcbutton',
+            false,
+            [
+                'icon'    => 'update',
+                'mode'    => 'mini',
+                'onclick' => 'save_update_filter();',
+            ],
+            true
+        );
 
-        html_print_table($table);
-        echo '<div id="update_delete_row"><br>';
-            echo html_print_submit_button(
-                __('Update filter'),
-                'update_filter',
-                false,
-                'class="sub upd" onclick="save_update_filter();"',
-                true
-            );
-            echo html_print_submit_button(
-                __('Delete filter'),
-                'delete_filter',
-                false,
-                'class="sub delete float-right" onclick="save_delete_filter();"',
-                true
-            );
-        echo '</div>';
-        echo '<div><br>';
-            echo html_print_submit_button(
-                __('Save current filter'),
-                'save_filter',
-                false,
-                'class="sub upd float-right" onclick="save_new_filter();"',
-                true
-            );
-        echo '</div>';
+        html_print_div(
+            [
+                'id'      => 'update_filter_row',
+                'class'   => 'action-buttons',
+                'content' => $input_actions,
+            ],
+            false
+        );
     } else {
         include 'general/noaccess.php';
     }
@@ -712,32 +724,34 @@ if ($save_filter_modal) {
 <script type="text/javascript">
 
 function show_save_filter() {
-    $('#save_filter_row1').show();
-    $('#save_filter_row2').show();
-    $('#update_filter_row1').hide();
+    $('#save_filter_row2').hide();
+    $('#update_filter_row').hide();
     $('#update_delete_row').hide();
+    $('.filter-group-dialog').show();
     // Filter save mode selector
     $("[name='filter_mode']").click(function() {
         if ($(this).val() == 'new') {
-            $('#save_filter_row1').show();
-            $('#save_filter_row2').show();
+            $('#save_filter_row2').hide();
             $('#submit-save_filter').show();
-            $('#update_filter_row1').hide();
+            $('#update_filter_row').hide();
             $('#update_delete_row').hide();
+            $('.filter-group-dialog').show();
         }
         else {
-            $('#save_filter_row1').hide();
-            $('#save_filter_row2').hide();
-            $('#update_filter_row1').show();
+            $('#save_filter_row2').show();
+            $('#update_filter_row').show();
             $('#submit-save_filter').hide();
             $('#update_delete_row').show();
+            $('.filter-group-dialog').hide();
         }
     });
     $("#save-filter-select").dialog({
         resizable: true,
         draggable: true,
         modal: false,
-        closeOnEscape: true
+        closeOnEscape: true,
+        width: 450,
+        height: 350
     });
 }
 

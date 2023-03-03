@@ -740,7 +740,7 @@ button.submitButton {
   line-height: 24px;
   box-shadow: 0px 3px 6px #c7c7c7;
   color: #fff;
-  border: 2px solid #14524f;
+  border: 2px solid var(--primary-color);
   border-radius: 8px;
   padding: 0 10px;
   cursor: pointer;

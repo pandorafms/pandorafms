@@ -235,8 +235,18 @@ if ($count_module_array > 0) {
         echo '<table><tr>';
 
         echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_label=1&id=".$id_graph.'&graph='.$idgs_array[$a]."'>";
+        echo '<div class="flex">';
         html_print_input_text('label', $label_array[$a], '', 30, 80, false, false);
-        html_print_submit_button('Ok', 'btn', false, '', false);
+        html_print_submit_button(
+            __('Ok'),
+            'btn',
+            false,
+            [
+                'mode'  => 'mini',
+                'class' => 'inputbuton',
+            ]
+        );
+        echo '</div>';
         echo '</form>';
 
         echo '</tr></table>';
@@ -246,14 +256,24 @@ if ($count_module_array > 0) {
         echo '<table><tr>';
 
         echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&id=".$id_graph.'&graph='.$idgs_array[$a]."'>";
+        echo '<div class="flex">';
         html_print_input_text('weight', $weight_array[$a], '', 20, 10, false, false);
-        html_print_submit_button('Ok', 'btn', false, '', false);
+        html_print_submit_button(
+            __('Ok'),
+            'btn',
+            false,
+            [
+                'mode'  => 'mini',
+                'class' => 'inputbuton',
+            ]
+        );
+        echo '</div>';
         echo '</form>';
 
         echo '</tr></table>';
         echo '</td>';
         echo "<td class='$tdcolor' align=''>";
-        echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=".$id_graph.'&delete='.$idgs_array[$a]."'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+        echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=".$id_graph.'&delete='.$idgs_array[$a]."'>".html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
 
         echo '</td>';
 
@@ -275,54 +295,78 @@ $table = new stdClass();
 $table->width = '100%';
 $table->colspan[0][0] = 3;
 $table->size = [];
-$table->size[0] = '25%';
-$table->size[1] = '25%';
-$table->size[2] = '25%';
-$table->size[3] = '25%';
+
 if (defined('METACONSOLE')) {
     $table->class = 'databox data';
     $table->head[0] = __('Sort items');
     $table->head_colspan[0] = 4;
     $table->headstyle[0] = 'text-align: center';
+    $table->size[0] = '25%';
+    $table->size[1] = '25%';
+    $table->size[2] = '25%';
+    $table->size[3] = '25%';
 } else {
-    $table->data[0][0] = '<b>'.__('Sort items').'</b>';
+    $table->class = 'filter-table-adv';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
 }
 
-$table->data[1][0] = __('Sort selected items');
-$table->data[1][1] = html_print_select_style(
+$table->data[0][0] = html_print_label_input_block(
+    __('Sort selected items'),
+    html_print_select_style(
+        [
+            'before' => __('before to'),
+            'after'  => __('after to'),
+        ],
+        'move_to',
+        '',
+        '',
+        '',
+        '',
+        0,
+        true
+    )
+);
+$table->data[0][1] = html_print_label_input_block(
+    __('Position'),
+    html_print_input_text_extended(
+        'position_to_sort',
+        1,
+        'text-position_to_sort',
+        '',
+        3,
+        10,
+        false,
+        "only_numbers('position_to_sort');",
+        '',
+        true
+    ).html_print_input_hidden('ids_items_to_sort', '', true)
+);
+
+
+$SortItems = "<form action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=".$id_graph."' method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
+$SortItems .= html_print_table($table, true);
+$SortItems .= html_print_input_hidden('action', 'sort_items', true);
+$SortItems .= html_print_div(
     [
-        'before' => __('before to'),
-        'after'  => __('after to'),
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Sort'),
+            'srcbutton',
+            false,
+            [
+                'class' => 'mini',
+                'icon'  => 'search',
+                'mode'  => 'secondary',
+            ],
+            true
+        ),
     ],
-    'move_to',
-    '',
-    '',
-    '',
-    '',
-    0,
     true
 );
-$table->data[1][2] = html_print_input_text_extended(
-    'position_to_sort',
-    1,
-    'text-position_to_sort',
-    '',
-    3,
-    10,
-    false,
-    "only_numbers('position_to_sort');",
-    '',
-    true
-);
-$table->data[1][2] .= html_print_input_hidden('ids_items_to_sort', '', true);
-$table->data[1][3] = html_print_submit_button(__('Sort'), 'sort_submit', false, 'class="sub upd"', true);
-$table->data[1][4] = html_print_input_hidden('action', 'sort_items', true);
+$SortItems .= '</form>';
 
-echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=".$id_graph."' method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
-html_print_table($table);
-echo '</form>';
-
-echo '<br>';
+ui_toggle($SortItems, __('Sort items'), '', '', false);
 
 
 // Configuration form.
@@ -349,7 +393,20 @@ echo '</td>';
 echo '</tr><tr>';
 echo "<td colspan='3' align='right'></td>";
 echo '</tr></table>';
-echo "<div class='w100p'><input id='submit-add' type=submit name='store' class='sub add right' value='".__('Add')."'></div></form>";
+$ActionButtons[] = html_print_submit_button(
+    __('Add'),
+    'submit-add',
+    false,
+    [
+        'class' => 'sub ok',
+        'icon'  => 'next',
+    ],
+    true
+);
+html_print_action_buttons(
+    implode('', $ActionButtons),
+    ['type' => 'form_action']
+);
 
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');

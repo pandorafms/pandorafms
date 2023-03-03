@@ -36,6 +36,7 @@ require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 enterprise_include_once('include/functions_config_agents.php');
+enterprise_include_once('include/functions_policies.php');
 
 ui_require_css_file('tables');
 
@@ -149,6 +150,9 @@ $offset = (int) get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter('status', -1);
+$os = (int) get_parameter('os', 0);
+$policies = (array) get_parameter('policies', []);
+$ag_custom_fields = (array) get_parameter('ag_custom_fields', []);
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 $agent_a = (bool) check_acl($config['id_user'], 0, 'AR');
@@ -156,6 +160,52 @@ $agent_w = (bool) check_acl($config['id_user'], 0, 'AW');
 $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
 
 $onheader = [];
+
+$load_filter_id = (int) get_parameter('filter_id', 0);
+
+if ($load_filter_id > 0) {
+    $user_groups_fl = users_get_groups(
+        $config['id_user'],
+        'AR',
+        users_can_manage_group_all('AR'),
+        true
+    );
+
+    $sql = sprintf(
+        'SELECT id_filter, id_name
+        FROM tagent_filter
+        WHERE id_filter = %d AND id_group_filter IN (%s)',
+        $load_filter_id,
+        implode(',', array_keys($user_groups_fl))
+    );
+
+    $loaded_filter = db_get_row_sql($sql);
+}
+
+if ($loaded_filter['id_filter'] > 0) {
+    $query_filter['id_filter'] = $load_filter_id;
+    $filter = db_get_row_filter('tagent_filter', $query_filter, false);
+
+    if ($filter !== false) {
+        $group_id = (int) $filter['group_id'];
+        $recursion = $filter['recursion'];
+        $status = $filter['status'];
+        $search = $filter['search'];
+        $os = $filter['id_os'];
+        $policies = json_decode($filter['policies'], true);
+        $search_custom = $filter['search_custom'];
+        $ag_custom_fields = $filter['ag_custom_fields'];
+    }
+
+
+    if (is_array($ag_custom_fields) === false) {
+        $ag_custom_fields = json_decode(io_safe_output($ag_custom_fields), true);
+    }
+
+    if (is_array($policies) === false) {
+        $policies = json_decode(io_safe_output($policies), true);
+    }
+}
 
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Prepare the tab system to the future.
@@ -312,6 +362,118 @@ $table->data['search_fields'][1] = html_print_label_input_block(
     )
 );
 
+/*
+    $table->data[1][0] = __('Operating System').'&nbsp;';
+
+    $pre_fields = db_get_all_rows_sql(
+    'select distinct(tagente.id_os),tconfig_os.name from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os'
+    );
+    $fields = [];
+
+    foreach ($pre_fields as $key => $value) {
+    $fields[$value['id_os']] = $value['name'];
+    }
+
+    $table->data[1][0] .= html_print_select($fields, 'os', $os, '', 'All', 0, true);
+
+    $table->data[1][1] = __('Policies').'&nbsp;';
+
+    $pre_fields = policies_get_policies(false, ['id', 'name']);
+    $fields = [];
+
+    foreach ($pre_fields as $value) {
+    $fields[$value['id']] = $value['name'];
+    }
+
+    $table->data[1][1] .= html_print_select($fields, 'policies[]', $policies, '', 'All', 0, true, true);
+
+    $table->data[1][2] = __('Search in custom fields').'&nbsp;'.'&nbsp;'.'&nbsp;';
+    $table->data[1][2] .= html_print_input_text('search_custom', $search_custom, '', 15, 255, true);
+
+
+    $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
+    if ($custom_fields === false) {
+    $custom_fields = [];
+    }
+
+    $div_custom_fields = '<div class="flex-row">';
+    foreach ($custom_fields as $custom_field) {
+    $custom_field_value = '';
+    if (empty($ag_custom_fields) === false) {
+        $custom_field_value = $ag_custom_fields[$custom_field['id_field']];
+        if (empty($custom_field_value) === true) {
+            $custom_field_value = '';
+        }
+    }
+
+    $div_custom_fields .= '<div class="div-col">';
+
+    $div_custom_fields .= '<div class="div-span">';
+    $div_custom_fields .= '<span >'.$custom_field['name'].'</span>';
+    $div_custom_fields .= '</div>';
+
+    $div_custom_fields .= '<div class="div-input">';
+    $div_custom_fields .= html_print_input_text(
+        'ag_custom_fields['.$custom_field['id_field'].']',
+        $custom_field_value,
+        '',
+        0,
+        300,
+        true,
+        false,
+        false,
+        '',
+        'div-input'
+    );
+    $div_custom_fields .= '</div></div>';
+    }
+
+    $table->colspan[2][0] = 7;
+    $table->cellstyle[2][0] = 'padding-left: 10px;';
+    $table->data[2][0] = ui_toggle(
+    $div_custom_fields,
+    __('Agent custom fields'),
+    '',
+    '',
+    true,
+    true,
+    '',
+    'white-box-content',
+    'white_table_graph'
+    );
+
+
+    $table->colspan[4][0] = 4;
+    $table->cellstyle[4][0] = 'padding-top: 0px;';
+    $table->data[4][0] = html_print_button(
+    __('Load filter'),
+    'load-filter',
+    false,
+    '',
+    'class="float-left margin-right-2 sub config"',
+    true
+    );
+
+    $table->cellstyle[4][0] .= 'padding-top: 0px;';
+    $table->data[4][0] .= html_print_button(
+    __('Manage filter'),
+    'save-filter',
+    false,
+    '',
+    'class="float-left margin-right-2 sub wand"',
+    true
+    );
+
+    $table->cellstyle[4][2] = 'padding-top: 0px;';
+    $table->data[4][2] = html_print_submit_button(
+    __('Search'),
+    'srcbutton',
+    '',
+    ['class' => 'sub search'],
+    true
+    );
+*/
+
 $searchForm .= html_print_table($table, true);
 $searchForm .= html_print_div(
     [
@@ -367,6 +529,8 @@ $selectLastContactUp = false;
 $selectLastContactDown = false;
 $selectRemoteUp = false;
 $selectRemoteDown = false;
+$selectLastStatusChangeUp = false;
+$selectLastStatusChangeDown = false;
 $order = null;
 
 switch ($sortField) {
@@ -526,6 +690,32 @@ switch ($sortField) {
         }
     break;
 
+    case 'last_status_change':
+        switch ($sort) {
+            case 'up':
+                $selectLastStatusChangeUp = $selected;
+                $order = [
+                    'field'  => 'last_status_change',
+                    'field2' => 'alias',
+                    'order'  => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $selectLastStatusChangeDown = $selected;
+                $order = [
+                    'field'  => 'last_status_change',
+                    'field2' => 'alias',
+                    'order'  => 'DESC',
+                ];
+            break;
+
+            default:
+                // Default.
+            break;
+        }
+    break;
+
     case 'description':
         switch ($sort) {
             case 'up':
@@ -565,6 +755,8 @@ switch ($sortField) {
         $selectDescriptionDown = false;
         $selectLastContactUp = false;
         $selectLastContactDown = false;
+        $selectLastStatusChangeUp = false;
+        $selectLastStatusChangeDown = false;
         $order = [
             'field'  => 'alias',
             'field2' => 'alias',
@@ -624,6 +816,24 @@ if (empty($search_custom) === false) {
     $search_sql_custom = '';
 }
 
+// Filter by agent custom fields.
+$sql_conditions_custom_fields = '';
+if (empty($ag_custom_fields) === false) {
+    $cf_filter = [];
+    foreach ($ag_custom_fields as $field_id => $value) {
+        if (empty($value) === false) {
+            $cf_filter[] = '(tagent_custom_data.id_field = '.$field_id.' AND tagent_custom_data.description LIKE \'%'.$value.'%\')';
+        }
+    }
+
+    if (empty($cf_filter) === false) {
+        $sql_conditions_custom_fields = ' AND tagente.id_agente IN (
+				SELECT tagent_custom_data.id_agent
+				FROM tagent_custom_data
+				WHERE '.implode(' AND ', $cf_filter).')';
+    }
+}
+
 // Show only selected groups.
 if ($group_id > 0) {
     $groups = [$group_id];
@@ -636,23 +846,41 @@ if ($group_id > 0) {
     $groups = array_keys($user_groups);
 }
 
+$all_policies = in_array(0, ($policies ?? []));
+
+$id_os_sql = '';
+$policies_sql = '';
+
+if ($os > 0) {
+    $id_os_sql = ' AND id_os = '.$os;
+}
+
+if ($all_policies === false && is_array($policies) && count($policies) > 0) {
+    $policies_sql = ' AND tpolicy_agents.id_policy IN ('.implode(',', $policies).')';
+}
 
 if ($strict_user) {
     $count_filter = [
         // 'order' => 'tagente.nombre ASC',
-        'order'    => 'tagente.nombre ASC',
-        'disabled' => 0,
-        'status'   => $status,
-        'search'   => $search,
+        'order'           => 'tagente.nombre ASC',
+        'disabled'        => 0,
+        'status'          => $status,
+        'search'          => $search,
+        'id_os'           => $id_os_sql,
+        'policies'        => $policies_sql,
+        'other_condition' => $sql_conditions_custom_fields,
     ];
     $filter = [
         // 'order' => 'tagente.nombre ASC',
-        'order'    => 'tagente.nombre ASC',
-        'disabled' => 0,
-        'status'   => $status,
-        'search'   => $search,
-        'offset'   => (int) get_parameter('offset'),
-        'limit'    => (int) $config['block_size'],
+        'order'           => 'tagente.nombre ASC',
+        'disabled'        => 0,
+        'status'          => $status,
+        'search'          => $search,
+        'offset'          => (int) get_parameter('offset'),
+        'limit'           => (int) $config['block_size'],
+        'id_os'           => $id_os_sql,
+        'policies'        => $policies_sql,
+        'other_condition' => $sql_conditions_custom_fields,
     ];
 
     if ($group_id > 0) {
@@ -691,28 +919,48 @@ if ($strict_user) {
 
     $agents = tags_get_all_user_agents(false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 } else {
+    $count_filter = [
+        'disabled'        => 0,
+        'id_grupo'        => $groups,
+        'search'          => $search_sql,
+        'search_custom'   => $search_sql_custom,
+        'status'          => $status,
+        'id_os'           => $id_os_sql,
+        'policies'        => $policies_sql,
+        'other_condition' => $sql_conditions_custom_fields,
+    ];
+
+    $filter = [
+        'order'           => 'nombre ASC',
+        'id_grupo'        => $groups,
+        'disabled'        => 0,
+        'status'          => $status,
+        'search_custom'   => $search_sql_custom,
+        'search'          => $search_sql,
+        'offset'          => (int) get_parameter('offset'),
+        'limit'           => (int) $config['block_size'],
+        'id_os'           => $id_os_sql,
+        'policies'        => $policies_sql,
+        'other_condition' => $sql_conditions_custom_fields,
+    ];
+
     $total_agents = agents_count_agents_filter(
-        [
-            'disabled'      => 0,
-            'id_grupo'      => $groups,
-            'search'        => $search_sql,
-            'search_custom' => $search_sql_custom,
-            'status'        => $status,
-        ],
+        $count_filter,
         $access
     );
 
+    $query_order = $order;
+
+    if ($order['field'] === 'last_status_change') {
+        $query_order = [
+            'field'  => 'alias',
+            'field2' => 'alias',
+            'order'  => 'ASC',
+        ];
+    }
+
     $agents = agents_get_agents(
-        [
-            'order'         => 'nombre ASC',
-            'id_grupo'      => $groups,
-            'disabled'      => 0,
-            'status'        => $status,
-            'search_custom' => $search_sql_custom,
-            'search'        => $search_sql,
-            'offset'        => (int) get_parameter('offset'),
-            'limit'         => (int) $config['block_size'],
-        ],
+        $filter,
         [
             'id_agente',
             'id_grupo',
@@ -735,7 +983,7 @@ if ($strict_user) {
             'agent_version',
         ],
         $access,
-        $order
+        $query_order
     );
 }
 
@@ -769,6 +1017,14 @@ $url_up_group = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp
 $url_down_group = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=group&amp;sort=down';
 $url_up_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=up';
 $url_down_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_contact&amp;sort=down';
+$url_up_last_status_change = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_status_change&amp;sort=up';
+$url_down_last_status_change = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_status_change&amp;sort=down';
+
+// Prepare pagination.
+ui_pagination(
+    $total_agents,
+    ui_get_url_refresh(['group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status])
+);
 
 // Show data.
 $tableAgents = new stdClass();
@@ -818,6 +1074,13 @@ $tableAgents->head[9] = '<span>'.__('Last contact').'</span>';
 $tableAgents->head[9] .= ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
 $tableAgents->size[9] = '15%';
 
+$tableAgents->head[10] = '<span>'.__('Last status change').'</span>';
+$tableAgents->head[10] .= ui_get_sorting_arrows($url_up_last_status_change, $url_down_last_status_change, $selectLastStatusChangeUp, $selectLastStatusChangeDown);
+$tableAgents->size[10] = '10%';
+
+$tableAgents->head[11] = '<span>'.__('Agent events').'</span>';
+$tableAgents->head[11] = '4%';
+
 $tableAgents->align = [];
 
 $tableAgents->align[2] = 'left';
@@ -828,6 +1091,8 @@ $tableAgents->align[6] = 'left';
 $tableAgents->align[7] = 'left';
 $tableAgents->align[8] = 'left';
 $tableAgents->align[9] = 'left';
+$tableAgents->align[10] = 'left';
+$tableAgents->align[11] = 'left';
 
 $tableAgents->style = [];
 $tableAgents->data = [];
@@ -935,7 +1200,7 @@ foreach ($agents as $agent) {
 
     $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]').'</span>';
 
-    $data[10] = '';
+    $data[12] = '';
 
     if (enterprise_installed()) {
         enterprise_include_once('include/functions_config_agents.php');
@@ -993,6 +1258,27 @@ foreach ($agents as $agent) {
 
     $data[9] = agents_get_interval_status($agent);
 
+    $last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
+    $time_elapsed = !empty($last_status_change_agent) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
+    $data[10] = $time_elapsed;
+
+    $agent_event_filter = [
+        'id_agent'      => $agent['id_agente'],
+        'event_view_hr' => 48,
+        'status'        => -1,
+    ];
+
+    $fb64 = base64_encode(json_encode($agent_event_filter));
+    $data[11] = '<a href="index.php?sec=eventos&sec2=operation/events/events&fb64='.$fb64.'">'.html_print_image(
+        'images/lightning.png',
+        true,
+        [
+            'align' => 'middle',
+            'title' => __('Agent events'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
+
     // This old code was returning "never" on agents without modules, BAD !!
     // And does not print outdated agents in red. WRONG !!!!
     // $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
@@ -1000,6 +1286,20 @@ foreach ($agents as $agent) {
 }
 
 if (empty($tableAgents->data) === false) {
+    if ($order['field'] === 'last_status_change') {
+        $order_direction = $order['order'];
+        usort(
+            $table->data,
+            function ($a, $b) use ($order_direction) {
+                if ($order_direction === 'ASC') {
+                    return strtotime($a[10]) > strtotime($b[10]);
+                } else {
+                    return strtotime($a[10]) < strtotime($b[10]);
+                }
+            }
+        );
+    }
+
     html_print_table($tableAgents);
 
     $tablePagination = ui_pagination(
@@ -1046,10 +1346,68 @@ if ((bool) check_acl($config['id_user'], 0, 'AW') === true || (bool) check_acl($
     echo '</form>';
 }
 
+// Load filter div for dialog.
+echo '<div id="load-modal-filter" style="display:none"></div>';
+echo '<div id="save-modal-filter" style="display:none"></div>';
+
 ?>
 
 <script type="text/javascript">
 $(document).ready (function () {
+    var loading = 0;
+
+    /* Filter management */
+    $('#button-load-filter').click(function (event) {
+        if($('#load-filter-select').length) {
+            $('#load-filter-select').dialog();
+        } else {
+            if (loading == 0) {
+                loading = 1
+                $.ajax({
+                    method: 'POST',
+                    url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                    data: {
+                        page: 'include/ajax/agent',
+                        load_filter_modal: 1
+                    },
+                    success: function (data) {
+                        $('#load-modal-filter')
+                            .empty()
+                            .html(data);
+
+                        loading = 0;
+                    }
+                });
+            }
+        }
+    });
+
+    $('#button-save-filter').click(function (){
+    // event.preventDefault();
+        if($('#save-filter-select').length) {
+            $('#save-filter-select').dialog();
+        } else {
+            if (loading == 0) {
+                loading = 1
+                $.ajax({
+                    method: 'POST',
+                    url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                    data: {
+                        page: 'include/ajax/agent',
+                        save_filter_modal: 1,
+                        current_filter: $('#latest_filter_id').val()
+                    },
+                    success: function (data){
+                        $('#save-modal-filter')
+                        .empty()
+                        .html(data);
+                        loading = 0;
+                    }
+                });
+            }
+        }
+    });
+
     $("[class^='left']").mouseenter (function () {
         $(".agent"+$(this)[0].className).css('visibility', '');
     }).mouseleave(function () {

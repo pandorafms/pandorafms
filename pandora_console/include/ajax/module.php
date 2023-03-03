@@ -73,6 +73,7 @@ if (check_login()) {
     $get_monitor_filters = get_parameter('get_monitor_filters', 0);
     $save_monitor_filter = get_parameter('save_monitor_filter', 0);
     $update_monitor_filter = get_parameter('update_monitor_filter', 0);
+    $delete_monitor_filter = get_parameter('delete_monitor_filter', 0);
 
     if ($get_agent_modules_json_by_name === true) {
         $agent_name = get_parameter('agent_name');
@@ -1766,6 +1767,29 @@ if (check_login()) {
         }
     }
 
+    if ($delete_monitor_filter) {
+        $id = get_parameter('id');
+
+        $user_groups = users_get_groups(
+            $config['id_user'],
+            'AW',
+            users_can_manage_group_all('AW'),
+            true
+        );
+
+        $sql = 'DELETE
+            FROM tmonitor_filter
+            WHERE id_filter = '.$id.' AND id_group_filter IN ('.implode(',', array_keys($user_groups)).')';
+
+        $monitor_filters = db_process_sql($sql);
+
+        if ($monitor_filters === false) {
+            echo 'error';
+        } else {
+            echo 'ok';
+        }
+    }
+
     if ($get_monitor_filters) {
         $sql = 'SELECT id_filter, id_name FROM tmonitor_filter';
 
@@ -1786,7 +1810,7 @@ if (check_login()) {
         $user_groups = users_get_groups(
             $config['id_user'],
             'AR',
-            users_can_manage_group_all(),
+            users_can_manage_group_all('AR'),
             true
         );
 
@@ -1898,7 +1922,7 @@ if (check_login()) {
             );
 
             $data[0][1] = html_print_label_input_block(
-                __('Update filter'),
+                __('Update/delete filter'),
                 html_print_radio_button(
                     'filter_mode',
                     'update',
@@ -1922,7 +1946,7 @@ if (check_login()) {
             $user_groups_array = users_get_groups_for_select(
                 $config['id_user'],
                 'AW',
-                users_can_manage_group_all(),
+                users_can_manage_group_all('AW'),
                 true
             );
 
@@ -1975,7 +1999,7 @@ if (check_login()) {
                     'id'      => 'submit-save_filter',
                     'class'   => 'action-buttons',
                     'content' => html_print_submit_button(
-                        __('Save filter'),
+                        __('Save current filter'),
                         'srcbutton',
                         false,
                         [
@@ -1989,21 +2013,35 @@ if (check_login()) {
                 false
             );
 
+            $input_actions = html_print_submit_button(
+                __('Delete filter'),
+                'delete_filter',
+                false,
+                [
+                    'icon'    => 'delete',
+                    'mode'    => 'mini',
+                    'onclick' => 'save_delete_filter();',
+                ],
+                true
+            );
+
+            $input_actions .= html_print_submit_button(
+                __('Update filter'),
+                'srcbutton',
+                false,
+                [
+                    'icon'    => 'update',
+                    'mode'    => 'mini',
+                    'onclick' => 'save_update_filter();',
+                ],
+                true
+            );
+
             html_print_div(
                 [
                     'id'      => 'update_filter_row',
                     'class'   => 'action-buttons',
-                    'content' => html_print_submit_button(
-                        __('Update filter'),
-                        'srcbutton',
-                        false,
-                        [
-                            'icon'    => 'search',
-                            'mode'    => 'mini',
-                            'onclick' => 'save_update_filter();',
-                        ],
-                        true
-                    ),
+                    'content' => $input_actions,
                 ],
                 false
             );
@@ -2017,17 +2055,20 @@ if (check_login()) {
     function show_save_filter() {
         $('#save_filter_row2').hide();
         $('#update_filter_row').hide();
+        $('#update_delete_row').hide();
         // Filter save mode selector
         $("[name='filter_mode']").click(function() {
             if ($(this).val() == 'new') {
                 $('#save_filter_row2').hide();
                 $('#submit-save_filter').show();
                 $('#update_filter_row').hide();
+                $('#update_delete_row').hide();
             }
             else {
                 $('#save_filter_row2').show();
                 $('#update_filter_row').show();
                 $('#submit-save_filter').hide();
+                $('#update_delete_row').show();
             }
         });
         $("#save-filter-select").dialog({
@@ -2219,6 +2260,69 @@ if (check_login()) {
             $("#hidden-id_name").val($('#text-id_name').val());
             $('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + name_filter_update);
             return false;
+    }
+
+    function save_delete_filter() {
+        var id_filter_update =  $("#overwrite_filter").val();
+
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {
+                "page" : "include/ajax/module",
+                "delete_monitor_filter" : 1,
+                "id" : $("#overwrite_filter").val(),
+            },
+            function (data) {
+                $(".info_box").hide();
+                if (data == 'ok') {
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "success_update_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+                else {
+                    $(".info_box").filter(function(i, item) {
+                        if ($(item).data('type_info_box') == "error_create_filter") {
+                            return true;
+                        }
+                        else
+                            return false;
+                    }).show();
+                }
+            });
+            
+        // First remove all options of filters select.
+        $('#filter_id').find('option').remove().end();
+
+        // Add 'none' option.
+        $('#filter_id').append ($('<option></option>').html ( <?php echo "'".__('None')."'"; ?> ).attr ("value", 0));    
+
+        // Reload filters select.
+        jQuery.post ("<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            {
+                "page" : "include/ajax/module",
+                "get_monitor_filters" : 1
+            },
+            function (data) {
+                jQuery.each (data, function (i, val) {
+                    s = js_html_entity_decode(val);
+                    if (i == id_filter_update) {
+                        $('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+                    }
+                    else {
+                        $('#filter_id').append ($('<option></option>').html (s).attr ("value", i));
+                    }
+                });
+            },
+            "json"
+        );
+            
+        // Close dialog
+        $('.ui-dialog-titlebar-close').trigger('click');
+
+        return false;
     }
     
     $(document).ready(function() {

@@ -405,15 +405,15 @@ if ($pure === false) {
         if ($aclWrite === true || $aclManage === true) {
             echo '<div class="flex-row" style="width:220px;">';
             if (is_metaconsole() === false) {
-                echo '<div id="force_check_control" class="flex-column">';
+                echo '<div id="force_check_control" class="flex-colum-center">';
                 echo html_print_label(__('Force'), 'force-mode', true);
                 echo '<a id ="force_check" href="">';
                 echo html_print_image(
-                    'images/target.png',
+                    'images/change-active.svg',
                     true,
                     [
                         'title' => __('Force remote checks'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 echo '</a>';
@@ -431,7 +431,7 @@ if ($pure === false) {
                     }
                 }
 
-                echo '<div id="maintenance-mode-control" class="flex-column">';
+                echo '<div id="maintenance-mode-control" class="flex-colum-center center_switch">';
                 echo html_print_label(
                     __('Maintenance'),
                     'maintenance-mode',
@@ -446,7 +446,7 @@ if ($pure === false) {
                 echo '</div>';
             }
 
-            echo '<div id="edit-mode-control" class="flex-column">';
+            echo '<div id="edit-mode-control" class="flex-colum-center center_switch">';
             echo html_print_label(__('Edit'), 'edit-mode', true);
             echo html_print_checkbox_switch('edit-mode', 1, false, true, $disabled_edit_mode);
             echo '</div>';

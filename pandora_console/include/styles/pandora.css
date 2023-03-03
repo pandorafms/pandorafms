@@ -10151,8 +10151,14 @@ button.submitButton > div {
 
 button.buttonButton.onlyIcon,
 button.submitButton.onlyIcon {
+  /*
   min-width: 32px;
   height: 32px;
+  */
+  padding: 0 !important;
+  min-width: 2em !important;
+  width: 2em !important;
+  height: 2em !important;
   border: none;
   box-shadow: none;
 }

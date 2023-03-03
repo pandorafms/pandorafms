@@ -33,9 +33,14 @@ div#vc-controls ul.white-box-content {
   border: 0px;
 }
 
+div#vc-controls .nomn,
+div#vc-controls .nomn #vc-refr-form {
+  display: flex;
+  align-items: center;
+}
 div#vc-controls div.vc-title,
 div#vc-controls div.vc-refr {
-  margin-top: 15px;
+  /*margin-top: 15px;*/
   margin-left: 3px;
   margin-right: 3px;
 }
@@ -52,7 +57,7 @@ div#vc-controls div.vc-refr-meta > div {
   display: inline;
 }
 div#vc-controls img.vc-qr {
-  margin-top: 12px;
+  margin-top: 0;
   margin-left: 8px;
   margin-right: 8px;
 }
@@ -73,6 +78,7 @@ div#vc-controls img.vc-qr {
   display: flex;
   justify-content: space-between;
   margin: 1em 0;
+  padding-left: 12px;
 }
 
 .visual-console-edit-controls > span {
@@ -872,4 +878,9 @@ div.label strong span {
 .visual_font_size_72pt span em {
   font-size: 36pt;
   line-height: 36pt;
+}
+
+.center_switch .p-switch {
+  margin: 0;
+  padding: 0;
 }

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -193,18 +193,18 @@ foreach ($layoutDatas as $layoutData) {
     switch ($layoutData['type']) {
         case STATIC_GRAPH:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/camera_mc.png',
+                'images/static-graph.svg',
                 true,
                 [
                     'title' => __('Static Image'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case PERCENTILE_BAR:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/chart_bar.png',
+                'images/percentil.svg',
                 true,
                 [
                     'title' => __('Percentile Bar'),
@@ -215,173 +215,200 @@ foreach ($layoutDatas as $layoutData) {
 
         case PERCENTILE_BUBBLE:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/dot_red.png',
+                'images/percentil.svg',
                 true,
-                ['title' => __('Percentile Bubble')]
+                [
+                    'title' => __('Percentile Bubble'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
         case CIRCULAR_INTERIOR_PROGRESS_BAR:
         case CIRCULAR_PROGRESS_BAR:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/percentile_item.png',
+                'images/percentil.svg',
                 true,
-                ['title' => __('Percentile')]
+                [
+                    'title' => __('Percentile'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
         case MODULE_GRAPH:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/chart_curve.png',
+                'images/module-graph.svg',
                 true,
                 [
                     'title' => __('Module Graph'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case AUTO_SLA_GRAPH:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/auto_sla_graph.png',
+                'images/event-history.svg',
                 true,
-                ['title' => __('Event history graph')]
+                [
+                    'title' => __('Event history graph'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case SIMPLE_VALUE:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/binary.png',
+                'images/simple-value.svg',
                 true,
                 [
                     'title' => __('Simple Value'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case SIMPLE_VALUE_MAX:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/binary.png',
+                'images/simple-value.svg',
                 true,
                 [
                     'title' => __('Simple Value (Process Max)'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case SIMPLE_VALUE_MIN:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/binary.png',
+                'images/simple-value.svg',
                 true,
                 [
                     'title' => __('Simple Value (Process Min)'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case SIMPLE_VALUE_AVG:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/binary.png',
+                'images/simple-value.svg',
                 true,
                 [
                     'title' => __('Simple Value (Process Avg)'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case LABEL:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/tag_red.png',
+                'images/item-label.svg',
                 true,
-                ['title' => __('Label')]
+                [
+                    'title' => __('Label'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case ICON:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/photo.png',
+                'images/item-icon.svg',
                 true,
                 [
                     'title' => __('Icon'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case BOX_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/box_item.png',
+                'images/item-box.svg',
                 true,
                 [
                     'title' => __('Box'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case GROUP_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/group_green.png',
+                'images/item-group.svg',
                 true,
-                ['title' => __('Group')]
+                [
+                    'title' => __('Group'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case NETWORK_LINK:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/network_link_item.png',
+                'images/network-line.svg',
                 true,
                 [
                     'title' => __('Network link'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case LINE_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/line_item.png',
+                'images/item-line.svg',
                 true,
                 [
                     'title' => __('Line'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case COLOR_CLOUD:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/color_cloud_item.png',
+                'images/color-cloud.svg',
                 true,
-                ['title' => __('Color cloud')]
+                [
+                    'title' => __('Color cloud'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case BASIC_CHART:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/basic_chart.png',
+                'images/SNMP@svg.svg',
                 true,
-                ['title' => __('Basic chart')]
+                [
+                    'title' => __('Basic chart'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case ODOMETER:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/odometer.png',
+                'images/odometro.svg',
                 true,
-                ['title' => __('Odometer')]
+                [
+                    'title' => __('Odometer'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case CLOCK:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/clock-tab.png',
+                'images/clock.svg',
                 true,
-                ['title' => __('Clock')]
+                [
+                    'title' => __('Clock'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
@@ -510,7 +537,7 @@ foreach ($layoutDatas as $layoutData) {
 
     $table->data[($i + 1)][5] = '';
     $table->data[($i + 1)][5] .= html_print_checkbox('multiple_delete_items', $idLayoutData, false, true);
-    $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'" '.'onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
+    $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'" '.'onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
 
     // Second row
     $table->data[($i + 2)]['icon'] = '';
@@ -785,11 +812,8 @@ $buttons .= html_print_button(
     true
 );
 
-html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => $buttons,
-    ]
+html_print_action_buttons(
+    $buttons
 );
 
 echo '</form>';

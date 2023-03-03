@@ -5627,50 +5627,56 @@ sub pandora_server_statistics ($$) {
 
 			# Non-dataserver LAG calculation:
 			if ($server->{"server_type"} != DATASERVER){
-				
-				$lag_row = get_db_single_row ($dbh, 
-				"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-                        AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
-                        FROM (
-                          SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
-                              FROM tagente_estado
-                                    WHERE tagente_estado.current_interval > 0
-                                    AND tagente_estado.last_execution_try > 0
-                                    AND tagente_estado.running_by = ?
-                        ) tae
-                    JOIN (
-                            SELECT tagente_modulo.id_agente_modulo
-                                FROM tagente_modulo LEFT JOIN tagente
-                                ON tagente_modulo.id_agente = tagente.id_agente
-                                    WHERE tagente.disabled = 0
-                                    AND tagente_modulo.disabled = 0
-                        ) tam
-                    ON tae.id_agente_modulo = tam.id_agente_modulo
-                    WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval)
-                    AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)", $server->{"id_server"});
-			}
+				$lag_row = get_db_single_row (
+					$dbh,
+					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
+					FROM (
+						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+						FROM tagente_estado
+						WHERE tagente_estado.current_interval > 0
+						AND tagente_estado.last_execution_try > 0
+						AND tagente_estado.running_by = ?
+					) tae
+					JOIN (
+						SELECT tagente_modulo.id_agente_modulo
+						FROM tagente_modulo LEFT JOIN tagente
+						ON tagente_modulo.id_agente = tagente.id_agente
+						WHERE tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+					) tam
+					ON tae.id_agente_modulo = tam.id_agente_modulo
+					WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval)
+					AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)",
+					$server->{"id_server"}
+				);
+}
 			# Dataserver LAG calculation:
 			else {
-				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-                            AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag
-                        FROM (
-                          SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
-                              FROM tagente_estado
-                                    WHERE tagente_estado.current_interval > 0
-                                    AND tagente_estado.last_execution_try > 0
-                                    AND tagente_estado.running_by = ?
-                        ) tae
-                    JOIN (
-                            SELECT tagente_modulo.id_agente_modulo
-                                FROM tagente_modulo LEFT JOIN tagente
-                                ON tagente_modulo.id_agente = tagente.id_agente
-                                    WHERE tagente.disabled = 0
-                                    AND tagente_modulo.disabled = 0
-                                    AND tagente_modulo.id_tipo_modulo < 5
-                        ) tam
-                    ON tae.id_agente_modulo = tam.id_agente_modulo
-                    WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval * 1.1)
-                    AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)", $server->{"id_server"});
+				$lag_row = get_db_single_row (
+					$dbh,
+					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag
+					FROM (
+						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+						FROM tagente_estado
+						WHERE tagente_estado.current_interval > 0
+						AND tagente_estado.last_execution_try > 0
+						AND tagente_estado.running_by = ?
+						) tae
+						JOIN (
+							SELECT tagente_modulo.id_agente_modulo
+							FROM tagente_modulo LEFT JOIN tagente
+							ON tagente_modulo.id_agente = tagente.id_agente
+							WHERE tagente.disabled = 0
+							AND tagente_modulo.disabled = 0
+							AND tagente_modulo.id_tipo_modulo < 5
+						) tam
+					ON tae.id_agente_modulo = tam.id_agente_modulo
+					WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval * 1.1)
+					AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)",
+					$server->{"id_server"}
+				);
 			}
 			
 			$server->{"module_lag"} = $lag_row->{'module_lag'};

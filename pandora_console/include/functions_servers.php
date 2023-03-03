@@ -1021,22 +1021,22 @@ function servers_get_info($id_server=-1)
                         'SELECT COUNT(tam.id_agente_modulo) AS module_lag,
                         AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag" 
                         FROM (
-                          SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
-                              FROM tagente_estado
-                                    WHERE tagente_estado.current_interval > 0
-                                    AND tagente_estado.last_execution_try > 0
-                                    AND tagente_estado.running_by = %d
+                            SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+                            FROM tagente_estado
+                            WHERE tagente_estado.current_interval > 0
+                            AND tagente_estado.last_execution_try > 0
+                            AND tagente_estado.running_by = %d
                         ) tae
-                    JOIN (
+                        JOIN (
                             SELECT tagente_modulo.id_agente_modulo
-                                FROM tagente_modulo LEFT JOIN tagente
-                                ON tagente_modulo.id_agente = tagente.id_agente
-                                    WHERE tagente.disabled = 0
-                                    AND tagente_modulo.disabled = 0
+                            FROM tagente_modulo LEFT JOIN tagente
+                            ON tagente_modulo.id_agente = tagente.id_agente
+                            WHERE tagente.disabled = 0
+                            AND tagente_modulo.disabled = 0
                         ) tam
-                    ON tae.id_agente_modulo = tam.id_agente_modulo
-                    WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval)
-                    AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)',
+                        ON tae.id_agente_modulo = tam.id_agente_modulo
+                        WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval)
+                        AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)',
                         $server['id_server']
                     );
                 } else {
@@ -1044,25 +1044,25 @@ function servers_get_info($id_server=-1)
                     // MySQL 8.0 has function lag(). So, lag must be enclosed in quotations.
                     $sql = sprintf(
                         'SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-                            AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag"
+                        AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag"
                         FROM (
                           SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
-                              FROM tagente_estado
-                                    WHERE tagente_estado.current_interval > 0
-                                    AND tagente_estado.last_execution_try > 0
-                                    AND tagente_estado.running_by = %d
+                            FROM tagente_estado
+                            WHERE tagente_estado.current_interval > 0
+                            AND tagente_estado.last_execution_try > 0
+                            AND tagente_estado.running_by = %d
                         ) tae
-                    JOIN (
+                        JOIN (
                             SELECT tagente_modulo.id_agente_modulo
-                                FROM tagente_modulo LEFT JOIN tagente
-                                ON tagente_modulo.id_agente = tagente.id_agente
-                                    WHERE tagente.disabled = 0
-                                    AND tagente_modulo.disabled = 0
-                                    AND tagente_modulo.id_tipo_modulo < 5
-                        ) tam
-                    ON tae.id_agente_modulo = tam.id_agente_modulo
-                    WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval * 1.1)
-                    AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)',
+                            FROM tagente_modulo LEFT JOIN tagente
+                            ON tagente_modulo.id_agente = tagente.id_agente
+                            WHERE tagente.disabled = 0
+                            AND tagente_modulo.disabled = 0
+                            AND tagente_modulo.id_tipo_modulo < 5
+                    ) tam
+                        ON tae.id_agente_modulo = tam.id_agente_modulo
+                        WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval * 1.1)
+                        AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)',
                         $server['id_server']
                     );
                 }

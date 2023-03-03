@@ -5630,7 +5630,7 @@ sub pandora_server_statistics ($$) {
 				
 				$lag_row = get_db_single_row ($dbh, 
 				"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-                        AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag" 
+                        AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
                         FROM (
                           SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
                               FROM tagente_estado
@@ -5652,7 +5652,7 @@ sub pandora_server_statistics ($$) {
 			# Dataserver LAG calculation:
 			else {
 				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-                            AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag"
+                            AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag
                         FROM (
                           SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
                               FROM tagente_estado

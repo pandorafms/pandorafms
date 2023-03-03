@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Auxiliary functions to manage servers.
  *
@@ -45,7 +44,7 @@ function servers_get_server($id_server, $filter=false, $fields=false)
         return false;
     }
 
-    if (!is_array($filter)) {
+    if (! is_array($filter)) {
         $filter = [];
     }
 
@@ -146,6 +145,7 @@ function servers_get_total_modules()
     );
 
     return $modules;
+
 }
 
 
@@ -1017,57 +1017,40 @@ function servers_get_info($id_server=-1)
                 // Remote servers LAG Calculation (server_type != 0).
                 if ($server['server_type'] != 0) {
                     // MySQL 8.0 has function lag(). So, lag must be enclosed in quotations.
-                    $sql = sprintf(
-                        'SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-                        AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag" 
-                        FROM (
-                          SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
-                              FROM tagente_estado
-                                    WHERE tagente_estado.current_interval > 0
-                                    AND tagente_estado.last_execution_try > 0
-                                    AND tagente_estado.running_by = %d
-                        ) tae
-                    JOIN (
-                            SELECT tagente_modulo.id_agente_modulo
-                                FROM tagente_modulo LEFT JOIN tagente
-                                ON tagente_modulo.id_agente = tagente.id_agente
-                                    WHERE tagente.disabled = 0
-                                    AND tagente_modulo.disabled = 0
-                        ) tam
-                    ON tae.id_agente_modulo = tam.id_agente_modulo
-                    WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval)
-                    AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)',
-                        $server['id_server']
+                    $result = db_get_row_sql(
+                        'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag,
+                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS "lag"
+                        FROM tagente_estado, tagente_modulo, tagente
+                        WHERE utimestamp > 0
+                            AND tagente.disabled = 0
+                            AND tagente.id_agente = tagente_estado.id_agente
+                            AND tagente_modulo.disabled = 0
+                            AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                            AND current_interval > 0
+                            AND running_by = '.$server['id_server'].'
+                            AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+                            AND (UNIX_TIMESTAMP() - utimestamp) > current_interval'
                     );
                 } else {
                     // Local/Dataserver server LAG calculation.
                     // MySQL 8.0 has function lag(). So, lag must be enclosed in quotations.
-                    $sql = sprintf(
-                        'SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-                            AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag"
-                        FROM (
-                          SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
-                              FROM tagente_estado
-                                    WHERE tagente_estado.current_interval > 0
-                                    AND tagente_estado.last_execution_try > 0
-                                    AND tagente_estado.running_by = %d
-                        ) tae
-                    JOIN (
-                            SELECT tagente_modulo.id_agente_modulo
-                                FROM tagente_modulo LEFT JOIN tagente
-                                ON tagente_modulo.id_agente = tagente.id_agente
-                                    WHERE tagente.disabled = 0
-                                    AND tagente_modulo.disabled = 0
-                                    AND tagente_modulo.id_tipo_modulo < 5
-                        ) tam
-                    ON tae.id_agente_modulo = tam.id_agente_modulo
-                    WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval * 1.1)
-                    AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)',
-                        $server['id_server']
+                    $result = db_get_row_sql(
+                        'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag,
+                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS "lag"
+                        FROM tagente_estado, tagente_modulo, tagente
+                        WHERE utimestamp > 0
+                            AND tagente.disabled = 0
+                            AND tagente.id_agente = tagente_estado.id_agente
+                            AND tagente_modulo.disabled = 0
+                            AND tagente_modulo.id_tipo_modulo < 5
+                            AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                            AND current_interval > 0
+                            AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+                            AND running_by = '.$server['id_server'].'
+                            AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)'
                     );
                 }
 
-                $result = db_get_row_sql($sql);
                 // Lag over current_interval * 2 is not lag,
                 // it's a timed out module.
                 if (!empty($result['lag'])) {
@@ -1154,11 +1137,11 @@ function servers_check_remote_config($server_name)
         $config['remote_config']
     ).'/conf/'.$server_md5.'.srv.conf';
 
-    if (!isset($filenames['conf'])) {
+    if (! isset($filenames['conf'])) {
         return false;
     }
 
-    if (!isset($filenames['md5'])) {
+    if (! isset($filenames['md5'])) {
         return false;
     }
 

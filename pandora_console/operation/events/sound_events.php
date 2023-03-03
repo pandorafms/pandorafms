@@ -60,7 +60,7 @@ ob_start();
 echo '<html>';
 echo '<head>';
 
-echo '<title>'.__('Sound Events').'</title>';
+echo '<title>'.__('Accoustic console').'</title>';
 ui_require_css_file('wizard');
 ui_require_css_file('discovery');
 ?>
@@ -161,7 +161,7 @@ if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
 
 echo '</head>';
 echo "<body class='sound_events'>";
-echo "<h1 class='modalheaderh1'>".__('Sound console').'</h1>';
+echo "<h1 class='modalheaderh1'>".__('Accoustic console').'</h1>';
 
 // Connection lost alert.
 ui_require_css_file('register', 'include/styles/', true);
@@ -251,6 +251,11 @@ $sounds = [
     'negativebeep.wav'                   => 'Negative beep',
     'Star_Trek_emergency_simulation.wav' => 'StarTrek emergency simulation',
 ];
+
+$eventsounds = mysql_db_get_row_sql('SELECT * FROM tevent_sound WHERE active = 1');
+foreach ($eventsounds as $key => $row) {
+    $sounds[$row['sound']] = $row['name'];
+}
 
 $inputs[] = [
     'label'     => \__('Sounds'),

@@ -2412,14 +2412,17 @@ function events_create_event(
         $source = get_product_name();
     }
 
+    // Get Timestamp.
+    $timestamp = time();
+
     $values = [
         'id_agente'             => $id_agent,
         'id_usuario'            => $id_user,
         'id_grupo'              => $id_group,
         'estado'                => $status,
-        'timestamp'             => date('Y-m-d H:i:s'),
+        'timestamp'             => date('Y-m-d H:i:s', $timestamp),
         'evento'                => $event,
-        'utimestamp'            => time(),
+        'utimestamp'            => $timestamp,
         'event_type'            => $event_type,
         'id_agentmodule'        => $id_agent_module,
         'id_alert_am'           => $id_aam,

@@ -423,8 +423,7 @@ if ($view_graph) {
     );
 
     if ($graph_return) {
-        echo "<table id='graph-container' class='databox filters' cellpadding='0' cellspacing='0' style='height:100%;width:100%;overflow:hidden;'>";
-        echo '<tr><td>';
+        echo '<div style="background-color: white;height: 700px;overflow-y: auto;padding-top:20px;">';
         if (!is_ajax()) {
             echo '<div id="spinner_loading" class="loading invisible" style="display:flex;flex-direction:column-reverse;justify-content:center;align-items:center">';
             echo html_print_image('images/spinner.gif', true, ['width' => '20px']);
@@ -442,7 +441,7 @@ if ($view_graph) {
 
         echo '</div>';
 
-        echo '</td></tr></table>';
+        echo '</div>';
     } else {
         ui_print_info_message([ 'no_close' => true, 'message' => __('No data.') ]);
     }

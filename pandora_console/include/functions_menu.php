@@ -881,6 +881,20 @@ if (is_ajax()) {
             }
         }
 
+        if (is_metaconsole() === true) {
+            $image_about = ui_get_full_url('/enterprise/images/custom_logo/pandoraFMS_metaconsole_full.svg', false, false, false);
+
+            if ($config['meta_custom_logo'] === 'pandoraFMS_metaconsole_full.svg') {
+                $image_about = 'images/custom_logo/'.$config['meta_custom_logo'];
+            } else {
+                $image_about = '../images/custom_logo/'.$config['meta_custom_logo'];
+            }
+
+            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
+                $image_about = $image_about;
+            }
+        }
+
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
                 <ul>
@@ -896,23 +910,24 @@ if (is_ajax()) {
                     <table class="table-about">
                         <tbody>
                             <tr>
-                                <th style="width: 40%;">
+                                <th style="width: 40%; border: 0px;">
                                     <img src="'.$image_about.'" alt="logo" width="70%">
                                 </th>
-                                <th style="width: 60%; text-align: left;">
+                                <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
                                     <p><span>'.__('Version').' '.$pandora_version.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
                                     <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
                                     <p><span>'.__('Build').'</span> '.$build_version.'</p>
                                     <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span> 2023/04/26</p>';
-        if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+
+        if (((bool) check_acl($config['id_user'], 0, 'PM') === true) && (is_metaconsole() === false)) {
             $dialogButtons = [];
 
             $dialogButtons[] = html_print_button(
                 __('Update manager'),
                 'update_manager',
                 false,
-                'location.href=\''.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'\'',
+                'location.href="'.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'"',
                 [
                     'icon' => 'cog',
                     'mode' => 'mini secondary',
@@ -924,7 +939,7 @@ if (is_ajax()) {
                 __('System report'),
                 'system_report',
                 false,
-                'location.href=\''.ui_get_full_url('/index.php?sec=gextensions&sec2=tools/diagnostics', false, false, false).'\'',
+                'location.href="'.ui_get_full_url('/index.php?sec=gextensions&sec2=tools/diagnostics', false, false, false).'"',
                 [
                     'icon' => 'info',
                     'mode' => 'mini secondary',

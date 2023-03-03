@@ -2352,3 +2352,18 @@ function show_hide_password(e, url) {
     inputPass.style.backgroundImage = "url(" + url + "/images/enable.svg)";
   }
 }
+
+// Add observer to clear value when type attribute changes.
+function observerInputPassword(name) {
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === "attributes" && mutation.attributeName === "type") {
+        mutation.target.value = "";
+      }
+    });
+  });
+
+  Array.from($("input[type=password]")).forEach(function(input) {
+    observer.observe(input, { attributes: true });
+  });
+}

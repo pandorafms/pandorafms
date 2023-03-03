@@ -5,7 +5,7 @@
 ## Tested versions ##
 # Centos 8.4, 8.5
 # Rocky 8.4, 8.5, 8.6, 8.7
-# Almalinuz 8.4, 8.5
+# Almalinux 8.4, 8.5
 # RedHat 8.5
 
 #Constants
@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='202301251'
+S_VERSION='202302201'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -106,6 +106,17 @@ check_root_permissions () {
         echo -e "${green}OK${reset}"
     fi
 }
+
+installing_docker () {
+    #Installing docker for debug
+    echo "Start installig docker" &>> "$LOGFILE"
+    dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo &>> "$LOGFILE"
+    dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin &>> "$LOGFILE"
+    systemctl disable --now docker &>> "$LOGFILE"
+    systemctl disable docker.socket --now &>> "$LOGFILE"
+    echo "End installig docker" &>> "$LOGFILE"
+}
+
 
 ## Main
 echo "Starting PandoraFMS Community deployment EL8 ver. $S_VERSION"
@@ -207,6 +218,7 @@ else
     execute_cmd "dnf config-manager --set-enabled powertools" "Configuring Powertools"
 fi
 
+execute_cmd "installing_docker" "Installing Docker for debug"
 
 #Installing wget
 execute_cmd "dnf install -y wget" "Installing wget"
@@ -454,7 +466,7 @@ innodb_flush_log_at_trx_commit = 0
 innodb_flush_method = O_DIRECT
 innodb_log_file_size = 64M
 innodb_log_buffer_size = 16M
-innodb_io_capacity = 100
+innodb_io_capacity = 300
 thread_cache_size = 8
 thread_stack    = 256K
 max_connections = 100
@@ -483,6 +495,7 @@ EO_CONFIG_F
     if [ "$MYVER" -eq '80' ] ; then
         sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
         sed -i -e "s/#skip-log-bin/skip-log-bin/g" /etc/my.cnf
+        sed -i -e "s/character-set-server=utf8/character-set-server=utf8mb4/g" /etc/my.cnf
     fi
 
     execute_cmd "systemctl restart mysqld" "Configuring database engine"
@@ -517,7 +530,7 @@ execute_cmd "curl -LSs --output pandorafms_agent_linux-7.0NG.noarch.rpm ${PANDOR
 execute_cmd "dnf install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "Installing Pandora FMS packages"
 
 # Copy gotty utility
-execute_cmd "wget https://pandorafms.com/library/wp-content/uploads/2019/11/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
+execute_cmd "wget https://firefly.pandorafms.com/pandorafms/utils/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
 tar xvzf gotty_linux_amd64.tar.gz &>> $LOGFILE
 execute_cmd "mv gotty /usr/bin/" 'Installing gotty util'
 
@@ -743,7 +756,7 @@ execute_cmd "systemctl start pandora_agent_daemon" "Starting Pandora FMS Agent"
 
 cat > /etc/issue.net << EOF_banner
 
-Welcome to Pandora FMS appliance on CentOS
+Welcome to Pandora FMS appliance on RHEL/Rocky Linux 8 
 ------------------------------------------
 Go to Public http://$ipplublic/pandora_console$to to login web console
 $(ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v "172.17.0.1" | awk '{print $2}' | awk -F '/' '{print "Go to Local http://"$1"/pandora_console to login web console"}')

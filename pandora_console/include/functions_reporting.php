@@ -68,6 +68,7 @@ define('REPORT_STATUS_IGNORED', 5);
 
 // Clases.
 use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\Enterprise\Metaconsole\Synchronizer;
 use PandoraFMS\Event;
 use PandoraFMS\Module;
 
@@ -7421,6 +7422,14 @@ function reporting_text($report, $content)
 }
 
 
+/**
+ * Build SQL report item.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content info.
+ *
+ * @return array
+ */
 function reporting_sql($report, $content)
 {
     global $config;
@@ -7438,15 +7447,98 @@ function reporting_sql($report, $content)
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text();
 
-    if ($config['metaconsole'] && !empty($content['server_name'])) {
-        $id_meta = metaconsole_get_id_server(
+    if (is_metaconsole() === true
+        && empty($content['server_name']) === false
+        && $content['server_name'] !== 'all'
+    ) {
+        $id_server = metaconsole_get_id_server(
             $content['server_name']
         );
-
-        $server = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
     }
 
+    if (is_metaconsole() === true && $content['server_name'] === 'all') {
+        $sync = new Synchronizer();
+        $results = $sync->apply(
+            function ($node) use ($report, $content) {
+                try {
+                    $node->connect();
+                    $rs = reporting_sql_auxiliary($report, $content);
+                    $node->disconnect();
+                } catch (Exception $e) {
+                    return [
+                        'error' => __(
+                            'Failed to connect to node %s',
+                            $node->server_name()
+                        ),
+                    ];
+                }
+
+                if ($rs === false) {
+                    return ['result' => []];
+                }
+
+                return ['result' => $rs];
+            },
+            false
+        );
+
+        $data = [];
+        $return['correct'] = 1;
+        $return['error'] = '';
+
+        foreach ($results as $id_node => $items) {
+            foreach ($items['result']['data'] as $key => $item) {
+                $items['result']['data'][$key] = (['node_id' => $id_node] + $items['result']['data'][$key]);
+            }
+
+            if ((int) $items['result']['correct'] !== 1) {
+                $return['correct'] = 0;
+            }
+
+            if ($items['result']['error'] !== '') {
+                $return['error'] = $items['result']['error'];
+            }
+
+            $return['sql'] = $items['result']['sql'];
+
+            $data = array_merge($data, $items['result']['data']);
+        }
+
+        $return['data'] = $data;
+    } else {
+        try {
+            if (is_metaconsole() === true && $id_server > 0) {
+                $node = new Node($id_server);
+                $node->connect();
+            }
+
+            $query_result = reporting_sql_auxiliary($report, $content);
+            $return = array_merge($return, $query_result);
+
+            if (is_metaconsole() === true && $id_server > 0) {
+                $node->disconnect();
+            }
+        } catch (\Exception $e) {
+            if (is_metaconsole() === true && $id_server > 0) {
+                $node->disconnect();
+            }
+        }
+    }
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Auxiliary function for reporting_sql.
+ *
+ * @param array $report  Report info.
+ * @param array $content Content info.
+ *
+ * @return array
+ */
+function reporting_sql_auxiliary($report, $content)
+{
     if ($content['treport_custom_sql_id'] != 0) {
         $sql = io_safe_output(
             db_get_value_filter(
@@ -7459,7 +7551,7 @@ function reporting_sql($report, $content)
         $sql = $content['external_source'];
     }
 
-    // Check if exist sql macro.
+    // Check if SQL macro exists.
     $sql = reporting_sql_macro($report, $sql);
 
     // Do a security check on SQL coming from the user.
@@ -7514,11 +7606,7 @@ function reporting_sql($report, $content)
         $return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
     }
 
-    if ($config['metaconsole'] && !empty($content['server_name'])) {
-        metaconsole_restore_db();
-    }
-
-    return reporting_check_structure_content($return);
+    return $return;
 }
 
 

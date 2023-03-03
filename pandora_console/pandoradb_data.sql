@@ -44,7 +44,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('days_autodisable_deletion','30'),
 ('graph_res','5'),
 ('step_compact','1'),
-('db_scheme_first_version', '6.0dev'),
+('db_scheme_first_version', '7.0NG'),
 ('db_scheme_version','7.0NG'),
 ('db_scheme_build','PD230303'),
 ('show_unknown','0'),

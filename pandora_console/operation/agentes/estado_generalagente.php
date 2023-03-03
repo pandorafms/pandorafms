@@ -644,6 +644,7 @@ $last_incident = db_get_row_sql(
 );
 
 if ($last_incident != false) {
+    $table_incident = new stdClass();
     $table_incident->id = 'agent_incident_main';
     $table_incident->width = '100%';
     $table_incident->cellspacing = 0;

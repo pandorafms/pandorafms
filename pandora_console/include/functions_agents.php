@@ -519,6 +519,27 @@ function agents_get_agents(
         $search_custom = '';
     }
 
+    if (isset($filter['id_os'])) {
+        $id_os = $filter['id_os'];
+        unset($filter['id_os']);
+    } else {
+        $id_os = '';
+    }
+
+    if (isset($filter['policies'])) {
+        $policies = $filter['policies'];
+        unset($filter['policies']);
+    } else {
+        $policies = '';
+    }
+
+    if (isset($filter['other_condition'])) {
+        $other_condition = $filter['other_condition'];
+        unset($filter['other_condition']);
+    } else {
+        $other_condition = '';
+    }
+
     if (isset($filter['offset'])) {
         $offset = $filter['offset'];
         unset($filter['offset']);
@@ -692,25 +713,38 @@ function agents_get_agents(
         $where_nogroup = '1 = 1';
     }
 
+    $policy_join = '';
+
+    if ($policies !== '') {
+        $policy_join = 'INNER JOIN tpolicy_agents
+            ON tpolicy_agents.id_agent=tagente.id_agente';
+    }
+
     if ($extra) {
         $where = sprintf(
-            '(%s OR (%s)) AND (%s) AND (%s) %s AND %s',
+            '(%s OR (%s)) AND (%s) AND (%s) %s AND %s %s %s %s',
             $sql_extra,
             $where,
             $where_nogroup,
             $status_sql,
             $search,
-            $disabled
+            $disabled,
+            $id_os,
+            $policies,
+            $other_condition
         );
     } else {
         $where = sprintf(
-            '%s AND %s AND (%s) %s AND %s %s',
+            '%s AND %s AND (%s) %s AND %s %s %s %s %s',
             $where,
             $where_nogroup,
             $status_sql,
             $search,
             $disabled,
-            $search_custom
+            $search_custom,
+            $id_os,
+            $policies,
+            $other_condition
         );
     }
 
@@ -720,9 +754,11 @@ function agents_get_agents(
 		FROM `%s` tagente
         LEFT JOIN tagent_secondary_group
             ON tagent_secondary_group.id_agent=tagente.id_agente
+        %s
 		WHERE %s %s',
         implode(',', $fields),
         $table_name,
+        $policy_join,
         $where,
         $order
     );

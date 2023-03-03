@@ -2572,6 +2572,17 @@ function html_print_input_text_extended(
         $output .= 'alt="'.$alt.'" ';
     }
 
+    if ($hide_div_eye !== false) {
+        echo "<script>
+        $(document).ready (function () {
+            $('input[name=\"".$name."\"]').val(\"".$value."\")
+            
+            observerInputPassword('".$name."');
+        });
+        </script>";
+        $value = '';
+    }
+
     // Attributes specified by function call.
     $attrs = [
         'name'      => 'unnamed',

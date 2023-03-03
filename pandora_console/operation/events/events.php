@@ -2414,8 +2414,7 @@ try {
 
     // Close.
     $active_filters_div .= '</div>';
-    $active_filters_div .= '<div id="events_buffers_display"></div>';
-
+    // $active_filters_div .= '<div id="events_buffers_display"></div>';
     $table_id = 'table_events';
     $form_id = 'events_form';
 
@@ -2490,6 +2489,9 @@ try {
 } catch (Exception $e) {
     ui_print_error_message($e->getMessage());
 }
+
+// Close.
+echo '<div id="events_buffers_display"></div>';
 
 // Event responses.
 if (is_user_admin($config['id_user'])) {

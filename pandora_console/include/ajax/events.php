@@ -2352,6 +2352,11 @@ if ($drawConsoleSound === true) {
                 'Star_Trek_emergency_simulation.wav' => 'StarTrek emergency simulation',
             ];
 
+            $eventsounds = mysql_db_get_all_rows_sql('SELECT * FROM tevent_sound WHERE active = 1');
+            foreach ($eventsounds as $key => $row) {
+                $sounds[$row['sound']] = $row['name'];
+            }
+
             $inputs[] = [
                 'class'         => 'test-sounds',
                 'direct'        => 1,

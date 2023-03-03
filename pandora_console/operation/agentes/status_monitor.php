@@ -227,7 +227,7 @@ if ($load_filter_id > 0) {
     $user_groups_fl = users_get_groups(
         $config['id_user'],
         'AR',
-        users_can_manage_group_all(),
+        users_can_manage_group_all('AR'),
         true
     );
 
@@ -286,6 +286,8 @@ if ($loaded_filter['id_filter'] > 0) {
         }
     }
 }
+
+$all_groups = [];
 
 // Agent group selector.
 if (!$is_metaconsole) {
@@ -937,7 +939,7 @@ $table->data[4][0] = html_print_button(
 
 $table->cellstyle[4][0] .= 'padding-top: 0px;';
 $table->data[4][0] .= html_print_button(
-    __('Save filter'),
+    __('Manage filter'),
     'save-filter',
     false,
     '',
@@ -2010,7 +2012,7 @@ if (!empty($result)) {
                 } else {
                     $sub_string = substr(io_safe_output($row['datos']), 0, 12);
                     if ($module_value == $sub_string) {
-                        if ($module_value == 0 && !$sub_string) {
+                        if ((empty($module_value) === true || $module_value == 0) && !$sub_string) {
                             $salida = 0;
                         } else {
                             $data_macro = modules_get_unit_macro($row['datos'], $row['unit']);

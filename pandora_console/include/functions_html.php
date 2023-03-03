@@ -84,6 +84,27 @@ function html_debug_print($var, $file='', $oneline=false)
 }
 
 
+/**
+ * Console log.
+ */
+function jslog($var)
+{
+    $more_info = '';
+    if (is_string($var)) {
+        $more_info = 'size: '.strlen($var);
+    } else if (is_bool($var)) {
+        $more_info = 'val: '.($var ? 'true' : 'false');
+    } else if (is_null($var)) {
+        $more_info = 'is null';
+    } else if (is_array($var)) {
+        $more_info = count($var);
+    }
+
+    echo '<script>console.log("'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info.'");</script>'."\n";
+    echo '<script>console.log('.json_encode($var).');</script>';
+}
+
+
 // Alias for "html_debug_print"
 function html_debug($var, $file='', $oneline=false)
 {

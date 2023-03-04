@@ -60,7 +60,7 @@ set_unless_defined($idVisualConsole, 0);
 // Set default.
 $idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
 if (empty($idVisualConsole) === true) {
-    $idVisualConsole = get_parameter('id_visualmap', 0);
+    $idVisualConsole = get_parameter('id', 0);
 }
 
 if (!defined('METACONSOLE')) {
@@ -81,7 +81,6 @@ $action = get_parameterBetweenListValues(
     ],
     'new'
 );
-
 $activeTab = get_parameterBetweenListValues(
     'tab',
     [
@@ -94,20 +93,17 @@ $activeTab = get_parameterBetweenListValues(
     'data'
 );
 
-// Visual console creation tab and actions
+
+// Visual console creation tab and actions.
 if (empty($idVisualConsole)) {
     $visualConsole = null;
 
-    // General ACL
-    // $vconsole_read = check_acl ($config['id_user'], 0, "VR");
+    // General ACL.
     $vconsole_write = check_acl($config['id_user'], 0, 'VW');
     $vconsole_manage = check_acl($config['id_user'], 0, 'VM');
-}
-// The visual console exists
-else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
-    // Load the visual console data
+} else {
+    // Load the visual console data.
     $visualConsole = db_get_row_filter('tlayout', ['id' => $idVisualConsole]);
-
     // The visual console should exist.
     if (empty($visualConsole)) {
         db_pandora_audit(
@@ -118,20 +114,12 @@ else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
         return;
     }
 
-    // The default group id is 0
+    // The default group id is 0.
     set_unless_defined($visualConsole['id_group'], 0);
 
-    // ACL for the existing visual console
-    // $vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
+    // ACL for the existing visual console.
     $vconsole_write = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VW');
     $vconsole_manage = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VM');
-} else {
-    db_pandora_audit(
-        AUDIT_LOG_ACL_VIOLATION,
-        'Trying to access report builder'
-    );
-    include 'general/noaccess.php';
-    return;
 }
 
 // This section is only to manage the visual console
@@ -803,7 +791,7 @@ if (!defined('METACONSOLE')) {
     $url_view = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$idVisualConsole.'&refr='.$view_refresh;
 } else {
     $url_base = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&action2=';
-    $url_view = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$idVisualConsole.'&refr='.$view_refresh;
+    $url_view = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id='.$idVisualConsole.'&refr='.$view_refresh;
 }
 
 // Hash for auto-auth in public link.
@@ -863,27 +851,24 @@ $buttons[$activeTab]['active'] = true;
 
 $tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
 
-if (is_metaconsole() === false) {
-    // Header.
-    ui_print_standard_header(
-        $visualConsoleName,
-        'images/visual_console.png',
-        false,
-        $tab_builder,
-        false,
-        $buttons,
+ui_print_standard_header(
+    $visualConsoleName,
+    'images/visual_console.png',
+    false,
+    $tab_builder,
+    false,
+    $buttons,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Topology maps'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Visual console'),
-            ],
-        ]
-    );
-}
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Visual console'),
+        ],
+    ]
+);
 
 if ($statusProcessInDB !== null) {
     echo $statusProcessInDB['message'];

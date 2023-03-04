@@ -73,7 +73,7 @@ ui_require_css_file('visual_maps');
 ui_require_css_file('register');
 
 // Query parameters.
-$visualConsoleId = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
+$visualConsoleId = (int) get_parameter('id');
 // To hide the menus.
 $pure = (bool) get_parameter('pure', $config['pure']);
 // Refresh interval in seconds.
@@ -81,7 +81,6 @@ $refr = (int) get_parameter('refr', $config['vc_refr']);
 
 $width = (int) get_parameter('width', 0);
 $height = (int) get_parameter('height', 0);
-
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
 $visualConsole = null;
@@ -207,42 +206,42 @@ $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual
 $options['view']['active'] = true;
 
 if (is_metaconsole() === false) {
-    if (!$config['pure']) {
-        $options['pure']['text'] = '<a id ="full_screen" href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
-            'images/fullscreen@svg.svg',
-            true,
-            [
-                'title' => __('Full screen mode'),
-                'class' => 'main_menu_icon invert_filter',
-            ]
-        ).'</a>';
-
-        // Header.
-        ui_print_standard_header(
-            $visualConsoleName,
-            'images/visual_console.png',
-            false,
-            'visual_console_view',
-            false,
-            $options,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Topology maps'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('Visual console'),
-                ],
-            ]
-        );
-    }
-
     // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 0);
 } else {
     // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 1);
+}
+
+if (!$config['pure']) {
+    $options['pure']['text'] = '<a id ="full_screen" href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
+        'images/fullscreen@svg.svg',
+        true,
+        [
+            'title' => __('Full screen mode'),
+            'class' => 'main_menu_icon invert_filter',
+        ]
+    ).'</a>';
+
+    // Header.
+    ui_print_standard_header(
+        $visualConsoleName,
+        'images/visual_console.png',
+        false,
+        'visual_console_view',
+        false,
+        $options,
+        [
+            [
+                'link'  => '',
+                'label' => __('Topology maps'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Visual console'),
+            ],
+        ]
+    );
 }
 
 $edit_capable = (bool) (
@@ -252,7 +251,7 @@ $edit_capable = (bool) (
 
 if ($pure === false) {
     if ($edit_capable === true) {
-        echo '<div id ="edit-vc">';
+        echo '<div id ="edit-vc" class="fixed_filter_bar">';
         echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
         echo '<div class="toolbox-buttons">';
         $class_camera = 'camera_min link-create-item';
@@ -403,7 +402,7 @@ if ($pure === false) {
         echo '</div>';
 
         if ($aclWrite === true || $aclManage === true) {
-            echo '<div class="flex-row" style="width:220px;">';
+            echo '<div class="flex-row" style="width:220px;padding:10px 30px;">';
             if (is_metaconsole() === false) {
                 echo '<div id="force_check_control" class="flex-colum-center">';
                 echo html_print_label(__('Force'), 'force-mode', true);
@@ -476,7 +475,7 @@ if ($pure === true) {
     // Quit fullscreen.
     echo '<li class="nomn">';
     if (is_metaconsole() === true) {
-        $urlNoFull = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$visualConsoleId.'&refr='.$refr;
+        $urlNoFull = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id='.$visualConsoleId.'&refr='.$refr;
     } else {
         $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr;
     }

@@ -150,7 +150,7 @@ $table->size[1] = '50%';
 $table->data = [];
 $table->colspan = [];
 
-$table->colspan[0][0] = 2;
+$table->colspan[-1][0] = 2;
 $table->data[-1][0] = '<div class="section_table_title">'.__('Licence').'</div>';
 
 $table->colspan[0][0] = 2;

@@ -82,7 +82,7 @@ switch ($action) {
             echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=".$activeTab.'&id_visual_console='.$idVisualConsole."' enctype='multipart/form-data'>";
             html_print_input_hidden('action', 'update');
         } else {
-            echo "<form id='back' action='index.php?sec=screen&sec2=screens/screens&tab=".$activeTab.'&id_visual_console='.$idVisualConsole.'&id_visualmap='.$idVisualConsole."&action=visualmap' method='post' enctype='multipart/form-data'>";
+            echo "<form id='back' action='index.php?sec=screen&sec2=screens/screens&tab=".$activeTab.'&id_visual_console='.$idVisualConsole.'&id='.$idVisualConsole."&action=visualmap' method='post' enctype='multipart/form-data'>";
             html_print_input_hidden('action2', 'update');
         }
     break;
@@ -136,14 +136,8 @@ echo $formHidden;
 
 $table = new stdClass();
 $table->width = '100%';
-if (is_metaconsole() === true) {
-    $table->class = 'databox data';
-    $table->head[0] = __('Create visual console');
-    $table->head_colspan[0] = 5;
-    $table->headstyle[0] = 'text-align: center';
-    $table->align[0] = 'left';
-    $table->align[1] = 'left';
-}
+
+
 
 $table->class = 'databox filter-table-adv';
 $table->size = [];
@@ -151,6 +145,9 @@ $table->size[0] = '50%';
 $table->size[1] = '50%';
 
 $table->data = [];
+
+$table->colspan[-1][0] = 2;
+$table->data[-1][0] = '<div class="section_table_title">'.__('Create visual console').'</div>';
 
 $table->data[0][] = html_print_label_input_block(
     __('Name'),

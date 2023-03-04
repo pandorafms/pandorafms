@@ -48,9 +48,7 @@ $strict_user = db_get_value(
     $config['id_user']
 );
 
-// ACL for the existing visual console
-// if (!isset($vconsole_read))
-// $vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
+// ACL for the existing visual console.
 if (!isset($vconsole_write)) {
     $vconsole_write = check_acl(
         $config['id_user'],
@@ -82,36 +80,18 @@ require_once $config['homedir'].'/include/functions_agents.php';
 $table = new stdClass();
 $table->id = 'wizard_table';
 $table->head = [];
+$table->width = '100%';
+$table->class = 'databox filter-table-adv';
 if (is_metaconsole() === false) {
     $metaconsole_hack = '';
-    $table->width = '100%';
-    $table->class = 'databox filters';
 } else {
     $metaconsole_hack = '../../';
-    $table->width = '100%';
-    $table->class = 'databox filters';
-    $table->styleTable = ' margin-top:0px';
     include_once $config['homedir'].'/enterprise/meta/include/functions_html_meta.php';
 }
 
-$table->style = [];
-
-$table->style[0] = 'font-weight: bold; ';
-
-$table->style[2] = 'font-weight: bold; ';
-
 $table->size = [];
-$table->size[0] = '15%';
-$table->size[1] = '15%';
-$table->size[2] = '15%';
-$table->size[3] = '15%';
-
-
-$table->align = [];
-$table->align[0] = 'left';
-$table->align[1] = 'left';
-$table->align[2] = 'left';
-$table->align[3] = 'left';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 
 $table->data = [];
 
@@ -146,55 +126,60 @@ $type_list = [
     SIMPLE_VALUE   => __('Simple value'),
 ];
 
-
 $table->rowstyle['all_0'] = 'display: none;';
-$table->data['all_0'][0] = __('Type');
-$table->colspan['all_0'][1] = '3';
-$table->data['all_0'][1] = html_print_select(
-    $type_list,
-    'type',
-    '',
-    'hidden_rows()',
-    '',
-    '',
-    true,
-    false,
-    false
+$table->data['all_0'][0] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        $type_list,
+        'type',
+        '',
+        'hidden_rows()',
+        '',
+        '',
+        true,
+        false,
+        false
+    )
 );
 
 
 $table->rowstyle['staticgraph'] = 'display: none;';
-$table->data['staticgraph'][0] = __('Image');
-$table->colspan['staticgraph'][1] = '3';
-$table->data['staticgraph'][1] = html_print_select(
-    $images_list,
-    'image',
-    '',
-    '',
-    '',
-    '',
-    true
+$table->data['staticgraph'][0] = html_print_label_input_block(
+    __('Image'),
+    html_print_select(
+        $images_list,
+        'image',
+        '',
+        '',
+        '',
+        '',
+        true
+    )
 );
-
 
 $table->rowstyle['all_1'] = 'display: none;';
-$table->data['all_1'][0] = __('Range between elements (px)');
-$table->colspan['all_1'][1] = '3';
-$table->data['all_1'][1] = html_print_input_text(
-    'range',
-    50,
-    '',
-    5,
-    5,
-    true
+$table->data['all_1'][0] = html_print_label_input_block(
+    __('Range between elements (px)'),
+    html_print_input_text(
+        'range',
+        50,
+        '',
+        5,
+        5,
+        true
+    )
 );
 
+$input_size = __('Width').': ';
+$input_size .= html_print_input_text('width', 0, '', 5, 5, true);
+$input_size .= __('Height').': ';
+$input_size .= html_print_input_text('height', 0, '', 5, 5, true);
 
 $table->rowstyle['staticgraph_modulegraph'] = 'display: none;';
-$table->data['staticgraph_modulegraph'][0] = __('Size (px)');
-$table->colspan['staticgraph_modulegraph'][1] = '3';
-$table->data['staticgraph_modulegraph'][1] = __('Width').': '.html_print_input_text('width', 0, '', 5, 5, true);
-$table->data['staticgraph_modulegraph'][1] .= '&nbsp;&nbsp;&nbsp;'.__('Height').': '.html_print_input_text('height', 0, '', 5, 5, true);
+$table->data['staticgraph_modulegraph'][0] = html_print_label_input_block(
+    __('Size (px)'),
+    '<div>'.$input_size.'</div>'
+);
 
 $fontf = [
     'Roboto'       => 'Roboto',
@@ -227,78 +212,81 @@ $fonts = [
     '196pt' => '196pt',
 ];
 
+
 $table->rowstyle['all_9'] = 'display: none;';
-$table->data['all_9'][0] = __('Font');
-$table->colspan['all_9'][1] = '3';
-$table->data['all_9'][1] = html_print_select(
-    $fontf,
-    'fontf',
-    $fontf['Roboto'],
-    '',
-    '',
-    '',
-    true
+$table->data['all_9'][0] = html_print_label_input_block(
+    __('Font'),
+    html_print_select(
+        $fontf,
+        'fontf',
+        $fontf['Roboto'],
+        '',
+        '',
+        '',
+        true
+    )
 );
 
-$table->rowstyle['all_10'] = 'display: none;';
-$table->data['all_10'][0] = __('Font size');
-$table->colspan['all_10'][1] = '3';
-$table->data['all_10'][1] = html_print_select(
-    $fonts,
-    'fonts',
-    $fonts['12pt'],
-    '',
-    '',
-    '',
-    true
+$table->rowstyle['all_9'] = 'display: none;';
+$table->data['all_9'][1] = html_print_label_input_block(
+    __('Font size'),
+    html_print_select(
+        $fonts,
+        'fonts',
+        $fonts['12pt'],
+        '',
+        '',
+        '',
+        true
+    )
 );
-
 
 $table->rowstyle['modulegraph_simplevalue'] = 'display: none;';
-$table->data['modulegraph_simplevalue'][0] = __('Period');
-$table->colspan['modulegraph_simplevalue'][1] = '3';
-$table->data['modulegraph_simplevalue'][1] = html_print_extended_select_for_time(
-    'period',
-    '',
-    '',
-    '',
-    '',
-    false,
-    true
+$table->data['modulegraph_simplevalue'][0] = html_print_label_input_block(
+    __('Period'),
+    html_print_extended_select_for_time(
+        'period',
+        '',
+        '',
+        '',
+        '',
+        false,
+        true
+    )
 );
-
 
 $table->rowstyle['simplevalue'] = 'display: none;';
-$table->data['simplevalue'][0] = __('Process');
-$table->data['simplevalue'][1] = html_print_select(
-    [
-        PROCESS_VALUE_MIN => __('Min value'),
-        PROCESS_VALUE_MAX => __('Max value'),
-        PROCESS_VALUE_AVG => __('Avg value'),
-    ],
-    'process_value',
-    PROCESS_VALUE_AVG,
-    '',
-    __('None'),
-    PROCESS_VALUE_NONE,
-    true
+$table->data['simplevalue'][0] = html_print_label_input_block(
+    __('Process'),
+    html_print_select(
+        [
+            PROCESS_VALUE_MIN => __('Min value'),
+            PROCESS_VALUE_MAX => __('Max value'),
+            PROCESS_VALUE_AVG => __('Avg value'),
+        ],
+        'process_value',
+        PROCESS_VALUE_AVG,
+        '',
+        __('None'),
+        PROCESS_VALUE_NONE,
+        true
+    )
 );
 
-
 $table->rowstyle['percentileitem_1'] = 'display: none;';
-$table->data['percentileitem_1'][0] = __('Width (px)');
-$table->data['percentileitem_1'][1] = html_print_input_text('percentileitem_width', 0, '', 5, 5, true);
-
+$table->data['percentileitem_1'][0] = html_print_label_input_block(
+    __('Width (px)'),
+    html_print_input_text('percentileitem_width', 0, '', 5, 5, true)
+);
 
 $table->rowstyle['percentileitem_2'] = 'display: none;';
-$table->data['percentileitem_2'][0] = __('Max value');
-$table->data['percentileitem_2'][1] = html_print_input_text('max_value', 0, '', 5, 5, true);
+$table->data['percentileitem_2'][0] = html_print_label_input_block(
+    __('Max value'),
+    html_print_input_text('max_value', 0, '', 5, 5, true)
+);
 
-
-$table->rowstyle['percentileitem_3'] = 'display: none;';
-$table->data['percentileitem_3'][0] = __('Type');
-$table->colspan['percentileitem_3'][1] = '3';
-$table->data['percentileitem_3'][1] = __('Percentile').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended(
+$input_percentile = '<div class="inline-radio-button">'.__('Percentile');
+$input_percentile .= html_print_radio_button_extended(
     'type_percentile',
     'percentile',
     '',
@@ -307,8 +295,10 @@ $table->data['percentileitem_3'][1] = __('Percentile').'&nbsp;&nbsp;&nbsp;'.html
     '',
     '',
     true
-).'&nbsp;&nbsp;';
-$table->data['percentileitem_3'][1] .= __('Bubble').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended(
+);
+
+$input_percentile .= __('Bubble');
+$input_percentile .= html_print_radio_button_extended(
     'type_percentile',
     'bubble',
     '',
@@ -317,12 +307,17 @@ $table->data['percentileitem_3'][1] .= __('Bubble').'&nbsp;&nbsp;&nbsp;'.html_pr
     '',
     '',
     true
-).'&nbsp;&nbsp;';
+);
+$input_percentile .= '</div>';
 
-$table->rowstyle['percentileitem_4'] = 'display: none;';
-$table->data['percentileitem_4'][0] = __('Value to show');
-$table->colspan['percentileitem_4'][1] = '3';
-$table->data['percentileitem_4'][1] = __('Percent').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended(
+$table->rowstyle['percentileitem_3'] = 'display: none;';
+$table->data['percentileitem_3'][0] = html_print_label_input_block(
+    __('Type'),
+    $input_percentile
+);
+
+$input_value_to_show = '<div class="inline-radio-button">'.__('Percent');
+$input_value_to_show .= html_print_radio_button_extended(
     'value_show',
     'percent',
     '',
@@ -331,8 +326,9 @@ $table->data['percentileitem_4'][1] = __('Percent').'&nbsp;&nbsp;&nbsp;'.html_pr
     '',
     '',
     true
-).'&nbsp;&nbsp;';
-$table->data['percentileitem_4'][1] .= __('Value').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended(
+);
+$input_value_to_show .= __('Value');
+$input_value_to_show .= html_print_radio_button_extended(
     'value_show',
     'value',
     '',
@@ -341,59 +337,50 @@ $table->data['percentileitem_4'][1] .= __('Value').'&nbsp;&nbsp;&nbsp;'.html_pri
     '',
     '',
     true
-).'&nbsp;&nbsp;';
+);
+$input_value_to_show .= '</div>';
 
+$table->rowstyle['percentileitem_4'] = 'display: none;';
+$table->data['percentileitem_4'][0] = html_print_label_input_block(
+    __('Value to show'),
+    $input_value_to_show
+);
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
+    $sql = 'SELECT id, server_name FROM tmetaconsole_setup';
     $table->rowstyle['all_2'] = 'display: none;';
-    $table->data['all_2'][0] = __('Servers');
-    if ($strict_user) {
-        $table->data['all_2'][1] = html_print_select(
-            '',
+    $table->data['all_2'][0] = html_print_label_input_block(
+        __('Servers'),
+        html_print_select_from_sql(
+            $sql,
             'servers',
             '',
             'metaconsole_init();',
             __('All'),
             '0',
             true
-        );
-    } else {
-            $sql = 'SELECT id, server_name
-        FROM tmetaconsole_setup';
-    }
-
-    $table->data['all_2'][1] = html_print_select_from_sql(
-        $sql,
-        'servers',
-        '',
-        'metaconsole_init();',
-        __('All'),
-        '0',
-        true
+        )
     );
 }
 
-
 $table->rowstyle['all_3'] = 'display: none;';
-$table->data['all_3'][0] = __('Groups');
-$table->colspan['all_3'][1] = '3';
-$table->data['all_3'][1] = '<div class="w250px">'.html_print_select_groups(
-    $config['id_user'],
-    'AR',
-    true,
-    'groups',
-    '',
-    '',
-    '',
-    0,
-    true
-).'</div>';
+$table->data['all_3'][0] = html_print_label_input_block(
+    __('Groups'),
+    html_print_select_groups(
+        $config['id_user'],
+        'AR',
+        true,
+        'groups',
+        '',
+        '',
+        '',
+        0,
+        true
+    )
+);
 
-
-$table->rowstyle['all_one_item_per_agent'] = 'display: none';
-$table->data['all_one_item_per_agent'][0] = __('One item per agent');
-$table->colspan['all_one_item_per_agent'][1] = '3';
-$table->data['all_one_item_per_agent'][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended(
+$input_one_item_per_agent = '<div class="inline-radio-button">'.__('Yes');
+$input_one_item_per_agent .= html_print_radio_button_extended(
     'item_per_agent',
     1,
     '',
@@ -403,7 +390,8 @@ $table->data['all_one_item_per_agent'][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_
     '',
     true
 ).'&nbsp;&nbsp;';
-$table->data['all_one_item_per_agent'][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended(
+$input_one_item_per_agent .= __('No');
+$input_one_item_per_agent .= html_print_radio_button_extended(
     'item_per_agent',
     0,
     '',
@@ -413,15 +401,18 @@ $table->data['all_one_item_per_agent'][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_
     '',
     true
 );
-$table->data['all_one_item_per_agent'][1] .= html_print_input_hidden(
+$input_one_item_per_agent .= html_print_input_hidden(
     'item_per_agent_test',
     0,
     true
 );
+$input_one_item_per_agent .= '</div>';
 
-
-$table->rowstyle['all_4'] = 'display: none;';
-$table->data['all_4'][0] = __('Agents').ui_print_help_tip(__('If you select several agents, only the common modules will be displayed'), true);
+$table->rowstyle['all_one_item_per_agent'] = 'display: none';
+$table->data['all_one_item_per_agent'][0] = html_print_label_input_block(
+    __('One item per agent'),
+    $input_one_item_per_agent
+);
 
 $agents_list = [];
 if (is_metaconsole() === false) {
@@ -434,104 +425,140 @@ if (is_metaconsole() === false) {
     );
 }
 
-
-$table->data['all_4'][1] = html_print_select(
-    $agents_list,
-    'id_agents[]',
-    0,
-    false,
-    '',
-    '',
-    true,
-    true
-);
-$table->data['all_4'][2] = ' <span class="align-top">'.__('Modules').'</span>';
-$table->data['all_4'][3] = html_print_select(
-    [],
-    'module[]',
-    0,
-    false,
-    __('None'),
-    -1,
-    true,
-    true
+$table->rowstyle['all_4'] = 'display: none;';
+$table->data['all_4'][0] = html_print_label_input_block(
+    __('Agents').ui_print_help_tip(
+        __('If you select several agents, only the common modules will be displayed'),
+        true
+    ),
+    html_print_select(
+        $agents_list,
+        'id_agents[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true
+    )
 );
 
+$table->data['all_4'][1] = html_print_label_input_block(
+    __('Modules'),
+    html_print_select(
+        [],
+        'module[]',
+        0,
+        false,
+        __('None'),
+        -1,
+        true,
+        true
+    )
+);
 
-$table->rowstyle['all_6'] = 'display: none;';
-$table->data['all_6'][0] = __('Label');
 $label_type = [
     'agent_module' => __('Agent - Module'),
     'module'       => __('Module'),
     'agent'        => __('Agent'),
     'none'         => __('None'),
 ];
-$table->colspan['all_6'][1] = '3';
-$table->data['all_6'][1] = html_print_select(
-    $label_type,
-    'label_type',
-    'agent_module',
+
+$table->rowstyle['all_6'] = 'display: none;';
+$table->data['all_6'][0] = html_print_label_input_block(
+    __('Label'),
+    html_print_select(
+        $label_type,
+        'label_type',
+        'agent_module',
+        '',
+        '',
+        '',
+        true
+    )
+);
+
+$input_enable_link = '<div class="inline-radio-button">'.__('Yes');
+$input_enable_link .= html_print_radio_button_extended(
+    'enable_link',
+    1,
     '',
+    1,
+    false,
     '',
     '',
     true
 );
+$input_enable_link .= __('No');
+$input_enable_link .= html_print_radio_button_extended(
+    'enable_link',
+    0,
+    '',
+    1,
+    false,
+    '',
+    '',
+    true
+);
+$input_enable_link .= '</div>';
 
-
-$table->data['all_7'][0] = __('Enable link agent');
-$table->colspan['all_7'][1] = '3';
-$table->data['all_7'][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended('enable_link', 1, '', 1, false, '', '', true).'&nbsp;&nbsp;';
-$table->data['all_7'][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended('enable_link', 0, '', 1, false, '', '', true);
-
+$table->data['all_6'][1] = html_print_label_input_block(
+    __('Enable link agent'),
+    $input_enable_link
+);
 
 $parents = visual_map_get_items_parents($visualConsole['id']);
 if (empty($parents) === true) {
     $parents = [];
 }
 
-$table->data['all_8'][0] = __('Set Parent');
-$table->data['all_8'][1] = html_print_select(
-    [
-        VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP            => __('Item created in the visualmap'),
-        VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP => __('Use the agents relationship (from selected agents)'),
-    ],
-    'kind_relationship',
-    0,
-    '',
-    __('None'),
-    VISUAL_MAP_WIZARD_PARENTS_NONE,
-    true
+$table->data['all_8'][0] = html_print_label_input_block(
+    __('Set Parent'),
+    html_print_select(
+        [
+            VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP            => __('Item created in the visualmap'),
+            VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP => __('Use the agents relationship (from selected agents)'),
+        ],
+        'kind_relationship',
+        0,
+        '',
+        __('None'),
+        VISUAL_MAP_WIZARD_PARENTS_NONE,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'max-width:50%;'
+    )
 );
-$table->data['all_8'][2] = '<span id="parent_column_2_item_in_visual_map">'.__('Item in the map').'</span><span id="parent_column_2_relationship">'.ui_print_help_tip(
-    __('The parenting relationships in %s will be drawn on the map.', get_product_name()),
-    true
-).'</span>';
-$table->data['all_8'][3] = '<span id="parent_column_3_item_in_visual_map">'.html_print_select(
-    $parents,
-    'item_in_the_map',
-    0,
-    '',
-    __('None'),
-    0,
-    true
-).'</span>';
 
-
+$table->data['all_8'][1] = html_print_label_input_block(
+    '<span id="parent_column_2_item_in_visual_map">'.__('Item in the map').'</span><span id="parent_column_2_relationship">'.ui_print_help_tip(
+        __('The parenting relationships in %s will be drawn on the map.', get_product_name()),
+        true
+    ).'</span>',
+    '<span id="parent_column_3_item_in_visual_map">'.html_print_select(
+        $parents,
+        'item_in_the_map',
+        0,
+        '',
+        __('None'),
+        0,
+        true
+    ).'</span>'
+);
 
 if (is_metaconsole() === true) {
     $pure = get_parameter('pure', 0);
 
-    echo '<form method="post"
+    echo '<form method="post" class="max_floating_element_size"
 		action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&tab=wizard&id_visual_console='.$visualConsole['id'].'"
 		onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
 } else {
-    echo '<form method="post"
+    echo '<form method="post" class="max_floating_element_size" 
 		action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'"
 		onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
-}
-
-if (is_metaconsole() === true) {
-    echo "<div class='title_tactical mrgn_top_15px'>".__('Wizard').'</div>';
 }
 
 html_print_table($table);
@@ -543,17 +570,15 @@ if (is_metaconsole() === true) {
 }
 
 html_print_input_hidden('id_visual_console', $visualConsole['id']);
-html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            __('Add'),
-            'go',
-            false,
-            [ 'icon' => 'wand' ],
-            true
-        ),
-    ]
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Add'),
+        'go',
+        false,
+        [ 'icon' => 'wand' ],
+        true
+    ),
+    []
 );
 
 echo '</form>';

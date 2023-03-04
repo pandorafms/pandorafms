@@ -639,7 +639,6 @@ if ($alert_validate === true) {
 }
 
 if ($get_agent_alerts_datatable === true) {
-    hd('holaaaaaaaaaaaaaa', true);
     // Datatables offset, limit and order.
     $filter_alert = get_parameter('filter', []);
     unset($filter_alert[0]);

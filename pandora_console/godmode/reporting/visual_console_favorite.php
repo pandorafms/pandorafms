@@ -242,7 +242,7 @@ if ($favorite_array == false) {
     echo "<ul class='container'>";
     foreach ($favorite_array as $favorite_k => $favourite_v) {
         if (is_metaconsole() === true) {
-            $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$favourite_v['id'];
+            $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id='.$favourite_v['id'];
         } else {
             $url = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$favourite_v['id'];
         }

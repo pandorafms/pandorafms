@@ -77,8 +77,7 @@ div#vc-controls img.vc-qr {
   flex: 1;
   display: flex;
   justify-content: space-between;
-  margin: 1em 0;
-  padding-left: 12px;
+  padding: 10px 20px;
 }
 
 .visual-console-edit-controls > span {

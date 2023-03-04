@@ -113,7 +113,7 @@ foreach ($all_images as $image_file) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'databox filter-table-adv';
 
 $table->head = [];
 $table->head['icon'] = '';
@@ -783,22 +783,46 @@ foreach ($layoutDatas as $layoutData) {
 $pure = get_parameter('pure', 0);
 
 if (is_metaconsole() === false) {
-    echo '<form class="vc_elem_form" method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
+    echo '<form id="vc_elem_form" method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
     html_print_input_hidden('action', 'update');
 } else {
-    echo "<form class='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
+    echo "<form id='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
     html_print_input_hidden('action2', 'update');
 }
 
 html_print_table($table);
 
+// Form for multiple delete.
+if (is_metaconsole() === false) {
+    $url_multiple_delete = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'];
+} else {
+    $url_multiple_delete = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'];
+}
+
+echo '</form>';
+
 $buttons = html_print_submit_button(
     __('Update'),
     'go',
     false,
-    [ 'icon' => 'next' ],
+    [
+        'icon' => 'next',
+        'form' => 'vc_elem_form',
+    ],
     true
 );
+
+$buttons .= "<form id='form_multiple_delete' method='post' action=".$url_multiple_delete.'>';
+
+if (is_metaconsole() === false) {
+    $buttons .= html_print_input_hidden('action', 'multiple_delete', true);
+} else {
+    $buttons .= html_print_input_hidden('action2', 'multiple_delete', true);
+}
+
+$buttons .= html_print_input_hidden('id_visual_console', $visualConsole['id'], true);
+$buttons .= html_print_input_hidden('id_item_json', '', true);
+
 
 $buttons .= html_print_button(
     __('Delete'),
@@ -812,31 +836,11 @@ $buttons .= html_print_button(
     true
 );
 
+$buttons .= '</form>';
+
 html_print_action_buttons(
     $buttons
 );
-
-echo '</form>';
-
-// Form for multiple delete.
-if (is_metaconsole() === false) {
-    $url_multiple_delete = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'];
-} else {
-    $url_multiple_delete = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console='.$idVisualConsole;
-}
-
-
-echo "<form id='form_multiple_delete' method='post' action=".$url_multiple_delete.'>';
-
-if (is_metaconsole() === false) {
-    html_print_input_hidden('action', 'multiple_delete');
-} else {
-    html_print_input_hidden('action2', 'multiple_delete');
-}
-
-html_print_input_hidden('id_visual_console', $visualConsole['id']);
-html_print_input_hidden('id_item_json', '');
-echo '</form>';
 
 
 // Trick for it have a traduct text for javascript.

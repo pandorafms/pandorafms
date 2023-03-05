@@ -122,36 +122,39 @@ $files = list_files('images/', '@groups.svg', 1, 0);
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
-if (is_metaconsole() === true) {
-    $table->head[0] = ($id_group > 0) ? __('Update group') : __('Create group');
-    $table->head_colspan[0] = 4;
-    $table->headstyle[0] = 'text-align: center';
-}
-
-$table->style[0] = 'font-weight: bold';
-
+$table->class = 'databox filter-table-adv';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 $table->data = [];
-$table->data[0][0] = __('Name');
-$table->data[0][1] = html_print_input_text('name', $name, '', 35, 100, true);
-$table->data[1][0] = __('Icon');
-$table->data[1][1] = html_print_select($files, 'icon', $icon, '', 'None', '', true);
-$table->data[1][1] .= ' <span id="icon_preview">';
+
+$table->data[0][0] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text('name', $name, '', 35, 100, true)
+);
+
+$input_icon = html_print_select($files, 'icon', $icon, '', 'None', '', true);
+$input_icon .= ' <span id="icon_preview">';
 if (empty($icon) === false) {
-    $table->data[1][1] .= html_print_image('images/'.$icon, true);
+    $input_icon .= html_print_image('images/'.$icon, true);
 }
 
-$table->data[1][1] .= '</span>';
-$table->data[2][0] = __('Parent');
+$input_icon .= '</span>';
+
+$table->data[0][1] = html_print_label_input_block(
+    __('Icon'),
+    '<div>'.$input_icon.'</div>'
+);
+
 if ($id_group > 0) {
     // The user can access to the parent, but she want to edit the group.
     if ((bool) check_acl($config['id_user'], $id_parent, 'AR') === false) {
         $acl_parent = false;
 
-        $table->data[2][1] = __('You have not access to the parent.').html_print_input_hidden('id_parent', $id_parent, true);
+        $input_parent = __('You have not access to the parent.').html_print_input_hidden('id_parent', $id_parent, true);
     } else {
-        $table->data[2][1] = '<div class="w250px inline">';
-        $table->data[2][1] .= html_print_select_groups(
+        $input_parent = '<div class="w250px inline">';
+        $input_parent .= html_print_select_groups(
             false,
             'AR',
             false,
@@ -169,11 +172,11 @@ if ($id_group > 0) {
             false,
             $id_group
         );
-        $table->data[2][1] .= '</div>';
+        $input_parent .= '</div>';
     }
 } else {
-    $table->data[2][1] = '<div class="w250px inline">';
-    $table->data[2][1] .= html_print_input(
+    $input_parent = '<div class="w250px inline">';
+    $input_parent .= html_print_input(
         [
             'type'           => 'select_groups',
             'name'           => 'id_parent',
@@ -184,66 +187,101 @@ if ($id_group > 0) {
             'nothing_value'  => -1,
         ]
     );
-    $table->data[2][1] .= '</div>';
+    $input_parent .= '</div>';
 }
 
 if ($acl_parent === true) {
-    $table->data[2][1] .= ' <span id="parent_preview">';
-    $table->data[2][1] .= html_print_image('images/'.(($id_parent !== 0) ? groups_get_icon($id_parent) : 'unknown@groups.svg'), true);
-    $table->data[2][1] .= '</span>';
+    $input_parent .= ' <span id="parent_preview">';
+    $input_parent .= html_print_image('images/'.(($id_parent !== 0) ? groups_get_icon($id_parent) : 'unknown@groups.svg'), true);
+    $input_parent .= '</span>';
 }
 
-$i = 3;
+$table->data[1][0] = html_print_label_input_block(
+    __('Parent'),
+    '<div>'.$input_parent.'</div>'
+);
+
 if ((bool) $config['enterprise_installed'] === true) {
-    $i = 4;
-    $table->data[3][0] = __('Group Password');
-    $table->data[3][1] = html_print_input_password('group_pass', $group_pass, '', 16, 255, true);
+    $table->data[1][1] .= html_print_label_input_block(
+        __('Group Password'),
+        html_print_input_password('group_pass', $group_pass, '', 16, 255, true)
+    );
 }
 
-$table->data[$i][0] = __('Alerts').ui_print_help_tip(__('Enable alert use in this group.'), true);
-$table->data[$i][1] = html_print_checkbox_switch('alerts_enabled', 1, ! $alerts_disabled, true);
-$i++;
+$table->data[2][0] = html_print_label_input_block(
+    __('Alerts').ui_print_help_tip(__('Enable alert use in this group.'), true),
+    html_print_checkbox_switch('alerts_enabled', 1, ! $alerts_disabled, true)
+);
 
-$table->data[$i][0] = __('Propagate ACL').ui_print_help_tip(__('Propagate the same ACL security into the child subgroups.'), true);
-$table->data[$i][1] = html_print_checkbox_switch('propagate', 1, $propagate, true);
-$i++;
+$table->data[2][1] = html_print_label_input_block(
+    __('Propagate ACL').ui_print_help_tip(__('Propagate the same ACL security into the child subgroups.'), true),
+    html_print_checkbox_switch('propagate', 1, $propagate, true)
+);
 
-$table->data[$i][0] = __('Custom ID');
-$table->data[$i][1] = html_print_input_text('custom_id', $custom_id, '', 16, 255, true);
-$i++;
+$table->data[3][0] = html_print_label_input_block(
+    __('Custom ID'),
+    html_print_input_text('custom_id', $custom_id, '', 16, 255, true)
+);
 
-$table->data[$i][0] = __('Description');
-$table->data[$i][1] = html_print_input_text('description', $description, '', 60, 255, true);
-$i++;
+$table->data[3][1] = html_print_label_input_block(
+    __('Description'),
+    html_print_input_text('description', $description, '', 60, 255, true)
+);
 
-$table->data[$i][0] = __('Contact').ui_print_help_tip(__('Contact information accessible through the _groupcontact_ macro'), true);
-$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "class='min-height-0px'", true);
-$i++;
+$table->data[4][0] = html_print_label_input_block(
+    __('Contact').ui_print_help_tip(__('Contact information accessible through the _groupcontact_ macro'), true),
+    html_print_textarea('contact', 4, 40, $contact, "class='min-height-0px'", true)
+);
 
-$table->data[$i][0] = __('Other').ui_print_help_tip(__('Information accessible through the _group_other_ macro'), true);
-$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "class='min-height-0px'", true);
-$i++;
+$table->data[4][1] = html_print_label_input_block(
+    __('Other').ui_print_help_tip(__('Information accessible through the _group_other_ macro'), true),
+    html_print_textarea('other', 4, 40, $other, "class='min-height-0px'", true)
+);
 
-$table->data[$i][0] = __('Max agents allowed').'&nbsp;'.ui_print_help_tip(__('Set the maximum of agents allowed for this group. 0 is unlimited.'), true);
-$table->data[$i][1] = html_print_input_text('max_agents', $max_agents, '', 10, 255, true);
-$i++;
+$table->data[5][0] = html_print_label_input_block(
+    __('Max agents allowed').ui_print_help_tip(__('Set the maximum of agents allowed for this group. 0 is unlimited.'), true),
+    html_print_input_text('max_agents', $max_agents, '', 10, 255, true)
+);
 
 $sec = (is_metaconsole() === true) ? 'advanced' : 'gagente';
 
-echo '<form name="grupo" method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/group_list&pure='.$config['pure'].'" >';
+echo '<form name="grupo" class="max_floating_element_size" method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/group_list&pure='.$config['pure'].'" >';
 html_print_table($table);
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_button(__('Back'), 'button_back', false, '', 'class="sub cancel"');
+
+$buttons = '';
 if ($id_group) {
-    html_print_input_hidden('update_group', 1);
-    html_print_input_hidden('id_group', $id_group);
-    html_print_submit_button(__('Update'), 'updbutton', false, 'class="sub upd"');
+    $buttons .= html_print_input_hidden('update_group', 1, true);
+    $buttons .= html_print_input_hidden('id_group', $id_group, true);
+    $buttons .= html_print_submit_button(
+        __('Update'),
+        'updbutton',
+        false,
+        ['icon' => 'upd'],
+        true
+    );
 } else {
-    html_print_input_hidden('create_group', 1);
-    html_print_submit_button(__('Create'), 'crtbutton', false, 'class="sub wand"');
+    $buttons .= html_print_input_hidden('create_group', 1);
+    $buttons .= html_print_submit_button(
+        __('Create'),
+        'crtbutton',
+        false,
+        ['icon' => 'next'],
+        true
+    );
 }
 
-echo '</div>';
+$buttons .= html_print_button(
+    __('Back'),
+    'button_back',
+    false,
+    '',
+    ['icon' => 'cancel'],
+    true
+);
+
+html_print_action_buttons(
+    $buttons
+);
 echo '</form>';
 
 ?>

@@ -140,13 +140,19 @@ $buttons[$tab]['active'] = true;
 
 if (is_metaconsole() === false) {
     // Header.
-    ui_print_page_header(
+    ui_print_standard_header(
         __('Tags configuration'),
         'images/tag.png',
         false,
         '',
         true,
-        $buttons
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Module tags'),
+            ],
+        ]
     );
 }
 
@@ -211,36 +217,63 @@ $result = tags_search_tag(false, $filter);
 
 // Filter form.
 $table = new StdClass();
-$table->class = 'databox filters';
 $table->width = '100%';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->class = 'filter-table-adv';
 $table->data = [];
 
 $row = [];
 
-$name_input = __('Name').' / '.__('Description');
-$name_input .= '&nbsp;&nbsp;';
-$name_input .= html_print_input_text('tag_name', $tag_name, '', 30, 255, true);
-$row[] = $name_input;
-
-$filter_button = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub search"', true);
-$row[] = $filter_button;
-
-$table->data[] = $row;
-
+$table->data[0][0] = html_print_label_input_block(
+    __('Name').' / '.__('Description'),
+    html_print_input_text(
+        'tag_name',
+        $tag_name,
+        '',
+        30,
+        255,
+        true
+    )
+);
+$table->data[0][1] = '';
 $filter_form = '<form method="POST" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tag_name="'.$tag_name.'>';
 $filter_form .= html_print_table($table, true);
+$filter_form .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Filter'),
+            'filter_button',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        ),
+    ],
+    true
+);
 $filter_form .= '</form>';
+
+ui_toggle(
+    $filter_form,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
+
+$tablePagination = '';
+$buttons_form = '';
 // End of filter form.
 if (empty($result) === false) {
-    if (is_metaconsole() === false) {
-        echo $filter_form;
-    } else {
-        ui_toggle($filter_form, __('Show Options'));
-    }
-
-    // Prepare pagination.
-    ui_pagination($total_tags, $url);
-
     // Display tags previously filtered or not.
     $rowPair = true;
     $iterator = 0;
@@ -398,31 +431,44 @@ if (empty($result) === false) {
     }
 
     html_print_table($table);
-    ui_pagination($total_tags, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination(
+        $total_tags,
+        $url,
+        0,
+        0,
+        true,
+        'offset',
+        false,
+        ''
+    );
 } else {
-    if (is_metaconsole() === true) {
-        ui_toggle($filter_form, __('Show Options'));
-        ui_print_info_message(['no_close' => true, 'message' => __('No tags defined')]);
-    } else if ($filter_performed) {
-        echo $filter_form;
-    } else {
+    if (empty($tag_name) === true) {
         include $config['homedir'].'/general/first_task/tags.php';
         return;
     }
 }
 
 if ($is_management_allowed === true) {
-    echo '<table border=0 cellpadding=0 cellspacing=0 width=100%>';
-    echo '<tr>';
-    echo '<td align=right>';
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
-    html_print_input_hidden('create_tag', '1', true);
-    html_print_submit_button(__('Create tag'), 'create_button', false, 'class="sub next"');
-    echo '</form>';
-    echo '</td>';
-    echo '</tr>';
-    echo '</table>';
+    $buttons_form .= '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
+    $buttons_form .= html_print_input_hidden('create_tag', '1', true);
+    $buttons_form .= html_print_submit_button(
+        __('Create tag'),
+        'create_button',
+        false,
+        ['icon' => 'next'],
+        true
+    );
+    $buttons_form .= '</form>';
 }
+
+html_print_action_buttons(
+    $buttons_form,
+    [
+        'type'          => 'data_table',
+        'class'         => 'fixed_action_buttons',
+        'right_content' => $tablePagination,
+    ]
+);
 
 ?>
 

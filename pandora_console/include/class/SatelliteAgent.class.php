@@ -1248,7 +1248,7 @@ class SatelliteAgent extends HTML
 
             $('body').append('<div id="dialog"></div>');
 
-            $("#submit-create").on('click', function() {
+            $("#button-create").on('click', function() {
                 show_form();
             });
 

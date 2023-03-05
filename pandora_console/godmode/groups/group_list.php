@@ -362,12 +362,6 @@ switch ($tab) {
 // Header.
 if (is_metaconsole() === true) {
     agents_meta_print_header();
-    html_print_div(
-        [
-            'class'   => 'notify',
-            'content' => __('Edit or delete groups can cause problems with synchronization'),
-        ]
-    );
 } else {
     // Header.
     ui_print_standard_header(
@@ -764,6 +758,8 @@ if ($tab == 'tree') {
     $search = (string) get_parameter('search', '');
     $block_size = $config['block_size'];
 
+    $tablePagination = '';
+
     if (empty($search) === false) {
         $search_name = 'AND t.nombre LIKE "%'.$search.'%"';
     }
@@ -784,23 +780,58 @@ if ($tab == 'tree') {
     }
 
     $form = "<form method='post' action=''>";
-        $form .= "<table class='databox filters bolder' width='100%'>";
-            $form .= '<tr><td>'.__('Search').'&nbsp;&nbsp;&nbsp;';
-                $form .= html_print_input_text(
+        $form .= "<table class='filter-table-adv' width='100%'>";
+            $form .= '<tr><td>'.html_print_label_input_block(
+                __('Search'),
+                html_print_input_text(
                     'search',
                     $search,
                     '',
                     30,
                     30,
                     true
-                );
-            $form .= '</td><td style="text-align: right">';
-                $form .= "<input name='find' type='submit' class='sub search' value='".__('Search')."'>";
+                )
+            );
+            $form .= '</td>';
             $form .= '</tr>';
         $form .= '</table>';
+        $buttons = html_print_submit_button(
+            __('Filter'),
+            'find',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        );
+
+        $form .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => $buttons,
+            ],
+            true
+        );
     $form .= '</form>';
 
-    echo $form;
+    ui_toggle(
+        $form,
+        '<span class="subsection_header_title">'.__('Filters').'</span>',
+        'filter_form',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph fixed_filter_bar'
+    );
+
+    if (is_metaconsole() === true) {
+        ui_print_info_message(
+            __('Edit or delete groups can cause problems with synchronization')
+        );
+    }
 
     $groups_sql = sprintf(
         'SELECT t.*,
@@ -945,24 +976,15 @@ if ($tab == 'tree') {
             }
         }
 
-        echo ui_pagination(
-            $groups_count,
-            false,
-            $offset,
-            $block_size,
-            true,
-            'offset',
-            true
-        );
         html_print_table($table);
-        echo ui_pagination(
+        $tablePagination = ui_pagination(
             $groups_count,
             false,
             $offset,
             $block_size,
             true,
             'offset',
-            true,
+            false,
             'pagination-bottom'
         );
     } else {
@@ -975,16 +997,31 @@ if ($tab == 'tree') {
     }
 }
 
-
+$button_form = '';
 if ($is_management_allowed === true
     && (bool) check_acl($config['id_user'], 0, 'PM') === true
 ) {
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
-        echo '<div class="action-buttons w100p">';
-            html_print_submit_button(__('Create group'), 'crt', false, 'class="sub next"');
-        echo '</div>';
-    echo '</form>';
+    $button_form = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
+    $button_form .= html_print_submit_button(
+        __('Create group'),
+        'crt',
+        false,
+        ['icon' => 'next'],
+        true
+    );
+    $button_form .= '</form>';
 }
+
+
+html_print_action_buttons(
+    $button_form,
+    [
+        'type'          => 'data_table',
+        'class'         => 'fixed_action_buttons',
+        'right_content' => $tablePagination,
+    ]
+);
+
 
 ui_require_javascript_file('TreeController', 'include/javascript/tree/');
 

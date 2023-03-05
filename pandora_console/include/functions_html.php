@@ -3221,6 +3221,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'onkeydown',
         'onkeyup',
         'class',
+        'form',
     ];
 
     foreach ($attrs as $attribute) {

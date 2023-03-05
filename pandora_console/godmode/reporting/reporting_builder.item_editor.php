@@ -5157,7 +5157,7 @@ $(document).ready (function () {
 
     $('#checkbox-fullscale').trigger('change');
 
-    $("#submit-create_item").click(function () {
+    $("#button-create_item").click(function () {
         var type = $('#type').val();
         var name = $('#text-name').val();
 

@@ -2766,7 +2766,7 @@ td.cellBig {
 }
 
 .info_box_container:not(.info_box_information) {
-  z-index: 1;
+  z-index: 2;
 }
 
 .info_box_container.info_box_information {
@@ -11503,4 +11503,8 @@ input[type="text"]:has(+ .inputbuton) {
   border-end-end-radius: 0px;
   border-start-end-radius: 0px;
   border-right: 0px;
+}
+
+.notzindex {
+  z-index: 0;
 }

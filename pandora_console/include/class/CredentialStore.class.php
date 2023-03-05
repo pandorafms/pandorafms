@@ -853,7 +853,7 @@ class CredentialStore extends Wizard
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -865,6 +865,7 @@ class CredentialStore extends Wizard
                         'direction' => 'asc',
                     ],
                     'search_button_class' => 'sub filter float-right',
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                     'form'                => [
                         'inputs' => [
                             [
@@ -902,14 +903,15 @@ class CredentialStore extends Wizard
         echo $modal.$msg.$aux;
 
         // Create button.
-        echo '<div class="w100p flex-content-right">';
-        html_print_submit_button(
-            __('Add key'),
-            'create',
-            false,
-            'class="sub next"'
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Add key'),
+                'create',
+                false,
+                ['icon' => 'next'],
+                true
+            )
         );
-        echo '</div>';
 
         echo $this->loadJS();
 
@@ -1752,8 +1754,7 @@ class CredentialStore extends Wizard
         }
 
         $(document).ready(function(){
-
-            $("#submit-create").on('click', function(){
+            $("#button-create").on('click', function(){
                 show_form();
             });
         });

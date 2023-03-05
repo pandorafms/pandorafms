@@ -1010,12 +1010,6 @@ $url_down_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&am
 $url_up_last_status_change = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_status_change&amp;sort=up';
 $url_down_last_status_change = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_status_change&amp;sort=down';
 
-// Prepare pagination.
-ui_pagination(
-    $total_agents,
-    ui_get_url_refresh(['group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status])
-);
-
 // Show data.
 $tableAgents = new stdClass();
 $tableAgents->cellpadding = 0;

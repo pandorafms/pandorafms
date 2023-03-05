@@ -789,7 +789,7 @@ function showMsg(data) {
 }
 
 $(document).ready(function() {
-  $("#submit-create").click(function() {
+  $("#button-create").click(function() {
     showForm();
   });
 });

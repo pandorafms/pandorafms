@@ -275,11 +275,26 @@ switch ($login_screen) {
             echo '</div>';
 
             echo '<div class="login_button" id="remove_button">';
-                echo '<input type="button" id="input_saml" value="Login as admin" onclick="show_normal_menu()">';
+                html_print_submit_button(
+                    __('Login as admin'),
+                    'input_saml',
+                    false,
+                    [
+                        'fixed_id' => 'submit-login_button',
+                        'class'    => 'next_login',
+                        'onclick'  => 'show_normal_menu()',
+                        'id'       => 'input_saml',
+                    ]
+                );
             echo '</div>';
 
             echo '<div class="login_button login_button_saml">';
-                html_print_submit_button(__('Login with SAML'), 'login_button_saml', false, '');
+                html_print_submit_button(
+                    __('Login with SAML'),
+                    'login_button_saml',
+                    false,
+                    ['class' => 'next_login secondary']
+                );
             echo '</div>';
         } else {
             echo '<div class="login_nick">';

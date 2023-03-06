@@ -558,10 +558,7 @@ if (is_ajax() === true) {
                             $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
 
-                        $tmp->timestamp = ui_print_timestamp(
-                            $tmp->utimestamp,
-                            true
-                        );
+                        $tmp->timestamp = $last_contact_value;
 
                         if (is_numeric($tmp->data) === true) {
                             $tmp->data = format_numeric(

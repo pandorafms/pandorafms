@@ -243,6 +243,10 @@ class TreeViewWidget extends Widget
                     $values['agentStatus'] = AGENT_STATUS_NOT_INIT;
                 break;
 
+                case 6:
+                    $values['agentStatus'] = AGENT_STATUS_NOT_NORMAL;
+                break;
+
                 default:
                 case -1:
                     $values['agentStatus'] = AGENT_STATUS_ALL;
@@ -282,6 +286,10 @@ class TreeViewWidget extends Widget
 
                 case 5:
                     $values['moduleStatus'] = AGENT_MODULE_STATUS_NOT_INIT;
+                break;
+
+                case 6:
+                    $values['moduleStatus'] = AGENT_MODULE_STATUS_NOT_NORMAL;
                 break;
 
                 default:
@@ -381,12 +389,13 @@ class TreeViewWidget extends Widget
 
         // Agents status.
         $fields = [
-            AGENT_STATUS_ALL      => __('All'),
-            AGENT_STATUS_NORMAL   => __('Normal'),
-            AGENT_STATUS_WARNING  => __('Warning'),
-            AGENT_STATUS_CRITICAL => __('Critical'),
-            AGENT_STATUS_UNKNOWN  => __('Unknown'),
-            AGENT_STATUS_NOT_INIT => __('Not init'),
+            AGENT_STATUS_ALL        => __('All'),
+            AGENT_STATUS_NORMAL     => __('Normal'),
+            AGENT_STATUS_WARNING    => __('Warning'),
+            AGENT_STATUS_CRITICAL   => __('Critical'),
+            AGENT_STATUS_UNKNOWN    => __('Unknown'),
+            AGENT_STATUS_NOT_INIT   => __('Not init'),
+            AGENT_STATUS_NOT_NORMAL => __('Not normal'),
         ];
 
         $inputs[] = [
@@ -420,6 +429,7 @@ class TreeViewWidget extends Widget
             AGENT_MODULE_STATUS_CRITICAL_BAD => __('Critical'),
             AGENT_MODULE_STATUS_UNKNOWN      => __('Unknown'),
             AGENT_MODULE_STATUS_NOT_INIT     => __('Not init'),
+            AGENT_MODULE_STATUS_NOT_NORMAL   => __('Not normal'),
         ];
 
         if (is_metaconsole() === false) {
@@ -681,6 +691,11 @@ class TreeViewWidget extends Widget
                     'agents'  => __('Normal agents'),
                     'modules' => __('Normal modules'),
                     'none'    => __('Normal'),
+                ],
+                'not_normal'    => [
+                    'agents'  => __('Not normal agents'),
+                    'modules' => __('Not normal modules'),
+                    'none'    => __('Not normal'),
                 ],
                 'module'        => __('Module'),
                 'timeOnlyTitle' => __('Choose time'),

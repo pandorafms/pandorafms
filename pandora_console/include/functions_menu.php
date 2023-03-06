@@ -797,6 +797,7 @@ if (is_ajax()) {
         $db_fragmentation = json_decode($d->getTablesFragmentation());
         $sys_info = json_decode($d->getSystemInfo());
         $php_sys = json_decode($d->getPHPSetup());
+        $system_date = json_decode($d->getSystemDate());
 
         $fragmentation_status = '';
         if ($db_fragmentation->data->tablesFragmentationStatus->status === 1) {
@@ -1028,6 +1029,14 @@ if (is_ajax()) {
                                 </th>
                                 <th style="width: 85%;">
                                     <p>'.$sys_info->data->ipInfo->value.'</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%;">
+                                    <p><span>'.$system_date->data->date->name.'</span></p>
+                                </th>
+                                <th style="width: 85%;">
+                                    <p>'.$system_date->data->date->value.'</p>
                                 </th>
                             </tr>
                         </tbody>

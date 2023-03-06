@@ -92,6 +92,9 @@ $node_id = (int) get_parameter('node_id', 0);
 if ($get_comments === true) {
     $event = get_parameter('event', false);
     $event_rep = (int) get_parameter('event_rep', 0);
+    $event_rep = get_parameter_post('event')['event_rep'];
+    $group_rep = get_parameter_post('event')['group_rep'];
+
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
@@ -99,7 +102,7 @@ if ($get_comments === true) {
     $eventsGrouped = [];
     // Consider if the event is grouped.
     $whereGrouped = '1=1';
-    if ($event_rep === EVENT_GROUP_REP_EVENTS) {
+    if ($group_rep === EVENT_GROUP_REP_EVENTS && $event_rep > 1) {
         // Default grouped message filtering (evento and estado).
         $whereGrouped = sprintf(
             '`evento` = "%s"',
@@ -120,7 +123,7 @@ if ($get_comments === true) {
                 (int) $event['id_agentmodule']
             );
         }
-    } else if ($event_rep === EVENT_GROUP_REP_EXTRAIDS) {
+    } else if ($group_rep === EVENT_GROUP_REP_EXTRAIDS) {
         $whereGrouped = sprintf(
             '`id_extra` = "%s"',
             $event['id_extra']
@@ -1639,6 +1642,7 @@ if ($get_extended_event) {
     $comments = $event['comments'];
 
     $event['similar_ids'] = $similar_ids;
+    $event['group_rep'] = $group_rep;
 
     if (isset($comments) === false) {
         $comments = $event['user_comment'];
@@ -2347,6 +2351,11 @@ if ($drawConsoleSound === true) {
                 'negativebeep.wav'                   => 'Negative beep',
                 'Star_Trek_emergency_simulation.wav' => 'StarTrek emergency simulation',
             ];
+
+            $eventsounds = mysql_db_get_all_rows_sql('SELECT * FROM tevent_sound WHERE active = 1');
+            foreach ($eventsounds as $key => $row) {
+                $sounds[$row['sound']] = $row['name'];
+            }
 
             $inputs[] = [
                 'class'         => 'test-sounds',

@@ -2,6 +2,8 @@ START TRANSACTION;
 
 ALTER TABLE `tserver` ADD COLUMN `server_keepalive_utimestamp` BIGINT NOT NULL DEFAULT 0;
 
+ALTER TABLE `tmap` MODIFY COLUMN `id_group` TEXT NOT NULL default '';
+
 CREATE TABLE IF NOT EXISTS `tmonitor_filter` ( 
   `id_filter`  INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_name` VARCHAR(600) NOT NULL,

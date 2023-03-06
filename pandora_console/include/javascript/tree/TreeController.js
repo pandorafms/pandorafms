@@ -1456,6 +1456,7 @@ var TreeController = {
               });
             }
           }
+          treeViewControlModuleValues();
 
           return $node;
         }

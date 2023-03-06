@@ -127,27 +127,21 @@ class TipsWindow
         echo '<div id="tips_window_modal"></div>';
         $totalTips = $this->getTotalTipsShowUser();
         if ($totalTips > 0) {
-            ?>
-
-                <script>
-                    var totalTips = <?php echo $totalTips; ?>;
-                    var url = '<?php echo ui_get_full_url('ajax.php'); ?>';
-                    var page = '<?php echo $this->ajaxController; ?>';
-                </script>
-                <script>
-                if(totalTips > 0){
-                    load_tips_modal({
-                        target: $('#tips_window_modal'),
-                        url: '<?php echo ui_get_full_url('ajax.php'); ?>',
-                        onshow: {
-                            page: '<?php echo $this->ajaxController; ?>',
-                            method: 'renderView',
-                        }
-                    });
-                }
-                </script>
-
-            <?php
+            echo '<script>';
+            echo 'var totalTips = "'.$totalTips.'";';
+            echo 'var url = "'.ui_get_full_url('ajax.php').'";';
+            echo 'var page = "'.$this->ajaxController.'";';
+            echo 'if(totalTips > 0){';
+            echo '    load_tips_modal({';
+            echo '        target: $("#tips_window_modal"),';
+            echo '        url: "'.ui_get_full_url('ajax.php').'",';
+            echo '        onshow: {';
+            echo '            page: "'.$this->ajaxController.'",';
+            echo '            method: "renderView",';
+            echo '        }';
+            echo '    });';
+            echo '}';
+            echo '</script>';
         }
     }
 

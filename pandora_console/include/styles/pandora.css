@@ -2097,6 +2097,13 @@ table.rounded_cells td {
   margin-left: 16px;
 }
 
+.action-buttons-right-forced {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  width: 100%;
+  float: right;
+}
 .toolbox-buttons {
   display: flex;
   flex-direction: row;

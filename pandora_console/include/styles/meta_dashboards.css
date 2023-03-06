@@ -29,3 +29,18 @@ li#select_multiple_modules_filtered {
 #menu_tab li.nomn form#form-select-dashboard {
   margin-top: 0px !important;
 }
+
+.table-border-0 {
+  border: none !important;
+  border-spacing: 0px !important;
+}
+
+.big_data {
+  text-decoration: none;
+  font-size: 2em;
+}
+
+.med_data {
+  text-decoration: none;
+  font-size: 1.5em;
+}

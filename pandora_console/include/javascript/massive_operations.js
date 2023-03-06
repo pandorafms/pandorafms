@@ -114,6 +114,10 @@ function form_controls_massive_operations_agents(metaconsole) {
     $("#nodes").change(function() {
       disabled = $("#disabled").val();
     });
+
+    $("#id_group").change(function() {
+      disabled = $("#disabled").val();
+    });
   }
 
   var nodes;

@@ -175,6 +175,7 @@ class DiscoveryTaskList extends HTML
                     'action' => ui_get_full_url(
                         'index.php?sec=gservers&sec2=godmode/servers/discovery'
                     ),
+                    'class'  => 'flex_center',
                 ],
                 'inputs' => [
                     [
@@ -182,25 +183,27 @@ class DiscoveryTaskList extends HTML
                             'name'       => 'submit',
                             'label'      => __('Go back'),
                             'type'       => 'submit',
-                            'attributes' => [ 'icon' => 'cancel' ],
+                            'attributes' => [
+                                'icon' => 'back',
+                                'mode' => 'secondary',
+                            ],
                             'return'     => true,
                         ],
                     ],
                     [
-                        'class'     => 'action-buttons rule-builder-actions',
                         'arguments' => [
                             'name'       => 'refresh',
                             'label'      => __('Refresh'),
                             'type'       => 'button',
                             'attributes' => [ 'icon' => 'cog'],
                             'return'     => true,
-                            'script'     => 'location.href = \''.$this->url.'\';',
+                            'script'     => 'location.href = "'.$this->url.'";',
                         ],
                     ],
                 ],
             ];
 
-            $this->printForm($form);
+            html_print_action_buttons($this->printForm($form, true));
         }
 
         return $ret;

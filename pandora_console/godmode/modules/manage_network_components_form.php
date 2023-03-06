@@ -390,7 +390,10 @@ html_print_div(
             'go_back',
             false,
             '',
-            ['icon' => 'back'],
+            [
+                'icon' => 'back',
+                'mode' => 'secondary',
+            ],
             true
         ).html_print_submit_button(
             $buttonCaption,

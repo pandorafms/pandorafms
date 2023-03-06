@@ -313,7 +313,10 @@ class CustomNetScan extends Wizard
                             'name'       => 'submit',
                             'label'      => __('Go back'),
                             'type'       => 'submit',
-                            'attributes' => ['icon' => 'cancel'],
+                            'attributes' => [
+                                'icon' => 'cancel',
+                                'mode' => 'secondary',
+                            ],
                             'return'     => true,
                         ],
                     ],
@@ -421,7 +424,10 @@ class CustomNetScan extends Wizard
                             'name'       => 'submit',
                             'label'      => __('Go back'),
                             'type'       => 'submit',
-                            'attributes' => ['icon' => 'cancel'],
+                            'attributes' => [
+                                'icon' => 'cancel',
+                                'mode' => 'secondary',
+                            ],
                             'return'     => true,
                         ],
                     ],
@@ -553,17 +559,6 @@ class CustomNetScan extends Wizard
                     $str = __('Update and continue');
                 }
 
-                // Submit button.
-                $form['inputs'][] = [
-                    'arguments' => [
-                        'name'       => 'submit',
-                        'label'      => $str,
-                        'type'       => 'submit',
-                        'attributes' => [ 'icon' => 'next' ],
-                        'return'     => true,
-                    ],
-                ];
-
                 $task_url = '';
                 if (isset($this->task['id_rt'])) {
                     $task_url = '&task='.$this->task['id_rt'];
@@ -572,6 +567,7 @@ class CustomNetScan extends Wizard
                 $form['form'] = [
                     'method' => 'POST',
                     'action' => $this->url.'&mode=customnetscan&page='.($this->page + 1).$task_url,
+                    'id'     => 'form-netscan-custom-definition',
                 ];
 
                 // Default.
@@ -602,6 +598,22 @@ class CustomNetScan extends Wizard
                 // XXX: Could be improved validating inputs before continue (JS)
                 // Print NetScan page 0.
                 $this->printFormAsList($form);
+
+                html_print_action_buttons(
+                    $this->printInput(
+                        [
+                            'name'       => 'submit',
+                            'label'      => $str,
+                            'type'       => 'submit',
+                            'attributes' => [
+                                'icon' => 'next',
+                                'form' => 'form-netscan-custom-definition',
+                            ],
+                            'return'     => true,
+                            'width'      => 'initial',
+                        ]
+                    )
+                );
             }
         }
 
@@ -717,20 +729,10 @@ class CustomNetScan extends Wizard
                 }
             }
 
-            // Submit button.
-            $form['inputs'][] = [
-                'arguments' => [
-                    'name'       => 'submit',
-                    'label'      => __('Finish'),
-                    'type'       => 'submit',
-                    'attributes' => ['icon' => 'update'],
-                    'return'     => true,
-                ],
-            ];
-
             $form['form'] = [
                 'method' => 'POST',
                 'action' => $this->url.'&mode=customnetscan&page='.($this->page + 1).'&task='.$this->task['id_rt'],
+                'id'     => 'form-netscan-custom-script',
             ];
 
             $id_task = (isset($this->task['id_rt']) === true) ? $this->task['id_rt'] : 0;
@@ -748,6 +750,22 @@ class CustomNetScan extends Wizard
                 })'.$change;
 
             $this->printFormAsList($form);
+
+            html_print_action_buttons(
+                $this->printInput(
+                    [
+                        'name'       => 'submit',
+                        'label'      => __('Finish'),
+                        'type'       => 'submit',
+                        'attributes' => [
+                            'icon' => 'update',
+                            'form' => 'form-netscan-custom-script',
+                        ],
+                        'return'     => true,
+                        'width'      => 'initial',
+                    ]
+                )
+            );
         }
 
         if (isset($this->page) === true && $this->page === 2) {

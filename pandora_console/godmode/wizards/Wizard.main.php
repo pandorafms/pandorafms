@@ -395,7 +395,7 @@ class Wizard
      *
      * @return void
      */
-    public function printGoBackButton($url=null)
+    public function printGoBackButton($url=null, $return=false)
     {
         if (isset($url) === false) {
             $url = ui_get_full_url(
@@ -415,14 +415,21 @@ class Wizard
                         'name'       => 'submit',
                         'label'      => __('Go back'),
                         'type'       => 'submit',
-                        'attributes' => ['icon' => 'cancel'],
+                        'attributes' => [
+                            'icon' => 'back',
+                            'mode' => 'secondary',
+                        ],
                         'return'     => true,
                     ],
                 ],
             ],
         ];
 
-        $this->printForm($form);
+        if ($return === true) {
+            return $this->printForm($form, $return);
+        }
+
+        $this->printForm($form, $return);
     }
 
 

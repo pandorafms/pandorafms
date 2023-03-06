@@ -418,7 +418,10 @@ class HTML
                         'name'       => 'submit',
                         'label'      => __('Go back'),
                         'type'       => 'submit',
-                        'attributes' => [ 'icon' => 'cancel' ],
+                        'attributes' => [
+                            'icon' => 'back',
+                            'mode' => 'secondary',
+                        ],
                         'return'     => true,
                     ],
                 ],
@@ -803,10 +806,12 @@ class HTML
                 $output_head .= 'id="'.$form['id'].'" ';
             }
 
-            $output_head .= 'class="max_floating_element_size " ';
+            $output_head .= 'class="max_floating_element_size ';
             if (isset($form['class']) === true) {
-                $output_head .= 'class="discovery '.$form['class'].'" ';
+                $output_head .= 'discovery '.$form['class'].' ';
             }
+
+            $output_head .= '"';
 
             if (isset($form['onsubmit']) === true) {
                 $output_head .= 'onsubmit="'.$form['onsubmit'].'" ';
@@ -1078,7 +1083,7 @@ class HTML
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form class="discovery max_floating_element_size" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery max_floating_element_size" id="'.$form['id'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {

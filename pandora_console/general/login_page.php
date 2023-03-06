@@ -485,9 +485,36 @@ if (isset($correct_reset_pass_process)) {
 }
 
 if (isset($login_failed)) {
-    $nick = get_parameter_post('nick');
-    $fails = db_get_value('failed_attempt', 'tusuario', 'id_user', $nick);
+    $nick = io_safe_input(get_parameter_post('nick'));
+    $user_in_db = db_get_row_filter(
+        'tusuario',
+        ['id_user' => $nick],
+        '*'
+    );
+    $fails = $user_in_db['failed_attempt'];
+    // If user not exist, and attempts its enable, lets make array and fails attemps.
+    if ($fails == false && $config['enable_pass_policy'] && $user_in_db === false) {
+        $nick_array_error = json_decode(base64_decode($config['nicks_error']), true);
+        $nick = strtolower($nick);
+        if (isset($nick_array_error[$nick]) !== false) {
+            $nick_array_error[$nick] += 1;
+        } else {
+            $nick_array_error[$nick] = 1;
+        }
+
+        $fails = $nick_array_error[$nick];
+        // Save or update the array.
+        if ($config['nicks_error']) {
+            config_update_value('nicks_error', base64_encode(json_encode($nick_array_error)));
+        } else {
+            config_create_value('nicks_error', base64_encode(json_encode($nick_array_error)));
+        }
+    } else {
+        $fails = ++$fails;
+    }
+
     $attemps = ($config['number_attempts'] - $fails);
+    $attemps = ($attemps < 0) ? 0 : $attemps;
     echo '<div id="login_failed" title="'.__('Login failed').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
@@ -500,7 +527,12 @@ if (isset($login_failed)) {
                 echo '</div>';
     if ($config['enable_pass_policy']) {
         echo '<div class="text_message_alert">';
-            echo '<p><strong>Remaining attempts: '.$attemps.'</strong></p>';
+        if ($attemps !== 0 && $user_in_db['login_blocked'] == 0) {
+            echo '<p><strong>'.__('Remaining attempts: ').$attemps.'</strong></p>';
+        } else {
+            echo '<p><strong>'.__('User is blocked').'</strong></p>';
+        }
+
         echo '</div>';
     }
 
@@ -791,8 +823,8 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 220,
-                        width: 528,
+                        height: 230,
+                        width: 530,
                         overlay: {
                             opacity: 0.5,
                             background: "black"
@@ -805,7 +837,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     $("#login_correct_pass").dialog('close');
                 });
             });
-            
             $('#nick').focus();
         break;
     }

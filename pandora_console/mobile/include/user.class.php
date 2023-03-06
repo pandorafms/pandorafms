@@ -349,11 +349,7 @@ class User
         if ($this->errorLogin) {
             $options['type'] = 'onStart';
             $options['title_text'] = __('Login Failed');
-            if ($this->errorLogin !== false) {
-                $options['content_text'] = $this->errorLogin;
-            } else {
-                $options['content_text'] = __('User not found in database or incorrect password.');
-            }
+            $options['content_text'] = __('User not found in database or incorrect password.');
 
             $ui->addDialog($options);
         }
@@ -401,6 +397,7 @@ class User
             'value'       => '',
             'placeholder' => __('password'),
             'label'       => __('Password'),
+            'required'    => 'required',
         ];
         $ui->formAddInputPassword($options);
         $options = [

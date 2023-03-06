@@ -658,10 +658,12 @@ td#save_filter_form-3-0 > span {
   width: 300px !important;
 }
 
+div.white_box > ul > li,
 div.filter-datatable-submain > form > ul > li {
   display: grid;
 }
 
+div.white_box > ul > li > label,
 div.filter-datatable-submain > form > ul > li > label {
   margin-bottom: 10px;
   font-weight: bold;

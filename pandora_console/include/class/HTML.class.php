@@ -803,6 +803,7 @@ class HTML
                 $output_head .= 'id="'.$form['id'].'" ';
             }
 
+            $output_head .= 'class="max_floating_element_size " ';
             if (isset($form['class']) === true) {
                 $output_head .= 'class="discovery '.$form['class'].'" ';
             }
@@ -870,7 +871,7 @@ class HTML
             $output .= '</div>';
         } else {
             if ($print_white_box === true) {
-                $output .= '<div class="white_box">';
+                $output .= '<div class="white_box pdd_15px">';
             }
 
             $output .= '<ul class="wizard">';
@@ -1077,7 +1078,7 @@ class HTML
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery max_floating_element_size" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {
@@ -1095,7 +1096,7 @@ class HTML
             error_log('Error executing wizard callback: ', $e->getMessage());
         }
 
-        $output = '<div class="white_box">';
+        $output = '<div class="white_box pdd_15px">';
         $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {

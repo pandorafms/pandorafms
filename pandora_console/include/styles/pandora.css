@@ -6384,6 +6384,14 @@ div#status_pie {
   padding: 10px 10px 10px 0;
 }
 
+a.table_services_item_link a,
+a.table_services_item_link:hover {
+  text-decoration: none;
+}
+
+.table_services_item_link div {
+  font-size: 16px;
+}
 .table_services_item_link_dashboard {
   font-size: 16px;
   display: grid;

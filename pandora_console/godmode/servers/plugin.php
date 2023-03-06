@@ -454,22 +454,6 @@ if (empty($create) === false || empty($view) === false) {
     $data[0] = html_print_textarea('form_description', 4, 50, $form_description, '', true, 'w100p');
     $table->colspan['plugin_desc_inputs'][0] = 3;
     $table->data['plugin_desc_inputs'] = $data;
-    /*
-        if (is_metaconsole() === true) {
-        $table->head[0] = __('General');
-        $table->head_colspan[0] = 4;
-        $table->headstyle[0] = 'text-align: center';
-        html_print_table($table);
-        } else {
-        echo '<fieldset><legend>'.__('General').'</legend>';
-        html_print_table($table);
-        echo '</fieldset>';
-        }
-
-        html_print_table($table);
-
-        $table->data = [];
-    */
 
     // Command title.
     $commandTitleContent = [];
@@ -528,20 +512,6 @@ if (empty($create) === false || empty($view) === false) {
     $data[0] = html_print_div(['id' => 'command_preview', 'class' => 'mono'], true);
     $table->data['plugin_preview_inputs'] = $data;
     $table->colspan['plugin_preview_inputs'][0] = 2;
-    /*
-        $table->width = '100%';
-        $table->class = 'databox filters';
-        if (is_metaconsole() === true) {
-        $table->head[0] = __('Command');
-        $table->head_colspan[0] = 4;
-        $table->headstyle[0] = 'text-align: center';
-        html_print_table($table);
-        } else {
-        echo '<fieldset><legend>'.__('Command').'</legend>';
-        html_print_table($table);
-        echo '</fieldset>';
-        }
-    */
 
     // Parameters macros title.
     $macrosTitleContent = [];
@@ -696,10 +666,26 @@ if (empty($create) === false || empty($view) === false) {
     echo '<tr><td align="right">';
 
     if ($create != '') {
-        echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+        $button = html_print_submit_button(
+            __('Create'),
+            'crtbutton',
+            false,
+            [ 'icon' => 'wand' ],
+            true
+        );
     } else {
-        echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+        $button = html_print_submit_button(
+            __('Update'),
+            'uptbutton',
+            false,
+            [ 'icon' => 'upd' ],
+            true
+        );
     }
+
+    html_print_action_buttons(
+        $button
+    );
 
     echo '</form></table>';
 

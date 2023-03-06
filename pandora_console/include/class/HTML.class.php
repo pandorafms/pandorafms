@@ -398,7 +398,7 @@ class HTML
      *
      * @return void
      */
-    public static function printGoBackButton($url=null)
+    public static function printGoBackButton($url=null, $return=false)
     {
         if (isset($url) === false) {
             $url = ui_get_full_url(
@@ -428,7 +428,11 @@ class HTML
             ],
         ];
 
-        self::printForm($form);
+        if ($return === true) {
+            return self::printForm($form, $return);
+        }
+
+        self::printForm($form, $return);
     }
 
 

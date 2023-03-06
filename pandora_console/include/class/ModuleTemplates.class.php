@@ -836,7 +836,15 @@ class ModuleTemplates extends HTML
             ]
         );
 
-        ui_pagination($countModuleTemplates, $this->baseUrl, $this->offset);
+        $tablePagination = ui_pagination(
+            $countModuleTemplates,
+            $this->baseUrl,
+            $this->offset,
+            0,
+            true,
+            'offset',
+            false
+        );
         // Create the table with Module Block list.
         $table = new StdClasS();
         $table->class = 'databox data ';
@@ -874,13 +882,13 @@ class ModuleTemplates extends HTML
             $table->cellclass[][3] = 'table_action_buttons';
             $data[3] = html_print_input_image(
                 'delete_profile',
-                'images/cross.png',
+                'images/delete.svg',
                 $row['id_np'],
-                '',
+                'width:40px',
                 true,
                 [
                     'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
-                    'class'   => 'invert_filter',
+                    'class'   => 'invert_filter main_menu_icon',
                 ]
             );
             $data[3] .= html_print_input_image(
@@ -891,23 +899,40 @@ class ModuleTemplates extends HTML
                 true,
                 [
                     'title' => 'Export tdaso CSV',
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             );
-            $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
-            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'" onclick="blockResubmit($(this))">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
+            $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+            $data[3] .= html_print_image(
+                'images/delete.svg',
+                true,
+                [
+                    'title' => __('Delete'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            );
+            $data[3] .= '</a>';
+            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'" onclick="blockResubmit($(this))">';
+            $data[3] .= html_print_image(
+                'images/csv.png',
+                true,
+                [
+                    'title' => __('Export to CSV'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            );
+            $data[3] .= '</a>';
 
             array_push($table->data, $data);
         }
 
         html_print_table($table);
 
-        $output = '<div class="float-right">';
-
         $form = [
             'method' => 'POST',
             'action' => $this->baseUrl,
             'id'     => 'main_management_form',
+            'class'  => 'flex_center',
         ];
 
         $inputs[] = [
@@ -934,22 +959,29 @@ class ModuleTemplates extends HTML
                 'label'      => __('Delete selected'),
                 'name'       => 'erase',
                 'type'       => 'button',
-                'attributes' => ['icon' => 'cancel'],
+                'attributes' => [
+                    'icon' => 'delete',
+                    'mode' => 'secondary',
+                ],
                 'return'     => true,
             ],
         ];
 
-        $output .= $this->printForm(
+        html_print_action_buttons(
+            $this->printForm(
+                [
+                    'form'   => $form,
+                    'inputs' => $inputs,
+                ],
+                true
+            ),
             [
-                'form'   => $form,
-                'inputs' => $inputs,
-            ],
-            true
+                'type'          => 'data_table',
+                'class'         => 'fixed_action_buttons',
+                'right_content' => $tablePagination,
+            ]
         );
 
-        $output .= '</div>';
-
-        echo $output;
     }
 
 
@@ -1056,41 +1088,37 @@ class ModuleTemplates extends HTML
             ],
         ];
 
-        $availableButtons = [];
+        // Required for PEN field.
+        ui_require_jquery_file('tag-editor');
+        ui_require_css_file('jquery.tag-editor');
 
-        $availableButtons[] = [
-            'arguments' => [
+        $buttons = $this->printInput(
+            [
                 'name'       => 'action_button',
                 'label'      => $formButtonLabel,
                 'type'       => 'submit',
-                'attributes' => [ 'icon' => $formButtonClass ],
+                'attributes' => [
+                    'icon' => $formButtonClass,
+                    'form' => 'module_template_form',
+                ],
                 'return'     => true,
-            ],
-        ];
+                'width'      => 'initial',
+            ]
+        );
 
         if ($createNewTemplate === false) {
-            $availableButtons[] = [
-                'arguments' => [
+            $buttons .= $this->printInput(
+                [
                     'name'       => 'add_components_button',
                     'label'      => __('Add components'),
                     'type'       => 'button',
                     'attributes' => [ 'icon' => 'cog' ],
                     'script'     => 'showAddComponent();',
                     'return'     => true,
-                ],
-            ];
+                    'width'      => 'initial',
+                ]
+            );
         }
-
-        $inputs[] = [
-            'class'         => 'action_button_list',
-            'direct'        => false,
-            'wrapper'       => 'div',
-            'block_content' => $availableButtons,
-        ];
-
-        // Required for PEN field.
-        ui_require_jquery_file('tag-editor');
-        ui_require_css_file('jquery.tag-editor');
 
         if ($createNewTemplate === false) {
             // Get the data.
@@ -1142,13 +1170,13 @@ class ModuleTemplates extends HTML
                         $blockTitle .= '<div class="white_table_header_checkbox">';
                         $blockTitle .= html_print_input_image(
                             'del_block_'.$id_group.'_',
-                            'images/cross.png',
+                            'images/delete.svg',
                             1,
-                            false,
+                            'width: 40px',
                             true,
                             [
                                 'title'   => __('Delete this block'),
-                                'class'   => 'invert_filter',
+                                'class'   => 'invert_filter main_menu_icon',
                                 'onclick' => 'if(confirm(\''.__('Do you want delete this block?').'\')){deleteModuleTemplate(\'block\',\''.$blockComponentList.'\')};return false;',
                             ]
                         );
@@ -1196,7 +1224,7 @@ class ModuleTemplates extends HTML
                                         true,
                                         [
                                             'title' => __('Network module'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                 break;
@@ -1207,7 +1235,7 @@ class ModuleTemplates extends HTML
                                         true,
                                         [
                                             'title' => __('WMI module'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                 break;
@@ -1218,7 +1246,7 @@ class ModuleTemplates extends HTML
                                         true,
                                         [
                                             'title' => __('Plug-in module'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                 break;
@@ -1239,13 +1267,13 @@ class ModuleTemplates extends HTML
                             $data[3] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
                             $data[4] = html_print_input_image(
                                 'del_module_'.$module['component_id'].'_',
-                                'images/cross.png',
+                                'images/delete.svg',
                                 1,
-                                '',
+                                'width:40px;',
                                 true,
                                 [
                                     'title'   => __('Delete this module'),
-                                    'class'   => 'invert_filter',
+                                    'class'   => 'invert_filter main_menu_icon',
                                     'onclick' => 'if(confirm(\''.__('Do you want delete this module?').'\')){deleteModuleTemplate(\'module\','.$module['component_id'].')};return false;',
                                 ]
                             );
@@ -1277,7 +1305,9 @@ class ModuleTemplates extends HTML
             echo '<div class="invisible" id="msg"></div>';
         }
 
-        $this->printGoBackButton($this->baseUrl);
+        $buttons .= $this->printGoBackButton($this->baseUrl, true);
+
+        html_print_action_buttons($buttons);
     }
 
 
@@ -1459,30 +1489,31 @@ class ModuleTemplates extends HTML
 
             var listValidPens = $("#hidden-valid-pen").val();
             try {
-                listValidPens = listValidPens.split(',');
+                if(listValidPens != undefined) {
+                    listValidPens = listValidPens.split(',');
+                    //Adding tagEditor for PEN management.
+                    $("#text-pen").tagEditor({
+                        beforeTagSave: function(field, editor, tags, tag, val) {
+                            if (listValidPens.indexOf(val) == -1) {
+                            return false;
+                            }
+                        },
+                        autocomplete: {
+                            source: <?php echo json_encode($this->penRefs); ?>
+
+                        }
+                    });
+                }
             } catch (e) {
                 console.error(e);
                 return;
             }
 
-            //Adding tagEditor for PEN management.
-            $("#text-pen").tagEditor({
-            beforeTagSave: function(field, editor, tags, tag, val) {
-                if (listValidPens.indexOf(val) == -1) {
-                return false;
-                }
-            },
-            autocomplete: {
-                source: <?php echo json_encode($this->penRefs); ?>
-
-            }
-            });
             //Values for add.
             $("#add-modules-components").change(function() {
             var valores = $("#add-modules-components")
                 .val()
                 .join(",");
-            //$("#hidden-add-modules-components-values").val(valores);
             });
         });
 

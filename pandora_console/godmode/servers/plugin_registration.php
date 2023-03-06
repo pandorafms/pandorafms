@@ -60,12 +60,23 @@ if (is_metaconsole() === true) {
         return;
     }
 } else {
-    ui_print_page_header(
+    ui_print_standard_header(
         __('PLUGIN REGISTRATION'),
         'images/gm_servers.png',
         false,
         '',
-        true
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Servers'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Register plugin'),
+            ],
+        ]
     );
 
     $management_allowed = is_management_allowed();

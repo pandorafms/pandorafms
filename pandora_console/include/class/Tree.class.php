@@ -214,6 +214,11 @@ class Tree
 											AND ta.unknown_count = 0
 											AND ta.normal_count > 0) ';
             break;
+
+            case AGENT_STATUS_NOT_NORMAL:
+                $agent_status_filter = ' AND (ta.critical_count > 0
+											OR ta.warning_count > 0) ';
+            break;
         }
 
         return $agent_status_filter;
@@ -283,6 +288,10 @@ class Tree
 
         if ($this->getEmptyModuleFilterStatus()) {
             return $show_init_condition;
+        }
+
+        if ((int) $this->filter['statusModule'] === 6) {
+            return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)';
         }
 
         $field_filter = modules_get_counter_by_states($this->filter['statusModule']);
@@ -901,6 +910,18 @@ class Tree
                 case AGENT_MODULE_STATUS_NORMAL:
                     $agent['counters']['ok'] = $agent['normal_count'];
                     $agent['counters']['total'] = $agent['normal_count'];
+                break;
+
+                case AGENT_MODULE_STATUS_NOT_NORMAL:
+                    if (empty($agent['critical_count']) === false) {
+                        $agent['counters']['critical'] = $agent['critical_count'];
+                    }
+
+                    if (empty($agent['warning_count']) === false) {
+                        $agent['counters']['warning'] = $agent['warning_count'];
+                    }
+
+                    $agent['counters']['total'] = ($agent['warning_count'] + $agent['critical_count']);
                 break;
             }
         }

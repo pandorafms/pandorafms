@@ -1,9 +1,9 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2014-2021 Artica Soluciones Tecnologicas, http://www.artica.es
--- Please see http://www.pandorafms.org for full contribution list
+-- Copyright (c) 2014-2023 Artica PFMS
+-- Please see http://www.pandorafms.com 
 
--- Database Data for Pandora FMS 5.1
+-- Database Data for Pandora FMS NG
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
@@ -39,17 +39,18 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('block_size','20'),
 ('days_purge','45'),
 ('days_delete_unknown','0'),
-('days_delete_not_initialized','0'),
+('days_delete_not_initialized','7'),
 ('days_compact','0'),
 ('days_autodisable_deletion','30'),
 ('graph_res','5'),
 ('step_compact','1'),
-('db_scheme_first_version', '6.0dev'),
-('db_scheme_version','6.0RC1'),
-('db_scheme_build','PD150908'),
+('db_scheme_first_version', '7.0NG'),
+('db_scheme_version','7.0NG'),
+('db_scheme_build','PD230303'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
+('graph_image_height', '250'),
 ('graph_color1', '#99dd00'),
 ('graph_color2', '#336600'),
 ('graph_color3', '#3399cc'),
@@ -104,7 +105,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('enable_refr', 0),
 ('meta_num_elements', 100),
 ('update_manager_installed', 1),
-('num_files_attachment', 250),
+('num_files_attachment', 500),
 ('show_vc', 1),
 ('inventory_changes_blacklist', '1,2,20,21'),
 ('custom_report_front', 0),
@@ -220,10 +221,10 @@ UNLOCK TABLES;
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES
 (1,'Documentation','https://pandorafms.com/manual'),
-(2,'Enterprise Edition','http://pandorafms.com'),
+(2,'Get support','https://pandorafms.com/en/technical-support/'),
 (3,'Report a bug','https://github.com/pandorafms/pandorafms/issues'),
 (4,'Suggest new feature','https://pandorafms.com/community/beta-program/'),
-(5,'Module library','http://library.pandorafms.com/');
+(5,'Module library','https://pandorafms.com/library/');
 
 UNLOCK TABLES;
 

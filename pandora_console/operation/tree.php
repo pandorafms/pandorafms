@@ -543,7 +543,12 @@ $infoHeadTitle = 'Sombra oscura';
                                 agents: "<?php echo __('Normal agents'); ?>",
                                 modules: "<?php echo __('Normal modules'); ?>",
                                 none: "<?php echo __('Normal'); ?>"
-                            }
+                            },
+                            not_normal: {
+                                agents: "<?php echo __('Not normal agents'); ?>",
+                                modules: "<?php echo __('Not normal modules'); ?>",
+                                none: "<?php echo __('Not normal'); ?>"
+                            },
                         }
                     });
                 }

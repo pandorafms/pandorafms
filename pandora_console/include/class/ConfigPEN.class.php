@@ -240,17 +240,17 @@ class ConfigPEN extends HTML
                         $tmp->description = io_safe_output($tmp->description);
                         $tmp->manufacturer = io_safe_output($tmp->manufacturer);
 
-                        $tmp->options = '';
+                        $tmp->options = '<div class="table_action_buttons float-right">';
 
-                        $tmp->options = '<a href="javascript:" onclick="showForm(\'';
+                        $tmp->options .= '<a href="javascript:" onclick="showForm(\'';
                         $tmp->options .= $tmp->pen;
                         $tmp->options .= '\')" >';
                         $tmp->options .= html_print_image(
-                            'images/operation.png',
+                            'images/edit.svg',
                             true,
                             [
                                 'title' => __('Show'),
-                                'class' => 'invert_filter',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         );
                         $tmp->options .= '</a>';
@@ -258,14 +258,16 @@ class ConfigPEN extends HTML
                         $tmp->options .= $tmp->pen;
                         $tmp->options .= '\')" >';
                         $tmp->options .= html_print_image(
-                            'images/cross.png',
+                            'images/delete.svg',
                             true,
                             [
                                 'title' => __('Delete'),
-                                'class' => 'invert_filter',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         );
                         $tmp->options .= '</a>';
+
+                        $tmp->options .= '</div>';
 
                         $carry[] = $tmp;
                         return $carry;
@@ -406,7 +408,7 @@ class ConfigPEN extends HTML
             'action'   => '#',
             'id'       => 'modal_form',
             'onsubmit' => 'return false;',
-            'class'    => '',
+            'class'    => 'filter-list-adv',
         ];
 
         $inputs = [];
@@ -420,7 +422,7 @@ class ConfigPEN extends HTML
             'size'     => 50,
         ];
 
-        if ((bool) $values['pen']) {
+        if ((bool) $values['pen'] === true) {
             $arguments['disabled'] = true;
         }
 
@@ -599,7 +601,7 @@ class ConfigPEN extends HTML
                 __('Description'),
                 [
                     'text'  => __('Options'),
-                    'class' => 'table_action_buttons',
+                    'class' => 'table_action_buttons align_right',
                 ],
             ];
 

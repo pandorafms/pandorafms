@@ -2110,6 +2110,7 @@ table.rounded_cells td {
   align-items: center;
 }
 
+.ta-right,
 .right {
   text-align: right;
 }
@@ -9190,8 +9191,8 @@ div.stat-win-spinner img {
   min-width: 50px;
 }
 
-.lign_right {
-  text-align: right;
+.align_right {
+  text-align: right !important;
 }
 
 .font_11pt {

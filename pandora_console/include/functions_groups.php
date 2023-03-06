@@ -440,17 +440,17 @@ function groups_give_disabled_group($id_group)
  */
 function groups_get_icon($id_group)
 {
-    if ($id_group == 0) {
-        return 'world';
+    if ((int) $id_group === 0) {
+        $icon = 'unknown@groups.svg';
     } else {
         $icon = (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 
-        if ($icon == '') {
-            $icon = 'without_group';
+        if (empty($icon) === true) {
+            $icon = 'unknown@groups.svg';
         }
-
-        return $icon;
     }
+
+    return $icon;
 }
 
 

@@ -3298,6 +3298,7 @@ class NetworkMap
 
         $table = new stdClass();
         $table->id = 'interface_link_table';
+        $table->class = 'info_table';
         $table->width = '100%';
         $table->head['node_source_interface'] = __('Node source');
         $table->head['interface_source_select'] = __('Interface source');
@@ -3340,16 +3341,25 @@ class NetworkMap
 
         $output .= '<br>';
 
-        $table->data['interface_row']['interface_link_button'] = html_print_button(
-            __('Add interface link'),
-            '',
-            false,
-            'add_interface_link_js();',
-            'class="sub"',
+        $output .= html_print_table($table, true);
+        $output .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_button(
+                    __('Add interface link'),
+                    '',
+                    false,
+                    'add_interface_link_js();',
+                    [
+                        'icon' => 'wand',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
             true
         );
 
-        $output .= html_print_table($table, true);
         $output .= '</div></div>';
 
         $output .= '<div id="dialog_node_add" class="invisible" title="';
@@ -3722,11 +3732,7 @@ class NetworkMap
             // Open networkconsole_id div.
             $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
             if ($this->fullSize) {
-                if ($this->widget) {
-                    $output .= ' class="networkconsole">';
-                } else {
-                    $output .= ' class="networkconsole">';
-                }
+                $output .= ' class="networkconsole">';
             } else {
                 $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';
             }

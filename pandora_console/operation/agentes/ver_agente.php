@@ -37,6 +37,7 @@ require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_metaconsole.php');
+enterprise_include_once('include/functions_omnishell.php');
 
 ui_require_javascript_file('openlayers.pandora');
 ui_require_css_file('agent_view');
@@ -1473,9 +1474,11 @@ if ($tab == 'inventory') {
 }
 
 // Collection.
-$collectiontab = enterprise_hook('collection_tab');
-if ($collectiontab == -1) {
-    $collectiontab = '';
+if ((int) $config['license_nms'] !== 1) {
+    $collectiontab = enterprise_hook('collection_tab');
+    if ($collectiontab == -1) {
+        $collectiontab = '';
+    }
 }
 
 
@@ -1483,6 +1486,17 @@ if ($collectiontab == -1) {
 $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1) {
     $policyTab = '';
+}
+
+
+// Omnishell.
+$tasks = count_tasks_agent($id_agente);
+
+if ($tasks === true) {
+    $omnishellTab = enterprise_hook('omnishell_tab');
+    if ($omnishellTab == -1) {
+        $omnishellTab = '';
+    }
 }
 
 // WUX Console.
@@ -1747,6 +1761,7 @@ $onheader = [
     'ncm_view'           => ($ncm_tab ?? null),
     'external_tools'     => ($external_tools ?? null),
     'incident'           => ($incidenttab ?? null),
+    'omnishell'          => ($omnishellTab ?? null),
 ];
 
 
@@ -1869,6 +1884,10 @@ switch ($tab) {
 
     case 'policy':
         $tab_name = 'Policies';
+    break;
+
+    case 'omnishell':
+        $tab_name = 'Omnishell';
     break;
 
     case 'ux_console_tab':
@@ -2007,6 +2026,10 @@ switch ($tab) {
 
     case 'policy':
         enterprise_include('operation/agentes/policy_view.php');
+    break;
+
+    case 'omnishell':
+        enterprise_include('operation/agentes/omnishell_view.php');
     break;
 
     case 'ux_console_tab':

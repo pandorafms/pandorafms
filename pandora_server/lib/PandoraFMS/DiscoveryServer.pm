@@ -221,10 +221,14 @@ sub data_consumer ($$) {
 
     if ($task->{'type'} == DISCOVERY_APP_SAP) {
       # SAP TASK, retrieve license.
-      $task->{'sap_license'} = pandora_get_config_value(
-        $dbh,
-        'sap_license'
-      );
+      if (defined($task->{'field4'}) && $task->{'field4'} ne "") {
+        $task->{'sap_license'} = $task->{'field4'};
+      } else {
+        $task->{'sap_license'} = pandora_get_config_value(
+          $dbh,
+          'sap_license'
+        );
+      }
 
       # Retrieve credentials for task (optional).
       if (defined($task->{'auth_strings'})

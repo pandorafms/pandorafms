@@ -171,7 +171,23 @@ if (is_ajax() === true) {
         $table->data[6][1] = html_print_input_text('scale_z', $map_filter['z_dash'], '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
 
         $table->data['source'][0] = __('Source');
-        $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true).html_print_radio_button('source', 'recon_task', __('Discovery task'), $source, true).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true);
+        $table->data['source'][1] = html_print_select(
+            [
+                'group'      => __('Group'),
+                'recon_task' => __('Discovery task'),
+                'ip_mask'    => __('CIDR IP mask'),
+            ],
+            'source',
+            $source,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            $disabled_source
+        );
 
         if (! check_acl($config['id_user'], 0, 'PM')) {
             $sql = sprintf(
@@ -221,7 +237,16 @@ if (is_ajax() === true) {
         );
 
         $table->data['source_data_ip_mask'][0] = __('Source from CIDR IP mask');
-        $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $map_info['source_data'], '', 20, 255, true);
+        $table->data['source_data_ip_mask'][1] = html_print_textarea(
+            'ip_mask',
+            3,
+            5,
+            $map_info['source_data'],
+            '',
+            true,
+            '',
+            $disabled_source
+        );
 
         $dont_show_subgroups = 0;
         if (isset($map_filter['dont_show_subgroups'])) {
@@ -296,9 +321,9 @@ if (is_ajax() === true) {
         $map_form .= html_print_table($table, true);
 
         $map_form .= '<script>
-						$("input[name=\'source\']").on(\'change\', function() {
-							var source = $("input[name=\'source\']:checked").val();
-							
+                        $("#source").change(function() {
+							const source = $(this).val();
+
 							if (source == \'recon_task\') {
 								$("#form_editor-source_data_ip_mask")
 									.css(\'display\', \'none\');
@@ -388,8 +413,8 @@ if (is_ajax() === true) {
 								.css(\'display\', \'\');
 						}
 					});
-					
-					$("input[name=\'source\']").trigger("change");
+
+					$("#source").trigger("change");
 					$("#method").trigger("change");
 			</script>';
 

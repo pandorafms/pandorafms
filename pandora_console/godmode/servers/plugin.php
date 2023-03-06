@@ -230,9 +230,64 @@ if ($filemanager) {
             $directory = filemanager_safe_directory($directory, $fallback_directory);
         }
 
+        $base_url = 'index.php?sec=gservers&sec2=godmode/servers/plugin';
+        $setup_url = $base_url.'&filemanager=1&tab=Attachments';
+        $tab = get_parameter('tab', null);
+        $tabs = [
+            'list'    => [
+                'text'   => '<a href="'.$base_url.'">'.html_print_image(
+                    'images/eye_show.png',
+                    true,
+                    [
+                        'title' => __('Plugins'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab != 'Attachments'),
+            ],
+            'options' => [
+                'text'   => '<a href="'.$setup_url.'">'.html_print_image(
+                    'images/collection.png',
+                    true,
+                    [
+                        'title' => __('Attachments'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab == 'Attachments'),
+            ],
+        ];
+
+        if ($tab === 'Attachments') {
+            $helpHeader  = '';
+            $titleHeader = __('Index of attachment/plugin');
+        } else {
+            $helpHeader  = 'servers_ha_clusters_tab';
+            $titleHeader = __('Plug-ins registered on %s', get_product_name());
+        }
+
+        // Header.
+        ui_print_standard_header(
+            $titleHeader,
+            'images/gm_servers.png',
+            false,
+            $helpHeader,
+            false,
+            $tabs,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Plugins'),
+                ],
+            ]
+        );
+
         $real_directory = realpath($config['homedir'].'/'.$directory);
 
-        echo '<h4>'.__('Index of %s', $directory).'</h4>';
 
         $chunck_url = '&view='.$id_plugin;
         if ($id_plugin == 0) {
@@ -255,7 +310,7 @@ if ($filemanager) {
         filemanager_file_explorer(
             $real_directory,
             $directory,
-            'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$id_plugin,
+            'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$id_plugin.'&tab=Attachments',
             $fallback_directory,
             true,
             false,
@@ -401,7 +456,7 @@ if (($create != '') || ($view != '')) {
     $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
     $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf text_input" size=100 value="'.$form_execute.'" >';
 
-    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" class="bot">';
+    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&tab=Attachments&id_plugin='.$form_id.'" class="bot">';
     $data[1] .= html_print_image('images/file.png', true, ['class' => 'invert_filter'], false, true);
     $data[1] .= '</a>';
     $table->data['plugin_command'] = $data;
@@ -597,15 +652,60 @@ if (($create != '') || ($view != '')) {
             );
         }
     } else {
-        ui_print_page_header(
-            __(
-                'Plug-ins registered on %s',
-                get_product_name()
-            ),
+        $base_url = 'index.php?sec=gservers&sec2=godmode/servers/plugin';
+        $setup_url = $base_url.'&filemanager=1&tab=Attachments';
+        $tab = get_parameter('tab', null);
+        $tabs = [
+            'list'    => [
+                'text'   => '<a href="'.$base_url.'">'.html_print_image(
+                    'images/eye_show.png',
+                    true,
+                    [
+                        'title' => __('Plugins'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab != 'Attachments'),
+            ],
+            'options' => [
+                'text'   => '<a href="'.$setup_url.'">'.html_print_image(
+                    'images/collection.png',
+                    true,
+                    [
+                        'title' => __('Attachments'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+                'active' => (bool) ($tab == 'Attachments'),
+            ],
+        ];
+
+        if ($tab === 'Attachments') {
+            $helpHeader  = '';
+            $titleHeader = __('Index of attachment/plugin');
+        } else {
+            $helpHeader  = 'servers_ha_clusters_tab';
+            $titleHeader = __('Plug-ins registered on %s', get_product_name());
+        }
+
+        // Header.
+        ui_print_standard_header(
+            $titleHeader,
             'images/gm_servers.png',
             false,
-            '',
-            true
+            $helpHeader,
+            false,
+            $tabs,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Plugins'),
+                ],
+            ]
         );
 
         $management_allowed = is_management_allowed();
@@ -892,7 +992,7 @@ if (($create != '') || ($view != '')) {
         echo '<div id="deploy_messages" class="invisible">';
     }
 
-    // The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'
+    // The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'.
     echo "<div id='dialog_locked' title='".__('List of modules and components created by "%s" ')."' class='invisible left'>";
     echo '</div>';
 
@@ -903,50 +1003,49 @@ ui_require_javascript_file('pandora_modules');
 ?>
 
 <script type="text/javascript">
-    
+
     var locked = <?php echo (int) json_encode((int) $locked); ?>;
-    
+
     function update_preview() {
         var command = $('#form_execute').val();
         var parameters = $('#form_parameters').val();
-        
+
         var i = 1;
-        
+
         while (1) {
             if ($('#text-field' + i + '_value').val() == undefined) {
                 break;
             }
-            
+
             if ($('#text-field'+i+'_value').val() != '') {
                 parameters = parameters
                     .replace('_field' + i + '_',
                         $('#text-field' + i + '_value').val());
             }
-            
+
             i++;
         }
-        
+
         $('#command_preview').html(_.escape(command) + ' ' + _.escape(parameters));
     }
-    
+
     function show_locked_dialog(id_plugin, plugin_name) {
         var parameters = {};
         parameters['page'] = "godmode/servers/plugin";
         parameters["get_list_modules_and_component_locked_plugin"] = 1;
         parameters["id_plugin"] = id_plugin;
-        
+
         $.ajax({
             type: "POST",
             url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
             data: parameters,
             dataType: "html",
             success: function(data) {
-                var title = $("#dialog_locked").prop('title').replace(/%s/, plugin_name);
-                
+                var title = 'List of modules and components created by "'+ plugin_name +'"';
                 $("#dialog_locked")
-                    .prop('title', title)
                     .html(data)
                     .dialog ({
+                        title: title,
                         resizable: true,
                         draggable: true,
                         modal: true,
@@ -961,8 +1060,7 @@ ui_require_javascript_file('pandora_modules');
             }
         });
     }
-    
-    
+
     $(document).ready(function() {
         // Add macro
         var add_macro_click_event = function (event) {
@@ -992,34 +1090,34 @@ ui_require_javascript_file('pandora_modules');
             update_preview();
         }
         $('div#delete_macro_button>a').click(delete_macro_click_event);
-        
+
         update_preview();
-        
+
         $('.command_component').keyup(function() {
             update_preview();
         });
     });
-    
-    
+
+
     var add_macro_click_locked_event = function (event) {
         var message = '<?php echo __('Some modules or components are using the plugin'); ?>.'
                     + '\n' + '<?php echo __('The modules or components should be updated manually or using the bulk operations for plugins after this change'); ?>.'
                     + '\n'
                     + '\n' + '<?php echo __('Are you sure you want to perform this action?'); ?>';
-        
+
         if (!confirm(message)) {
             event.stopImmediatePropagation();
             event.preventDefault();
         }
     }
-    
+
     var macros_click_locked_event = function (event) {
         alert("<?php echo __('The plugin macros cannot be updated because some modules or components are using the plugin'); ?>");
     }
-    
+
     if (locked) {
         $('a#add_macro_btn').click(add_macro_click_locked_event);
     }
-    
-    
+
+
 </script>

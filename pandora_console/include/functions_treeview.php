@@ -696,6 +696,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=reporting&sec2=operation/cluster/cluster&op=update&id='.$cluster->id().'">';
             $go_to_agent .= html_print_submit_button(__('Go to cluster edition'), 'upd_button', false, 'class="sub config"', true);
         } else {
+            $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.$ent.'&status_hierachy_mode_sent=1&moduletype=dataserver&edit_module=1&updbutton=Create&sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=2">';
+            $go_to_agent .= html_print_submit_button(__('Go to module creation'), 'upd_button', false, 'class="sub config"', true);
             $go_to_agent .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'">';
             $go_to_agent .= html_print_submit_button(__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
         }

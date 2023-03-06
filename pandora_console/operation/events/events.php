@@ -239,6 +239,13 @@ $server_id = get_parameter(
     ($filter['server_id'] ?? '')
 );
 
+if (empty($id_agent) === true) {
+    $id_agent = get_parameter(
+        'id_agent',
+        ($filter['id_agent'] ?? '')
+    );
+}
+
 if (is_metaconsole() === true) {
     $servers = metaconsole_get_servers();
     if (is_array($servers) === true) {
@@ -350,7 +357,7 @@ if (is_ajax() === true) {
                 'te.warning_instructions',
                 'te.unknown_instructions',
                 'te.owner_user',
-                'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp',
+                'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp',
                 'te.custom_data',
                 'te.data',
                 'te.module_status',
@@ -380,7 +387,7 @@ if (is_ajax() === true) {
                             $order['field'] = 'agent_name';
                         break;
 
-                        case 'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp':
+                        case 'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp':
                             $order['field'] = 'ack_utimestamp';
                         break;
 
@@ -521,7 +528,7 @@ if (is_ajax() === true) {
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
 
-                        $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
+                        $tmp->ack_utimestamp_raw = $tmp->ack_utimestamp;
 
                         $tmp->ack_utimestamp = ui_print_timestamp(
                             (empty($tmp->ack_utimestamp) === true) ? 0 : $tmp->ack_utimestamp,
@@ -551,7 +558,10 @@ if (is_ajax() === true) {
                             $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
 
-                        $tmp->timestamp = $last_contact_value;
+                        $tmp->timestamp = ui_print_timestamp(
+                            $tmp->utimestamp,
+                            true
+                        );
 
                         if (is_numeric($tmp->data) === true) {
                             $tmp->data = format_numeric(
@@ -1494,7 +1504,7 @@ if ($pure) {
         ]
     ).'</a>';
 
-    // Sound events.
+    // Accoustic console.
     $sound_event['active'] = false;
 
     // Sound Events.
@@ -1517,7 +1527,7 @@ if ($pure) {
         'images/sound.png',
         true,
         [
-            'title' => __('Sound events'),
+            'title' => __('Accoustic console'),
             'class' => 'invert_filter',
         ]
     ).'</a>';
@@ -1567,7 +1577,7 @@ if ($pure) {
     switch ($section) {
         case 'sound_event':
             $onheader['sound_event']['active'] = true;
-            $section_string = __('Sound events');
+            $section_string = __('Accoustic console');
         break;
 
         case 'history':
@@ -2434,8 +2444,6 @@ try {
                     100,
                     200,
                     500,
-                    1000,
-                    -1,
                 ],
                 [
                     $config['block_size'],
@@ -2444,8 +2452,6 @@ try {
                     100,
                     200,
                     500,
-                    1000,
-                    'All',
                 ],
             ],
             'order'                          => [

@@ -140,7 +140,7 @@ $inputs[] = [
         'type'     => 'textarea',
         'name'     => 'description',
         'required' => false,
-        'value'    => $specialDay->description(),
+        'value'    => io_safe_output($specialDay->description()),
         'rows'     => 50,
         'columns'  => 30,
     ],

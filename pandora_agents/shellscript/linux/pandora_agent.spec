@@ -1,6 +1,7 @@
 #
 #Pandora FMS Linux Agent
 #
+%global __os_install_post %{nil}
 %define name        pandorafms_agent
 %define version	    3.2
 Summary:            Pandora FMS Linux agent

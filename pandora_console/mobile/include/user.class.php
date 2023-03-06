@@ -397,6 +397,7 @@ class User
             'value'       => '',
             'placeholder' => __('password'),
             'label'       => __('Password'),
+            'required'    => 'required',
         ];
         $ui->formAddInputPassword($options);
         $options = [

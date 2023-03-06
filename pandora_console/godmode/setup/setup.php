@@ -226,7 +226,7 @@ $buttons['external_tools'] = [
 
 $buttons['welcome_tips'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips').'">'.html_print_image('images/', true, ['title' => __('Welcome tips'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips').'">'.html_print_image('images/inventory.png', true, ['title' => __('Welcome tips'), 'class' => 'invert_filter']).'</a>',
 ];
 
 if ($config['activate_gis']) {

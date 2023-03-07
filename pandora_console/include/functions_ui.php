@@ -693,7 +693,7 @@ function ui_print_tags_warning($return=false)
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_group_icon($id_group, $return=false, $path='', $style='', $link=true, $force_show_image=false, $show_as_image=false, $class='')
+function ui_print_group_icon($id_group, $return=false, $path='', $style='', $link=true, $force_show_image=false, $show_as_image=false, $class='', $tactical_view=false)
 {
     global $config;
 
@@ -707,7 +707,11 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
     }
 
     if ($link === true) {
-        $output = '<a href="'.$config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
+        if ($tactical_view === true) {
+            $output = '<a href="'.$config['homeurl'].'index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$id_group.'">';
+        } else {
+            $output = '<a href="'.$config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
+        }
     }
 
     if ((bool) $config['show_group_name'] === true) {

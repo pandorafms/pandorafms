@@ -20,8 +20,6 @@ require_once $config['homedir'].'/include/functions_groups.php';
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 // Fix: Netflow have to check RW ACL
 if (! check_acl($config['id_user'], 0, 'RW')) {
     db_pandora_audit(
@@ -274,8 +272,6 @@ if ($id) {
 
 echo '</div>';
 echo '</form>';
-
-enterprise_hook('close_meta_frame');
 
 ?>
 

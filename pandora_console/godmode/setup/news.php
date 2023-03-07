@@ -287,7 +287,7 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
                 echo "<td class='$tdcolor'>".__('No').'</b></td>';
             }
 
-            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a></td></tr>';
+            echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a></td></tr>';
         }
 
         echo '</table>';

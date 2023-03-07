@@ -1,0 +1,16 @@
+.white-box-content {
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.white-box-content table {
+  border: 0;
+}
+
+table.databox {
+  padding: 5px;
+}
+
+.info_table.no-td-borders > tbody > tr > td {
+  border: 0px;
+}

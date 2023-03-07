@@ -436,64 +436,27 @@ class ModuleTemplates extends HTML
                         return;
                     }
 
-                    // It's important to keep the structure and order in the same way for backwards compatibility.
-                    switch ($config['dbtype']) {
-                        case 'mysql':
-                            $sql = sprintf(
-                                '
-                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
-                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
-                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
-                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-                                    components.max_critical, components.str_critical, components.min_ff_event, components.dynamic_interval, components.dynamic_max, components.dynamic_min, components.dynamic_two_tailed, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
-                                FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
-                                WHERE tpc.id_nc = components.id_nc
-                                    AND components.id_group = comp_group.id_sg
-                                    AND tpc.id_np = %d',
-                                $this->id_np
-                            );
-                        break;
-
-                        case 'postgresql':
-                            $sql = sprintf(
-                                '
-                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
-                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
-                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
-                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-                                    components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
-                                FROM "tnetwork_component" AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
-                                WHERE tpc.id_nc = components.id_nc
-                                    AND components.id_group = comp_group.id_sg
-                                    AND tpc.id_np = %d',
-                                $this->id_np
-                            );
-                        break;
-
-                        case 'oracle':
-                            $sql = sprintf(
-                                '
-                                SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
-                                    components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
-                                    components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
-                                    components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-                                    components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
-                                FROM tnetwork_component AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
-                                WHERE tpc.id_nc = components.id_nc
-                                    AND components.id_group = comp_group.id_sg
-                                    AND tpc.id_np = %d',
-                                $this->id_np
-                            );
-                        break;
-                    }
+                    $sql = sprintf(
+                        '
+                        SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
+                            components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
+                            components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
+                            components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
+                            components.max_critical, components.str_critical, components.min_ff_event, components.dynamic_interval, components.dynamic_max, components.dynamic_min, components.dynamic_two_tailed, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
+                        FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
+                        WHERE tpc.id_nc = components.id_nc
+                            AND components.id_group = comp_group.id_sg
+                            AND tpc.id_np = %d',
+                        $this->id_np
+                    );
 
                     $components = db_get_all_rows_sql($sql);
 
                     $row_names = [];
                     $inv_names = [];
-                    // Find the names of the rows that we are getting and throw away the duplicate numeric keys
+                    // Find the names of the rows that we are getting and throw away the duplicate numeric keys.
                     foreach ($components[0] as $row_name => $detail) {
-                        if (is_numeric($row_name)) {
+                        if (is_numeric($row_name) === true) {
                             $inv_names[] = $row_name;
                         } else {
                             $row_names[] = $row_name;
@@ -501,18 +464,18 @@ class ModuleTemplates extends HTML
                     }
 
                     $fileName = io_safe_output($profile_info['name']);
-                    // Send headers to tell the browser we're sending a file
+                    // Send headers to tell the browser we're sending a file.
                     header('Content-type: application/octet-stream');
                     header('Content-Disposition: attachment; filename='.preg_replace('/\s/', '_', $fileName).'.csv');
                     header('Pragma: no-cache');
                     header('Expires: 0');
                     setDownloadCookieToken();
 
-                    // Clean up output buffering
+                    // Clean up output buffering.
                     while (@ob_end_clean()) {
                     }
 
-                    // Then print the first line (row names)
+                    // Then print the first line (row names).
                     echo '"'.implode('"'.$config['csv_divider'].'"', $row_names).'"';
                     echo "\n";
 
@@ -873,7 +836,15 @@ class ModuleTemplates extends HTML
             ]
         );
 
-        ui_pagination($countModuleTemplates, $this->baseUrl, $this->offset);
+        $tablePagination = ui_pagination(
+            $countModuleTemplates,
+            $this->baseUrl,
+            $this->offset,
+            0,
+            true,
+            'offset',
+            false
+        );
         // Create the table with Module Block list.
         $table = new StdClasS();
         $table->class = 'databox data ';
@@ -908,16 +879,16 @@ class ModuleTemplates extends HTML
             $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
             $data[1] = '<a href="'.$this->baseUrl.'&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
             $data[2] = ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]');
-            $table->cellclass[][3] = 'action_buttons';
+            $table->cellclass[][3] = 'table_action_buttons';
             $data[3] = html_print_input_image(
                 'delete_profile',
-                'images/cross.png',
+                'images/delete.svg',
                 $row['id_np'],
-                '',
+                'width:40px',
                 true,
                 [
                     'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
-                    'class'   => 'invert_filter',
+                    'class'   => 'invert_filter main_menu_icon',
                 ]
             );
             $data[3] .= html_print_input_image(
@@ -928,23 +899,40 @@ class ModuleTemplates extends HTML
                 true,
                 [
                     'title' => 'Export tdaso CSV',
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             );
-            $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
-            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'" onclick="blockResubmit($(this))">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
+            $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+            $data[3] .= html_print_image(
+                'images/delete.svg',
+                true,
+                [
+                    'title' => __('Delete'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            );
+            $data[3] .= '</a>';
+            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'" onclick="blockResubmit($(this))">';
+            $data[3] .= html_print_image(
+                'images/csv.png',
+                true,
+                [
+                    'title' => __('Export to CSV'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            );
+            $data[3] .= '</a>';
 
             array_push($table->data, $data);
         }
 
         html_print_table($table);
 
-        $output = '<div class="float-right">';
-
         $form = [
             'method' => 'POST',
             'action' => $this->baseUrl,
             'id'     => 'main_management_form',
+            'class'  => 'flex_center',
         ];
 
         $inputs[] = [
@@ -961,7 +949,7 @@ class ModuleTemplates extends HTML
                 'label'      => __('Create'),
                 'name'       => 'crt',
                 'type'       => 'submit',
-                'attributes' => 'class="sub wand"',
+                'attributes' => ['icon' => 'wand'],
                 'return'     => true,
             ],
         ];
@@ -971,22 +959,29 @@ class ModuleTemplates extends HTML
                 'label'      => __('Delete selected'),
                 'name'       => 'erase',
                 'type'       => 'button',
-                'attributes' => 'class="sub cancel"',
+                'attributes' => [
+                    'icon' => 'delete',
+                    'mode' => 'secondary',
+                ],
                 'return'     => true,
             ],
         ];
 
-        $output .= $this->printForm(
+        html_print_action_buttons(
+            $this->printForm(
+                [
+                    'form'   => $form,
+                    'inputs' => $inputs,
+                ],
+                true
+            ),
             [
-                'form'   => $form,
-                'inputs' => $inputs,
-            ],
-            true
+                'type'          => 'data_table',
+                'class'         => 'fixed_action_buttons',
+                'right_content' => $tablePagination,
+            ]
         );
 
-        $output .= '</div>';
-
-        echo $output;
     }
 
 
@@ -999,16 +994,16 @@ class ModuleTemplates extends HTML
     {
         global $config;
 
-        $createNewTemplate = ($this->id_np == 0) ? true : false;
+        $createNewTemplate = ((int) $this->id_np === 0);
 
-        if ($createNewTemplate) {
+        if ($createNewTemplate === true) {
             // Assignation for submit button.
-            $formButtonClass = 'sub wand';
+            $formButtonClass = 'wand';
             $formAction = 'create';
             $formButtonLabel = __('Create');
         } else {
             // Assignation for submit button.
-            $formButtonClass = 'sub upd';
+            $formButtonClass = 'update';
             $formAction = 'update';
             $formButtonLabel = __('Update');
         }
@@ -1093,41 +1088,37 @@ class ModuleTemplates extends HTML
             ],
         ];
 
-        $availableButtons = [];
-
-        $availableButtons[] = [
-            'arguments' => [
-                'name'       => 'action_button',
-                'label'      => $formButtonLabel,
-                'type'       => 'submit',
-                'attributes' => 'class="float-right '.$formButtonClass.'"',
-                'return'     => true,
-            ],
-        ];
-
-        if ($createNewTemplate === false) {
-            $availableButtons[] = [
-                'arguments' => [
-                    'name'       => 'add_components_button',
-                    'label'      => __('Add components'),
-                    'type'       => 'button',
-                    'attributes' => 'class="float-right sub cog"',
-                    'script'     => 'showAddComponent();',
-                    'return'     => true,
-                ],
-            ];
-        }
-
-        $inputs[] = [
-            'class'         => 'action_button_list',
-            'direct'        => false,
-            'wrapper'       => 'div',
-            'block_content' => $availableButtons,
-        ];
-
         // Required for PEN field.
         ui_require_jquery_file('tag-editor');
         ui_require_css_file('jquery.tag-editor');
+
+        $buttons = $this->printInput(
+            [
+                'name'       => 'action_button',
+                'label'      => $formButtonLabel,
+                'type'       => 'submit',
+                'attributes' => [
+                    'icon' => $formButtonClass,
+                    'form' => 'module_template_form',
+                ],
+                'return'     => true,
+                'width'      => 'initial',
+            ]
+        );
+
+        if ($createNewTemplate === false) {
+            $buttons .= $this->printInput(
+                [
+                    'name'       => 'add_components_button',
+                    'label'      => __('Add components'),
+                    'type'       => 'button',
+                    'attributes' => [ 'icon' => 'cog' ],
+                    'script'     => 'showAddComponent();',
+                    'return'     => true,
+                    'width'      => 'initial',
+                ]
+            );
+        }
 
         if ($createNewTemplate === false) {
             // Get the data.
@@ -1179,13 +1170,13 @@ class ModuleTemplates extends HTML
                         $blockTitle .= '<div class="white_table_header_checkbox">';
                         $blockTitle .= html_print_input_image(
                             'del_block_'.$id_group.'_',
-                            'images/cross.png',
+                            'images/delete.svg',
                             1,
-                            false,
+                            'width: 40px',
                             true,
                             [
                                 'title'   => __('Delete this block'),
-                                'class'   => 'invert_filter',
+                                'class'   => 'invert_filter main_menu_icon',
                                 'onclick' => 'if(confirm(\''.__('Do you want delete this block?').'\')){deleteModuleTemplate(\'block\',\''.$blockComponentList.'\')};return false;',
                             ]
                         );
@@ -1233,7 +1224,7 @@ class ModuleTemplates extends HTML
                                         true,
                                         [
                                             'title' => __('Network module'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                 break;
@@ -1244,7 +1235,7 @@ class ModuleTemplates extends HTML
                                         true,
                                         [
                                             'title' => __('WMI module'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                 break;
@@ -1255,7 +1246,7 @@ class ModuleTemplates extends HTML
                                         true,
                                         [
                                             'title' => __('Plug-in module'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                 break;
@@ -1276,13 +1267,13 @@ class ModuleTemplates extends HTML
                             $data[3] = mb_strimwidth(io_safe_output($module['description']), 0, 150, '...');
                             $data[4] = html_print_input_image(
                                 'del_module_'.$module['component_id'].'_',
-                                'images/cross.png',
+                                'images/delete.svg',
                                 1,
-                                '',
+                                'width:40px;',
                                 true,
                                 [
                                     'title'   => __('Delete this module'),
-                                    'class'   => 'invert_filter',
+                                    'class'   => 'invert_filter main_menu_icon',
                                     'onclick' => 'if(confirm(\''.__('Do you want delete this module?').'\')){deleteModuleTemplate(\'module\','.$module['component_id'].')};return false;',
                                 ]
                             );
@@ -1314,7 +1305,9 @@ class ModuleTemplates extends HTML
             echo '<div class="invisible" id="msg"></div>';
         }
 
-        $this->printGoBackButton($this->baseUrl);
+        $buttons .= $this->printGoBackButton($this->baseUrl, true);
+
+        html_print_action_buttons($buttons);
     }
 
 
@@ -1496,30 +1489,31 @@ class ModuleTemplates extends HTML
 
             var listValidPens = $("#hidden-valid-pen").val();
             try {
-                listValidPens = listValidPens.split(',');
+                if(listValidPens != undefined) {
+                    listValidPens = listValidPens.split(',');
+                    //Adding tagEditor for PEN management.
+                    $("#text-pen").tagEditor({
+                        beforeTagSave: function(field, editor, tags, tag, val) {
+                            if (listValidPens.indexOf(val) == -1) {
+                            return false;
+                            }
+                        },
+                        autocomplete: {
+                            source: <?php echo json_encode($this->penRefs); ?>
+
+                        }
+                    });
+                }
             } catch (e) {
                 console.error(e);
                 return;
             }
 
-            //Adding tagEditor for PEN management.
-            $("#text-pen").tagEditor({
-            beforeTagSave: function(field, editor, tags, tag, val) {
-                if (listValidPens.indexOf(val) == -1) {
-                return false;
-                }
-            },
-            autocomplete: {
-                source: <?php echo json_encode($this->penRefs); ?>
-
-            }
-            });
             //Values for add.
             $("#add-modules-components").change(function() {
             var valores = $("#add-modules-components")
                 .val()
                 .join(",");
-            //$("#hidden-add-modules-components-values").val(valores);
             });
         });
 

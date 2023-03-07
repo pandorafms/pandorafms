@@ -1,21 +1,39 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+
+/**
+ * Double Authentication Ajax file.
+ *
+ * @category   Users
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
-// Security check
+// Security check.
 $id_user = (string) get_parameter('id_user');
 $FA_forced = (int) get_parameter('FA_forced');
 $id_user_auth = (string) get_parameter('id_user_auth', $config['id_user']);
@@ -30,15 +48,15 @@ if ($id_user !== $config['id_user'] && $FA_forced != 1) {
     return;
 }
 
-// Load the class
+// Load the class.
 require_once $config['homedir'].'/include/auth/GAuth/Auth.php';
 
-// Default lenght of the secret
+// Default lenght of the secret.
 $secret_lenght = 16;
-// Default lenght of the code
+// Default lenght of the code.
 $code_lenght = 6;
 
-// Generate a new secret for the user
+// Generate a new secret for the user.
 $generate_double_auth_secret = (bool) get_parameter('generate_double_auth_secret');
 if ($generate_double_auth_secret) {
     $gAuth = new \GAuth\Auth();
@@ -93,7 +111,7 @@ if ($validate_double_auth_code) {
     return;
 }
 
-// Set the provided secret to the user
+// Set the provided secret to the user.
 $save_double_auth_secret = (bool) get_parameter('save_double_auth_secret');
 if ($save_double_auth_secret) {
     $result = false;
@@ -101,10 +119,10 @@ if ($save_double_auth_secret) {
     $secret = (string) get_parameter('secret');
 
     if (strlen($secret) === $secret_lenght) {
-        // Delete the actual value (if exists)
+        // Delete the actual value (if exists).
         $where = ['id_user' => $id_user];
         db_process_sql_delete('tuser_double_auth', $where);
-        // Insert the new value
+        // Insert the new value.
         $values = [
             'id_user' => $id_user,
             'secret'  => $secret,
@@ -116,12 +134,12 @@ if ($save_double_auth_secret) {
     return;
 }
 
-// Disable the double auth for the user
+// Disable the double auth for the user.
 $deactivate_double_auth = (bool) get_parameter('deactivate_double_auth');
 if ($deactivate_double_auth) {
     $result = false;
 
-    // Delete the actual value (if exists)
+    // Delete the actual value (if exists).
     $where = ['id_user' => $id_user];
     $result = db_process_sql_delete('tuser_double_auth', $where);
 
@@ -129,7 +147,7 @@ if ($deactivate_double_auth) {
     return;
 }
 
-// Get the info page to the container dialog
+// Get the info page to the container dialog.
 $get_double_auth_data_page = (bool) get_parameter('get_double_auth_data_page');
 if ($get_double_auth_data_page) {
     $secret = db_get_value('secret', 'tuser_double_auth', 'id_user', $id_user);
@@ -146,7 +164,7 @@ if ($get_double_auth_data_page) {
     $html .= '</p>';
     $html .= '</div>';
     $html .= '<div class="center_align">';
-    $html .= __('Code').": <b>$secret</b>";
+    $html .= __('Code').': <b>'.$secret.'</b>';
     $html .= '<br>';
     $html .= __('QR').': <br>';
     $html .= '<div id="qr-container"></div>';
@@ -161,7 +179,7 @@ if ($get_double_auth_data_page) {
     var secret = "<?php echo $secret; ?>";
     var id_user_auth = "<?php echo $id_user_auth; ?>";
 
-    // QR code with the secret to add it to the app
+    // QR code with the secret to add it to the app.
     paint_qrcode("otpauth://totp/"+id_user_auth+"?secret="+secret, $("div#qr-container").get(0), 200, 200);
 
     $("div#qr-container").attr("title", "").find("canvas").remove();
@@ -179,7 +197,7 @@ if ($get_double_auth_data_page) {
     return;
 }
 
-// Get the info page to the container dialog
+// Get the info page to the container dialog.
 $get_double_auth_info_page = (bool) get_parameter('get_double_auth_info_page');
 if ($get_double_auth_info_page) {
     $container_id = (string) get_parameter('containerID');
@@ -209,14 +227,14 @@ if ($get_double_auth_info_page) {
     ob_clean();
     ?>
 <script type="text/javascript">
-    // Open the download page on click
-    $("input[name=\"google_authenticator_download\"]").click(function (e) {
+    // Open the download page on click.
+    $("#button-google_authenticator_download").click(function (e) {
         e.preventDefault();
         window.open("https://support.google.com/accounts/answer/1066447");
     });
 
-    // Change the container content with the generation page
-    $("input[name=\"continue_to_generate\"]").click(function (e) {
+    // Change the container content with the generation page.
+    $("#button-continue_to_generate").click(function (e) {
         e.preventDefault();
 
         if (!confirm("<?php echo __('Are you installed the app yet?'); ?>")) {
@@ -268,7 +286,7 @@ if ($get_double_auth_info_page) {
     return;
 }
 
-// Get the page that generates a secret for the user
+// Get the page that generates a secret for the user.
 $get_double_auth_generation_page = (bool) get_parameter('get_double_auth_generation_page');
 if ($get_double_auth_generation_page) {
     $container_id = (string) get_parameter('containerID');
@@ -289,7 +307,7 @@ if ($get_double_auth_generation_page) {
     $html .= '</p>';
     $html .= '</div>';
     $html .= '<div class="center_align">';
-    $html .= __('Code').": <b>$secret</b>";
+    $html .= __('Code').': <b>'.$secret.'</b>';
     $html .= '<br>';
     $html .= __('QR').': <br>';
     $html .= '<div id="qr-container"></div>';
@@ -319,7 +337,7 @@ if ($get_double_auth_generation_page) {
         }, 10);
 
     // Load the same page with another secret
-    $("input[name=\"continue_to_generate\"]").click(function(e) {
+    $("#button-continue_to_generate").click(function(e) {
         e.preventDefault();
 
         var containerID = "<?php echo $container_id; ?>";
@@ -360,7 +378,7 @@ if ($get_double_auth_generation_page) {
     });
 
     // Load the validation page
-    $("input[name=\"continue_to_validate\"]").click(function(e) {
+    $("#button-continue_to_validate").click(function(e) {
         e.preventDefault();
         
         if (!confirm("<?php echo __('Are you introduced the code in the authenticator app yet?'); ?>")) {
@@ -455,7 +473,7 @@ if ($get_double_auth_validation_page) {
         $(this).removeClass("red").css('border-color', '#cbcbcb');
     });
 
-    $("input[name=\"continue_to_validate\"]").click(function(e) {
+    $("#button-continue_to_validate").click(function(e) {
         e.preventDefault();
 
         // Hide the error message
@@ -463,7 +481,7 @@ if ($get_double_auth_validation_page) {
         
         var containerID = "<?php echo $container_id; ?>";
 
-        $("input[name=\"continue_to_validate\"]").prop('enabled', false).hide();
+        $("#button-continue_to_validate").prop('enabled', false).hide();
         $("div#button-container").find("img").show();
 
         $.ajax({
@@ -493,7 +511,7 @@ if ($get_double_auth_validation_page) {
                 }
                 // Invalid code
                 else if (data === false) {
-                    $("input[name=\"continue_to_validate\"]").prop('enabled', true).show();
+                    $("#button-continue_to_validate").prop('enabled', true).show();
                     $("div#button-container").find("img").hide();
                     $("input#text-code").addClass("red").css('border-color', '#c00');
 
@@ -501,7 +519,7 @@ if ($get_double_auth_validation_page) {
                 }
                 // Valid code but not saved
                 else if (data === 1) {
-                    $("input[name=\"continue_to_validate\"]").prop('enabled', true).show();
+                    $("#button-continue_to_validate").prop('enabled', true).show();
                     $("div#button-container").find("img").hide();
                     $("input#text-code").addClass("red").css('border-color', '#c00');
 

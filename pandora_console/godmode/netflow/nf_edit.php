@@ -19,8 +19,6 @@ require_once $config['homedir'].'/include/functions_netflow.php';
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -187,11 +185,11 @@ foreach ($filters as $filter) {
     }
 
 
-    $data[2] = ui_print_group_icon($filter['id_group'], true, 'groups_small', '', !defined('METACONSOLE'));
+    $data[2] = ui_print_group_icon($filter['id_group'], true);
     $data[3] = '';
 
     if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'AW')) {
-        $table->cellclass[][3] = 'action_buttons';
+        $table->cellclass[][3] = 'table_action_buttons';
         $data[3] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
             href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
     }
@@ -217,8 +215,6 @@ echo "<div class='mrgn_right_5px right'>";
 html_print_submit_button(__('Create filter'), 'crt', false, 'class="sub wand"');
 echo '</div>';
 echo '</form>';
-
-enterprise_hook('close_meta_frame');
 
 ?>
 

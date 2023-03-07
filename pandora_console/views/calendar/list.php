@@ -28,7 +28,6 @@
 
 \ui_require_css_file('wizard');
 \enterprise_include_once('meta/include/functions_alerts_meta.php');
-\enterprise_hook('open_meta_frame');
 
 if (\is_metaconsole() === true) {
     \alerts_meta_print_header($tabs);
@@ -84,7 +83,7 @@ try {
         'description',
         [
             'text'  => 'options',
-            'class' => 'w150px action_buttons',
+            'class' => 'w150px table_action_buttons',
         ],
     ];
 
@@ -150,5 +149,3 @@ if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
         ]
     );
 }
-
-\enterprise_hook('close_meta_frame');

@@ -192,13 +192,23 @@ $buttons['graph_container'] = [
 ];
 
 // Header.
-ui_print_page_header(
+ui_print_standard_header(
     __('Create container'),
-    '',
+    'images/chart.png',
     false,
     'create_container',
     false,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Reporting'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Custom graphs'),
+        ],
+    ]
 );
 
 if ($add_container) {
@@ -212,28 +222,33 @@ if ($update_container) {
     ui_print_result_message($success, __('Update the container'), __('Bad update the container'));
 }
 
-echo "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
+$table = '';
 if ($edit_container) {
-    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&update_container=1&id=".$id_container."'>";
+    $table .= "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&update_container=1&id=".$id_container."'>";
 } else {
-    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&add_container=1'>";
+    $table .= "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&add_container=1'>";
 }
 
-echo '<tr>';
-echo "<td class='datos w10p'><b>".__('Name').'</b></td>';
+$table .= "<table width='100%' class='filter-table-adv' cellpadding=4 cellspacing=4 >";
+$table .= '<tr class="datos2"><td class="datos2" width="30%">';
+
+$input_value = '';
+if ($edit_container) {
+    $input_value = io_safe_output($name);
+}
+
 if ($id_container === '1') {
-    echo "<td class='datos w30p'><input type='text' name='name' size='30' disabled='1'";
+    $input_name = html_print_input_text('name', $input_value, '', false, 255, true, true);
 } else {
-    echo "<td class='datos w30p'><input type='text' name='name' size='30' ";
-    // Using latest style...
-    echo ' required ';
+    $input_name = html_print_input_text('name', $input_value, '', false, 255, true, false, true);
 }
 
-if ($edit_container) {
-    echo "value='".io_safe_output($name)."'";
-}
+$table .= html_print_label_input_block(
+    __('Name'),
+    $input_name
+);
 
-echo '></td>';
+$table .= '</td>';
 $own_info = get_user_info($config['id_user']);
 if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
     $return_all_groups = true;
@@ -241,41 +256,96 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
     $return_all_groups = false;
 }
 
-echo "<td class='w10p'><b>".__('Group').'</b></td><td>';
-echo '<div class="w250px">';
-echo html_print_input(
-    [
-        'type'           => 'select_groups',
-        'id_user'        => $config['id_user'],
-        'privilege'      => 'RW',
-        'returnAllGroup' => $return_all_groups,
-        'name'           => 'container_id_group',
-        'selected'       => $id_group,
-        'script'         => '',
-        'nothing'        => '',
-        'nothing_value'  => '',
-        'return'         => false,
-        'required'       => true,
-        'disabled'       => ($id_container === '1'),
-    ]
+$table .= "<td class='datos2' width='30%'>";
+$table .= html_print_label_input_block(
+    __('Group'),
+    html_print_input(
+        [
+            'type'           => 'select_groups',
+            'id_user'        => $config['id_user'],
+            'privilege'      => 'RW',
+            'returnAllGroup' => $return_all_groups,
+            'name'           => 'container_id_group',
+            'selected'       => $id_group,
+            'script'         => '',
+            'nothing'        => '',
+            'nothing_value'  => '',
+            'return'         => true,
+            'required'       => true,
+            'disabled'       => ($id_container === '1'),
+            'style'          => 'width:100% !important',
+        ]
+    )
 );
-echo '</div>';
-echo '</td></tr>';
+$table .= '</td>';
 
-echo '<tr>';
-echo "<td class='datos2'><b>".__('Description').'</b></td>';
+$table .= "<td class='datos2' width='30%'>";
 if ($id_container === '1') {
-    echo "<td class='datos2' colspan=3><textarea name='description' style='height:45px;' cols=95 rows=2 disabled>";
+    $table .= html_print_label_input_block(
+        __('Parent container'),
+        html_print_select(
+            $containers_tree,
+            'id_parent',
+            $id_parent,
+            '',
+            __('none'),
+            0,
+            true,
+            '',
+            false,
+            'w130',
+            true,
+            'width: 100%',
+            ''
+        )
+    );
 } else {
-    echo "<td class='datos2' colspan=3><textarea name='description' style='height:45px;' cols=95 rows=2>";
+    $table .= html_print_label_input_block(
+        __('Parent container'),
+        html_print_select(
+            $containers_tree,
+            'id_parent',
+            $id_parent,
+            '',
+            __('none'),
+            0,
+            true,
+            '',
+            false,
+            'w130',
+            '',
+            'width: 100%',
+            ''
+        )
+    );
 }
 
+$table .= '</td></tr><tr class="datos2">';
+$table .= '<td class="datos2" colspan="3">';
+$textarea_disabled = false;
+if ($id_container === '1') {
+    $textarea_disabled = true;
+}
+
+$texarea_value = '';
 if ($edit_container) {
-    echo io_safe_output($description);
+    $texarea_value = io_safe_output($description);
 }
 
-echo '</textarea>';
-echo '</td></tr>';
+$table .= html_print_label_input_block(
+    __('Description'),
+    html_print_textarea(
+        'description',
+        2,
+        95,
+        $texarea_value,
+        '',
+        true,
+        '',
+        $textarea_disabled
+    )
+);
+$table .= '</td></tr>';
 $container = folder_get_folders();
 $tree = folder_get_folders_tree_recursive($container);
 $containers_tree = folder_flatten_tree_folders($tree, 0);
@@ -283,57 +353,59 @@ $containers_tree = folder_get_select($containers_tree);
 
 unset($containers_tree[$id_container]);
 
-echo '<tr>';
-echo "<td class='datos2'><b>".__('Parent container').'</b></td>';
-if ($id_container === '1') {
-    echo "<td class='datos2'>".html_print_select(
-        $containers_tree,
-        'id_parent',
-        $id_parent,
-        '',
-        __('none'),
-        0,
-        true,
-        '',
-        false,
-        'w130',
-        true,
-        'width: 195px',
-        ''
-    );
-} else {
-    echo "<td class='datos2'>".html_print_select(
-        $containers_tree,
-        'id_parent',
-        $id_parent,
-        '',
-        __('none'),
-        0,
-        true,
-        '',
-        false,
-        'w130',
-        '',
-        'width: 195px',
-        ''
-    );
-}
 
-
-echo '</td></tr>';
-
-
-echo '</table>';
+$table .= '</table>';
 
 if ($edit_container) {
     if ($id_container !== '1') {
-        echo "<div class='w100p'><input  type=submit name='store' disbaled class='sub upd right' value='".__('Update')."'></div>";
+        $table .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Update'),
+                    'store',
+                    false,
+                    [
+                        'mode' => 'mini',
+                        'icon' => 'next',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
     }
 } else {
-    echo "<div class='w100p'><input  type=submit name='store' class='sub next right' value='".__('Create')."'></div>";
+    $table .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Create'),
+                'store',
+                false,
+                [
+                    'mode' => 'mini',
+                    'icon' => 'next',
+                ],
+                true
+            ),
+        ],
+        true
+    );
 }
 
-echo '</form>';
+$table .= '</form>';
+ui_toggle(
+    $table,
+    '<span class="subsection_header_title">'.__('Container').'</span>',
+    'container',
+    '',
+    false,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph'
+);
 
 echo '</br>';
 echo '</br>';
@@ -358,35 +430,31 @@ if ($edit_container) {
     $type_graphs[0] = __('Area');
     $type_graphs[1] = __('Line');
 
-    $single_table = "<table width='100%' cellpadding=4 cellspacing=4>";
-        $single_table .= "<tr id='row_time_lapse' class='datos'>";
-            $single_table .= "<td class='bolder w10p'>";
-                $single_table .= __('Time lapse');
-                $single_table .= ui_print_help_tip(__('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '), true);
-            $single_table .= '</td>';
-            $single_table .= '<td>';
-                $single_table .= html_print_extended_select_for_time(
-                    'period_single',
-                    $period,
-                    '',
-                    '',
-                    '0',
-                    10,
-                    true,
-                    false,
-                    true,
-                    '',
-                    false,
-                    $periods
+    $single_table = "<table width='100%' class='filter-table-adv' cellpadding=4 cellspacing=4>";
+        $single_table .= "<tr class='datos2'>";
+            $single_table .= "<td id='row_time_lapse' class='datos2' width='30%'>";
+                $single_table .= html_print_label_input_block(
+                    __('Time lapse').ui_print_help_tip(
+                        __('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '),
+                        true
+                    ),
+                    html_print_extended_select_for_time(
+                        'period_single',
+                        $period,
+                        '',
+                        '',
+                        '0',
+                        10,
+                        true,
+                        'width:100%',
+                        true,
+                        '',
+                        false,
+                        $periods
+                    )
                 );
             $single_table .= '</td>';
-        $single_table .= '</tr>';
-
-        $single_table .= "<tr id='row_agent'  class='datos'>";
-            $single_table .= "<td class='bolder w10p'>";
-                $single_table .= __('Agent');
-            $single_table .= '</td>';
-            $single_table .= '<td>';
+            $single_table .= "<td id='row_agent' class='datos2' width='30%'>";
                 $params = [];
 
                 $params['show_helptip'] = false;
@@ -401,62 +469,74 @@ if ($edit_container) {
                 $params['hidden_input_idagent_id'] = 'hidden-id_agent';
 
 
-                $single_table .= ui_print_agent_autocomplete_input($params);
+                $single_table .= html_print_label_input_block(
+                    __('Agent'),
+                    ui_print_agent_autocomplete_input($params)
+                );
             $single_table .= '</td>';
-        $single_table .= '</tr>';
+            $single_table .= "<td id='row_module' class='datos2' width='30%'>";
 
-        $single_table .= "<tr id='row_module' class='datos'>";
-            $single_table .= "<td class='bolder w10p'>";
-                $single_table .= __('Module');
-            $single_table .= '</td>';
-            $single_table .= '<td>';
     if ($idAgent) {
-        $single_table .= html_print_select_from_sql($sql_modules, 'id_agent_module', $idAgentModule, '', '', '0', true);
+        $select_module .= html_print_select_from_sql($sql_modules, 'id_agent_module', $idAgentModule, '', '', '0', true);
     } else {
-        $single_table .= "<select class='maxw180px' id='id_agent_module' name='id_agent_module' disabled='disabled'>";
-            $single_table .= "<option value='0'>";
-                $single_table .= __('Select an Agent first');
-            $single_table .= '</option>';
-        $single_table .= '</select>';
+        $select_module .= "<select id='id_agent_module' name='id_agent_module' disabled='disabled' style='width:100%'>";
+            $select_module .= "<option value='0'>";
+                $select_module .= __('Select an Agent first');
+            $select_module .= '</option>';
+        $select_module .= '</select>';
     }
 
+                $single_table .= html_print_label_input_block(
+                    __('Module'),
+                    $select_module
+                );
             $single_table .= '</td>';
         $single_table .= '</tr>';
-
-        $single_table .= "<tr id='row_type_graphs' style='' class='datos'>";
-                $single_table .= "<td style='font-weight:bold;'>";
-                        $single_table .= __('Type of graph');
-                $single_table .= '</td>';
-                $single_table .= '<td>';
-                        $single_table .= html_print_select($type_graphs, 'simple_type_graph', '', '', '', 0, true);
-                $single_table .= '</td>';
-        $single_table .= '</tr>';
-
-        $single_table .= "<tr id='row_fullscale' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;'>";
-                $single_table .= __('Show full scale graph (TIP)').ui_print_help_tip('This option may cause performance issues', true);
+        $single_table .= "<tr class='datos2'>";
+            $single_table .= "<td id='row_type_graphs' width='30%'>";
+            $single_table .= html_print_label_input_block(
+                __('Type of graph'),
+                html_print_select($type_graphs, 'simple_type_graph', '', '', '', 0, true)
+            );
             $single_table .= '</td>';
-            $single_table .= '<td>';
-                $single_table .= html_print_checkbox('fullscale', 1, false, true);
-            $single_table .= '</td>';
-        $single_table .= '</tr>';
 
-        $single_table .= '<tr>';
-            $single_table .= '<td >';
-            $single_table .= '</td>';
-            $single_table .= "<td style='float:right;'>";
-                $single_table .= "<input style='float:right;' type=submit name='add_single' class='sub add' value='".__('Add item')."'>";
+            $single_table .= "<td id='row_fullscale' width='30%' colspan='2'>";
+            $single_table .= html_print_label_input_block(
+                __('Show full scale graph (TIP)').ui_print_help_tip('This option may cause performance issues', true),
+                html_print_checkbox('fullscale', 1, false, true)
+            );
             $single_table .= '</td>';
         $single_table .= '</tr>';
     $single_table .= '</table>';
 
-    echo "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
-        echo '<tr>';
-            echo '<td>';
-                echo ui_toggle($single_table, 'Simple module graph', '', '', true);
-            echo '</td>';
-        echo '</tr>';
-    echo '</table>';
+    $single_table .= html_print_div(
+        [
+            'class'   => 'action-buttons-right-forced mrgn_right_10px',
+            'content' => html_print_submit_button(
+                __('Add item'),
+                'add_single',
+                false,
+                [
+                    'mode' => 'mini',
+                    'icon' => 'next',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+
+    ui_toggle(
+        $single_table,
+        '<span class="subsection_header_title">'.__('Simple module graph').'</span>',
+        'container',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph'
+    );
 
     $table = new stdClass();
     $table->id = 'custom_graph_table';
@@ -680,7 +760,7 @@ if ($edit_container) {
             }
 
             $data[7] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&delete_item=1&id_item='.$item['id_ci'].'&id='.$id_container.'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-                return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
+                return false;">'.html_print_image('images/delete.svg', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
 
             array_push($table->data, $data);
         }
@@ -694,7 +774,7 @@ echo html_print_input_hidden('id_agent', 0);
 
 <script type="text/javascript">
     $(document).ready (function () {
-        $("input[name=add_single]").click (function () {
+        $("#button-add_single").click (function () {
             var id_agent_module = $("#id_agent_module").val();
             if(id_agent_module !== '0'){
                 var id_agent = $("#hidden-id_agent").attr('value');

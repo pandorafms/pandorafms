@@ -949,30 +949,20 @@ html_print_action_buttons(
 ?>
 <script type="text/javascript">
     $( document ).ready(function() {
-        $('[id^=checkbox-delete_multiple]').change(function(){
-            if($(this).parent().parent().hasClass('checkselected')){
-                $(this).parent().parent().removeClass('checkselected');
-            }
-            else{
-                $(this).parent().parent().addClass('checkselected');
+        $('[id^=checkbox-delete_multiple]').click(function(){
+            if($(this).prop("checked") === false ){
+                $(this).prop("checked", false);
+            } else {
+                $(this).prop("checked", true);
             }
         });
 
-        $('[id^=checkbox-all_delete]').change(function(){
-            if ($("#checkbox-all_delete").prop("checked")) {
-                $('[id^=checkbox-delete_multiple]')
-                    .parent()
-                    .parent()
-                    .addClass('checkselected');
-                $(".check_delete")
-                    .prop("checked", true);
+        $('#checkbox-all_delete').click(function(){
+            if ($("#checkbox-all_delete").prop("checked") === true) {
+                $("[id^=checkbox-delete_multiple]").prop("checked", true);
             }
             else{
-                $('[id^=checkbox-delete_multiple]')
-                    .parent()
-                    .parent()
-                    .removeClass('checkselected');
-                $(".check_delete").prop("checked", false);
+                $("[id^=checkbox-delete_multiple]").prop("checked", false);
             }
         });
     });

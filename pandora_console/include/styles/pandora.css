@@ -11505,6 +11505,15 @@ div[role="dialog"] {
   /* font-weight: bold; */
 }
 
+.font-title-font {
+  font-size: 13px;
+  line-height: 16px;
+  color: #161628;
+  text-align: left;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
 .preimage_container span {
   font-size: 11pt;
   line-height: 28px;

@@ -11006,14 +11006,14 @@ pre.external_tools_output {
 .tag-editor .tag-editor-tag {
   padding: 5px !important;
   color: #fff !important;
-  background: #82b92e !important;
+  background: var(--primary-color) !important;
   border-radius: 0 2px 2px 0 !important;
 }
 
 .tag-editor .tag-editor-delete {
   padding: 5px !important;
   line-height: 16px !important;
-  background: #82b92e !important;
+  background: var(--primary-color) !important;
   border-radius: 2px 0 0 2px !important;
 }
 
@@ -11187,6 +11187,10 @@ table.table_modal_alternate
   height: 20px;
 }
 
+.header_help_icon {
+  width: 16px;
+  height: 16px;
+}
 .main_menu_icon.arrow_up {
   transform: rotate(90deg);
 }
@@ -11535,4 +11539,18 @@ table.alert-template-fields > tbody > tr > td > div > textarea {
 
 table.alert-template-fields > tbody > tr > td[id^="template-label_fields"] {
   text-align: center;
+}
+
+ul.tag-editor {
+  list-style-type: none;
+  padding: 0.5em !important;
+  margin: 0;
+  overflow: hidden;
+  border: 2px solid #c0ccdc;
+  border-radius: 6px;
+  cursor: text;
+  font: normal 14px sans-serif;
+  color: #333333;
+  background: #f6f7fb;
+  line-height: 20px;
 }

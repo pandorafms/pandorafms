@@ -509,11 +509,11 @@ switch ($action) {
             'list_reports' => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image(
-                    'images/report_list.png',
+                    'images/logs@svg.svg',
                     true,
                     [
                         'title' => __('Reports list'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ],

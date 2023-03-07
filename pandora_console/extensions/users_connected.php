@@ -34,7 +34,24 @@ function users_extension_main_god($god=true)
     }
 
     // Header.
-    ui_print_page_header(__('Users connected'), $image, false, '', $god);
+    ui_print_standard_header(
+        __('List of users connected'),
+        $image,
+        false,
+        '',
+        $god,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Workspace'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Users connected'),
+            ],
+        ]
+    );
 
     $check_profile = db_get_row('tusuario_perfil', 'id_usuario', $config['id_user'], 'id_up');
     if ($check_profile === false && !users_is_admin()) {

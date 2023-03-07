@@ -230,11 +230,11 @@ $url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&search_string='
 // Filter table.
 $table_filter = new stdClass();
 $table_filter->width = '100%';
-$table_filter->class = 'databox filters';
+$table_filter->class = 'databox filters filter-table-adv';
 $table_filter->style = [];
-$table_filter->style[0] = 'font-weight: bold';
-$table_filter->style[2] = 'font-weight: bold';
-$table_filter->style[4] = 'font-weight: bold';
+$table_filter->style[0] = 'width: 33%';
+$table_filter->style[2] = 'width: 33%';
+$table_filter->style[4] = 'width: 33%';
 $table_filter->data = [];
 
 $table_filter->data[0][0] = __('Search');
@@ -245,6 +245,17 @@ $table_filter->data[0][1] = html_print_input_text(
     25,
     255,
     true
+);
+$table_filter->data[0][0] = html_print_label_input_block(
+    __('Search'),
+    html_print_input_text(
+        'search_string',
+        $search_string,
+        '',
+        25,
+        255,
+        true
+    )
 );
 
 $return_all_group = false;
@@ -464,8 +475,9 @@ if (isset($data)) {
 if (is_management_allowed() === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'&offset='.$offset.'">';
-    html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
+    $button = html_print_submit_button(__('Create'), 'create', false, ['icon' => 'wand'], true);
     html_print_input_hidden('create_alert', 1);
+    html_print_action_buttons($button);
     echo '</form>';
     echo '</div>';
 }

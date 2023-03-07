@@ -959,40 +959,27 @@ class SatelliteAgent extends HTML
      */
     private function ajaxMsg($type, $msg, $delete=false, $disable=false)
     {
-        $msg_err = 'Failed while saving: %s';
-        $msg_ok = 'Successfully saved agent ';
-
-        if ($delete === true) {
-            $msg_err = 'Failed while removing: %s';
-            $msg_ok = 'Successfully deleted ';
-        }
-
-        if ($disable === true) {
-            $msg_err = 'Failed while disabling: %s';
-            $msg_ok = 'Successfully disabled';
-        }
-
-        if ($type == 'error') {
-            echo json_encode(
-                [
-                    $type => ui_print_error_message(
-                        __($msg),
-                        '',
-                        true
-                    ),
-                ]
-            );
+        if ($type === 'error') {
+            if ($delete === true) {
+                $msg_title = 'Failed while removing';
+            } else if ($disable === true) {
+                $msg_title = 'Failed while disabling';
+            } else {
+                $msg_title = 'Failed while saving';
+            }
         } else {
-            echo json_encode(
-                [
-                    $type => ui_print_success_message(
-                        __($msg),
-                        '',
-                        true
-                    ),
-                ]
-            );
+            if ($delete === true) {
+                $msg_title = 'Successfully deleted';
+            } else if ($disable === true) {
+                $msg_title = 'Successfully disabled';
+            } else {
+                $msg_title = 'Successfully saved agent';
+            }
         }
+
+        echo json_encode(
+            [ $type => __($msg_title).':<br>'.$msg ]
+        );
 
         exit;
     }

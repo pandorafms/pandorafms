@@ -264,27 +264,11 @@ class ModuleTemplates extends HTML
      */
     private function ajaxMsg($type, $msg)
     {
-        if ($type == 'error') {
-            echo json_encode(
-                [
-                    $type => ui_print_error_message(
-                        __($msg),
-                        '',
-                        true
-                    ),
-                ]
-            );
-        } else {
-            echo json_encode(
-                [
-                    $type => ui_print_success_message(
-                        __($msg),
-                        '',
-                        true
-                    ),
-                ]
-            );
-        }
+        echo json_encode(
+            [
+                $type => __($msg),
+            ]
+        );
 
         exit;
     }

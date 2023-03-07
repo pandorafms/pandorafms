@@ -893,7 +893,7 @@ class ModuleTemplates extends HTML
             );
             $data[3] .= html_print_input_image(
                 'export_profile',
-                'images/csv.png',
+                'images/file-csv.svg',
                 $row['id_np'],
                 '',
                 true,
@@ -914,7 +914,7 @@ class ModuleTemplates extends HTML
             $data[3] .= '</a>';
             $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'" onclick="blockResubmit($(this))">';
             $data[3] .= html_print_image(
-                'images/csv.png',
+                'images/file-csv.svg',
                 true,
                 [
                     'title' => __('Export to CSV'),

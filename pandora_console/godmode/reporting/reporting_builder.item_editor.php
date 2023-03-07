@@ -1040,7 +1040,7 @@ html_print_input_hidden('id_item', $idItem);
 $class = 'databox filters';
 
 ?>
-<table   class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
+<table id="table_item_edit_reporting"  class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
     <?php
     if (defined('METACONSOLE')) {
         echo '<thead>
@@ -1100,7 +1100,7 @@ $class = 'databox filters';
                         false,
                         false,
                         '',
-                        'fullwidth'
+                        ''
                     );
                 } else {
                     html_print_input_text(
@@ -1113,7 +1113,7 @@ $class = 'databox filters';
                         false,
                         false,
                         '',
-                        'fullwidth'
+                        ''
                     );
                 }
                 ?>
@@ -1160,7 +1160,7 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Description'); ?></td>
             <td  >
                 <?php
-                echo html_print_textarea('description', 3, 25, $description);
+                echo html_print_textarea('description', 2, 80, $description, 'style="padding-right: 0px !important;"');
                 ?>
             </td>
         </tr>
@@ -1299,13 +1299,13 @@ $class = 'databox filters';
                     'label',
                     $label,
                     '',
-                    50,
+                    80,
                     255,
                     true,
                     false,
                     false,
                     '',
-                    'fullwidth'
+                    ''
                 );
                 ?>
             </td>
@@ -2481,7 +2481,7 @@ $class = 'databox filters';
         </tr>
         <tr id="row_order_uptodown"   class="datos">
             <td class="bolder"><?php echo __('Order'); ?></td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Ascending');
                 html_print_radio_button(
@@ -2540,7 +2540,7 @@ $class = 'databox filters';
 
         <tr id="row_max_min_avg"   class="datos">
             <td class="bolder"><?php echo __('Display'); ?></td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Max');
                 html_print_radio_button(
@@ -3219,7 +3219,7 @@ $class = 'databox filters';
             echo __('Priority mode');
             ?>
             </td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Priority ok mode');
                 echo '<span class="mrgn_lft_5px"></span>';
@@ -3272,7 +3272,7 @@ $class = 'databox filters';
             echo __('Failover type');
             ?>
             </td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Failover normal');
                 echo '<span class="mrgn_lft_5px"></span>';
@@ -3381,7 +3381,7 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_visual_format"   class="datos advanced_elements">
-            <td class="bolder" colspan="2">
+            <td class="bolder flex-row-center" colspan="2">
                 <?php
                 if ($visual_format == 1) {
                     $visual_format_table = true;
@@ -3943,20 +3943,24 @@ print_SLA_list('100%', $action, $idItem);
 print_General_list('100%', $action, $idItem, $type);
 echo '<div class="action-buttons w100p" >';
 if ($action == 'new') {
-    html_print_submit_button(
+    $actionButtons = html_print_submit_button(
         __('Create item'),
         'create_item',
         false,
-        'class="sub wand"'
+        ['icon' => 'next'],
+        true
     );
 } else {
-    html_print_submit_button(
+    $actionButtons = html_print_submit_button(
         __('Update item'),
         'edit_item',
         false,
-        'class="sub upd"'
+        ['icon' => 'next'],
+        true
     );
 }
+
+html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 
 echo '</div>';
 echo '</form>';
@@ -4003,7 +4007,7 @@ function print_SLA_list($width, $action, $idItem=null)
         $idItem
     );
     ?>
-    <table class="databox data" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
+    <table class="info_table" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
         <thead>
             <tr>
                 <th class="header sla_list_agent_col" scope="col">
@@ -4519,7 +4523,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 
     include_once $config['homedir'].'/include/functions_html.php';
     ?>
-    <table class="databox data" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
+    <table class="info_table" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
         <thead>
             <tr>
                 <?php
@@ -5153,7 +5157,7 @@ $(document).ready (function () {
 
     $('#checkbox-fullscale').trigger('change');
 
-    $("#submit-create_item").click(function () {
+    $("#button-create_item").click(function () {
         var type = $('#type').val();
         var name = $('#text-name').val();
 
@@ -7421,5 +7425,9 @@ function dialog_message(message_id) {
       }
     });
 }
+
+$(document).ready(function () {
+    $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
+});
 
 </script>

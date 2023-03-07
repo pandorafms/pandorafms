@@ -119,11 +119,11 @@ class AuditLog extends HTML
                     $columns,
                     [
                         'text'  => 'security',
-                        'class' => 'w50px action_buttons show_security_info',
+                        'class' => 'w80px table_action_buttons show_security_info',
                     ],
                     [
                         'text'  => 'action',
-                        'class' => 'w50px action_buttons show_extended_info',
+                        'class' => 'w80px table_action_buttons show_extended_info',
                     ]
                 );
 
@@ -132,32 +132,24 @@ class AuditLog extends HTML
 
             $this->tableId = 'audit_logs';
 
-            // Header (only in Node).
-            if (is_metaconsole() === false) {
-                ui_print_standard_header(
-                    __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
-                    'images/gm_log.png',
-                    false,
-                    '',
-                    false,
-                    [],
+            ui_print_standard_header(
+                __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
+                'images/gm_log.png',
+                false,
+                '',
+                false,
+                [],
+                [
                     [
-                        [
-                            'link'  => '',
-                            'label' => __('Admin Tools'),
-                        ],
-                        [
-                            'link'  => '',
-                            'label' => __('System Audit log'),
-                        ],
-                    ]
-                );
-            }
-
-            if (is_metaconsole() === true) {
-                // Only in case of Metaconsole, format the frame.
-                open_meta_frame();
-            }
+                        'link'  => '',
+                        'label' => __('Admin Tools'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('System Audit log'),
+                    ],
+                ]
+            );
 
             $buttons = [];
 
@@ -165,6 +157,7 @@ class AuditLog extends HTML
                 'id'      => 'load-filter',
                 'class'   => 'float-left margin-right-2 margin-left-2 sub config',
                 'text'    => __('Load filter'),
+                'icon'    => 'load',
                 'onclick' => '',
             ];
 
@@ -172,6 +165,7 @@ class AuditLog extends HTML
                 'id'      => 'save-filter',
                 'class'   => 'float-left margin-right-2 sub wand',
                 'text'    => __('Save filter'),
+                'icon'    => 'save',
                 'onclick' => '',
             ];
 
@@ -184,7 +178,7 @@ class AuditLog extends HTML
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -202,7 +196,7 @@ class AuditLog extends HTML
                             [
                                 'label' => __('Free search').ui_print_help_tip(__('Search filter by User, Action, Date, Source IP or Comments fields content'), true),
                                 'type'  => 'text',
-                                'class' => 'w150px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_text',
                                 'name'  => 'filter_text',
                             ],
@@ -228,7 +222,7 @@ class AuditLog extends HTML
                             [
                                 'label' => __('IP'),
                                 'type'  => 'text',
-                                'class' => 'w100px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_ip',
                                 'name'  => 'filter_ip',
                             ],
@@ -256,19 +250,17 @@ class AuditLog extends HTML
                             ],
                         ],
                     ],
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                 ]
             );
         } catch (Exception $e) {
             echo $e->getMessage();
         }
 
-        if (is_metaconsole() === true) {
-            // Close the frame.
-            close_meta_frame();
-        }
-
         // Load own javascript file.
         echo $this->loadJS();
+
+        html_print_action_buttons([], ['type' => 'form_action']);
     }
 
 

@@ -119,11 +119,6 @@ class SatelliteCollection extends HTML
 
         $this->createBlock();
 
-        if (is_metaconsole() === true) {
-            // Only in case of Metaconsole, format the frame.
-            open_meta_frame();
-        }
-
         // Datatables list.
         try {
             $columns = [
@@ -177,11 +172,6 @@ class SatelliteCollection extends HTML
             );
         } catch (Exception $e) {
             echo $e->getMessage();
-        }
-
-        if (is_metaconsole() === true) {
-            // Close the frame.
-            close_meta_frame();
         }
 
         echo '<div id="aux" class="invisible"></div>';

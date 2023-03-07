@@ -566,8 +566,6 @@ tyle='display:none;'>";
     echo '</div>';
 }
 
-enterprise_hook('open_meta_frame');
-
 if ($update_command) {
     include_once 'configure_alert_command.php';
     return;
@@ -794,8 +792,9 @@ foreach ($commands as $command) {
         io_safe_output($command['description'])
     );
     $data['action'] = '';
-    $table->cellclass[]['action'] = 'action_buttons';
+    $table->cellclass[]['action'] = 'table_action_buttons';
     $offset_delete = ($offset >= ($total_commands - 1)) ? ($offset - $limit) : $offset;
+
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
     if ($is_management_allowed === true && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
         if (is_user_admin($config['id_user']) === true) {
@@ -834,8 +833,6 @@ if (users_is_admin() === true) {
     echo '</form>';
     echo '</div>';
 }
-
-enterprise_hook('close_meta_frame');
 
 ?>
 

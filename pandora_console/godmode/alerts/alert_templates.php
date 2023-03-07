@@ -21,8 +21,6 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (is_ajax()) {
     $get_template_tooltip = (bool) get_parameter('get_template_tooltip');
 
@@ -124,15 +122,22 @@ $sec = (is_metaconsole() === true) ? 'advanced' : 'galertas';
 // case delete_templete action is performed.
 if (!$delete_template) {
     // Header.
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         alerts_meta_print_header();
     } else {
-        ui_print_page_header(
-            __('Alerts').' &raquo; '.__('Alert templates'),
+        ui_print_standard_header(
+            __('Alerts'),
             'images/gm_alerts.png',
             false,
             '',
-            true
+            true,
+            [],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Alert templates'),
+                ],
+            ]
         );
     }
 }
@@ -285,7 +290,7 @@ $url = ui_get_url_refresh(
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
 if (is_metaconsole() === true) {
     $table->cellspacing = 0;
     $table->cellpadding = 0;
@@ -295,51 +300,70 @@ $table->data = [];
 $table->head = [];
 $table->style = [];
 
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
+$table->style[0] = 'width: 50%;';
+$table->style[1] = 'width: 50%;';
 
+$table->data[0][0] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        alerts_get_alert_templates_types(),
+        'search_type',
+        $search_type,
+        '',
+        __('All'),
+        '',
+        true,
+        false,
+        false,
+        'w100p',
+        false,
+        'width: 100%;'
+    )
+);
 
-$table->data[0][0] = __('Type');
-$table->data[0][1] = html_print_select(
-    alerts_get_alert_templates_types(),
-    'search_type',
-    $search_type,
-    '',
-    __('All'),
-    '',
-    true,
-    false,
-    false
+$table->data[0][1] = html_print_label_input_block(
+    __('Search'),
+    html_print_input_text(
+        'search_string',
+        $search_string,
+        '',
+        25,
+        255,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    )
 );
-$table->data[0][2] = __('Search');
-$table->data[0][3] = html_print_input_text(
-    'search_string',
-    $search_string,
-    '',
-    25,
-    255,
-    true
-);
-$table->data[0][4] = '<div class="action-buttons">';
-$table->data[0][4] .= html_print_submit_button(
+
+$table->data[1][0] = '&nbsp;';
+$table->data[1][1] = html_print_submit_button(
     __('Search'),
     '',
     false,
-    'class="sub search"',
+    [
+        'class' => 'float-right',
+        'icon'  => 'search',
+    ],
     true
 );
-$table->data[0][4] .= '</div>';
 
-if (is_metaconsole() === true) {
-    $filter = '<form class="" method="post" action="'.$url.'">';
-    $filter .= html_print_table($table, true);
-    $filter .= '</form>';
-    ui_toggle($filter, __('Show Options'));
-} else {
-    echo '<form method="post" action="'.$url.'">';
-    html_print_table($table);
-    echo '</form>';
-}
+$filter = '<form class="" method="post" action="'.$url.'">';
+$filter .= html_print_table($table, true);
+$filter .= '</form>';
+ui_toggle(
+    $filter,
+    '<span class="subsection_header_title">'.__('Show Options').'</span>',
+    __('Show Options'),
+    'update',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar  '
+);
+
 
 unset($table);
 
@@ -420,7 +444,7 @@ foreach ($templates as $template) {
     if (is_management_allowed() === true
         && check_acl($config['id_user'], $template['id_group'], 'LM')
     ) {
-        $table->cellclass[][4] = 'action_buttons';
+        $table->cellclass[][4] = 'table_action_buttons';
         $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'&offset='.$offset.'" class="float-left inline_line">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);
@@ -430,7 +454,10 @@ foreach ($templates as $template) {
             1,
             '',
             true,
-            ['title' => __('Duplicate')]
+            [
+                'title' => __('Duplicate'),
+                'class' => 'main_menu_icon',
+            ]
         );
         $data[4] .= '</form> ';
 
@@ -440,11 +467,14 @@ foreach ($templates as $template) {
             $data[4] .= html_print_input_hidden('id', $template['id'], true);
             $data[4] .= html_print_input_image(
                 'del',
-                'images/cross.png',
+                'images/delete.svg',
                 1,
                 '',
                 true,
-                ['title' => __('Delete')]
+                [
+                    'title' => __('Delete'),
+                    'class' => 'main_menu_icon',
+                ]
             );
             $data[4] .= '</form> ';
         }
@@ -455,18 +485,18 @@ foreach ($templates as $template) {
     array_push($table->data, $data);
 }
 
-ui_pagination($total_templates, $url);
+$pagination = '';
 if (isset($data) === true) {
     html_print_table($table);
-    ui_pagination(
+    $pagination = ui_pagination(
         $total_templates,
         $url,
         0,
         0,
-        false,
-        'offset',
         true,
-        'pagination-bottom'
+        'offset',
+        false,
+        ''
     );
 } else {
     ui_print_info_message(
@@ -477,13 +507,15 @@ if (isset($data) === true) {
     );
 }
 
+$buttons = '';
 if (is_management_allowed() === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
-    html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
-    html_print_input_hidden('create_alert', 1);
+    $buttons = html_print_submit_button(__('Create'), 'create', false, ['icon' => 'wand'], true);
+    $buttons .= html_print_input_hidden('create_alert', 1);
+    html_print_action_buttons($buttons, ['right_content' => $pagination]);
     echo '</form>';
     echo '</div>';
+} else {
+    html_print_action_buttons($buttons, ['right_content' => $pagination]);
 }
-
-enterprise_hook('close_meta_frame');

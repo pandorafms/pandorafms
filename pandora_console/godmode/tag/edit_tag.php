@@ -13,8 +13,6 @@
 // GNU General Public License for more details.
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 // Include functions code
 require_once $config['homedir'].'/include/functions_tags.php';
 
@@ -40,56 +38,49 @@ $email_tag = io_safe_input(strip_tags(io_safe_output(((string) get_parameter('em
 $phone_tag = io_safe_input(strip_tags(io_safe_output(((string) get_parameter('phone_tag')))));
 $tab = (string) get_parameter('tab', 'list');
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $sec = 'advanced';
+    $url = 'index.php?sec='.$sec.'&sec2=advanced/component_management&tab=tags';
 } else {
     $sec = 'gmodules';
+    $url = 'index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list';
 }
 
-if (defined('METACONSOLE')) {
-    $buttons = [
-        'list' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec='.$sec.'&sec2=advanced/component_management&tab=tags">'.html_print_image(
-                'images/list.png',
-                true,
-                [
-                    'title' => __('List tags'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>',
-        ],
-    ];
+$buttons = [
+    'list' => [
+        'active' => false,
+        'text'   => '<a href="'.$url.'">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'title' => __('List tags'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
+    ],
+];
 
-    $buttons[$tab]['active'] = true;
-    // Print header
-    ui_meta_print_header(__('Tags'), '', $buttons);
-} else {
-    $buttons = [
-        'list' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image(
-                'images/list.png',
-                true,
-                [
-                    'title' => __('List tags'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>',
-        ],
-    ];
+$buttons[$tab]['active'] = true;
 
-    $buttons[$tab]['active'] = true;
-    // Header
-    ui_print_page_header(
-        __('Tags configuration'),
-        'images/tag.png',
-        false,
-        ['class' => 'invert_filter'],
-        true,
-        $buttons
-    );
-}
+// Header.
+ui_print_standard_header(
+    __('Tags configuration'),
+    'images/tag.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Profile'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Manage tags'),
+        ],
+    ]
+);
 
 // Two actions can performed in this page: update and create tags
 // Update tag: update an existing tag
@@ -190,101 +181,90 @@ else {
 }
 
 
-// Create/Update tag form
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action='.$action.'&id_tag='.$id_tag.'" enctype="multipart/form-data">';
+// Create/Update tag form.
+echo '<form method="post" class="max_floating_element_size" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action='.$action.'&id_tag='.$id_tag.'" enctype="multipart/form-data">';
+echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filter-table-adv' width=100%>";
+    echo '<tr>';
+    echo '<td>';
+    echo html_print_label_input_block(
+        __('Name'),
+        html_print_input_text('name_tag', $name_tag, '', 50, 255, true)
+    );
+    echo '</td>';
+    echo '<td>';
+    echo html_print_label_input_block(
+        __('Description'),
+        html_print_input_text(
+            'description_tag',
+            $description_tag,
+            '',
+            50,
+            255,
+            true
+        )
+    );
+    echo '</td>';
+    echo '</tr>';
 
-echo '<div align=left class="pandora_form w100p">';
+    echo '<tr>';
+    echo '<td colspan="2">';
+    echo html_print_label_input_block(
+        __('Url').ui_print_help_tip(
+            __('Hyperlink to help information that has to exist previously.'),
+            true
+        ),
+        html_print_input_text('url_tag', $url_tag, '', 50, 255, true)
+    );
+    echo '</td>';
+    echo '</tr>';
 
-echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
-if (defined('METACONSOLE')) {
+    echo '<tr>';
+    echo '<td>';
+    echo html_print_label_input_block(
+        __('Email').ui_print_help_tip(
+            __('Associated Email direction to use later in alerts associated to Tags.'),
+            true
+        ),
+        html_print_textarea('email_tag', 5, 20, $email_tag, '', true)
+    );
+    echo '</td>';
+    echo '<td>';
+    echo html_print_label_input_block(
+        __('Phone').ui_print_help_tip(
+            __('Associated phone number to use later in alerts associated to Tags.'),
+            true
+        ),
+        html_print_textarea('phone_tag', 5, 20, $phone_tag, '', true)
+    );
+    echo '</td>';
+    echo '</tr>';
+    echo '</table>';
+
+    $buttons = '';
     if ($action == 'update') {
-        echo "<th colspan=8 class='center'>".__('Update Tag').'</th>';
+        $buttons .= html_print_input_hidden('update_tag', 1, true);
+        $buttons .= html_print_submit_button(
+            __('Update'),
+            'update_button',
+            false,
+            ['icon' => 'next'],
+            true
+        );
     }
 
     if ($action == 'new') {
-        echo "<th colspan=8 class='center'>".__('Create Tag').'</th>';
+        $buttons .= html_print_input_hidden('create_tag', 1, true);
+        $buttons .= html_print_submit_button(
+            __('Create'),
+            'create_button',
+            false,
+            ['icon' => 'next'],
+            true
+        );
     }
-}
 
-    echo '<tr>';
-        echo "<td align='left'>";
-        echo '<b>'.__('Name').'</b>';
-        echo '</td>';
-        echo "<td align='left'>";
-        html_print_input_text('name_tag', $name_tag);
-        echo '</td>';
-    echo '</tr>';
-    echo '<tr>';
-        echo "<td align='left'>";
-        echo '<b>'.__('Description').'</b>';
-        echo '</td>';
-        echo "<td align='left'>";
-        html_print_input_text('description_tag', $description_tag);
-        echo '</td>';
-    echo '</tr>';
-    echo '<tr>';
-        echo "<td align='left'>";
-        echo '<b>'.__('Url').'</b>';
-        echo ui_print_help_tip(
-            __('Hyperlink to help information that has to exist previously.'),
-            true
-        );
-        echo '</td>';
-        echo "<td align='left'>";
-        html_print_input_text('url_tag', $url_tag);
-        echo '</td>';
-        echo '</tr>';
-        echo '<tr>';
-        echo "<td align='left'>";
-        echo '<b>'.__('Email').'</b>';
-        echo ui_print_help_tip(
-            __('Associated Email direction to use later in alerts associated to Tags.'),
-            true
-        );
-        echo '</td>';
-        echo "<td align='left'>";
-        html_print_textarea('email_tag', 5, 20, $email_tag);
-        echo '</td>';
-        echo '</tr>';
-        echo '<tr>';
-        echo "<td align='left'>";
-        echo '<b>'.__('Phone').'</b>';
-        echo ui_print_help_tip(
-            __('Associated phone number to use later in alerts associated to Tags.'),
-            true
-        );
-        echo '</td>';
-        echo "<td align='left'>";
-        html_print_textarea('phone_tag', 5, 20, $phone_tag);
-        echo '</td>';
-        echo '</tr>';
-        echo '</table>';
+    html_print_action_buttons(
+        $buttons
+    );
 
-        echo '</div>';
-
-        echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
-        echo '<tr>';
-        if ($action == 'update') {
-            echo "<td align='center'>";
-            html_print_input_hidden('update_tag', 1);
-            echo '</td>';
-            echo '<td align=right>';
-            html_print_submit_button(__('Update'), 'update_button', false, 'class="sub next"');
-            echo '</td>';
-        }
-
-        if ($action == 'new') {
-            echo '<td align=center>';
-            html_print_input_hidden('create_tag', 1);
-            echo '</td>';
-            echo '<td align=right>';
-            html_print_submit_button(__('Create'), 'create_button', false, 'class="sub next"');
-            echo '</td>';
-        }
-
-        echo '</tr>';
-        echo '</table>';
-
-        echo '</form>';
-
-        enterprise_hook('close_meta_frame');
+    echo '</form>';

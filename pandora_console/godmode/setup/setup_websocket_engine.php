@@ -84,12 +84,16 @@ if (function_exists('quickShellSettings') === true) {
     quickShellSettings();
 }
 
-echo '<div class="action-buttons w100p">';
-html_print_submit_button(
-    __('Update'),
-    'update_button',
-    false,
-    'class="sub upd"'
+html_print_div(
+    [
+        'class'   => 'action-buttons w100p',
+        'content' => html_print_submit_button(
+            __('Update'),
+            'update_button',
+            false,
+            [ 'icon' => 'update' ],
+            true
+        ),
+    ]
 );
-echo '</div>';
 echo '</form>';

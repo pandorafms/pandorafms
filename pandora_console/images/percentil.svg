@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / percentil@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-percentil" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(1.000000, 1.000000)">
+            <path d="M9,18 C13.9705627,18 18,13.9705627 18,9 C18,7.57359533 17.6681676,6.22469427 17.0774877,5.02628166 C15.8948527,2.62686953 13.6745914,0.830711322 11.002475,0.223578411 C10.3584945,0.0772592596 9.68826967,0 9,0 C4.02943725,0 0,4.02943725 0,9" id="Oval" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(9.000000, 9.000000) scale(-1, -1) translate(-9.000000, -9.000000) "></path>
+            <circle id="Oval" fill="#3F3F3F" cx="6.33333333" cy="6.33333333" r="1.33333333"></circle>
+            <circle id="Oval" fill="#3F3F3F" cx="11.6666667" cy="11.6666667" r="1.33333333"></circle>
+            <line x1="5.88888889" y1="12.1742825" x2="12.1742825" y2="5.88888889" id="Path-3" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>
+            <path d="M12.0077305,0.536232471 C14.546821,1.40998665 16.3910678,3.23860772 17.5404711,6.02209568" id="Path-7" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+    </g>
+</svg>

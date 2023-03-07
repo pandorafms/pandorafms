@@ -1059,7 +1059,7 @@ function get_table_custom_macros_report($data)
     $table = new StdClass();
     $table->data = [];
     $table->width = '100%';
-    $table->class = 'databox data fullwidth';
+    $table->class = 'info_table';
     $table->id = 'table-macros-definition';
     $table->rowclass = [];
 

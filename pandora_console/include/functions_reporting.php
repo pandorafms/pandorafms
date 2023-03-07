@@ -11986,7 +11986,7 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-                        <legend>'.__('Module sanity').ui_print_help_tip(sprintf(__('%d Not inited monitors'), (int) $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
+                        <legend>'.__('Module sanityX').ui_print_help_tip(sprintf(__('%d Not inited monitors'), (int) $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
@@ -12052,7 +12052,7 @@ function reporting_get_stats_alerts($data, $links=false)
     $table_al = html_get_predefined_table();
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/bell.png', true, ['title' => __('Defined alerts'), 'class' => 'invert_filter'], false, false, false, true);
+    $tdata[0] = html_print_image('images/alert@svg.svg', true, ['title' => __('Defined alerts'), 'class' => 'main_menu_icon invert_filter'], false, false, false, true);
     $tdata[1] = $data['monitor_alerts'] <= 0 ? '-' : $data['monitor_alerts'];
     $tdata[1] = '<a class="big_data" href="'.$urls['monitor_alerts'].'">'.$tdata[1].'</a>';
 
@@ -12063,10 +12063,19 @@ function reporting_get_stats_alerts($data, $links=false)
     */
 
     if ($data['monitor_alerts'] > $data['total_agents'] && !enterprise_installed()) {
-        $tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        $tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title main_menu_icon' data-use_title_for_force_title='1' src='images/alert-yellow@svg.svg'></div>";
     }
 
-    $tdata[3] = html_print_image(
+    $tdata[3] = html_print_div(
+        [
+            'title' => __('Fired alerts'),
+            'style' => 'background-color: '.COL_CRITICAL,
+            'class' => 'alert_background_state main_menu_icon invert_filter',
+        ],
+        true
+    );
+    /*
+        html_print_image(
         'images/bell_error.png',
         true,
         [
@@ -12077,7 +12086,7 @@ function reporting_get_stats_alerts($data, $links=false)
         false,
         false,
         true
-    );
+    );*/
     $tdata[4] = $data['monitor_alerts_fired'] <= 0 ? '-' : $data['monitor_alerts_fired'];
     $tdata[4] = '<a style="color: '.COL_ALERTFIRED.';" class="big_data" href="'.$urls['monitor_alerts_fired'].'">'.$tdata[4].'</a>';
     $table_al->rowclass[] = '';
@@ -12128,29 +12137,29 @@ function reporting_get_stats_modules_status($data, $graph_width=250, $graph_heig
     $table_mbs = html_get_predefined_table();
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/module_critical.png', true, ['title' => __('Monitor critical')], false, false, false, true);
+    $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_CRITICAL, 'title' => __('Monitor critical')], true);
     $tdata[1] = $data['monitor_critical'] <= 0 ? '-' : $data['monitor_critical'];
     $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="big_data line_heigth_initial" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
 
-    $tdata[2] = html_print_image('images/module_warning.png', true, ['title' => __('Monitor warning')], false, false, false, true);
+    $tdata[2] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_WARNING_DARK, 'title' => __('Monitor warning')], true);
     $tdata[3] = $data['monitor_warning'] <= 0 ? '-' : $data['monitor_warning'];
     $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="big_data line_heigth_initial" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/module_ok.png', true, ['title' => __('Monitor normal')], false, false, false, true);
+    $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_NORMAL, 'title' => __('Monitor normal')], true);
     $tdata[1] = $data['monitor_ok'] <= 0 ? '-' : $data['monitor_ok'];
     $tdata[1] = '<a style="color: '.COL_NORMAL.';" class="big_data" href="'.$urls['monitor_ok'].'">'.$tdata[1].'</a>';
 
-    $tdata[2] = html_print_image('images/module_unknown.png', true, ['title' => __('Monitor unknown')], false, false, false, true);
+    $tdata[2] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_UNKNOWN, 'title' => __('Monitor unknown')], true);
     $tdata[3] = $data['monitor_unknown'] <= 0 ? '-' : $data['monitor_unknown'];
     $tdata[3] = '<a style="color: '.COL_UNKNOWN.';" class="big_data line_heigth_initial" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/module_notinit.png', true, ['title' => __('Monitor not init')], false, false, false, true);
+    $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_NOTINIT, 'title' => __('Monitor not init')], true);
     $tdata[1] = $data['monitor_not_init'] <= 0 ? '-' : $data['monitor_not_init'];
     $tdata[1] = '<a style="color: '.COL_NOTINIT.';" class="big_data line_heigth_initial" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
 
@@ -12209,7 +12218,7 @@ function reporting_get_stats_agents_monitors($data)
     $table_am = html_get_predefined_table();
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/agent.png', true, ['title' => __('Total agents'), 'class' => 'invert_filter'], false, false, false, true);
+    $tdata[0] = html_print_image('images/agents@svg.svg', true, ['title' => __('Total agents'), 'class' => 'invert_filter main_menu_icon'], false, false, false, true);
     $tdata[1] = $data['total_agents'] <= 0 ? '-' : $data['total_agents'];
     $tdata[1] = '<a class="big_data" href="'.$urls['total_agents'].'">'.$tdata[1].'</a>';
 
@@ -12220,10 +12229,10 @@ function reporting_get_stats_agents_monitors($data)
     */
 
     if ($data['total_agents'] > 500 && !enterprise_installed()) {
-        $tdata[2] = "<div id='agentsmodal' class='publienterprise' title='".__('Enterprise version not installed')."'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        $tdata[2] = "<div id='agentsmodal' class='publienterprise' title='".__('Enterprise version not installed')."'><img data-title='Enterprise version' class='img_help forced_title main_menu_icon' data-use_title_for_force_title='1' src='images/alert-yellow@svg.svg'></div>";
     }
 
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Monitor checks'), 'class' => 'invert_filter'], false, false, false, true);
+    $tdata[3] = html_print_image('images/modules@svg.svg', true, ['title' => __('Monitor checks'), 'class' => 'main_menu_icon invert_filter'], false, false, false, true);
     $tdata[4] = $data['monitor_total'] <= 0 ? '-' : $data['monitor_total'];
     $tdata[4] = '<a class="big_data" href="'.$urls['monitor_total'].'">'.$tdata[4].'</a>';
 
@@ -12234,7 +12243,7 @@ function reporting_get_stats_agents_monitors($data)
     */
     if ($data['total_agents']) {
         if (($data['monitor_total'] / $data['total_agents'] > 100) && !enterprise_installed()) {
-            $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+            $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title main_menu_icon' data-use_title_for_force_title='1' src='images/alert-yellow@svg.svg'></div>";
         }
     }
 
@@ -12264,7 +12273,7 @@ function reporting_get_stats_users($data)
     $table_us = html_get_predefined_table();
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/user.png', true, ['title' => __('Defined users'), 'class' => 'invert_filter']);
+    $tdata[0] = html_print_image('images/user.svg', true, ['title' => __('Defined users'), 'class' => 'main_menu_icon invert_filter']);
     $user_is_admin = users_is_admin();
 
     $users = [];
@@ -14540,10 +14549,10 @@ function reporting_get_stats_servers()
     $table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/module.png', true, ['title' => __('Total running modules'), 'class' => 'invert_filter']);
+    $tdata[0] = html_print_image('images/modules@svg.svg', true, ['title' => __('Total running modules'), 'class' => 'main_menu_icon invert_filter']);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['total_modules_rate'], 2).'</span>';
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
+    $tdata[3] = html_print_image('images/modules@svg.svg', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'main_menu_icon invert_filter']).'/sec </span>';
 
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
@@ -14555,25 +14564,25 @@ function reporting_get_stats_servers()
     $table_srv->data[] = $tdata;
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/database.png', true, ['title' => __('Local modules'), 'class' => 'invert_filter']);
+    $tdata[0] = html_print_image('images/data-server@svg.svg', true, ['title' => __('Local modules'), 'class' => 'main_menu_icon invert_filter']);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_local_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['local_modules_rate'], 2).'</span>';
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
+    $tdata[3] = html_print_image('images/modules@svg.svg', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'main_menu_icon invert_filter']).'/sec </span>';
 
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
 
     if (isset($server_performance['total_network_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/network.png', true, ['title' => __('Network modules'), 'class' => 'invert_filter']);
+        $tdata[0] = html_print_image('images/network@svg.svg', true, ['title' => __('Network modules'), 'class' => 'main_menu_icon invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_network_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['network_modules_rate'], 2).'</span>';
 
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
+        $tdata[3] = html_print_image('images/modules@svg.svg', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'main_menu_icon invert_filter']).'/sec </span>';
 
         if ($server_performance['total_remote_modules'] > 10000 && !enterprise_installed()) {
-            $tdata[4] = "<div id='remotemodulesmodal' class='publienterprise left' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+            $tdata[4] = "<div id='remotemodulesmodal' class='publienterprise left' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title main_menu_icon' data-use_title_for_force_title='1' src='images/alert-yellow@svg.svg'></div>";
         } else {
             $tdata[4] = '&nbsp;';
         }
@@ -14584,11 +14593,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_plugin_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/plugin.png', true, ['title' => __('Plugin modules'), 'class' => 'invert_filter']);
+        $tdata[0] = html_print_image('images/plugins@svg.svg', true, ['title' => __('Plugin modules'), 'class' => 'main_menu_icon invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_plugin_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['plugin_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
+        $tdata[3] = html_print_image('images/modules@svg.svg', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'main_menu_icon invert_filter']).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -14596,11 +14605,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_prediction_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/chart_bar.png', true, ['title' => __('Prediction modules'), 'class' => 'invert_filter']);
+        $tdata[0] = html_print_image('images/prediction@svg.svg', true, ['title' => __('Prediction modules'), 'class' => 'main_menu_icon invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_prediction_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['prediction_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
+        $tdata[3] = html_print_image('images/modules@svg.svg', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'main_menu_icon invert_filter']).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -14608,11 +14617,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_wmi_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/wmi.png', true, ['title' => __('WMI modules'), 'class' => 'invert_filter']);
+        $tdata[0] = html_print_image('images/WMI@svg.svg', true, ['title' => __('WMI modules'), 'class' => 'main_menu_icon invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_wmi_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['wmi_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
+        $tdata[3] = html_print_image('images/modules@svg.svg', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'main_menu_icon invert_filter']).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -14620,11 +14629,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_web_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules'), 'class' => 'invert_filter']);
+        $tdata[0] = html_print_image('images/web-analisys-data@svg.svg', true, ['title' => __('Web modules'), 'class' => 'main_menu_icon invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_web_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['web_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
+        $tdata[3] = html_print_image('images/modules@svg.svg', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'main_menu_icon invert_filter']).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -14638,17 +14647,17 @@ function reporting_get_stats_servers()
 
     $tdata = [];
     $tdata[0] = html_print_image(
-        'images/lightning_go.png',
+        'images/event.svg',
         true,
         [
             'title' => __('Total events'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     );
     $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';
 
     if (isset($system_events) && $system_events > 50000 && !enterprise_installed()) {
-        $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise left' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise left' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title main_menu_icon' data-use_title_for_force_title='1' src='images/alert-yellow@svg.svg'></div>";
     } else {
         $tdata[3] = '&nbsp;';
     }

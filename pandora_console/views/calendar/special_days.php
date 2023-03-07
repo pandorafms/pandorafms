@@ -30,7 +30,6 @@ global $config;
 
 \ui_require_css_file('wizard');
 \enterprise_include_once('meta/include/functions_alerts_meta.php');
-\enterprise_hook('open_meta_frame');
 
 if (\is_metaconsole() === true) {
     \alerts_meta_print_header($tabs);
@@ -491,7 +490,6 @@ if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
 echo '<div id="modal-alert-templates" class="invisible"></div>';
 ui_require_javascript_file('pandora_alerts');
 
-\enterprise_hook('close_meta_frame');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {

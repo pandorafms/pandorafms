@@ -419,7 +419,10 @@ $row[] = html_print_submit_button(
     __('Search'),
     'search',
     false,
-    'class="sub search"',
+    [
+        'icon' => 'search',
+        'mode' => 'mini',
+    ],
     true
 );
 
@@ -632,17 +635,23 @@ if ($downtimes === false && $filter_performed === false) {
     // Info message.
     echo '<div class="nf">'.__('No scheduled downtime').'</div>';
 
-    echo '<div class="action-buttons w100p" >';
-
     // Create button.
     if ($write_permisson === true) {
-        echo '&nbsp;';
         echo '<form method="post" class="display_in" action="'.$url_editor.'">';
-        html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Create'),
+                    'create',
+                    false,
+                    ['icon' => 'next'],
+                    true
+                ),
+            ]
+        );
         echo '</form>';
     }
-
-    echo '</div>';
 } else {
     // Has downtimes.
     echo '<form method="post" action="'.$url_list.'">';

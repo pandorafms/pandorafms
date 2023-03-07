@@ -198,8 +198,21 @@ if ($edit_filter > -2) {
     $table->id = 'filter_table';
     $table->width = '100%';
     $table->class = 'databox filters';
+    $table->rowclass[0] = 'row-title-font-child';
+    $table->rowclass[1] = 'row-title-font-child';
     $table->data[0][0] = __('Description');
     $table->data[0][1] = html_print_input_text('description', $description, '', 60, 100, true);
+    $table->data[0][1] .= html_print_image(
+        'images/plus.png',
+        true,
+        [
+            'id'    => 'add_filter',
+            'alt'   => __('Click to add new filter'),
+            'title' => __('Click to add new filter'),
+            'style' => 'height:20px',
+            'class' => 'invert_filter',
+        ]
+    );
     $table->data[1][0] = __('Filter');
     if ($edit_filter > -1) {
         $unified_filter = db_get_value_sql('SELECT unified_filters_id FROM tsnmp_filter WHERE id_snmp_filter != 0 AND id_snmp_filter = '.$edit_filter);
@@ -220,7 +233,7 @@ if ($edit_filter > -2) {
             if ($j == 1) {
                 $table->data[$j][1] .= ui_print_help_tip(__('This field contains a substring, could be part of a IP address, a numeric OID, or a plain substring').SEPARATOR_COLUMN, true);
             } else {
-                $table->data[$j][1] .= html_print_image('images/cross.png', true, ['id' => 'delete_filter_'.$f['id_snmp_filter'], 'class' => 'invert_filter', 'alt' => __('Click to remove the filter')]);
+                $table->data[$j][1] .= html_print_image('images/delete.svg', true, ['id' => 'delete_filter_'.$f['id_snmp_filter'], 'class' => 'invert_filter main_menu_icon', 'alt' => __('Click to remove the filter')]);
             }
 
             $j++;
@@ -232,7 +245,7 @@ if ($edit_filter > -2) {
     }
 
     $index++;
-    echo '<form action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters" method="post">';
+    echo '<form class="max_floating_element_size" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters" method="post">';
     html_print_input_hidden('update_filter', $edit_filter);
     html_print_input_hidden('index_post', $index);
     if ($edit_filter > -1) {
@@ -245,25 +258,36 @@ if ($edit_filter > -2) {
     }
 
     html_print_table($table);
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_image(
-        'images/add.png',
-        false,
-        [
-            'id'    => 'add_filter',
-            'alt'   => __('Click to add new filter'),
-            'title' => __('Click to add new filter'),
-            'style' => 'float:left;',
-            'class' => 'invert_filter',
-        ]
-    );
+
     if ($edit_filter > -1) {
-        html_print_submit_button(__('Update'), 'submit_button', false, 'class="sub upd"');
+        $buttons[] = html_print_submit_button(
+            __('Update'),
+            'submit_button',
+            false,
+            [
+                'class' => 'sub ok',
+                'icon'  => 'next',
+            ],
+            true
+        );
     } else {
-        html_print_submit_button(__('Create'), 'submit_button', false, 'class="sub upd"');
+        $buttons[] = html_print_submit_button(
+            __('Create'),
+            'submit_button',
+            false,
+            [
+                'class' => 'sub ok',
+                'icon'  => 'next',
+            ],
+            true
+        );
     }
 
-    echo '</div>';
+    html_print_action_buttons(
+        implode('', $buttons),
+        ['type' => 'form_action']
+    );
+
     echo '</form>';
     // Overview
 } else {
@@ -292,37 +316,41 @@ if ($edit_filter > -2) {
     $table->size[2] = '65px';
     $table->align[2] = 'center';
 
-    foreach ($aglomerate_result as $ind => $row) {
-        if ($ind == 0) {
-            foreach ($row as $r) {
-                $data = [];
-                $data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
-                $data[1] = $r['filter'];
-                $data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
-                array_push($table->data, $data);
-            }
-        } else {
-            $ind2 = 0;
-            $compose_filter = [];
-            $compose_id = '';
-            $compose_action = '';
-            foreach ($row as $i => $r) {
-                if ($ind2 == 0) {
-                    $compose_id = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
-                    $compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
-                    $ind2++;
+    if (empty($aglomerate_result) === false) {
+        foreach ($aglomerate_result as $ind => $row) {
+            if ($ind == 0) {
+                foreach ($row as $r) {
+                    $data = [];
+                    $data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
+                    $data[1] = $r['filter'];
+                    $data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/support@svg.svg', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter main_menu_icon']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
+                    array_push($table->data, $data);
+                }
+            } else {
+                $ind2 = 0;
+                $compose_filter = [];
+                $compose_id = '';
+                $compose_action = '';
+                foreach ($row as $i => $r) {
+                    if ($ind2 == 0) {
+                        $compose_id = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
+                        $compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/support@svg.svg', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter main_menu_icon']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
+                        $ind2++;
+                    }
+
+                    $compose_filter[] = $r['filter'];
                 }
 
-                $compose_filter[] = $r['filter'];
+                $data = [];
+                $data[0] = $compose_id;
+                $data[1] = implode(' AND ', $compose_filter);
+                $data[2] = $compose_action;
+                $table->cellclass[][2] = 'table_action_buttons';
+                array_push($table->data, $data);
             }
-
-            $data = [];
-            $data[0] = $compose_id;
-            $data[1] = implode(' AND ', $compose_filter);
-            $data[2] = $compose_action;
-            $table->cellclass[][2] = 'action_buttons';
-            array_push($table->data, $data);
         }
+    } else {
+        ui_print_info_message(['no_close' => true, 'message' => __('There are no SNMP Filters defined yet.') ]);
     }
 
     if (!empty($table->data)) {
@@ -333,7 +361,20 @@ if ($edit_filter > -2) {
 
     echo '<div class="right w100p">';
     echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';
-    html_print_submit_button(__('Create'), 'submit_button', false, 'class="sub next"');
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        [
+            'type'  => 'data_table',
+            'class' => 'fixed_action_buttons',
+        ]
+    );
+
     echo '</form></div>';
 }
 ?>
@@ -345,7 +386,7 @@ if ($edit_filter > -2) {
 
     $(document).ready (function () {
         $('#add_filter').click(function(e) {
-            $('#filter_table').append('<tr id="filter_table-' + id + '"   class="datos"><td id="filter_table-' + id + '-0"   class="datos "></td><td id="filter_table-' + id + '-1"   class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="' + homeurl + 'images/cross.png" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title" alt="Click to delete the filter"></td></tr>');
+            $('#filter_table').append('<tr id="filter_table-' + id + '"   class="datos"><td id="filter_table-' + id + '-0"   class="datos "></td><td id="filter_table-' + id + '-1"   class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="' + homeurl + 'images/delete.svg" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title main_menu_icon" alt="Click to delete the filter"></td></tr>');
             
             id++;
 

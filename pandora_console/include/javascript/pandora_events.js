@@ -1028,6 +1028,7 @@ function openSoundEventModal(settings) {
                   .addClass("alerts");
                 // Change value button.
                 $("#button-no-alerts").val(settings.noAlert);
+                $("#button-no-alerts > span").text(settings.noAlert);
 
                 // Background button.
                 $(".container-button-alert").removeClass("fired");
@@ -1074,6 +1075,7 @@ function action_events_sound(mode, settings) {
       .addClass("stop");
     // Change value button.
     $("#button-start-search").val(settings.stop);
+    $("#button-start-search > span").text(settings.stop);
     // Add Progress bar.
     listen_event_sound(settings);
   } else {
@@ -1089,6 +1091,7 @@ function action_events_sound(mode, settings) {
       .addClass("play");
     // Change value button.
     $("#button-start-search").val(settings.start);
+    $("#button-start-search > span").text(settings.start);
     // Remove progress bar.
     $("#progressbar_time").empty();
     // Remove audio.
@@ -1104,6 +1107,7 @@ function action_events_sound(mode, settings) {
       .addClass("alerts");
     // Change value button.
     $("#button-no-alerts").val(settings.noAlert);
+    $("#button-no-alerts > span").text(settings.noAlert);
 
     // Background button.
     $(".container-button-alert").removeClass("fired");
@@ -1158,6 +1162,7 @@ function check_event_sound(settings) {
           .addClass("silence-alerts");
         // Change value button.
         $("#button-no-alerts").val(settings.silenceAlarm);
+        $("#button-no-alerts > span").text(settings.silenceAlarm);
 
         // Background button.
         $(".container-button-alert").addClass("fired");

@@ -156,26 +156,26 @@ UNLOCK TABLES;
 
 LOCK TABLES `tconfig_os` WRITE;
 INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`, `previous_name`) VALUES 
-(1,'Linux','Linux: All versions','so_linux.png', ''),
-(2,'Solaris','Sun Solaris','so_solaris.png', ''),
-(3,'AIX','IBM AIX','so_aix.png', ''),
-(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.png', ''),
-(5,'HP-UX','HP-UX Unix OS','so_hpux.png', ''),
-(7,'Cisco','CISCO IOS','so_cisco.png', ''),
-(8,'MacOS','MAC OS','so_mac.png', ''),
-(9,'Windows','Microsoft Windows OS','so_win.png', ''),
-(10,'Other','Other SO','so_other.png', ''),
-(11,'Network','Network Agent','network.png', ''),
-(12,'Web Server','Web Server/Application','network.png', ''),
-(13,'Sensor','Hardware Agent (Sensor)','network.png', ''),
-(14,'Embedded','Embedded device running an agent','embedded.png', ''),
-(15,'Android','Android agent','android.png', ''),
-(16, 'VMware', 'VMware Architecture', 'so_vmware.png', ''),
-(17, 'Router', 'Generic router', 'so_router.png', ''),
-(18, 'Switch', 'Generic switch', 'so_switch.png', ''),
-(19, 'Satellite', 'Satellite agent', 'satellite.png', ''),
-(20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png', ''),
-(100, 'Cluster', 'Cluster agent', 'so_cluster.png', '');
+(1,'Linux','Linux: All versions','linux@os.svg', ''),
+(2,'Solaris','Sun Solaris','solaris@os.svg', ''),
+(3,'AIX','IBM AIX','aix@os.svg', ''),
+(4,'BSD','OpenBSD, FreeBSD and Others','freebsd@os.svg', ''),
+(5,'HP-UX','HP-UX Unix OS','HP@os.svg', ''),
+(7,'Cisco','CISCO IOS','cisco@os.svg', ''),
+(8,'MacOS','MAC OS','apple@os.svg', ''),
+(9,'Windows','Microsoft Windows OS','windows@os.svg', ''),
+(10,'Other','Other SO','other-OS@os.svg', ''),
+(11,'Network','Network Agent','network-server@os.svg', ''),
+(12,'Web Server','Web Server/Application','network-server@os.svg', ''),
+(13,'Sensor','Hardware Agent (Sensor)','network-server@os.svg', ''),
+(14,'Embedded','Embedded device running an agent','embedded@os.svg', ''),
+(15,'Android','Android agent','android@os.svg', ''),
+(16, 'VMware', 'VMware Architecture', 'vmware@os.svg', ''),
+(17, 'Router', 'Generic router', 'routers@os.svg', ''),
+(18, 'Switch', 'Generic switch', 'switch@os.svg', ''),
+(19, 'Satellite', 'Satellite agent', 'satellite@os.svg', ''),
+(20, 'Mainframe', 'Mainframe agent', 'mainframe@os.svg', ''),
+(100, 'Cluster', 'Cluster agent', 'cluster@os.svg', '');
 UNLOCK TABLES;
 
 
@@ -185,14 +185,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `tgrupo` WRITE;
 INSERT INTO `tgrupo` (`id_grupo`, `nombre`, `icon`, `parent`, `propagate`, `disabled`, `custom_id`, `id_skin`, `other`) VALUES 
-(2,'Servers','server_database',0,0,0,'',1,''),
-(4,'Firewalls','firewall',0,0,0,'',1,''),
-(8,'Databases','database_gear',0,0,0,'',1,''),
-(9,'Network','transmit',0,0,0,'',1,''),
-(10,'Unknown','world',0,0,0,'',1,''),
-(11,'Workstations','computer',0,0,0,'',1,''),
-(12,'Applications','applications',0,0,0,'',1,''),
-(13,'Web','world',0,0,0,'',1,'');
+(2,'Servers','servers@groups.svg',0,0,0,'',1,''),
+(4,'Firewalls','firewall@groups.svg',0,0,0,'',1,''),
+(8,'Databases','database@groups.svg',0,0,0,'',1,''),
+(9,'Network','network@groups.svg',0,0,0,'',1,''),
+(10,'Unknown','unknown@groups.svg',0,0,0,'',1,''),
+(11,'Workstations','workstation@groups.svg',0,0,0,'',1,''),
+(12,'Applications','applications@groups.svg',0,0,0,'',1,''),
+(13,'Web','web@groups.svg',0,0,0,'',1,'');
 UNLOCK TABLES;
 
 
@@ -267,35 +267,35 @@ INSERT INTO `torigen` VALUES
 
 -- Identifiers 30 and 31 are reserved for Enterprise data types
 INSERT INTO `ttipo_modulo` VALUES
-(1,'generic_data',0,'Generic numeric','mod_data.png'),
-(2,'generic_proc',1,'Generic boolean','mod_proc.png'),
-(3,'generic_data_string',2,'Generic string','mod_string.png'),
-(4,'generic_data_inc',0,'Generic numeric incremental','mod_data_inc.png'),
-(5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png'),
-(6,'remote_icmp_proc',4,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),
-(7,'remote_icmp',3,'Remote ICMP network agent (latency)','mod_icmp_data.png'),
-(8,'remote_tcp',3,'Remote TCP network agent, numeric data','mod_tcp_data.png'),
-(9,'remote_tcp_proc',4,'Remote TCP network agent, boolean data','mod_tcp_proc.png'),
-(10,'remote_tcp_string',5,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png'),
-(11,'remote_tcp_inc',3,'Remote TCP network agent, incremental data','mod_tcp_inc.png'),
-(15,'remote_snmp',3,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),
-(16,'remote_snmp_inc',3,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),
-(17,'remote_snmp_string',5,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),
-(18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'),
-(21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'),
-(22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'),
-(23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
-(30,'web_data',9,'Remote HTTP module to check latency','mod_web_data.png'),
-(31,'web_proc',9,'Remote HTTP module to check server response','mod_web_proc.png'),
-(32,'web_content_data',9,'Remote HTTP module to retrieve numeric data','mod_web_data.png'),
-(33,'web_content_string',9,'Remote HTTP module to retrieve string data','mod_web_data.png'),
-(34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
-(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
-(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
-(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png'),
-(38,'web_server_status_code_string',9,'Remote HTTP module to check server status code','mod_web_data.png'),
-(100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
+(1,'generic_data',0,'Generic numeric','data-server@svg.svg'),
+(2,'generic_proc',1,'Generic boolean','generic-boolean@svg.svg'),
+(3,'generic_data_string',2,'Generic string','generic-string@svg.svg'),
+(4,'generic_data_inc',0,'Generic numeric incremental','data-server@svg.svg'),
+(5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','data-server@svg.svg'),
+(6,'remote_icmp_proc',4,'Remote ICMP network agent, boolean data','ICMP-network-boolean-data@svg.svg'),
+(7,'remote_icmp',3,'Remote ICMP network agent (latency)','ICMP-network-latency@svg.svg'),
+(8,'remote_tcp',3,'Remote TCP network agent, numeric data','TCP-network-numeric-data@svg.svg'),
+(9,'remote_tcp_proc',4,'Remote TCP network agent, boolean data','TCP-network-boolean-data@svg.svg'),
+(10,'remote_tcp_string',5,'Remote TCP network agent, alphanumeric data','TCP-network-alphanumeric-data@svg.svg'),
+(11,'remote_tcp_inc',3,'Remote TCP network agent, incremental data','TCP-network-incremental-data@svg.svg'),
+(15,'remote_snmp',3,'Remote SNMP network agent, numeric data','SNMP-network-numeric-data@svg.svg'),
+(16,'remote_snmp_inc',3,'Remote SNMP network agent, incremental data','SNMP-network-incremental-data@svg.svg'),
+(17,'remote_snmp_string',5,'Remote SNMP network agent, alphanumeric data','SNMP-network-alphanumeric-data@svg.svg'),
+(18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','SNMP-network-incremental-data@svg.svg'),
+(21,'async_proc', 7, 'Asyncronous proc data', 'asynchronus-data@svg.svg'),
+(22,'async_data', 6, 'Asyncronous numeric data', 'asynchronus-data@svg.svg'),
+(23,'async_string', 8, 'Asyncronous string data', 'asynchronus-data@svg.svg'),
+(25,'web_analysis', 8, 'Web analysis data', 'wux@svg.svg'),
+(30,'web_data',9,'Remote HTTP module to check latency','server-web@svg.svg'),
+(31,'web_proc',9,'Remote HTTP module to check server response','web-analisys-data@svg.svg'),
+(32,'web_content_data',9,'Remote HTTP module to retrieve numeric data','server-web@svg.svg'),
+(33,'web_content_string',9,'Remote HTTP module to retrieve string data','server-web@svg.svg'),
+(34,'remote_cmd', 10, 'Remote execution, numeric data', 'remote-execution-numeric-data@svg.svg'),
+(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'remote-execution-boolean-data@svg.svg'),
+(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'remote-execution-alphanumeric-data@svg.svg'),
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'remote-execution-incremental-data@svg.svg'),
+(38,'web_server_status_code_string',9,'Remote HTTP module to check server status code','server-web@svg.svg'),
+(100,'keep_alive',-1,'KeepAlive','keepalive@svg.svg');
 
 --
 -- Dumping data for table `tmodule_inventory`

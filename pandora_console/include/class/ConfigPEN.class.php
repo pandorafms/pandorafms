@@ -240,17 +240,17 @@ class ConfigPEN extends HTML
                         $tmp->description = io_safe_output($tmp->description);
                         $tmp->manufacturer = io_safe_output($tmp->manufacturer);
 
-                        $tmp->options = '';
+                        $tmp->options = '<div class="table_action_buttons float-right">';
 
-                        $tmp->options = '<a href="javascript:" onclick="showForm(\'';
+                        $tmp->options .= '<a href="javascript:" onclick="showForm(\'';
                         $tmp->options .= $tmp->pen;
                         $tmp->options .= '\')" >';
                         $tmp->options .= html_print_image(
-                            'images/operation.png',
+                            'images/edit.svg',
                             true,
                             [
                                 'title' => __('Show'),
-                                'class' => 'invert_filter',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         );
                         $tmp->options .= '</a>';
@@ -258,14 +258,16 @@ class ConfigPEN extends HTML
                         $tmp->options .= $tmp->pen;
                         $tmp->options .= '\')" >';
                         $tmp->options .= html_print_image(
-                            'images/cross.png',
+                            'images/delete.svg',
                             true,
                             [
                                 'title' => __('Delete'),
-                                'class' => 'invert_filter',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         );
                         $tmp->options .= '</a>';
+
+                        $tmp->options .= '</div>';
 
                         $carry[] = $tmp;
                         return $carry;
@@ -406,7 +408,7 @@ class ConfigPEN extends HTML
             'action'   => '#',
             'id'       => 'modal_form',
             'onsubmit' => 'return false;',
-            'class'    => '',
+            'class'    => 'filter-list-adv',
         ];
 
         $inputs = [];
@@ -420,7 +422,7 @@ class ConfigPEN extends HTML
             'size'     => 50,
         ];
 
-        if ((bool) $values['pen']) {
+        if ((bool) $values['pen'] === true) {
             $arguments['disabled'] = true;
         }
 
@@ -599,18 +601,18 @@ class ConfigPEN extends HTML
                 __('Description'),
                 [
                     'text'  => __('Options'),
-                    'class' => 'action_buttons',
+                    'class' => 'table_action_buttons align_right',
                 ],
             ];
 
-            $this->tableId = 'keystore';
+            $tableId = 'keystore';
             // Load datatables user interface.
             $output .= ui_print_datatable(
                 [
-                    'id'                  => $this->tableId,
+                    'id'                  => $tableId,
                     'return'              => true,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -621,6 +623,7 @@ class ConfigPEN extends HTML
                         'direction' => 'asc',
                     ],
                     'search_button_class' => 'sub filter float-right',
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                     'form'                => [
                         'inputs' => [
                             [
@@ -643,15 +646,18 @@ class ConfigPEN extends HTML
         $output .= '<div id="msg"   class="invisible"></div>';
         $output .= '<div id="aux"   class="invisible"></div>';
 
-        // Create button.
-        $output .= parent::printInput(
-            [
-                'type'       => 'submit',
-                'name'       => 'create',
-                'label'      => __('Register manufacturer'),
-                'attributes' => 'class="sub next"',
-                'return'     => true,
-            ]
+        $output .= html_print_action_buttons(
+            parent::printInput(
+                [
+                    'type'       => 'submit',
+                    'name'       => 'create',
+                    'label'      => __('Register manufacturer'),
+                    'attributes' => ['icon' => 'next'],
+                    'return'     => true,
+                ]
+            ),
+            ['type' => 'form_action'],
+            true
         );
 
         ob_start();
@@ -789,7 +795,7 @@ function showMsg(data) {
 }
 
 $(document).ready(function() {
-  $("#submit-create").click(function() {
+  $("#button-create").click(function() {
     showForm();
   });
 });

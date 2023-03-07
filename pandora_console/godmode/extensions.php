@@ -252,7 +252,7 @@ foreach ($extensions as $file => $extension) {
 
     // Avoid to delete or disabled update_manager
     if ($file != 'update_manager.php') {
-        $table->cellclass[][10] = 'action_buttons';
+        $table->cellclass[][10] = 'table_action_buttons';
         if (!$extension['enabled']) {
             $data[] = '<a title="'.__('Delete').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file.'" class="mn">'.html_print_image('images/cross.disabled.png', true, ['class' => 'filter_none']).'</a>'.' <a title="'.__('Enable').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&enabled='.$file.'" class="mn">'.html_print_image('images/lightbulb_off.png', true, ['class' => 'filter_none']).'</a>';
         } else {

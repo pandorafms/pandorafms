@@ -2444,35 +2444,35 @@ function ui_print_session_action_icon($action, $return=false)
     global $config;
 
     $key_icon = [
-        'acl'             => 'images/delete.png',
-        'agent'           => 'images/agent.png',
-        'module'          => 'images/module.png',
-        'alert'           => 'images/bell.png',
-        'incident'        => 'images/default_list.png',
-        'logon'           => 'images/house.png',
-        'logoff'          => 'images/house.png',
-        'massive'         => 'images/config.png',
-        'hack'            => 'images/application_edit.png',
-        'event'           => 'images/lightning_go.png',
-        'policy'          => 'images/policies_mc.png',
-        'report'          => 'images/reporting.png',
-        'file collection' => 'images/collection_col.png',
-        'user'            => 'images/user_green.png',
-        'password'        => 'images/lock.png',
-        'session'         => 'images/heart_col.png',
-        'snmp'            => 'images/snmp.png',
-        'command'         => 'images/bell.png',
-        'category'        => 'images/category_col.png',
-        'dashboard'       => 'images/dashboard_col.png',
-        'api'             => 'images/eye.png',
-        'db'              => 'images/database.png',
-        'setup'           => 'images/cog.png',
+        'acl'             => 'images/delete.svg',
+        'agent'           => 'images/agents@svg.svg',
+        'module'          => 'images/modules@svg.svg',
+        'alert'           => 'images/alerts.svg',
+        'incident'        => 'images/logs@svg.svg',
+        'logon'           => 'images/house@svg.svg',
+        'logoff'          => 'images/house@svg.svg',
+        'massive'         => 'images/configuration@svg.svg',
+        'hack'            => 'images/custom-input@svg.svg',
+        'event'           => 'images/event.svg',
+        'policy'          => 'images/policy@svg.svg',
+        'report'          => 'images/agent-fields.svg',
+        'file collection' => 'images/file-collection@svg.svg',
+        'user'            => 'images/user.svg',
+        'password'        => 'images/password.svg',
+        'session'         => 'images/star@svg.svg',
+        'snmp'            => 'images/SNMP-network-numeric-data@svg.svg',
+        'command'         => 'images/external-tools@svg.svg',
+        'category'        => 'images/tag@svg.svg',
+        'dashboard'       => 'images/workstation@groups.svg',
+        'api'             => 'images/enable.svg',
+        'db'              => 'images/data-server@svg.svg',
+        'setup'           => 'images/configuration@svg.svg',
     ];
 
     $output = '';
     foreach ($key_icon as $key => $icon) {
         if (stristr($action, $key) !== false) {
-            $output = html_print_image($icon, true, ['title' => $action, 'class' => 'invert_filter'], false, false, false, true).' ';
+            $output = html_print_image($icon, true, ['title' => $action, 'class' => 'main_menu_icon invert_filter'], false, false, false, true).' ';
             break;
         }
     }

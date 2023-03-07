@@ -84,7 +84,7 @@ class SatelliteCollection extends HTML
             return;
         }
 
-        if ((int) $config['license_nms'] === 0) {
+        if ((int) $config['license_nms'] === 1) {
             db_pandora_audit(
                 AUDIT_LOG_NMS_VIOLATION,
                 'Trying to access satellite collections'

@@ -1210,7 +1210,7 @@ function ui_format_alert_row(
                 $forceTitle,
                 'force_execution_'.$alert['id'],
                 false,
-                'window.location.assign(\''.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl.'\');',
+                'window.location.assign("'.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl.'");',
                 [ 'mode' => 'link' ],
                 true
             );

@@ -1496,6 +1496,7 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
  * @param string  $image       Image path.
  * @param boolean $is_relative Route is relative or not.
  * @param string  $id          Target id.
+ * @param string  $isHeader    If true, the view is header.
  *
  * @return string The help tip
  */
@@ -1505,9 +1506,16 @@ function ui_print_help_icon(
     $home_url='',
     $image='images/info@svg.svg',
     $is_relative=false,
-    $id=''
+    $id='',
+    $isHeader=false
 ) {
     global $config;
+
+    if (empty($image) === true) {
+        $image = 'images/info@svg.svg';
+    }
+
+    $iconClass = ($isHeader === true) ? 'header_help_icon' : 'main_menu_icon';
 
     // Do not display the help icon if help is disabled.
     if ((bool) $config['disable_help'] === true) {
@@ -1533,7 +1541,7 @@ function ui_print_help_icon(
         $image,
         true,
         [
-            'class'   => 'img_help main_menu_icon',
+            'class'   => 'img_help '.$iconClass,
             'title'   => __('Help'),
             'onclick' => "open_help ('".ui_get_full_url($help_handler)."')",
             'id'      => $id,
@@ -5053,7 +5061,7 @@ function ui_print_page_header(
 
     if (is_metaconsole() === false) {
         if ($help != '') {
-            $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', 'images/help_g.png').'</div>';
+            $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', '', false, '', true).'</div>';
         }
     }
 

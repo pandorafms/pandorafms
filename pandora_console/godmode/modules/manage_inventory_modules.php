@@ -332,14 +332,16 @@ if ($result === false) {
 
         if ($management_allowed === true) {
             // Update module.
-            $data[4] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form&id_module_inventory='.$row['id_module_inventory'].'">';
-            $data[4] .= html_print_image('images/config.png', true, ['border' => '0', 'title' => __('Update'), 'class' => 'invert_filter']).'</b></a>';
+            $data[4] = '<div class="table_action_buttons">';
+            $data[4] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form&id_module_inventory='.$row['id_module_inventory'].'">';
+            $data[4] .= html_print_image('images/edit.svg', true, ['border' => '0', 'title' => __('Update'), 'class' => 'main_menu_icon invert_filter']).'</b></a>';
 
             // Delete module.
             $data[4] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules&delete_inventory_module='.$row['id_module_inventory'].'" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-            $data[4] .= html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete'), 'class' => 'invert_filter']);
+            $data[4] .= html_print_image('images/delete.svg', true, ['border' => '0', 'title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']);
             $data[4] .= '</b></a>&nbsp;&nbsp;';
             $data[4] .= html_print_checkbox_extended('delete_multiple[]', $row['id_module_inventory'], false, false, '', 'class="check_delete"', true);
+            $data[4] .= '</div>';
         }
 
         array_push($table->data, $data);

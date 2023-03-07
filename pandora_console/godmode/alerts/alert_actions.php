@@ -66,12 +66,19 @@ if (check_acl_restricted_all($config['id_user'], 0, 'LM')) {
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
-    ui_print_page_header(
-        __('Alerts').' &raquo; '.__('Alert actions'),
+    ui_print_standard_header(
+        __('Alerts'),
         'images/gm_alerts.png',
         false,
         '',
-        true
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Alert actions'),
+            ],
+        ]
     );
 }
 
@@ -230,22 +237,15 @@ $url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&search_string='
 // Filter table.
 $table_filter = new stdClass();
 $table_filter->width = '100%';
-$table_filter->class = 'databox filters filter-table-adv';
+$table_filter->class = 'databox filters no_border filter-table-adv';
 $table_filter->style = [];
 $table_filter->style[0] = 'width: 33%';
+$table_filter->style[1] = 'width: 33%';
 $table_filter->style[2] = 'width: 33%';
-$table_filter->style[4] = 'width: 33%';
 $table_filter->data = [];
+$table_filter->colspan = [];
+$table_filter->colspan[1][0] = 3;
 
-$table_filter->data[0][0] = __('Search');
-$table_filter->data[0][1] = html_print_input_text(
-    'search_string',
-    $search_string,
-    '',
-    25,
-    255,
-    true
-);
 $table_filter->data[0][0] = html_print_label_input_block(
     __('Search'),
     html_print_input_text(
@@ -264,19 +264,22 @@ if (users_can_manage_group_all('LM') === true) {
     $return_all_group = true;
 }
 
-$table_filter->data[0][2] = __('Group');
-$table_filter->data[0][3] = html_print_select_groups(
-    $config['id_user'],
-    'LM',
-    $return_all_group,
-    'group_search',
-    $group_search,
-    '',
-    '',
-    0,
-    true
+
+$table_filter->data[0][1] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        $config['id_user'],
+        'LM',
+        $return_all_group,
+        'group_search',
+        $group_search,
+        '',
+        '',
+        0,
+        true
+    )
 );
-$table_filter->data[0][4] = __('Command');
+
 $commands_sql = db_get_all_rows_filter(
     'talert_commands',
     ['id_group' => array_keys(users_get_groups(false, 'LW'))],
@@ -290,39 +293,54 @@ $commands_sql = db_get_all_rows_filter(
 );
 
 $commands = db_get_all_rows_sql($commands_sql);
-$table_filter->data[0][5] = html_print_select(
-    index_array($commands, 'id', 'name'),
-    'id_command_search',
-    $id_command_search,
-    '',
-    __('None'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width:150px'
+
+$table_filter->data[0][2] = html_print_label_input_block(
+    __('Command'),
+    html_print_select(
+        index_array($commands, 'id', 'name'),
+        'id_command_search',
+        $id_command_search,
+        '',
+        __('None'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width:100%'
+    )
 );
-$table_filter->data[0][6] = '<div class="action-buttons">';
-$table_filter->data[0][6] .= html_print_submit_button(
+
+$table_filter->data[1][0] = '<div class="float-right">';
+$table_filter->data[1][0] .= html_print_submit_button(
     __('Search'),
     '',
     false,
-    'class="sub search"',
+    [
+        'icon'  => 'search',
+        'class' => 'mini',
+    ],
     true
 );
-$table_filter->data[0][5] .= '</div>';
+$table_filter->data[1][0] .= '</div>';
 
 
 $show_table_filter = '<form method="post" action="'.$url.'">';
-$show_table_filter .= html_print_table($table_filter, true);
+$show_table_filter .= ui_toggle(
+    html_print_table($table_filter, true),
+    '<span class="subsection_header_title">'.__('Search').'</span>',
+    __('Search'),
+    'search',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar  '
+);
 $show_table_filter .= '</form>';
-if (is_metaconsole()) {
-    ui_toggle($show_table_filter, __('Show Options'));
-} else {
-    echo $show_table_filter;
-}
+
+echo $show_table_filter;
 
 
 $table = new stdClass();
@@ -435,11 +453,14 @@ foreach ($actions as $action) {
         $data[3] .= html_print_input_hidden('id', $id_action, true);
         $data[3] .= html_print_input_image(
             'dup',
-            'images/copy.png',
+            'images/copy.svg',
             1,
             '',
             true,
-            ['title' => __('Duplicate')]
+            [
+                'title' => __('Duplicate'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
         );
         $data[3] .= '</form> ';
 
@@ -449,11 +470,14 @@ foreach ($actions as $action) {
             $data[4] .= html_print_input_hidden('id', $id_action, true);
             $data[4] .= html_print_input_image(
                 'del',
-                'images/cross.png',
+                'images/delete.svg',
                 1,
                 '',
                 true,
-                ['title' => __('Delete')]
+                [
+                    'title' => __('Delete'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
             $data[4] .= '</form> ';
         } else {
@@ -464,10 +488,10 @@ foreach ($actions as $action) {
     array_push($table->data, $data);
 }
 
-ui_pagination($total_actions, $url);
+$pagination = '';
 if (isset($data)) {
     html_print_table($table);
-    ui_pagination($total_actions, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
+    $pagination = ui_pagination($total_actions, $url, 0, 0, true, 'offset', false, '');
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert actions configured') ]);
 }
@@ -477,7 +501,7 @@ if (is_management_allowed() === true) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'&offset='.$offset.'">';
     $button = html_print_submit_button(__('Create'), 'create', false, ['icon' => 'wand'], true);
     html_print_input_hidden('create_alert', 1);
-    html_print_action_buttons($button);
+    html_print_action_buttons($button, ['right_content' => $pagination]);
     echo '</form>';
     echo '</div>';
 }

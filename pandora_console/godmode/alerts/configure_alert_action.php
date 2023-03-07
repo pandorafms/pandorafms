@@ -158,43 +158,34 @@ html_print_div(
 $table = new stdClass();
 $table->id = 'table_macros';
 $table->width = '100%';
-$table->class = 'databox filters';
-
-if (defined('METACONSOLE')) {
-    if ($id) {
-        $table->head[0] = __('Update Action');
-    } else {
-        $table->head[0] = __('Create Action');
-    }
-
-    $table->head_colspan[0] = 4;
-    $table->headstyle[0] = 'text-align: center';
-}
-
+$table->class = 'databox filters filter-table-adv';
 $table->style = [];
-$table->style[0] = 'font-weight: bold';
 $table->size = [];
-$table->size[0] = '20%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 $table->data = [];
-$table->data[0][0] = __('Name');
-$table->data[0][1] = html_print_input_text(
-    'name',
-    $name,
-    '',
-    35,
-    255,
-    true,
-    false,
-    false,
-    '',
-    '',
-    '',
-    '',
-    false,
-    '',
-    '',
-    '',
-    (!$is_management_allowed | $disabled)
+
+$table->data[0][0] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text(
+        'name',
+        $name,
+        '',
+        35,
+        255,
+        true,
+        false,
+        false,
+        '',
+        '',
+        '',
+        '',
+        false,
+        '',
+        '',
+        '',
+        (!$is_management_allowed | $disabled)
+    )
 );
 
 if (io_safe_output($name) == 'Monitoring Event') {
@@ -205,34 +196,30 @@ if (io_safe_output($name) == 'Monitoring Event') {
     );
 }
 
-$table->colspan[0][1] = 2;
-
-$table->data[1][0] = __('Group');
-
 $own_info = get_user_info($config['id_user']);
-
 $return_all_group = false;
-
 if (users_can_manage_group_all('LW') === true || $disabled) {
     $return_all_group = true;
 }
 
-$table->data[1][1] = '<div class="w250px inline">'.html_print_select_groups(
-    false,
-    'LW',
-    $return_all_group,
-    'group',
-    $group,
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    (!$is_management_allowed | $disabled)
-).'</div>';
-$table->colspan[1][1] = 2;
+$table->data[0][1] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'LW',
+        $return_all_group,
+        'group',
+        $group,
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        (!$is_management_allowed | $disabled)
+    )
+);
 
 $create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_safe_input('Integria IMS Ticket'));
 
@@ -242,7 +229,6 @@ if (!is_metaconsole() && $config['integria_enabled'] == 0 && $create_ticket_comm
     $sql_exclude_command_id = ' AND id <> '.$create_ticket_command_id;
 }
 
-$table->data[2][0] = __('Command');
 $commands_sql = db_get_all_rows_filter(
     'talert_commands',
     'id_group IN ('.implode(',', array_keys(users_get_groups(false, 'LW'))).')'.$sql_exclude_command_id,
@@ -254,56 +240,65 @@ $commands_sql = db_get_all_rows_filter(
     false,
     true
 );
-$table->data[2][1] = html_print_select_from_sql(
-    $commands_sql,
-    'id_command',
-    $id_command,
-    '',
-    '',
-    0,
-    true,
-    false,
-    false,
-    (!$is_management_allowed | $disabled)
-);
-$table->data[2][1] .= ' ';
+
+$create_command = ' ';
 if ($is_management_allowed === true
     && check_acl($config['id_user'], 0, 'PM') && !$disabled
 ) {
-    $table->data[2][1] .= __('Create Command');
-    $table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
-    $table->data[2][1] .= html_print_image('images/add.png', true);
-    $table->data[2][1] .= '</a>';
+    $create_command .= __('Create Command');
+    $create_command .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
+    $create_command .= html_print_image('images/add.png', true);
+    $create_command .= '</a>';
 }
 
-$table->data[2][1] .= '<div id="command_description"  ></div>';
-$table->colspan[2][1] = 2;
+$create_command .= '<div id="command_description"  ></div>';
 
-$table->data[3][0] = __('Threshold');
-$table->data[3][1] = html_print_extended_select_for_time(
-    'action_threshold',
-    $action_threshold,
-    '',
-    '',
-    '',
-    false,
-    true,
-    false,
-    true,
-    '',
-    (!$is_management_allowed | $disabled),
-    false,
-    '',
-    false,
-    true
+$table->data[1][0] = html_print_label_input_block(
+    __('Command'),
+    html_print_select_from_sql(
+        $commands_sql,
+        'id_command',
+        $id_command,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false,
+        (!$is_management_allowed | $disabled)
+    ).$create_command
 );
-$table->colspan[3][1] = 2;
 
-$table->data[4][0] = '';
-$table->data[4][1] = __('Firing');
-$table->data[4][2] = __('Recovery');
-$table->cellstyle[4][1] = 'font-weight: bold;';
-$table->cellstyle[4][2] = 'font-weight: bold;';
+$table->data[1][1] = html_print_label_input_block(
+    __('Threshold'),
+    html_print_extended_select_for_time(
+        'action_threshold',
+        $action_threshold,
+        '',
+        '',
+        '',
+        false,
+        true,
+        false,
+        true,
+        'w100p',
+        (!$is_management_allowed | $disabled),
+        false,
+        '',
+        false,
+        true
+    )
+);
+
+$table->data[2][0] = html_print_label_input_block(
+    __('Recovery'),
+    ''
+);
+
+$table->data[2][1] = html_print_label_input_block(
+    __('Recovery'),
+    ''
+);
 
 $table->data[5][0] = __('Command preview');
 $table->data[5][1] = html_print_textarea(
@@ -372,40 +367,49 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 
 $offset = (int) get_parameter('offset', 0);
 
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'&offset='.$offset.'">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'&offset='.$offset.'" class="max_floating_element_size">';
 $table_html = html_print_table($table, true);
 
+$backButton = '';
+$submitButton = '';
 echo $table_html;
 if ($is_management_allowed === true) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
     if ($id) {
         html_print_input_hidden('id', $id);
         if (!$disabled) {
             html_print_input_hidden('update_action', 1);
-            html_print_submit_button(
+            $submitButton = html_print_submit_button(
                 __('Update'),
                 'create',
                 false,
-                'class="sub upd"'
+                ['icon' => 'wand'],
+                true
             );
         } else {
-            echo '<div class="action-buttons" style="width: '.$table->width.'">';
-            echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions">';
-            html_print_submit_button(__('Back'), 'back', false, 'class="sub upd"');
-            echo '</form>';
-            echo '</div>';
+            $backButton = html_print_button(
+                __('Back'),
+                'back',
+                false,
+                "window.location.href = 'index.php?sec=galertas&sec2=godmode/alerts/alert_actions'",
+                [
+                    'icon'  => 'back',
+                    'class' => 'secondary',
+                ],
+                true
+            );
         }
     } else {
         html_print_input_hidden('create_action', 1);
-        html_print_submit_button(
+        $submitButton = html_print_submit_button(
             __('Create'),
             'create',
             false,
-            'class="sub wand"'
+            ['icon' => 'wand'],
+            true
         );
     }
 
-    echo '</div>';
+    html_print_action_buttons($submitButton.$backButton);
 }
 
 echo '</form>';

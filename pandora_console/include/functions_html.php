@@ -1361,29 +1361,27 @@ function html_print_select_multiple_filtered(
 
     $output .= '<div class="arrows-container flex-column">';
 
-    $output .= html_print_input(
+    $output .= html_print_image(
+        'images/plus.svg',
+        true,
         [
-            'type'    => 'image',
-            'src'     => 'images/darrowright.png',
-            'return'  => true,
-            'options' => [
-                'title'   => $texts['title-add'],
-                'onclick' => $add,
-                'class'   => 'invert_filter',
-            ],
+            'id'      => 'right_autorefreshlist',
+            'style'   => 'width: 24px; margin: 10px 10px 0;',
+            'alt'     => __('Push selected pages into autorefresh list'),
+            'title'   => __('Push selected pages into autorefresh list'),
+            'onclick' => $add,
         ]
     );
 
-    $output .= html_print_input(
+    $output .= html_print_image(
+        'images/minus.svg',
+        true,
         [
-            'type'    => 'image',
-            'src'     => 'images/darrowleft.png',
-            'return'  => true,
-            'options' => [
-                'title'   => $texts['title-del'],
-                'onclick' => $del,
-                'class'   => 'invert_filter',
-            ],
+            'id'      => 'left_autorefreshlist',
+            'style'   => 'width: 24px; margin: 10px 10px 0;',
+            'alt'     => __('Pop selected pages out of autorefresh list'),
+            'title'   => __('Pop selected pages out of autorefresh list'),
+            'onclick' => $del,
         ]
     );
 

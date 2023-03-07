@@ -106,7 +106,12 @@ $agentIconGroup = ((bool) $config['show_group_name'] === false) ? ui_print_group
     $agent['id_grupo'],
     true,
     '',
-    'padding-right: 6px;'
+    'padding-right: 6px;',
+    true,
+    false,
+    false,
+    '',
+    true
 ) : '';
 
 $agentIconStatus = agents_detail_view_status_img(
@@ -488,7 +493,7 @@ $data = [];
 $data[0] = '<b>'.__('Group').'</b>';
 $data[1] = html_print_anchor(
     [
-        'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent['id_grupo'],
+        'href'    => 'index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$agent['id_grupo'],
         'content' => groups_get_name($agent['id_grupo']),
     ],
     true

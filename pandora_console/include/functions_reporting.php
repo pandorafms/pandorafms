@@ -7488,7 +7488,7 @@ function reporting_sql($report, $content)
 
         foreach ($results as $id_node => $items) {
             foreach ($items['result']['data'] as $key => $item) {
-                $items['result']['data'][$key] = ['node_id' => $id_node] + $items['result']['data'][$key];
+                $items['result']['data'][$key] = (['node_id' => $id_node] + $items['result']['data'][$key]);
             }
 
             if ((int) $items['result']['correct'] !== 1) {
@@ -7537,7 +7537,8 @@ function reporting_sql($report, $content)
  *
  * @return array
  */
-function reporting_sql_auxiliary($report, $content) {
+function reporting_sql_auxiliary($report, $content)
+{
     if ($content['treport_custom_sql_id'] != 0) {
         $sql = io_safe_output(
             db_get_value_filter(

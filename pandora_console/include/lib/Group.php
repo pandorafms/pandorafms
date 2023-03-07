@@ -43,7 +43,13 @@ class Group extends Entity
      *
      * @var array
      */
-    private static $ajaxMethods = ['getGroupsForSelect'];
+    private static $ajaxMethods = [
+        'getGroupsForSelect',
+        'distributionBySoGraph',
+        'groupEventsByAgent',
+        'loadInfoAgent',
+        'getAgentsByGroup',
+    ];
 
 
     /**
@@ -470,6 +476,273 @@ class Group extends Entity
                 ],
             ]
         );
+    }
+
+
+    /**
+     * Draw a graph distribution so by group.
+     *
+     * @return void
+     */
+    public static function distributionBySoGraph()
+    {
+        global $config;
+        $id_group = get_parameter('id_group', '');
+        include_once $config['homedir'].'/include/functions_graph.php';
+
+        $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+        $out .= graph_so_by_group($id_group, 300, 200, false, false);
+        $out .= '<div>';
+        echo $out;
+        return;
+    }
+
+
+    /**
+     * Draw a graph events agent by group.
+     *
+     * @return void
+     */
+    public static function groupEventsByAgent()
+    {
+        global $config;
+        $id_group = get_parameter('id_group', '');
+        include_once $config['homedir'].'/include/functions_graph.php';
+
+        $out = '<div style="flex: 0 0 300px; width:99%; height:100%;">';
+        $out .= graph_events_agent_by_group($id_group, 300, 200, false, true, true);
+        $out .= '<div>';
+        echo $out;
+        return;
+    }
+
+
+    /**
+     * Draw in modal a agent info
+     *
+     * @return void
+     */
+    public static function loadInfoAgent()
+    {
+        $extradata = get_parameter('extradata', '');
+        echo '<div class="info-agent">';
+
+        if (empty($extradata) === false) {
+            $extradata = json_decode(io_safe_output($extradata), true);
+            $agent = agents_get_agent($extradata['idAgent']);
+
+            if (is_array($agent)) {
+                $status_img = agents_tree_view_status_img(
+                    $agent['critical_count'],
+                    $agent['warning_count'],
+                    $agent['unknown_count'],
+                    $agent['total_count'],
+                    $agent['notinit_count']
+                );
+                $table = new \stdClass();
+                $table->class = 'table_modal_alternate';
+                $table->data = [
+                    [
+                        __('Id'),
+                        $agent['id_agente'],
+                    ],
+                    [
+                        __('Agent name'),
+                        '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent['id_agente'].'"><b>'.$agent['nombre'].'</b></a>',
+                    ],
+                    [
+                        __('Alias'),
+                        $agent['alias'],
+                    ],
+                    [
+                        __('Ip Address'),
+                        $agent['direccion'],
+                    ],
+                    [
+                        __('Status'),
+                        $status_img,
+                    ],
+                    [
+                        __('Group'),
+                        groups_get_name($agent['id_grupo']),
+                    ],
+                    [
+                        __('Interval'),
+                        $agent['intervalo'],
+                    ],
+                    [
+                        __('Operative system'),
+                        get_os_name($agent['id_os']),
+                    ],
+                    [
+                        __('Server name'),
+                        $agent['server_name'],
+                    ],
+                    [
+                        __('Description'),
+                        $agent['comentarios'],
+                    ],
+                ];
+
+                html_print_table($table);
+            }
+        }
+
+        echo '</div>';
+    }
+
+
+    /**
+     * Get agents by group  for datatable.
+     *
+     * @return void
+     */
+    public static function getAgentsByGroup()
+    {
+        global $config;
+
+        $data = [];
+        $id_group = get_parameter('id_group', '');
+        $id_groups = [$id_group];
+        $groups = groups_get_children($id_group);
+
+        if (count($groups) > 0) {
+            $id_groups = [];
+            foreach ($groups as $key => $value) {
+                $id_groups[] = $value['id_grupo'];
+            }
+        }
+
+        $start  = get_parameter('start', 0);
+        $length = get_parameter('length', $config['block_size']);
+        $orderDatatable = get_datatable_order(true);
+        $pagination = '';
+        $order = '';
+
+        try {
+            ob_start();
+            if (isset($orderDatatable)) {
+                switch ($orderDatatable['field']) {
+                    case 'alerts':
+                        $orderDatatable['field'] = 'fired_count';
+                    break;
+
+                    case 'status':
+                        $orderDatatable['field'] = 'total_count';
+
+                    default:
+                        $orderDatatable['field'] = $orderDatatable['field'];
+                    break;
+                }
+
+                $order = sprintf(
+                    ' ORDER BY %s %s',
+                    $orderDatatable['field'],
+                    $orderDatatable['direction']
+                );
+            }
+
+            if (isset($length) && $length > 0
+                && isset($start) && $start >= 0
+            ) {
+                $pagination = sprintf(
+                    ' LIMIT %d OFFSET %d ',
+                    $length,
+                    $start
+                );
+            }
+
+            $sql = sprintf(
+                'SELECT id_agente,
+                        alias,
+                        critical_count,
+                        warning_count,
+                        unknown_count,
+                        total_count,
+                        notinit_count,
+                        ultimo_contacto_remoto,
+                        fired_count
+                FROM tagente t
+                WHERE disabled = 0 AND
+                total_count <> notinit_count AND
+                id_grupo IN (%s)
+                %s %s',
+                implode(',', $id_groups),
+                $order,
+                $pagination
+            );
+
+            $data = db_get_all_rows_sql($sql);
+
+            $sql = sprintf(
+                'SELECT
+                        id_agente,
+                        alias,
+                        critical_count,
+                        warning_count,
+                        unknown_count,
+                        total_count,
+                        notinit_count,
+                        ultimo_contacto_remoto,
+                        fired_count
+                FROM tagente t
+                WHERE disabled = 0 AND
+                total_count <> notinit_count AND
+                id_grupo IN (%s)
+                %s',
+                implode(',', $id_groups),
+                $order,
+            );
+
+            $count_agents = db_get_num_rows($sql);
+
+            foreach ($data as $key => $agent) {
+                $status_img = agents_tree_view_status_img(
+                    $agent['critical_count'],
+                    $agent['warning_count'],
+                    $agent['unknown_count'],
+                    $agent['total_count'],
+                    $agent['notinit_count']
+                );
+                $data[$key]['alias'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent['id_agente'].'"><b>'.$agent['alias'].'</b></a>';
+                $data[$key]['status'] = $status_img;
+                $data[$key]['alerts'] = agents_tree_view_alert_img($agent['fired_count']);
+            }
+
+            if (empty($data) === true) {
+                $total = 0;
+                $data = [];
+            } else {
+                $total = $count_agents;
+            }
+
+            echo json_encode(
+                [
+                    'data'            => $data,
+                    'recordsTotal'    => $total,
+                    'recordsFiltered' => $total,
+                ]
+            );
+            // Capture output.
+            $response = ob_get_clean();
+        } catch (\Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+            exit;
+        }
+
+        json_decode($response);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            echo $response;
+        } else {
+            echo json_encode(
+                [
+                    'success' => false,
+                    'error'   => $response,
+                ]
+            );
+        }
+
+        exit;
     }
 
 

@@ -1141,7 +1141,7 @@ foreach ($agents as $agent) {
         $data[0] .= ui_print_help_tip(
             __('Agent in scheduled downtime'),
             true,
-            'images/minireloj-16.png'
+            'images/clock.svg'
         );
         $data[0] .= '</em>';
     }
@@ -1254,12 +1254,12 @@ foreach ($agents as $agent) {
 
     $fb64 = base64_encode(json_encode($agent_event_filter));
     $data[11] = '<a href="index.php?sec=eventos&sec2=operation/events/events&fb64='.$fb64.'">'.html_print_image(
-        'images/lightning.png',
+        'images/event.svg',
         true,
         [
             'align' => 'middle',
             'title' => __('Agent events'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 

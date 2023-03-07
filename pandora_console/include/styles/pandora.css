@@ -675,6 +675,14 @@ select:-internal-list-box {
   width: 40%;
 }
 
+.w45p {
+  width: 45%;
+}
+
+.w48p {
+  width: 48%;
+}
+
 .w47p {
   width: 47%;
 }
@@ -11566,4 +11574,8 @@ ul.tag-editor {
   color: #333333;
   background: #f6f7fb;
   line-height: 20px;
+}
+
+.max-width-100p {
+  max-width: 100% !important;
 }

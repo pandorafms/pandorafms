@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,8 +29,6 @@
 global $config;
 
 check_login();
-
-enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
@@ -287,16 +285,25 @@ if (is_metaconsole() === true) {
         $help_header = 'network_component_tab';
     }
 
-    ui_print_page_header(
-        __('Module management').' &raquo; '.__('Remote component management'),
+    ui_print_standard_header(
+        __('Remote component management'),
         '',
         false,
         $help_header,
         true,
-        '',
-        false,
-        'modulemodal'
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Templates'),
+            ],
+        ]
     );
+
     $sec = 'gmodules';
 }
 
@@ -715,7 +722,7 @@ $total_components = network_components_get_network_components(
 $total_components = $total_components[0]['total'];
 $offset_delete = ($offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
 ui_pagination($total_components, $name_url);
-$filter['offset'] = $offset;
+$filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = network_components_get_network_components(
     false,
@@ -737,7 +744,7 @@ if ($components === false) {
 }
 
 $table = new stdClass();
-$table->width = '100%';
+$table->styleTable = 'margin: 10px 10px 0; width: -webkit-fill-available; width: -moz-available';
 $table->head = [];
 $table->class = 'info_table';
 if ($is_management_allowed === true) {
@@ -800,55 +807,7 @@ foreach ($components as $component) {
         $data[0] = io_safe_output($component['name']);
     }
 
-    switch ($component['id_modulo']) {
-        case MODULE_NETWORK:
-            $data[1] .= html_print_image(
-                'images/op_network.png',
-                true,
-                [
-                    'title' => __('Network module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_WMI:
-            $data[1] .= html_print_image(
-                'images/wmi.png',
-                true,
-                [
-                    'title' => __('WMI module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_PLUGIN:
-            $data[1] .= html_print_image(
-                'images/plugin.png',
-                true,
-                [
-                    'title' => __('Plug-in module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_WIZARD:
-            $data[1] .= html_print_image(
-                'images/wand.png',
-                true,
-                [
-                    'title' => __('Wizard module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        default:
-            // Not possible.
-        break;
-    }
+    $data[1] .= ui_print_servertype_icon((int) $component['id_modulo']);
 
     $data[2] = ui_print_moduletype_icon($component['type'], true);
     $data[3] = "<span class='font_8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';
@@ -856,59 +815,59 @@ foreach ($components as $component) {
     $data[5] = $component['max'].' / '.$component['min'];
 
     if ($is_management_allowed === true) {
-        $table->cellclass[][6] = 'action_buttons';
-        $data[6] = '<a class="inline_line float-left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'&offset='.$offset.'">'.html_print_image(
-            'images/copy.png',
-            true,
+        $table->cellclass[][6] = 'table_action_buttons';
+
+        $data[6] = html_print_anchor(
             [
-                'alt'   => __('Duplicate'),
-                'title' => __('Duplicate'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
-        $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'&offset='.$offset_delete.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image(
-            'images/cross.png',
-            true,
+                'href'    => $url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'&offset='.$offset,
+                'content' => html_print_image(
+                    'images/copy.svg',
+                    true,
+                    [
+                        'title' => __('Duplicate'),
+                        'class' => 'invert_filter main_menu_icon',
+                    ]
+                ),
+            ],
+            true
+        );
+
+        $data[6] .= html_print_anchor(
             [
-                'alt'   => __('Delete'),
-                'title' => __('Delete'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
+                'href'    => $url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'&offset='.$offset_delete,
+                'onClick' => 'if (! confirm (\''.__('Are you sure?').'\')) return false',
+                'content' => html_print_image(
+                    'images/delete.svg',
+                    true,
+                    [
+                        'title' => __('Delete'),
+                        'class' => 'invert_filter main_menu_icon',
+                    ]
+                ),
+            ],
+            true
+        );
     }
 
     array_push($table->data, $data);
 }
 
-if (isset($data) === true) {
-    if ($is_management_allowed === true) {
-        echo "<form method='post' action='index.php?sec=".$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure."'>";
-        html_print_input_hidden('multiple_delete', 1);
-    }
+$tablePagination = ui_pagination(
+    $total_components,
+    $url,
+    0,
+    0,
+    true,
+    'offset',
+    false
+);
 
-    html_print_table($table);
-    ui_pagination(
-        $total_components,
-        $name_url,
-        0,
-        0,
-        false,
-        'offset',
-        true,
-        'pagination-bottom'
-    );
-    if ($is_management_allowed === true) {
-        echo "<div id='btn_delete_5' class='float-right'>";
-        html_print_submit_button(
-            __('Delete'),
-            'delete_btn',
-            false,
-            'class="sub delete"'
-        );
-        echo '</div>';
-        echo '</form>';
-    }
-} else {
+echo '<form id="form_delete" method="POST" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure.'">';
+html_print_table($table);
+html_print_input_hidden('multiple_delete', 1);
+echo '</form>';
+
+if (isset($data) === false) {
     ui_print_info_message(
         [
             'no_close' => true,
@@ -917,11 +876,33 @@ if (isset($data) === true) {
     );
 }
 
+$actionButtons = [];
 if ($is_management_allowed === true) {
-    echo '<form method="post" action="'.$url.'">';
-    echo '<div class="right_align mrgn_btn_15px">';
-    html_print_input_hidden('new_component', 1);
-    html_print_select(
+    $actionButtons[] = html_print_submit_button(
+        __('Create'),
+        'crt',
+        false,
+        [
+            'icon' => 'wand',
+            'form' => 'form_create',
+        ],
+        true
+    );
+    $actionButtons[] = html_print_submit_button(
+        __('Delete'),
+        'delete_btn',
+        false,
+        [
+            'icon' => 'delete',
+            'mode' => 'secondary',
+            'form' => 'form_delete',
+        ],
+        true
+    );
+    // Create.
+    $actionButtons[] = '<form style="z-index: 10" id="form_create" method="post" action="'.$url.'">';
+    $actionButtons[] = html_print_input_hidden('new_component', 1, true);
+    $actionButtons[] = html_print_select(
         [
             COMPONENT_TYPE_NETWORK => __('Create a new network component'),
             COMPONENT_TYPE_PLUGIN  => __('Create a new plugin component'),
@@ -933,19 +914,23 @@ if ($is_management_allowed === true) {
         '',
         '',
         '',
-        ''
-    );
-    html_print_submit_button(
-        __('Create'),
-        'crt',
+        true,
         false,
-        'class="sub next mrgn_lft_5px"'
+        true,
+        '',
+        false,
+        'z-index: 10'
     );
-    echo '</div>';
-    echo '</form>';
+    $actionButtons[] = '</form>';
 }
 
-enterprise_hook('close_meta_frame');
+html_print_action_buttons(
+    implode('', $actionButtons),
+    [
+        'type'          => 'form_action',
+        'right_content' => $tablePagination,
+    ]
+);
 
 ?>
 <script type="text/javascript">

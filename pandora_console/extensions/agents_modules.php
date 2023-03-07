@@ -397,61 +397,139 @@ function mainAgentsModules()
         1 => __('Show module data'),
     ];
 
-    $filter_type_label = '<b>'.__('Information to be shown').'</b>';
-    $filter_type = html_print_select($show_select, 'show_type', $show_type, '', '', 0, true, false, false, '', false, 'min-width: 180px;');
-
-    // Groups.
-    $filter_groups_label = '<b>'.__('Group').'</b>';
-    $filter_groups = html_print_select_groups(false, 'AR', true, 'group_id', $group_id, '', '', '', true, false, true, '', false, 'width: auto;');
-
-    $filter_recursion_label = '</td><td><b>'.__('Recursion').'</b>';
-    $filter_recursion = html_print_checkbox('recursion', 1, 0, true).'</td>';
-    // Groups module.
-    $filter_module_groups_label = '<b>'.__('Module group').'</b>';
-    $filter_module_groups = html_print_select_from_sql(
-        'SELECT * FROM tmodule_group ORDER BY name',
-        'modulegroup',
-        $modulegroup,
-        '',
-        __('All'),
-        0,
-        true,
-        false,
-        true,
-        false,
-        'width: auto;'
+    $filter_type = html_print_label_input_block(
+        __('Information to be shown'),
+        html_print_select(
+            $show_select,
+            'show_type',
+            $show_type,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            'width: 100%;'
+        )
     );
 
-    // Agent.
+    $filter_groups = html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups(
+            false,
+            'AR',
+            true,
+            'group_id',
+            $group_id,
+            '',
+            '',
+            '',
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 100%;'
+        )
+    );
+
+    $filter_groups .= html_print_label_input_block(
+        __('Recursion'),
+        html_print_checkbox_switch('recursion', 1, 0, true),
+        [
+            'div_class'   => 'add-input-reverse',
+            'label_class' => 'label-thin',
+        ]
+    );
+
+    $filter_module_groups = html_print_label_input_block(
+        __('Module group'),
+        html_print_select_from_sql(
+            'SELECT * FROM tmodule_group ORDER BY name',
+            'modulegroup',
+            $modulegroup,
+            '',
+            __('All'),
+            0,
+            true,
+            false,
+            true,
+            false,
+            'width: 100%;'
+        )
+    );
+
     $agents = agents_get_group_agents($group_id);
     if ((empty($agents)) || $agents == -1) {
         $agents = [];
     }
 
-    $filter_agents_label = '<b>'.__('Agents').'</b>';
-    $filter_agents = html_print_select($agents, 'id_agents2[]', $agents_id, '', '', 0, true, true, true, '', false, 'min-width: 180px; max-width: 200px;');
+    $filter_agents = html_print_label_input_block(
+        __('Agents'),
+        html_print_select(
+            $agents,
+            'id_agents2[]',
+            $agents_id,
+            '',
+            '',
+            0,
+            true,
+            true,
+            true,
+            '',
+            false,
+            'width: 100%;'
+        )
+    );
 
     // Type show.
     $selection = [
         0 => __('Show common modules'),
         1 => __('Show all modules'),
     ];
-    $filter_type_show_label = '<b>'.__('Show common modules').'</b>';
-    $filter_type_show = html_print_select($selection, 'selection_agent_module', $selection_a_m, '', '', 0, true, false, true, '', false, 'min-width: 180px;');
+    $filter_type_show = html_print_label_input_block(
+        __('Show common modules'),
+        html_print_select(
+            $selection,
+            'selection_agent_module',
+            $selection_a_m,
+            '',
+            '',
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 100%;'
+        )
+    );
 
     // Modules.
     $all_modules = select_modules_for_agent_group($group_id, $agents_id, $selection_a_m, false);
-    $filter_modules_label = '<b>'.__('Module').'</b>';
-    $filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', '', 0, true, true, false, '', false, 'min-width: 180px; max-width: 200px;');
-
-    // Update.
-    $filter_update = html_print_submit_button(__('Update item'), 'edit_item', false, 'class="sub upd"', true);
+    $filter_modules = html_print_label_input_block(
+        __('Module'),
+        html_print_select(
+            $all_modules,
+            'module[]',
+            $modules_selected,
+            '',
+            '',
+            0,
+            true,
+            true,
+            false,
+            '',
+            false,
+            'width: 100%;'
+        )
+    );
 
     $onheader = [
-        'updated_time'        => $updated_time,
-        'fullscreen'          => $fullscreen,
-        'combo_module_groups' => $filter_module_groups,
-        'combo_groups'        => $filter_groups,
+        'updated_time' => $updated_time,
+        'fullscreen'   => $fullscreen,
     ];
 
     /*
@@ -467,7 +545,7 @@ function mainAgentsModules()
             false,
             '',
             false,
-            (array) $updated_time,
+            $onheader,
             [
                 [
                     'link'  => '',
@@ -479,12 +557,6 @@ function mainAgentsModules()
                 ],
             ]
         );
-
-        echo '<table class="w100p">';
-        echo '<tr>';
-        echo "<td> <span class='float-right'>".$fullscreen['text'].'</span> </td>';
-        echo '</tr>';
-        echo '</table>';
     } else {
         if ($full_agents_id[0]) {
             $full_modules = urlencode(implode(';', $full_modules_selected));
@@ -574,35 +646,46 @@ function mainAgentsModules()
 
     if ($config['pure'] != 1) {
         $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" class="w100p">';
-        $show_filters .= '<table class="w100p no-border" cellpadding="15" cellspacing="0" border="0">';
+        $show_filters .= '<table class="filter-table-adv w100p no-border" cellpadding="4" cellspacing="4">';
             $show_filters .= '<tr>';
-                $show_filters .= '<td>'.$filter_type_label.'</td>';
-                $show_filters .= '<td>'.$filter_type.'</td>';
+                $show_filters .= '<td width="33%">'.$filter_type.'</td>';
+                $show_filters .= '<td width="33%">'.$filter_groups.'</td>';
+                $show_filters .= '<td width="33%">'.$filter_module_groups.'</td>';
             $show_filters .= '</tr>';
             $show_filters .= '<tr>';
-                $show_filters .= '<td>'.$filter_groups_label.'</td>';
-                $show_filters .= '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
-                $show_filters .= '<td></td>';
-                $show_filters .= '<td></td>';
-                $show_filters .= '<td>'.$filter_module_groups_label.'</td>';
-                $show_filters .= '<td>'.$filter_module_groups.'</td>';
-            $show_filters .= '</tr>';
-            $show_filters .= '<tr>';
-                $show_filters .= '<td>'.$filter_agents_label.'</td>';
                 $show_filters .= '<td>'.$filter_agents.'</td>';
-                $show_filters .= '<td>'.$filter_type_show_label.'</td>';
                 $show_filters .= '<td>'.$filter_type_show.'</td>';
-                $show_filters .= '<td>'.$filter_modules_label.'</td>';
                 $show_filters .= '<td>'.$filter_modules.'</td>';
             $show_filters .= '</tr>';
-            $show_filters .= '<tr>';
-                $show_filters .= "<td colspan=6 ><span class='right pdd_r_35px mrgn_top_25px'>".$filter_update.'</span></td>';
-            $show_filters .= '</tr>';
         $show_filters .= '</table>';
+        $show_filters .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Filter'),
+                    'srcbutton',
+                    false,
+                    [
+                        'icon' => 'search',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
         $show_filters .= '</form>';
+
         ui_toggle(
             $show_filters,
-            __('Filters ').ui_print_help_tip(__('Secondary groups and agent subgroups will be taken into account.'), true)
+            '<span class="subsection_header_title">'.__('Filters ').'</span>'.ui_print_help_tip(__('Secondary groups and agent subgroups will be taken into account.'), true),
+            'filter_form',
+            '',
+            true,
+            false,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
         );
     }
 
@@ -751,11 +834,11 @@ function mainAgentsModules()
         return;
     }
 
-    echo '<table cellpadding="4" cellspacing="4" border="0" class="agents_modules_table w100p">';
+    echo '<table cellpadding="4" cellspacing="4" border="0" class="info_table mrgn_btn_20px">';
 
     echo '<tr>';
 
-    echo "<th width='140px' class='pdd_r_10px lign_right'>".__('Agents').' / '.__('Modules').'</th>';
+    echo "<th width='140px' class='pdd_r_10px align_right'>".__('Agents').' / '.__('Modules').'</th>';
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);
@@ -804,7 +887,20 @@ function mainAgentsModules()
 
     // Prepare pagination.
     $url = 'index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&hor_offset='.$hor_offset.'&selection_a_m='.$selection_a_m;
-    ui_pagination($total_pagination, $url);
+    $tablePagination = ui_pagination(
+        $total_pagination,
+        $url,
+        0,
+        0,
+        true,
+        'offset',
+        false
+    );
+
+    html_print_action_buttons(
+        '',
+        [ 'right_content' => $tablePagination ]
+    );
 
     foreach ($agents as $agent) {
         // Get stats for this group.

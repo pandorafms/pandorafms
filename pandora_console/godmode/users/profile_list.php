@@ -31,8 +31,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
@@ -57,22 +55,22 @@ if (is_metaconsole() === false) {
         'user'    => [
             'active' => false,
             'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                'images/gm_users.png',
+                'images/user.svg',
                 true,
                 [
                     'title' => __('User management'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_user',
                 ]
             ).'</a>',
         ],
         'profile' => [
             'active' => false,
             'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                'images/profiles.png',
+                'images/suitcase@svg.svg',
                 true,
                 [
                     'title' => __('Profile management'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_user',
                 ]
             ).'</a>',
         ],
@@ -80,13 +78,24 @@ if (is_metaconsole() === false) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(
-        __('User management').' &raquo; '.__('Profiles defined on %s', get_product_name()),
-        'images/gm_users.png',
+    // Header.
+    ui_print_standard_header(
+        __('User Profile management'),
+        'images/user.svg',
         false,
         'profile_tab',
-        true,
-        $buttons
+        false,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage users'),
+            ],
+        ]
     );
     $sec = 'gusuarios';
 } else {
@@ -312,8 +321,8 @@ if ($is_management_allowed === true && $create_profile === true) {
 $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
+$table->styleTable = 'margin: 10px';
 $table->class = 'info_table profile_list';
-$table->width = '100%';
 
 $table->head = [];
 $table->data = [];
@@ -322,36 +331,37 @@ $table->align = [];
 
 $table->head['profiles'] = __('Profiles');
 
-$table->head['AR'] = 'AR';
-$table->head['AW'] = 'AW';
-$table->head['AD'] = 'AD';
-$table->head['LW'] = 'LW';
-$table->head['LM'] = 'LM';
-$table->head['UM'] = 'UM';
-$table->head['DM'] = 'DM';
-$table->head['ER'] = 'ER';
-$table->head['EW'] = 'EW';
-$table->head['EM'] = 'EM';
-$table->head['RR'] = 'RR';
-$table->head['RW'] = 'RW';
-$table->head['RM'] = 'RM';
-$table->head['MR'] = 'MR';
-$table->head['MW'] = 'MW';
-$table->head['MM'] = 'MM';
-$table->head['VR'] = 'VR';
-$table->head['VW'] = 'VW';
-$table->head['VM'] = 'VM';
-$table->head['NR'] = 'NR';
-$table->head['NW'] = 'NW';
-$table->head['NM'] = 'NM';
-$table->head['PM'] = 'PM';
+$table->head['AR'] = '<span title="'.__('View Agents').'">'.'AR'.'</span>';
+$table->head['AW'] = '<span title="'.__('Edit Agents').'">'.'AW'.'</span>';
+$table->head['AD'] = '<span title="'.__('Disable Agents').'">'.'AD'.'</span>';
+$table->head['LW'] = '<span title="'.__('Edit Alerts').'">'.'LW'.'</span>';
+$table->head['LM'] = '<span title="'.__('Manage Alerts').'">'.'LM'.'</span>';
+$table->head['UM'] = '<span title="'.__('User Management').'">'.'UM'.'</span>';
+$table->head['DM'] = '<span title="'.__('Database Management').'">'.'DM'.'</span>';
+$table->head['ER'] = '<span title="'.__('View Events').'">'.'ER'.'</span>';
+$table->head['EW'] = '<span title="'.__('Edit Events').'">'.'EW'.'</span>';
+$table->head['EM'] = '<span title="'.__('Manage Events').'">'.'EM'.'</span>';
+$table->head['RR'] = '<span title="'.__('View Reports').'">'.'RR'.'</span>';
+$table->head['RW'] = '<span title="'.__('Edit Reports').'">'.'RW'.'</span>';
+$table->head['RM'] = '<span title="'.__('Manage Reports').'">'.'RM'.'</span>';
+$table->head['MR'] = '<span title="'.__('View Network Maps').'">'.'MR'.'</span>';
+$table->head['MW'] = '<span title="'.__('Edit Network Maps').'">'.'MW'.'</span>';
+$table->head['MM'] = '<span title="'.__('Manage Network Maps').'">'.'MM'.'</span>';
+$table->head['VR'] = '<span title="'.__('View Visual Consoles').'">'.'VR'.'</span>';
+$table->head['VW'] = '<span title="'.__('Edit Visual Consoles').'">'.'VW'.'</span>';
+$table->head['VM'] = '<span title="'.__('Manage Visual Consoles').'">'.'VM'.'</span>';
+$table->head['NR'] = '<span title="'.__('View NCM Data').'">'.'NR'.'</span>';
+$table->head['NW'] = '<span title="'.__('Operate NCM').'">'.'NW'.'</span>';
+$table->head['NM'] = '<span title="'.__('Manage NCM').'">'.'NM'.'</span>';
+$table->head['PM'] = '<span title="'.__('Pandora Administration').'">'.'PM'.'</span>';
+
 if ($is_management_allowed === true) {
     $table->head['operations'] = '<span title="Operations">'.__('Op.').'</span>';
 }
 
 $table->align = array_fill(1, 11, 'center');
 
-$table->size['profiles'] = '200px';
+$table->size['profiles'] = '150px';
 $table->size['AR'] = '10px';
 $table->size['AW'] = '10px';
 $table->size['AD'] = '10px';
@@ -376,7 +386,7 @@ $table->size['NW'] = '10px';
 $table->size['NM'] = '10px';
 $table->size['PM'] = '10px';
 if ($is_management_allowed === true) {
-    $table->size['operations'] = '5%';
+    $table->size['operations'] = '6%';
 }
 
 $profiles = db_get_all_rows_in_table('tperfil');
@@ -385,11 +395,11 @@ if ($profiles === false) {
 }
 
 $img = html_print_image(
-    'images/ok.png',
+    'images/validate.svg',
     true,
     [
         'border' => 0,
-        'class'  => 'invert_filter',
+        'class'  => 'invert_filter main_menu_icon',
     ]
 );
 
@@ -425,25 +435,32 @@ foreach ($profiles as $profile) {
     $data['NW'] = (empty($profile['network_config_edit']) === false) ? $img : '';
     $data['NM'] = (empty($profile['network_config_management']) === false) ? $img : '';
     $data['PM'] = (empty($profile['pandora_management']) === false) ? $img : '';
-    $table->cellclass[]['operations'] = 'action_buttons';
+    $table->cellclass[]['operations'] = 'table_action_buttons';
     if ($is_management_allowed === true) {
         $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
-            'images/config.png',
+            'images/edit.svg',
             true,
             [
                 'title' => __('Edit'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>';
-        if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
-            $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                'images/cross.png',
-                true,
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) users_is_admin() === true) {
+            $data['operations'] .= html_print_anchor(
                 [
-                    'title' => __('Delete'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>';
+                    'href'    => 'index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure,
+                    'onClick' => 'if (!confirm(\' '.__('Are you sure?').'\')) return false;',
+                    'content' => html_print_image(
+                        'images/delete.svg',
+                        true,
+                        [
+                            'title' => __('Delete'),
+                            'class' => 'invert_filter main_menu_icon',
+                        ]
+                    ),
+                ],
+                true
+            );
         }
     }
 
@@ -458,13 +475,21 @@ if (isset($data) === true) {
 
 if ($is_management_allowed === true) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/configure_profile&pure='.$pure.'">';
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
     html_print_input_hidden('new_profile', 1);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
-    echo '</div>';
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create profile'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        [
+            'type'  => 'data_table',
+            'class' => 'fixed_action_buttons',
+        ]
+    );
     echo '</form>';
 }
 
 unset($table);
-
-enterprise_hook('close_meta_frame');

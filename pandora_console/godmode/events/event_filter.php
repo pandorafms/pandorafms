@@ -184,7 +184,7 @@ foreach ($filters as $filter) {
     if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'EW')
         || check_acl_restricted_all($config['id_user'], $filter['id_group'], 'EM')
     ) {
-        $table->cellclass[][6] = 'action_buttons';
+        $table->cellclass[][6] = 'table_action_buttons';
         $data[6] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;'href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter'].'&offset=0&pure='.$config['pure']."'>".html_print_image(
             'images/cross.png',
             true,
@@ -198,37 +198,61 @@ foreach ($filters as $filter) {
     array_push($table->data, $data);
 }
 
+
 if (isset($data)) {
-    echo "<form method='post' action='index.php?sec=geventos&sec2=godmode/events/events&amp;pure=".$config['pure']."'>";
+    echo "<form id='form-delete-filters' method='post' action='index.php?sec=geventos&sec2=godmode/events/events&amp;pure=".$config['pure']."'>";
         html_print_input_hidden('multiple_delete', 1);
         html_print_table($table);
-    if (!is_metaconsole()) {
-        echo "<div class='pdd_b_20px right'>";
-    } else {
+    if (is_metaconsole() === true) {
         echo "<div class='right'>";
     }
 
-        html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+    if (is_metaconsole() === true) {
         echo '</div>';
+    }
+
     echo '</form>';
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined filters') ]);
 }
 
-if (!defined('METACONSOLE')) {
-    echo "<div class='pdd_b_20px right w100p'>";
-} else {
-    echo "<div class='right'>";
-}
 
-    echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
-        html_print_submit_button(__('Create filter'), 'crt', false, 'class="sub wand"');
-    echo '</form>';
-echo '</div>';
+$submitButtons = '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
+$submitButtons .= html_print_submit_button(
+    __('Create filter'),
+    'crt',
+    false,
+    [
+        'icon'  => 'wand',
+        'class' => 'mrgn_lft_15px',
+    ],
+    true
+);
+$submitButtons .= '</form>';
+
+$submitButtons .= html_print_submit_button(
+    __('Delete'),
+    'delete_btn',
+    false,
+    [
+        'icon'  => 'delete',
+        'class' => 'secondary',
+        'id'    => 'delete-event-filters',
+    ],
+    true
+);
+
+html_print_action_buttons(
+    $submitButtons,
+    [
+        'type' => 'form_action',
+        'id'   => 'list-events-filters',
+    ]
+);
 ?>
 
 <script type="text/javascript">
-    
+
     $( document ).ready(function() {
 
         $('[id^=checkbox-delete_multiple]').change(function(){
@@ -243,12 +267,16 @@ echo '</div>';
         $('[id^=checkbox-all_delete]').change(function(){    
             if ($("#checkbox-all_delete").prop("checked")) {
                 $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
-                $(".check_delete").prop("checked", true);
+                $("[id^=checkbox-delete_multiple]").prop("checked", true);
             }
             else{
                 $('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
-                $(".check_delete").prop("checked", false);
+                $("[id^=checkbox-delete_multiple]").prop("checked", false);
             }    
+        });
+        
+        $('#button-delete_btn').click(function (e) { 
+            $('#form-delete-filters').submit();
         });
 
     });

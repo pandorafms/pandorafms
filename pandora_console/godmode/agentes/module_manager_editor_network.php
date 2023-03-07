@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Network module manager editor.
  *
- * @category   Extensions
+ * @category   Modules
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -15,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,10 +27,12 @@
  */
 
 global $config;
-
+require_once $config['homedir'].'/include/class/CredentialStore.class.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
-$snmp_browser_path = (is_metaconsole()) ? '../../' : '';
+$snmp_browser_path = (is_metaconsole() === true) ? '../../' : '';
 $snmp_browser_path .= 'include/javascript/pandora_snmp_browser.js';
+$array_credential_identifier = CredentialStore::getKeys('CUSTOM');
+
 echo "<script type='text/javascript' src='".$snmp_browser_path."'></script>";
 
 // Define a custom action to save the OID selected
@@ -63,13 +64,13 @@ if (strstr($page, 'policy_modules') === false) {
     if ($disabledBecauseInPolicy) {
         $disabledTextBecauseInPolicy = 'readonly = "yes"';
         $classdisabledBecauseInPolicy = 'readonly';
-        $largeclassdisabledBecauseInPolicy = 'class = readonly';
+        $largeclassdisabledBecauseInPolicy = 'readonly';
     }
 }
 
 define('ID_NETWORK_COMPONENT_TYPE', 2);
 
-if (empty($edit_module)) {
+if (empty($edit_module) === true) {
     // Function in module_manager_editor_common.php.
     add_component_selection(ID_NETWORK_COMPONENT_TYPE);
 }
@@ -78,12 +79,20 @@ $extra_title = __('Network server module');
 
 $data = [];
 $data[0] = __('Target IP');
+if ((int) $id_module_type !== 6 && $id_module_type !== 7) {
+    $data[1] = __('Port');
+}
+
+$table_simple->rowclass['caption_target_ip'] = 'w50p';
+push_table_simple($data, 'caption_target_ip');
+
+$data = [];
 // Show agent_for defect.
-if ($page == 'enterprise/godmode/policies/policy_modules') {
-    if ($ip_target != 'auto' && $ip_target != '') {
+if ($page === 'enterprise/godmode/policies/policy_modules') {
+    if (empty($ip_target) === false && $ip_target !== 'auto') {
         $custom_ip_target = $ip_target;
         $ip_target = 'custom';
-    } else if ($ip_target == '') {
+    } else if (empty($ip_target) === true) {
         $ip_target = 'force_pri';
         $custom_ip_target = '';
     } else {
@@ -95,7 +104,7 @@ if ($page == 'enterprise/godmode/policies/policy_modules') {
     $target_ip_values['force_pri'] = __('Force primary key');
     $target_ip_values['custom']    = __('Custom');
 
-    $data[1] = html_print_select(
+    $data[0] = html_print_select(
         $target_ip_values,
         'ip_target',
         $ip_target,
@@ -105,39 +114,37 @@ if ($page == 'enterprise/godmode/policies/policy_modules') {
         true,
         false,
         false,
-        '',
+        'w100p',
         false,
-        'width:200px;'
     );
-    $data[1] .= html_print_input_text('custom_ip_target', $custom_ip_target, '', 15, 60, true);
+    $data[0] .= html_print_input_text('custom_ip_target', $custom_ip_target, '', 0, 60, true, false, false, '', 'w100p');
 } else {
-    if ($ip_target == 'auto') {
+    if ($ip_target === 'auto') {
         $ip_target = agents_get_address($id_agente);
     }
 
-    $data[1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
+    $data[0] = html_print_input_text('ip_target', $ip_target, '', 0, 60, true, false, false, '', 'w100p');
 }
 
 // In ICMP modules, port is not configurable.
-if ($id_module_type >= 6 && $id_module_type <= 7) {
-    $data[2] = '';
-    $data[3] = '';
-} else {
-    $data[2] = __('Port');
-    $data[3] = html_print_input_text(
+if ($id_module_type !== 6 && $id_module_type !== 7) {
+    $data[1] = html_print_input_text(
         'tcp_port',
         $tcp_port,
         '',
-        5,
+        0,
         20,
         true,
         $disabledBecauseInPolicy,
         false,
         '',
-        $classdisabledBecauseInPolicy
+        $classdisabledBecauseInPolicy.' w100p',
     );
+} else {
+    $data[1] = '';
 }
 
+$table_simple->rowclass['target_ip'] = 'w50p';
 push_table_simple($data, 'target_ip');
 
 $user_groups = users_get_groups(false, 'AR');
@@ -162,7 +169,10 @@ if (empty($credentials) === false) {
 
     $data = [];
     $data[0] = __('Credential store');
-    $data[1] = html_print_select(
+    push_table_simple($data, 'caption_snmp_credentials');
+
+    $data = [];
+    $data[0] = html_print_select(
         $fields,
         'credentials',
         0,
@@ -178,102 +188,93 @@ if (empty($credentials) === false) {
         '',
         false
     );
-
     push_table_simple($data, 'snmp_credentials');
 }
 
+$data = [];
+$data[0] = __('SNMP community');
+$data[1] = __('SNMP version');
+$data[2] = __('SNMP OID');
+$data[2] .= ui_print_help_icon('snmpwalk', true);
+$table_simple->cellclass['snmp_1'][0] = 'w25p';
+$table_simple->cellclass['snmp_1'][1] = 'w25p';
+$table_simple->cellclass['snmp_1'][2] = 'w50p';
+push_table_simple($data, 'snmp_1');
+
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module) === true) {
+    $adopt = policies_is_module_adopt($id_agent_module);
+} else {
+    $adopt = false;
+}
+
+if ($adopt === false) {
+    $snmpCommunityInput = html_print_input_text(
+        'snmp_community',
+        $snmp_community,
+        '',
+        0,
+        60,
+        true,
+        $disabledBecauseInPolicy,
+        false,
+        '',
+        $classdisabledBecauseInPolicy.' w100p'
+    );
+} else {
+    $snmpCommunityInput = html_print_input_text(
+        'snmp_community',
+        $snmp_community,
+        '',
+        0,
+        60,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    );
+}
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 
-$data = [];
-$data[0] = __('SNMP community');
-$adopt = false;
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
-    $adopt = policies_is_module_adopt($id_agent_module);
-}
+$snmpVersionsInput = html_print_select(
+    $snmp_versions,
+    'snmp_version',
+    ($id_module_type >= 15 && $id_module_type <= 18) ? $snmp_version : 0,
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    '',
+    $disabledBecauseInPolicy,
+    'width: 100%',
+    '',
+    $classdisabledBecauseInPolicy.' w100p'
+);
 
-if (!$adopt) {
-    $data[1] = html_print_input_text(
-        'snmp_community',
-        $snmp_community,
-        '',
-        15,
-        60,
-        true,
-        $disabledBecauseInPolicy,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-} else {
-    $data[1] = html_print_input_text(
-        'snmp_community',
-        $snmp_community,
-        '',
-        15,
-        60,
-        true,
-        false
-    );
-}
-
-$data[2] = _('SNMP version');
-
-if ($id_module_type >= 15 && $id_module_type <= 18) {
-    $data[3] = html_print_select(
-        $snmp_versions,
-        'snmp_version',
-        $snmp_version,
-        '',
-        '',
-        '',
-        true,
-        false,
-        false,
-        '',
-        $disabledBecauseInPolicy,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-} else {
-    $data[3] = html_print_select(
-        $snmp_versions,
-        'snmp_version',
-        0,
-        '',
-        '',
-        '',
-        true,
-        false,
-        false,
-        '',
-        $disabledBecauseInPolicy,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-}
-
-if ($disabledBecauseInPolicy) {
+if ($disabledBecauseInPolicy === true) {
     if ($id_module_type >= 15 && $id_module_type <= 18) {
-        $data[3] .= html_print_input_hidden('snmp_version', $tcp_send, true);
+        $snmpVersionsInput .= html_print_input_hidden('snmp_version', $tcp_send, true);
     }
 }
 
-push_table_simple($data, 'snmp_1');
-
 $data = [];
-$data[0] = __('SNMP OID');
-$data[1] = '<span class="left w50p">';
-$data[1] .= html_print_input_text(
+$table_simple->cellclass['snmp_2'][0] = 'w25p';
+$table_simple->cellclass['snmp_2'][1] = 'w25p';
+$table_simple->cellclass['snmp_2'][2] = 'w50p';
+
+$data[0] = $snmpCommunityInput;
+$data[1] = $snmpVersionsInput;
+$data[2] = html_print_input_text(
     'snmp_oid',
     $snmp_oid,
     '',
-    30,
+    0,
     255,
     true,
     $disabledBecauseInPolicy,
@@ -281,8 +282,8 @@ $data[1] .= html_print_input_text(
     '',
     $classdisabledBecauseInPolicy
 );
-$data[1] .= '<span class="invisible" id="oid">';
-$data[1] .= html_print_select(
+$data[2] .= '<span class="invisible" id="oid">';
+$data[2] .= html_print_select(
     [],
     'select_snmp_oid',
     $snmp_oid,
@@ -295,7 +296,7 @@ $data[1] .= html_print_select(
     '',
     $disabledBecauseInPolicy
 );
-$data[1] .= html_print_image(
+$data[2] .= html_print_image(
     'images/edit.png',
     true,
     [
@@ -303,26 +304,27 @@ $data[1] .= html_print_image(
         'id'    => 'edit_oid',
     ]
 );
-$data[1] .= '</span>';
-$data[1] .= '</span><span class="right w50p right">';
-$data[1] .= html_print_button(
-    __('SNMP walk'),
+$data[2] .= '</span>';
+$data[2] .= html_print_button(
+    __('SNMP Walk'),
     'snmp_walk',
     false,
     'snmpBrowserWindow()',
-    'class="sub next"',
+    [ 'mode' => 'link' ],
     true
 );
-$data[1] .= ui_print_help_icon('snmpwalk', true);
-$data[1] .= '</span>';
-$table_simple->colspan['snmp_2'][1] = 3;
 
 push_table_simple($data, 'snmp_2');
 
 // Advanced stuff.
 $data = [];
 $data[0] = __('TCP send');
-$data[1] = html_print_textarea(
+$data[1] = __('TCP receive');
+
+push_table_simple($data, 'caption_tcp_send_receive');
+
+$data = [];
+$data[0] = html_print_textarea(
     'tcp_send',
     2,
     65,
@@ -331,11 +333,6 @@ $data[1] = html_print_textarea(
     true,
     $largeclassdisabledBecauseInPolicy
 );
-$table_simple->colspan['tcp_send'][1] = 3;
-
-push_table_simple($data, 'tcp_send');
-
-$data[0] = __('TCP receive');
 $data[1] = html_print_textarea(
     'tcp_rcv',
     2,
@@ -345,9 +342,8 @@ $data[1] = html_print_textarea(
     true,
     $largeclassdisabledBecauseInPolicy
 );
-$table_simple->colspan['tcp_receive'][1] = 3;
 
-push_table_simple($data, 'tcp_receive');
+push_table_simple($data, 'tcp_send_receive');
 
 if ($id_module_type < 8 || $id_module_type > 11) {
     // NOT TCP.
@@ -475,33 +471,41 @@ push_table_simple($data, 'field_snmpv3_row3');
 
 $data = [];
 $data[0] = __('Command');
-$data[1] = html_print_input_text_extended(
-    'command_text',
-    $command_text,
-    'command_text',
-    '',
-    100,
-    10000,
-    $disabledBecauseInPolicy,
-    '',
-    $largeClassDisabledBecauseInPolicy,
-    true
-);
-$data[1] .= ui_print_help_tip(
+$data[0] .= ui_print_help_tip(
     __(
         'Please use single quotation marks when necessary. '."\n".'
 If double quotation marks are needed, please escape them with a backslash (\&quot;)'
     ),
     true
 );
-$table_simple->colspan['row-cmd-row-1'][1] = 3;
+push_table_simple($data, 'caption-row-cmd-row-1');
+
+$data = [];
+$data[0] = html_print_input_text_extended(
+    'command_text',
+    $command_text,
+    'command_text',
+    '',
+    0,
+    10000,
+    $disabledBecauseInPolicy,
+    '',
+    $largeClassDisabledBecauseInPolicy.' class="w100p"',
+    true
+);
+$table_simple->rowclass['row-cmd-row-1'] = 'w100p';
 push_table_simple($data, 'row-cmd-row-1');
 
-require_once $config['homedir'].'/include/class/CredentialStore.class.php';
-$array_credential_identifier = CredentialStore::getKeys('CUSTOM');
-
+$data = [];
 $data[0] = __('Credential identifier');
-$data[1] = html_print_select(
+$data[1] = __('Connection method');
+// $table_simple->rowclass['row-cmd-row-1'] = 'w100p';
+$table_simple->cellclass['caption-row-cmd-row-2'][0] = 'w50p';
+$table_simple->cellclass['caption-row-cmd-row-2'][1] = 'w50p';
+push_table_simple($data, 'caption-row-cmd-row-2');
+
+$data = [];
+$data[0] = html_print_select(
     $array_credential_identifier,
     'command_credential_identifier',
     $command_credential_identifier,
@@ -512,10 +516,18 @@ $data[1] = html_print_select(
     false,
     false,
     '',
-    $disabledBecauseInPolicy
+    $disabledBecauseInPolicy,
+    'width: 100%;'
 );
 
-$data[1] .= '<br> <br><a class="info_cell" href="'.ui_get_full_url('index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox').'">'.__('Manage credentials').'</a>';
+$data[0] .= html_print_button(
+    __('Manage credentials'),
+    'manage_credentials_button',
+    false,
+    'window.location.assign(\'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox\')',
+    [ 'mode' => 'link' ],
+    true
+);
 
 $array_os = [
     'inherited' => __('Inherited'),
@@ -523,8 +535,7 @@ $array_os = [
     'windows'   => __('Windows remote'),
 ];
 
-$data[2] = __('Connection method');
-$data[3] = html_print_select(
+$data[1] = html_print_select(
     $array_os,
     'command_os',
     $command_os,
@@ -535,9 +546,11 @@ $data[3] = html_print_select(
     false,
     false,
     '',
-    $disabledBecauseInPolicy
+    $disabledBecauseInPolicy,
+    'width: 100%;'
 );
-
+$table_simple->cellclass['row-cmd-row-2'][0] = 'w50p';
+$table_simple->cellclass['row-cmd-row-2'][1] = 'w50p';
 push_table_simple($data, 'row-cmd-row-2');
 
 if ($id_module_type !== 34
@@ -545,7 +558,9 @@ if ($id_module_type !== 34
     && $id_module_type !== 36
     && $id_module_type !== 37
 ) {
+    $table_simple->rowstyle['caption-row-cmd-row-1'] = 'display: none;';
     $table_simple->rowstyle['row-cmd-row-1'] = 'display: none;';
+    $table_simple->rowstyle['caption-row-cmd-row-2'] = 'display: none;';
     $table_simple->rowstyle['row-cmd-row-2'] = 'display: none;';
 }
 
@@ -581,9 +596,13 @@ $(document).ready (function () {
             (this.value == "37")
         ) {
             $("#simple-row-cmd-row-1").attr("style", "");
+            $("#simple-caption-row-cmd-row-1").attr("style", "");
             $("#simple-row-cmd-row-2").attr("style", "");
+            $("#simple-caption-row-cmd-row-2").attr("style", "");
         } else {
+            $("#simple-caption-row-cmd-row-1").css("display", "none");
             $("#simple-row-cmd-row-1").css("display", "none");
+            $("#simple-caption-row-cmd-row-2").css("display", "none");
             $("#simple-row-cmd-row-2").css("display", "none");
         }
     });
@@ -704,7 +723,7 @@ $(document).ready (function () {
         $("#text-custom_ip_target").hide();
     }
     $('#ip_target').change(function() {
-        if($(this).val() == 'custom') {
+        if($(this).val() === 'custom') {
             $("#text-custom_ip_target").show();
         }
         else{

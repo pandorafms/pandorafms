@@ -6400,10 +6400,33 @@ function getBearerToken()
 
 
 /**
+ * Check whether an instance of pandora_db is running.
+ *
+ * @return boolean Result.
+ */
+function is_pandora_db_running()
+{
+    // Get current DB name: useful for metaconsole connection to node.
+    $db_name = db_get_sql('SELECT DATABASE()');
+
+    $is_free_lock = mysql_db_process_sql(
+        'SELECT IS_FREE_LOCK("'.$db_name.'_pandora_db") AS "value"',
+        'affected_rows',
+        '',
+        false
+    );
+
+    $is_free_lock = (bool) $is_free_lock[0]['value'];
+
+    return !$is_free_lock;
+}
+
+
+/**
  * Check nms license on api.
  *
- * @return boolean
- */
+ * @return boolean.
+ * */
 function nms_check_api()
 {
     global $config;

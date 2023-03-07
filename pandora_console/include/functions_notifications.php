@@ -160,6 +160,7 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.SERVER.QUEUE',
             'NOTIF.SERVER.MASTER',
             'NOTIF.ACCESSSTASTICS.PERFORMANCE',
+            'NOTIF.VARIABLES.PERFORMANCE',
         ],
     ];
 

@@ -327,7 +327,7 @@ if ($id_component_type == COMPONENT_TYPE_WMI) {
         4,
         5,
     ];
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         $categories[] = 10;
     }
 
@@ -338,7 +338,7 @@ if ($id_component_type == COMPONENT_TYPE_WMI) {
         4,
         5,
     ];
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         $categories[] = 10;
     }
 
@@ -353,7 +353,7 @@ echo '<form name="component" method="post">';
 $table->width = '100%';
 $table->class = 'databox filters';
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     if ($id) {
         $table->head[0] = __('Update Network Component');
     } else {
@@ -366,26 +366,50 @@ if (defined('METACONSOLE')) {
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_button(__('Go back'), 'go_back', false, '', 'class="sub cancel"');
 html_print_input_hidden('id_component_type', $id_component_type);
 if ($id) {
     html_print_input_hidden('update_component', 1);
     html_print_input_hidden('id', $id);
+    $buttonCaption = __('Update');
+    $buttonIcon = 'update';
+    $buttonName = 'upd';
     html_print_submit_button(__('Update'), 'upd', false, 'class="sub upd"');
 } else {
     html_print_input_hidden('create_component', 1);
     html_print_input_hidden('create_network_from_module', 0);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub wand"');
+    $buttonCaption = __('Create');
+    $buttonIcon = 'wand';
+    $buttonName = 'crt';
 }
 
-echo '</div>';
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_button(
+            __('Go back'),
+            'go_back',
+            false,
+            '',
+            [
+                'icon' => 'back',
+                'mode' => 'secondary',
+            ],
+            true
+        ).html_print_submit_button(
+            $buttonCaption,
+            $buttonName,
+            false,
+            ['icon' => $buttonIcon],
+            true
+        ),
+    ]
+);
+
 echo '</form>';
 
 ui_require_javascript_file('pandora_modules');
 ?>
 <script language="JavaScript" type="text/javascript">
-<!--
 
 $('#button-go_back').click(function () {
     window.location.href = "<?php echo ui_get_full_url('index.php?sec=templates&sec2=godmode/modules/manage_network_components'); ?>";

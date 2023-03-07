@@ -29,7 +29,6 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 
 if (defined('METACONSOLE')) {
     $sec = 'advanced';
     enterprise_include_once('meta/include/functions_components_meta.php');
-    enterprise_hook('open_meta_frame');
     components_meta_print_header();
 } else {
     $sec = 'gmodules';
@@ -173,10 +172,6 @@ if ($id_module_inventory) {
 
 echo '</div>';
 echo '</form>';
-
-if (defined('METACONSOLE')) {
-    enterprise_hook('close_meta_frame');
-}
 
 ?>
 

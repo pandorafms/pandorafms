@@ -115,20 +115,18 @@ if ($edit_graph === true) {
 // -----------------------
 $url = 'index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1';
 if ($edit_graph === true) {
-    $output = "<form method='post' action='".$url.'&update_graph=1&id='.$id_graph."'>";
+    $output = "<form method='post' class='max_floating_element_size' action='".$url.'&update_graph=1&id='.$id_graph."'>";
 } else {
-    $output = "<form method='post' action='".$url."&add_graph=1'>";
+    $output = "<form method='post' class='max_floating_element_size' action='".$url."&add_graph=1'>";
 }
 
-$output .= "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
-$output .= '<tr>';
-$output .= "<td class='datos'><b>".__('Name').'</b></td>';
-$output .= "<td class='datos'><input type='text' name='name' size='25' ";
-if ($edit_graph === true) {
-    $output .= "value='".$graphInTgraph['name']."' ";
-}
-
-$output .= '>';
+$output .= "<table width='100%' cellpadding=4 cellspacing=4 class='filter-table-adv databox'>";
+$output .= '<tbody width="100%">';
+$output .= '<tr class="datos2">';
+$graphInTgraph['name'] = (isset($graphInTgraph['name']) === true) ? $graphInTgraph['name'] : '';
+$output .= '<td width="50%">';
+$output .= html_print_label_input_block(__('Name'), html_print_input_text('name', $graphInTgraph['name'], '', '', 255, true), ['style' => 'width:50%']);
+$output .= '</td>';
 
 $own_info = get_user_info($config['id_user']);
 
@@ -140,9 +138,9 @@ if (users_can_manage_group_all('RW') === false
     $return_all_group = false;
 }
 
-$output .= '<td><b>'.__('Group').'</b></td><td>';
+$output .= '<td width="50%">';
 if (check_acl($config['id_user'], 0, 'RW')) {
-    $output .= html_print_input(
+    $inputGroup = html_print_input(
         [
             'type'           => 'select_groups',
             'id_user'        => $config['id_user'],
@@ -158,7 +156,7 @@ if (check_acl($config['id_user'], 0, 'RW')) {
         ]
     );
 } else if (check_acl($config['id_user'], 0, 'RM')) {
-    $output .= html_print_input(
+    $inputGroup = html_print_input(
         [
             'type'           => 'select_groups',
             'id_user'        => $config['id_user'],
@@ -175,38 +173,34 @@ if (check_acl($config['id_user'], 0, 'RW')) {
     );
 }
 
+$output .= html_print_label_input_block(__('Group'), $inputGroup);
 $output .= '</td></tr>';
-$output .= '<tr>';
-$output .= "<td class='datos2'><b>".__('Description').'</b></td>';
-$output .= "<td class='datos2' colspan=3><textarea name='description' class='height_45px' cols=55 rows=2>";
-if ($edit_graph === true) {
-    $output .= $graphInTgraph['description'];
-}
-
-$output .= '</textarea>';
-$output .= '</td></tr>';
-if ($stacked == CUSTOM_GRAPH_GAUGE) {
-    $hidden = ' class="invisible" ';
-} else {
-    $hidden = '';
-}
-
-$output .= '<tr>';
-$output .= "<td class='datos'>";
-$output .= '<b>'.__('Period').'</b></td>';
-$output .= "<td class='datos'>";
-$output .= html_print_extended_select_for_time(
-    'period',
-    $period,
-    '',
-    '',
-    '0',
-    10,
-    true
+$output .= '<tr class="datos2">';
+$output .= '<td width="100%" colspan="2">';
+$graphInTgraph['description'] = (isset($graphInTgraph['description']) === true) ? $graphInTgraph['description'] : '';
+$output .= html_print_label_input_block(
+    __('Description'),
+    html_print_textarea('description', 10, 5, $graphInTgraph['description'], '', true)
 );
-$output .= "</td><td class='datos2'>";
-$output .= '<b>'.__('Type of graph').'</b></td>';
-$output .= "<td class='datos2'> <div class='left inline'>";
+$output .= '</td>';
+$output .= '</tr><tr class="datos2">';
+$output .= "<td class='datos' width='50%''>";
+$output .= html_print_label_input_block(
+    __('Period'),
+    html_print_extended_select_for_time(
+        'period',
+        $period,
+        '',
+        '',
+        '0',
+        false,
+        true,
+        false,
+        false,
+        'w100p'
+    )
+);
+$output .= "</td><td class='datos2' width='50%'>";
 
 require_once $config['homedir'].'/include/functions_graph.php';
 
@@ -221,97 +215,116 @@ $stackeds = [
     CUSTOM_GRAPH_VBARS        => __('Vertical bars'),
     CUSTOM_GRAPH_PIE          => __('Pie'),
 ];
-$output .= html_print_select($stackeds, 'stacked', $stacked, '', '', 0, true);
-
-$output .= '</div></td></tr>';
-
-$output .= '<tr>';
-$output .= "<td class='datos2 thresholdDiv'><b>";
-$output .= __('Equalize maximum thresholds');
-$output .= '</b></td>';
-$output .= "<td class='datos2 thresholdDiv'>";
-$output .= html_print_checkbox(
-    'threshold',
-    CUSTOM_GRAPH_BULLET_CHART_THRESHOLD,
-    $check,
-    true,
-    false,
-    '',
-    false
+$output .= html_print_label_input_block(
+    __('Type of graph'),
+    html_print_select(
+        $stackeds,
+        'stacked',
+        $stacked,
+        '',
+        '',
+        0,
+        true
+    )
 );
 $output .= '</td></tr>';
 
-$output .= "<tr><td class='datos2 sparse_graph '><b>";
-$output .= __('Percentil');
-$output .= '</b></td>';
-$output .= "<td class='datos2 sparse_graph'>";
-$output .= html_print_checkbox(
-    'percentil',
-    1,
-    $percentil,
-    true
+$output .= '<tr class="datos2">';
+$output .= "<td class='datos2 thresholdDiv' width='50%'>";
+$output .= html_print_label_input_block(
+    __('Equalize maximum thresholds'),
+    html_print_checkbox(
+        'threshold',
+        CUSTOM_GRAPH_BULLET_CHART_THRESHOLD,
+        $check,
+        true,
+        false,
+        '',
+        false
+    )
+);
+$output .= '</td>';
+
+$output .= '<td class="datos2 sparse_graph" width="50%">';
+$output .= html_print_label_input_block(
+    __('Percentil'),
+    html_print_checkbox(
+        'percentil',
+        1,
+        $percentil,
+        true
+    )
 );
 $output .= '</td>';
 $output .= '</tr>';
 
-$output .= "<tr><td class='datos2 sparse_graph'><b>";
-$output .= __('Add summatory series');
-$output .= '</b></td>';
-$output .= "<td class='datos2 sparse_graph'>";
-$output .= html_print_checkbox(
-    'summatory_series',
-    1,
-    $summatory_series,
-    true
+$output .= '<tr class="datos2"><td class="datos2 sparse_graph" width="50%">';
+$output .= html_print_label_input_block(
+    __('Add summatory series'),
+    html_print_checkbox(
+        'summatory_series',
+        1,
+        $summatory_series,
+        true
+    )
 );
-$output .= "</td><td class='datos2 sparse_graph'><b>";
-$output .= __('Add average series');
-$output .= '</b></td>';
-$output .= "<td class='datos2 sparse_graph'>";
-$output .= html_print_checkbox(
-    'average_series',
-    1,
-    $average_series,
-    true
+$output .= "</td><td class='datos2 sparse_graph' width='50%'>";
+$output .= html_print_label_input_block(
+    __('Add average series'),
+    html_print_checkbox(
+        'average_series',
+        1,
+        $average_series,
+        true
+    )
 );
 $output .= '</td></tr>';
-$output .= "<tr><td class='datos2 sparse_graph'><b>";
-$output .= __('Modules and series');
-$output .= '</b></td>';
-$output .= "<td class='datos2 sparse_graph'>";
-$output .= html_print_checkbox('modules_series', 1, $modules_series, true);
+$output .= '<tr class="datos2"><td class="datos2 sparse_graph" width="50%">';
+$output .= html_print_label_input_block(
+    __('Modules and series'),
+    html_print_checkbox('modules_series', 1, $modules_series, true)
+);
 $output .= '</td>';
-$output .= "<td class='datos2 sparse_graph'><b>";
-$output .= __('Show full scale graph (TIP)');
-$output .= '</td>';
-$output .= "<td class='datos2 sparse_graph'>";
-$output .= html_print_checkbox('fullscale', 1, $fullscale, true);
+$output .= "<td class='datos2 sparse_graph' width='50%'>";
+$output .= html_print_label_input_block(
+    __('Show full scale graph (TIP)'),
+    html_print_checkbox('fullscale', 1, $fullscale, true)
+);
 $output .= '</td>';
 $output .= '</tr>';
-
+$output .= '</tbody>';
 $output .= '</table>';
 
-$stringButton = ($edit_graph === true) ? __('Update') : __('Create');
+$labelButton = ($edit_graph === true) ? __('Update') : __('Create');
 
-$output .= html_print_div(
+$ActionButtons[] = html_print_submit_button(
+    $labelButton,
+    'store',
+    false,
     [
-        'class'   => 'w100p',
-        'content' => "<input type=submit name='store' class='sub next right databox' value='".$stringButton."'>",
+        'class' => 'sub ok submitButton',
+        'icon'  => 'next',
+    ],
+    true
+);
+
+$ActionButtons[] = html_print_button(
+    __('Go back'),
+    'back',
+    false,
+    "window.location.href = 'index.php?sec=reporting&sec2=godmode/reporting/graphs'",
+    [
+        'class' => 'sub ok submitButton',
+        'icon'  => 'back',
+        'mode'  => 'secondary',
     ],
     true
 );
 
 $output .= html_print_div(
     [
-        'class'   => 'w100p',
-        'content' => html_print_button(
-            __('Go back'),
-            'go_back',
-            false,
-            'window.location.href = \'index.php?sec=reporting&sec2=godmode/reporting/graphs\'',
-            'class="sub cancel right"',
-            true
-        ),
+        'class'   => 'action-buttons',
+        'content' => html_print_action_buttons(implode('', $ActionButtons), ['type' => 'form_action'], true),
     ],
     true
 );

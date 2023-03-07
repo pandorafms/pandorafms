@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -708,7 +708,7 @@ class ModuleTemplates extends HTML
             'action' => $this->baseUrl,
             'id'     => 'add_module_form',
             'method' => 'POST',
-            'class'  => 'modal',
+            'class'  => 'modal filter-list-adv',
             'extra'  => '',
         ];
 
@@ -846,10 +846,10 @@ class ModuleTemplates extends HTML
             false
         );
         // Create the table with Module Block list.
-        $table = new StdClasS();
+        $table = new stdClass();
         $table->class = 'databox data ';
         $table->width = '75%';
-        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
+        $table->styleTable = 'border: 1px solid #ddd;';
         $table->rowid = [];
         $table->data = [];
 
@@ -1165,7 +1165,7 @@ class ModuleTemplates extends HTML
 
                         $blockComponentList = chop($blockComponentList, ',');
                         // Title of Block.
-                        $blockTitle = '<div class="pdd_t_8px">';
+                        $blockTitle = '<div class="subsection_header_title">';
                         $blockTitle .= $blockTable['name'];
                         $blockTitle .= '<div class="white_table_header_checkbox">';
                         $blockTitle .= html_print_input_image(
@@ -1186,7 +1186,7 @@ class ModuleTemplates extends HTML
                         $table = new StdClasS();
                         $table->class = 'databox data border_bt';
                         $table->width = '75%';
-                        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
+                        $table->styleTable = 'margin: 0; border: 1px solid #ddd;';
                         $table->rowid = [];
                         $table->data = [];
 
@@ -1220,7 +1220,7 @@ class ModuleTemplates extends HTML
                             switch ($module['id_format']) {
                                 case MODULE_NETWORK:
                                     $formatInfo = html_print_image(
-                                        'images/network.png',
+                                        'images/network-server@os.svg',
                                         true,
                                         [
                                             'title' => __('Network module'),
@@ -1231,7 +1231,7 @@ class ModuleTemplates extends HTML
 
                                 case MODULE_WMI:
                                     $formatInfo = html_print_image(
-                                        'images/wmi.png',
+                                        'images/WMI@svg.svg',
                                         true,
                                         [
                                             'title' => __('WMI module'),
@@ -1242,7 +1242,7 @@ class ModuleTemplates extends HTML
 
                                 case MODULE_PLUGIN:
                                     $formatInfo = html_print_image(
-                                        'images/plugin.png',
+                                        'images/plugins@svg.svg',
                                         true,
                                         [
                                             'title' => __('Plug-in module'),

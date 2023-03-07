@@ -671,31 +671,15 @@ var TreeController = {
                   "</div>"
               );
 
-              if (typeof element.edit != "undefined") {
-                var url_edit =
-                  controller.baseURL +
-                  "index.php?sec=gagente&sec2=godmode/groups/configure_group&tab=tree&id_group=" +
-                  element.id;
-                var $updateicon = $(
-                  '<img src="' +
-                    (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/edit.svg" class="invert_filter" style="width:18px; vertical-align: middle;"/>'
-                );
-                var $updatebtn = $('<a href = "' + url_edit + '"></a>').append(
-                  $updateicon
-                );
-                $content.append($updatebtn);
-              }
-
               if (typeof element.delete != "undefined") {
                 var url_delete =
                   controller.baseURL +
                   "index.php?sec=gagente&sec2=godmode/groups/group_list&tab=tree&delete_group=1&id_group=" +
                   element.id;
                 var $deleteBtn = $(
-                  '<a><img src="' +
+                  '<a style="float: right; margin-top: 5px;"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/delete.svg" class="invert_filter" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
+                    'images/delete.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/></a>'
                 );
                 $deleteBtn.click(function(event) {
                   var ok_function = function() {
@@ -709,6 +693,24 @@ var TreeController = {
                   );
                 });
                 $content.append($deleteBtn);
+              }
+
+              if (typeof element.edit != "undefined") {
+                var url_edit =
+                  controller.baseURL +
+                  "index.php?sec=gagente&sec2=godmode/groups/configure_group&tab=tree&id_group=" +
+                  element.id;
+                var $updateicon = $(
+                  '<img src="' +
+                    (controller.baseURL.length > 0 ? controller.baseURL : "") +
+                    'images/edit.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/>'
+                );
+                var $updatebtn = $(
+                  '<a style="float: right; margin-top: 5px;" href = "' +
+                    url_edit +
+                    '"></a>'
+                ).append($updateicon);
+                $content.append($updatebtn);
               }
 
               if (typeof element.alerts != "undefined") {
@@ -1456,7 +1458,10 @@ var TreeController = {
               });
             }
           }
-          treeViewControlModuleValues();
+
+          if (typeof treeViewControlModuleValues === "function") {
+            treeViewControlModuleValues();
+          }
 
           return $node;
         }

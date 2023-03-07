@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -126,11 +126,11 @@ $buttons = [
     'list' => [
         'active' => false,
         'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image(
-            'images/list.png',
+            'images/logs@svg.svg',
             true,
             [
                 'title' => __('List tags'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
     ],
@@ -335,9 +335,9 @@ if (empty($result) === false) {
         // The tooltip needs a title on the item, don't delete the title.
         $data[3] = '<a class="tag_details img_help" title="'.__('Tag details').'"
 			href="'.ui_get_full_url(false, false, false, false).'/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">'.html_print_image(
-            'images/zoom.png',
+            'images/details.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'main_menu_icon invert_filter']
         ).'</a> ';
 
         $modules_count = 0;
@@ -375,9 +375,9 @@ if (empty($result) === false) {
             $output .= '</span> ';
             $output .= "<a href='javascript: show_dialog(".$tag['id_tag'].")'>";
             $output .= html_print_image(
-                'images/rosette.png',
+                'images/item-icon.svg',
                 true,
-                ['class' => 'invert_filter']
+                ['class' => 'main_menu_icon invert_filter']
             );
             $output .= '</a></span>';
         }
@@ -396,9 +396,9 @@ if (empty($result) === false) {
             $output .= '<span id="value_'.$tag['id_tag'].'">'.$phone_small.'</span> ';
             $output .= "<a href='javascript: show_phone_dialog(".$tag['id_tag'].")'>";
             $output .= html_print_image(
-                'images/rosette.png',
+                'images/item-icon.svg',
                 true,
-                ['class' => 'invert_filter']
+                ['class' => 'main_menu_icon invert_filter']
             );
             $output .= '</a></span>';
         }
@@ -409,20 +409,20 @@ if (empty($result) === false) {
             $table->cellclass[][6] = 'table_action_buttons';
             $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>";
             $data[6] .= html_print_image(
-                'images/config.png',
+                'images/edit.svg',
                 true,
                 [
                     'title' => 'Edit',
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[6] .= '</a>';
             $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'&offset='.$offset_delete.'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 true,
                 [
                     'title' => 'Delete',
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
         }

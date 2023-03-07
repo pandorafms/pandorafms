@@ -1283,13 +1283,15 @@ class CredentialStore extends Wizard
             idrow += '\')" >'+item.identifier+'</a></b>';
             item.identifier = idrow;
 
-            item.options = '<a href="javascript:" onclick="show_form(\'';
+            item.options = '<div class="table_action_buttons">';
+            item.options += '<a href="javascript:" onclick="show_form(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/operation.png', true, ['title' => __('Show'), 'class' => 'invert_filter']); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/edit.svg', true, ['title' => __('Edit'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
 
             item.options += '<a href="javascript:" onclick="delete_key(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
+            item.options += '</div>';
         }
 
         /**

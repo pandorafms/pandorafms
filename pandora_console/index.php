@@ -1524,17 +1524,6 @@ require 'include/php_to_js_values.php';
         }
     }
 
-    //$('.button_collapse').on('click', menuActionButtonResizing());
-
-    // Cursor change for show a spinner. Experimental.
-    /*
-    $('.buttonButton').not('.dialog_opener').on('click', function(){
-        $('*').css('cursor', 'wait');
-    });
-    $('.submitButton').not('.dialog_opener').on('click', function(){
-        $('*').css('cursor', 'wait');
-    });
-*/
     // When the user scrolls down 400px from the top of the document, show the
     // button.
     window.onscroll = function() {
@@ -1544,10 +1533,6 @@ require 'include/php_to_js_values.php';
     window.onresize = function() {
         scrollFunction()
     };
-
-    function menuActionButtonResizing() {
-        $('.action_buttons_right_content').attr('style', 'left: '+($('#menu_full').width())+'px;');
-    }
 
     function first_time_identification() {
         jQuery.post("ajax.php", {

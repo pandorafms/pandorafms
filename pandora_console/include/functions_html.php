@@ -6551,7 +6551,7 @@ function html_print_go_back_button(string $url, array $options=[], bool $return=
                 ($options['title'] ?? __('Go back')),
                 'go_back',
                 false,
-                'window.location.href = \''.$url.'\'',
+                'window.location.href = "'.$url.'"',
                 [
                     'icon' => ($options['action_class'] ?? 'back'),
                     'mode' => 'secondary',

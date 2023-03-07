@@ -55,11 +55,11 @@
   position: absolute;
   border-radius: 8px;
   width: 18px;
-  height: 18px;
-  top: 6px;
+  height: 20px;
+  top: 5px;
   margin: 0;
   padding: 0;
-  left: 13px;
+  left: 6px;
 }
 .tree-node .node-name {
   position: relative;
@@ -236,18 +236,20 @@ div.tree-node span {
 }
 
 .node-content.module:not(.module-only-caption) .module-name {
-  margin-left: 3em;
+  margin-left: 1.5em;
   font-weight: normal;
 }
-/*.node-content.module.module-only-caption:not(:first-of-type) {
-  margin-top: 8px;
-}*/
 
+.tree-node > .node-content > .status_balls,
+.tree-node > .node-content > .status_small_balls {
+  width: 6px;
+  border-radius: 4px;
+}
 .tree-node > .node-content > .module-name-alias {
   font-size: 14px;
   font-weight: normal;
   top: 4px;
-  margin-left: 3.3em;
+  margin-left: 1.1em;
 }
 
 .tree-node > .node-content.module-only-caption > .module-name-alias {
@@ -306,7 +308,7 @@ div.tree-node span {
 
 .tree-node > .node-content > .tree-node-counters > .tree-node-counter {
   font-weight: bold;
-  font-size: 0.9em;
+  font-size: 1em;
   cursor: default;
 }
 
@@ -326,6 +328,12 @@ div#tree-controller-recipient {
   /*margin-left: 3px;*/
 }
 
+.tree-node .node-service div.node-service-status {
+  width: 6px;
+  height: 20px;
+  margin-left: 10px;
+  border-radius: 5px;
+}
 .tree-node .disabled {
   filter: opacity(0.3);
 }

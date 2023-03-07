@@ -839,7 +839,6 @@ function edit_node(data_node, dblClick) {
       "onclick",
       "update_fictional_node(" + node_selected.id_db + ");"
     );
-    console.log("cimborrio");
     $("#button-upd_fictional_node").attr(
       "onclick",
       "update_fictional_node(" + node_selected.id_db + ");"

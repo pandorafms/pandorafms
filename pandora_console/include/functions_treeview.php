@@ -702,7 +702,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     // Events graph toggle.
     $eventsGraph = html_print_div(
         [
-            'class'   => 'graphic_agents',
+            'style'   => 'height: 150px;',
             'content' => graph_graphic_agentevents(
                 $id_agente,
                 '500px;',
@@ -732,7 +732,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     );
 
     if ($config['agentaccess']) {
-        $access_graph = '<div class="w100p height_130px center">';
+        $access_graph = '<div style="height: 150px;" class="w100p center">';
         $access_graph .= graphic_agentaccess(
             $id_agente,
             SECONDS_1DAY,

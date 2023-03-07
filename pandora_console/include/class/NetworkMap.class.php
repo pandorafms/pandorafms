@@ -2569,7 +2569,7 @@ class NetworkMap
                         false,
                         true,
                         true,
-                        true,
+                        false,
                         true,
                         true
                     );
@@ -3151,28 +3151,6 @@ class NetworkMap
             ['icon' => 'next'],
             true
         );
-        /*
-            $table->data['fictional_node_networkmap_link'][0] = __('Networkmap to link');
-            $table->data['fictional_node_networkmap_link'][1] = html_print_select(
-            $list_networkmaps,
-            'edit_networkmap_to_link',
-            '',
-            '',
-            '',
-            0,
-            true
-            );
-
-            $table->data['fictional_node_update_button'][0] = '';
-            $table->data['fictional_node_update_button'][1] = html_print_button(
-            __('Update fictional node'),
-            '',
-            false,
-            'add_fictional_node();',
-            ['icon' => 'next'],
-            true
-            );
-        */
 
         $buttons[] = html_print_button(
             __('Update node'),
@@ -3298,6 +3276,7 @@ class NetworkMap
 
         $table = new stdClass();
         $table->id = 'interface_link_table';
+        $table->class = 'info_table';
         $table->width = '100%';
         $table->head['node_source_interface'] = __('Node source');
         $table->head['interface_source_select'] = __('Interface source');
@@ -3340,27 +3319,31 @@ class NetworkMap
 
         $output .= '<br>';
 
-        $table->data['interface_row']['interface_link_button'] = html_print_button(
-            __('Add interface link'),
-            '',
-            false,
-            'add_interface_link_js();',
-            'class="sub"',
+        $output .= html_print_table($table, true);
+        $output .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_button(
+                    __('Add interface link'),
+                    '',
+                    false,
+                    'add_interface_link_js();',
+                    [
+                        'icon' => 'wand',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
             true
         );
 
-        $output .= html_print_table($table, true);
         $output .= '</div></div>';
 
         $output .= '<div id="dialog_node_add" class="invisible" title="';
         $output .= __('Add node').'">';
         $output .= '<div class="left w100p">';
 
-        $table = new StdClass();
-        $table->width = '100%';
-        $table->data = [];
-
-        $table->data[0][0] = __('Agent');
         $params = [];
         $params['return'] = true;
         $params['show_helptip'] = true;
@@ -3369,29 +3352,48 @@ class NetworkMap
         $params['print_hidden_input_idagent'] = true;
         $params['hidden_input_idagent_name'] = 'id_agent';
         $params['disabled_javascript_on_blur_function'] = true;
-        $table->data[0][1] = ui_print_agent_autocomplete_input($params);
-        $table->data[1][0] = '';
-        $table->data[1][1] = html_print_button(
-            __('Add agent node'),
-            '',
-            false,
-            'add_agent_node();',
-            'class="sub"',
-            true
-        ).html_print_image(
-            'images/error_red.png',
-            true,
-            [
-                'id'         => 'error_red',
-                'style'      => 'vertical-align: bottom;display: none;',
-                'class'      => 'forced_title',
-                'alt'        => '',
-                'data-title' => 'data-use_title_for_force_title:1',
-            ],
-            false
+
+        $table = new StdClass();
+        $table->width = '100%';
+        $table->id = 'add_agent_network_map';
+        $table->class = 'filter-table-adv';
+        $table->data = [];
+
+        $table->data[0][] = html_print_label_input_block(
+            __('Agent'),
+            ui_print_agent_autocomplete_input($params)
         );
 
         $add_agent_node_html = html_print_table($table, true);
+        $add_agent_node_html .= html_print_div(
+            [
+                'class'   => 'action-buttons-right-forced',
+                'content' => html_print_button(
+                    __('Add agent node'),
+                    '',
+                    false,
+                    'add_agent_node();',
+                    [
+                        'icon' => 'wand',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ).html_print_image(
+                    'images/error_red.png',
+                    true,
+                    [
+                        'id'         => 'error_red',
+                        'style'      => 'vertical-align: bottom;display: none;',
+                        'class'      => 'forced_title',
+                        'alt'        => '',
+                        'data-title' => 'data-use_title_for_force_title:1',
+                    ],
+                    false
+                ),
+            ],
+            true
+        );
+
         $output .= ui_toggle(
             $add_agent_node_html,
             __('Add agent node'),
@@ -3403,57 +3405,74 @@ class NetworkMap
 
         $table = new StdClass();
         $table->width = '100%';
+        $table->id = 'add_agent_by_group_network_map';
+        $table->class = 'filter-table-adv';
         $table->data = [];
-        $table->data[0][0] = __('Group');
-        $table->data[0][1] = html_print_select_groups(
-            false,
-            'AR',
-            false,
-            'group_for_show_agents',
-            -1,
-            'choose_group_for_show_agents()',
-            __('None'),
-            -1,
-            true
+        $table->data[0][] = html_print_label_input_block(
+            __('Group'),
+            html_print_select_groups(
+                false,
+                'AR',
+                false,
+                'group_for_show_agents',
+                -1,
+                'choose_group_for_show_agents()',
+                __('None'),
+                -1,
+                true
+            )
         );
 
-        $table->data[0][2] = html_print_checkbox(
-            'group_recursion',
-            0,
-            false,
-            true,
-            false,
-            'choose_group_for_show_agents()'
-        ).__('Recursion');
-
-        $table->data[1][0] = __('Agents');
-        $table->data[1][1] = html_print_select(
-            [-1 => __('None')],
-            'agents_filter_group',
-            -1,
-            '',
-            '',
-            0,
-            true,
-            true,
-            true,
-            '',
-            false,
-            'width: 170px;',
-            false,
-            5
+        $table->data[0][] = html_print_label_input_block(
+            __('Recursion'),
+            html_print_checkbox_switch(
+                'group_recursion',
+                0,
+                false,
+                true,
+                false,
+                'choose_group_for_show_agents()'
+            )
         );
-        $table->data[2][0] = '';
-        $table->data[2][1] = html_print_button(
-            __('Add agent node'),
-            '',
-            false,
-            'add_agent_node_from_the_filter_group();',
-            'class="sub"',
-            true
+
+        $table->data[1][] = html_print_label_input_block(
+            __('Agents'),
+            html_print_select(
+                [-1 => __('None')],
+                'agents_filter_group',
+                -1,
+                '',
+                '',
+                0,
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width: 170px;',
+                false,
+                5
+            )
         );
 
         $add_agent_node_html = html_print_table($table, true);
+        $add_agent_node_html .= html_print_div(
+            [
+                'class'   => 'action-buttons-right-forced',
+                'content' => html_print_button(
+                    __('Add agent node'),
+                    '',
+                    false,
+                    'add_agent_node_from_the_filter_group();',
+                    [
+                        'icon' => 'wand',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
         $output .= ui_toggle(
             $add_agent_node_html,
             __('Add agent node (filter by group)'),
@@ -3465,36 +3484,52 @@ class NetworkMap
 
         $table = new StdClass();
         $table->width = '100%';
+        $table->id = 'add_fictional_network_map';
+        $table->class = 'filter-table-adv';
         $table->data = [];
-        $table->data[0][0] = __('Name');
-        $table->data[0][1] = html_print_input_text(
-            'name_fictional_node',
-            '',
-            __('name fictional node'),
-            '20',
-            '50',
-            true
+        $table->data[0][] = html_print_label_input_block(
+            __('Name'),
+            html_print_input_text(
+                'name_fictional_node',
+                '',
+                __('name fictional node'),
+                '20',
+                '50',
+                true
+            )
         );
-        $table->data[1][0] = __('Networkmap to link');
-        $table->data[1][1] = html_print_select(
-            $list_networkmaps,
-            'networkmap_to_link',
-            0,
-            '',
-            '',
-            0,
-            true
+
+        $table->data[1][] = html_print_label_input_block(
+            __('Networkmap to link'),
+            html_print_select(
+                $list_networkmaps,
+                'networkmap_to_link',
+                0,
+                '',
+                '',
+                0,
+                true
+            )
         );
-        $table->data[2][0] = '';
-        $table->data[2][1] = html_print_button(
-            __('Add fictional node'),
-            '',
-            false,
-            'add_fictional_node();',
-            ['type' => 'link'],
-            true
-        );
+
         $add_agent_node_html = html_print_table($table, true);
+        $add_agent_node_html .= html_print_div(
+            [
+                'class'   => 'action-buttons-right-forced',
+                'content' => html_print_button(
+                    __('Add fictional node'),
+                    '',
+                    false,
+                    'add_fictional_node();',
+                    [
+                        'icon' => 'wand',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
         $output .= ui_toggle(
             $add_agent_node_html,
             __('Add fictional point'),
@@ -3722,11 +3757,7 @@ class NetworkMap
             // Open networkconsole_id div.
             $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
             if ($this->fullSize) {
-                if ($this->widget) {
-                    $output .= ' class="networkconsole">';
-                } else {
-                    $output .= ' class="networkconsole">';
-                }
+                $output .= ' class="networkconsole">';
             } else {
                 $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';
             }

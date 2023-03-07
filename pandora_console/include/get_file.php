@@ -97,6 +97,7 @@ if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$c
         header('Content-Length: '.filesize($downloadable_file));
         header('Content-Disposition: attachment; filename="'.basename($downloadable_file).'"');
         readfile($downloadable_file);
+        return;
     }
 }
 

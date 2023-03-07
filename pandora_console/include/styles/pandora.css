@@ -2097,12 +2097,20 @@ table.rounded_cells td {
   margin-left: 16px;
 }
 
+.action-buttons-right-forced {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  width: 100%;
+  float: right;
+}
 .toolbox-buttons {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
+.ta-right,
 .right {
   text-align: right;
 }
@@ -6384,6 +6392,14 @@ div#status_pie {
   padding: 10px 10px 10px 0;
 }
 
+a.table_services_item_link a,
+a.table_services_item_link:hover {
+  text-decoration: none;
+}
+
+.table_services_item_link div {
+  font-size: 16px;
+}
 .table_services_item_link_dashboard {
   font-size: 16px;
   display: grid;
@@ -9175,8 +9191,8 @@ div.stat-win-spinner img {
   min-width: 50px;
 }
 
-.lign_right {
-  text-align: right;
+.align_right {
+  text-align: right !important;
 }
 
 .font_11pt {

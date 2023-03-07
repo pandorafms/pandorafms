@@ -980,7 +980,7 @@ var TreeController = {
               break;
             case "module":
               $content.addClass("module");
-              //console.log(element);                $statusImage.addClass("node-status");
+
               // Status image
               if (
                 typeof element.statusImageHTML != "undefined" &&
@@ -1456,6 +1456,7 @@ var TreeController = {
               });
             }
           }
+          treeViewControlModuleValues();
 
           return $node;
         }

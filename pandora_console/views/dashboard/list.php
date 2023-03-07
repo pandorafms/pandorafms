@@ -157,9 +157,9 @@ if (empty($dashboards) === true) {
         $urlFull .= '&'.\http_build_query($dataQueryFull);
         $data['full_screen'] = '<a href="'.$urlFull.'">';
         $data['full_screen'] .= \html_print_image(
-            'images/fullscreen.png',
+            'images/fullscreen@svg.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'main_menu_icon invert_filter']
         );
         $data['full_screen'] .= '</a>';
 
@@ -175,7 +175,7 @@ if (empty($dashboards) === true) {
             ];
             $urlCopy = $urlDashboard.'&'.\http_build_query($dataQueryCopy);
             $data['copy'] = '<a href="'.$urlCopy.'">';
-            $data['copy'] .= html_print_image('images/copy.png', true, ['class' => 'invert_filter']);
+            $data['copy'] .= html_print_image('images/copy.svg', true, ['class' => 'main_menu_icon invert_filter']);
             $data['copy'] .= '</a>';
 
             $dataQueryDelete = [
@@ -187,9 +187,9 @@ if (empty($dashboards) === true) {
             $data['delete'] = '<a href="'.$urlDelete;
             $data['delete'] .= '" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">';
             $data['delete'] .= \html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 true,
-                ['class' => 'invert_filter']
+                ['class' => 'main_menu_icon invert_filter']
             );
             $data['delete'] .= '</a>';
         }

@@ -258,8 +258,15 @@ function pandora_realtime_graphs()
     $canvas .= grafico_modulo_sparse($params);
 
     $canvas .= '</div>';
-    echo $canvas;
 
+    html_print_div(
+        [
+            'class'   => 'white_box',
+            'content' => $canvas,
+        ]
+    );
+
+    // echo $canvas;
     // Define a custom action to save
     // the OID selected in the SNMP browser to the form.
     html_print_input_hidden(

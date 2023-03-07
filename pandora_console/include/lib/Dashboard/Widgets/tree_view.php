@@ -600,16 +600,32 @@ class TreeViewWidget extends Widget
 
         // Spinner.
         $output .= ui_print_spinner(__('Loading'), true);
-        /*
-            $output .= \html_print_image(
-            'images/spinner.gif',
-            true,
-            [
-                'class' => 'loading_tree',
-                'style' => 'display: none;',
-            ]
-            );
-        */
+        ob_start();
+        ?>
+        <script type="text/javascript">
+            function treeViewControlModuleValues()
+            {
+                var $treeController = $("div[id^='tree-controller-recipient_']");
+                $treeController.each(function() {
+                    var $thisTree = $(this);
+                    if ($thisTree.width() < 600) {
+                        var $valuesForRemove = $('#'+$thisTree[0].id+' span.module-value');
+                        $valuesForRemove.each(function(){
+                            $(this).attr('style', 'display:none');
+                        });
+
+                        if ($thisTree.width() < 400) {
+                            var $titlesForReduce = $('#'+$thisTree[0].id+' .node-content .module-name');
+                            $titlesForReduce.each(function(){
+                                $(this).attr('style', 'width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;');
+                            });
+                       }
+                    }
+                });
+            }
+        </script>
+        <?php
+        $output .= ob_get_clean();
         // Container tree.
         $style = 'height:'.$height.'px; width:'.$width.'px;';
         $style .= 'text-align: left; padding:10px;';

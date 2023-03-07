@@ -744,7 +744,7 @@ class Ui
         $dialogHtml .= "<div id='".$content_id."' class='".$content_class."' data-role='content'>\n";
         $dialogHtml .= $content_text;
         if ($button_close) {
-            $dialogHtml .= "<a data-role='button' href='#main_page' id='".$dialog_id."-button_close'>";
+            $dialogHtml .= "<a data-role='button' href='javascript:history.back()' id='".$dialog_id."-button_close'>";
             if (empty($button_text)) {
                 $dialogHtml .= __('Close');
             } else {

@@ -129,6 +129,12 @@ ul.wizard li > textarea {
   background: #e63c52;
 }
 
+.wizard .tag-editor li,
+.wizard .tag-editor li:focus,
+.wizard .tag-editor li:hover {
+  border: 0;
+  padding: 0;
+}
 .wizard .time_selection_container {
   display: flex;
   align-items: baseline;

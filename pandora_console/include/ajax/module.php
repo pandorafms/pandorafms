@@ -1283,7 +1283,7 @@ if (check_login()) {
                         $linkCaption,
                         'additional_action_for_'.$idAgenteModulo,
                         false,
-                        'window.location.assign(\'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$addedLinkParams.'\')',
+                        'window.location.assign("index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$addedLinkParams.'")',
                         [
                             'mode'  => 'link',
                             'style' => 'justify-content: flex-end;',
@@ -1300,7 +1300,7 @@ if (check_login()) {
                     __('Edit'),
                     'edit_module_'.$idAgenteModulo,
                     false,
-                    'window.location.assign(\'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'\')',
+                    'window.location.assign("index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'")',
                     [
                         'mode'  => 'link',
                         'style' => 'justify-content: flex-end;',

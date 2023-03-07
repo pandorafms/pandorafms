@@ -615,18 +615,6 @@ $url = ui_get_url_refresh(
     true,
     false
 );
-$name_url = 'index.php?sec=templates&sec2=godmode/modules/manage_network_components';
-$table = new stdClass();
-$table->width = '100%';
-$table->class = 'databox filters';
-
-$table->style = [];
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
-
-$table->data = [];
-
-$table->data[0][0] = __('Group');
 
 $component_groups = network_components_get_groups();
 
@@ -656,54 +644,81 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
     }
 }
 
-$table->data[0][1] = html_print_select(
-    $component_groups,
-    'search_id_group',
-    $search_id_group,
+$name_url = 'index.php?sec=templates&sec2=godmode/modules/manage_network_components';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'filter-table-adv';
+
+$table->style = [];
+$table->style[0] = 'font-weight: bold';
+$table->style[2] = 'font-weight: bold';
+
+$table->data = [];
+
+$table->data[0][] = html_print_label_input_block(
+    __('Group'),
+    html_print_select(
+        $component_groups,
+        'search_id_group',
+        $search_id_group,
+        '',
+        __('All'),
+        0,
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width: 100%'
+    )
+);
+
+$table->data[0][] = html_print_label_input_block(
+    __('Free Search'),
+    html_print_input_text(
+        'search_string',
+        $search_string,
+        '',
+        25,
+        255,
+        true
+    ).ui_print_input_placeholder(
+        __('Search by name, description, tcp send or tcp rcv, list matches.'),
+        true
+    )
+);
+
+$toggleFilters = '<form class="filters_form" method="POST" action="'.$url.'">';
+$toggleFilters .= html_print_table($table, true);
+$toggleFilters .= html_print_div(
+    [
+        'class'   => 'action-buttons-right-forced',
+        'content' => html_print_submit_button(
+            __('Filter'),
+            'search',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        ),
+    ],
+    true
+);
+$toggleFilters .= '</form>';
+
+ui_toggle(
+    $toggleFilters,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
     '',
-    __('All'),
-    0,
     true,
     false,
-    false
-);
-$table->data[0][2] = __('Free Search').ui_print_help_tip(
-    __('Search by name, description, tcp send or tcp rcv, list matches.'),
-    true
-);
-$table->data[0][3] = html_print_input_text(
-    'search_string',
-    $search_string,
     '',
-    25,
-    255,
-    true
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
 );
-if (is_metaconsole() === true) {
-    $table->data[0][4] = '<div>';
-} else {
-    $table->data[0][4] = '<div class="action-buttons">';
-}
-
-$table->data[0][4] .= html_print_submit_button(
-    __('Search'),
-    'search',
-    false,
-    'class="sub search"',
-    true
-);
-$table->data[0][4] .= '</div>';
-
-if (is_metaconsole() === true) {
-    $filter = '<form class="filters_form" method="post" action="'.$url.'">';
-    $filter .= html_print_table($table, true);
-    $filter .= '</form>';
-    ui_toggle($filter, __('Show Options'));
-} else {
-    echo '<form method="post" action="'.$url.'">';
-    html_print_table($table);
-    echo '</form>';
-}
 
 $filter = [];
 if ($search_id_group) {
@@ -721,7 +736,6 @@ $total_components = network_components_get_network_components(
 );
 $total_components = $total_components[0]['total'];
 $offset_delete = ($offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
-ui_pagination($total_components, $name_url);
 $filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = network_components_get_network_components(

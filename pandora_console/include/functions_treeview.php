@@ -467,7 +467,7 @@ function treeview_printAlertsTable($id_module, $server_data=[], $no_head=false)
                     __('Go to alerts edition'),
                     'upd_button',
                     false,
-                    'window.location.assign(\''.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'\')',
+                    'window.location.assign("'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'")',
                     ['icon' => 'alert'],
                     true
                 ),

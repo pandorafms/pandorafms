@@ -301,12 +301,11 @@ function dbmgr_extension_main()
 if (is_metaconsole() === true) {
     // This adds a option in the operation menu.
     extensions_add_meta_menu_option(
-        'DB interface',
+        __('DB interface'),
         'PM',
         'gextensions',
         'database.png',
-        'v1r1',
-        'gdbman'
+        'v1r1'
     );
 
     extensions_add_meta_function('dbmgr_extension_main');

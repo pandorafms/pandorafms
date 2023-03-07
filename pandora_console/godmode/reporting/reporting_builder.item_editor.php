@@ -2229,7 +2229,7 @@ $class = 'databox filters';
 
         <tr id="row_custom_graph"   class="datos">
             <td class="bolder"><?php echo __('Custom graph'); ?></td>
-            <td  >
+            <td class="toolbox-buttons">
                 <?php
                 if ($meta) {
                     $graphs = [];
@@ -2303,21 +2303,38 @@ $class = 'databox filters';
                     }
                 }
 
-                echo '&nbsp;';
+                if (!empty($style_button_create_custom_graph)) {
+                    $style_create = [
+                        'mode'  => 'link',
+                        'style' => 'display:none',
+                    ];
+                } else {
+                    $style_create = [ 'mode' => 'link' ];
+                }
+
+                if (!empty($style_button_edit_custom_graph)) {
+                    $style_edit = [
+                        'mode'  => 'link',
+                        'style' => 'display:none',
+                    ];
+                } else {
+                    $style_edit = [ 'mode' => 'link' ];
+                }
+
                 html_print_button(
                     __('Create'),
                     'create_graph',
                     false,
-                    'create_custom_graph();',
-                    'class="sub add" '.$style_button_create_custom_graph
+                    'create_custom_graph()',
+                    $style_create
                 );
 
                 html_print_button(
                     __('Edit'),
                     'edit_graph',
                     false,
-                    'edit_custom_graph();',
-                    'class="sub config" '.$style_button_edit_custom_graph
+                    'edit_custom_graph()',
+                    $style_edit
                 );
                 ?>
             </td>

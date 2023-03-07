@@ -496,7 +496,7 @@ if ($edit_container) {
             $single_table .= "<td id='row_type_graphs' width='30%'>";
             $single_table .= html_print_label_input_block(
                 __('Type of graph'),
-                html_print_select($type_graphs, 'simple_type_graph', '', '', '', 0, true)
+                html_print_select($type_graphs, 'simple_type_graph2', '', '', '', 0, true, false, true, '', false, 'width:100%')
             );
             $single_table .= '</td>';
 
@@ -543,21 +543,22 @@ if ($edit_container) {
     $table->width = '100%';
     $table->cellspacing = 4;
     $table->cellpadding = 4;
-    $table->class = 'dat';
+    $table->class = 'filter-table-adv';
 
     $table->styleTable = 'font-weight: bold;';
     $table->style[0] = 'width: 13%';
     $table->data = [];
+    $table->size[0] = '30%';
+    $table->size[1] = '30%';
+    $table->size[2] = '30%';
 
-    $data = [];
-    $data[0] = __('Time lapse');
-    $data[0] .= ui_print_help_tip(__('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '), true);
-    $data[1] = html_print_extended_select_for_time('period_custom', $period, '', '', '0', 10, true, false, true, '', false, $periods);
-    $table->data[] = $data;
-    $table->rowclass[] = '';
-
-    $data = [];
-    $data[0] = __('Custom graph');
+    $table->data[0][0] = html_print_label_input_block(
+        __('Time lapse').ui_print_help_tip(
+            __('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '),
+            true
+        ),
+        html_print_extended_select_for_time('period_custom', $period, '', '', '0', 10, true, 'width:100%', true, '', false, $periods)
+    );
 
     $list_custom_graphs = custom_graphs_get_user($config['id_user'], false, true, 'RR');
 
@@ -566,29 +567,45 @@ if ($edit_container) {
         $graphs[$custom_graph['id_graph']] = $custom_graph['name'];
     }
 
-    $data[1] = html_print_select($graphs, 'id_custom_graph', $idCustomGraph, '', __('None'), 0, true);
-    $table->data[] = $data;
-    $table->rowclass[] = '';
+    $table->data[0][1] = html_print_label_input_block(
+        __('Custom graph'),
+        html_print_select($graphs, 'id_custom_graph', $idCustomGraph, '', __('None'), 0, true, '', true, '', false, 'width:100%')
+    );
 
-    $data = [];
-    $data[0] = __('Show full scale graph (TIP)').ui_print_help_tip('This option may cause performance issues', true);
-    $data[1] = html_print_checkbox('fullscale_2', 1, false, true);
-    $table->data[] = $data;
-    $table->rowclass[] = '';
+    $table->data[0][2] = html_print_label_input_block(
+        __('Show full scale graph (TIP)').ui_print_help_tip('This option may cause performance issues', true),
+        html_print_checkbox('fullscale_2', 1, false, true)
+    );
 
-    $data = [];
-    $data[0] = '';
-    $data[1] = "<input style='float:right;' type=submit name='add_custom' class='sub add' value='".__('Add item')."'>";
-    $table->data[] = $data;
-    $table->rowclass[] = '';
+    $data_toggle = html_print_table($table, true);
+    $data_toggle .= html_print_div(
+        [
+            'class'   => 'action-buttons-right-forced mrgn_right_10px',
+            'content' => html_print_submit_button(
+                __('Add item'),
+                'add_custom',
+                false,
+                [
+                    'mode' => 'mini',
+                    'icon' => 'next',
+                ],
+                true
+            ),
+        ],
+        true
+    );
 
-    echo "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
-        echo '<tr>';
-            echo '<td>';
-                echo ui_toggle(html_print_table($table, true), 'Custom graph', '', '', true);
-            echo '</td>';
-        echo '</tr>';
-    echo '</table>';
+    ui_toggle(
+        $data_toggle,
+        '<span class="subsection_header_title">'.__('Custom graph').'</span>',
+        'container',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph'
+    );
 
     unset($table);
 
@@ -597,93 +614,113 @@ if ($edit_container) {
     $table->width = '100%';
     $table->cellspacing = 4;
     $table->cellpadding = 4;
-    $table->class = 'dat';
+    $table->class = 'filter-table-adv';
 
     $table->styleTable = 'font-weight: bold;';
-    $table->style[0] = 'width: 13%';
     $table->data = [];
+    $table->size[0] = '30%';
+    $table->size[1] = '30%';
+    $table->size[2] = '30%';
 
-    $data = [];
-    $data[0] = __('Time lapse');
-    $data[0] .= ui_print_help_tip(__('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '), true);
-    $data[1] = html_print_extended_select_for_time('period_dynamic', $period, '', '', '0', 10, true, false, true, '', false, $periods);
-    $table->data[] = $data;
-    $table->rowclass[] = '';
 
-    $data = [];
-    $data[0] = __('Group');
-    $data[1] = '<div class="w250px">'.html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'container_id_group', $id_group, '', '', '', true).'</div>';
-    $table->data[] = $data;
-    $table->rowclass[] = '';
+    $table->data[0][0] = html_print_label_input_block(
+        __('Time lapse').ui_print_help_tip(
+            __('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '),
+            true
+        ),
+        html_print_extended_select_for_time('period_custom', $period, '', '', '0', 10, true, 'width:100%', true, '', false, $periods)
+    );
 
-    $data = [];
-    $data[0] = __('Module group');
-    $data[1] = html_print_select_from_sql(
-        'SELECT * FROM tmodule_group ORDER BY name',
-        'combo_modulegroup',
-        $modulegroup,
-        '',
-        __('All'),
-        false,
+    $table->data[0][1] = html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'container_id_group', $id_group, '', '', '', true)
+    );
+
+    $table->data[0][2] = html_print_label_input_block(
+        __('Module group'),
+        html_print_select_from_sql(
+            'SELECT * FROM tmodule_group ORDER BY name',
+            'combo_modulegroup',
+            $modulegroup,
+            '',
+            __('All'),
+            false,
+            true,
+            false,
+            true,
+            false,
+            'width:100%'
+        )
+    );
+
+    $table->data[1][0] = html_print_label_input_block(
+        __('Agent'),
+        html_print_input_text('text_agent', $textAgent, '', 30, 100, true)
+    );
+
+    $table->data[1][1] = html_print_label_input_block(
+        __('Module'),
+        html_print_input_text('text_agent_module', $textModule, '', 30, 100, true)
+    );
+
+    $select_tags = tags_search_tag(false, false, true);
+    $table->data[1][2] = html_print_label_input_block(
+        __('Tag'),
+        html_print_select(
+            $select_tags,
+            'tag',
+            $tag,
+            '',
+            __('Any'),
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            'width:100%'
+        )
+    );
+
+    $table->data[2][0] = html_print_label_input_block(
+        __('Type of graph'),
+        html_print_select($type_graphs, 'simple_type_graph2', '', '', '', 0, true, false, true, '', false, 'width:100%')
+    );
+
+    $table->data[2][1] = html_print_label_input_block(
+        __('Show full scale graph (TIP)').ui_print_help_tip('This option may cause performance issues', true),
+        html_print_checkbox('fullscale_3', 1, false, true)
+    );
+
+    $data_toggle = html_print_table($table, true);
+    $data_toggle .= html_print_div(
+        [
+            'class'   => 'action-buttons-right-forced mrgn_right_10px',
+            'content' => html_print_submit_button(
+                __('Add item'),
+                'add_dynamic',
+                false,
+                [
+                    'mode' => 'mini',
+                    'icon' => 'next',
+                ],
+                true
+            ),
+        ],
         true
     );
-    $table->data[] = $data;
-    $table->rowclass[] = '';
 
-    $data = [];
-    $data[0] = __('Agent');
-    $data[1] = html_print_input_text('text_agent', $textAgent, '', 30, 100, true);
-    $table->data[] = $data;
-    $table->rowclass[] = '';
-
-    $data = [];
-    $data[0] = __('Module');
-    $data[1] = html_print_input_text('text_agent_module', $textModule, '', 30, 100, true);
-    $table->data[] = $data;
-    $table->rowclass[] = '';
-
-    $data = [];
-    $data[0] = __('Tag');
-    $select_tags = tags_search_tag(false, false, true);
-    $data[1] = html_print_select(
-        $select_tags,
-        'tag',
-        $tag,
+    ui_toggle(
+        $data_toggle,
+        '<span class="subsection_header_title">'.__('Dynamic rules for simple module graph').'</span>',
+        'container',
         '',
-        __('Any'),
-        0,
         true,
         false,
-        false
+        '',
+        'white-box-content',
+        'box-flat white_table_graph'
     );
-    $table->data[] = $data;
-    $table->rowclass[] = '';
-
-        $data = [];
-        $data[0] = __('Type of graph');
-        $data[1] = html_print_select($type_graphs, 'simple_type_graph2', '', '', '', 0, true);
-        $table->data[] = $data;
-    $table->rowclass[] = '';
-
-    $data = [];
-    $data[0] = __('Show full scale graph (TIP)').ui_print_help_tip('This option may cause performance issues', true);
-    $data[1] = html_print_checkbox('fullscale_3', 1, false, true);
-    $table->data[] = $data;
-    $table->rowclass[] = '';
-
-    $data = [];
-    $data[0] = '';
-    $data[1] = "<input style='float:right;' type=submit name='add_dynamic' class='sub add' value='".__('Add item')."'>";
-    $table->data[] = $data;
-    $table->rowclass[] = '';
-
-    echo "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
-        echo '<tr>';
-            echo '<td>';
-                echo ui_toggle(html_print_table($table, true), 'Dynamic rules for simple module graph', '', '', true);
-            echo '</td>';
-        echo '</tr>';
-    echo '</table>';
 
     if ((bool) $id_container !== false) {
         $total_item = db_get_all_rows_sql('SELECT count(*) FROM tcontainer_item WHERE id_container = '.$id_container);
@@ -696,7 +733,7 @@ if ($edit_container) {
         ui_pagination($total_item[0]['count(*)'], false, $offset, 10);
         $table = new stdClass();
         $table->width = '100%';
-        $table->class = 'databox data';
+        $table->class = 'info_table';
         $table->id = 'item_table';
         $table->align = [];
         $table->head = [];
@@ -710,7 +747,7 @@ if ($edit_container) {
         $table->head[7] = __('Delete');
 
         $table->data = [];
-
+        $i = 0;
 
         foreach ($result_item as $item) {
             $data = [];
@@ -759,6 +796,8 @@ if ($edit_container) {
                 break;
             }
 
+            $table->cellclass[$i][7] = 'table_action_buttons';
+            $i++;
             $data[7] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&delete_item=1&id_item='.$item['id_ci'].'&id='.$id_container.'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
                 return false;">'.html_print_image('images/delete.svg', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
 
@@ -801,7 +840,7 @@ echo html_print_input_hidden('id_agent', 0);
             }
         });
 
-        $("input[name=add_custom]").click (function () {
+        $("#button-add_custom").click (function () {
             var id_custom = $("#id_custom_graph").val();
             var fullscale = $("#checkbox-fullscale_2").prop("checked");
             if (id_custom !== '0'){
@@ -824,7 +863,7 @@ echo html_print_input_hidden('id_agent', 0);
             }
         });
         
-        $("input[name=add_dynamic]").click (function () {
+        $("#button-add_dynamic").click (function () {
             var agent_alias = $("#text-text_agent").val();
             var module_name = $("#text-text_agent_module").val();
             var time_lapse = $("#hidden-period_dynamic").attr('value');

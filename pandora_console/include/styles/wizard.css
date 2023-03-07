@@ -37,9 +37,9 @@ ul.wizard li > label:not(.p-switch):first-of-type {
   display: inline-block;
 }
 
-ul.wizard li > label:not(.p-switch):not(:first-of-type) {
+/* ul.wizard li > label:not(.p-switch):not(:first-of-type) {
   margin-left: 1em;
-}
+} */
 
 .select2.select2-container {
   min-width: 200px;
@@ -155,9 +155,18 @@ ul.wizard li > textarea {
 }
 
 .action_button_list {
+  display: flex;
+  align-content: center;
+  justify-content: flex-end;
   height: 60px;
 }
 
+.action_button_list ul {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  align-items: center;
+}
 .action_button_list li {
   display: inline;
 }
@@ -185,4 +194,19 @@ ul.wizard li.mrgn_0px {
 
 ul.wizard li.pdd_0px {
   padding: 0;
+}
+
+li#textarea-create-site > textarea {
+  width: 100%;
+}
+
+form#create_site > ul.wizard > li > label {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+select[multiple] {
+  min-height: 20em;
 }

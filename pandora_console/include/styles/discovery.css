@@ -113,7 +113,7 @@ div.arrow_box:before {
 #menu_tab_frame_view_bc {
   display: flex;
   justify-content: space-between;
-  border-bottom: 2px solid #82b92e;
+  border-bottom: 2px solid var(--primary-color);
   max-height: 70px;
   min-height: 55px;
   width: 100%;
@@ -131,16 +131,16 @@ div.arrow_box:before {
 #menu_tab_frame_view_bc .breadcrumbs_container {
   align-self: flex-start;
 }
-
+/*
 .breadcrumbs_container {
   padding-top: 4px;
   text-indent: 0.25em;
   padding-left: 2.5em;
 }
-
+*/
 .breadcrumb_link {
   color: #848484;
-  font-size: 10pt;
+  font-size: 12px;
   text-decoration: none;
 }
 
@@ -150,23 +150,21 @@ span.breadcrumb_link {
 }
 
 .breadcrumb_link.selected {
-  color: #95b750;
+  color: var(--primary-color);
 }
 
 .breadcrumb_link.selected:hover {
-  color: #95b750;
+  color: var(--primary-color);
+  text-decoration: none;
 }
 .breadcrumb_link:hover {
-  color: #95b750;
+  color: var(--primary-color);
+  text-decoration: none;
 }
 
 /*
  * Discovery forms structure
  */
-
-form.discovery * {
-  font-size: 10pt;
-}
 
 form.discovery .label_select b {
   font-weight: bolder;
@@ -199,7 +197,7 @@ label {
 .discovery_full_width_input {
   width: 100%;
 }
-
+/*
 li > input[type="number"],
 li > input[type="text"],
 li > input[type="email"],
@@ -216,7 +214,7 @@ li > input[type="email"],
   box-sizing: border-box;
   margin-bottom: 4px;
 }
-
+*/
 #interval_manual > input[type="text"] {
   width: 50px;
   margin-left: 10px;

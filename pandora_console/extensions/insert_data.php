@@ -1,16 +1,32 @@
 <?php
+/**
+ * Insert Data form.
+ *
+ * @category   Extension.
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -55,7 +71,24 @@ function mainInsertData()
 {
     global $config;
 
-    ui_print_page_header(__('Insert data'), 'images/extensions.png', false, '', true, '');
+    ui_print_standard_header(
+        __('Insert Data'),
+        'images/extensions.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Insert Data'),
+            ],
+        ]
+    );
 
     if (! check_acl($config['id_user'], 0, 'AW') && ! is_user_admin($config['id_user'])) {
         db_pandora_audit(
@@ -83,6 +116,13 @@ function mainInsertData()
     } else {
         $csv = false;
     }
+
+    ui_print_warning_message(
+        sprintf(
+            __('Please check that the directory "%s" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s.'),
+            $config['remote_config']
+        )
+    );
 
     if ($save) {
         if (!check_acl($config['id_user'], agents_get_agent_group($agent_id), 'AW')) {
@@ -140,27 +180,25 @@ function mainInsertData()
         }
     }
 
-    echo '<div class="notify mrg_btt_15">';
-    echo sprintf(
-        __('Please check that the directory "%s" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s.'),
-        $config['remote_config']
-    );
-    echo '</div>';
+    $modules = [];
+    if ($agent_id > 0) {
+        $modules = agents_get_modules($agent_id, false, ['delete_pending' => 0]);
+    }
 
     $table = new stdClass();
-    $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'databox filter-table-adv';
     $table->style = [];
-    $table->style[0] = 'font-weight: bolder;';
-
+    $table->cellstyle[0][0] = 'width: 0';
+    $table->cellstyle[0][1] = 'width: 0';
     $table->data = [];
-
-    $table->data[0][0] = __('Agent');
+    $table->data[0][0] = '<label>'.__('Agent').'</label>';
+    $table->data[0][1] = '<label>'.__('Module').'</label>';
+    $table->data[0][2] = '<label>'.__('Date').'</label>';
     $params = [];
     $params['return'] = true;
     $params['show_helptip'] = true;
     $params['input_name'] = 'agent_name';
-    $params['value'] = $agent_name;
+    $params['value'] = ($save === true) ? '' : $agent_name;
     $params['javascript_is_function_select'] = true;
     $params['javascript_name_function_select'] = 'custom_select_function';
     $params['javascript_code_function_select'] = '';
@@ -170,18 +208,12 @@ function mainInsertData()
     $params['hidden_input_idagent_name'] = 'agent_id';
     $params['hidden_input_idagent_value'] = $agent_id;
 
-    $table->data[0][1] = ui_print_agent_autocomplete_input($params);
-
-    $table->data[1][0] = __('Module');
-    $modules = [];
-    if ($agent_id) {
-        $modules = agents_get_modules($agent_id, false, ['delete_pending' => 0]);
-    }
+    $table->data[1][0] = html_print_div(['class' => 'flex flex-items-center', 'content' => ui_print_agent_autocomplete_input($params)], true);
 
     $table->data[1][1] = html_print_select(
         $modules,
         'id_agent_module',
-        $id_agent_module,
+        ($save === true) ? '' : $id_agent_module,
         true,
         __('Select'),
         0,
@@ -191,22 +223,45 @@ function mainInsertData()
         '',
         empty($agent_id)
     );
-    $table->data[2][0] = __('Data');
-    $table->data[2][1] = html_print_input_text('data', $data, __('Data'), 40, 60, true);
-    $table->data[3][0] = __('Date');
-    $table->data[3][1] = html_print_input_text('date', $date, '', 11, 11, true).' ';
-    $table->data[3][1] .= html_print_input_text('time', $time, '', 7, 7, true);
-    $table->data[4][0] = __('CSV');
-    $table->data[4][1] = html_print_input_file('csv', true);
+    $table->data[1][2] = html_print_input_text('data', ($save === true) ? date(DATE_FORMAT) : $data, __('Data'), 10, 60, true);
+    $table->data[1][2] .= '&nbsp;';
+    $table->data[1][2] .= html_print_input_text('time', ($save === true) ? date(TIME_FORMAT) : $time, '', 10, 7, true);
+
+    $table->data[2][0] = '<label>'.__('Data').'</label>';
+    $table->data[2][1] = '<label>'.__('CSV').'</label>';
+    $table->data[3][0] = html_print_input_text(
+        'data',
+        $data,
+        __('Data'),
+        40,
+        60,
+        true
+    );
+    $table->data[3][1] = html_print_div(
+        [
+            'class'   => '',
+            'content' => html_print_input_file('csv', true),
+        ],
+        true
+    );
 
     echo "<form method='post' enctype='multipart/form-data'>";
 
     html_print_table($table);
 
-    echo "<div class='right' style='width: ".$table->width."'>";
     html_print_input_hidden('save', 1);
-    html_print_submit_button(__('Save'), 'submit', ($id_agent === ''), 'class="sub next"');
-    echo '</div>';
+
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Save'),
+            'submit',
+            // (empty($id_agent) === true),
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        ['type' => 'form_action']
+    );
 
     echo '</form>';
 
@@ -257,8 +312,8 @@ function mainInsertData()
                 $('#id_agent_module').enable();
                 $('#id_agent_module').fadeIn ('normal');
                 
-                $('#submit-submit').enable();
-                $('#submit-submit').fadeIn ('normal');
+                $('button [name="submit"]').removeClass('disabled_action_button');
+                $('button [name="submit"]').fadeIn ('normal');
             }
         });
     }

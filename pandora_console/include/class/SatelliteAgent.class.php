@@ -157,11 +157,6 @@ class SatelliteAgent extends HTML
 
             $this->tableId = 'satellite_agents';
 
-            if (is_metaconsole() === true) {
-                // Only in case of Metaconsole, format the frame.
-                open_meta_frame();
-            }
-
             // Load datatables user interface.
             ui_print_datatable(
                 [
@@ -209,11 +204,6 @@ class SatelliteAgent extends HTML
             );
         } catch (Exception $e) {
             echo $e->getMessage();
-        }
-
-        if (is_metaconsole() === true) {
-            // Close the frame.
-            close_meta_frame();
         }
 
         // Auxiliar div.
@@ -1258,7 +1248,7 @@ class SatelliteAgent extends HTML
 
             $('body').append('<div id="dialog"></div>');
 
-            $("#submit-create").on('click', function() {
+            $("#button-create").on('click', function() {
                 show_form();
             });
 

@@ -864,3 +864,14 @@ define(
 
 // Pandora FMS Enterprise license.
 define('LICENSE_FILE', 'customer_key');
+
+// Home screen values for user definition.
+define('HOME_SCREEN_DEFAULT', 'default');
+define('HOME_SCREEN_VISUAL_CONSOLE', 'visual_console');
+define('HOME_SCREEN_EVENT_LIST', 'event_list');
+define('HOME_SCREEN_GROUP_VIEW', 'group_view');
+define('HOME_SCREEN_TACTICAL_VIEW', 'tactical_view');
+define('HOME_SCREEN_ALERT_DETAIL', 'alert_detail');
+define('HOME_SCREEN_EXTERNAL_LINK', 'external_link');
+define('HOME_SCREEN_OTHER', 'other');
+define('HOME_SCREEN_DASHBOARD', 'dashboard');

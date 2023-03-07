@@ -1,16 +1,32 @@
 <?php
+/**
+ * Resources exportation view.
+ *
+ * @category   Extensions.
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// Load global vars.
 if (isset($_GET['get_ptr'])) {
     if ($_GET['get_ptr'] == 1) {
         $ownDir = dirname(__FILE__).'/';
@@ -123,13 +139,6 @@ function output_xml_report($id)
 
             $agent = null;
         switch (io_safe_output($item['type'])) {
-            case 1:
-            case 'simple_graph':
-            break;
-
-            case 'simple_baseline_graph':
-            break;
-
             case 2:
             case 'custom_graph':
             case 'automatic_custom_graph':
@@ -169,30 +178,6 @@ function output_xml_report($id)
                 }
             break;
 
-            case 6:
-            case 'monitor_report':
-            break;
-
-            case 7:
-            case 'avg_value':
-            break;
-
-            case 8:
-            case 'max_value':
-            break;
-
-            case 9:
-            case 'min_value':
-            break;
-
-            case 10:
-            case 'sumatory':
-            break;
-
-            case 'agent_detailed_event':
-            case 'event_report_agent':
-            break;
-
             case 'text':
                 echo '<text><![CDATA['.io_safe_output($item['text'])."]]></text>\n";
             break;
@@ -224,18 +209,6 @@ function output_xml_report($id)
                 echo '<group><![CDATA['.io_safe_output($group)."]]></group>\n";
             break;
 
-            case 'event_report_module':
-            break;
-
-            case 'alert_report_module':
-            break;
-
-            case 'alert_report_agent':
-            break;
-
-            case 'alert_report_group':
-            break;
-
             case 'url':
                 echo '<url><![CDATA['.io_safe_output($values['external_source']).']]></url>';
             break;
@@ -244,6 +217,29 @@ function output_xml_report($id)
                 echo '<header_definition><![CDATA['.io_safe_output($item['header_definition']).']]></header_definition>';
                 echo '<line_separator><![CDATA['.io_safe_output($item['line_separator']).']]></line_separator>';
                 echo '<column_separator><![CDATA['.io_safe_output($item['header_definition']).']]></column_separator>';
+            break;
+
+            case 1:
+            case 'simple_graph':
+            case 'simple_baseline_graph':
+            case 6:
+            case 'monitor_report':
+            case 7:
+            case 'avg_value':
+            case 8:
+            case 'max_value':
+            case 9:
+            case 'min_value':
+            case 10:
+            case 'sumatory':
+            case 'agent_detailed_event':
+            case 'event_report_agent':
+            case 'event_report_module':
+            case 'alert_report_module':
+            case 'alert_report_agent':
+            case 'alert_report_group':
+            default:
+                // Do nothing.
             break;
         }
 
@@ -417,25 +413,59 @@ function resource_exportation_extension_main()
 
     $hook_enterprise = enterprise_include('extensions/resource_exportation/functions.php');
 
-    ui_print_page_header(__('Resource exportation'), 'images/extensions.png', false, '', true, '');
+    ui_print_standard_header(
+        __('Resource exportation'),
+        'images/extensions.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Resource exporting'),
+            ],
+        ]
+    );
 
-    echo '<div class=notify>';
-    echo __('This extension makes exportation of resource template more easy.').' '.__('You can export resource templates in .ptr format.');
-    echo '</div>';
-
-    echo '<br /><br />';
+    ui_print_warning_message(
+        __('This extension makes exportation of resource template more easy.').'<br>'.__('You can export resource templates in .ptr format.')
+    );
 
     $table = new stdClass();
-    $table->width = '100%';
-    $table->style[0] = 'width: 30%;';
-    $table->style[1] = 'width: 10%;';
-    $table->class = 'databox filters';
-    $table->data[0][0] = __('Report');
-    $table->data[0][1] = html_print_select_from_sql('SELECT id_report, name FROM treport', 'report', '', '', '', 0, true);
-    $table->data[0][2] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'report\');', 'class="sub config"', true);
-    $table->data[1][0] = __('Visual console');
-    $table->data[1][1] = html_print_select_from_sql('SELECT id, name FROM tlayout', 'visual_console', '', '', '', 0, true);
-    $table->data[1][2] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'visual_console\');', 'class="sub config"', true);
+    $table->class = 'databox filter-table-adv';
+    $table->id = 'resource_exportation_table';
+    $table->style = [];
+    $table->style[0] = 'width: 30%';
+    $table->style[1] = 'vertical-align: bottom;';
+    $table->data = [];
+    $table->data[0][] = html_print_label_input_block(
+        __('Report'),
+        html_print_div(
+            [
+                'class'   => 'flex-content-left',
+                'content' => html_print_select_from_sql('SELECT id_report, name FROM treport', 'report', '', '', '', 0, true),
+            ],
+            true
+        )
+    );
+    $table->data[0][] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'report\');', ['mode' => 'link'], true);
+
+    $table->data[1][] = html_print_label_input_block(
+        __('Visual console'),
+        html_print_div(
+            [
+                'class'   => 'flex-content-left',
+                'content' => html_print_select_from_sql('SELECT id, name FROM tlayout', 'visual_console', '', '', '', 0, true),
+            ],
+            true
+        )
+    );
+    $table->data[1][] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'visual_console\');', ['mode' => 'link'], true);
 
     if ($hook_enterprise === true) {
         add_rows_for_enterprise($table->data);

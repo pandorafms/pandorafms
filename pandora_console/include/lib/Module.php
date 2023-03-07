@@ -513,6 +513,37 @@ class Module extends Entity
 
 
     /**
+     * Return the color to image representing last status.
+     *
+     * @return string Hexadecimal notation color.
+     */
+    public function lastStatusColor()
+    {
+        switch ($this->lastStatus()) {
+            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+            return COL_CRITICAL;
+
+            case AGENT_MODULE_STATUS_WARNING_ALERT:
+            case AGENT_MODULE_STATUS_WARNING:
+            return COL_WARNING;
+
+            case AGENT_MODULE_STATUS_UNKNOWN:
+            return COL_UNKNOWN;
+
+            case AGENT_MODULE_STATUS_NO_DATA:
+            case AGENT_MODULE_STATUS_NOT_INIT:
+            return COL_NOTINIT;
+
+            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+            case AGENT_MODULE_STATUS_NORMAL:
+            default:
+            return COL_NORMAL;
+        }
+    }
+
+
+    /**
      * Return path to image representing last status.
      *
      * @return string Relative URL to image.

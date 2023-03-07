@@ -2,6 +2,12 @@
  * Discovery css global
  */
 
+*,
+::after,
+::before {
+  box-sizing: unset !important;
+}
+
 ul.bigbuttonlist {
   min-height: 200px;
 }
@@ -108,60 +114,6 @@ div.arrow_box:before {
 }
 
 /*
- * Breadcrum
- */
-
-#menu_tab_frame_view_bc {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 2px solid #82b92e;
-  max-height: 70px;
-  min-height: 55px;
-  width: 100%;
-  padding-right: 0px;
-  margin-left: 0px;
-  margin-bottom: 20px;
-  height: 55px;
-  box-sizing: border-box;
-  background-color: #fafafa;
-  border-top-right-radius: 7px;
-  border-top-left-radius: 7px;
-  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);
-}
-
-#menu_tab_frame_view_bc .breadcrumbs_container {
-  align-self: flex-start;
-}
-
-.breadcrumbs_container {
-  padding-top: 4px;
-  text-indent: 0.25em;
-  padding-left: 2.5em;
-}
-
-.breadcrumb_link {
-  color: #848484;
-  font-size: 10pt;
-  text-decoration: none;
-}
-
-span.breadcrumb_link {
-  color: #d0d0d0;
-  font-size: 12pt;
-}
-
-.breadcrumb_link.selected {
-  color: #95b750;
-}
-
-.breadcrumb_link.selected:hover {
-  color: #95b750;
-}
-.breadcrumb_link:hover {
-  color: #95b750;
-}
-
-/*
  * Discovery forms structure
  */
 
@@ -200,7 +152,7 @@ label {
 .discovery_full_width_input {
   width: 100%;
 }
-
+/*
 li > input[type="number"],
 li > input[type="text"]:not(.search_input),
 li > input[type="email"],
@@ -216,7 +168,7 @@ li > input[type="password"],
   box-sizing: border-box;
   margin-bottom: 4px;
 }
-
+*/
 #interval_manual > input[type="text"] {
   width: 50px;
   margin-left: 10px;
@@ -323,11 +275,13 @@ form.modal ul.wizard li {
   width: 90%;
   margin: 0.5em auto;
   justify-items: center;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
 form.modal-dashboard ul.wizard li *,
 form.modal ul.wizard li * {
-  flex: 1;
+  flex: 1 1 50%;
 }
 
 ul.wizard li.flex-indep {

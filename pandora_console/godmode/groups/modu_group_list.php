@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,7 +43,7 @@ if (is_ajax() === true) {
     $get_group_json = (bool) get_parameter('get_group_json');
     $get_group_agents = (bool) get_parameter('get_group_agents');
 
-    if ($get_group_json) {
+    if ($get_group_json === true) {
         $id_group = (int) get_parameter('id_group');
 
         if (! check_acl($config['id_user'], $id_group, 'AR')) {
@@ -66,13 +66,23 @@ if (is_ajax() === true) {
 
 if (is_metaconsole() === false) {
     // Header.
-    ui_print_page_header(
-        __('Module groups defined in %s', get_product_name()),
+    ui_print_standard_header(
+        __('Module groups list'),
         'images/module_group.png',
         false,
         '',
         true,
-        ''
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Module groups'),
+            ],
+        ]
     );
 }
 
@@ -174,7 +184,7 @@ if ($is_management_allowed === true && $delete_group === true) {
 
     $result = db_process_sql_delete('tmodule_group', ['id_mg' => $id_group]);
 
-    if ($result) {
+    if ((bool) $result === true) {
         $result = db_process_sql_update(
             'tagente_modulo',
             ['id_module_group' => 0],
@@ -223,11 +233,11 @@ if ($is_management_allowed === true && $delete_group === true) {
         }
     }
 
-    if (! $result) {
-        ui_print_error_message(__('There was a problem deleting group'));
-    } else {
-        ui_print_success_message(__('Group successfully deleted'));
-    }
+    ui_print_result_message(
+        $result,
+        __('Group successfully deleted'),
+        __('There was a problem deleting group')
+    );
 }
 
 // Prepare pagination.
@@ -243,7 +253,6 @@ $sql = 'SELECT *
 $groups = db_get_all_rows_sql($sql);
 
 $table = new stdClass();
-$table->width = '100%';
 $table->class = 'info_table';
 
 if (empty($groups) === false) {
@@ -254,6 +263,8 @@ if (empty($groups) === false) {
         $table->head[2] = __('Delete');
     }
 
+    $table->size[0] = '5%';
+
     $table->align = [];
     $table->align[1] = 'left';
     if ($is_management_allowed === true) {
@@ -262,18 +273,18 @@ if (empty($groups) === false) {
     }
 
     $table->data = [];
-
+    $offset_delete = ($offset >= $total_groups - 1) ? ($offset - $config['block_size']) : $offset;
     foreach ($groups as $id_group) {
         $data = [];
         $data[0] = $id_group['id_mg'];
 
         if ($is_management_allowed === true) {
-            $data[1] = '<strong><a href="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group&id_group='.$id_group['id_mg'].'">'.ui_print_truncate_text($id_group['name'], GENERIC_SIZE_TEXT).'</a></strong>';
+            $data[1] = '<strong><a href="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group&id_group='.$id_group['id_mg'].'&offset='.$offset.'">'.ui_print_truncate_text($id_group['name'], GENERIC_SIZE_TEXT).'</a></strong>';
             if (is_metaconsole() === true) {
-                $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+                $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1&offset='.$offset_delete.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
             } else {
-                $table->cellclass[][2] = 'action_buttons';
-                $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+                $table->cellclass[][2] = 'table_action_buttons';
+                $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1&offset='.$offset_delete.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
             }
         } else {
             $data[1] = '<strong>';
@@ -284,9 +295,8 @@ if (empty($groups) === false) {
         array_push($table->data, $data);
     }
 
-    ui_pagination($total_groups, $url, $offset);
     html_print_table($table);
-    ui_pagination($total_groups, $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination($total_groups, $url, $offset, 0, true, 'offset', false);
 } else {
     ui_print_info_message(
         [
@@ -298,13 +308,18 @@ if (empty($groups) === false) {
 
 if ($is_management_allowed === true) {
     echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group">';
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(
-        __('Create module group'),
-        'crt',
-        false,
-        'class="sub next"'
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create module group'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        [
+            'type'          => 'form_action',
+            'right_content' => $tablePagination,
+        ]
     );
-    echo '</div>';
     echo '</form>';
 }

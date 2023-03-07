@@ -59,23 +59,22 @@ $result = integria_api_call(null, null, null, null, 'get_incidents', $params, fa
 
 $result = json_decode($result, true);
 
-$count = count($result);
-
-$result = array_slice($result, $offset, $config['block_size']);
-
-if (empty($result)) {
+if (empty($result) === true) {
     $result = [];
     $count = 0;
     echo '<div class="nf">'.__('No incidents associated to this agent').'</div><br />';
     return;
+} else {
+    $count = count($result);
+    $result = array_slice($result, $offset, $config['block_size']);
 }
 
-// Show pagination
+// Show pagination.
 ui_pagination($count, $url, $offset, 0, false, 'offset');
 // ($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.
 echo '<br />';
 
-// Show headers
+// Show headers.
 $table->width = '100%';
 $table->class = 'databox';
 $table->cellpadding = 4;

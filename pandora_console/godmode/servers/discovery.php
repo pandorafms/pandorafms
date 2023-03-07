@@ -55,17 +55,19 @@ function get_wiz_class($str)
 
         default:
             // Main, show header.
-            ui_print_page_header(
+            ui_print_standard_header(
                 __('Discovery'),
                 '',
                 false,
                 '',
                 true,
-                '',
-                false,
-                '',
-                GENERIC_SIZE_TEXT,
-                ''
+                [],
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Discovery'),
+                    ],
+                ]
             );
         return null;
     }

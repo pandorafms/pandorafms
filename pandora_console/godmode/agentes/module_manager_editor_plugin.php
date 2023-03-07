@@ -89,8 +89,7 @@ $password_fields = [];
 
 // If there are $macros, we create the form fields
 if (!empty($macros)) {
-    $macros = json_decode($macros, true);
-
+    $macros = json_decode(io_safe_output($macros), true);
     foreach ($macros as $k => $m) {
         $data = [];
         $data[0] = $m['desc'];

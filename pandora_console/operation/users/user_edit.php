@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -85,9 +85,21 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['show_tips_startup'] = get_parameter_switch('show_tips_startup');
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
+
+
+
+
+
+
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
     $upd_info['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($config['id_user']);
+
+
+
+
+
+
 
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size > 0) {
@@ -99,6 +111,11 @@ if (isset($_GET['modified']) && !$view_mode) {
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
+
+
+
+
+
     // Save autorefresh list.
     $autorefresh_list = get_parameter_post('autorefresh_list');
     if (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) {
@@ -106,6 +123,11 @@ if (isset($_GET['modified']) && !$view_mode) {
     } else {
         $upd_info['autorefresh_white_list'] = json_encode($autorefresh_list);
     }
+
+
+
+
+
 
     $upd_info['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
     $upd_info['ehorus_user_level_user'] = get_parameter('ehorus_user_level_user');
@@ -270,6 +292,11 @@ if (is_metaconsole() === false && is_management_allowed() === false) {
 $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
 $user_id .= '<span>'.$id.'</span></div>';
 
+
+
+
+
+
 $user_id .= '<div class="label_select_simple"><p class="edit_user_labels">'.__('API Token').'</p>';
 if (is_management_allowed()) {
     $user_id .= html_print_anchor(
@@ -335,6 +362,13 @@ if ($http_authorization === false) {
         true
     );
 }
+
+
+
+
+
+
+
 
 $user_id .= '</div>';
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
@@ -519,14 +553,25 @@ if ((bool) $config['double_auth_enabled'] === true) {
 
     // Dialog.
     $double_authentication .= '<div id="dialog-double_auth"class="invisible"><div id="dialog-double_auth-container"></div></div>';
-    $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 
-if (isset($double_authentication)) {
+if ($double_auth_enabled && $config['double_auth_enabled']) {
+    $double_authentication .= html_print_button(
+        __('Show information'),
+        'show_info',
+        false,
+        'show_double_auth_info();',
+        [ 'icon' => 'camera' ],
+        '',
+        true
+    );
+}
+
+if (isset($double_authentication) === true) {
     $double_authentication .= '</div>';
 }
 
-if (check_acl($config['id_user'], 0, 'ER')) {
+if ((bool) check_acl($config['id_user'], 0, 'ER') === true) {
     $event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Event filter').'</p>';
     $user_groups = implode(',', array_keys((users_get_groups($config['id_user'], 'AR', true))));
     $event_filter .= html_print_select_from_sql(
@@ -542,6 +587,18 @@ if (check_acl($config['id_user'], 0, 'ER')) {
 
 $show_tips = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Show usage tips at startup').'</p>';
 $show_tips .= html_print_checkbox_switch('show_tips_startup', 1, $user_info['show_tips_startup'], true).'</div>';
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -690,6 +747,17 @@ $time_autorefresh .= html_print_select(
 ).'</div>';
 
 
+
+
+
+
+
+
+
+
+
+
+
 $comments = '<p class="edit_user_labels">'.__('Comments').': </p>';
 $comments .= html_print_textarea(
     'comments',
@@ -820,7 +888,14 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
 
     $row = [];
     $row['name'] = __('Test');
-    $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')', 'class="sub next"', true);
+    $row['control'] = html_print_button(
+        __('Start'),
+        'test-ehorus',
+        false,
+        'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')',
+        [ 'icon' => 'next' ],
+        true
+    );
     $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
     $row['control'] .= '&nbsp;<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
     $row['control'] .= '&nbsp;<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
@@ -866,7 +941,14 @@ if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
 
     $row = [];
     $row['name'] = __('Test');
-    $row['control'] = html_print_button(__('Start'), 'test-integria', false, 'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')', 'class="sub next"', true);
+    $row['control'] = html_print_button(
+        __('Start'),
+        'test-integria',
+        false,
+        'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')',
+        [ 'icon' => 'next' ],
+        true
+    );
     $row['control'] .= '&nbsp;<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
     $row['control'] .= '&nbsp;<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
     $row['control'] .= '&nbsp;<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
@@ -880,15 +962,25 @@ if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
 
 
 if ($is_management_allowed === true) {
-    echo '<div class="edit_user_button">';
-    if (!$config['user_can_update_info']) {
-        echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
+    if ((bool) $config['user_can_update_info'] === false) {
+        $outputButton = '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
     } else {
-        html_print_csrf_hidden();
-        html_print_submit_button(__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
+        $outputButton = html_print_submit_button(
+            __('Update'),
+            'uptbutton',
+            $view_mode,
+            [ 'icon' => 'update' ],
+            true
+        );
+        $outputButton .= html_print_csrf_hidden(true);
     }
 
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => $outputButton,
+        ]
+    );
 }
 
 echo '</form>';
@@ -964,8 +1056,6 @@ if (!empty($table->data)) {
 
 // Close edit_user_profiles.
 echo '</div>';
-
-enterprise_hook('close_meta_frame');
 
 if (is_metaconsole() === false) {
     ?>

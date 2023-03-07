@@ -37,10 +37,6 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
-if (is_metaconsole() === true) {
-    enterprise_hook('open_meta_frame');
-}
-
 if (! check_acl($config['id_user'], 0, 'LM')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -95,12 +91,19 @@ if ($a_template !== false) {
                 $help_header = '';
             }
 
-            ui_print_page_header(
-                __('Alerts').' &raquo; '.__('Configure alert template'),
-                '',
+            ui_print_standard_header(
+                __('Alerts'),
+                'images/gm_alerts.png',
                 false,
                 $help_header,
-                true
+                true,
+                [],
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Configure alert template'),
+                    ],
+                ]
             );
         }
     } else {
@@ -119,12 +122,19 @@ if ($a_template !== false) {
             if (is_metaconsole() === true) {
                 alerts_meta_print_header();
             } else {
-                ui_print_page_header(
-                    __('Alerts').' &raquo; '.__('Configure alert template'),
+                ui_print_standard_header(
+                    __('Alerts'),
                     'images/gm_alerts.png',
                     false,
                     'conf_alert_template',
-                    true
+                    true,
+                    [],
+                    [
+                        [
+                            'link'  => '',
+                            'label' => __('Configure alert template'),
+                        ],
+                    ]
                 );
             }
         } else {
@@ -151,12 +161,19 @@ if ($a_template !== false) {
             $help_header = '';
         }
 
-        ui_print_page_header(
-            __('Alerts').' &raquo; '.__('Configure alert template'),
+        ui_print_standard_header(
+            __('Alerts'),
             'images/gm_alerts.png',
             false,
             $help_header,
-            true
+            true,
+            [],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Configure alert template'),
+                ],
+            ]
         );
     }
 }
@@ -602,27 +619,22 @@ print_alert_template_steps($step, $id);
 $table = new stdClass();
 $table->id = 'template';
 $table->width = '100%';
-$table->class = 'databox filters';
-if (is_metaconsole() === true) {
-    $table->head[0] = __('Create Template');
-    $table->head_colspan[0] = 4;
-    $table->headstyle[0] = 'text-align: center';
-}
+$table->class = 'databox filters w100p filter-table-adv';
 
 $table->style = [];
-$table->style[0] = 'font-weight: bold;';
-$table->style[2] = 'font-weight: bold;';
 
 $table->size = [];
-$table->size[0] = '20%';
-$table->size[2] = '20%';
+$table->size[0] = '50%';
+$table->size[2] = '50%';
+
+$table->colspan = [];
+$table->colspan[1][0] = 2;
 
 if ($step == 2) {
     if (!isset($show_matches)) {
         $show_matches = false;
     }
 
-    $table->data[0][0] = __('Use special days list');
     $data_special_days = Calendar::calendars(
         // Fields.
         [ '`talert_calendar`.*' ],
@@ -641,121 +653,154 @@ if ($step == 2) {
         // Reduce to a select.
         true
     );
-
-    $table->data[0][1] = html_print_select(
-        $data_special_days,
-        'special_day',
-        $special_day,
-        '',
-        __('None'),
-        0,
-        true,
-        false,
-        false,
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data[0][0] = html_print_label_input_block(
+        __('Use special days list'),
+        html_print_select(
+            $data_special_days,
+            'special_day',
+            $special_day,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            false,
+            'w100p',
+            (!$is_management_allowed | $disabled),
+            'width: 100%'
+        )
     );
+
+    $table->data[0][1] = '&nbsp;';
 
     // Firing conditions and events.
-    $table->colspan = [];
-    $table->data[1][0] = __('Schedule');
-    $table->colspan[1][1] = 3;
-    $table->data[1][1] = ui_print_warning_message(
-        [
-            'message'     => __('No alert has been scheduled yet'),
-            'force_style' => 'display:none;',
-            'force_class' => 'alert_schedule',
-        ],
-        '',
-        true
-    );
-    $table->data[1][1] .= '<div id="calendar_map" style="width: 90%;"></div>';
-    $table->data[1][1] .= html_print_input_hidden('schedule', $schedule, true);
-
-    $table->colspan['threshold'][1] = 3;
-    $table->data['threshold'][0] = __('Time threshold');
-    $table->data['threshold'][1] = html_print_extended_select_for_time(
-        'threshold',
-        $threshold,
-        '',
-        '',
-        '',
-        false,
-        true,
-        false,
-        true,
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data[1][0] = html_print_label_input_block(
+        __('Schedule'),
+        ui_print_warning_message(
+            [
+                'message'     => __('No alert has been scheduled yet'),
+                'force_style' => 'display:none;',
+                'force_class' => 'alert_schedule',
+            ],
+            '',
+            true
+        ).'<div id="calendar_map" style="width: 90%;"></div>'.html_print_input_hidden('schedule', $schedule, true)
     );
 
-    $table->data[4][0] = __('Min. number of alerts');
-    $table->data[4][1] = html_print_input_text(
-        'min_alerts',
-        $min_alerts,
-        '',
-        5,
-        7,
-        true,
-        false,
-        false,
-        '',
-        '',
-        '',
-        '',
-        false,
-        '',
-        '',
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data[2][0] = html_print_label_input_block(
+        __('Time threshold'),
+        html_print_extended_select_for_time(
+            'threshold',
+            $threshold,
+            '',
+            '',
+            '',
+            false,
+            true,
+            false,
+            true,
+            'w100p',
+            (!$is_management_allowed | $disabled)
+        )
     );
 
-    $table->data[4][2] = __('Reset counter for non-sustained alerts');
-    $table->data[4][2] .= ui_print_help_tip(
-        __('Enable this option if you want the counter to be reset when the alert is not being fired consecutively, even if it\'s within the time threshold'),
-        true
-    );
-    $table->data[4][3] = html_print_checkbox(
-        'min_alerts_reset_counter',
-        1,
-        $min_alerts_reset_counter,
-        true,
-        (!$is_management_allowed | $disabled),
-        '',
-        false,
-        ($create_template == 1) ? 'checked=checked' : ''
-    );
-
-    $table->data[5][0] = __('Max. number of alerts');
-    $table->data[5][1] = html_print_input_text(
-        'max_alerts',
-        $max_alerts,
-        '',
-        5,
-        7,
-        true,
-        false,
-        false,
-        '',
-        '',
-        '',
-        '',
-        false,
-        '',
-        '',
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data[2][1] = html_print_label_input_block(
+        __('Default action').ui_print_help_tip(
+            __('Unless they\'re left blank, the fields from the action will override those set on the template.'),
+            true
+        ),
+        html_print_select_from_sql(
+            $sql_query,
+            'default_action',
+            $default_action,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            false,
+            (!$is_management_allowed | $disabled),
+            false,
+            false,
+            0,
+            'w100p'
+        )
     );
 
-    $table->data[5][2] = __('Disable event');
-    $table->data[5][3] = html_print_checkbox(
-        'disable_event',
-        1,
-        $disable_event,
-        true,
-        (!$is_management_allowed | $disabled)
+    $table->data[3][0] = html_print_label_input_block(
+        __('Min. number of alerts'),
+        html_print_input_text(
+            'min_alerts',
+            $min_alerts,
+            '',
+            5,
+            7,
+            true,
+            false,
+            false,
+            '',
+            'w100p',
+            '',
+            '',
+            false,
+            '',
+            '',
+            '',
+            (!$is_management_allowed | $disabled)
+        )
     );
 
-    $table->data[6][0] = __('Default action');
+    $table->data[3][1] = html_print_label_input_block(
+        __('Reset counter for non-sustained alerts').ui_print_help_tip(
+            __('Enable this option if you want the counter to be reset when the alert is not being fired consecutively, even if it\'s within the time threshold'),
+            true
+        ),
+        html_print_checkbox(
+            'min_alerts_reset_counter',
+            1,
+            $min_alerts_reset_counter,
+            true,
+            (!$is_management_allowed | $disabled),
+            '',
+            false,
+            ($create_template == 1) ? 'checked=checked' : ''
+        )
+    );
+
+    $table->data[4][0] = html_print_label_input_block(
+        __('Max. number of alerts'),
+        html_print_input_text(
+            'max_alerts',
+            $max_alerts,
+            '',
+            5,
+            7,
+            true,
+            false,
+            false,
+            '',
+            'w100p',
+            '',
+            '',
+            false,
+            '',
+            '',
+            '',
+            (!$is_management_allowed | $disabled)
+        )
+    );
+
+    $table->data[4][1] = html_print_label_input_block(
+        __('Disable event'),
+        html_print_checkbox(
+            'disable_event',
+            1,
+            $disable_event,
+            true,
+            (!$is_management_allowed | $disabled)
+        )
+    );
+
     $usr_groups = implode(
         ',',
         array_keys(users_get_groups($config['id_user'], 'LM', true))
@@ -769,123 +814,98 @@ if ($step == 2) {
         $usr_groups
     );
 
-    $table->data[6][1] = html_print_select_from_sql(
-        $sql_query,
-        'default_action',
-        $default_action,
-        '',
-        __('None'),
-        0,
-        true,
-        false,
-        false,
-        (!$is_management_allowed | $disabled),
-        false,
-        false,
-        0
-    );
-    $table->data[6][1] .= ui_print_help_tip(
-        __('Unless they\'re left blank, the fields from the action will override those set on the template.'),
-        true
+    $table->data[5][0] = html_print_label_input_block(
+        __('Condition type'),
+        html_print_select(
+            alerts_get_alert_templates_types(),
+            'type',
+            $type,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            false,
+            'w100p',
+            (!$is_management_allowed | $disabled)
+        ).'<span id="matches_value" '.(($show_matches) ? '' : 'class="invisible"').'>'.'&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true).html_print_label(
+            __('Trigger when matches the value'),
+            'checkbox-matches_value',
+            true
+        ).'</span>'
     );
 
-    $table->data[7][0] = __('Condition type');
-    $table->data[7][1] = html_print_select(
-        alerts_get_alert_templates_types(),
-        'type',
-        $type,
-        '',
-        __('None'),
-        0,
-        true,
-        false,
-        false,
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data['value'][1] = html_print_label_input_block(
+        __('Value'),
+        html_print_input_text(
+            'value',
+            $value,
+            '',
+            35,
+            255,
+            true
+        ).'&nbsp;<span id="regex_ok">'.html_print_image(
+            'images/suc.png',
+            true,
+            [
+                'style' => 'display:none',
+                'id'    => 'regex_good',
+                'title' => __('The regular expression is valid'),
+                'width' => '20px',
+            ]
+        ).html_print_image(
+            'images/err.png',
+            true,
+            [
+                'style' => 'display:none',
+                'id'    => 'regex_bad',
+                'title' => __('The regular expression is not valid'),
+                'width' => '20px',
+            ]
+        ).'</span>'
     );
-    $table->data[7][1] .= '<span id="matches_value" '.(($show_matches) ? '' : 'class="invisible"').'>';
-    $table->data[7][1] .= '&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true);
-    $table->data[7][1] .= html_print_label(
-        __('Trigger when matches the value'),
-        'checkbox-matches_value',
-        true
-    );
-    $table->data[7][1] .= '</span>';
-    $table->colspan[7][1] = 3;
-
-    $table->data['value'][0] = __('Value');
-    $table->data['value'][1] = html_print_input_text(
-        'value',
-        $value,
-        '',
-        35,
-        255,
-        true
-    );
-    $table->data['value'][1] .= '&nbsp;<span id="regex_ok">';
-    $table->data['value'][1] .= html_print_image(
-        'images/suc.png',
-        true,
-        [
-            'style' => 'display:none',
-            'id'    => 'regex_good',
-            'title' => __('The regular expression is valid'),
-            'width' => '20px',
-        ]
-    );
-    $table->data['value'][1] .= html_print_image(
-        'images/err.png',
-        true,
-        [
-            'style' => 'display:none',
-            'id'    => 'regex_bad',
-            'title' => __('The regular expression is not valid'),
-            'width' => '20px',
-        ]
-    );
-    $table->data['value'][1] .= '</span>';
-    $table->colspan['value'][1] = 3;
 
     // Min first, then max, that's more logical.
-    $table->data['min'][0] = __('Min.');
-    $table->data['min'][1] = html_print_input_text(
-        'min',
-        $min,
-        '',
-        5,
-        255,
-        true,
-        $disabled
+    $table->data['min'][0] = html_print_label_input_block(
+        __('Min.'),
+        html_print_input_text(
+            'min',
+            $min,
+            '',
+            5,
+            255,
+            true,
+            $disabled
+        )
     );
-    $table->colspan['min'][1] = 3;
 
-    $table->data['max'][0] = __('Max.');
-    $table->data['max'][1] = html_print_input_text(
-        'max',
-        $max,
-        '',
-        5,
-        255,
-        true,
-        $disabled
+    $table->data['max'][1] = html_print_label_input_block(
+        __('Max.'),
+        html_print_input_text(
+            'max',
+            $max,
+            '',
+            5,
+            255,
+            true,
+            $disabled
+        )
     );
-    $table->colspan['max'][1] = 3;
 
-    $table->data['example'][1] = ui_print_alert_template_example(
+    $table->data['example'][0] = ui_print_alert_template_example(
         $id,
         true,
         false
     );
-    $table->colspan['example'][1] = 4;
 } else if ($step == 3) {
-    $table->style[0] = 'font-weight: bold; vertical-align: middle';
-    $table->style[1] = 'font-weight: bold; vertical-align: top';
-    $table->style[2] = 'font-weight: bold; vertical-align: top';
+    $table->style[1] = 'font-weight: bold; vertical-align: top;';
+    $table->style[2] = 'font-weight: bold; vertical-align: top;';
     $table->size = [];
-    $table->size[0] = '10%';
-    $table->size[1] = '45%';
-    $table->size[2] = '45%';
+    $table->size[1] = '50%';
+    $table->size[2] = '50%';
+    $table->colspan[0][0] = 2;
 
+    $table->class = 'databox filters w100p filter-table-adv alert-template-fields';
     // Alert recover.
     if (! $recovery_notify) {
         $table->cellstyle['label_fields'][2] = 'display:none;';
@@ -894,29 +914,29 @@ if ($step == 2) {
         }
     }
 
-    $table->data[0][0] = __('Alert recovery');
     $values = [
         false => __('Disabled'),
         true  => __('Enabled'),
     ];
-    $table->data[0][1] = html_print_select(
-        $values,
-        'recovery_notify',
-        $recovery_notify,
-        '',
-        '',
-        '',
-        true,
-        false,
-        false,
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data[0][0] = html_print_label_input_block(
+        __('Alert recovery'),
+        html_print_select(
+            $values,
+            'recovery_notify',
+            $recovery_notify,
+            '',
+            '',
+            '',
+            true,
+            false,
+            false,
+            'w25p',
+            (!$is_management_allowed | $disabled)
+        )
     );
-    $table->colspan[0][1] = 2;
 
-    $table->data['label_fields'][0] = '';
-    $table->data['label_fields'][1] = __('Firing fields');
-    $table->data['label_fields'][2] = __('Recovery fields');
+    $table->data['label_fields'][1] = '<span class"center">'.__('Firing fields').'</span>';
+    $table->data['label_fields'][2] = '<span class"center">'.__('Recovery fields').'</span>';
 
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         if (isset($template[$name]) === true) {
@@ -925,99 +945,106 @@ if ($step == 2) {
             $value = '';
         }
 
-        $table->data['field'.$i][0] = sprintf(__('Field %s'), $i);
+        // $table->data['field'.$i][0] = sprintf(__('Field %s'), $i);
         // TinyMCE.
         // triggering fields.
         // Basic.
-        $table->data['field'.$i][1] = '<div id="command_div"><b><small>';
-        $table->data['field'.$i][1] .= __('Basic').'&nbsp;&nbsp;';
-        $table->data['field'.$i][1] .= html_print_radio_button_extended(
+        $col1 = '<div id="command_div"><b><small>';
+        $col1 .= __('Basic').'&nbsp;&nbsp;';
+        $col1 .= html_print_radio_button_extended(
             'editor_type_value_'.$i,
             0,
             '',
             false,
             (!$is_management_allowed | $disabled),
             "removeTinyMCE('textarea_field".$i."')",
-            '',
+            'style="height: 15px !important;"',
             true
         );
         // Advanced.
-        $table->data['field'.$i][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
-        $table->data['field'.$i][1] .= __('Advanced').'&nbsp;&nbsp;';
-        $table->data['field'.$i][1] .= html_print_radio_button_extended(
+        $col1 .= '&nbsp;&nbsp;&nbsp;&nbsp;';
+        $col1 .= __('Advanced').'&nbsp;&nbsp;';
+        $col1 .= html_print_radio_button_extended(
             'editor_type_value_'.$i,
             0,
             '',
             true,
             (!$is_management_allowed | $disabled),
             "addTinyMCE('textarea_field".$i."')",
-            '',
+            'style="height: 15px !important;"',
             true
         );
-        $table->data['field'.$i][1] .= '</small></b></div>';
+        $col1 .= '</small></b></div>';
 
         // Texarea.
-        $table->data['field'.$i][1] .= html_print_textarea(
+        $col1 .= html_print_textarea(
             'field'.$i,
             1,
             1,
             isset($fields[$i]) ? $fields[$i] : '',
-            'class="fields" min-height-40px',
+            'class="fields w100p" style="min-height: 100px !important;"',
             true,
             '',
             (!$is_management_allowed | $disabled)
         );
+        $table->data['field'.$i][1] = html_print_label_input_block(
+            sprintf(__('Field %s'), $i),
+            $col1
+        );
 
         // Recovery.
         // Basic.
-        $table->data['field'.$i][2] = '<div id="command_div"><b><small>';
-        $table->data['field'.$i][2] .= __('Basic').'&nbsp;&nbsp;';
-        $table->data['field'.$i][2] .= html_print_radio_button_extended(
+        $col2 = '<div id="command_div"><b><small>';
+        $col2 .= __('Basic').'&nbsp;&nbsp;';
+        $col2 .= html_print_radio_button_extended(
             'editor_type_recovery_value_'.$i,
             0,
             '',
             false,
             (!$is_management_allowed | $disabled),
             "removeTinyMCE('textarea_field".$i."_recovery')",
-            '',
+            'style="height: 15px !important;"',
             true
         );
         // Advanced.
-        $table->data['field'.$i][2] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
-        $table->data['field'.$i][2] .= __('Advanced').'&nbsp;&nbsp;';
-        $table->data['field'.$i][2] .= html_print_radio_button_extended(
+        $col2 .= '&nbsp;&nbsp;&nbsp;&nbsp;';
+        $col2 .= __('Advanced').'&nbsp;&nbsp;';
+        $col2 .= html_print_radio_button_extended(
             'editor_type_recovery_value_'.$i,
             0,
             '',
             true,
             (!$is_management_allowed | $disabled),
             "addTinyMCE('textarea_field".$i."_recovery')",
-            '',
+            'style="height: 15px !important;"',
             true
         );
-        $table->data['field'.$i][2] .= '</small></b></div>';
+        $col2 .= '</small></b></div>';
 
         // Texarea.
-        $table->data['field'.$i][2] .= html_print_textarea(
+        $col2 .= html_print_textarea(
             'field'.$i.'_recovery',
             1,
             1,
             isset($fields_recovery[$i]) ? $fields_recovery[$i] : '',
-            'class="fields min-height-40px"',
+            'class="fields w100p" style="min-height: 100px !important;"',
             true,
             '',
             (!$is_management_allowed | $disabled)
+        );
+        $table->data['field'.$i][2] = html_print_label_input_block(
+            '&nbsp;',
+            $col2
         );
     }
 } else {
     // Step 1 by default.
     $table->size = [];
-    $table->size[0] = '20%';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
+    $table->colspan = [];
+    $table->colspan[1][0] = 2;
     $table->data = [];
-    $table->rowstyle = [];
-    $table->rowstyle['value'] = 'display: none';
-    $table->rowstyle['max'] = 'display: none';
-    $table->rowstyle['min'] = 'display: none';
 
     $show_matches = false;
     switch ($type) {
@@ -1049,29 +1076,29 @@ if ($step == 2) {
         break;
     }
 
-    $table->data[0][0] = __('Name');
-    $table->data[0][1] = html_print_input_text(
-        'name',
-        $name,
-        '',
-        35,
-        255,
-        true,
-        false,
-        false,
-        '',
-        '',
-        '',
-        '',
-        false,
-        '',
-        '',
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data[0][0] = html_print_label_input_block(
+        __('Name'),
+        html_print_input_text(
+            'name',
+            $name,
+            '',
+            35,
+            255,
+            true,
+            false,
+            false,
+            '',
+            '',
+            '',
+            '',
+            false,
+            '',
+            '',
+            '',
+            (!$is_management_allowed | $disabled)
+        )
     );
 
-
-    $table->data[0][1] .= '&nbsp;&nbsp;'.__('Group');
     $groups = users_get_groups();
     $own_info = get_user_info($config['id_user']);
 
@@ -1085,59 +1112,76 @@ if ($step == 2) {
         }
     }
 
-    $table->data[0][1] .= '&nbsp;';
-    $table->data[0][1] .= '<div class="w250px inline">'.html_print_select_groups(
-        false,
-        'AR',
-        $return_all_group,
-        'id_group',
-        $id_group,
-        '',
-        '',
-        0,
-        true,
-        false,
-        true,
-        '',
-        (!$is_management_allowed | $disabled)
-    ).'</div>';
-
-
-    $table->data[1][0] = __('Description');
-    $table->data[1][1] = html_print_textarea(
-        'description',
-        10,
-        30,
-        $description,
-        '',
-        true,
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data[0][1] = html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups(
+            false,
+            'AR',
+            $return_all_group,
+            'id_group',
+            $id_group,
+            '',
+            '',
+            0,
+            true,
+            false,
+            true,
+            '',
+            (!$is_management_allowed | $disabled)
+        )
     );
 
-    $table->data[2][0] = __('Priority');
-    $table->data[2][1] = html_print_select(
-        get_priorities(),
-        'priority',
-        $priority,
-        '',
-        0,
-        0,
-        true,
-        false,
-        false,
-        '',
-        (!$is_management_allowed | $disabled)
+    $table->data[1][0] = html_print_label_input_block(
+        __('Description'),
+        html_print_textarea(
+            'description',
+            10,
+            30,
+            $description,
+            '',
+            true,
+            '',
+            (!$is_management_allowed | $disabled)
+        )
+    );
+
+    $table->data[2][0] = html_print_label_input_block(
+        __('Priority'),
+        html_print_select(
+            get_priorities(),
+            'priority',
+            $priority,
+            '',
+            0,
+            0,
+            true,
+            false,
+            false,
+            '',
+            (!$is_management_allowed | $disabled)
+        )
     );
 
     if (is_metaconsole() === true) {
-        $table->data[3][0] = __('Wizard level');
         $wizard_levels = [
             'nowizard' => __('No wizard'),
             'basic'    => __('Basic'),
             'advanced' => __('Advanced'),
         ];
-        $table->data[3][1] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false);
+        $table->data[2][1] = html_print_label_input_block(
+            __('Wizard level'),
+            html_print_select(
+                $wizard_levels,
+                'wizard_level',
+                $wizard_level,
+                '',
+                '',
+                -1,
+                true,
+                false,
+                false
+            )
+        );
     } else {
         $table->data[2][1] .= html_print_input_hidden('wizard_level', $wizard_level, true);
     }
@@ -1147,11 +1191,12 @@ if ($step == 2) {
     echo ui_get_using_system_timezone_warning();
 }
 
+$offset = (int) get_parameter('offset');
 // If it's the last step it will redirect to template lists.
 if ($step >= LAST_STEP) {
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_templates&pure='.$pure.'">';
+    echo '<form class="max_floating_element_size" method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_templates&pure='.$pure.'&offset='.$offset.'">';
 } else {
-    echo '<form method="post">';
+    echo '<form class="max_floating_element_size" method="post">';
 }
 
 html_print_table($table);
@@ -1167,40 +1212,45 @@ if ($id) {
 if (!$disabled) {
     if ($is_management_allowed === true) {
         if ($step >= LAST_STEP) {
-            html_print_submit_button(
+            $actionButtons = html_print_submit_button(
                 __('Finish'),
                 'finish',
                 false,
-                'class="sub upd"'
+                ['icon' => 'wand'],
+                true
             );
         } else {
             html_print_input_hidden('step', ($step + 1));
             if ($step == 2) {
                 // Javascript onsubmit to avoid min = 0 and max = 0.
-                html_print_submit_button(
+                $actionButtons = html_print_submit_button(
                     __('Next'),
                     'next',
                     false,
-                    'class="sub next" onclick="return check_fields_step2();"'
+                    [
+                        'class'   => 'submitButton',
+                        'onclick' => 'return check_fields_step2();',
+                        'icon'    => 'next',
+                    ],
+                    true
                 );
             } else {
-                html_print_submit_button(
+                $actionButtons = html_print_submit_button(
                     __('Next'),
                     'next',
                     false,
-                    'class="sub next"'
+                    ['icon' => 'next'],
+                    true
                 );
             }
         }
     }
+
+    html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 }
 
 echo '</div>';
 echo '</form>';
-
-if (is_metaconsole() === true) {
-    enterprise_hook('close_meta_frame');
-}
 
 ui_require_javascript_file('pandora_alerts');
 ui_include_time_picker();

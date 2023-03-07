@@ -1126,6 +1126,10 @@ function networkmap_open_graph(
             $head .= 'overlap="scalexy";';
         }
 
+        if ($layout == 'spring1' || $layout == 'spring2') {
+            $head .= 'sep="'.$node_sep.'";';
+        }
+
         if ($layout === 'flat') {
             $head .= 'ranksep="'.$rank_sep.'";';
         } else if ($layout === 'spring2') {
@@ -1356,9 +1360,10 @@ function networkmap_get_types($strict_user=false)
  */
 function networkmap_get_nodes_from_ip_mask(
     $ip_mask,
-    $return_ids_only=false
+    $return_ids_only=false,
+    $separator=',',
 ) {
-    $list_ip_masks = explode(',', $ip_mask);
+    $list_ip_masks = explode($separator, $ip_mask);
 
     if (empty($list_ip_masks) === true) {
         return [];
@@ -1375,14 +1380,14 @@ function networkmap_get_nodes_from_ip_mask(
         $sql = sprintf(
             'SELECT *
             FROM `tagente`
-            INNER JOIN 
-                (SELECT DISTINCT `id_agent` FROM 
+            INNER JOIN
+                (SELECT DISTINCT `id_agent` FROM
                     (SELECT `id_agente` AS "id_agent", `direccion` AS "ip"
-                    FROM `tagente` 
+                    FROM `tagente`
                     UNION
                     SELECT ag.`id_agent`, a.`ip`
-                    FROM `taddress_agent` ag 
-                    INNER JOIN `taddress` a 
+                    FROM `taddress_agent` ag
+                    INNER JOIN `taddress` a
                         ON ag.id_a=a.id_a
                     ) t_tmp
                 WHERE (-1 << %d) & INET_ATON(t_tmp.ip) = INET_ATON("%s")

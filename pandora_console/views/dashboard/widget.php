@@ -36,7 +36,10 @@ if ((int) $cellData['id_widget'] !== 0 || $widgetId !== 0) {
         'add-widget-'.$cellData['id'],
         false,
         '',
-        'class="sub cog add-widget"',
+        [
+            'icon' => 'cog',
+            'mode' => 'secondary mini',
+        ],
         true
     );
 

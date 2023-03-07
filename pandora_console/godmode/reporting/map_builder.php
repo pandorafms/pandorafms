@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2007-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,18 +62,18 @@ if ($is_metaconsole === false) {
 
 $pure = (int) get_parameter('pure', 0);
 $hack_metaconsole = '';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $hack_metaconsole = '../../';
 }
 
 $buttons['visual_console'] = [
     'active' => true,
     'text'   => '<a href="'.$url_visual_console.'">'.html_print_image(
-        'images/visual_console.png',
+        'images/logs@svg.svg',
         true,
         [
             'title' => __('Visual Console List'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -81,11 +81,11 @@ $buttons['visual_console'] = [
 $buttons['visual_console_favorite'] = [
     'active' => false,
     'text'   => '<a href="'.$url_visual_console_favorite.'">'.html_print_image(
-        'images/list.png',
+        'images/star@svg.svg',
         true,
         [
             'title' => __('Visual Favourite Console'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -94,11 +94,11 @@ if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     $buttons['visual_console_template'] = [
         'active' => false,
         'text'   => '<a href="'.$url_visual_console_template.'">'.html_print_image(
-            'images/templates.png',
+            'images/groups@svg.svg',
             true,
             [
                 'title' => __('Visual Console Template'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
     ];
@@ -106,42 +106,34 @@ if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     $buttons['visual_console_template_wizard'] = [
         'active' => false,
         'text'   => '<a href="'.$url_visual_console_template_wizard.'">'.html_print_image(
-            'images/wand.png',
+            'images/wizard@svg.svg',
             true,
             [
                 'title' => __('Visual Console Template Wizard'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
     ];
 }
 
-if ($is_metaconsole === false) {
-    ui_print_standard_header(
-        __('Visual Console List'),
-        'images/op_reporting.png',
-        false,
-        '',
-        true,
-        $buttons,
+ui_print_standard_header(
+    __('Visual Console List'),
+    'images/op_reporting.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Topology maps'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Visual console'),
-            ],
-        ]
-    );
-} else {
-    ui_meta_print_header(
-        __('Visual console').' &raquo; '.$visualConsoleName,
-        '',
-        $buttons
-    );
-}
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Visual console'),
+        ],
+    ]
+);
 
 $id_layout = (int) get_parameter('id_layout');
 $copy_layout = (bool) get_parameter('copy_layout');
@@ -336,24 +328,6 @@ if ($ag_group > 0) {
     }
 }
 
-echo "<table class='databox filters bolder mrgn_btn_10px' width='100%'>
-	<tr>";
-if (!is_metaconsole()) {
-    echo "<form method='post'
-		action='index.php?sec=network&amp;sec2=godmode/reporting/map_builder'>";
-} else {
-    echo "<form method='post'
-		action='index.php?sec=screen&sec2=screens/screens&action=visualmap'>";
-}
-
-echo "<td class='w33p'>";
-echo __('Search').'&nbsp;';
-html_print_input_text('search', $search, '', 50);
-
-echo '</td>';
-echo "<td class='w25p'>";
-
-echo __('Group').'&nbsp;';
 $own_info = get_user_info($config['id_user']);
 if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'VR')) {
     $return_all_group = false;
@@ -361,18 +335,69 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'VR')) {
     $return_all_group = true;
 }
 
-echo '<div class="w250px inline">';
-html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false);
-echo '</div>';
-echo "<td class='w25p'>";
-echo __('Group Recursion').'&nbsp;';
-html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
+$filterTable = new stdClass();
+$filterTable->id = 'map_buider_filter';
+$filterTable->class = 'filter-table-adv';
+$filterTable->width = '100%';
+$filterTable->size = [];
+$filterTable->size[0] = '33%';
+$filterTable->size[1] = '33%';
 
-echo "</td><td class='w22p'>";
-echo "<input name='search_visual_console' type='submit' class='sub search' value='".__('Search')."'>";
-echo '</form>';
-echo '</td>';
-echo '</tr></table>';
+$filterTable->data = [];
+
+$filterTable->data[0][] = html_print_label_input_block(
+    __('Search'),
+    html_print_input_text('search', $search, '', 50, 255, true)
+);
+
+$filterTable->data[0][] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, 'this.form.submit();', '', 0, true, false, true, '', false)
+);
+
+$filterTable->data[0][] = html_print_label_input_block(
+    __('Group Recursion'),
+    html_print_checkbox_switch('recursion', 1, $recursion, true, false, 'this.form.submit()')
+);
+
+if (is_metaconsole() === false) {
+    $actionUrl = 'index.php?sec=network&amp;sec2=godmode/reporting/map_builder';
+} else {
+    $actionUrl = 'index.php?sec=screen&sec2=screens/screens&action=visualmap';
+}
+
+$searchForm = [];
+$searchForm[] = '<form method="POST" action="'.$actionUrl.'">';
+$searchForm[] = html_print_table($filterTable, true);
+$searchForm[] = html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Filter'),
+            'search_visual_console',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        ),
+    ],
+    true
+);
+$searchForm[] = '</form>';
+
+ui_toggle(
+    implode('', $searchForm),
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
 
 $table = new stdClass();
 $table->width = '100%';
@@ -401,7 +426,7 @@ $table->align[4] = 'left';
 // or has "VR" privileges, otherwise show only maps of user group
 $filters['offset'] = $offset;
 $filters['limit'] = $pagination;
-if (!empty($search)) {
+if (empty($search) === false) {
     $filters['name'] = io_safe_input($search);
 }
 
@@ -410,7 +435,7 @@ if ($ag_group) {
 }
 
 $own_info = get_user_info($config['id_user']);
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $url = 'index.php?sec=network&amp;sec2=godmode/reporting/map_builder&recursion='.$recursion.'&ag_group='.$ag_group.'&search='.$search.'&pagination='.$pagination;
 } else {
     $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&recursion='.$recursion.'&ag_group='.$ag_group.'&search='.$search.'&pagination='.$pagination;
@@ -441,7 +466,7 @@ if ($own_info['is_admin'] || $vconsoles_read) {
     $total_maps = count($count_maps);
 }
 
-if (!$maps && !is_metaconsole()) {
+if (!$maps && is_metaconsole() === false) {
     $total = count(visual_map_get_user_layouts($config['id_user'], false, false, false));
     if (!$total) {
         include_once $config['homedir'].'/general/first_task/map_builder.php';
@@ -453,7 +478,7 @@ if (!$maps && !is_metaconsole()) {
             ]
         );
     }
-} else if (!$maps && is_metaconsole()) {
+} else if (!$maps && is_metaconsole() === true) {
     $total = count(visual_map_get_user_layouts($config['id_user'], false, false, false));
     if (!$total) {
         ui_print_info_message(
@@ -471,25 +496,24 @@ if (!$maps && !is_metaconsole()) {
         );
     }
 } else {
-    ui_pagination($total_maps, $url, $offset, $pagination);
     foreach ($maps as $map) {
-        // ACL for the visual console permission
+        // ACL for the visual console permission.
         $vconsole_write = false;
         $vconsole_manage = false;
-        if (isset($map['vw'])) {
+        if (isset($map['vw']) === true) {
             $vconsole_write = true;
         }
 
-        if (isset($map['vm'])) {
+        if (isset($map['vm']) === true) {
             $vconsole_manage = true;
         }
 
         $data = [];
 
-        if (!is_metaconsole()) {
+        if (is_metaconsole() === false) {
             $data[0] = '<a href="index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;id='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
         } else {
-            $data[0] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_visualmap='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
+            $data[0] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
         }
 
         $data[1] = ui_print_group_icon($map['id_group'], true);
@@ -499,31 +523,31 @@ if (!$maps && !is_metaconsole()) {
         $vconsoles_manage_action_btn = check_acl_restricted_all($config['id_user'], $map['id_group'], 'VM');
 
         if ($vconsoles_write_action_btn || $vconsoles_manage_action_btn) {
-            if (!is_metaconsole()) {
+            if (is_metaconsole() === false) {
                 $table->cellclass[] = [
-                    3 => 'action_buttons',
-                    4 => 'action_buttons',
+                    3 => 'table_action_buttons',
+                    4 => 'table_action_buttons',
                 ];
                 $data[3] = '<a class="copy_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image(
-                    'images/copy.png',
+                    'images/copy.svg',
                     true,
-                    ['class' => 'invert_filter']
+                    ['class' => 'main_menu_icon invert_filter']
                 ).'</a>';
                 $data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\n'.__('Delete').': '.$map['name'].'\')) return false;">'.html_print_image(
-                    'images/cross.png',
+                    'images/delete.svg',
                     true,
-                    ['class' => 'invert_filter']
+                    ['class' => 'main_menu_icon invert_filter']
                 ).'</a>';
             } else {
                 $data[3] = '<a class="copy_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image(
-                    'images/copy.png',
+                    'images/copy.svg',
                     true,
-                    ['class' => 'invert_filter']
+                    ['class' => 'main_menu_icon invert_filter']
                 ).'</a>';
                 $data[4] = '<a class="delete_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_layout='.$map['id'].'&amp;delete_layout=1" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\n'.__('Delete').': '.$map['name'].'\')) return false;">'.html_print_image(
-                    'images/cross.png',
+                    'images/delete.svg',
                     true,
-                    ['class' => 'invert_filter']
+                    ['class' => 'main_menu_icon invert_filter']
                 ).'</a>';
             }
         } else {
@@ -535,34 +559,31 @@ if (!$maps && !is_metaconsole()) {
     }
 
     html_print_table($table);
-    ui_pagination($total_maps, $url, $offset, $pagination, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination($total_maps, $url, $offset, $pagination, true, 'offset', false);
 }
 
-if ($maps) {
-    if (!is_metaconsole()) {
-        echo '<div class="action-buttons w100p right_align">';
-    } else {
-        echo '<div class="w100p right right_align mrgn_btn_20px">';
-    }
-}
-
-if ($maps || defined('METACONSOLE')) {
+if ($maps || is_metaconsole() === true) {
     if ($vconsoles_write || $vconsoles_manage) {
-        if (!defined('METACONSOLE')) {
-            echo '<form action="index.php?sec=network&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
+        if (is_metaconsole() === false) {
+            $actionUrl = 'index.php?sec=network&amp;sec2=godmode/reporting/visual_console_builder';
         } else {
-            echo '<form action="index.php?sec=screen&sec2=screens/screens&action=visualmap&action2=new&operation=new_visualmap&tab=data&pure='.$pure.'" method="post">';
+            $actionUrl = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&action2=new&operation=new_visualmap&tab=data&pure='.$pure;
         }
 
+        echo '<form action="'.$actionUrl.'" method="post">';
         html_print_input_hidden('edit_layout', 1);
-        html_print_submit_button(
-            __('Create'),
-            '',
-            false,
-            'class="sub next"'
+
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Create'),
+                '',
+                false,
+                [ 'icon' => 'next'],
+                true
+            ),
+            [ 'right_content' => $tablePagination ]
         );
+
         echo '</form>';
     }
-
-    echo '</div>';
 }

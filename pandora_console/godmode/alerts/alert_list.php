@@ -476,6 +476,70 @@ if ($standbyoff_alert) {
     );
 }
 
+
+$searchFlag = true;
+if (!is_metaconsole()) {
+    // The tabs will be shown only with manage alerts permissions
+    if (check_acl($config['id_user'], 0, 'LW') || check_acl($config['id_user'], 0, 'LM')) {
+        $buttons = [
+            'list'    => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List alerts'), 'class' => 'invert_filter']).'</a>',
+            ],
+            'builder' => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Builder alert'), 'class' => 'invert_filter']).'</a>',
+            ],
+        ];
+
+        $buttons[$tab]['active'] = true;
+    } else {
+        $buttons = '';
+    }
+
+    if ($tab == 'list') {
+        ui_print_standard_header(
+            __('Alerts'),
+            'images/gm_alerts.png',
+            false,
+            '',
+            true,
+            $buttons,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Manage alerts'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('List'),
+                ],
+            ]
+        );
+    } else {
+        ui_print_standard_header(
+            __('Alerts'),
+            'images/gm_alerts.png',
+            false,
+            '',
+            true,
+            $buttons,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Manage alerts'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Create'),
+                ],
+            ]
+        );
+    }
+} else {
+    alerts_meta_print_header();
+}
+
 if ($id_agente) {
     $agents = [$id_agente => agents_get_name($id_agente)];
 
@@ -494,64 +558,35 @@ if ($id_agente) {
     }
 
     return;
-} else {
-    $searchFlag = true;
-    if (!is_metaconsole()) {
-        // The tabs will be shown only with manage alerts permissions
-        if (check_acl($config['id_user'], 0, 'LW') || check_acl($config['id_user'], 0, 'LM')) {
-            $buttons = [
-                'list'    => [
-                    'active' => false,
-                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List alerts'), 'class' => 'invert_filter']).'</a>',
-                ],
-                'builder' => [
-                    'active' => false,
-                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Builder alert'), 'class' => 'invert_filter']).'</a>',
-                ],
-            ];
+}
 
-            $buttons[$tab]['active'] = true;
+echo $messageAction;
+
+switch ($tab) {
+    case 'list':
+        if ($group == 0) {
+            $groups = users_get_groups();
         } else {
-            $buttons = '';
+            $groups = [0 => __('All')];
         }
 
-        if ($tab == 'list') {
-            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('List'), 'images/gm_alerts.png', false, '', true, $buttons);
+        $agents = agents_get_group_agents(array_keys($groups), false, 'none', true);
+
+        include_once $config['homedir'].'/godmode/alerts/alert_list.list.php';
+
+    return;
+
+        break;
+    case 'builder':
+        if ($group == 0) {
+            $groups = users_get_groups();
         } else {
-            ui_print_page_header(__('Alerts').' &raquo; '.__('Manage alerts').' &raquo; '.__('Create'), 'images/gm_alerts.png', false, '', true, $buttons);
+            $groups = [0 => __('All')];
         }
-    } else {
-        alerts_meta_print_header();
-    }
 
-    echo $messageAction;
+        include_once $config['homedir'].'/godmode/alerts/alert_list.builder.php';
 
-    switch ($tab) {
-        case 'list':
-            if ($group == 0) {
-                $groups = users_get_groups();
-            } else {
-                $groups = [0 => __('All')];
-            }
+    return;
 
-            $agents = agents_get_group_agents(array_keys($groups), false, 'none', true);
-
-            include_once $config['homedir'].'/godmode/alerts/alert_list.list.php';
-
-        return;
-
-            break;
-        case 'builder':
-            if ($group == 0) {
-                $groups = users_get_groups();
-            } else {
-                $groups = [0 => __('All')];
-            }
-
-            include_once $config['homedir'].'/godmode/alerts/alert_list.builder.php';
-
-        return;
-
-            break;
-    }
+        break;
 }

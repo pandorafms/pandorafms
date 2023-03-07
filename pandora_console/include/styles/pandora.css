@@ -2361,10 +2361,10 @@ div.pager input {
 
 /* Steps style */
 ol.steps {
-  margin-bottom: 70px;
   padding: 0;
   list-style-type: none;
   list-style-position: outside;
+  margin-top: 0px;
 }
 
 ol.steps li {
@@ -9273,7 +9273,7 @@ div.stat-win-spinner img {
 }
 
 .fc-col-header-cell-cushion {
-  color: #fff;
+  color: #000;
 }
 
 .stat_win_histogram {
@@ -11482,7 +11482,7 @@ div[role="dialog"] {
   color: #161628;
   text-align: left;
   margin-bottom: 10px;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 .preimage_container span {
@@ -11507,4 +11507,16 @@ input[type="text"]:has(+ .inputbuton) {
 
 .notzindex {
   z-index: 0;
+}
+
+table.alert-template-fields > tbody > tr > td > div > label {
+  margin-bottom: 0px;
+}
+
+table.alert-template-fields > tbody > tr > td > div > textarea {
+  margin-bottom: 15px;
+}
+
+table.alert-template-fields > tbody > tr > td[id^="template-label_fields"] {
+  text-align: center;
 }

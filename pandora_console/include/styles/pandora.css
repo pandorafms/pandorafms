@@ -671,6 +671,14 @@ select:-internal-list-box {
   width: 40%;
 }
 
+.w45p {
+  width: 45%;
+}
+
+.w48p {
+  width: 48%;
+}
+
 .w47p {
   width: 47%;
 }
@@ -11535,4 +11543,8 @@ table.alert-template-fields > tbody > tr > td > div > textarea {
 
 table.alert-template-fields > tbody > tr > td[id^="template-label_fields"] {
   text-align: center;
+}
+
+.max-width-100p {
+  max-width: 100% !important;
 }

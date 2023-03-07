@@ -351,22 +351,51 @@ if ($result === false) {
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
     echo '</form>';
-    $tablePagination = ui_pagination($total_modules, 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules', $offset, 0, true, 'offset', false);
 
-    $actionButtons = [];
+    echo '<form id="form_create" method="post" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form">';
+    echo html_print_input_hidden('create_module_inventory', 1);
+    echo '<form>';
+
+    $tablePagination = ui_pagination(
+        $total_modules,
+        'index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules',
+        $offset,
+        0,
+        true,
+        'offset',
+        false
+    );
+
+    $actionButtons = '';
 
     if ($management_allowed === true) {
-        $actionButtons[] = html_print_submit_button(__('Delete'), 'delete_btn', false, ['icon' => 'delete', 'mode' => 'secondary', 'form' => 'form_delete'], true);
-        $actionButtons[] = html_print_submit_button(__('Create'), 'crt', false, ['icon' => 'wand', 'form' => 'form_create'], true);
+        $actionButtons .= html_print_submit_button(
+            __('Delete'),
+            'delete_btn',
+            false,
+            [
+                'icon' => 'delete',
+                'mode' => 'secondary',
+                'form' => 'form_delete',
+            ],
+            true
+        );
 
-        $actionButtons[] = '<form id="form_create" method="post" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form">';
-        $actionButtons[] = html_print_input_hidden('create_module_inventory', 1, true);
-        $actionButtons[] = '<form>';
+
+        $actionButtons .= html_print_submit_button(
+            __('Create'),
+            'crt',
+            false,
+            [
+                'icon' => 'wand',
+                'form' => 'form_create',
+            ],
+            true
+        );
     }
 
-
     html_print_action_buttons(
-        implode('', $actionButtons),
+        $actionButtons,
         [
             'type'          => 'form_action',
             'right_content' => $tablePagination,

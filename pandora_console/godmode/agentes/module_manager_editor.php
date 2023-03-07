@@ -802,7 +802,7 @@ if ($id_agent_module) {
         __('Delete'),
         'deleteModule',
         false,
-        'window.location.assign(\'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$id_agent_module.')',
+        'window.location.assign("index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$id_agent_module.'")',
         [
             'icon' => 'delete',
             'mode' => 'secondary',

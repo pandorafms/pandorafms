@@ -396,7 +396,7 @@ $buttonsRefreshAgent = html_print_button(
     __('Refresh data'),
     'refresh_data',
     false,
-    'window.location.assign(\'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60\')',
+    'window.location.assign("index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60")',
     [ 'mode' => 'link' ],
     true
 );
@@ -406,7 +406,7 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         __('Force checks'),
         'force_checks',
         false,
-        'window.location.assign(\'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'\')',
+        'window.location.assign("index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'")',
         [ 'mode' => 'link' ],
         true
     );

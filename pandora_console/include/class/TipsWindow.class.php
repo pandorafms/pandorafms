@@ -113,13 +113,13 @@ class TipsWindow
     public function run()
     {
         global $config;
+        $_SESSION['showed_tips_window'] = true;
         $userInfo = users_get_user_by_id($config['id_user']);
 
         if ((bool) $userInfo['show_tips_startup'] === false) {
             return;
         }
 
-        $_SESSION['showed_tips_window'] = true;
         ui_require_css_file('tips_window');
         ui_require_css_file('jquery.bxslider');
         ui_require_javascript_file('tipsWindow');
@@ -479,7 +479,10 @@ class TipsWindow
                 __('Create tip'),
                 'create',
                 false,
-                'class="sub next"'
+                [
+                    'class' => 'sub',
+                    'icon'  => 'create_file',
+                ]
             );
             echo '</a>';
             echo '</div>';
@@ -583,22 +586,23 @@ class TipsWindow
                 $data[$key]['url'] = io_safe_output($row['url']);
                 $data[$key]['actions'] = '<div class="buttons_actions">';
                 $data[$key]['actions'] .= '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&idTip='.$row['id'].'">';
-                $data[$key]['actions'] .= html_print_input_image(
-                    'button_edit_tip',
-                    'images/edit.png',
-                    '',
-                    '',
-                    true
+                $data[$key]['actions'] .= html_print_image(
+                    'images/edit.svg',
+                    true,
+                    ['class' => 'main_menu_icon']
                 );
                 $data[$key]['actions'] .= '</a>';
                 $data[$key]['actions'] .= '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&action=delete">';
                 $data[$key]['actions'] .= html_print_input_image(
                     'button_delete_tip',
-                    'images/delete.png',
+                    'images/delete.svg',
                     '',
                     '',
                     true,
-                    ['onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;']
+                    [
+                        'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+                        'class'   => 'main_menu_icon',
+                    ]
                 );
                 $data[$key]['actions'] .= html_print_input_hidden('idTip', $row['id'], true);
                 $data[$key]['actions'] .= '</form>';
@@ -706,7 +710,7 @@ class TipsWindow
         $table->data[3][0] = __('Title');
         $table->data[3][1] = html_print_input_text('title', '', '', 35, 100, true);
         $table->data[4][0] = __('Text');
-        $table->data[4][1] = html_print_textarea('text', 5, 1, '', '', true);
+        $table->data[4][1] = html_print_textarea('text', 5, 50, '', '', true);
         $table->data[5][0] = __('Url');
         $table->data[5][1] = html_print_input_text('url', '', '', 35, 100, true);
         $table->data[6][0] = __('Enable');
@@ -716,15 +720,24 @@ class TipsWindow
         html_print_table($table);
         echo '<div class="action-buttons" style="width: '.$table->width.'">';
         html_print_submit_button(
+            __('Send'),
+            'submit_button',
+            false,
+            [
+                'class' => 'sub',
+                'icon'  => 'update',
+            ]
+        );
+        html_print_submit_button(
             __('Preview'),
             'preview_button',
             false,
             [
                 'class' => 'sub preview',
                 'id'    => 'prev_button',
+                'icon'  => 'preview',
             ]
         );
-        html_print_submit_button(__('Send'), 'submit_button', false, ['class' => 'sub next']);
         echo '</div>';
         echo '</form>';
         html_print_div(['id' => 'tips_window_modal_preview']);
@@ -770,11 +783,14 @@ class TipsWindow
                 $imageTip = html_print_image($namePath, true);
                 $imageTip .= html_print_input_image(
                     'delete_image_tip',
-                    'images/delete.png',
+                    'images/delete.svg',
                     '',
                     '',
                     true,
-                    ['onclick' => 'deleteImage(this, \''.$value['id'].'\', \''.$namePath.'\')']
+                    [
+                        'onclick' => 'deleteImage(this, \''.$value['id'].'\', \''.$namePath.'\')',
+                        'class'   => 'remove-image',
+                    ]
                 );
                 $outputImagesTip .= html_print_div(
                     [
@@ -828,7 +844,7 @@ class TipsWindow
         $table->data[3][0] = __('Title');
         $table->data[3][1] = html_print_input_text('title', $tip['title'], '', 35, 100, true);
         $table->data[4][0] = __('Text');
-        $table->data[4][1] = html_print_textarea('text', 5, 1, $tip['text'], '', true);
+        $table->data[4][1] = html_print_textarea('text', 5, 50, $tip['text'], '', true);
         $table->data[5][0] = __('Url');
         $table->data[5][1] = html_print_input_text('url', $tip['url'], '', 35, 100, true);
         $table->data[6][0] = __('Enable');
@@ -838,15 +854,24 @@ class TipsWindow
         html_print_table($table);
         echo '<div class="action-buttons" style="width: '.$table->width.'">';
         html_print_submit_button(
+            __('Send'),
+            'submit_button',
+            false,
+            [
+                'class' => 'sub',
+                'icon'  => 'update',
+            ]
+        );
+        html_print_submit_button(
             __('Preview'),
             'preview_button',
             false,
             [
                 'class' => 'sub preview',
                 'id'    => 'prev_button',
+                'icon'  => 'preview',
             ]
         );
-        html_print_submit_button(__('Send'), 'submit_button', false, ['class' => 'sub next']);
 
         echo '</div>';
         echo '</form>';

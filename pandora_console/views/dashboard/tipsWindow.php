@@ -37,7 +37,7 @@ $output .= '<p>'.html_print_checkbox(
     true,
     true,
     false,
-    '',
+    'show_tips_startup(this)',
     false,
     '',
     ($preview === true) ? '' : 'checkbox_tips_startup'
@@ -81,15 +81,45 @@ $output .= '</div>';
 
 $output .= '<div class="ui-dialog-buttonset">';
 // TODO Delete this buttons and use html_print_button when merge new design
-$output .= '<button type="button" class="submit-cancel-tips ui-button ui-corner-all ui-widget" onclick="close_dialog()">Maybe later</button>';
+$output .= html_print_button(
+    __('Maybe later'),
+    '',
+    false,
+    '',
+    [
+        'onclick' => 'close_dialog()',
+        'class'   => 'secondary mini',
+    ],
+    true
+);
 $output .= '<div class="counter-tips">';
 $output .= html_print_image('images/arrow-left-grey.png', true, ['class' => 'arrow_counter']);
 $output .= html_print_image('images/arrow-right-grey.png', true, ['class' => 'arrow_counter']);
 $output .= '</div>';
 if ($preview === true) {
-    $output .= '<button type="button" class="submit-next-tips ui-button ui-corner-all ui-widget" onclick="close_dialog()">Ok</button>';
+    $output .= html_print_button(
+        __('Ok'),
+        'next_tip',
+        false,
+        '',
+        [
+            'onclick' => 'close_dialog()',
+            'class'   => 'mini',
+        ],
+        true
+    );
 } else {
-    $output .= '<button type="button" class="submit-next-tips ui-button ui-corner-all ui-widget" onclick="next_tip()">Ok</button>';
+    $output .= html_print_button(
+        __('Ok'),
+        'next_tip',
+        false,
+        '',
+        [
+            'onclick' => 'next_tip()',
+            'class'   => 'mini',
+        ],
+        true
+    );
 }
 
 $output .= '</div>';

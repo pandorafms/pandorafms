@@ -9,7 +9,7 @@ $(document).ready(function() {
         1}"  onchange="checkImage(this)"/>`
     );
     $(div_image).append(
-      `<input type="image" src="images/delete.png" onclick="removeInputImage('file_${numberImages +
+      `<input type="image" src="images/delete.svg" onclick="removeInputImage('file_${numberImages +
         1}');" class="remove-image" value="-"/>`
     );
     $("#inputs_images").append(div_image);
@@ -18,31 +18,29 @@ $(document).ready(function() {
   $("#image-delete_image_tip1").on("click", function(e) {
     e.preventDefault();
   });
-  $("#submit-preview_button").on("click", function(e) {
+  $("#button-preview_button").on("click", function(e) {
     e.preventDefault();
     previewTip();
   });
 });
 
-$("#checkbox_tips_startup").ready(function() {
-  $("#checkbox_tips_startup").on("click", function() {
-    $.ajax({
-      method: "POST",
-      url: url,
-      dataType: "json",
-      data: {
-        page: page,
-        method: "setShowTipsAtStartup",
-        show_tips_startup: this.checked ? "1" : "0"
-      },
-      success: function({ success }) {
-        if (!success) {
-          $("#checkbox_tips_startup").prop("checked", true);
-        }
+function show_tips_startup(e) {
+  $.ajax({
+    method: "POST",
+    url: url,
+    dataType: "json",
+    data: {
+      page: page,
+      method: "setShowTipsAtStartup",
+      show_tips_startup: e.checked ? "1" : "0"
+    },
+    success: function({ success }) {
+      if (!success) {
+        $("#checkbox_tips_startup").prop("checked", true);
       }
-    });
+    }
   });
-});
+}
 function checkImage(e) {
   var maxWidth = 464;
   var maxHeight = 260;
@@ -320,25 +318,27 @@ function previewTip() {
     extradata["totalFiles64"] = totalInputsFiles;
     $("input[type=file]").each(function(index) {
       var reader = new FileReader();
-      reader.readAsDataURL(this.files[0]);
-      reader.onload = function(e) {
-        var img = new Image();
-        img.src = e.target.result;
-        img.onload = function() {
-          extradata[`file64_${index}`] = this.currentSrc;
-          if (totalInputsFiles - 1 === index) {
-            load_tips_modal({
-              target: $("#tips_window_modal_preview"),
-              url: url,
-              onshow: {
-                page: page,
-                method: "renderPreview"
-              },
-              extradata //Receive json
-            });
-          }
+      if (this.files.length > 0) {
+        reader.readAsDataURL(this.files[0]);
+        reader.onload = function(e) {
+          var img = new Image();
+          img.src = e.target.result;
+          img.onload = function() {
+            extradata[`file64_${index}`] = this.currentSrc;
+            if (totalInputsFiles - 1 === index) {
+              load_tips_modal({
+                target: $("#tips_window_modal_preview"),
+                url: url,
+                onshow: {
+                  page: page,
+                  method: "renderPreview"
+                },
+                extradata //Receive json
+              });
+            }
+          };
         };
-      };
+      }
     });
   } else {
     load_tips_modal({

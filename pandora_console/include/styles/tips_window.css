@@ -24,6 +24,8 @@
   height: fit-content;
   background-color: white;
   color: #161628;
+  border-top-left-radius: 25px !important;
+  border-top-right-radius: 25px !important;
 }
 .tips_header .title {
   font-size: 15px;
@@ -124,6 +126,7 @@
 #tips_window_modal_preview .ui-dialog-buttonset button {
   margin: 0px 20px !important;
   margin-top: 10px !important;
+  min-width: fit-content;
 }
 .dialog_tips .ui-dialog-buttonset {
   border-bottom-right-radius: 10px !important;
@@ -201,7 +204,10 @@ span.disable {
 #notices_images {
   color: #e63c52;
 }
-.preview {
-  background-position: 92% 10px !important;
-  margin-right: 20px !important;
+.remove-image {
+  max-width: 35px;
+  padding-top: 18px;
+}
+.buttons_actions input {
+  width: 32px;
 }

@@ -372,6 +372,8 @@ $userManagementTable->data['captions_loginErrorUser'][1] .= ui_print_input_place
     __('The user with local authentication enabled will always use local authentication.'),
     true
 );
+$userManagementTable->data['show_tips_startup'][0] = html_print_checkbox_switch('show_tips_startup', 1, ($user_info['show_tips_startup'] === null) ? true : $user_info['show_tips_startup'], true);
+$userManagementTable->data['show_tips_startup'][1] = __('Show usage tips at startup');
 
 // Session time input.
 $userManagementTable->rowclass['captions_userSessionTime'] = 'field_half_width';

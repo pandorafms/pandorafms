@@ -10491,6 +10491,11 @@ button div.create_directory {
     contain;
 }
 
+button div.preview {
+  mask: url(../../images/eye.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/eye.png) no-repeat center / contain;
+}
+
 button div.cog.rotation {
   animation: rotation 4s infinite linear;
 }

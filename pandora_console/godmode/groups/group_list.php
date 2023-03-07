@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -306,11 +306,11 @@ $url_groups = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=groups'
 $buttons['tree'] = [
     'active' => false,
     'text'   => '<a href="'.$url_tree.'">'.html_print_image(
-        'images/gm_massive_operations.png',
+        'images/snmp-trap@svg.svg',
         true,
         [
             'title' => __('Tree Group view'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -318,11 +318,11 @@ $buttons['tree'] = [
 $buttons['groups'] = [
     'active' => false,
     'text'   => '<a href="'.$url_groups.'">'.html_print_image(
-        'images/group.png',
+        'images/groups@svg.svg',
         true,
         [
             'title' => __('Group view'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -334,7 +334,7 @@ $buttons['credbox'] = [
         true,
         [
             'title' => __('Credential Store'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -945,12 +945,12 @@ if ($tab == 'tree') {
             if ($is_management_allowed === true) {
                 $table->cellclass[$key][6] = 'table_action_buttons';
                 $table->data[$key][6] = '<a href="'.$url.'">'.html_print_image(
-                    'images/config.png',
+                    'images/edit.svg',
                     true,
                     [
-                        'alt'    => __('Edit'),
-                        'title'  => __('Edit'),
-                        'border' => '0',
+                        'alt'   => __('Edit'),
+                        'title' => __('Edit'),
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>';
 
@@ -965,7 +965,7 @@ if ($tab == 'tree') {
                 }
 
                 $table->data[$key][6] .= '<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
-                    'images/cross.png',
+                    'images/delete.svg',
                     true,
                     [
                         'alt'    => __('Delete'),

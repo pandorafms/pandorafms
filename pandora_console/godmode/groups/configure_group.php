@@ -133,8 +133,8 @@ $table->data[0][0] = html_print_label_input_block(
     html_print_input_text('name', $name, '', 35, 100, true)
 );
 
-$input_icon = html_print_select($files, 'icon', $icon, '', 'None', '', true);
-$input_icon .= ' <span id="icon_preview">';
+$input_icon = html_print_select($files, 'icon', $icon, '', 'None', '', true, false, true, '', false, 'width: 100%;');
+$input_icon .= ' <span id="icon_preview" class="mrgn_lft_05em">';
 if (empty($icon) === false) {
     $input_icon .= html_print_image('images/'.$icon, true);
 }
@@ -143,7 +143,13 @@ $input_icon .= '</span>';
 
 $table->data[0][1] = html_print_label_input_block(
     __('Icon'),
-    '<div>'.$input_icon.'</div>'
+    html_print_div(
+        [
+            'class'   => 'flex-content-left ',
+            'content' => $input_icon,
+        ],
+        true
+    )
 );
 
 if ($id_group > 0) {
@@ -191,14 +197,20 @@ if ($id_group > 0) {
 }
 
 if ($acl_parent === true) {
-    $input_parent .= ' <span id="parent_preview">';
+    $input_parent .= ' <span id="parent_preview" class="mrgn_lft_05em">';
     $input_parent .= html_print_image('images/'.(($id_parent !== 0) ? groups_get_icon($id_parent) : 'unknown@groups.svg'), true);
     $input_parent .= '</span>';
 }
 
 $table->data[1][0] = html_print_label_input_block(
     __('Parent'),
-    '<div>'.$input_parent.'</div>'
+    html_print_div(
+        [
+            'class'   => 'flex-content-left ',
+            'content' => $input_parent,
+        ],
+        true
+    )
 );
 
 if ((bool) $config['enterprise_installed'] === true) {
@@ -271,11 +283,14 @@ if ($id_group) {
 }
 
 $buttons .= html_print_button(
-    __('Back'),
+    __('Go back'),
     'button_back',
     false,
     '',
-    ['icon' => 'cancel'],
+    [
+        'icon' => 'back',
+        'mode' => 'secondary',
+    ],
     true
 );
 

@@ -1494,7 +1494,8 @@ function events_get_all(
         break;
 
         case EVENT_GROUP_REP_EXTRAIDS:
-            // Group by events.
+            // Group by events and ignore null.
+            $sql_filters[] = 'AND te.id_extra IS NOT NULL AND te.id_extra <> ""';
             $group_by .= 'te.id_extra';
         break;
     }

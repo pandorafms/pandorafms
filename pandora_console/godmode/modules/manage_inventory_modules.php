@@ -370,6 +370,17 @@ if ($result === false) {
 
     if ($management_allowed === true) {
         $actionButtons .= html_print_submit_button(
+            __('Create'),
+            'crt',
+            false,
+            [
+                'icon' => 'wand',
+                'form' => 'form_create',
+            ],
+            true
+        );
+
+        $actionButtons .= html_print_submit_button(
             __('Delete'),
             'delete_btn',
             false,
@@ -377,18 +388,6 @@ if ($result === false) {
                 'icon' => 'delete',
                 'mode' => 'secondary',
                 'form' => 'form_delete',
-            ],
-            true
-        );
-
-
-        $actionButtons .= html_print_submit_button(
-            __('Create'),
-            'crt',
-            false,
-            [
-                'icon' => 'wand',
-                'form' => 'form_create',
             ],
             true
         );

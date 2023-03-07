@@ -738,14 +738,7 @@ if ($tab == 'tree') {
      * Group tree view.
      */
 
-    echo html_print_image(
-        'images/spinner.gif',
-        true,
-        [
-            'class' => 'loading_tree',
-            'style' => 'display: none;',
-        ]
-    );
+    ui_print_spinner(__('Loading'));
     echo "<div id='tree-controller-recipient'></div>";
 } else {
     /*
@@ -1041,7 +1034,7 @@ $tab = 'group_edition';
     if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
             treeController.recipient.empty();
 
-        $(".loading_tree").show();
+        showSpinner();
 
         var parameters = {};
         parameters['page'] = "include/ajax/tree.ajax";
@@ -1065,7 +1058,7 @@ $tab = 'group_edition';
             data: parameters,
             success: function(data) {
                 if (data.success) {
-                    $(".loading_tree").hide();
+                    hideSpinner();
 
                     treeController.init({
                         recipient: $("div#tree-controller-recipient"),

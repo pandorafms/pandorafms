@@ -192,7 +192,7 @@ sub ha_keep_pandora_running($$) {
   if ($OSNAME eq "freebsd") {
     $control_command = "status_server";
   }
-  my $pid =  `$Pandora_Service $control_command | awk '{print \$NF*1}' | tr -d '\.'`;
+  my $pid =  `$Pandora_Service $control_command | grep -v /conf.d/ | awk '{print \$NF*1}' | tr -d '\.'`;
 
   if ( ($pid > 0) && ($component_last_contact > 0)) {
     # service running but not all components

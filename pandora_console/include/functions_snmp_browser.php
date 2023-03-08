@@ -612,8 +612,8 @@ function snmp_browser_print_oid(
     $table->head[1] = __('OID Information');
     $output .= html_print_table($table, true);
 
-    $url = 'index.php?'.'sec=gmodules&'.'sec2=godmode/modules/manage_network_components';
-    $output .= '<form id="snmp_create_module" class="center mrgn_10px" target="_blank" method="post" action="'.$url.'">';
+    $url = 'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components';
+    $output .= '<form id="snmp_create_module" class="center mrgn_10px flex" target="_blank" method="post" action="'.$url.'">';
     $output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
     $output .= html_print_input_hidden('id_component_type', 2, true);
     $output .= html_print_input_hidden('type', 17, true);
@@ -638,19 +638,21 @@ function snmp_browser_print_oid(
         __('Create network component'),
         'create_network_component',
         false,
-        'class="sub add float-left mrgn_right_20px"',
+        'class="buttonButton mrgn_right_20px"',
         true
     );
 
-    // Hidden by default.
-    $output .= html_print_button(
-        __('Create agent module'),
-        'create_module_agent_single',
-        false,
-        'show_add_module()',
-        'class="sub add invisible"',
-        true
-    );
+    if (isset($_POST['print_create_agent_module'])) {
+        // Hidden by default.
+        $output .= html_print_button(
+            __('Create agent module'),
+            'create_module_agent_single',
+            false,
+            'show_add_module()',
+            'class="sub add invisible"',
+            true
+        );
+    }
 
     // Select agent modal.
     $output .= snmp_browser_print_create_modules(true);
@@ -685,7 +687,8 @@ function snmp_browser_print_container(
     $width='100%',
     $height='60%',
     $display='',
-    $show_massive_buttons=false
+    $show_massive_buttons=false,
+    $toggle=false
 ) {
     global $config;
 
@@ -948,8 +951,22 @@ function snmp_browser_print_container(
     );
     $table->data[2] .= '</div>';
 
+    if ($toggle == true) {
+        $print_create_agent_module = 1;
+    } else {
+        $print_create_agent_module = 0;
+    }
+
     $searchForm = '<form onsubmit="snmpBrowse(); return false;">';
     $searchForm .= html_print_table($table, true);
+    $searchForm .= html_print_input_hidden(
+        'print_create_agent_module',
+        $print_create_agent_module,
+        true,
+        false,
+        false,
+        'print_create_agent_module'
+    );
     $searchForm .= html_print_div(
         [
             'class'   => 'action-buttons',
@@ -969,17 +986,19 @@ function snmp_browser_print_container(
 
     $searchForm .= '</form>';
 
-    ui_toggle(
-        $searchForm,
-        '<span class="subsection_header_title">'.__('Filters').'</span>',
-        'filter_form',
-        '',
-        false,
-        false,
-        '',
-        'white-box-content',
-        'box-flat white_table_graph fixed_filter_bar'
-    );
+    if ($toggle == true) {
+        ui_toggle(
+            $searchForm,
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
+            'filter_form',
+            '',
+            false,
+            false,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
+        );
+    }
 
     // Search tools.
     $table2 = new stdClass();
@@ -1100,6 +1119,62 @@ function snmp_browser_print_container(
         true
     );
     $output .= '</div>';
+
+    if ($toggle === false) {
+        // This extra div that can be handled by jquery's dialog.
+        $output .= '<div id="snmp_browser_container" style="display:none">';
+        $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
+        $output .= '<div class="w100p">';
+        $output .= '<form onsubmit="snmpBrowse(); return false;">';
+        $output .= html_print_table($table, true);
+        $output .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Execute'),
+                    'srcbutton',
+                    false,
+                    [
+                        'mode' => 'mini',
+                        'icon' => 'cog',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
+        $output .= '</form></div>';
+
+        if (isset($snmp_version) === false) {
+            $snmp_version = null;
+        }
+
+        if ($snmp_version == 3) {
+            $output .= '<div id="snmp3_browser_options">';
+        } else {
+            $output .= '<div id="snmp3_browser_options" style="display: none;">';
+        }
+
+        $output .= ui_toggle(
+            html_print_table($table3, true),
+            __('SNMP v3 options'),
+            '',
+            '',
+            true,
+            true
+        );
+        $output .= '</div>';
+        $output .= '<div class="search_options">';
+        $output .= ui_toggle(
+            html_print_table($table2, true),
+            __('Search options'),
+            '',
+            '',
+            true,
+            true
+        );
+        $output .= '</div>';
+    }
 
     // SNMP tree container.
     $output .= '<div class="snmp_tree_container" id="snmp_tree_container" style="display:none">';

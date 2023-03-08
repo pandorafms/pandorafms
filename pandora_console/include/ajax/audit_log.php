@@ -135,18 +135,15 @@ if ($load_filter_modal) {
     $table->width = '100%';
     $table->cellspacing = 4;
     $table->cellpadding = 4;
-    $table->class = 'databox';
+    $table->class = 'databox no_border';
     if (is_metaconsole()) {
         $table->cellspacing = 0;
         $table->cellpadding = 0;
-        $table->class = 'databox filters';
+        $table->class = 'databox filters no_border';
     }
 
     $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-    $filter_id_width = '200px';
-    if (is_metaconsole()) {
-        $filter_id_width = '150px';
-    }
+    $filter_id_width = 'w100p';
 
     $data = [];
     $table->rowid[3] = 'update_filter_row1';
@@ -165,11 +162,17 @@ if ($load_filter_modal) {
         false,
         'margin-left:5px; width:'.$filter_id_width.';'
     );
+
+    $table->rowclass[] = 'display-grid';
     $data[1] = html_print_submit_button(
         __('Load filter'),
         'load_filter',
         false,
-        'class="sub upd" onclick="load_filter_values()"',
+        [
+            'class'   => 'mini w25p',
+            'style'   => 'margin-left: 73%',
+            'onclick' => 'load_filter_values();',
+        ],
         true
     );
     $data[1] .= html_print_input_hidden('load_filter', 1, true);
@@ -186,7 +189,7 @@ function show_filter() {
         draggable: true,
         modal: false,
         closeOnEscape: true,
-        width: 450
+        width: 500
     });
 }
 
@@ -238,7 +241,7 @@ $(document).ready (function() {
 
 
 if ($save_filter_modal) {
-    echo '<div id="save-filter-select" style="width:350px;">';
+    echo '<div id="save-filter-select" style="width:600px;">';
 
     if (check_acl($config['id_user'], 0, 'EW') === 1 || check_acl($config['id_user'], 0, 'EM') === 1) {
         echo '<div id="info_box"></div>';
@@ -247,9 +250,9 @@ if ($save_filter_modal) {
         $table->width = '100%';
         $table->cellspacing = 4;
         $table->cellpadding = 4;
-        $table->class = 'databox';
+        $table->class = 'databox no_border';
         if (is_metaconsole()) {
-            $table->class = 'databox filters';
+            $table->class = 'databox filters no_border';
             $table->cellspacing = 0;
             $table->cellpadding = 0;
         }
@@ -289,7 +292,11 @@ if ($save_filter_modal) {
             __('Save filter'),
             'save_filter',
             false,
-            'class="sub wand" onclick="save_new_filter();"',
+            [
+                'class'   => 'mini w25p',
+                'style'   => 'margin-left: 56%',
+                'onclick' => 'save_new_filter();',
+            ],
             true
         );
 
@@ -317,11 +324,16 @@ if ($save_filter_modal) {
             0,
             true
         );
+        $table->rowclass[] = 'display-grid';
         $data[1] = html_print_submit_button(
             __('Update filter'),
             'update_filter',
             false,
-            'class="sub upd" onclick="save_update_filter();"',
+            [
+                'class'   => 'mini w25p',
+                'style'   => 'margin-left: 56%',
+                'onclick' => 'save_update_filter();',
+            ],
             true
         );
 
@@ -359,7 +371,8 @@ function show_save_filter() {
         resizable: true,
         draggable: true,
         modal: false,
-        closeOnEscape: true
+        closeOnEscape: true,
+        width: 380
     });
 }
 

@@ -2508,6 +2508,10 @@ function ui_print_help_tip(
     $style='',
     $blink=false
 ) {
+    if (empty($img) === true) {
+        $img = 'images/info@svg.svg';
+    }
+
     $output = '<a href="javascript:" class="tip" style="'.$style.'" >';
     $output .= html_print_image(
         $img,
@@ -4515,8 +4519,8 @@ function ui_print_toggle($data)
         (isset($data['toggle_class']) === true) ? $data['toggle_class'] : '',
         (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
         (isset($data['main_class']) === true) ? $data['main_class'] : 'box-flat white_table_graph',
-        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
-        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
+        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow@svg.svg',
+        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow@svg.svg',
         (isset($data['clean']) === true) ? $data['clean'] : false,
         (isset($data['reverseImg']) === true) ? $data['reverseImg'] : false,
         (isset($data['switch']) === true) ? $data['switch'] : false,

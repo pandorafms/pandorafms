@@ -1169,6 +1169,10 @@ if ($config['pure'] == 0) {
     $menuTypeClass = ($menuCollapsed === true) ? 'collapsed' : 'classic';
     // Container.
     echo '<div id="container">';
+
+    // Notifications content wrapper
+    echo '<div id="notification-content" class="invisible"/></div>';
+
     // Header.
     echo '<div id="head">';
     include 'general/header.php';

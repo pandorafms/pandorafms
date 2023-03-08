@@ -373,7 +373,7 @@ $userManagementTable->data['captions_loginErrorUser'][1] .= ui_print_input_place
     true
 );
 $userManagementTable->data['show_tips_startup'][0] = html_print_checkbox_switch('show_tips_startup', 1, ($user_info['show_tips_startup'] === null) ? true : $user_info['show_tips_startup'], true);
-$userManagementTable->data['show_tips_startup'][1] = __('Show usage tips at startup');
+$userManagementTable->data['show_tips_startup'][1] = '<span>'.__('Show usage tips at startup').'</span>';
 
 // Session time input.
 $userManagementTable->rowclass['captions_userSessionTime'] = 'field_half_width';

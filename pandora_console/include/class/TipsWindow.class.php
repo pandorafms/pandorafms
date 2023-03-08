@@ -540,7 +540,7 @@ class TipsWindow
 
             if (key_exists('filter_title', $filters) === true) {
                 if (empty($filters['filter_title']) === false) {
-                    $filter = ' WHERE title like "%'.io_safe_input($filters['filter_title']).'%"';
+                    $filter = ' WHERE title like "%'.$filters['filter_title'].'%"';
                 }
             }
 
@@ -902,9 +902,9 @@ class TipsWindow
             [
                 'id_lang'    => $id_lang,
                 'id_profile' => (empty($id_profile) === false) ? $id_profile : 0,
-                'title'      => io_safe_input($title),
-                'text'       => io_safe_input($text),
-                'url'        => io_safe_input($url),
+                'title'      => $title,
+                'text'       => $text,
+                'url'        => $url,
                 'enable'     => $enable,
             ],
             ['id' => $id]
@@ -958,9 +958,9 @@ class TipsWindow
             [
                 'id_lang'    => $id_lang,
                 'id_profile' => (empty($id_profile) === false) ? $id_profile : 0,
-                'title'      => io_safe_input($title),
-                'text'       => io_safe_input($text),
-                'url'        => io_safe_input($url),
+                'title'      => $title,
+                'text'       => $text,
+                'url'        => $url,
                 'enable'     => $enable,
             ]
         );

@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,23 +54,33 @@ require_once $config['homedir'].'/include/functions_cron.php';
 // Buttons.
 $buttons = [
     'text' => "<a href='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'>".html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
         [
             'title' => __('List'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
 
 // Header.
-ui_print_page_header(
+ui_print_standard_header(
     __('Scheduled Downtime'),
     'images/gm_monitoring.png',
     false,
     '',
     true,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Tools'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Scheduled Downtime'),
+        ],
+    ]
 );
 
 // Recursion group filter.
@@ -813,227 +823,7 @@ if (users_can_manage_group_all('AW') === true || $disabled) {
     $return_all_group = true;
 }
 
-$table = new StdClass();
-$table->class = 'databox filters';
-$table->width = '100%';
-$table->data = [];
-$table->data[0][0] = __('Name');
-$table->data[0][1] = html_print_input_text(
-    'name',
-    $name,
-    '',
-    25,
-    40,
-    true,
-    $disabled_in_execution
-);
-$table->data[1][0] = __('Group');
-$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
-    false,
-    $access,
-    $return_all_group,
-    'id_group',
-    $id_group,
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
-).'</div>';
-$table->data[2][0] = __('Description');
-$table->data[2][1] = html_print_textarea(
-    'description',
-    3,
-    35,
-    $description,
-    '',
-    true
-);
-
-$table->data[3][0] = __('Type').ui_print_help_tip(
-    __('Quiet: Modules will not generate events or fire alerts.').'<br>'.__('Disable Agents: Disables the selected agents.').'<br>'.__('Disable Alerts: Disable alerts for the selected agents.'),
-    true
-);
-$table->data[3][1] = html_print_select(
-    [
-        'quiet'                 => __('Quiet'),
-        'disable_agents'        => __('Disabled Agents'),
-        'disable_agent_modules' => __('Disable Modules'),
-        'disable_agents_alerts' => __('Disabled only Alerts'),
-    ],
-    'type_downtime',
-    $type_downtime,
-    'change_type_downtime()',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
-);
-$table->data[4][0] = __('Execution');
-$table->data[4][1] = html_print_select(
-    [
-        'once'         => __('Once'),
-        'periodically' => __('Periodically'),
-        'cron'         => __('Cron from/to'),
-    ],
-    'type_execution',
-    $type_execution,
-    'change_type_execution();',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    $disabled_in_execution
-);
-
 $days = array_combine(range(1, 31), range(1, 31));
-$table->data[5][0] = __('Configure the time').'&nbsp;';
-;
-$table->data[5][1] = "
-    <div id='once_time' style='display: none;'>
-        <table>
-            <tr>
-                <td>".__('From:').'</td>
-                <td>'.html_print_input_text('once_date_from', $once_date_from, '', 10, 10, true, $disabled_in_execution).html_print_input_text('once_time_from', $once_time_from, '', 9, 9, true, $disabled_in_execution).'</td>
-            </tr>
-            <tr>
-                <td>'.__('To:').'</td>
-                <td>'.html_print_input_text('once_date_to', $once_date_to, '', 10, 10, true).html_print_input_text('once_time_to', $once_time_to, '', 9, 9, true)."</td>
-            </tr>
-        </table>
-    </div>
-    <div id='periodically_time' style='display: none;'>
-        <table>
-            <tr><td>".ui_get_using_system_timezone_warning().'</td></tr>
-            <tr>
-                <td>'.__('Type Periodicity:').'&nbsp;'.html_print_select(
-                [
-                    'weekly'  => __('Weekly'),
-                    'monthly' => __('Monthly'),
-                ],
-                'type_periodicity',
-                $type_periodicity,
-                'change_type_periodicity();',
-                '',
-                0,
-                true,
-                false,
-                true,
-                '',
-                $disabled_in_execution
-)."</td>
-            </tr>
-            <tr>
-                <td colspan='2'>
-                    <table id='weekly_item' style='display: none;'>
-                        <tr>
-                            <td>".__('Mon').html_print_checkbox('monday', 1, $monday, true, $disabled_in_execution).'</td>
-                            <td>'.__('Tue').html_print_checkbox('tuesday', 1, $tuesday, true, $disabled_in_execution).'</td>
-                            <td>'.__('Wed').html_print_checkbox('wednesday', 1, $wednesday, true, $disabled_in_execution).'</td>
-                            <td>'.__('Thu').html_print_checkbox('thursday', 1, $thursday, true, $disabled_in_execution).'</td>
-                            <td>'.__('Fri').html_print_checkbox('friday', 1, $friday, true, $disabled_in_execution).'</td>
-                            <td>'.__('Sat').html_print_checkbox('saturday', 1, $saturday, true, $disabled_in_execution).'</td>
-                            <td>'.__('Sun').html_print_checkbox('sunday', 1, $sunday, true, $disabled_in_execution)."</td>
-                        </tr>
-                    </table>
-                    <table id='monthly_item' style='display: none;'>
-                        <tr>
-                            <td>".__('From day:').'</td>
-                            <td>'.html_print_select(
-                                $days,
-                                'periodically_day_from',
-                                $periodically_day_from,
-                                '',
-                                '',
-                                0,
-                                true,
-                                false,
-                                true,
-                                '',
-                                $disabled_in_execution
-).'</td>
-                            <td>'.__('To day:').'</td>
-                            <td>'.html_print_select(
-                                $days,
-                                'periodically_day_to',
-                                $periodically_day_to,
-                                '',
-                                '',
-                                0,
-                                true,
-                                false,
-                                true,
-                                '',
-                                $disabled_in_execution
-).'</td>
-                            <td>'.ui_print_help_tip(__('The end day must be higher than the start day'), true).'</td>
-                        </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <td>'.__('From hour:').'</td>
-                            <td>'.html_print_input_text(
-                                'periodically_time_from',
-                                $periodically_time_from,
-                                '',
-                                7,
-                                7,
-                                true,
-                                $disabled_in_execution
-).ui_print_help_tip(
-    __('The end time must be higher than the start time'),
-    true
-).'</td>
-                            <td>'.__('To hour:').'</td>
-                            <td>'.html_print_input_text(
-                                'periodically_time_to',
-                                $periodically_time_to,
-                                '',
-                                7,
-                                7,
-                                true,
-                                $disabled_in_execution
-).ui_print_help_tip(
-    __('The end time must be higher than the start time'),
-    true
-).'</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div id="cron_time" style="display: none;">
-        <table class="w100p">
-            <tr>
-                <td>'.__('Cron from:').'</td>
-                <td>'.html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, false, false, true, 'from').'</td>
-            </tr>
-            <tr>
-                <td>'.__('Cron to:').'</td>
-                <td>'.html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, false, true, true, 'to').'</td>
-            </tr>
-        </table>
-    </div>';
-
-if ($id_downtime > 0) {
-    echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
-} else {
-    echo '<form method="POST" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor">';
-}
-
-// Editor form.
-html_print_table($table);
-
-echo "<td valign=top style='width:300px;padding-left:20px;'>";
 
 $filter_group = (int) get_parameter('filter_group', 0);
 
@@ -1074,39 +864,439 @@ if (empty($agents) || $disabled_in_execution) {
     $disabled_add_button = true;
 }
 
-// Show available agents to include into downtime
+
 $table = new StdClass();
-$table->class = 'databox filters';
+$table->class = 'databox filter-table-adv';
+$table->id = 'principal_table_scheduled';
 $table->width = '100%';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 $table->data = [];
-$table->size[0] = '25%';
-
-$table->data[0][0] = __('Group filter');
-$table->data[0][1] = html_print_select_groups(
-    false,
-    $access,
-    $return_all_group,
-    'filter_group',
-    $filter_group,
-    '',
-    '',
-    '',
-    true,
-    false,
-    true,
-    '',
-    false,
-    'min-width:180px;margin-right:15px;'
+$table->data['first_title'][] = html_print_div(
+    [
+        'class'   => 'section_table_title',
+        'content' => __('Editor'),
+    ],
+    true
 );
-$table->data[0][2] = __('Recursion').'&nbsp&nbsp'.html_print_checkbox('recursion', 1, $recursion, true, false, '');
+$table->data[0][] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text(
+        'name',
+        $name,
+        '',
+        25,
+        40,
+        true,
+        $disabled_in_execution
+    )
+);
 
-$table->data[1][0] = __('Available agents');
-$table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'min-width: 250px;width: 70%;');
+$table->data[0][] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        $access,
+        $return_all_group,
+        'id_group',
+        $id_group,
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        $disabled_in_execution
+    )
+);
 
+$table->data[1][] = html_print_label_input_block(
+    __('Description'),
+    html_print_textarea(
+        'description',
+        3,
+        35,
+        $description,
+        '',
+        true
+    )
+);
 
-$table->rowid[2] = 'available_modules_selection_mode';
+$table->data[1][] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        [
+            'quiet'                 => __('Quiet'),
+            'disable_agents'        => __('Disabled Agents'),
+            'disable_agent_modules' => __('Disable Modules'),
+            'disable_agents_alerts' => __('Disabled only Alerts'),
+        ],
+        'type_downtime',
+        $type_downtime,
+        'change_type_downtime()',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        $disabled_in_execution
+    ).ui_print_input_placeholder(
+        __('Quiet: Modules will not generate events or fire alerts.').'<br>'.__('Disable Agents: Disables the selected agents.').'<br>'.__('Disable Alerts: Disable alerts for the selected agents.'),
+        true
+    )
+);
 
-$table->data[2][1] = html_print_select(
+$table->data[2][] = html_print_label_input_block(
+    __('Execution'),
+    html_print_select(
+        [
+            'once'         => __('Once'),
+            'periodically' => __('Periodically'),
+            'cron'         => __('Cron from/to'),
+        ],
+        'type_execution',
+        $type_execution,
+        'change_type_execution();',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        $disabled_in_execution
+    )
+);
+
+$timeInputs = [];
+
+$timeInputs[] = html_print_div(
+    [
+        'id'      => 'once_time',
+        'style'   => 'display: none',
+        'content' => html_print_div(
+            [
+                'class'   => '',
+                'content' => html_print_input_text(
+                    'once_date_from',
+                    $once_date_from,
+                    '',
+                    10,
+                    10,
+                    true,
+                    $disabled_in_execution
+                ).html_print_input_text(
+                    'once_time_from',
+                    $once_time_from,
+                    '',
+                    9,
+                    9,
+                    true,
+                    $disabled_in_execution
+                ).'<span class="margin-lr-10 result_info_text">'.__(
+                    'To'
+                ).'</span>'.html_print_input_text(
+                    'once_date_to',
+                    $once_date_to,
+                    '',
+                    10,
+                    10,
+                    true
+                ).html_print_input_text(
+                    'once_time_to',
+                    $once_time_to,
+                    '',
+                    9,
+                    9,
+                    true
+                ),
+            ],
+            true
+        ),
+    ],
+    true
+);
+
+$timeInputs[] = html_print_div(
+    [
+        'id'      => 'periodically_time',
+        'style'   => 'display: none',
+        'content' => html_print_div(
+            [
+                'class'   => 'filter-table-adv-manual w50p',
+                'content' => html_print_label_input_block(
+                    __('Type Periodicity'),
+                    html_print_select(
+                        [
+                            'weekly'  => __('Weekly'),
+                            'monthly' => __('Monthly'),
+                        ],
+                        'type_periodicity',
+                        $type_periodicity,
+                        'change_type_periodicity();',
+                        '',
+                        0,
+                        true,
+                        false,
+                        true,
+                        '',
+                        $disabled_in_execution
+                    )
+                ),
+            ],
+            true
+        ).html_print_div(
+            [
+                'id'      => 'weekly_item',
+                'class'   => '',
+                'content' => '<ul class="flex-row-center mrgn_top_15px mrgn_btn_15px">
+                <li class="flex">'.__('Mon').html_print_checkbox('monday', 1, $monday, true, $disabled_in_execution, '', false, ['label_style' => 'margin: 0 5px;' ]).'</li>
+                <li class="flex">'.__('Tue').html_print_checkbox('tuesday', 1, $tuesday, true, $disabled_in_execution, '', false, ['label_style' => 'margin: 0 5px;' ]).'</li>
+                <li class="flex">'.__('Wed').html_print_checkbox('wednesday', 1, $wednesday, true, $disabled_in_execution, '', false, ['label_style' => 'margin: 0 5px;' ]).'</li>
+                <li class="flex">'.__('Thu').html_print_checkbox('thursday', 1, $thursday, true, $disabled_in_execution, '', false, ['label_style' => 'margin: 0 5px;' ]).'</li>
+                <li class="flex">'.__('Fri').html_print_checkbox('friday', 1, $friday, true, $disabled_in_execution, '', false, ['label_style' => 'margin: 0 5px;' ]).'</li>
+                <li class="flex">'.__('Sat').html_print_checkbox('saturday', 1, $saturday, true, $disabled_in_execution, '', false, ['label_style' => 'margin: 0 5px;' ]).'</li>
+                <li class="flex">'.__('Sun').html_print_checkbox('sunday', 1, $sunday, true, $disabled_in_execution, '', false, ['label_style' => 'margin: 0 5px;' ]).'</li>
+                </ul>',
+            ],
+            true
+        ).html_print_div(
+            [
+                'id'      => 'monthly_item',
+                'style'   => 'margin-top: 12px;',
+                'class'   => 'filter-table-adv-manual flex-row-start w50p',
+                'content' => html_print_label_input_block(
+                    __('From day'),
+                    html_print_select(
+                        $days,
+                        'periodically_day_from',
+                        $periodically_day_from,
+                        '',
+                        '',
+                        0,
+                        true,
+                        false,
+                        true,
+                        '',
+                        $disabled_in_execution
+                    ),
+                    [ 'div_style' => 'flex: 50; margin-right: 5px;' ]
+                ).html_print_label_input_block(
+                    __('To day'),
+                    html_print_select(
+                        $days,
+                        'periodically_day_to',
+                        $periodically_day_to,
+                        '',
+                        '',
+                        0,
+                        true,
+                        false,
+                        true,
+                        '',
+                        $disabled_in_execution
+                    ).ui_print_input_placeholder(
+                        __('The end day must be higher than the start day'),
+                        true
+                    ),
+                    [ 'div_style' => 'flex: 50; margin-left: 5px;' ]
+                ),
+            ],
+            true
+        ).html_print_div(
+            [
+                'class'   => 'filter-table-adv-manual flex-row-start w50p',
+                'content' => html_print_label_input_block(
+                    __('From hour'),
+                    html_print_input_text(
+                        'periodically_time_from',
+                        $periodically_time_from,
+                        '',
+                        7,
+                        7,
+                        true,
+                        $disabled_in_execution
+                    ).ui_print_input_placeholder(
+                        __('The start time must be lower than the end time'),
+                        true
+                    ),
+                    [ 'div_style' => 'flex: 50; margin-right: 5px;' ]
+                ).html_print_label_input_block(
+                    __('To hour'),
+                    html_print_input_text(
+                        'periodically_time_to',
+                        $periodically_time_to,
+                        '',
+                        7,
+                        7,
+                        true,
+                        $disabled_in_execution
+                    ).ui_print_input_placeholder(
+                        __('The end time must be higher than the start time'),
+                        true
+                    ),
+                    [ 'div_style' => 'flex: 50; margin-left: 5px;' ]
+                ),
+            ],
+            true
+        ).ui_get_using_system_timezone_warning(),
+    ],
+    true
+);
+
+$timeInputs[] = html_print_div(
+    [
+        'id'      => 'cron_time',
+        'style'   => 'display: none',
+        'content' => html_print_label_input_block(
+            __('Cron from'),
+            html_print_extended_select_for_cron($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, false, false, true, 'from')
+        ).html_print_label_input_block(
+            __('Cron to'),
+            html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, false, true, true, 'to')
+        ),
+    ],
+    true
+);
+
+$table->colspan[3][0] = 2;
+$table->data[3][0] = html_print_label_input_block(
+    __('Configure the time'),
+    implode('', $timeInputs)
+);
+
+$table->data[4][] = html_print_div(
+    [
+        'class'   => 'section_table_title',
+        'content' => __('Filtering'),
+    ],
+    true
+);
+
+$table->data[5][] = html_print_label_input_block(
+    __('Group filter'),
+    html_print_select_groups(
+        false,
+        $access,
+        $return_all_group,
+        'filter_group',
+        $filter_group,
+        '',
+        '',
+        '',
+        true,
+        false,
+        true,
+        '',
+        false,
+        'min-width:180px;margin-right:15px;'
+    )
+);
+
+$table->data[5][] = html_print_label_input_block(
+    __('Recursion'),
+    html_print_checkbox_switch(
+        'recursion',
+        1,
+        $recursion,
+        true,
+        false,
+        ''
+    )
+);
+
+$table->colspan[6][0] = 2;
+$availableModules = html_print_label_input_block(
+    __('Available agents'),
+    html_print_select(
+        $agents,
+        'id_agents[]',
+        -1,
+        '',
+        __('Any'),
+        -2,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'min-width: 250px;width: 70%;'
+    ),
+    [
+        'div_class' => 'flex-column',
+        'div_style' => 'flex: 33',
+    ]
+);
+
+$availableModules .= html_print_label_input_block(
+    __('Selection mode'),
+    html_print_select(
+        [
+            'common' => __('Show common modules'),
+            'all'    => __('Show all modules'),
+        ],
+        'modules_selection_mode',
+        'common',
+        false,
+        '',
+        '',
+        true,
+        false,
+        true,
+        '',
+        false,
+        'min-width:180px;'
+    ),
+    [
+        'div_class' => 'available_modules_selection_mode flex-column',
+        'div_style' => 'flex: 33',
+    ]
+);
+
+$availableModules .= html_print_label_input_block(
+    __('Available modules'),
+    html_print_select(
+        [],
+        'module[]',
+        '',
+        '',
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'min-width: 250px;width: 70%;'
+    ).ui_print_input_placeholder(
+        __('Only for type Quiet for downtimes.'),
+        true
+    ),
+    [
+        'div_class' => 'available_modules flex-column',
+        'div_style' => 'flex: 33',
+    ]
+);
+
+$table->data[6][0] = html_print_div(
+    [
+        'style'   => 'flex-direction: row;align-items: flex-start;',
+        'content' => $availableModules,
+    ],
+    true
+);
+
+// $table->data[0][2] = __('Recursion').'&nbsp&nbsp'.html_print_checkbox('recursion', 1, $recursion, true, false, '');
+/*
+    $table->data[1][0] = __('Available agents');
+    $table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'min-width: 250px;width: 70%;');
+*/
+/*
+    $table->rowid[2] = 'available_modules_selection_mode';
+
+    $table->data[2][1] = html_print_select(
     [
         'common' => __('Show common modules'),
         'all'    => __('Show all modules'),
@@ -1122,16 +1312,16 @@ $table->data[2][1] = html_print_select(
     '',
     false,
     'min-width:180px;'
-);
+    );
 
 
-$table->rowid[3] = 'available_modules';
-$table->data[3][0] = __('Available modules:').ui_print_help_tip(
+    $table->rowid[3] = 'available_modules';
+    $table->data[3][0] = __('Available modules:').ui_print_help_tip(
     __('Only for type Quiet for downtimes.'),
     true
-);
+    );
 
-$table->data[3][1] = html_print_select(
+    $table->data[3][1] = html_print_select(
     [],
     'module[]',
     '',
@@ -1144,35 +1334,45 @@ $table->data[3][1] = html_print_select(
     '',
     false,
     'min-width: 250px;width: 70%;'
-);
-
+    );
+*/
 // Print agent table.
+if ($id_downtime > 0) {
+    echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
+} else {
+    echo '<form method="POST" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor">';
+}
+
 html_print_table($table);
 
-echo '<br /><br /><br />';
-
+$buttons = '';
 html_print_input_hidden('id_agent', $id_agent);
-echo '<div class="action-buttons w100p" >';
+
 if ($id_downtime > 0) {
     html_print_input_hidden('update_downtime', 1);
     html_print_input_hidden('id_downtime', $id_downtime);
-    html_print_submit_button(
+    $buttons .= html_print_submit_button(
         __('Update'),
         'updbutton',
         false,
-        'class="sub upd"'
+        ['icon' => 'update'],
+        true
     );
 } else {
     html_print_input_hidden('create_downtime', 1);
-    html_print_submit_button(
+    $buttons .= html_print_submit_button(
         __('Add'),
         'crtbutton',
         false,
-        'class="sub wand"'
+        ['icon' => 'wand'],
+        true
     );
 }
 
-echo '</div>';
+html_print_action_buttons(
+    $buttons
+);
+
 html_print_input_hidden('all_common_modules', '');
 echo '</form>';
 
@@ -1208,11 +1408,17 @@ if (empty($downtimes_agents)) {
     $table->head[2] = __('OS');
     $table->head[3] = __('Last contact');
     $table->head['count_modules'] = __('Modules');
+    $table->align = [];
+    $table->align[0] = 'center';
+    $table->align[1] = 'center';
+    $table->align[2] = 'center';
+    $table->align[3] = 'center';
+    $table->align[4] = 'center';
 
     if (!$running) {
         $table->head[5] = __('Actions');
-        $table->align[5] = 'center';
-        $table->size[5] = '5%';
+        $table->align[5] = 'right';
+        $table->size[5] = '10%';
     }
 
     foreach ($downtimes_agents as $downtime_agent) {
@@ -1232,7 +1438,13 @@ if (empty($downtimes_agents)) {
             WHERE id_grupo = '.$downtime_agent['id_grupo']
         );
 
-        $data[2] = ui_print_os_icon($downtime_agent['id_os'], true, true);
+        $data[2] = html_print_div(
+            [
+                'class'   => 'main_menu_icon invert_filter',
+                'content' => ui_print_os_icon($downtime_agent['id_os'], false, true),
+            ],
+            true
+        );
 
         $data[3] = $downtime_agent['ultimo_contacto'];
 
@@ -1251,10 +1463,10 @@ if (empty($downtimes_agents)) {
         if (!$running) {
             $data[5] = '';
             if ($type_downtime !== 'disable_agents') {
-                $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+                $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/edit.svg', true, ['alt' => __('Edit'), 'class' => 'main_menu_icon invert_filter']).'</a>';
             }
 
-            $data[5] .= '<a href="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent='.$downtime_agent['id_agente'].'&delete_downtime_agent=1&id_downtime_agent='.$downtime_agent['id'].'&id_downtime='.$id_downtime.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+            $data[5] .= '<a href="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent='.$downtime_agent['id_agente'].'&delete_downtime_agent=1&id_downtime_agent='.$downtime_agent['id'].'&id_downtime='.$id_downtime.'">'.html_print_image('images/delete.svg', true, ['alt' => __('Delete'), 'class' => 'main_menu_icon invert_filter']).'</a>';
         }
 
         $table->data['agent_'.$downtime_agent['id_agente']] = $data;
@@ -1263,17 +1475,7 @@ if (empty($downtimes_agents)) {
     html_print_table($table);
 }
 
-$table = new stdClass();
-$table->id = 'loading';
-$table->width = '100%';
-$table->colspan['loading'][0] = '6';
-$table->style[0] = 'text-align: center;';
-$table->data = [];
-$table->data['loading'] = [];
-$table->data['loading'][0] = html_print_image('images/spinner.gif', true);
-echo "<div class='invisible'>";
-html_print_table($table);
-echo '</div>';
+ui_print_spinner('Loading');
 
 $table = new stdClass();
 $table->id = 'editor';

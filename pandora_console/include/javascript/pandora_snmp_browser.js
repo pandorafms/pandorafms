@@ -257,6 +257,8 @@ function snmpGet(oid) {
   var snmp3_privacy_pass = $("#password-snmp3_browser_privacy_pass").val();
   var ajax_url = $("#hidden-ajax_url").val();
   var server_to_exec = $("#server_to_exec").val();
+  var target_port = $("#target_port").val();
+  var print_create_agent_module = $("#print_create_agent_module").val();
 
   // Check for a custom action
   var custom_action = $("#hidden-custom_action").val();
@@ -280,6 +282,8 @@ function snmpGet(oid) {
   params["action"] = "snmpget";
   params["custom_action"] = custom_action;
   params["page"] = "include/ajax/snmp_browser.ajax";
+  params["target_port"] = target_port;
+  params["print_create_agent_module"] = print_create_agent_module;
 
   // SNMP get!
   jQuery.ajax({
@@ -560,7 +564,7 @@ function snmpBrowserWindow() {
         background: "black"
       },
       width: 1000,
-      height: 500
+      height: 800
     });
 }
 

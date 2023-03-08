@@ -588,7 +588,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
         $hashdata = md5($hashdata);
         if ((bool) $grants_on_node === true && (bool) $user_access_node !== false) {
-            $urlAgent = 'sendHash(\''.$server_data['server_url'].'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'\')';
+            $urlAgent = $server_data['server_url'].'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'];
         } else {
             $urlAgent = '';
         }

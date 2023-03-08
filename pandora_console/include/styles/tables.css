@@ -650,10 +650,6 @@ td#save_filter_form-1-0 > b {
   line-height: 16px;
 }
 
-tr#save_filter_row1 {
-  display: flex !important;
-}
-
 td#save_filter_form-0-0,
 td#save_filter_form-0-1,
 td#save_filter_form-1-0 > input#text-id_name,

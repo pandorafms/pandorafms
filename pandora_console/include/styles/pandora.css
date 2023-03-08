@@ -86,6 +86,43 @@
   font-weight: 900;
 }
 
+/*
+@font-face {
+  font-family: "lato-italic";
+  src: url("../fonts/Lato-Italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "lato";
+  src: url("../fonts/Lato-LightItalic.woff") format("woff");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "lato";
+  src: url("../fonts/Lato-ThinItalic.woff") format("woff");
+  font-weight: 100;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "lato";
+  src: url("../fonts/Lato-BoldItalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "lato";
+  src: url("../fonts/Lato-BlackItalic.woff") format("woff");
+  font-weight: 900;
+  font-style: italic;
+}
+*/
+
 @font-face {
   font-family: "source-code";
   src: url("../fonts/SourceCodePro.woff") format("woff");

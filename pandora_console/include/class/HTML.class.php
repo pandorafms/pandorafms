@@ -544,7 +544,7 @@ class HTML
                         'container_class' => $input['toggle_container_class'],
                         'img_a'           => $input['toggle_img_a'],
                         'img_b'           => $input['toggle_img_b'],
-                        'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                        'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : false),
                     ]
                 );
             } else {

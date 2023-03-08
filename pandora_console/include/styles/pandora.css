@@ -297,6 +297,7 @@ td input[type="checkbox"] {
   padding: 10px;
   margin-top: 2px;
   display: table-cell;
+  height: 15px;
 }
 
 input[type="image"] {
@@ -4816,7 +4817,7 @@ div#dialog_messages table th:last-child {
   z-index: 900000;
   position: absolute;
   width: 550px;
-  margin-top: -5px;
+  margin-top: 55px;
   border-radius: 5px;
 }
 
@@ -7534,6 +7535,9 @@ div.graph div.legend table {
 */
 .pdd_t_0px {
   padding-top: 0px;
+}
+.pdd_t_0px_important {
+  padding-top: 0px !important;
 }
 
 .pdd_t_3px {

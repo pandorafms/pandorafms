@@ -27,11 +27,7 @@
  */
 
 // Begin.
-if (is_metaconsole() === true) {
-    ui_require_css_file('tree_meta');
-} else {
-    ui_require_css_file('tree');
-}
+ui_require_css_file('tree');
 
 ui_require_css_file('fixed-bottom-box');
 
@@ -166,10 +162,6 @@ switch ($tab) {
             $header_sub_title = sprintf($header_sub_title, __('policies'));
         }
     break;
-}
-
-if (is_metaconsole() === true) {
-    $tabs = [];
 }
 
 if (!$strict_acl) {
@@ -373,11 +365,7 @@ html_print_input_hidden('tag-id', $tag_id);
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 
-if (is_metaconsole() === true) {
-    ui_require_javascript_file('TreeControllerMeta', 'include/javascript/tree/');
-} else {
-    ui_require_javascript_file('TreeController', 'include/javascript/tree/');
-}
+ui_require_javascript_file('TreeController', 'include/javascript/tree/');
 
 ui_print_spinner(__('Loading'));
 
@@ -387,10 +375,6 @@ html_print_div(
         'content' => '',
     ]
 );
-
-if (is_metaconsole() === true) {
-    echo '</div>';
-}
 
 $infoHeadTitle = 'Sombra oscura';
 ?>
@@ -505,7 +489,7 @@ $infoHeadTitle = 'Sombra oscura';
                         emptyMessage: "<?php echo __('No data found'); ?>",
                         foundMessage: foundMessage,
                         tree: data.tree,
-                        baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
+                        baseURL: "<?php echo ui_get_full_url(false, false, false, false); ?>",
                         ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
                         filter: parameters['filter'],
                         counterTitles: {

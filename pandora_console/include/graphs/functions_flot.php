@@ -855,7 +855,7 @@ function flot_slicesbar_graph(
         $full_legend_date = false;
     }
 
-    if (!$date_to) {
+    if (!$date_to || $date_to === '1') {
         $date_to = get_system_time();
     }
 

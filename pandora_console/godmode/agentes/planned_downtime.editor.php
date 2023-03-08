@@ -29,8 +29,6 @@
 
 global $config;
 
-
-
 check_login();
 
 $agent_d = check_acl($config['id_user'], 0, 'AD');
@@ -1288,54 +1286,6 @@ $table->data[6][0] = html_print_div(
     true
 );
 
-// $table->data[0][2] = __('Recursion').'&nbsp&nbsp'.html_print_checkbox('recursion', 1, $recursion, true, false, '');
-/*
-    $table->data[1][0] = __('Available agents');
-    $table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'min-width: 250px;width: 70%;');
-*/
-/*
-    $table->rowid[2] = 'available_modules_selection_mode';
-
-    $table->data[2][1] = html_print_select(
-    [
-        'common' => __('Show common modules'),
-        'all'    => __('Show all modules'),
-    ],
-    'modules_selection_mode',
-    'common',
-    false,
-    '',
-    '',
-    true,
-    false,
-    true,
-    '',
-    false,
-    'min-width:180px;'
-    );
-
-
-    $table->rowid[3] = 'available_modules';
-    $table->data[3][0] = __('Available modules:').ui_print_help_tip(
-    __('Only for type Quiet for downtimes.'),
-    true
-    );
-
-    $table->data[3][1] = html_print_select(
-    [],
-    'module[]',
-    '',
-    '',
-    '',
-    0,
-    true,
-    true,
-    true,
-    '',
-    false,
-    'min-width: 250px;width: 70%;'
-    );
-*/
 // Print agent table.
 if ($id_downtime > 0) {
     echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
@@ -1779,13 +1729,13 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         switch ($("#type_downtime").val()) {
             case 'disable_agents_alerts':
             case 'disable_agents':
-                $("#available_modules").hide();
-                $("#available_modules_selection_mode").hide();
+                $(".available_modules").hide();
+                $(".available_modules_selection_mode").hide();
                 break;
             case 'quiet':
             case 'disable_agent_modules':
-                $("#available_modules_selection_mode").show();
-                $("#available_modules").show();
+                $(".available_modules_selection_mode").show();
+                $(".available_modules").show();
                 break;
         }
     }

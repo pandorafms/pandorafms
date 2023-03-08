@@ -48,6 +48,7 @@ $inputs = [
             'class'     => 'search_input',
             'autofocus' => true,
         ],
+        'class'     => 'pdd_t_0px_important',
     ],
 ];
 
@@ -58,9 +59,8 @@ HTML::printForm(
     ]
 );
 
-ui_pagination($total, '#', $offset, 9);
 
-$output = '<div class="container-list-widgets" >';
+$output = '<div class="container-list-widgets mrgn_top_50px">';
 
 foreach ($widgets as $widget) {
     $urlWidgets = $config['homedir'];
@@ -97,3 +97,5 @@ foreach ($widgets as $widget) {
 
 $output .= '</div>';
 echo $output;
+
+ui_pagination($total, '#', $offset, 9, false, 'offset', false, 'center mrgn_top_10px');

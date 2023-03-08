@@ -7535,6 +7535,9 @@ div.graph div.legend table {
 .pdd_t_0px {
   padding-top: 0px;
 }
+.pdd_t_0px_important {
+  padding-top: 0px !important;
+}
 
 .pdd_t_3px {
   padding-top: 3px;

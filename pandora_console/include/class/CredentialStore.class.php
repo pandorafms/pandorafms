@@ -103,41 +103,15 @@ class CredentialStore extends Wizard
      */
     private function ajaxMsg($type, $msg, $delete=false)
     {
-        $msg_err = 'Failed while saving: %s';
-        $msg_ok = 'Successfully saved into keystore ';
-
-        if ($delete) {
-            $msg_err = 'Failed while removing: %s';
-            $msg_ok = 'Successfully deleted ';
-        }
-
-        if ($type == 'error') {
-            echo json_encode(
-                [
-                    $type => ui_print_error_message(
-                        __(
-                            $msg_err,
-                            $msg
-                        ),
-                        '',
-                        true
-                    ),
-                ]
-            );
+        if ($type === 'error') {
+            $msg_title = ($delete === true) ? 'Failed while removing' : 'Failed while saving';
         } else {
-            echo json_encode(
-                [
-                    $type => ui_print_success_message(
-                        __(
-                            $msg_ok,
-                            $msg
-                        ),
-                        '',
-                        true
-                    ),
-                ]
-            );
+            $msg_title = ($delete === true) ? 'Successfully deleted' : 'Successfully saved into keystore';
         }
+
+        echo json_encode(
+            [ $type => __($msg_title).':<br>'.$msg ]
+        );
 
         exit;
     }

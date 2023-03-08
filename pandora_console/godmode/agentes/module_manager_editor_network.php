@@ -524,7 +524,7 @@ $data[0] .= html_print_button(
     __('Manage credentials'),
     'manage_credentials_button',
     false,
-    'window.location.assign(\'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox\')',
+    'window.location.assign("index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox")',
     [ 'mode' => 'link' ],
     true
 );

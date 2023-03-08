@@ -68,12 +68,19 @@ if ($al_action !== false) {
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
-        ui_print_page_header(
-            __('Alerts').' &raquo; '.__('Configure alert action'),
+        ui_print_standard_header(
+            __('Alerts'),
             'images/gm_alerts.png',
             false,
-            'alert_config',
-            true
+            '',
+            true,
+            [],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Configure alert action'),
+                ],
+            ]
         );
     }
 } else {
@@ -81,12 +88,19 @@ if ($al_action !== false) {
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
-        ui_print_page_header(
-            __('Alerts').' &raquo; '.__('Configure alert action'),
+        ui_print_standard_header(
+            __('Alerts'),
             'images/gm_alerts.png',
             false,
-            'alert_config',
-            true
+            '',
+            true,
+            [],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Configure alert action'),
+                ],
+            ]
         );
     }
 
@@ -290,73 +304,99 @@ $table->data[1][1] = html_print_label_input_block(
     )
 );
 
-$table->data[2][0] = html_print_label_input_block(
+$table_macros = new stdClass();
+$table_macros->id = 'table_macros';
+$table_macros->width = '100%';
+$table_macros->class = 'databox filters filter-table-adv';
+$table_macros->style = [];
+$table_macros->size = [];
+$table_macros->size[0] = '20%';
+$table_macros->size[1] = '40%';
+$table_macros->size[2] = '40%';
+$table_macros->data = [];
+
+$table_macros->data[0][0] = '';
+$table_macros->data[0][1] = html_print_label_input_block(
+    __('Triggering'),
+    ''
+);
+
+$table_macros->data[0][2] = html_print_label_input_block(
     __('Recovery'),
     ''
 );
 
-$table->data[2][1] = html_print_label_input_block(
-    __('Recovery'),
+$table_macros->data[1][0] = html_print_label_input_block(
+    __('Command preview'),
     ''
 );
 
-$table->data[5][0] = __('Command preview');
-$table->data[5][1] = html_print_textarea(
-    'command_preview',
-    5,
-    30,
+$table_macros->data[1][1] = html_print_label_input_block(
     '',
-    'disabled="disabled"',
-    true
+    html_print_textarea(
+        'command_preview',
+        5,
+        30,
+        '',
+        'disabled="disabled"',
+        true
+    )
 );
-$table->data[5][2] = html_print_textarea(
-    'command_recovery_preview',
-    5,
-    30,
+
+$table_macros->data[1][2] = html_print_label_input_block(
     '',
-    'disabled="disabled"',
-    true
+    html_print_textarea(
+        'command_recovery_preview',
+        5,
+        30,
+        '',
+        'disabled="disabled"',
+        true
+    )
 );
 
 // Selector will work only with Integria activated.
 $integriaIdName = 'integria_wu';
-$table->data[$integriaIdName][0] = __('Create workunit on recovery').ui_print_help_tip(
-    __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
-    true
-);
-$table->data[$integriaIdName][1] = html_print_checkbox_switch_extended(
-    'create_wu_integria',
-    1,
-    $create_wu_integria,
-    false,
-    '',
-    $disabled_attr,
-    true
+$table_macros->colspan[$integriaIdName][0] = 3;
+$table_macros->data[$integriaIdName][0] = html_print_label_input_block(
+    __('Create workunit on recovery').ui_print_help_tip(
+        __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
+        true
+    ),
+    html_print_checkbox_switch_extended(
+        'create_wu_integria',
+        1,
+        $create_wu_integria,
+        false,
+        '',
+        $disabled_attr,
+        true
+    )
 );
 
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-    $table->data['field'.$i][0] = html_print_image(
+    $table_macros->data['field'.$i][0] = html_print_image(
         'images/spinner.gif',
         true
     );
-    $table->data['field'.$i][1] = html_print_image(
+    $table_macros->data['field'.$i][1] = html_print_image(
         'images/spinner.gif',
         true
     );
-    $table->data['field'.$i][2] = html_print_image(
+    $table_macros->data['field'.$i][2] = html_print_image(
         'images/spinner.gif',
         true
     );
 
     // Store the value in a hidden to keep it on first execution
-    $table->data['field'.$i][1] .= html_print_input_hidden(
+    $table_macros->data['field'.$i][1] .= html_print_input_hidden(
         'field'.$i.'_value',
         (!empty($action['field'.$i]) || $action['field'.$i] == 0) ? $action['field'.$i] : '',
         true,
         '',
         $disabled_attr
     );
-    $table->data['field'.$i][2] .= html_print_input_hidden(
+    $table_macros->data['field'.$i][2] .= html_print_input_hidden(
         'field'.$i.'_recovery_value',
         (!empty($action['field'.$i.'_recovery']) || $action['field'.$i] == 0) ? $action['field'.$i.'_recovery'] : '',
         true,
@@ -369,10 +409,12 @@ $offset = (int) get_parameter('offset', 0);
 
 echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'&offset='.$offset.'" class="max_floating_element_size">';
 $table_html = html_print_table($table, true);
+$table_html_macros = html_print_table($table_macros, true);
 
 $backButton = '';
 $submitButton = '';
 echo $table_html;
+echo $table_html_macros;
 if ($is_management_allowed === true) {
     if ($id) {
         html_print_input_hidden('id', $id);

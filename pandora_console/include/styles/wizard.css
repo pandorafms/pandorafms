@@ -46,7 +46,6 @@ ul.wizard li > label:not(.p-switch):first-of-type {
 }
 
 ul.wizard li > textarea {
-  width: 600px;
   height: 15em;
   display: inline-block;
 }
@@ -130,6 +129,12 @@ ul.wizard li > textarea {
   background: #e63c52;
 }
 
+.wizard .tag-editor li,
+.wizard .tag-editor li:focus,
+.wizard .tag-editor li:hover {
+  border: 0;
+  padding: 0;
+}
 .wizard .time_selection_container {
   display: flex;
   align-items: baseline;
@@ -200,6 +205,7 @@ li#textarea-create-site > textarea {
   width: 100%;
 }
 
+form.alert-correlation > ul.wizard > li > label,
 form#create_site > ul.wizard > li > label {
   font-size: 13px;
   line-height: 16px;
@@ -209,4 +215,24 @@ form#create_site > ul.wizard > li > label {
 
 select[multiple] {
   min-height: 20em;
+}
+
+form.alert-correlation > div > ul,
+form.alert-correlation > ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+form.alert-correlation > div > ul > li.flex-flex-end {
+  display: flex;
+  align-items: flex-end;
+}
+
+form.alert-correlation > div > ul > li.flex-flex-end > input {
+  width: 150px !important;
+}
+
+form.alert-correlation > div > ul > li.flex-flex-end > label {
+  width: 50px !important;
 }

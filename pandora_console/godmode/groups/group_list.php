@@ -738,14 +738,7 @@ if ($tab == 'tree') {
      * Group tree view.
      */
 
-    echo html_print_image(
-        'images/spinner.gif',
-        true,
-        [
-            'class' => 'loading_tree',
-            'style' => 'display: none;',
-        ]
-    );
+    ui_print_spinner(__('Loading'));
     echo "<div id='tree-controller-recipient'></div>";
 } else {
     /*
@@ -904,8 +897,9 @@ if ($tab == 'tree') {
         $table->data = [];
 
         foreach ($groups as $key => $group) {
-            $url = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
-            if (is_metaconsole() === true) {
+            $url_edit = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
+            $url_tactical = 'index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$group['id_grupo'];
+            if (is_metaconsole()) {
                 $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'].'&tab=groups';
             } else {
                 $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
@@ -913,7 +907,7 @@ if ($tab == 'tree') {
 
             $table->data[$key][0] = $group['id_grupo'];
             if ($is_management_allowed === true) {
-                $table->data[$key][1] = '<a href="'.$url.'">'.$group['nombre'].'</a>';
+                $table->data[$key][1] = '<a href="'.$url_tactical.'">'.$group['nombre'].'</a>';
             } else {
                 $table->data[$key][1] = $group['nombre'];
             }
@@ -944,7 +938,7 @@ if ($tab == 'tree') {
             $table->data[$key][5] = $group['description'];
             if ($is_management_allowed === true) {
                 $table->cellclass[$key][6] = 'table_action_buttons';
-                $table->data[$key][6] = '<a href="'.$url.'">'.html_print_image(
+                $table->data[$key][6] = '<a href="'.$url_edit.'">'.html_print_image(
                     'images/edit.svg',
                     true,
                     [
@@ -968,9 +962,9 @@ if ($tab == 'tree') {
                     'images/delete.svg',
                     true,
                     [
-                        'alt'    => __('Delete'),
-                        'title'  => __('Delete'),
-                        'border' => '0',
+                        'alt'   => __('Delete'),
+                        'title' => __('Delete'),
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>';
             }
@@ -1041,7 +1035,7 @@ $tab = 'group_edition';
     if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
             treeController.recipient.empty();
 
-        $(".loading_tree").show();
+        showSpinner();
 
         var parameters = {};
         parameters['page'] = "include/ajax/tree.ajax";
@@ -1065,7 +1059,7 @@ $tab = 'group_edition';
             data: parameters,
             success: function(data) {
                 if (data.success) {
-                    $(".loading_tree").hide();
+                    hideSpinner();
 
                     treeController.init({
                         recipient: $("div#tree-controller-recipient"),

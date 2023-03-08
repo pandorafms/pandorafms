@@ -77,28 +77,28 @@ if (is_metaconsole()) {
     user_meta_print_header();
     $urls['main'] = 'index.php?sec=advanced&amp;sec2=advanced/users_setup&amp;tab=user_edit';
 } else {
-    $urls['main'] = 'index.php?sec=workspace&amp;sec2=operation/users/user_edit';
+    $urls['main'] = 'index.php?sec=gusuarios&sec2=godmode/users/user_list';
     $urls['notifications'] = 'index.php?sec=workspace&amp;sec2=operation/users/user_edit_notifications';
     $buttons = [
         'main'          => [
-            'active' => $_GET['sec2'] === 'operation/users/user_edit',
+            'active' => $_GET['sec2'] === 'godmode/users/user_list&tab=user&pure=0',
             'text'   => "<a href='{$urls['main']}'>".html_print_image(
-                'images/user.png',
+                'images/user.svg',
                 true,
                 [
                     'title' => __('User management'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>',
         ],
         'notifications' => [
             'active' => $_GET['sec2'] === 'operation/users/user_edit_notifications',
             'text'   => "<a href='{$urls['notifications']}'>".html_print_image(
-                'images/alerts_template.png',
+                'images/alert@svg.svg',
                 true,
                 [
                     'title' => __('User notifications'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>',
         ],

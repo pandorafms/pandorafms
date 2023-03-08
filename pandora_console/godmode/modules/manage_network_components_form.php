@@ -366,43 +366,43 @@ if (is_metaconsole() === true) {
 
 html_print_table($table);
 
-html_print_input_hidden('id_component_type', $id_component_type);
+$buttons = html_print_input_hidden('id_component_type', $id_component_type);
 if ($id) {
-    html_print_input_hidden('update_component', 1);
-    html_print_input_hidden('id', $id);
+    $buttons .= html_print_input_hidden('update_component', 1, true);
+    $buttons .= html_print_input_hidden('id', $id, true);
     $buttonCaption = __('Update');
     $buttonIcon = 'update';
     $buttonName = 'upd';
-    html_print_submit_button(__('Update'), 'upd', false, 'class="sub upd"');
 } else {
-    html_print_input_hidden('create_component', 1);
-    html_print_input_hidden('create_network_from_module', 0);
+    $buttons .= html_print_input_hidden('create_component', 1, true);
+    $buttons .= html_print_input_hidden('create_network_from_module', 0, true);
     $buttonCaption = __('Create');
     $buttonIcon = 'wand';
     $buttonName = 'crt';
 }
 
-html_print_div(
+$buttons .= html_print_submit_button(
+    $buttonCaption,
+    $buttonName,
+    false,
+    ['icon' => $buttonIcon],
+    true
+);
+
+$buttons .= html_print_button(
+    __('Go back'),
+    'go_back',
+    false,
+    '',
     [
-        'class'   => 'action-buttons',
-        'content' => html_print_button(
-            __('Go back'),
-            'go_back',
-            false,
-            '',
-            [
-                'icon' => 'back',
-                'mode' => 'secondary',
-            ],
-            true
-        ).html_print_submit_button(
-            $buttonCaption,
-            $buttonName,
-            false,
-            ['icon' => $buttonIcon],
-            true
-        ),
-    ]
+        'icon' => 'back',
+        'mode' => 'secondary',
+    ],
+    true
+);
+
+html_print_action_buttons(
+    $buttons
 );
 
 echo '</form>';

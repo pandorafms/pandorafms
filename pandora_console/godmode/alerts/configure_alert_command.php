@@ -54,12 +54,19 @@ $alert = [];
 if (is_metaconsole() === true) {
     alerts_meta_print_header();
 } else {
-    ui_print_page_header(
-        __('Alerts').' &raquo; '.__('Configure alert command'),
+    ui_print_standard_header(
+        __('Alerts'),
         'images/gm_alerts.png',
         false,
         '',
-        true
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Configure alert command'),
+            ],
+        ]
     );
 }
 
@@ -199,112 +206,23 @@ if ($is_management_allowed === false) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
-
-if (is_metaconsole() === true) {
-    $table->head[0] = ($id) ? __('Update Command') : __('Create Command');
-    $table->head_colspan[0] = 4;
-    $table->headstyle[0] = 'text-align: center';
-}
+$table->class = 'databox filters filter-table-adv';
 
 $table->style = [];
-if (is_metaconsole() === false) {
-    $table->style[0] = 'font-weight: bold';
-    $table->style[2] = 'font-weight: bold';
-    $table->style[4] = 'font-weight: bold';
-}
 
 $table->size = [];
-$table->size[0] = '20%';
+$table->size[0] = '45%';
+$table->size[1] = '45%';
+$table->size[2] = '10%';
 $table->data = [];
 
-$table->colspan['name'][1] = 3;
-$table->data['name'][0] = __('Name');
-$table->data['name'][2] = html_print_input_text(
-    'name',
-    $name,
-    '',
-    35,
-    255,
-    true,
-    false,
-    false,
-    '',
-    '',
-    '',
-    '',
-    false,
-    '',
-    '',
-    '',
-    !$is_management_allowed
-);
-
-$table->colspan['command'][1] = 3;
-$table->data['command'][0] = __('Command');
-$table->data['command'][1] = html_print_textarea(
-    'command',
-    8,
-    30,
-    $command,
-    '',
-    true,
-    '',
-    !$is_management_allowed
-);
-
-$return_all_group = false;
-
-if (users_can_manage_group_all('LM') === true) {
-    $return_all_group = true;
-}
-
-$table->colspan['group'][1] = 3;
-$table->data['group'][0] = __('Group');
-$table->data['group'][1] = '<div class="w250px inline">'.html_print_select_groups(
-    false,
-    'LM',
-    $return_all_group,
-    'id_group',
-    $id_group,
-    false,
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    !$is_management_allowed
-).'</div>';
-
-$table->colspan['description'][1] = 3;
-$table->data['description'][0] = __('Description');
-$table->data['description'][1] = html_print_textarea(
-    'description',
-    10,
-    30,
-    $description,
-    '',
-    true,
-    '',
-    !$is_management_allowed
-);
-
-
-for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-    $table->data['field'.$i][0] = sprintf(__('Field %s description'), $i);
-
-    if (empty($fields_descriptions) === false) {
-        $field_description = $fields_descriptions[($i - 1)];
-    } else {
-        $field_description = '';
-    }
-
-    $table->data['field'.$i][1] = html_print_input_text(
-        'field'.$i.'_description',
-        $field_description,
+$table->data[0][0] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text(
+        'name',
+        $name,
         '',
-        30,
+        35,
         255,
         true,
         false,
@@ -318,12 +236,91 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         '',
         '',
         !$is_management_allowed
-    );
+    )
+);
 
-    $table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
-    $table->data['field'.$i][2] .= ui_print_help_tip(
-        __('value1,tag1;value2,tag2;value3,tag3'),
-        true
+if (users_can_manage_group_all('LM') === true) {
+    $return_all_group = true;
+}
+
+$table->data[0][1] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'LM',
+        $return_all_group,
+        'id_group',
+        $id_group,
+        false,
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        !$is_management_allowed
+    )
+);
+
+$table->data[1][0] = html_print_label_input_block(
+    __('Command'),
+    html_print_textarea(
+        'command',
+        8,
+        30,
+        $command,
+        '',
+        true,
+        '',
+        !$is_management_allowed
+    )
+);
+
+$return_all_group = false;
+
+
+$table->data[1][1] = html_print_label_input_block(
+    __('Description'),
+    html_print_textarea(
+        'description',
+        8,
+        30,
+        $description,
+        '',
+        true,
+        '',
+        !$is_management_allowed
+    )
+);
+
+for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
+    if (empty($fields_descriptions) === false) {
+        $field_description = $fields_descriptions[($i - 1)];
+    } else {
+        $field_description = '';
+    }
+
+    $table->data['field'.$i][0] = html_print_label_input_block(
+        sprintf(__('Field %s description'), $i),
+        html_print_input_text(
+            'field'.$i.'_description',
+            $field_description,
+            '',
+            30,
+            255,
+            true,
+            false,
+            false,
+            '',
+            '',
+            '',
+            '',
+            false,
+            '',
+            '',
+            '',
+            !$is_management_allowed
+        )
     );
 
     if (empty($fields_values) === false) {
@@ -338,54 +335,72 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $selected = false;
     }
 
-    $table->data['field'.$i][3] = html_print_input_text(
-        'field'.$i.'_values',
-        $field_values,
-        '',
-        55,
-        1000,
-        true,
-        false,
-        false,
-        '',
-        'field_value',
-        '',
-        '',
-        false,
-        '',
-        '',
-        '',
-        !$is_management_allowed
+    $table->data['field'.$i][1] = html_print_label_input_block(
+        sprintf(__('Field %s values'), $i).ui_print_help_tip(
+            __('value1,tag1;value2,tag2;value3,tag3'),
+            true
+        ),
+        html_print_input_text(
+            'field'.$i.'_values',
+            $field_values,
+            '',
+            55,
+            1000,
+            true,
+            false,
+            false,
+            '',
+            'field_value',
+            '',
+            '',
+            false,
+            '',
+            '',
+            '',
+            !$is_management_allowed
+        )
     );
 
-    $table->data['field'.$i][4] = __('Hide');
-
-    $table->data['field'.$i][5] = html_print_checkbox_extended(
-        'field'.$i.'_hide',
-        1,
-        $selected,
-        !$is_management_allowed,
-        'cursor: \'pointer\'',
-        'class="hide_inputs"',
-        true
+    $table->data['field'.$i][2] = html_print_label_input_block(
+        __('Hide'),
+        html_print_checkbox_extended(
+            'field'.$i.'_hide',
+            1,
+            $selected,
+            !$is_management_allowed,
+            'cursor: \'pointer\'',
+            'class="hide_inputs"',
+            true
+        )
     );
 }
 
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&pure='.$pure.'">';
+echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&pure='.$pure.'" class="max_floating_element_size">';
 html_print_table($table);
 
 if ($is_management_allowed === true) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
     if ($id) {
         html_print_input_hidden('id', $id);
         html_print_input_hidden('update_command', 1);
-        html_print_submit_button(__('Update'), 'create', false, 'class="sub upd"');
+        $buttonSubmit = html_print_submit_button(
+            __('Update'),
+            'create',
+            false,
+            ['icon' => 'wand'],
+            true
+        );
     } else {
         html_print_input_hidden('create_command', 1);
-        html_print_submit_button(__('Create'), 'create', false, 'class="sub wand"');
+        $buttonSubmit = html_print_submit_button(
+            __('Create'),
+            'create',
+            false,
+            ['icon' => 'wand'],
+            true
+        );
     }
 
-    echo '</div>';
+    html_print_action_buttons($buttonSubmit);
 }
 
 echo '</form>';

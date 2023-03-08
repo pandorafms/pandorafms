@@ -471,10 +471,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
     </div>    <!-- Closes #table_header_inner -->
 </div>    <!-- Closes #table_header -->
 
-
-<!-- Notifications content wrapper-->
-<div id='notification-content' class='invisible'/></div>
-
 <!-- Old style div wrapper -->
 <div id="alert_messages" class="invisible"></div>
 

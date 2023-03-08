@@ -855,6 +855,7 @@ function favMenuAction(e) {
             $(e).val(btoa(JSON.stringify(data)));
             favMenuAction(e);
             $(this).dialog("close");
+            $("input[name='label_fav_menu']").val("");
           }
         }
       ]

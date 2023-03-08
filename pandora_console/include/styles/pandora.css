@@ -11587,3 +11587,12 @@ ul.tag-editor {
 .max-width-100p {
   max-width: 100%;
 }
+
+/* Datatables overrides */
+.ui-dialog .ui-dialog-titlebar-close {
+  right: 1em !important;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+  display: block !important;
+}

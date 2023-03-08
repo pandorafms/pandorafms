@@ -530,6 +530,7 @@ table.filter-table-adv td {
   vertical-align: top;
 }
 
+div.filter-table-adv-manual > div,
 table.filter-table-adv td > div {
   display: flex;
   flex-direction: column;
@@ -537,6 +538,7 @@ table.filter-table-adv td > div {
   align-items: normal;
 }
 
+div.filter-table-adv-manual > div label,
 table.filter-table-adv td > div label {
   color: #161628;
   font-size: 13px;

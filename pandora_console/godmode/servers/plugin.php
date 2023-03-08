@@ -632,7 +632,7 @@ if (empty($create) === false || empty($view) === false) {
             $delete_macro_style = 'display:none;';
         }
 
-        $datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.'<a href="javascript:;">'.'<span class="bolder">'.__('Delete macro').'</span>'.'&nbsp;'.html_print_image('images/delete.png', true, ['class' => 'invert_filter']).'</a>'.'</div>';
+        $datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.'<a href="javascript:;">'.'<span class="bolder">'.__('Delete macro').'</span>'.'&nbsp;'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>'.'</div>';
 
         $table->colspan['plugin_action'][0] = 2;
         $table->colspan['plugin_action'][2] = 2;
@@ -665,8 +665,10 @@ if (empty($create) === false || empty($view) === false) {
 
     echo '<tr><td align="right">';
 
-    if ($create != '') {
-        $button = html_print_submit_button(
+    $buttons = '';
+
+    if (empty($create) === false) {
+        $buttons .= html_print_submit_button(
             __('Create'),
             'crtbutton',
             false,
@@ -674,7 +676,7 @@ if (empty($create) === false || empty($view) === false) {
             true
         );
     } else {
-        $button = html_print_submit_button(
+        $buttons .= html_print_submit_button(
             __('Update'),
             'uptbutton',
             false,
@@ -683,8 +685,14 @@ if (empty($create) === false || empty($view) === false) {
         );
     }
 
+    $buttons .= html_print_go_back_button(
+        'index.php?sec=gservers&sec2=godmode/servers/plugin',
+        ['button_class' => ''],
+        true
+    );
+
     html_print_action_buttons(
-        $button
+        $buttons
     );
 
     echo '</form></table>';

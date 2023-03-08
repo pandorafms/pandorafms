@@ -2400,3 +2400,10 @@ function topFunction() {
     500
   );
 }
+
+function menuActionButtonResizing() {
+  $(".action_buttons_right_content").attr(
+    "style",
+    "left: " + $("#menu_full").width() + "px;"
+  );
+}

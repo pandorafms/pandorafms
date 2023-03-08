@@ -4903,7 +4903,8 @@ function html_print_autocomplete_modules(
     $filter=[],
     $return=false,
     $id_agent_module=0,
-    $size='30'
+    $size='30',
+    $underInputTip=false
 ) {
     global $config;
 
@@ -4960,7 +4961,11 @@ function html_print_autocomplete_modules(
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 
     if (is_metaconsole() === false) {
-        ui_print_help_tip(__('Type at least two characters to search the module.'), false);
+        if ($underInputTip === true) {
+            ui_print_input_placeholder(__('Type at least two characters to search the module.'), false);
+        } else {
+            ui_print_help_tip(__('Type at least two characters to search the module.'), false);
+        }
     }
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false);

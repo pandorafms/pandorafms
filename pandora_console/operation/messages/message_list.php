@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -206,25 +206,36 @@ if (empty($messages) === true) {
         $data[0] = '';
         if ($message['read'] == 1) {
             if ($show_sent === true) {
-                $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
-                $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Click to read'), 'class' => 'invert_filter']);
-                $data[0] .= '</a>';
+                $pathRead = 'index.php?sec=message_list&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id;
+                $titleRead = __('Click to read');
             } else {
-                $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&amp;mark_unread=1&amp;id_message='.$message_id.'">';
-                $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Mark as unread'), 'class' => 'invert_filter']);
-                $data[0] .= '</a>';
+                $pathRead = 'index.php?sec=message_list&amp;sec2=operation/messages/message_list&amp;mark_unread=1&amp;id_message='.$message_id;
+                $titleRead = __('Mark as unread');
             }
         } else {
             if ($show_sent === true) {
-                $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
-                $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Message unread - click to read'), 'class' => 'invert_filter']);
-                $data[0] .= '</a>';
+                $pathRead = 'index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;show_sent=1&amp;id_message='.$message_id;
+                $titleRead = __('Message unread - click to read');
             } else {
-                $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
-                $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Message unread - click to read'), 'class' => 'invert_filter']);
-                $data[0] .= '</a>';
+                $pathRead = 'index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id;
+                $titleRead = __('Message unread - click to read');
             }
         }
+
+        $data[0] = html_print_anchor(
+            [
+                'href'    => $pathRead,
+                'content' => html_print_image(
+                    'images/email_inbox.png',
+                    true,
+                    [
+                        'title' => $titleRead,
+                        'class' => 'main_menu_icon invert_filter',
+                    ],
+                ),
+            ],
+            true
+        );
 
         if ($show_sent === true) {
             $dest_user = get_user_fullname($message['dest']);
@@ -243,18 +254,24 @@ if (empty($messages) === true) {
         }
 
         if ($show_sent === true) {
-            $data[2] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&show_sent=1&amp;id_message='.$message_id.'">';
+            $pathSubject = 'index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&show_sent=1&amp;id_message='.$message_id;
         } else {
-            $data[2] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
+            $pathSubject = 'index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id;
         }
 
-        if ($message['subject'] == '') {
-            $data[2] .= __('No Subject');
-        } else {
-            $data[2] .= $message['subject'];
+        $contentSubject = (empty($message['subject']) === true) ? __('No Subject') : $message['subject'];
+
+        if ((int) $message['read'] !== 1) {
+            $contentSubject = '<strong>'.$contentSubject.'</strong>';
         }
 
-        $data[2] .= '</a>';
+        $data[2] .= html_print_anchor(
+            [
+                'href'    => $pathSubject,
+                'content' => $contentSubject,
+            ],
+            true
+        );
 
         $data[3] = ui_print_timestamp(
             $message['timestamp'],
@@ -264,12 +281,26 @@ if (empty($messages) === true) {
 
         $table->cellclass[][4] = 'table_action_buttons';
         if ($show_sent === true) {
-            $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
-                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+            $pathDelete = 'index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id;
         } else {
-            $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
-                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+            $pathDelete = 'index.php?sec=message_list&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id;
         }
+
+        $data[4] = html_print_anchor(
+            [
+                'href'    => $pathDelete,
+                'content' => html_print_image(
+                    'images/delete.svg',
+                    true,
+                    [
+                        'title' => __('Delete'),
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                ),
+                'onClick' => 'javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;',
+            ],
+            true
+        );
 
         array_push($table->data, $data);
     }
@@ -312,11 +343,8 @@ if (empty($messages) === false) {
 
     echo '<form id="create_message_form" method="post" class="float-right" action="index.php?sec=message_list&sec2=operation/messages/message_edit"></form>';
 
-    html_print_div(
-        [
-            'class'   => 'action-buttons',
-            'content' => $outputButton,
-        ]
+    html_print_action_buttons(
+        $outputButton
     );
 
     ?>

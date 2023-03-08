@@ -50,11 +50,11 @@ if ($config['pure']) {
     // Windowed.
     $link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">';
     $link['text'] .= html_print_image(
-        'images/normal_screen.png',
+        'images/exit_fullscreen@svg.svg',
         true,
         [
             'title' => __('Normal screen'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     );
     $link['text'] .= '</a>';
@@ -62,11 +62,11 @@ if ($config['pure']) {
     // Fullscreen.
     $link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=0">';
     $link['text'] .= html_print_image(
-        'images/full_screen.png',
+        'images/fullscreen@svg.svg',
         true,
         [
             'title' => __('Full screen'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     );
     $link['text'] .= '</a>';

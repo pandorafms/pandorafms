@@ -348,7 +348,10 @@ class ClusterWizard extends \HTML
                     'name'       => 'submit',
                     'label'      => __('Go back'),
                     'type'       => 'submit',
-                    'attributes' => 'class="sub cancel"',
+                    'attributes' => [
+                        'icon' => 'back',
+                        'mode' => 'secondary',
+                    ],
                     'return'     => true,
                 ],
             ],

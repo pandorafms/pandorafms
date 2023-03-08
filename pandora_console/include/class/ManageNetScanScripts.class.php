@@ -451,13 +451,13 @@ class ManageNetScanScripts extends Wizard
                 );
                 echo html_print_input_image(
                     'delete',
-                    'images/cross.png',
+                    'images/delete.svg',
                     1,
-                    '',
+                    'width:40px;',
                     true,
                     [
                         'title' => __('Delete Script'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 );
                 echo '</form>';
@@ -468,7 +468,19 @@ class ManageNetScanScripts extends Wizard
 
             echo "<form name=reconscript method='post' action='".$url."'>";
                 echo html_print_input_hidden('page', 1, true);
-                echo "<input name='crtbutton' type='submit' class='sub next float-right' value='".__('Add')."'>";
+                html_print_div(
+                    [
+                        'class'   => 'action-buttons',
+                        'content' => html_print_submit_button(
+                            __('Add'),
+                            'crtbutton',
+                            false,
+                            [ 'icon' => 'next' ],
+                            true
+                        ),
+                    ],
+                    true
+                );
             echo '</form>';
         } else {
             ui_print_info_message(
@@ -515,7 +527,7 @@ class ManageNetScanScripts extends Wizard
         $url .= '&wiz=hd&mode=managenetscanscripts';
 
         if ($id_script !== 0) {
-            echo '<form name=reconscript method="post" action="'.$url.'&id_script='.$id_script.'">';
+            echo '<form name=reconscript class="max_floating_element_size" method="post" action="'.$url.'&id_script='.$id_script.'">';
             echo html_print_input_hidden('page', 0, true);
             echo html_print_input_hidden(
                 'operation_scp',
@@ -523,7 +535,7 @@ class ManageNetScanScripts extends Wizard
                 true
             );
         } else {
-            echo '<form name=reconscript method="post" action="'.$url.'">';
+            echo '<form name=reconscript class="max_floating_element_size" method="post" action="'.$url.'">';
             echo html_print_input_hidden('page', 0, true);
             echo html_print_input_hidden(
                 'operation_scp',
@@ -535,11 +547,7 @@ class ManageNetScanScripts extends Wizard
         $table = new stdClass();
         $table->width = '100%';
         $table->id = 'table-form';
-        $table->class = 'databox filters';
-        $table->style = [];
-        $table->style[0] = 'font-weight: bold';
-        $table->style[2] = 'font-weight: bold';
-        $table->data = [];
+        $table->class = 'databox filter-table-adv';
 
         $data = [];
         $data[0] = __('Name');
@@ -756,16 +764,33 @@ class ManageNetScanScripts extends Wizard
 
         html_print_table($table);
 
-        echo '<table width=100%>';
-        echo '<tr><td align="right">';
-
         if ($id_script === 0) {
-            echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+            $buttonName = 'crtbutton';
+            $buttonCaption = __('Create');
+            $buttonIcon = 'wand';
         } else {
-            echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+            $buttonName = 'updbutton';
+            $buttonCaption = __('Update');
+            $buttonIcon = 'update';
         }
 
-        echo '</form></table>';
+        html_print_action_buttons(
+            html_print_div(
+                [
+                    'class'   => 'action-buttons',
+                    'content' => html_print_submit_button(
+                        $buttonCaption,
+                        $buttonName,
+                        false,
+                        [ 'icon' => $buttonIcon ],
+                        true
+                    ),
+                ],
+                true
+            )
+        );
+
+        echo '</form>';
 
         ui_require_javascript_file('pandora_modules');
     }

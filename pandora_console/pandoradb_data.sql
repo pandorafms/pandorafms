@@ -1,9 +1,9 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2014-2021 Artica Soluciones Tecnologicas, http://www.artica.es
--- Please see http://www.pandorafms.org for full contribution list
+-- Copyright (c) 2014-2023 Artica PFMS
+-- Please see http://www.pandorafms.com 
 
--- Database Data for Pandora FMS 5.1
+-- Database Data for Pandora FMS NG
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
@@ -39,17 +39,18 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('block_size','20'),
 ('days_purge','45'),
 ('days_delete_unknown','0'),
-('days_delete_not_initialized','0'),
+('days_delete_not_initialized','7'),
 ('days_compact','0'),
 ('days_autodisable_deletion','30'),
 ('graph_res','5'),
 ('step_compact','1'),
-('db_scheme_first_version', '6.0dev'),
-('db_scheme_version','6.0RC1'),
-('db_scheme_build','PD150908'),
+('db_scheme_first_version', '7.0NG'),
+('db_scheme_version','7.0NG'),
+('db_scheme_build','PD230303'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
+('graph_image_height', '250'),
 ('graph_color1', '#99dd00'),
 ('graph_color2', '#336600'),
 ('graph_color3', '#3399cc'),
@@ -104,7 +105,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('enable_refr', 0),
 ('meta_num_elements', 100),
 ('update_manager_installed', 1),
-('num_files_attachment', 250),
+('num_files_attachment', 500),
 ('show_vc', 1),
 ('inventory_changes_blacklist', '1,2,20,21'),
 ('custom_report_front', 0),
@@ -155,26 +156,26 @@ UNLOCK TABLES;
 
 LOCK TABLES `tconfig_os` WRITE;
 INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`, `previous_name`) VALUES 
-(1,'Linux','Linux: All versions','so_linux.png', ''),
-(2,'Solaris','Sun Solaris','so_solaris.png', ''),
-(3,'AIX','IBM AIX','so_aix.png', ''),
-(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.png', ''),
-(5,'HP-UX','HP-UX Unix OS','so_hpux.png', ''),
-(7,'Cisco','CISCO IOS','so_cisco.png', ''),
-(8,'MacOS','MAC OS','so_mac.png', ''),
-(9,'Windows','Microsoft Windows OS','so_win.png', ''),
-(10,'Other','Other SO','so_other.png', ''),
-(11,'Network','Network Agent','network.png', ''),
-(12,'Web Server','Web Server/Application','network.png', ''),
-(13,'Sensor','Hardware Agent (Sensor)','network.png', ''),
-(14,'Embedded','Embedded device running an agent','embedded.png', ''),
-(15,'Android','Android agent','android.png', ''),
-(16, 'VMware', 'VMware Architecture', 'so_vmware.png', ''),
-(17, 'Router', 'Generic router', 'so_router.png', ''),
-(18, 'Switch', 'Generic switch', 'so_switch.png', ''),
-(19, 'Satellite', 'Satellite agent', 'satellite.png', ''),
-(20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png', ''),
-(100, 'Cluster', 'Cluster agent', 'so_cluster.png', '');
+(1,'Linux','Linux: All versions','linux@os.svg', ''),
+(2,'Solaris','Sun Solaris','solaris@os.svg', ''),
+(3,'AIX','IBM AIX','aix@os.svg', ''),
+(4,'BSD','OpenBSD, FreeBSD and Others','freebsd@os.svg', ''),
+(5,'HP-UX','HP-UX Unix OS','HP@os.svg', ''),
+(7,'Cisco','CISCO IOS','cisco@os.svg', ''),
+(8,'MacOS','MAC OS','apple@os.svg', ''),
+(9,'Windows','Microsoft Windows OS','windows@os.svg', ''),
+(10,'Other','Other SO','other-OS@os.svg', ''),
+(11,'Network','Network Agent','network-server@os.svg', ''),
+(12,'Web Server','Web Server/Application','network-server@os.svg', ''),
+(13,'Sensor','Hardware Agent (Sensor)','network-server@os.svg', ''),
+(14,'Embedded','Embedded device running an agent','embedded@os.svg', ''),
+(15,'Android','Android agent','android@os.svg', ''),
+(16, 'VMware', 'VMware Architecture', 'vmware@os.svg', ''),
+(17, 'Router', 'Generic router', 'routers@os.svg', ''),
+(18, 'Switch', 'Generic switch', 'switch@os.svg', ''),
+(19, 'Satellite', 'Satellite agent', 'satellite@os.svg', ''),
+(20, 'Mainframe', 'Mainframe agent', 'mainframe@os.svg', ''),
+(100, 'Cluster', 'Cluster agent', 'cluster@os.svg', '');
 UNLOCK TABLES;
 
 
@@ -184,14 +185,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `tgrupo` WRITE;
 INSERT INTO `tgrupo` (`id_grupo`, `nombre`, `icon`, `parent`, `propagate`, `disabled`, `custom_id`, `id_skin`, `other`) VALUES 
-(2,'Servers','server_database',0,0,0,'',1,''),
-(4,'Firewalls','firewall',0,0,0,'',1,''),
-(8,'Databases','database_gear',0,0,0,'',1,''),
-(9,'Network','transmit',0,0,0,'',1,''),
-(10,'Unknown','world',0,0,0,'',1,''),
-(11,'Workstations','computer',0,0,0,'',1,''),
-(12,'Applications','applications',0,0,0,'',1,''),
-(13,'Web','world',0,0,0,'',1,'');
+(2,'Servers','servers@groups.svg',0,0,0,'',1,''),
+(4,'Firewalls','firewall@groups.svg',0,0,0,'',1,''),
+(8,'Databases','database@groups.svg',0,0,0,'',1,''),
+(9,'Network','network@groups.svg',0,0,0,'',1,''),
+(10,'Unknown','unknown@groups.svg',0,0,0,'',1,''),
+(11,'Workstations','workstation@groups.svg',0,0,0,'',1,''),
+(12,'Applications','applications@groups.svg',0,0,0,'',1,''),
+(13,'Web','web@groups.svg',0,0,0,'',1,'');
 UNLOCK TABLES;
 
 
@@ -220,10 +221,10 @@ UNLOCK TABLES;
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES
 (1,'Documentation','https://pandorafms.com/manual'),
-(2,'Enterprise Edition','http://pandorafms.com'),
+(2,'Get support','https://pandorafms.com/en/technical-support/'),
 (3,'Report a bug','https://github.com/pandorafms/pandorafms/issues'),
 (4,'Suggest new feature','https://pandorafms.com/community/beta-program/'),
-(5,'Module library','http://library.pandorafms.com/');
+(5,'Module library','https://pandorafms.com/library/');
 
 UNLOCK TABLES;
 
@@ -266,35 +267,35 @@ INSERT INTO `torigen` VALUES
 
 -- Identifiers 30 and 31 are reserved for Enterprise data types
 INSERT INTO `ttipo_modulo` VALUES
-(1,'generic_data',0,'Generic numeric','mod_data.png'),
-(2,'generic_proc',1,'Generic boolean','mod_proc.png'),
-(3,'generic_data_string',2,'Generic string','mod_string.png'),
-(4,'generic_data_inc',0,'Generic numeric incremental','mod_data_inc.png'),
-(5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png'),
-(6,'remote_icmp_proc',4,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),
-(7,'remote_icmp',3,'Remote ICMP network agent (latency)','mod_icmp_data.png'),
-(8,'remote_tcp',3,'Remote TCP network agent, numeric data','mod_tcp_data.png'),
-(9,'remote_tcp_proc',4,'Remote TCP network agent, boolean data','mod_tcp_proc.png'),
-(10,'remote_tcp_string',5,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png'),
-(11,'remote_tcp_inc',3,'Remote TCP network agent, incremental data','mod_tcp_inc.png'),
-(15,'remote_snmp',3,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),
-(16,'remote_snmp_inc',3,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),
-(17,'remote_snmp_string',5,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),
-(18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'),
-(21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'),
-(22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'),
-(23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(25,'web_analysis', 8, 'Web analysis data', 'module-wux.png'),
-(30,'web_data',9,'Remote HTTP module to check latency','mod_web_data.png'),
-(31,'web_proc',9,'Remote HTTP module to check server response','mod_web_proc.png'),
-(32,'web_content_data',9,'Remote HTTP module to retrieve numeric data','mod_web_data.png'),
-(33,'web_content_string',9,'Remote HTTP module to retrieve string data','mod_web_data.png'),
-(34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
-(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
-(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
-(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png'),
-(38,'web_server_status_code_string',9,'Remote HTTP module to check server status code','mod_web_data.png'),
-(100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
+(1,'generic_data',0,'Generic numeric','data-server@svg.svg'),
+(2,'generic_proc',1,'Generic boolean','generic-boolean@svg.svg'),
+(3,'generic_data_string',2,'Generic string','generic-string@svg.svg'),
+(4,'generic_data_inc',0,'Generic numeric incremental','data-server@svg.svg'),
+(5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','data-server@svg.svg'),
+(6,'remote_icmp_proc',4,'Remote ICMP network agent, boolean data','ICMP-network-boolean-data@svg.svg'),
+(7,'remote_icmp',3,'Remote ICMP network agent (latency)','ICMP-network-latency@svg.svg'),
+(8,'remote_tcp',3,'Remote TCP network agent, numeric data','TCP-network-numeric-data@svg.svg'),
+(9,'remote_tcp_proc',4,'Remote TCP network agent, boolean data','TCP-network-boolean-data@svg.svg'),
+(10,'remote_tcp_string',5,'Remote TCP network agent, alphanumeric data','TCP-network-alphanumeric-data@svg.svg'),
+(11,'remote_tcp_inc',3,'Remote TCP network agent, incremental data','TCP-network-incremental-data@svg.svg'),
+(15,'remote_snmp',3,'Remote SNMP network agent, numeric data','SNMP-network-numeric-data@svg.svg'),
+(16,'remote_snmp_inc',3,'Remote SNMP network agent, incremental data','SNMP-network-incremental-data@svg.svg'),
+(17,'remote_snmp_string',5,'Remote SNMP network agent, alphanumeric data','SNMP-network-alphanumeric-data@svg.svg'),
+(18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','SNMP-network-incremental-data@svg.svg'),
+(21,'async_proc', 7, 'Asyncronous proc data', 'asynchronus-data@svg.svg'),
+(22,'async_data', 6, 'Asyncronous numeric data', 'asynchronus-data@svg.svg'),
+(23,'async_string', 8, 'Asyncronous string data', 'asynchronus-data@svg.svg'),
+(25,'web_analysis', 8, 'Web analysis data', 'wux@svg.svg'),
+(30,'web_data',9,'Remote HTTP module to check latency','server-web@svg.svg'),
+(31,'web_proc',9,'Remote HTTP module to check server response','web-analisys-data@svg.svg'),
+(32,'web_content_data',9,'Remote HTTP module to retrieve numeric data','server-web@svg.svg'),
+(33,'web_content_string',9,'Remote HTTP module to retrieve string data','server-web@svg.svg'),
+(34,'remote_cmd', 10, 'Remote execution, numeric data', 'remote-execution-numeric-data@svg.svg'),
+(35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'remote-execution-boolean-data@svg.svg'),
+(36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'remote-execution-alphanumeric-data@svg.svg'),
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'remote-execution-incremental-data@svg.svg'),
+(38,'web_server_status_code_string',9,'Remote HTTP module to check server status code','server-web@svg.svg'),
+(100,'keep_alive',-1,'KeepAlive','keepalive@svg.svg');
 
 --
 -- Dumping data for table `tmodule_inventory`
@@ -1165,6 +1166,7 @@ INSERT INTO `treport_custom_sql` (`id`, `name`, `sql`) VALUES (1, 'Monitoring&#x
 INSERT INTO `treport_custom_sql` (`id`, `name`, `sql`) VALUES (2, 'Monitoring&#x20;Report&#x20;Modules', 'select&#x20;&#40;select&#x20;tagente.alias&#x20;from&#x20;tagente&#x20;where&#x20;tagente.id_agente&#x20;=&#x20;tagente_modulo.id_agente&#41;&#x20;as&#x20;agent_nombre,&#x20;nombre&#x20;,&#x20;&#40;select&#x20;tmodule_group.name&#x20;from&#x20;tmodule_group&#x20;where&#x20;tmodule_group.id_mg&#x20;=&#x20;tagente_modulo.id_module_group&#41;&#x20;as&#x20;module_group,&#x20;module_interval&#x20;from&#x20;tagente_modulo&#x20;where&#x20;delete_pending&#x20;=&#x20;0&#x20;order&#x20;by&#x20;nombre;');
 INSERT INTO `treport_custom_sql` (`id`, `name`, `sql`) VALUES (3, 'Monitoring&#x20;Report&#x20;Alerts', 'select&#x20;t1.alias&#x20;as&#x20;agent_name,&#x20;t2.nombre&#x20;as&#x20;module_name,&#x20;&#40;select&#x20;talert_templates.name&#x20;from&#x20;talert_templates&#x20;where&#x20;talert_templates.id&#x20;=&#x20;t3.id_alert_template&#41;&#x20;as&#x20;template,&#x20;&#40;select&#x20;group_concat&#40;t02.name&#41;&#x20;from&#x20;talert_template_module_actions&#x20;as&#x20;t01&#x20;inner&#x20;join&#x20;talert_actions&#x20;as&#x20;t02&#x20;on&#x20;t01.id_alert_action&#x20;=&#x20;t02.id&#x20;where&#x20;t01.id_alert_template_module&#x20;=&#x20;t3.id&#x20;group&#x20;by&#x20;t01.id_alert_template_module&#41;&#x20;as&#x20;actions&#x20;from&#x20;tagente&#x20;as&#x20;t1&#x20;inner&#x20;join&#x20;tagente_modulo&#x20;as&#x20;t2&#x20;on&#x20;t1.id_agente&#x20;=&#x20;t2.id_agente&#x20;inner&#x20;join&#x20;talert_template_modules&#x20;as&#x20;t3&#x20;on&#x20;t2.id_agente_modulo&#x20;=&#x20;t3.id_agent_module&#x20;order&#x20;by&#x20;agent_name,&#x20;module_name;');
 INSERT INTO `treport_custom_sql` (`id`, `name`, `sql`) VALUES (4, 'Group&#x20;view', 'select&#x20;t1.nombre,&#x20;&#40;select&#x20;count&#40;t3.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t3&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t3.id_grupo&#41;&#x20;as&#x20;agents,&#x20;&#40;SELECT&#x20;COUNT&#40;t4.id_agente&#41;&#x20;FROM&#x20;tagente&#x20;as&#x20;t4&#x20;WHERE&#x20;t4.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;t4.disabled&#x20;=&#x20;0&#x20;AND&#x20;t4.ultimo_contacto&#x20;&lt;&#x20;NOW&#40;&#41;&#x20;-&#x20;&#40;intervalo&#x20;/&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;agent_unknown,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.id_agente&#x20;=&#x20;tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;utimestamp&#x20;&gt;&#x20;0&#x20;AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#40;21,22,23,24,100&#41;&#x20;AND&#x20;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-&#x20;tagente_estado.utimestamp&#41;&#x20;&gt;=&#x20;&#40;tagente_estado.current_interval&#x20;/&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;monitor_unknow,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.id_agente&#x20;=&#x20;tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#x20;&#40;21,22,23,24&#41;&#x20;AND&#x20;utimestamp&#x20;=&#x20;0&#41;&#x20;as&#x20;monitor_no_init,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente_estado.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;estado&#x20;=&#x20;0&#x20;AND&#x20;&#40;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-&#x20;tagente_estado.utimestamp&#41;&#x20;&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;&#40;utimestamp&#x20;&gt;&#x20;0&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24&#41;&#41;&#41;&#41;&#x20;as&#x20;monitor_ok,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente_estado.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;estado&#x20;=&#x20;1&#x20;AND&#x20;&#40;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-&#x20;tagente_estado.utimestamp&#41;&#x20;&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;utimestamp&#x20;&gt;&#x20;0&#41;&#x20;as&#x20;monitor_critical,&#x20;&#40;SELECT&#x20;COUNT&#40;talert_template_modules.id&#41;&#x20;FROM&#x20;talert_template_modules,&#x20;tagente_modulo,&#x20;tagente_estado,&#x20;tagente&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente_modulo.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;talert_template_modules.id_agent_module&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;times_fired&#x20;&gt;&#x20;0&#41;&#x20;as&#x20;monitor_alert_fired&#x20;from&#x20;tgrupo&#x20;as&#x20;t1&#x20;where&#x20;0&#x20;&lt;&#x20;&#40;select&#x20;count&#40;t2.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t2&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t2.id_grupo&#41;');
+INSERT INTO `treport_custom_sql` (`id`, `name`, `sql`) VALUES (5, 'Agent&#x20;safe&#x20;mode&#x20;not&#x20;enable', 'select&#x20;alias&#x20;from&#x20;tagente&#x20;where&#x20;safe_mode_module&#x20;=&#x20;0');
 
 -- trecon scripts
 INSERT INTO `trecon_script` (`type`,`name`,`description`,`script`,`macros`) VALUES (1, 'Discovery.Application.VMware', 'Discovery&#x20;Application&#x20;script&#x20;to&#x20;monitor&#x20;VMware&#x20;technologies&#x20;&#40;ESXi,&#x20;VCenter,&#x20;VSphere&#41;', '/usr/share/pandora_server/util/recon_scripts/vmware-plugin.pl', '{"1":{"macro":"_field1_","desc":"Configuration&#x20;file","help":"","value":"","hide":""}}');

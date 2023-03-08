@@ -295,7 +295,6 @@ if ($create_agent) {
                     'fixed_ip'                  => $fixed_ip,
                 ]
             );
-            enterprise_hook('update_agent', [$id_agente]);
         } else {
             $id_agente = false;
         }
@@ -377,86 +376,89 @@ $img_style = [
 
 if ($id_agente) {
     // View tab.
-    $viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/eye.png',
-        true,
+    $viewtab['text'] = html_print_anchor(
         [
-            'title' => __('View'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente,
+            'content' => html_print_image(
+                'images/enable.svg',
+                true,
+                [
+                    'title' => __('View'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
 
-    if ($tab == 'view') {
-        $viewtab['active'] = true;
-    } else {
-        $viewtab['active'] = false;
-    }
-
+    $viewtab['active'] = ($tab === 'view');
     $viewtab['operation'] = 1;
 
     // Main tab.
-    $maintab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/gm_setup.png',
-        true,
+    $maintab['text'] = html_print_anchor(
         [
-            'title' => __('Setup'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
-    if ($tab == 'main') {
-        $maintab['active'] = true;
-    } else {
-        $maintab['active'] = false;
-    }
+            'href'    => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente,
+            'content' => html_print_image(
+                'images/configuration@svg.svg',
+                true,
+                [
+                    'title' => __('Setup'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
+
+    $maintab['active'] = ($tab === 'main');
 
     // Module tab.
-    $moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/gm_modules.png',
-        true,
+    $moduletab['text'] = html_print_anchor(
         [
-            'title' => __('Modules'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+            'href'    => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente,
+            'content' => html_print_image(
+                'images/modules@svg.svg',
+                true,
+                [
+                    'title' => __('Modules'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
 
-    if ($tab == 'module') {
-        $moduletab['active'] = true;
-    } else {
-        $moduletab['active'] = false;
-    }
+    $moduletab['active'] = ($tab === 'module');
 
     // Alert tab.
-    $alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/gm_alerts.png',
-        true,
+    $alerttab['text'] = html_print_anchor(
         [
-            'title' => __('Alerts'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+            'href'    => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente,
+            'content' => html_print_image(
+                'images/alert@svg.svg',
+                true,
+                [
+                    'title' => __('Alerts'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
 
-    if ($tab == 'alert') {
-        $alerttab['active'] = true;
-    } else {
-        $alerttab['active'] = false;
-    }
+    $alerttab['active'] = ($tab === 'alert');
 
     // Template tab.
-    $templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/templates.png',
-        true,
+    $templatetab['text'] = html_print_menu_button(
         [
+            'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente,
+            'image' => 'images/modules-group@svg.svg',
             'title' => __('Module templates'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+        ],
+        true
+    );
 
-    if ($tab == 'template') {
-        $templatetab['active'] = true;
-    } else {
-        $templatetab['active'] = false;
-    }
-
+    $templatetab['active'] = ($tab === 'template');
 
     // Inventory.
     $inventorytab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
@@ -474,10 +476,10 @@ if ($id_agente) {
         $inventorytab['active'] = false;
     }
 
-    if ($inventorytab == -1) {
+    $inventorytab = enterprise_hook('inventory_tab');
+    if ($inventorytab === ENTERPRISE_NOT_HOOK) {
         $inventorytab = '';
     }
-
 
     $has_remote_conf = enterprise_hook(
         'config_agents_has_remote_configuration',
@@ -490,7 +492,7 @@ if ($id_agente) {
     if ($has_remote_conf === true) {
         // Plugins.
         $pluginstab = enterprise_hook('plugins_tab');
-        if ($pluginstab == -1) {
+        if ($pluginstab === ENTERPRISE_NOT_HOOK) {
             $pluginstab = '';
         }
     } else {
@@ -500,60 +502,60 @@ if ($id_agente) {
     // Collection.
     if ((int) $config['license_nms'] !== 1) {
         $collectiontab = enterprise_hook('collection_tab');
-
-        if ($collectiontab == -1) {
+        if ($collectiontab === ENTERPRISE_NOT_HOOK) {
             $collectiontab = '';
         }
+    } else {
+        $collectiontab = '';
     }
 
     // NetworkConfigManager tab.
     $ncm_tab = enterprise_hook('networkconfigmanager_tab');
-
     if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
         $ncm_tab = '';
     }
 
     // Group tab.
-    $grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.html_print_image(
-        'images/group.png',
-        true,
+    $grouptab['text'] = html_print_menu_button(
         [
+            'href'  => 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group,
+            'image' => 'images/groups@svg.svg',
             'title' => __('Group'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+        ],
+        true
+    );
 
     $grouptab['active'] = false;
 
     $gistab = [];
 
-    // GIS tab.
-    if ($config['activate_gis']) {
-        $gistab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'.html_print_image(
-            'images/gm_gis.png',
-            true,
-            [
-                'title' => __('GIS data'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
+    // TODO. OVERRIDE.
+    $config['activate_gis'] = true;
 
-        if ($tab == 'gis') {
-            $gistab['active'] = true;
-        } else {
-            $gistab['active'] = false;
-        }
+    // GIS tab.
+    if ((bool) $config['activate_gis'] === true) {
+        $gistab['text'] = html_print_menu_button(
+            [
+                'href'  => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente,
+                'image' => 'images/poi@svg.svg',
+                'title' => __('GIS data'),
+            ],
+            true
+        );
+
+        $gistab['active'] = ($tab === 'gis');
     }
 
     // Agent wizard tab.
-    $agent_wizard['text'] = '<a href="javascript:" class="agent_wizard_tab">'.html_print_image(
-        'images/wand_agent.png',
-        true,
+    $agent_wizard['text'] = html_print_menu_button(
         [
+            'href'  => 'javascript:',
+            'class' => 'agent_wizard_tab',
+            'image' => 'images/wizard@svg.svg',
             'title' => __('Agent wizard'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+        ],
+        true
+    );
 
     // Hidden subtab layer.
     $agent_wizard['sub_menu'] = '<ul class="mn subsubmenu invisible float-none">';
@@ -601,42 +603,34 @@ if ($id_agente) {
 
     // Incident tab.
     if ($total_incidents > 0) {
-        $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente.'">'.html_print_image(
-            'images/book_edit.png',
-            true,
+        $incidenttab['text'] = html_print_menu_button(
             [
+                'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente,
+                'image' => 'images/logs@svg.svg',
                 'title' => __('Incidents'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
+            ],
+            true
+        );
 
-        if ($tab == 'incident') {
-            $incidenttab['active'] = true;
-        } else {
-            $incidenttab['active'] = false;
-        }
+        $incidenttab['active'] = ($tab === 'incident');
     }
 
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-        if ($has_remote_conf) {
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+        if ($has_remote_conf !== false) {
             $agent_name = agents_get_name($id_agente);
             $agent_name = io_safe_output($agent_name);
             $agent_md5 = md5($agent_name, false);
 
-            $remote_configuration_tab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=remote_configuration&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">'.html_print_image(
-                'images/remote_configuration.png',
-                true,
+            $remote_configuration_tab['text'] = html_print_menu_button(
                 [
+                    'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=remote_configuration&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5,
+                    'image' => 'images/remote-configuration@svg.svg',
                     'title' => __('Remote configuration'),
-                    'class' => 'invert_filter',
-                ]
-            ).'</a>';
-            if ($tab == 'remote_configuration') {
-                $remote_configuration_tab['active'] = true;
-            } else {
-                $remote_configuration_tab['active'] = false;
-            }
+                ],
+                true
+            );
 
+            $remote_configuration_tab['active'] = ($tab === 'remote_configuration');
 
             $onheader = [
                 'view'                 => $viewtab,
@@ -719,37 +713,32 @@ if ($id_agente) {
     // This add information to the header.
     switch ($tab) {
         case 'main':
-            $tab_description = '- '.__('Setup');
             $help_header = 'main_tab';
-            $tab_name = 'Setup';
+            $tab_name = __('Setup');
         break;
 
         case 'collection':
-            $tab_description = '- '.__('Collection');
-            $tab_name = 'Collection';
+            $tab_name = __('Collection');
         break;
 
         case 'ncm':
-            $tab_description = '- '.__('Network config manager');
-            $tab_name = 'Network config manager';
+            $tab_name = __('Network config manager');
         break;
 
         case 'inventory':
-            $tab_description = '- '.__('Inventory');
             $help_header = 'inventory_tab';
-            $tab_name = 'Inventory';
+            $tab_name = __('Inventory');
         break;
 
         case 'plugins':
-            $tab_description = '- '.__('Agent plugins');
             $help_header = 'plugins_tab';
+            $tab_name = __('Agent plugins');
         break;
 
         case 'module':
             $type_module_t = get_parameter('moduletype', '');
-            $tab_description = '- '.__('Modules');
-            $tab_name = 'Modules';
-            if ($type_module_t == 'webux') {
+            $tab_name = __('Modules');
+            if ($type_module_t === 'webux') {
                 $help_header = 'wux_console';
             } else {
                 $help_header = 'local_module_tab';
@@ -757,47 +746,42 @@ if ($id_agente) {
         break;
 
         case 'alert':
-            $tab_description = '- '.__('Alert');
             $help_header = 'manage_alert_list';
-            $tab_name = 'Alerts';
+            $tab_name = __('Alerts');
         break;
 
         case 'template':
-            $tab_description = '- '.__('Templates');
-            $tab_name = 'Module templates';
+            $tab_name = __('Module templates');
         break;
 
         case 'gis':
-            $tab_description = '- '.__('Gis');
+            $tab_name = __('Gis');
             $help_header = 'gis_tab';
         break;
 
         case 'incident':
-            $tab_description = '- '.__('Incidents');
+            $tab_name = __('Incidents');
         break;
 
         case 'remote_configuration':
-            $tab_description = '- '.__('Remote configuration');
+            $tab_name = __('Remote configuration');
         break;
 
         case 'agent_wizard':
             switch (get_parameter('wizard_section')) {
                 case 'snmp_explorer':
-                    $tab_description = '- '.__('SNMP Wizard');
                     $help_header = 'agent_snmp_explorer_tab';
-                    $tab_name = 'SNMP Wizard';
+                    $tab_name = __('SNMP Wizard');
                 break;
 
                 case 'snmp_interfaces_explorer':
-                    $tab_description = '- '.__('SNMP Interfaces wizard');
+                    $tab_name = __('SNMP Interfaces Wizard');
                     $help_header = 'agent_snmp_interfaces_explorer_tab';
-                    $tab_name = 'SNMP Interfaces wizard';
                 break;
 
                 case 'wmi_explorer':
-                    $tab_description = '- '.__('WMI Wizard');
+                    $tab_name = __('WMI Wizard');
                     $help_header = 'agent_snmp_wmi_explorer_tab';
-                    $tab_name = 'WMI Wizard';
                 break;
 
                 default:
@@ -826,27 +810,29 @@ if ($id_agente) {
     }
 
     $helper = ($help_header === 'main_tab') ? 'main_tab' : '';
-    $pure = get_parameter('pure', 0);
-    if (!$pure) {
-        ui_print_page_header(
-            agents_get_alias($id_agente),
-            'images/setup.png',
+    $pure = (int) get_parameter('pure');
+    if ($pure === 0) {
+        ui_print_standard_header(
+            __('Agent setup view'),
+            'images/agent.png',
             false,
             $helper,
-            true,
+            false,
             $onheader,
-            false,
-            '',
-            $config['item_title_size_text'],
-            '',
-            ui_print_breadcrums(
+            [
                 [
-                    __('Resources'),
-                    __('Manage agents'),
-                    '<span class="breadcrumb_active">'.$tab_name.'</span>',
-                ]
-            ),
-            false,
+                    'link'  => '',
+                    'label' => __('Resources'),
+                ],
+                [
+                    'link'  => 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+                    'label' => __('Manage agents'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => $tab_name,
+                ],
+            ],
             [
                 'id_element' => $id_agente,
                 'url'        => 'godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agente,
@@ -856,25 +842,23 @@ if ($id_agente) {
         );
     }
 } else {
-    // Create agent.
-    ui_print_page_header(
-        __('Agent manager'),
+    ui_print_standard_header(
+        __('Create agent'),
         'images/agent.png',
         false,
-        'create_agent',
-        true,
         '',
         false,
-        '',
-        GENERIC_SIZE_TEXT,
-        '',
-        ui_print_breadcrums(
+        [],
+        [
             [
-                __('Resources'),
-                __('Manage agents'),
-                '<span class="breadcrumb_active">'.__('Create agent').'</span>',
-            ]
-        )
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+                'label' => __('Manage agents'),
+            ],
+        ]
     );
 }
 
@@ -899,7 +883,8 @@ if ($delete_conf_file) {
     ui_print_result_message(
         $correct,
         __('Conf file deleted successfully'),
-        __('Could not delete conf file')
+        __('Could not delete conf file'),
+        [ 'autoclose' => true ]
     );
 }
 
@@ -1257,9 +1242,9 @@ if ($id_agente) {
     $intervalo = $agent['intervalo'];
     // Define interval in seconds.
     $nombre_agente = $agent['nombre'];
-    if (empty($alias)) {
+    if (empty($alias) === true) {
         $alias = $agent['alias'];
-        if (empty($alias)) {
+        if (empty($alias) === true) {
             $alias = $nombre_agente;
         }
     }
@@ -1298,7 +1283,7 @@ $duplicate_module = (int) get_parameter('duplicate_module');
 $edit_module = (bool) get_parameter('edit_module');
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT.
-if ($update_module || $create_module) {
+if ($update_module === true || $create_module === true) {
     $id_grupo = agents_get_agent_group($id_agente);
     $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
@@ -1325,12 +1310,7 @@ if ($update_module || $create_module) {
      */
 
     $post_process = (string) get_parameter('post_process', 0.0);
-    if (get_parameter('prediction_module')) {
-        $prediction_module = 1;
-    } else {
-        $prediction_module = 0;
-    }
-
+    $prediction_module = (int) get_parameter('prediction_module');
     $max_timeout = (int) get_parameter('max_timeout');
     $max_retries = (int) get_parameter('max_retries');
     $min = (int) get_parameter('min');
@@ -1587,11 +1567,11 @@ if ($update_module || $create_module) {
     }
 
     $cron_interval = $minute_from.$minute_to.' '.$hour_from.$hour_to.' '.$mday_from.$mday_to.' '.$month_from.$month_to.' '.$wday_from.$wday_to;
-    if (!cron_check_syntax($cron_interval)) {
+    if (cron_check_syntax($cron_interval) === false) {
         $cron_interval = '';
     }
 
-    if ($prediction_module != MODULE_PREDICTION_SYNTHETIC) {
+    if ($prediction_module !== MODULE_PREDICTION_SYNTHETIC) {
         unset($serialize_ops);
         enterprise_hook(
             'modules_delete_synthetic_operations',
@@ -1716,7 +1696,7 @@ if ($update_module) {
         $values['plugin_parameter'] = '';
 
         foreach ($plugin_parameter_split as $key => $value) {
-            if ($key == 1) {
+            if ((int) $key === 1) {
                 if ($http_user) {
                     $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
                 }
@@ -1735,12 +1715,12 @@ if ($update_module) {
 
     // In local modules, the interval is updated by agent.
     $module_kind = (int) get_parameter('moduletype');
-    if ($module_kind == MODULE_DATA) {
+    if ($module_kind === MODULE_DATA) {
         unset($values['module_interval']);
     }
 
-    if ($prediction_module == MODULE_PREDICTION_SYNTHETIC
-        && $serialize_ops == ''
+    if ($prediction_module === MODULE_PREDICTION_SYNTHETIC
+        && empty($serialize_ops) === true
     ) {
         $result = false;
     } else {
@@ -1761,7 +1741,7 @@ if ($update_module) {
         }
     }
 
-    if (is_error($result)) {
+    if (is_error($result) === true) {
         switch ($result) {
             case ERR_EXIST:
                 $msg = __('There was a problem updating module. Another module already exists with the same name.');
@@ -1794,7 +1774,7 @@ if ($update_module) {
             "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
+        if ($prediction_module === MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -1828,27 +1808,15 @@ if ($create_module) {
     // Old configuration data must always be empty in case of creation.
     $old_configuration_data = '';
 
-    if (isset($_POST['combo_snmp_oid'])) {
+    if (isset($_POST['combo_snmp_oid']) === true) {
         $combo_snmp_oid = get_parameter_post('combo_snmp_oid');
     }
 
-    if ($snmp_oid == '') {
+    if (empty($snmp_oid) === true) {
         $snmp_oid = $combo_snmp_oid;
     }
 
     $id_module = (int) get_parameter('id_module');
-
-    switch ($config['dbtype']) {
-        case 'oracle':
-            if (empty($description) || !isset($description)) {
-                $description = ' ';
-            }
-        break;
-
-        default:
-            // Default.
-        break;
-    }
 
     $values = [
         'id_tipo_modulo'        => $id_module_type,
@@ -1918,13 +1886,13 @@ if ($create_module) {
         'warning_time'          => $warning_time,
     ];
 
-    if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
+    if ($id_module_type === 30 || $id_module_type === 31 || $id_module_type === 32 || $id_module_type === 33) {
         $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
         $values['plugin_parameter'] = '';
 
         foreach ($plugin_parameter_split as $key => $value) {
-            if ($key == 1) {
+            if ((int) $key === 1) {
                 if ($http_user) {
                     $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
                 }
@@ -1932,15 +1900,13 @@ if ($create_module) {
                 if ($http_pass) {
                     $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
                 }
-
-                $values['plugin_parameter'] .= $value.'&#x0a;';
-            } else {
-                $values['plugin_parameter'] .= $value.'&#x0a;';
             }
+
+            $values['plugin_parameter'] .= $value.'&#x0a;';
         }
     }
 
-    if ($prediction_module == MODULE_PREDICTION_SYNTHETIC && $serialize_ops == '') {
+    if ((int) $prediction_module === MODULE_PREDICTION_SYNTHETIC && empty($serialize_ops) === true) {
         $id_agent_module = false;
     } else {
         $id_agent_module = modules_create_agent_module(
@@ -1952,7 +1918,7 @@ if ($create_module) {
         );
     }
 
-    if (is_error($id_agent_module)) {
+    if (is_error($id_agent_module) === true) {
         switch ($id_agent_module) {
             case ERR_EXIST:
                 $msg = __('There was a problem adding module. Another module already exists with the same name.');
@@ -1981,7 +1947,7 @@ if ($create_module) {
             "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
-        if ($prediction_module == MODULE_PREDICTION_SYNTHETIC) {
+        if ($prediction_module === MODULE_PREDICTION_SYNTHETIC) {
             enterprise_hook(
                 'modules_create_synthetic_operations',
                 [
@@ -2261,8 +2227,8 @@ if ($disable_module) {
 }
 
 // UPDATE GIS.
-$updateGIS = get_parameter('update_gis', 0);
-if ($updateGIS) {
+$updateGIS = (bool) get_parameter('update_gis', 0);
+if ($updateGIS === true) {
     $updateGisData = get_parameter('update_gis_data');
     $lastLatitude = get_parameter('latitude');
     $lastLongitude = get_parameter('longitude');
@@ -2532,7 +2498,7 @@ switch ($tab) {
             if(wizard_tab_showed <= 0) {
                 $('.subsubmenu').hide("fast");
             }
-        },15000);
+        },1500);
     }
     
     /* ]]> */

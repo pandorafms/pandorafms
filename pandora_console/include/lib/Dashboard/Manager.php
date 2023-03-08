@@ -574,7 +574,7 @@ class Manager implements PublicLogin
                 'tfavmenu_user',
                 [
                     'id_element' => $this->dashboardId,
-                    'section'    => 'Dashboard',
+                    'section'    => 'Dashboard_',
                 ]
             );
         }
@@ -1034,10 +1034,6 @@ class Manager implements PublicLogin
 
         // Header.
         if ($this->slides === 0) {
-            if ((bool) \is_metaconsole() === true) {
-                open_meta_frame();
-            }
-
             View::render(
                 'dashboard/header',
                 [
@@ -1122,12 +1118,6 @@ class Manager implements PublicLogin
             'dashboard/jsLayout',
             ['dashboardId' => $this->dashboardId]
         );
-
-        if ((bool) \is_metaconsole() === true
-            && $this->slides === 0
-        ) {
-            close_meta_frame();
-        }
 
         return null;
     }

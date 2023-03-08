@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / item-group@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-item-group" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group">
+            <rect id="Rectangle" fill="#3F3F3F" x="0" y="0" width="4" height="4" rx="0.5"></rect>
+            <rect id="Rectangle-Copy-2" fill="#3F3F3F" x="0" y="16" width="4" height="4" rx="0.5"></rect>
+            <rect id="Rectangle-Copy" fill="#3F3F3F" x="16" y="0" width="4" height="4" rx="0.5"></rect>
+            <rect id="Rectangle-Copy-3" fill="#3F3F3F" x="16" y="16" width="4" height="4" rx="0.5"></rect>
+            <path d="M18,2 L18,18 L2,18 L2,2 L18,2 Z M14.125,8 L13,8 L13,12.125 C13,12.6082492 12.6082492,13 12.125,13 L12.125,13 L8,13 L8,14.125 L8.00681749,14.2347581 C8.06081077,14.6662005 8.42892386,15 8.875,15 L8.875,15 L14.125,15 L14.2347581,14.9931825 C14.6662005,14.9391892 15,14.5710761 15,14.125 L15,14.125 L15,8.875 L14.9931825,8.76524186 C14.9391892,8.33379954 14.5710761,8 14.125,8 L14.125,8 Z M11.125,5 L5.875,5 C5.39175084,5 5,5.39175084 5,5.875 L5,11.125 C5,11.6082492 5.39175084,12 5.875,12 L11.125,12 C11.6082492,12 12,11.6082492 12,11.125 L12,5.875 C12,5.39175084 11.6082492,5 11.125,5 Z" id="Rectangle-2" fill="#3F3F3F"></path>
+            <g transform="translate(8.000000, 8.000000)"></g>
+        </g>
+    </g>
+</svg>

@@ -2580,8 +2580,8 @@ function modules_get_agentmodule_data_for_humans($module)
                     switch ($module['id_tipo_modulo']) {
                         case 15:
                             $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                            if (($value == '.1.3.6.1.2.1.1.3.0'
-                                || $value == '.1.3.6.1.2.1.25.1.1.0')
+                            if (($value === '.1.3.6.1.2.1.1.3.0'
+                                || $value === '.1.3.6.1.2.1.25.1.1.0')
                                 && modules_get_unit_macro($module['data'], $module['unit']) === true
                             ) {
                                 if ($module['post_process'] > 0) {
@@ -2604,8 +2604,8 @@ function modules_get_agentmodule_data_for_humans($module)
             switch ($module['id_tipo_modulo']) {
                 case 15:
                     $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                    if (($value == '.1.3.6.1.2.1.1.3.0'
-                        || $value == '.1.3.6.1.2.1.25.1.1.0')
+                    if (($value === '.1.3.6.1.2.1.1.3.0'
+                        || $value === '.1.3.6.1.2.1.25.1.1.0')
                         && modules_get_unit_macro($module['data'], $module['unit']) === true
                     ) {
                         if ($module['post_process'] > 0) {
@@ -2624,8 +2624,8 @@ function modules_get_agentmodule_data_for_humans($module)
             }
         }
 
-        // Show units ONLY in numeric data types
-        if (isset($module['unit'])) {
+        // Show units ONLY in numeric data types.
+        if (isset($module['unit']) === true) {
             $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
             if ($data_macro) {
                 $salida = $data_macro;
@@ -4133,12 +4133,12 @@ function get_module_realtime_link_graph($module)
         'community'            => urlencode($module['snmp_community']),
         'starting_oid'         => urlencode($module['snmp_oid']),
         'snmp_browser_version' => urlencode($module['tcp_send']),
-        'snmp3_auth_user'      => urlencode($module['plugin_user']),
-        'snmp3_security_level' => urlencode($module['custom_string_3']),
-        'snmp3_auth_method'    => urlencode($module['plugin_parameters']),
-        'snmp3_auth_pass'      => urlencode($module['plugin_pass']),
-        'snmp3_privacy_method' => urlencode($module['custom_string_1']),
-        'snmp3_privacy_pass'   => urlencode($module['custom_string_2']),
+        'snmp3_auth_user'      => urlencode(($module['plugin_user'] ?? '')),
+        'snmp3_security_level' => urlencode(($module['custom_string_3'] ?? '')),
+        'snmp3_auth_method'    => urlencode(($module['plugin_parameters'] ?? '')),
+        'snmp3_auth_pass'      => urlencode(($module['plugin_pass'] ?? '')),
+        'snmp3_privacy_method' => urlencode(($module['custom_string_1'] ?? '')),
+        'snmp3_privacy_pass'   => urlencode(($module['custom_string_2'] ?? '')),
         'hide_header'          => 1,
         'rel_path'             => '../../',
     ];
@@ -4161,13 +4161,13 @@ function get_module_realtime_link_graph($module)
 
     $link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 900, 480)">';
     $link_button .= html_print_image(
-        'images/realtime_shortcut.png',
+        'images/prediction@svg.svg',
         true,
         [
             'border' => '0',
             'alt'    => '',
             'title'  => __('Realtime SNMP graph'),
-            'class'  => 'invert_filter',
+            'class'  => 'invert_filter main_menu_icon',
         ]
     );
     $link_button .= '</a>';

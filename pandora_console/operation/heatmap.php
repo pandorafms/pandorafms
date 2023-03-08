@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -64,11 +64,11 @@ if ($group_sent === true) {
 $is_ajax = is_ajax();
 if ($is_ajax === false && $pure === false) {
     $viewtab['config'] = '<a id="config" href="">'.html_print_image(
-        'images/setup.png',
+        'images/configuration@svg.svg',
         true,
         [
             'title' => __('Config'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
@@ -81,11 +81,11 @@ if ($is_ajax === false && $pure === false) {
     );
 
     $viewtab['full_screen'] = '<a id="full_screen" href="'.$url.'">'.html_print_image(
-        'images/full_screen.png',
+        'images/fullscreen@svg.svg',
         true,
         [
             'title' => __('Full screen'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
@@ -208,11 +208,11 @@ if ($is_ajax === false && $pure === true) {
 
     echo '<a href="'.$urlNoFull.'">';
     echo html_print_image(
-        'images/normal_screen.png',
+        'images/exit_fullscreen@svg.svg',
         true,
         [
             'title' => __('Back to normal mode'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     );
     echo '</a>';

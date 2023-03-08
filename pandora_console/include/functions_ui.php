@@ -2508,6 +2508,10 @@ function ui_print_help_tip(
     $style='',
     $blink=false
 ) {
+    if (empty($img) === true) {
+        $img = 'images/info@svg.svg';
+    }
+
     $output = '<a href="javascript:" class="tip" style="'.$style.'" >';
     $output .= html_print_image(
         $img,

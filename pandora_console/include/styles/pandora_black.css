@@ -67,9 +67,20 @@ table.agent_info_table tr {
   color: #fff !important;
 }
 
-div#head,
-#menu_tabs {
+div#head {
   border-bottom: 1px solid #1a1a1a;
+}
+
+.menu_full_classic #menu_tabs {
+  height: 49px;
+  border-bottom: 1px solid #82b92e;
+  padding-bottom: 2px;
+}
+
+.menu_full_collapsed #menu_tabs {
+  height: 49px;
+  border-bottom: 1px solid #82b92e;
+  padding-bottom: 1px;
 }
 
 #menu_full {
@@ -248,13 +259,10 @@ ol.steps li a {
 /* Tabs icons change color */
 
 /* menu.css */
-.operation {
-  background-color: #252525;
-}
-
+.operation,
 .godmode,
 #menu_full {
-  background-color: #1a1a1a;
+  background-color: #222;
 }
 
 .button_collapse {
@@ -264,11 +272,72 @@ ol.steps li a {
 .operation .selected,
 .godmode .selected,
 .menu_icon:hover {
-  background-color: #080808;
+  background-color: #191919;
+}
+
+.submenu_text,
+.span_has_menu_text,
+.title_menu_classic span {
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: -0.3px;
+  height: 18px;
+  color: #fff;
+}
+
+.head_tab_selected span {
+  color: #fff;
+}
+
+.tabs_selected {
+  background-color: #1d7874;
+}
+
+.operation .menu_icon ul.submenu > li,
+.godmode .menu_icon ul.submenu > li {
+  background-color: #222;
+  padding-left: 24px !important;
+}
+
+.submenu_not_selected:hover {
+  background-color: #171717 !important;
+  color: #fff !important;
+}
+
+.submenu_selected {
+  margin-bottom: 0px;
+  background-color: #171717 !important;
+}
+
+.submenu_selected_no_submenu {
+  background-color: #111 !important;
+  color: #ffffff !important;
 }
 
 .sub_subMenu {
-  background-color: #343434;
+  font-weight: normal;
+  background-color: #171717;
+  padding-left: 1.5em;
+  color: #fff !important;
+}
+
+.sub_subMenu.selected {
+  font-weight: 600;
+  background-color: #111 !important;
+}
+
+.sub_subMenu:hover {
+  background-color: #141414;
+}
+
+.sub_subMenu.selected a {
+  color: #fff !important;
+}
+
+.span_has_menu_text {
+  font-weight: normal;
+  font-size: 9.4pt;
+  color: #fff;
 }
 
 /* footer */

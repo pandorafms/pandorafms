@@ -2109,6 +2109,10 @@ table.rounded_cells td {
   z-index: 5;
 }
 
+#principal_action_buttons {
+  z-index: 6;
+}
+
 .action-buttons > button {
   margin-left: 16px;
 }
@@ -2790,7 +2794,7 @@ td.cellBig {
 }
 
 .info_box_container:not(.info_box_information) {
-  z-index: 2;
+  z-index: 6;
 }
 
 .info_box_container.info_box_information {

@@ -3477,7 +3477,7 @@ function html_print_action_buttons(mixed $content, array $parameters=[], bool $r
             'id'      => ($parameters['id'] ?? 'principal_action_buttons'),
             'class'   => 'action-buttons '.$typeClass.' '.($parameters['class'] ?? ''),
             'content' => $content,
-            'style'   => 'z-index: 1',
+            'style'   => 'z-index: 6',
         ],
         $return
     );

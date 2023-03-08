@@ -325,7 +325,7 @@ if ($edit === false) {
 
     $table_simple->data['module_n_type'][1] = '<span class="result_info_text">'.modules_get_moduletype_description($id_module_type).' ('.$type_names_hash[$id_module_type].')</span>';
 } else {
-    $idModuleType = (isset($id_module_type) === true) ? $idModuleType : '';
+    $idModuleType = (isset($id_module_type) === true) ? $id_module_type : '';
     // Removed web analysis and log4x from select.
     $tipe_not_in = '24, 25';
     if (is_metaconsole() === true) {

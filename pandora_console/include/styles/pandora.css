@@ -682,6 +682,10 @@ select:-internal-list-box {
   width: 80%;
 }
 
+.w88p {
+  width: 88%;
+}
+
 .w90p {
   width: 90%;
 }
@@ -2377,7 +2381,7 @@ ol.steps li.visited span {
 }
 
 ol.steps li.current {
-  border-left: 5px solid #778866;
+  border-left: 5px solid var(--primary-color);
   margin-left: 0;
   font-weight: bold;
   background-color: #e9f3d2;
@@ -7848,6 +7852,10 @@ div.graph div.legend table {
   height: 10px;
 }
 
+.height_15px {
+  height: 15px;
+}
+
 .height_20px {
   height: 20px;
 }
@@ -11540,7 +11548,7 @@ ul.tag-editor {
 }
 
 .max-width-100p {
-  max-width: 100% !important;
+  max-width: 100%;
 }
 
 /* Datatables overrides */

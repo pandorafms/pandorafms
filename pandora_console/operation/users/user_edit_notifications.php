@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -58,7 +58,7 @@ if (get_parameter('change_label', 0)) {
 }
 
 
-echo '<div id="user-notifications-wrapper" class="white_box table_div table_three_columns">
+echo '<div id="user-notifications-wrapper" class="white_box table_div table_three_columns padding-2">
         <div class="table_thead">
             <div class="table_th"></div>
             <div class="table_th">'.__('Enable').'</div>
@@ -91,8 +91,9 @@ foreach ($sources as $source) {
 }
 
 if ((bool) $disabled_flag === true) {
-    $s = __('Controls have been disabled by the system administrator');
-    echo '<span class="bolder color_ff0">'.$s.'</span>';
+    ui_print_warning_message(
+        __('Controls have been disabled by the system administrator')
+    );
 }
 
 echo '</div>';

@@ -377,17 +377,17 @@ function mainAgentsModules()
 
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
 			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'&show_type='.$show_type.'
-			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
+			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/fullscreen@svg.svg', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else if ($full_modules_selected[0] && $full_agents_id[0]) {
             $full_modules = urlencode(implode(';', $full_modules_selected));
             $full_agents = urlencode(implode(';', $full_agents_id));
 
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
 			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'&show_type='.$show_type.'
-			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
+			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/fullscreen@svg.svg', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else {
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
-			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&show_type='.$show_type.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&show_type='.$show_type.'">'.html_print_image('images/fullscreen@svg.svg', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         }
     }
 
@@ -597,11 +597,11 @@ function mainAgentsModules()
         echo '<li class="nomn">';
         echo '<a target="_top" href="'.$url.'">';
         echo html_print_image(
-            'images/normal_screen.png',
+            'images/exit_fullscreen@svg.svg',
             true,
             [
                 'title' => __('Back to normal mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         );
         echo '</a>';

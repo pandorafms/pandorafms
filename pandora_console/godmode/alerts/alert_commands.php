@@ -171,7 +171,7 @@ if (is_ajax()) {
                     $ffield = $editor_type_chkbx;
                     $ffield .= html_print_textarea(
                         'field'.$i.'_value',
-                        1,
+                        5,
                         1,
                         '',
                         'class="fields"',
@@ -208,7 +208,7 @@ if (is_ajax()) {
                     $rfield = $editor_type_chkbx;
                     $rfield .= html_print_textarea(
                         'field'.$i.'_recovery_value',
-                        1,
+                        5,
                         1,
                         '',
                         'class="fields_recovery"',
@@ -329,7 +329,7 @@ if (is_ajax()) {
 
                         $ffield .= html_print_textarea(
                             'field'.$i.'_value[]',
-                            1,
+                            5,
                             1,
                             '',
                             'style="min-height:40px; '.$style.'" class="fields"',
@@ -341,7 +341,7 @@ if (is_ajax()) {
 
                         $rfield .= html_print_textarea(
                             'field'.$i.'_recovery_value[]',
-                            1,
+                            5,
                             1,
                             '',
                             'style="min-height:40px; '.$style.'" class="fields_recovery',
@@ -484,7 +484,7 @@ if (is_ajax()) {
                     } else {
                         $ffield = html_print_textarea(
                             'field'.$i.'_value',
-                            1,
+                            5,
                             1,
                             $fv[0],
                             'style="'.$style.'" class="fields min-height-40px"',
@@ -494,7 +494,7 @@ if (is_ajax()) {
                         );
                         $rfield = html_print_textarea(
                             'field'.$i.'_recovery_value',
-                            1,
+                            5,
                             1,
                             $fv[0],
                             'style="'.$style.'" class="fields_recovery min-height-40px',
@@ -507,7 +507,7 @@ if (is_ajax()) {
             } else {
                 $ffield = html_print_textarea(
                     'field'.$i.'_value',
-                    1,
+                    5,
                     1,
                     '',
                     'style="'.$style.'" class="fields min-height-40px"',
@@ -517,7 +517,7 @@ if (is_ajax()) {
                 );
                 $rfield = html_print_textarea(
                     'field'.$i.'_recovery_value',
-                    1,
+                    5,
                     1,
                     '',
                     'style="'.$style.'" class="fields_recovery min-height-40px"',
@@ -533,7 +533,7 @@ if (is_ajax()) {
                 $fields_rows[$i] = '';
             } else {
                 $fields_rows[$i] = '<tr id="table_macros-field'.$i.'" class="datos">';
-                $fields_rows[$i] .= '<td class="datos bolder w20p">'.$fdesc.'</td>';
+                $fields_rows[$i] .= '<td class="datos bolder w20p" style="font-size: 13px;">'.$fdesc.'</td>';
                 $fields_rows[$i] .= '<td class="datos">'.$ffield.'</td>';
                 if ($get_recovery_fields) {
                     $fields_rows[$i] .= '<td class="datos recovery_col">'.$rfield.'</td>';
@@ -575,12 +575,19 @@ if ($update_command) {
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
 } else {
-    ui_print_page_header(
-        __('Alerts').' &raquo; '.__('Alert commands'),
+    ui_print_standard_header(
+        __('Alerts'),
         'images/gm_alerts.png',
         false,
         '',
-        true
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Alert commands'),
+            ],
+        ]
     );
 }
 
@@ -811,10 +818,9 @@ foreach ($commands as $command) {
     array_push($table->data, $data);
 }
 
-ui_pagination($total_commands, $url);
 if (isset($data) === true && count($table->data) > 0) {
     html_print_table($table);
-    ui_pagination($total_commands, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
+    $pagination = ui_pagination($total_commands, $url, 0, 0, true, 'offset', false, '');
 } else {
     ui_print_info_message(
         [
@@ -826,12 +832,17 @@ if (isset($data) === true && count($table->data) > 0) {
 
 // Commands can only be created by the super administrator.
 if (users_is_admin() === true) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
-    html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
+    $buttonSubmit = html_print_submit_button(
+        __('Create'),
+        'create',
+        false,
+        ['icon' => 'wand'],
+        true
+    );
     html_print_input_hidden('create_alert', 1);
+    html_print_action_buttons($buttonSubmit, ['right_content' => $pagination]);
     echo '</form>';
-    echo '</div>';
 }
 
 ?>

@@ -744,8 +744,7 @@ function filemanager_file_explorer(
 
             // Actions buttons
             // Delete button.
-            $data[4] = '';
-            $data[4] .= '<span style="display: flex">';
+            $data[4] = '<div class="table_action_buttons flex">';
             $typefile = array_pop(explode('.', $fileinfo['name']));
             if (is_writable($fileinfo['realpath']) === true
                 && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
@@ -774,7 +773,7 @@ function filemanager_file_explorer(
                         && ($typefile !== 'iso') && ($typefile !== 'docx') && ($typefile !== 'doc') && ($fileinfo['mime'] != MIME_DIR)
                     ) {
                         $hash = md5($fileinfo['realpath'].$config['server_unique_identifier']);
-                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'invert_filter']).'</a>';
+                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'main_menu_icon invert_filter']).'</a>';
                     }
                 }
             }
@@ -794,7 +793,7 @@ function filemanager_file_explorer(
                 $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/enable.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
 
-            $data[4] .= '</span>';
+            $data[4] .= '</div>';
 
             array_push($table->data, $data);
         }
@@ -983,7 +982,7 @@ function filemanager_file_explorer(
                                 <div id='real_path'></div>";
 
             if (isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'on' || $_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1') {
-                $modal_real_path .= "<div style='float:right;margin: 5em 0 0 auto';>".html_print_submit_button(__('Copy'), 'submit', false, 'class="sub next"', true).'</div>';
+                $modal_real_path .= "<div style='float:right;margin: 5em 0 0 auto';>".html_print_submit_button(__('Copy'), 'submit', false, ['icon' => 'wand', 'mode' => 'mini'], true).'</div>';
             }
 
             html_print_div(
@@ -997,7 +996,7 @@ function filemanager_file_explorer(
             echo '</div>';
         } else {
             echo "<div style='text-align: right; width: ".$table->width."; color:#AC4444; margin-bottom:10px;'>";
-            echo "<image class='invert_filter' src='images/info.png' />".__('The directory is read-only');
+            echo "<image class='main_menu_icon invert_filter' src='images/info@svg.svg' />".__('The directory is read-only');
             echo '</div>';
         }
     }

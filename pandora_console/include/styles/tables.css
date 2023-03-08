@@ -235,7 +235,8 @@
 
 .table_action_buttons > a,
 .table_action_buttons > img,
-.table_action_buttons > button {
+.table_action_buttons > button,
+.table_action_buttons > form {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -246,7 +247,8 @@
 
 .info_table > tbody > tr:hover .table_action_buttons > a,
 .info_table > tbody > tr:hover .table_action_buttons > img,
-.info_table > tbody > tr:hover .table_action_buttons > button {
+.info_table > tbody > tr:hover .table_action_buttons > button,
+.info_table > tbody > tr:hover .table_action_buttons > form {
   visibility: visible;
 }
 

@@ -4773,6 +4773,10 @@ function html_print_input_file($name, $return=false, $options=false)
         if (isset($options['style']) === true) {
             $output .= ' style="'.$options['style'].'"';
         }
+
+        if (isset($options['accept']) === true) {
+            $output .= ' accept="'.$options['accept'].'"';
+        }
     }
 
     // Close input.

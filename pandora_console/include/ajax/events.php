@@ -791,6 +791,10 @@ if ($save_filter_modal) {
         $table->rowid[1] = 'save_filter_row1';
         $table->size[0] = '50%';
         $table->size[1] = '50%';
+        $table->rowclass[1] = 'flex';
+        $table->rowclass[2] = 'flex';
+        $table->rowclass[3] = 'flex';
+        $table->rowclass[4] = 'flex';
         $data[0] = '<b>'.__('Filter name').'</b>'.$jump;
         $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
         if (is_metaconsole()) {

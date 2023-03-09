@@ -1040,7 +1040,7 @@ class CalendarManager
                     'id'                  => 'templates_alerts_special_days',
                     'return'              => true,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => 'godmode/alerts/alert_special_days',
@@ -1075,7 +1075,9 @@ class CalendarManager
                                 'name'  => 'name',
                             ],
                         ],
+                        'class'  => 'no_border',
                     ],
+                    'filter_main_class'   => 'box-flat white_table_graph',
                 ]
             );
         } catch (Exception $e) {

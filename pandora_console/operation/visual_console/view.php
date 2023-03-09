@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -59,7 +59,10 @@ function visual_map_print_button_editor_refactor(
         $idDiv,
         $disabled,
         '',
-        'class=" sub visual_editor_button_toolbox '.$idDiv.' '.$class.'"',
+        [
+            'class' => $class,
+            'mode'  => 'onlyIcon',
+        ],
         false,
         true
     );
@@ -70,7 +73,7 @@ ui_require_css_file('visual_maps');
 ui_require_css_file('register');
 
 // Query parameters.
-$visualConsoleId = (int) get_parameter(!is_metaconsole() ? 'id' : 'id_visualmap');
+$visualConsoleId = (int) get_parameter('id');
 // To hide the menus.
 $pure = (bool) get_parameter('pure', $config['pure']);
 // Refresh interval in seconds.
@@ -78,7 +81,6 @@ $refr = (int) get_parameter('refr', $config['vc_refr']);
 
 $width = (int) get_parameter('width', 0);
 $height = (int) get_parameter('height', 0);
-
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
 $visualConsole = null;
@@ -118,11 +120,11 @@ if ($aclRead === false && $aclWrite === false && $aclManage === false) {
 $options = [];
 
 $options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder">'.html_print_image(
-    'images/visual_console.png',
+    'images/logs@svg.svg',
     true,
     [
         'title' => __('Visual consoles list'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 
@@ -146,29 +148,29 @@ if ($aclWrite === true || $aclManage === true) {
     $options['public_link']['text'] = '<a href="'.ui_get_full_url(
         'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user']
     ).'" target="_blank">'.html_print_image(
-        'images/camera_mc.png',
+        'images/item-icon.svg',
         true,
         [
             'title' => __('Show link to public Visual Console'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
     $options['public_link']['active'] = false;
 
     $options['data']['text'] = '<a href="'.$baseUrl.'&tab=data&id_visual_console='.$visualConsoleId.'">'.html_print_image(
-        'images/op_reporting.png',
+        'images/bars-graph.svg',
         true,
         [
             'title' => __('Main data'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
     $options['list_elements']['text'] = '<a href="'.$baseUrl.'&tab=list_elements&id_visual_console='.$visualConsoleId.'">'.html_print_image(
-        'images/list.png',
+        'images/edit_columns@svg.svg',
         true,
         [
             'title' => __('List elements'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
@@ -178,68 +180,68 @@ if ($aclWrite === true || $aclManage === true) {
             true,
             [
                 'title' => __('Services wizard'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
     }
 
     $options['wizard']['text'] = '<a href="'.$baseUrl.'&tab=wizard&id_visual_console='.$visualConsoleId.'">'.html_print_image(
-        'images/wand.png',
+        'images/wizard@svg.svg',
         true,
         [
             'title' => __('Wizard'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 }
 
 $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr.'">'.html_print_image(
-    'images/eye.png',
+    'images/enable.svg',
     true,
     [
         'title' => __('View'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 $options['view']['active'] = true;
 
 if (is_metaconsole() === false) {
-    if (!$config['pure']) {
-        $options['pure']['text'] = '<a id ="full_screen" href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
-            'images/full_screen.png',
-            true,
-            [
-                'title' => __('Full screen mode'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
-
-        // Header.
-        ui_print_standard_header(
-            $visualConsoleName,
-            'images/visual_console.png',
-            false,
-            'visual_console_view',
-            false,
-            $options,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Topology maps'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('Visual console'),
-                ],
-            ]
-        );
-    }
-
     // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 0);
 } else {
     // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 1);
+}
+
+if (!$config['pure']) {
+    $options['pure']['text'] = '<a id ="full_screen" href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
+        'images/fullscreen@svg.svg',
+        true,
+        [
+            'title' => __('Full screen mode'),
+            'class' => 'main_menu_icon invert_filter',
+        ]
+    ).'</a>';
+
+    // Header.
+    ui_print_standard_header(
+        $visualConsoleName,
+        'images/visual_console.png',
+        false,
+        'visual_console_view',
+        false,
+        $options,
+        [
+            [
+                'link'  => '',
+                'label' => __('Topology maps'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Visual console'),
+            ],
+        ]
+    );
 }
 
 $edit_capable = (bool) (
@@ -249,9 +251,9 @@ $edit_capable = (bool) (
 
 if ($pure === false) {
     if ($edit_capable === true) {
-        echo '<div id ="edit-vc">';
+        echo '<div id ="edit-vc" class="fixed_filter_bar">';
         echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
-        echo '<div>';
+        echo '<div class="toolbox-buttons">';
         $class_camera = 'camera_min link-create-item';
         $class_percentile = 'percentile_item_min link-create-item';
         $class_module_graph = 'graph_min link-create-item';
@@ -271,7 +273,7 @@ if ($pure === false) {
         $class_basic_chart = 'basic_chart_min link-create-item';
         $class_delete = 'delete_item delete_min';
         $class_copy = 'copy_item';
-        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+        if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
             $class_camera = 'camera_min_white link-create-item';
             $class_percentile = 'percentile_item_min_white link-create-item';
             $class_module_graph = 'graph_min_white link-create-item';
@@ -400,17 +402,17 @@ if ($pure === false) {
         echo '</div>';
 
         if ($aclWrite === true || $aclManage === true) {
-            echo '<div class="flex-row" style="width:220px;">';
+            echo '<div class="flex-row" style="width:220px;padding:10px 30px;">';
             if (is_metaconsole() === false) {
-                echo '<div id="force_check_control" class="flex-column">';
+                echo '<div id="force_check_control" class="flex-colum-center">';
                 echo html_print_label(__('Force'), 'force-mode', true);
                 echo '<a id ="force_check" href="">';
                 echo html_print_image(
-                    'images/target.png',
+                    'images/change-active.svg',
                     true,
                     [
                         'title' => __('Force remote checks'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 echo '</a>';
@@ -428,7 +430,7 @@ if ($pure === false) {
                     }
                 }
 
-                echo '<div id="maintenance-mode-control" class="flex-column">';
+                echo '<div id="maintenance-mode-control" class="flex-colum-center center_switch">';
                 echo html_print_label(
                     __('Maintenance'),
                     'maintenance-mode',
@@ -443,7 +445,7 @@ if ($pure === false) {
                 echo '</div>';
             }
 
-            echo '<div id="edit-mode-control" class="flex-column">';
+            echo '<div id="edit-mode-control" class="flex-colum-center center_switch">';
             echo html_print_label(__('Edit'), 'edit-mode', true);
             echo html_print_checkbox_switch('edit-mode', 1, false, true, $disabled_edit_mode);
             echo '</div>';
@@ -473,7 +475,7 @@ if ($pure === true) {
     // Quit fullscreen.
     echo '<li class="nomn">';
     if (is_metaconsole() === true) {
-        $urlNoFull = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$visualConsoleId.'&refr='.$refr;
+        $urlNoFull = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id='.$visualConsoleId.'&refr='.$refr;
     } else {
         $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr;
     }

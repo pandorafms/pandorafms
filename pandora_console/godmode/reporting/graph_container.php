@@ -129,11 +129,22 @@ $container = folder_get_folders();
 $tree = folder_get_folders_tree_recursive($container);
 echo folder_togge_tree_folders($tree);
 if ($report_r && $report_w) {
-    echo "<div class='right'>";
-            echo '<form method="post" class="right" action="index.php?sec=reporting&sec2=godmode/reporting/create_container">';
-                html_print_submit_button(__('Create container'), 'create', false, 'class="sub next mrgn_right_5px mrgn_top_15px"');
-            echo '</form>';
-    echo '</div>';
+    $ActionButtons[] = '<form method="post" class="right" action="index.php?sec=reporting&sec2=godmode/reporting/create_container">';
+    $ActionButtons[] = '<div class="action-buttons">';
+    $ActionButtons[] = html_print_submit_button(
+        __('Create container'),
+        'create',
+        false,
+        [
+            'class' => 'sub ok submitButton',
+            'icon'  => 'next',
+        ],
+        true
+    );
+    $ActionButtons[] = '</div>';
+    $ActionButtons[] = '</form>';
+
+    html_print_action_buttons(implode('', $ActionButtons), ['type' => 'form_action']);
 }
 ?>
 

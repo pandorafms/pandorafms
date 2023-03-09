@@ -262,33 +262,37 @@ if ($create) {
 $own_info = get_user_info($config['id_user']);
 
 $table = new stdClass();
-$table->width = '100%';
+$table->width = '1366px';
+// $table->width = '100%';
 $table->border = 0;
 $table->cellspacing = 0;
 $table->cellpadding = 0;
-$table->class = 'databox filters';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->class = 'databox filters events-filters-create pdd_10px';
 $table->style[0] = 'vertical-align: top;';
+$table->rowspan = [];
+$table->rowspan[3][0] = 2;
 
 $table->valign[1] = 'top';
 
-if (is_metaconsole()) {
-    if ($id) {
-        $table->head[0] = __('Update Filter');
-    } else {
-        $table->head[0] = __('Create Filter');
-    }
-
-    $table->head_colspan[0] = 4;
-    $table->headstyle[0] = 'text-align: center';
-    $table->style[0] = '';
-    $table->valign[1] = '';
-}
-
 $table->data = [];
-$table->data[0][0] = '<b>'.__('Filter name').'</b>';
-$table->data[0][1] = html_print_input_text('id_name', $id_name, false, 20, 80, true);
 
-$table->data[1][0] = '<b>'.__('Save in group').'</b>'.ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
+$table->data[0][0] = html_print_label_input_block(
+    __('Filter name'),
+    html_print_input_text(
+        'id_name',
+        $id_name,
+        false,
+        20,
+        80,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    )
+);
 
 $returnAllGroup = users_can_manage_group_all();
 // If the user can't manage All group but the filter is for All group, the user should see All group in the select.
@@ -296,115 +300,135 @@ if ($returnAllGroup === false && $id_group_filter == 0) {
     $returnAllGroup = true;
 }
 
-$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
-    $config['id_user'],
-    $access,
-    $returnAllGroup,
-    'id_group_filter',
-    $id_group_filter,
-    '',
-    '',
-    -1,
-    true,
-    false,
-    false,
-    '',
-    false,
-    '',
-    false,
-    false,
-    'id_grupo',
-    $strict_user
-).'</div>';
-
+$table->data[0][1] = html_print_label_input_block(
+    __('Save in group').ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true),
+    '<div class="w100p">'.html_print_select_groups(
+        $config['id_user'],
+        $access,
+        $returnAllGroup,
+        'id_group_filter',
+        $id_group_filter,
+        '',
+        '',
+        -1,
+        true,
+        false,
+        false,
+        '',
+        false,
+        '',
+        false,
+        false,
+        'id_grupo',
+        $strict_user
+    ).'</div>'
+);
 $return_all_group = false;
 
 if (users_can_manage_group_all('AR') === true) {
     $return_all_group = true;
 }
 
-$table->data[2][0] = '<b>'.__('Group').'</b>';
 $display_all_group = (users_is_admin() || users_can_manage_group_all('AR'));
-$table->data[2][1] = '<div class="w250px">'.html_print_select_groups(
-    $config['id_user'],
-    'AR',
-    $return_all_group,
-    'id_group',
-    $id_group,
-    '',
-    '',
-    '',
-    true
-).'</div>';
+$table->data[2][0] = html_print_label_input_block(
+    __('Group'),
+    '<div class="w100p">'.html_print_select_groups(
+        $config['id_user'],
+        'AR',
+        $return_all_group,
+        'id_group',
+        $id_group,
+        '',
+        '',
+        '',
+        true
+    ).'</div>'
+);
 
 $types = get_event_types();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
 $types['not_normal'] = __('Not normal');
-
-$table->data[3][0] = '<b>'.__('Event type').'</b>';
-$table->data[3][1] = html_print_select(
-    $types,
-    'event_type',
-    $event_type,
-    '',
-    __('All'),
-    '',
-    true
+$table->data[2][1] = html_print_label_input_block(
+    __('Event type'),
+    '<div class="w100p">'.html_print_select(
+        $types,
+        'event_type',
+        $event_type,
+        '',
+        __('All'),
+        '',
+        true,
+        false,
+        false,
+        'w100p'
+    ).'</div>'
 );
 
 if (empty($severity) && $severity !== '0') {
     $severity = -1;
 }
 
-$table->data[4][0] = '<b>'.__('Severity').'</b>';
-$table->data[4][1] = html_print_select(
-    get_priorities(),
-    'severity[]',
-    $severity,
-    '',
-    __('All'),
-    -1,
-    true,
-    true,
-    true,
-    '',
-    false,
-    'width: 175px'
+$table->data[3][0] = html_print_label_input_block(
+    __('Severity'),
+    html_print_select(
+        get_priorities(),
+        'severity[]',
+        $severity,
+        '',
+        __('All'),
+        -1,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width: 100%'
+    )
 );
 
 $fields = events_get_all_status();
-
-$table->data[5][0] = '<b>'.__('Event status').'</b>';
-$table->data[5][1] = html_print_select(
-    $fields,
-    'status',
-    $status,
-    '',
-    '',
-    '',
-    true
+$table->data[3][1] = html_print_label_input_block(
+    __('Event status'),
+    html_print_select(
+        $fields,
+        'status',
+        $status,
+        '',
+        '',
+        '',
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%'
+    )
 );
 
-$table->data[6][0] = '<b>'.__('Free search').'</b>';
-$table->data[6][1] = html_print_input_text(
-    'search',
-    $search,
-    '',
-    15,
-    255,
-    true
-);
-$table->data[6][1] .= ' '.html_print_checkbox_switch(
-    'not_search',
-    $not_search,
-    $not_search,
-    true,
-    false,
-    'checked_slide_events(this);',
-    true
+$table->data[4][1] = html_print_label_input_block(
+    __('Free search'),
+    '<div class="flex_center">'.html_print_input_text(
+        'search',
+        $search,
+        '',
+        15,
+        255,
+        true,
+        false,
+        false,
+        '',
+        'w96p mrgn_right_15px'
+    ).' '.html_print_checkbox_switch(
+        'not_search',
+        $not_search,
+        $not_search,
+        true,
+        false,
+        'checked_slide_events(this);',
+        true
+    ).'</div>'
 );
 
-$table->data[7][0] = '<b>'.__('Agent search').'</b>';
 $params = [];
 $params['show_helptip'] = true;
 $params['input_name'] = 'text_agent';
@@ -419,39 +443,48 @@ if (is_metaconsole()) {
     $params['hidden_input_idagent_value'] = $id_agent;
 }
 
-$table->data[7][1] = ui_print_agent_autocomplete_input($params);
+$table->data[5][0] = html_print_label_input_block(
+    __('Agent search'),
+    '<div class="w100p">'.ui_print_agent_autocomplete_input($params).'</div>'
+);
 
 $lpagination[25] = 25;
 $lpagination[50] = 50;
 $lpagination[100] = 100;
 $lpagination[200] = 200;
 $lpagination[500] = 500;
-$table->data[8][0] = '<b>'.__('Block size for pagination').'</b>';
-$table->data[8][1] = html_print_select(
-    $lpagination,
-    'pagination',
-    $pagination,
-    '',
-    __('Default'),
-    $config['block_size'],
-    true
+$table->data[5][1] = html_print_label_input_block(
+    __('Block size for pagination'),
+    '<div class="w100p">'.html_print_select(
+        $lpagination,
+        'pagination',
+        $pagination,
+        '',
+        __('Default'),
+        $config['block_size'],
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%'
+    ).'</div>'
 );
 
-$table->data[9][0] = '<b>'.__('Max. hours old').'</b>';
-$table->data[9][1] = html_print_input_text(
-    'event_view_hr',
-    $event_view_hr,
-    '',
-    5,
-    255,
-    true
-);
-
-$table->data[10][0] = '<b>'.__('User ack.').'</b>';
-$table->data[10][0] .= ' ';
-$table->data[10][0] .= ui_print_help_tip(
-    __('Choose between the users who have validated an event. '),
-    true
+$table->data[6][0] = html_print_label_input_block(
+    __('Max. hours old'),
+    '<div class="w100p">'.html_print_input_text(
+        'event_view_hr',
+        $event_view_hr,
+        '',
+        5,
+        255,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    ).'</div>'
 );
 
 if ($strict_user) {
@@ -464,49 +497,96 @@ if ($strict_user) {
     );
 }
 
-$table->data[10][1] = html_print_select(
-    $users,
-    'id_user_ack',
-    $id_user_ack,
-    '',
-    __('Any'),
-    0,
-    true
+$table->data[6][1] = html_print_label_input_block(
+    __('User ack.').' '.ui_print_help_tip(
+        __('Choose between the users who have validated an event. '),
+        true
+    ),
+    '<div class="w100p">'.html_print_select(
+        $users,
+        'id_user_ack',
+        $id_user_ack,
+        '',
+        __('Any'),
+        0,
+        true,
+        false,
+        true,
+        'w100p'
+    ).'</div>'
 );
 
-$table->data[11][0] = '<b>'.__('Owner.').'</b>';
-$table->data[11][1] = html_print_select(
-    $users,
-    'owner_user',
-    $owner_user,
-    '',
-    __('Any'),
-    0,
-    true
+$table->data[7][0] = html_print_label_input_block(
+    __('Owner.'),
+    '<div class="w100p">'.html_print_select(
+        $users,
+        'owner_user',
+        $owner_user,
+        '',
+        __('Any'),
+        0,
+        true,
+        false,
+        true,
+        'w100p'
+    ).'</div>'
 );
-
 $repeated_sel = [
     EVENT_GROUP_REP_ALL      => __('All events'),
     EVENT_GROUP_REP_EVENTS   => __('Group events'),
     EVENT_GROUP_REP_AGENTS   => __('Group agents'),
     EVENT_GROUP_REP_EXTRAIDS => __('Group extra id'),
 ];
-$table->data[12][0] = '<b>'.__('Repeated').'</b>';
-$table->data[12][1] = html_print_select(
-    $repeated_sel,
-    'group_rep',
-    $group_rep,
-    '',
-    '',
-    '',
-    true
+
+$table->data[7][1] = html_print_label_input_block(
+    __('Repeated'),
+    '<div class="w100p">'.html_print_select(
+        $repeated_sel,
+        'group_rep',
+        $group_rep,
+        '',
+        '',
+        '',
+        true,
+        false,
+        true,
+        'w100p'
+    ).'</div>'
 );
 
-$table->data[13][0] = '<b>'.__('Date from').'</b>';
-$table->data[13][1] = html_print_input_text('date_from', $date_from, '', 15, 10, true);
+$date_from = html_print_label_input_block(
+    __('Date from'),
+    '<div class="w100p">'.html_print_input_text(
+        'date_to',
+        $date_to,
+        '',
+        15,
+        10,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    ).'</div>'
+);
 
-$table->data[14][0] = '<b>'.__('Date to').'</b>';
-$table->data[14][1] = html_print_input_text('date_to', $date_to, '', 15, 10, true);
+$date_to = html_print_label_input_block(
+    __('Date from'),
+    '<div class="w100p">'.html_print_input_text(
+        'date_to',
+        $date_to,
+        '',
+        15,
+        10,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    ).'</div>'
+);
+
+$table->data[8][0] = '<div class="flex-row">'.$date_from.$date_to.'</div>';
 
 $tag_with = json_decode($tag_with_json_clean, true);
 if (empty($tag_with)) {
@@ -545,176 +625,272 @@ $remove_with_tag_disabled = empty($tag_with_temp);
 $add_without_tag_disabled = empty($tags_select_without);
 $remove_without_tag_disabled = empty($tag_without_temp);
 
-$table->colspan[15][0] = '2';
-$table->data[15][0] = '<b>'.__('Events with following tags').'</b>';
-$table->data[16][0] = html_print_select(
-    $tags_select_with,
-    'select_with',
-    '',
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 220px;'
-);
-$table->data[16][1] = html_print_button(
-    __('Add'),
-    'add_whith',
-    $add_with_tag_disabled,
-    '',
-    'class="add sub"',
-    true
+$table->data[8][0] = html_print_label_input_block(
+    __('Events with following tags'),
+    '<div class="w100p">'.html_print_select(
+        $tags_select_with,
+        'select_with',
+        '',
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        'w100p'
+    ).'</div>'
 );
 
-$table->data[17][0] = html_print_select(
-    $tag_with_temp,
-    'tag_with_temp',
-    [],
-    '',
-    '',
-    0,
-    true,
-    true,
-    true,
-    '',
-    false,
-    'width: 220px; height: 50px;'
+$table->data[8][1] = html_print_label_input_block(
+    '&nbsp;',
+    '<div class="w100p">'.html_print_button(
+        __('Add'),
+        'add_whith',
+        $add_with_tag_disabled,
+        '',
+        ['class' => 'submitButton mini'],
+        true
+    ).'</div>'
 );
-$table->data[17][0] .= html_print_input_hidden(
+
+$table->data[9][0] = html_print_label_input_block(
+    '',
+    '<div class="w100p no-margin-top">'.html_print_select(
+        $tag_with_temp,
+        'tag_with_temp',
+        [],
+        '',
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width: 100%; height: 50px;'
+    ).'</div>'
+).html_print_input_hidden(
     'tag_with',
     $tag_with_base64,
     true
 );
-$table->data[17][1] = html_print_button(
-    __('Remove'),
-    'remove_whith',
-    $remove_with_tag_disabled,
-    '',
-    'class="delete sub"',
-    true
+
+$table->data[9][1] = html_print_label_input_block(
+    '&nbsp;',
+    '<div class="w100p">'.html_print_button(
+        __('Remove'),
+        'remove_whith',
+        false,
+        '',
+        [
+            'mode'  => 'link',
+            'class' => 'submitButton',
+        ],
+        true
+    ).'</div>'
 );
 
-$table->colspan[18][0] = '2';
-$table->data[18][0] = '<b>'.__('Events without following tags').'</b>';
-$table->data[19][0] = html_print_select(
-    $tags_select_without,
-    'select_without',
-    '',
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 220px;'
-);
-$table->data[19][1] = html_print_button(
-    __('Add'),
-    'add_whithout',
-    $add_without_tag_disabled,
-    '',
-    'class="add sub"',
-    true
+$table->data[10][0] = html_print_label_input_block(
+    __('Events without following tags'),
+    '<div class="w100p">'.html_print_select(
+        $tags_select_without,
+        'select_without',
+        '',
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        'w100p'
+    ).'</div>'
 );
 
-$table->data[20][0] = html_print_select(
-    $tag_without_temp,
-    'tag_without_temp',
-    [],
-    '',
-    '',
-    0,
-    true,
-    true,
-    true,
-    '',
-    false,
-    'width: 220px; height: 50px;'
+$table->data[10][1] = html_print_label_input_block(
+    '&nbsp;',
+    '<div class="w100p">'.html_print_button(
+        __('Add'),
+        'add_whithout',
+        $add_without_tag_disabled,
+        '',
+        ['class' => 'submitButton mini'],
+        true
+    ).'</div>'
 );
-$table->data[20][0] .= html_print_input_hidden(
+
+$table->data[11][0] = html_print_label_input_block(
+    '',
+    '<div class="w100p no-margin-top">'.html_print_select(
+        $tag_without_temp,
+        'tag_without_temp',
+        [],
+        '',
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width: 100%; height: 50px;'
+    ).'</div>'
+).html_print_input_hidden(
     'tag_without',
     $tag_without_base64,
     true
 );
-$table->data[20][1] = html_print_button(
-    __('Remove'),
-    'remove_whithout',
-    $remove_without_tag_disabled,
-    '',
-    'class="delete sub"',
-    true
+
+$table->data[11][1] = html_print_label_input_block(
+    '&nbsp;',
+    '<div class="w100p">'.html_print_button(
+        __('Remove'),
+        'remove_whithout',
+        false,
+        '',
+        [
+            'mode'  => 'link',
+            'class' => 'submitButton',
+        ],
+        true
+    ).'</div>'
 );
 
-$table->data[21][0] = '<b>'.__('Alert events').'</b>';
-$table->data[21][1] = html_print_select(
-    [
-        '-1' => __('All'),
-        '0'  => __('Filter alert events'),
-        '1'  => __('Only alert events'),
-    ],
-    'filter_only_alert',
-    $filter_only_alert,
-    '',
-    '',
-    '',
-    true
+$table->data[12][0] = html_print_label_input_block(
+    __('Alert events'),
+    '<div class="w100p">'.html_print_select(
+        [
+            '-1' => __('All'),
+            '0'  => __('Filter alert events'),
+            '1'  => __('Only alert events'),
+        ],
+        'filter_only_alert',
+        $filter_only_alert,
+        '',
+        '',
+        '',
+        true,
+        false,
+        true,
+        'w100p'
+    ).'</div>'
 );
 
 if (!is_metaconsole()) {
-    $table->data[22][0] = '<b>'.__('Module search').'</b>';
-    $table->data[22][1] .= html_print_autocomplete_modules(
-        'module_search',
-        $text_module,
-        false,
-        true,
-        '',
-        [],
-        true,
-        $id_agent_module
+    $table->data[12][1] = html_print_label_input_block(
+        __('Module search'),
+        '<div class="w100p">'.html_print_autocomplete_modules(
+            'module_search',
+            $text_module,
+            false,
+            true,
+            '',
+            [],
+            true,
+            $id_agent_module
+        ).'</div>'
     );
+} else {
+    $table->data[12][1] = '';
 }
 
-$table->data[23][0] = '<b>'.__('Source').'</b>';
-$table->data[23][1] = html_print_input_text('source', $source, '', 35, 255, true);
-
-$table->data[24][0] = '<b>'.__('Extra ID').'</b>';
-$table->data[24][1] = html_print_input_text('id_extra', $id_extra, '', 11, 255, true);
-
-$table->data[25][0] = '<b>'.__('Comment').'</b>';
-$table->data[25][1] = html_print_input_text('user_comment', $user_comment, '', 35, 255, true);
-
-$table->data[26][0] = '<b>'.__('Custom data filter type').'</b>';
-$table->data[26][1] = html_print_select(
-    [
-        '0' => __('Filter custom data by name field'),
-        '1' => __('Filter custom data by value field'),
-    ],
-    'custom_data_filter_type',
-    $custom_data_filter_type,
-    '',
-    false,
-    '',
-    true
-);
-
-$table->data[27][0] = '<b>'.__('Custom data').'</b>';
-$table->data[27][1] = html_print_input_text('custom_data', $custom_data, '', 35, 255, true);
-
-if (is_metaconsole()) {
-    $table->data[28][0] = '<b>'.__('Id souce event').'</b>';
-    $table->data[28][1] = html_print_input_text(
-        'id_source_event',
-        $id_source_event,
+$table->data[13][0] = html_print_label_input_block(
+    __('Source'),
+    '<div class="w100p">'.html_print_input_text(
+        'source',
+        $source,
         '',
         35,
         255,
-        true
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    ).'</div>'
+);
+
+$table->data[13][1] = html_print_label_input_block(
+    __('Extra ID'),
+    '<div class="w100p">'.html_print_input_text(
+        'id_extra',
+        $id_extra,
+        '',
+        11,
+        255,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    ).'</div>'
+);
+
+$table->data[14][0] = html_print_label_input_block(
+    __('Comment'),
+    '<div class="w100p">'.html_print_input_text(
+        'user_comment',
+        $user_comment,
+        '',
+        35,
+        255,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    ).'</div>'
+);
+
+$table->data[14][1] = html_print_label_input_block(
+    __('Custom data filter type'),
+    '<div class="w100p">'.html_print_select(
+        [
+            '0' => __('Filter custom data by name field'),
+            '1' => __('Filter custom data by value field'),
+        ],
+        'custom_data_filter_type',
+        $custom_data_filter_type,
+        '',
+        false,
+        '',
+        true,
+        false,
+        true,
+        'w100p'
+    ).'</div>'
+);
+
+$table->data[15][0] = html_print_label_input_block(
+    __('Custom data'),
+    '<div class="w100p">'.html_print_input_text(
+        'custom_data',
+        $custom_data,
+        '',
+        35,
+        255,
+        true,
+        false,
+        false,
+        '',
+        'w100p'
+    ).'</div>'
+);
+
+if (is_metaconsole()) {
+    $table->data[15][1] = html_print_label_input_block(
+        __('Id souce event'),
+        '<div class="w100p">'.html_print_input_text(
+            'id_source_event',
+            $id_source_event,
+            '',
+            35,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        ).'</div>'
     );
 }
 
@@ -750,20 +926,20 @@ if (is_metaconsole() === true) {
         }
     }
 
-    $table->data[29][0] = '<b>'.__('Server').'</b>';
-    $table->data[29][1] = html_print_select(
-        $servers,
-        'server_id[]',
-        $server_id,
-        '',
-        '',
-        0,
-        true,
-        true,
-        true,
-        '',
-        false,
-        'height: 60px;'
+    $table->data[16][0] = html_print_label_input_block(
+        __('Server'),
+        '<div class="w100p">'.html_print_select(
+            $servers,
+            'server_id[]',
+            $server_id,
+            '',
+            '',
+            0,
+            true,
+            true,
+            true,
+            'w100p'
+        ).'</div>'
     );
 }
 
@@ -775,11 +951,13 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
     html_print_input_hidden('update', 1);
     html_print_input_hidden('id', $id);
-    html_print_submit_button(__('Update'), 'crt', false, 'class="sub upd"');
+    $actionButtons = html_print_submit_button(__('Update'), 'crt', false, ['icon' => 'update'], true);
 } else {
     html_print_input_hidden('create', 1);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub wand"');
+    $actionButtons = html_print_submit_button(__('Create'), 'crt', false, ['icon' => 'wand'], true);
 }
+
+html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 
 echo '</div>';
 echo '</form>';

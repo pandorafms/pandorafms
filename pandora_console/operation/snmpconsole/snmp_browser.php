@@ -50,11 +50,11 @@ if ($config['pure']) {
     // Windowed.
     $link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">';
     $link['text'] .= html_print_image(
-        'images/normal_screen.png',
+        'images/exit_fullscreen@svg.svg',
         true,
         [
             'title' => __('Normal screen'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     );
     $link['text'] .= '</a>';
@@ -62,11 +62,11 @@ if ($config['pure']) {
     // Fullscreen.
     $link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=0">';
     $link['text'] .= html_print_image(
-        'images/full_screen.png',
+        'images/fullscreen@svg.svg',
         true,
         [
             'title' => __('Full screen'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     );
     $link['text'] .= '</a>';
@@ -93,7 +93,7 @@ ui_print_standard_header(
 );
 
 // SNMP tree container.
-snmp_browser_print_container(false, '100%', '60%', '', true);
+snmp_browser_print_container(false, '100%', '60%', '', true, true);
 
 // Div for modal.
 echo '<div id="modal" style="display:none"></div>';
@@ -111,7 +111,7 @@ $(document).on('DOMSubtreeModified', "#snmp_create_module", function() {
 
 });
 
-$(document).on("click", 'div#snmp_create_buttons > input', function (event) {
+$(document).on("click", 'div#snmp_create_buttons > button', function (event) {
         var source_button = this.name;
         var target = "";
 
@@ -254,55 +254,55 @@ function snmp_show_result_message(data) {
 
     var dato = JSON.parse(data);
     if (dato.length !== 0) {
-      $("#error_text").text("");
+    $("#error_text").text("");
 
-      if (dato[0] === -1) {
-          $("#dialog_no_agents_selected").dialog({
+    if (dato[0] === -1) {
+        $("#dialog_no_agents_selected").dialog({
             resizable: true,
             draggable: true,
             modal: true,
             height: 300,
             width: 500,
             close: function(e, ui) {
-              $("input[name=create_modules_network_component]").removeClass("sub spinn");
-              $("input[name=create_modules_network_component]").addClass("sub add");
+            $("button[name=create_modules_network_component]").removeClass("sub spinn");
+            $("button[name=create_modules_network_component]").addClass("sub add");
             },
             overlay: {
-              opacity: 0.5,
-              background: "black"
+            opacity: 0.5,
+            background: "black"
             }
-          });
-      } else {
-          $("#error_text").text("");
+        });
+    } else {
+        $("#error_text").text("");
 
-          dato.forEach(function (valor, indice, array) {
+        dato.forEach(function (valor, indice, array) {
             $("#error_text").append("<br/>" + valor);
-          });
-          $("#dialog_error").dialog({
+        });
+        $("#dialog_error").dialog({
             resizable: true,
             draggable: true,
             modal: true,
             height: 300,
             width: 500,
             overlay: {
-              opacity: 0.5,
-              background: "black"
+            opacity: 0.5,
+            background: "black"
             }
-          });
-      }
+        });
+    }
 
     } else {
-      $("#dialog_success").dialog({
+    $("#dialog_success").dialog({
         resizable: true,
         draggable: true,
         modal: true,
         height: 250,
         width: 500,
         overlay: {
-          opacity: 0.5,
-          background: "black"
+        opacity: 0.5,
+        background: "black"
         }
-      });
+    });
     }
 }
 /**
@@ -337,18 +337,14 @@ function add_module_massive_controller(target = 'agent')
     });
 
     // Select all Items.
-    $("#checkbox-select_all_left").change(function () {
-        if ($("#checkbox-select_all_left").prop('checked') == true) {
-            $('#id_item option').map(function() {
-                $(this).prop('selected', true);
-            });
-        } else {
-            $('#id_item option').map(function() {
-                $(this).prop('selected', false);
-            });
-        }
+    $("#image-select_all_available").click(function (event) {
+        event.preventDefault();
+        $('#id_item>option').prop('selected', true);
+    })
 
-        return false;
+    $("#image-select_all_apply").click(function (event) {
+        event.preventDefault();
+        $('#id_item2>option').prop('selected', true);
     });
 
     $("#checkbox-select_all_right").change(function () {
@@ -659,7 +655,7 @@ function show_add_module() {
                                         snmp3_auth_pass : $('#password-snmp3_browser_auth_pass').val(),
                                         snmp3_privacy_method : $('#snmp3_browser_privacy_method').val(),
                                         snmp3_privacy_pass : $('#password-snmp3_browser_privacy_pass').val(),
-                                        
+                                        tcp_port : $('#target_port').val(),
                                     };
 
                                     // Append values to form.

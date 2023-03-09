@@ -2470,13 +2470,9 @@ function events_print_event_table(
 
     ui_require_css_file('events');
 
-    if ($agent_id == 0) {
-        $agent_condition = '';
-    } else {
-        $agent_condition = ' id_agente = '.$agent_id.' AND ';
-    }
+    $agent_condition = ($agent_id === 0) ? '' : ' id_agente = '.$agent_id.' AND ';
 
-    if ($filter == '') {
+    if (empty($filter) === true) {
         $filter = '1 = 1';
     }
 
@@ -2496,7 +2492,7 @@ function events_print_event_table(
     $result = db_get_all_rows_sql($sql);
 
     if ($result === false) {
-        if ($return) {
+        if ($return === true) {
             $returned = ui_print_info_message(__('No events'), '', true);
             return $returned;
         } else {
@@ -2508,8 +2504,8 @@ function events_print_event_table(
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->width = $width;
-        $table->class = 'info_table no-td-padding';
-        if (!$tactical_view) {
+        $table->class = 'tactical_table info_table no-td-padding';
+        if ($tactical_view === false) {
             $table->title = __('Latest events');
         }
 
@@ -2524,31 +2520,28 @@ function events_print_event_table(
         $table->style = [];
 
         $i = 0;
-        $table->head[$i] = "<span title='".__('Severity')."'>".__('S.').'</span>';
-        $table->headstyle[$i] = 'width: 1%;text-align: center;';
-        $table->style[$i++] = 'text-align: center;';
 
-        $table->head[$i] = __('Type');
+        $table->head[$i] = '<span>'.__('Type').'</span>';
         $table->headstyle[$i] = 'width: 3%;text-align: center;';
         $table->style[$i++] = 'text-align: center;';
 
-        $table->head[$i] = __('Event name');
+        $table->head[$i] = '<span>'.__('Event name').'</span>';
         $table->headstyle[$i] = '';
-        $table->style[$i++] = 'word-break: break-word;';
+        $table->style[$i++] = 'padding: 0 5px;word-break: break-word';
 
-        if ($agent_id == 0) {
-            $table->head[$i] = __('Agent name');
+        if ($agent_id === 0) {
+            $table->head[$i] = '<span>'.__('Agent name').'</span>';
             $table->headstyle[$i] = '';
             $table->style[$i++] = 'word-break: break-all;';
         }
 
-        $table->head[$i] = __('Timestamp');
+        $table->head[$i] = '<span>'.__('Timestamp').'</span>';
         $table->headstyle[$i] = 'width: 150px;';
-        $table->style[$i++] = 'word-break: break-word;';
+        $table->style[$i++] = 'padding: 0 5px;word-break: break-word;';
 
-        $table->head[$i] = __('Status');
+        $table->head[$i] = '<span>'.__('Status').'</span>';
         $table->headstyle[$i] = 'width: 150px;text-align: center;';
-        $table->style[$i++] = 'text-align: center;';
+        $table->style[$i++] = 'padding: 0 5px;text-align: center;';
 
         $table->head[$i] = "<span title='".__('Validated')."'>".__('V.').'</span>';
         $table->headstyle[$i] = 'width: 1%;text-align: center;';
@@ -2563,7 +2556,7 @@ function events_print_event_table(
             // Copy all groups of the agent and append the event group.
             $check_events = $all_groups;
             $check_events[] = $event['id_grupo'];
-            if (! check_acl_one_of_groups($config['id_user'], $check_events, 'ER')) {
+            if ((bool) check_acl_one_of_groups($config['id_user'], $check_events, 'ER') === false) {
                 continue;
             }
 
@@ -2571,30 +2564,24 @@ function events_print_event_table(
 
             // Colored box.
             switch ($event['estado']) {
-                case 0:
-                    $img = 'images/star.png';
+                case EVENT_STATUS_NEW:
+                default:
+                    $img = 'images/star@svg.svg';
                     $title = __('New event');
                 break;
 
-                case 1:
-                    $img = 'images/tick.png';
+                case EVENT_STATUS_VALIDATED:
+                    $img = 'images/validate.svg';
                     $title = __('Event validated');
                 break;
 
-                case 2:
-                    $img = 'images/hourglass.png';
+                case EVENT_STATUS_INPROCESS:
+                    $img = 'images/clock.svg';
                     $title = __('Event in process');
-                break;
-
-                default:
-                    // Ignore.
                 break;
             }
 
             $i = 0;
-            // Criticity.
-            $data[$i++] = ui_print_event_priority($event['criticity'], true, true);
-
             // Event type.
             $data[$i++] = events_print_type_img($event['event_type'], true);
 
@@ -2603,14 +2590,19 @@ function events_print_event_table(
                 strip_tags(io_safe_output($event['evento'])),
                 75,
                 true,
-                '7.5'
             );
 
-            if ($agent_id == 0) {
+            if ($agent_id === 0) {
                 if ($event['id_agente'] > 0) {
                     // Agent name.
                     // Get class name, for the link color, etc.
-                    $data[$i] = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</A>';
+                    $data[$i] = html_print_anchor(
+                        [
+                            'href'    => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$event['id_agente'],
+                            'content' => agents_get_alias($event['id_agente']),
+                        ],
+                        true
+                    );
                     // For System or SNMP generated alerts.
                 } else if ($event['event_type'] === 'system') {
                     $data[$i] = __('System');
@@ -2622,10 +2614,10 @@ function events_print_event_table(
             }
 
             // Timestamp.
-            $data[$i++] = ui_print_timestamp($event['timestamp'], true, ['style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;']);
+            $data[$i++] = ui_print_timestamp($event['timestamp'], true, ['style' => 'letter-spacing: 0.3pt;']);
 
             // Status.
-            $data[$i++] = ui_print_event_type($event['event_type'], true);
+            $data[$i++] = ui_print_event_type($event['event_type'], true, true);
 
             $data[$i++] = html_print_image(
                 $img,
@@ -2643,7 +2635,7 @@ function events_print_event_table(
 
         unset($table);
 
-        if ($return) {
+        if ($return === true) {
             return $out;
         } else {
             echo $out;
@@ -2671,84 +2663,85 @@ function events_print_type_img(
     $output = '';
 
     $urlImage = ui_get_full_url(false);
-
-    $style = '';
+    $icon = '';
+    $style = 'invert_filter main_menu_icon';
 
     switch ($type) {
         case 'alert_recovered':
-            $icon = 'images/bell.png';
-            $style = 'invert_filter';
+            $icon = 'images/alert@svg.svg';
         break;
 
         case 'alert_manual_validation':
-            $icon = 'images/ok.png';
-            $style = 'invert_filter';
+            $icon = 'images/validate.svg';
         break;
 
         case 'going_down_critical':
         case 'going_up_critical':
             // This is to be backwards compatible.
-            $icon = 'images/module_critical.png';
+            $style .= ' event_module_background_state icon_background_critical';
         break;
 
         case 'going_up_normal':
         case 'going_down_normal':
             // This is to be backwards compatible.
-            $icon = 'images/module_ok.png';
+            $style .= ' event_module_background_state icon_background_normal';
         break;
 
         case 'going_up_warning':
         case 'going_down_warning':
-            $icon = 'images/module_warning.png';
+            $style .= ' event_module_background_state icon_background_warning';
         break;
 
         case 'going_unknown':
-            $icon = 'images/module_unknown.png';
+            $style .= ' event_module_background_state icon_background_unknown';
         break;
 
         case 'alert_fired':
             $icon = 'images/bell_error.png';
-            $style = 'invert_filter';
         break;
 
         case 'system':
-            $icon = 'images/cog.png';
-            $style = 'invert_filter';
+            $icon = 'images/configuration@svg.svg';
         break;
 
         case 'recon_host_detected':
             $icon = 'images/recon.png';
-            $style = 'invert_filter';
         break;
 
         case 'new_agent':
-            $icon = 'images/agent.png';
-            $style = 'invert_filter';
+            $icon = 'images/agents@svg.svg';
         break;
 
         case 'configuration_change':
-            $icon = 'images/config.png';
-            $style = 'invert_filter';
+            $icon = 'images/configuration@svg.svg';
         break;
 
         case 'unknown':
         default:
-            $icon = 'images/lightning_go.png';
-            $style = 'invert_filter';
+            $icon = 'images/event.svg';
         break;
     }
 
     if ($only_url) {
         $output = $urlImage.'/'.$icon;
     } else {
-        $output .= html_print_image(
+        $output .= html_print_div(
+            [
+                'title' => events_print_type_description($type, true),
+                'class' => $style,
+                'style' => 'margin: 0 auto;'.((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
+            ],
+            true
+        );
+        /*
+            $output .= html_print_image(
             $icon,
             true,
             [
                 'title' => events_print_type_description($type, true),
                 'class' => $style,
             ]
-        );
+        );*/
     }
 
     if ($return) {
@@ -3379,7 +3372,10 @@ function events_page_responses($event)
             'owner_button',
             false,
             'event_change_owner('.$event['id_evento'].', '.$event['server_id'].');',
-            'class="sub next w70p"',
+            [
+                'icon' => 'next',
+                'mode' => 'link',
+            ],
             true
         );
 
@@ -3458,7 +3454,10 @@ function events_page_responses($event)
             'status_button',
             false,
             'event_change_status(\''.$event['similar_ids'].'\','.$event['server_id'].');',
-            'class="sub next w70p"',
+            [
+                'icon' => 'next',
+                'mode' => 'link',
+            ],
             true
         );
     }
@@ -3486,7 +3485,10 @@ function events_page_responses($event)
             'comment_button',
             false,
             '$(\'#link_comments\').trigger(\'click\');',
-            'class="sub next w70p"',
+            [
+                'icon' => 'next',
+                'mode' => 'link',
+            ],
             true
         );
 
@@ -3510,7 +3512,10 @@ function events_page_responses($event)
             'delete_button',
             false,
             'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();',
-            'class="sub cancel w70p"',
+            [
+                'icon' => 'cancel',
+                'mode' => 'link',
+            ],
             true
         );
         $data[2] .= html_print_input_hidden('delete', 1, true);
@@ -3565,7 +3570,7 @@ function events_page_responses($event)
             'custom_response_button',
             false,
             'execute_response('.$event['id_evento'].','.$server_id.',0)',
-            "class='sub next w70p'",
+            ['mode' => 'link'],
             true
         );
     }
@@ -4184,7 +4189,7 @@ function events_page_details($event, $server_id=0)
         $agent = [];
     }
 
-    $data[0] = __('Agent details');
+    $data[0] = '<span class="subsection_header_title">'.__('Agent details').'</span>';
     $data[1] = empty($agent) ? '<i>'.__('N/A').'</i>' : '';
     $table_details->data[] = $data;
 
@@ -4229,10 +4234,13 @@ function events_page_details($event, $server_id=0)
 
         $data = [];
         $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('OS').'</div>';
-        $data[1] = ui_print_os_icon($agent['id_os'], true, true);
+        $data[1] = '<div style="display:flex"><div class="main_menu_icon invert_filter">'.ui_print_os_icon($agent['id_os'], false, true).'</div>';
+        $data[1] .= get_os_name($agent['id_os']);
         if (empty($agent['os_version']) === false) {
             $data[1] .= ' ('.$agent['os_version'].')';
         }
+
+        $data[1] .= '</div>';
 
         $table_details->data[] = $data;
 
@@ -4253,7 +4261,7 @@ function events_page_details($event, $server_id=0)
             'custom_button',
             false,
             '$(\'#link_custom_fields\').trigger(\'click\');',
-            'class="sub next"',
+            [ 'mode' => 'link' ],
             true
         );
         $table_details->data[] = $data;
@@ -4272,8 +4280,8 @@ function events_page_details($event, $server_id=0)
     }
 
     $data = [];
-    $data[0] = __('Module details');
-    $data[1] = empty($module) ? '<i>'.__('N/A').'</i>' : '';
+    $data[0] = '<span class="subsection_header_title">'.__('Module details').'<span>';
+    $data[1] = (empty($module) === true) ? '<i>'.__('N/A').'</i>' : '';
     $table_details->data[] = $data;
 
     if (empty($module) === false) {
@@ -4349,10 +4357,7 @@ function events_page_details($event, $server_id=0)
             $graph_params_str = http_build_query($graph_params);
 
             $link = "winopeng_var('".$url.'?'.$graph_params_str."','".$win_handle."', 800, 480)";
-
-            $data[1] = '<a href="javascript:'.$link.'">';
-            $data[1] .= html_print_image('images/chart_curve.png', true, ['class' => 'invert_filter']);
-            $data[1] .= '</a>';
+            $data[1] = html_print_button(__('View graph'), 'view_graph_button', false, $link, ['mode' => 'link'], true);
             $table_details->data[] = $data;
         }
     }
@@ -4369,7 +4374,7 @@ function events_page_details($event, $server_id=0)
         $standby = db_get_value('standby', 'talert_template_modules', 'id', $event['id_alert_am']);
         if (!$standby) {
             $data[1] .= html_print_image(
-                'images/bell.png',
+                'images/alert@svg.svg',
                 true,
                 [
                     'title' => __('Go to data overview'),
@@ -4378,11 +4383,12 @@ function events_page_details($event, $server_id=0)
             );
         } else {
             $data[1] .= html_print_image(
-                'images/bell_pause.png',
+                'images/alert@svg.svg',
                 true,
                 [
                     'title' => __('Go to data overview'),
                     'class' => 'invert_filter',
+                    'style' => 'opacity: .5',
                 ]
             );
         }
@@ -4550,19 +4556,19 @@ function events_display_status($status)
     switch ($status) {
         case 0:
         return [
-            'img'   => 'images/star.png',
+            'img'   => 'images/star@svg.svg',
             'title' => __('New event'),
         ];
 
         case 1:
         return [
-            'img'   => 'images/tick.png',
+            'img'   => 'images/validate.svg',
             'title' => __('Event validated'),
         ];
 
         case 2:
         return [
-            'img'   => 'images/hourglass.png',
+            'img'   => 'images/clock.svg',
             'title' => __('Event in process'),
         ];
 
@@ -4808,7 +4814,7 @@ function events_page_general($event)
     $table_general->cellclass[count($table_general->data)][1] = 'general_status';
     $data[0] = __('Status');
     $data[1] = $event_st['title'];
-    $data[2] = html_print_image($event_st['img'], true);
+    $data[2] = html_print_image($event_st['img'], true, [ 'class' => 'invert_filter main_menu_icon']);
     $table_general->data[] = $data;
 
     // If event is validated, show who and when acknowleded it.
@@ -5167,7 +5173,10 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
             'comment_button',
             false,
             'event_comment(\''.base64_encode(json_encode($event)).'\');',
-            'class="sub next"',
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
             true
         );
         $comments_form .= '</div><br></div>';
@@ -5771,7 +5780,10 @@ function get_row_response_action(
         'btn_str',
         false,
         'perform_response(\''.base64_encode(json_encode($event_response)).'\','.$response_id.',\''.trim($index).'\')',
-        "class='sub next'",
+        [
+            'icon' => 'next',
+            'mode' => 'mini secondary',
+        ],
         true
     );
     $output .= '</div>';

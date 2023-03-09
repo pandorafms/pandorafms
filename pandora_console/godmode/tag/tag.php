@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,14 +48,6 @@ require_once $config['homedir'].'/include/functions_tags.php';
 $delete = (int) get_parameter('delete_tag', 0);
 $tag_name = (string) get_parameter('tag_name', '');
 $tab = (string) get_parameter('tab', 'list');
-
-if ($delete !== 0 && is_metaconsole() === true) {
-    open_meta_frame();
-}
-
-if ($tag_name != '' && is_metaconsole() === true) {
-    open_meta_frame();
-}
 
 // Metaconsole nodes.
 $servers = false;
@@ -134,11 +126,11 @@ $buttons = [
     'list' => [
         'active' => false,
         'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image(
-            'images/list.png',
+            'images/logs@svg.svg',
             true,
             [
                 'title' => __('List tags'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
     ],
@@ -148,13 +140,19 @@ $buttons[$tab]['active'] = true;
 
 if (is_metaconsole() === false) {
     // Header.
-    ui_print_page_header(
+    ui_print_standard_header(
         __('Tags configuration'),
         'images/tag.png',
         false,
         '',
         true,
-        $buttons
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Module tags'),
+            ],
+        ]
     );
 }
 
@@ -219,36 +217,63 @@ $result = tags_search_tag(false, $filter);
 
 // Filter form.
 $table = new StdClass();
-$table->class = 'databox filters';
 $table->width = '100%';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->class = 'filter-table-adv';
 $table->data = [];
 
 $row = [];
 
-$name_input = __('Name').' / '.__('Description');
-$name_input .= '&nbsp;&nbsp;';
-$name_input .= html_print_input_text('tag_name', $tag_name, '', 30, 255, true);
-$row[] = $name_input;
-
-$filter_button = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub search"', true);
-$row[] = $filter_button;
-
-$table->data[] = $row;
-
+$table->data[0][0] = html_print_label_input_block(
+    __('Name').' / '.__('Description'),
+    html_print_input_text(
+        'tag_name',
+        $tag_name,
+        '',
+        30,
+        255,
+        true
+    )
+);
+$table->data[0][1] = '';
 $filter_form = '<form method="POST" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tag_name="'.$tag_name.'>';
 $filter_form .= html_print_table($table, true);
+$filter_form .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Filter'),
+            'filter_button',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        ),
+    ],
+    true
+);
 $filter_form .= '</form>';
+
+ui_toggle(
+    $filter_form,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
+
+$tablePagination = '';
+$buttons_form = '';
 // End of filter form.
 if (empty($result) === false) {
-    if (is_metaconsole() === false) {
-        echo $filter_form;
-    } else {
-        ui_toggle($filter_form, __('Show Options'));
-    }
-
-    // Prepare pagination.
-    ui_pagination($total_tags, $url);
-
     // Display tags previously filtered or not.
     $rowPair = true;
     $iterator = 0;
@@ -310,9 +335,9 @@ if (empty($result) === false) {
         // The tooltip needs a title on the item, don't delete the title.
         $data[3] = '<a class="tag_details img_help" title="'.__('Tag details').'"
 			href="'.ui_get_full_url(false, false, false, false).'/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">'.html_print_image(
-            'images/zoom.png',
+            'images/details.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'main_menu_icon invert_filter']
         ).'</a> ';
 
         $modules_count = 0;
@@ -350,9 +375,9 @@ if (empty($result) === false) {
             $output .= '</span> ';
             $output .= "<a href='javascript: show_dialog(".$tag['id_tag'].")'>";
             $output .= html_print_image(
-                'images/rosette.png',
+                'images/item-icon.svg',
                 true,
-                ['class' => 'invert_filter']
+                ['class' => 'main_menu_icon invert_filter']
             );
             $output .= '</a></span>';
         }
@@ -371,9 +396,9 @@ if (empty($result) === false) {
             $output .= '<span id="value_'.$tag['id_tag'].'">'.$phone_small.'</span> ';
             $output .= "<a href='javascript: show_phone_dialog(".$tag['id_tag'].")'>";
             $output .= html_print_image(
-                'images/rosette.png',
+                'images/item-icon.svg',
                 true,
-                ['class' => 'invert_filter']
+                ['class' => 'main_menu_icon invert_filter']
             );
             $output .= '</a></span>';
         }
@@ -381,23 +406,23 @@ if (empty($result) === false) {
         $data[5] = $output;
 
         if ($is_management_allowed === true) {
-            $table->cellclass[][6] = 'action_buttons';
+            $table->cellclass[][6] = 'table_action_buttons';
             $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>";
             $data[6] .= html_print_image(
-                'images/config.png',
+                'images/edit.svg',
                 true,
                 [
                     'title' => 'Edit',
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[6] .= '</a>';
             $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'&offset='.$offset_delete.'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 true,
                 [
                     'title' => 'Delete',
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
         }
@@ -406,35 +431,44 @@ if (empty($result) === false) {
     }
 
     html_print_table($table);
-    ui_pagination($total_tags, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination(
+        $total_tags,
+        $url,
+        0,
+        0,
+        true,
+        'offset',
+        false,
+        ''
+    );
 } else {
-    if (is_metaconsole() === true) {
-        ui_toggle($filter_form, __('Show Options'));
-        ui_print_info_message(['no_close' => true, 'message' => __('No tags defined')]);
-    } else if ($filter_performed) {
-        echo $filter_form;
-    } else {
+    if (empty($tag_name) === true) {
         include $config['homedir'].'/general/first_task/tags.php';
         return;
     }
 }
 
 if ($is_management_allowed === true) {
-    echo '<table border=0 cellpadding=0 cellspacing=0 width=100%>';
-    echo '<tr>';
-    echo '<td align=right>';
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
-    html_print_input_hidden('create_tag', '1', true);
-    html_print_submit_button(__('Create tag'), 'create_button', false, 'class="sub next"');
-    echo '</form>';
-    echo '</td>';
-    echo '</tr>';
-    echo '</table>';
+    $buttons_form .= '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
+    $buttons_form .= html_print_input_hidden('create_tag', '1', true);
+    $buttons_form .= html_print_submit_button(
+        __('Create tag'),
+        'create_button',
+        false,
+        ['icon' => 'next'],
+        true
+    );
+    $buttons_form .= '</form>';
 }
 
-if ($delete != 0 && is_metaconsole() === true) {
-    close_meta_frame();
-}
+html_print_action_buttons(
+    $buttons_form,
+    [
+        'type'          => 'data_table',
+        'class'         => 'fixed_action_buttons',
+        'right_content' => $tablePagination,
+    ]
+);
 
 ?>
 

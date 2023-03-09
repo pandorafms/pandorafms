@@ -923,6 +923,12 @@ switch ($action) {
 
                     $selected_agent_group_filter = $es['agent_group_filter'];
                     $selected_module_group = $es['module_group'];
+
+                    $search_module_name = $es['search_module_name'];
+                    $tags = $es['tags'];
+                    $alias = $es['alias'];
+                    $description_switch = $es['description_switch'];
+                    $last_status_change = $es['last_status_change'];
                 break;
 
                 case 'inventory':
@@ -1040,7 +1046,7 @@ html_print_input_hidden('id_item', $idItem);
 $class = 'databox filters';
 
 ?>
-<table   class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
+<table id="table_item_edit_reporting"  class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
     <?php
     if (defined('METACONSOLE')) {
         echo '<thead>
@@ -1100,7 +1106,7 @@ $class = 'databox filters';
                         false,
                         false,
                         '',
-                        'fullwidth'
+                        ''
                     );
                 } else {
                     html_print_input_text(
@@ -1113,7 +1119,7 @@ $class = 'databox filters';
                         false,
                         false,
                         '',
-                        'fullwidth'
+                        ''
                     );
                 }
                 ?>
@@ -1160,7 +1166,7 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Description'); ?></td>
             <td  >
                 <?php
-                echo html_print_textarea('description', 3, 25, $description);
+                echo html_print_textarea('description', 2, 80, $description, 'style="padding-right: 0px !important;"');
                 ?>
             </td>
         </tr>
@@ -1299,13 +1305,13 @@ $class = 'databox filters';
                     'label',
                     $label,
                     '',
-                    50,
+                    80,
                     255,
                     true,
                     false,
                     false,
                     '',
-                    'fullwidth'
+                    ''
                 );
                 ?>
             </td>
@@ -2229,7 +2235,7 @@ $class = 'databox filters';
 
         <tr id="row_custom_graph"   class="datos">
             <td class="bolder"><?php echo __('Custom graph'); ?></td>
-            <td  >
+            <td class="toolbox-buttons">
                 <?php
                 if ($meta) {
                     $graphs = [];
@@ -2303,21 +2309,38 @@ $class = 'databox filters';
                     }
                 }
 
-                echo '&nbsp;';
+                if (!empty($style_button_create_custom_graph)) {
+                    $style_create = [
+                        'mode'  => 'link',
+                        'style' => 'display:none',
+                    ];
+                } else {
+                    $style_create = [ 'mode' => 'link' ];
+                }
+
+                if (!empty($style_button_edit_custom_graph)) {
+                    $style_edit = [
+                        'mode'  => 'link',
+                        'style' => 'display:none',
+                    ];
+                } else {
+                    $style_edit = [ 'mode' => 'link' ];
+                }
+
                 html_print_button(
                     __('Create'),
                     'create_graph',
                     false,
-                    'create_custom_graph();',
-                    'class="sub add" '.$style_button_create_custom_graph
+                    'create_custom_graph()',
+                    $style_create
                 );
 
                 html_print_button(
                     __('Edit'),
                     'edit_graph',
                     false,
-                    'edit_custom_graph();',
-                    'class="sub config" '.$style_button_edit_custom_graph
+                    'edit_custom_graph()',
+                    $style_edit
                 );
                 ?>
             </td>
@@ -2481,7 +2504,7 @@ $class = 'databox filters';
         </tr>
         <tr id="row_order_uptodown"   class="datos">
             <td class="bolder"><?php echo __('Order'); ?></td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Ascending');
                 html_print_radio_button(
@@ -2540,7 +2563,7 @@ $class = 'databox filters';
 
         <tr id="row_max_min_avg"   class="datos">
             <td class="bolder"><?php echo __('Display'); ?></td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Max');
                 html_print_radio_button(
@@ -3219,7 +3242,7 @@ $class = 'databox filters';
             echo __('Priority mode');
             ?>
             </td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Priority ok mode');
                 echo '<span class="mrgn_lft_5px"></span>';
@@ -3272,7 +3295,7 @@ $class = 'databox filters';
             echo __('Failover type');
             ?>
             </td>
-            <td>
+            <td class="flex-row-center">
                 <?php
                 echo __('Failover normal');
                 echo '<span class="mrgn_lft_5px"></span>';
@@ -3381,7 +3404,7 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_visual_format"   class="datos advanced_elements">
-            <td class="bolder" colspan="2">
+            <td class="bolder flex-row-center" colspan="2">
                 <?php
                 if ($visual_format == 1) {
                     $visual_format_table = true;
@@ -3903,37 +3926,92 @@ $class = 'databox filters';
             <?php
             $rows_select = [];
             $rows_select[0] = __('Not assigned');
-            if ($is_metaconsole === false) {
-                $rows = db_get_all_rows_sql(
-                    'SELECT * FROM tmodule_group ORDER BY name'
-                );
-                $rows = io_safe_output($rows);
-                if (empty($rows) === false) {
-                    foreach ($rows as $module_group) {
-                        $rows_select[$module_group['id_mg']] = $module_group['name'];
-                    }
-                }
-            } else {
-                $rows_select = modules_get_modulegroups();
-            }
+            $rows_select = modules_get_modulegroups();
 
             html_print_select($rows_select, 'modulegroup', $modulegroup, '', __($is_none), -1, true, false, true, '', false, 'width: 120px;');
             html_print_select(
                 $rows_select,
-                'module_group',
+                'module_group[]',
                 $selected_module_group,
                 '',
-                __('All'),
-                -1,
+                '',
+                '',
                 false,
-                false,
+                true,
                 true,
                 '',
                 false,
-                'width: 120px;'
+                'width: 200px;'
             );
             ?>
             </td>
+        </tr>
+
+        <tr id="row_search_module_name"   class="datos">
+            <td class="bolder">
+                <?php echo __('Search module name'); ?>
+            </td>
+            <td  >
+                <?php
+                html_print_input_text('search_module_name', $search_module_name, '', 40, 100);
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_tags" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Tags');
+                ?>
+            </td>
+            <td>
+            <?php
+            $rows_select = [];
+            $rows_select = tags_get_user_tags();
+
+            html_print_select(
+                $rows_select,
+                'tags[]',
+                $tags,
+                '',
+                '',
+                '',
+                false,
+                true,
+                true,
+                '',
+                false,
+                'width: 200px;'
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_alias"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Alias');
+            ?>
+            </td>
+            <td><?php html_print_checkbox_switch('alias', 1, $alias); ?></td>
+        </tr>
+
+        <tr id="row_description_switch"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Description');
+            ?>
+            </td>
+            <td><?php html_print_checkbox_switch('description_switch', 1, $description_switch); ?></td>
+        </tr>
+
+        <tr id="row_last_status_change"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Last status change');
+            ?>
+            </td>
+            <td><?php html_print_checkbox_switch('last_status_change', 1, $last_status_change); ?></td>
         </tr>
     </tbody>
 </table>
@@ -3943,20 +4021,24 @@ print_SLA_list('100%', $action, $idItem);
 print_General_list('100%', $action, $idItem, $type);
 echo '<div class="action-buttons w100p" >';
 if ($action == 'new') {
-    html_print_submit_button(
+    $actionButtons = html_print_submit_button(
         __('Create item'),
         'create_item',
         false,
-        'class="sub wand"'
+        ['icon' => 'next'],
+        true
     );
 } else {
-    html_print_submit_button(
+    $actionButtons = html_print_submit_button(
         __('Update item'),
         'edit_item',
         false,
-        'class="sub upd"'
+        ['icon' => 'next'],
+        true
     );
 }
+
+html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 
 echo '</div>';
 echo '</form>';
@@ -4003,7 +4085,7 @@ function print_SLA_list($width, $action, $idItem=null)
         $idItem
     );
     ?>
-    <table class="databox data" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
+    <table class="info_table" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
         <thead>
             <tr>
                 <th class="header sla_list_agent_col" scope="col">
@@ -4519,7 +4601,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 
     include_once $config['homedir'].'/include/functions_html.php';
     ?>
-    <table class="databox data" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
+    <table class="info_table" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
         <thead>
             <tr>
                 <?php
@@ -5153,7 +5235,7 @@ $(document).ready (function () {
 
     $('#checkbox-fullscale').trigger('change');
 
-    $("#submit-create_item").click(function () {
+    $("#button-create_item").click(function () {
         var type = $('#type').val();
         var name = $('#text-name').val();
 
@@ -6400,6 +6482,11 @@ function chooseType() {
     $("#row_agent_group_filter").hide();
     $("#row_module_group_filter").hide();
     $("#row_module_group_filter").hide();
+    $("#row_alias").hide();
+    $("#row_search_module_name").hide();
+    $("#row_description_switch").hide();
+    $("#row_last_status_change").hide();
+    $("#row_tags").hide();
     $("#row_os").hide();
     $("#row_custom_field_filter").hide();
     $("#row_custom_field").hide();
@@ -7026,7 +7113,6 @@ function chooseType() {
             $("#row_agents_inventory_display_options").show();
             $("#row_agent_server_filter").show();
             $("#row_agent_group_filter").show();
-            $("#row_group").show();
             $("#row_os").show();
             $("#row_custom_field").show();
             $("#row_custom_field_filter").show();
@@ -7052,10 +7138,14 @@ function chooseType() {
             break;
 
         case 'modules_inventory':
-            $("#row_group").show();
             $("#row_agent_server_filter").show();
             $("#row_agent_group_filter").show();
             $("#row_module_group_filter").show();
+            $("#row_alias").show();
+            $("#row_search_module_name").show();
+            $("#row_description_switch").show();
+            $("#row_last_status_change").show();
+            $("#row_tags").show();
 
             break;
 
@@ -7421,5 +7511,9 @@ function dialog_message(message_id) {
       }
     });
 }
+
+$(document).ready(function () {
+    $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
+});
 
 </script>

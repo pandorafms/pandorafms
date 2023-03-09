@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,6 +38,8 @@ require_once $config['homedir'].'/include/functions_modules.php';
 enterprise_include_once('include/functions_config_agents.php');
 enterprise_include_once('include/functions_policies.php');
 
+ui_require_css_file('tables');
+
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
@@ -50,13 +52,13 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
     return;
 }
 
-if (is_ajax()) {
+if (is_ajax() === true) {
     ob_get_clean();
 
     $get_agent_module_last_value = (bool) get_parameter('get_agent_module_last_value');
     $get_actions_alert_template = (bool) get_parameter('get_actions_alert_template');
 
-    if ($get_actions_alert_template) {
+    if ($get_actions_alert_template === true) {
         $id_template = get_parameter('id_template');
 
         $own_info = get_user_info($config['id_user']);
@@ -66,52 +68,18 @@ if (is_ajax()) {
         $filter_groups = '';
         $filter_groups = implode(',', array_keys($usr_groups));
 
-        switch ($config['dbtype']) {
-            case 'mysql':
-                $sql = sprintf(
-                    "SELECT t1.id, t1.name,
-						(SELECT COUNT(t2.id) 
-							FROM talert_templates t2 
-							WHERE t2.id =  %d 
-								AND t2.id_alert_action = t1.id) as 'sort_order'
-					FROM talert_actions t1
-					WHERE id_group IN (%s) 
-					ORDER BY sort_order DESC",
-                    $id_template,
-                    $filter_groups
-                );
-            break;
-
-            case 'oracle':
-                $sql = sprintf(
-                    'SELECT t1.id, t1.name,
-						(SELECT COUNT(t2.id) 
-							FROM talert_templates t2 
-							WHERE t2.id =  %d 
-								AND t2.id_alert_action = t1.id) as sort_order
-					FROM talert_actions t1
-					WHERE id_group IN (%s) 
-					ORDER BY sort_order DESC',
-                    $id_template,
-                    $filter_groups
-                );
-            break;
-
-            case 'postgresql':
-                $sql = sprintf(
-                    'SELECT t1.id, t1.name,
-						(SELECT COUNT(t2.id) 
-							FROM talert_templates t2 
-							WHERE t2.id =  %d 
-								AND t2.id_alert_action = t1.id) as sort_order
-					FROM talert_actions t1
-					WHERE id_group IN (%s) 
-					ORDER BY sort_order DESC',
-                    $id_template,
-                    $filter_groups
-                );
-            break;
-        }
+        $sql = sprintf(
+            "SELECT t1.id, t1.name,
+                (SELECT COUNT(t2.id) 
+                    FROM talert_templates t2 
+                    WHERE t2.id =  %d 
+                        AND t2.id_alert_action = t1.id) as 'sort_order'
+            FROM talert_actions t1
+            WHERE id_group IN (%s) 
+            ORDER BY sort_order DESC",
+            $id_template,
+            $filter_groups
+        );
 
         $rows = db_get_all_rows_sql($sql);
 
@@ -125,7 +93,7 @@ if (is_ajax()) {
         return;
     }
 
-    if ($get_agent_module_last_value) {
+    if ($get_agent_module_last_value === true) {
         $id_module = (int) get_parameter('id_agent_module');
         $id_agent = (int) modules_get_agentmodule_agent((int) $id_module);
         if (! check_acl_one_of_groups($config['id_user'], agents_get_all_groups_agent($id_agent), 'AR')) {
@@ -239,24 +207,28 @@ if ($loaded_filter['id_filter'] > 0) {
     }
 }
 
-if (check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Prepare the tab system to the future.
     $tab = 'setup';
-
-    // Setup tab.
-    $setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.html_print_image(
-        'images/setup.png',
-        true,
-        [
-            'title' => __('Setup'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
-
+    // Options.
     $setuptab['godmode'] = true;
-
     $setuptab['active'] = false;
-
+    // Setup tab.
+    $setuptab['text'] = html_print_anchor(
+        [
+            'href'    => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'),
+            'content' => html_print_image(
+                'images/configuration@svg.svg',
+                true,
+                [
+                    'title' => __('Setup'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ),
+        ],
+        true
+    );
+    // Header button.
     $onheader = ['setup' => $setuptab];
 }
 
@@ -280,64 +252,22 @@ ui_print_standard_header(
     ]
 );
 
-if (!$strict_user) {
-    if (tags_has_user_acl_tags()) {
+if ((bool) $strict_user === false) {
+    if (tags_has_user_acl_tags() === true) {
         ui_print_tags_warning();
     }
 }
 
 // User is deleting agent.
-if (isset($result_delete)) {
-    if ($result_delete) {
-        ui_print_success_message(__('Sucessfully deleted agent'));
-    } else {
-        ui_print_error_message(__('There was an error message deleting the agent'));
-    }
+if (isset($result_delete) === true) {
+    ui_print_result_message(
+        $result_delete,
+        __('Sucessfully deleted agent'),
+        __('There was an error message deleting the agent')
+    );
 }
 
-echo '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
-
-//echo '<table cellpadding="4" cellspacing="4" class="databox filters bolder mrgn_btn_10px" width="100%">';
-
-//echo '<tr><td class="nowrap w100px padding-right-2-imp">';
-
-// Start Build Search Form.
-//
-$table = new StdClass();
-$table->width = '100%';
-$table->cellspacing = 0;
-$table->cellpadding = 0;
-$table->class = 'databox filters';
-$table->style[0] = 'font-weight: bold;';
-$table->style[1] = 'font-weight: bold;';
-$table->style[2] = 'font-weight: bold;';
-$table->style[3] = 'font-weight: bold;';
-$table->style[4] = 'font-weight: bold;';
-
-$table->data[0][0] = __('Group');
-$table->data[0][0] .= '<div class="flex flex-row-vcenter w290px"><div class="w200px">';
-
 $groups = users_get_groups(false, $access);
-
-$table->data[0][0] .= html_print_select_groups(false, $access, true, 'group_id', $group_id, '', '', '', true, false, true, '', false);
-
-//$table->data[0][1] .= '&nbsp;&nbsp;';
-
-$table->data[0][0] .= '<br>'.__('Recursion').'&nbsp;'.'&nbsp;'.'&nbsp;';
-$table->data[0][0] .= html_print_input(
-    [
-        'type'    => 'checkbox',
-        'name'    => 'recursion',
-        'return'  => true,
-        'checked' => $recursion,
-        'checked' => ($recursion === true || $recursion === 'true' || $recursion === '1') ? 'checked' : false,
-        'value'   => 1,
-    ]
-);
-
-
-
-//echo '</td><td class="nowrap">';
 
 $fields = [];
 $fields[AGENT_STATUS_NORMAL] = __('Normal');
@@ -347,39 +277,114 @@ $fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
-$table->data[0][1] = __('Status').'&nbsp;'.'&nbsp;'.'&nbsp;';
-$table->data[0][1] .= html_print_select($fields, 'status', $status, '', __('All'), AGENT_STATUS_ALL, true, false, true, '', false, 'width: 90px;');
+$searchForm = '';
+$searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
 
-$table->data[0][2] = __('Search').'&nbsp;'.'&nbsp;'.'&nbsp;';
-$table->data[0][2] .= html_print_input_text('search', $search, '', 15, 255, true);
+$table = new stdClass();
+$table->width = '100%';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->class = 'filter-table-adv';
 
-$table->data[1][0] = __('Operating System').'&nbsp;';
+$table->data['group'][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        $access,
+        true,
+        'group_id',
+        $group_id,
+        'this.form.submit()',
+        '',
+        '',
+        true,
+        false,
+        true,
+        '',
+        false
+    )
+);
+
+$table->data['group'][0] .= html_print_label_input_block(
+    __('Recursion'),
+    html_print_checkbox_switch(
+        'recursion',
+        1,
+        $recursion,
+        true
+    ),
+    [
+        'div_class'   => 'add-input-reverse',
+        'label_class' => 'label-thin',
+    ]
+);
+
+$table->data['group'][1] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $fields,
+        'status',
+        $status,
+        'this.form.submit()',
+        __('All'),
+        AGENT_STATUS_ALL,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%'
+    )
+);
+
+$table->data['search_fields'][0] = html_print_label_input_block(
+    __('Search'),
+    html_print_input_text(
+        'search',
+        $search,
+        '',
+        35,
+        255,
+        true
+    )
+);
+
+$table->data['search_fields'][1] = html_print_label_input_block(
+    __('Search in custom fields'),
+    html_print_input_text(
+        'search_custom',
+        $search_custom,
+        '',
+        35,
+        255,
+        true
+    )
+);
 
 $pre_fields = db_get_all_rows_sql(
     'select distinct(tagente.id_os),tconfig_os.name from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os'
 );
 $fields = [];
-
 foreach ($pre_fields as $key => $value) {
     $fields[$value['id_os']] = $value['name'];
 }
 
-$table->data[1][0] .= html_print_select($fields, 'os', $os, '', 'All', 0, true);
-
-$table->data[1][1] = __('Policies').'&nbsp;';
+$table->data[1][0] = html_print_label_input_block(
+    __('Operating System'),
+    html_print_select($fields, 'os', $os, '', 'All', 0, true)
+);
 
 $pre_fields = policies_get_policies(false, ['id', 'name']);
 $fields = [];
-
 foreach ($pre_fields as $value) {
     $fields[$value['id']] = $value['name'];
 }
 
-$table->data[1][1] .= html_print_select($fields, 'policies[]', $policies, '', 'All', 0, true, true);
-
-$table->data[1][2] = __('Search in custom fields').'&nbsp;'.'&nbsp;'.'&nbsp;';
-$table->data[1][2] .= html_print_input_text('search_custom', $search_custom, '', 15, 255, true);
-
+$table->data[1][1] = html_print_label_input_block(
+    __('Policies'),
+    html_print_select($fields, 'policies[]', $policies, '', 'All', 0, true, true)
+);
 
 $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
 if ($custom_fields === false) {
@@ -418,8 +423,7 @@ foreach ($custom_fields as $custom_field) {
     $div_custom_fields .= '</div></div>';
 }
 
-$table->colspan[2][0] = 7;
-$table->cellstyle[2][0] = 'padding-left: 10px;';
+$table->colspan[2][0] = 2;
 $table->data[2][0] = ui_toggle(
     $div_custom_fields,
     __('Agent custom fields'),
@@ -433,41 +437,65 @@ $table->data[2][0] = ui_toggle(
 );
 
 
-$table->colspan[4][0] = 4;
-$table->cellstyle[4][0] = 'padding-top: 0px;';
-$table->data[4][0] = html_print_button(
+
+$buttons = html_print_submit_button(
+    __('Filter'),
+    'srcbutton',
+    false,
+    [
+        'icon' => 'search',
+        'mode' => 'mini',
+    ],
+    true
+);
+
+$buttons .= html_print_button(
     __('Load filter'),
     'load-filter',
     false,
     '',
-    'class="float-left margin-right-2 sub config"',
+    [
+        'icon' => 'load',
+        'mode' => 'mini secondary',
+    ],
     true
 );
 
-$table->cellstyle[4][0] .= 'padding-top: 0px;';
-$table->data[4][0] .= html_print_button(
+$buttons .= html_print_button(
     __('Manage filter'),
     'save-filter',
     false,
     '',
-    'class="float-left margin-right-2 sub wand"',
+    [
+        'icon' => 'wand',
+        'mode' => 'mini secondary',
+    ],
     true
 );
 
-$table->cellstyle[4][2] = 'padding-top: 0px;';
-$table->data[4][2] = html_print_submit_button(
-    __('Search'),
-    'srcbutton',
+$searchForm .= html_print_table($table, true);
+$searchForm .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $buttons,
+    ],
+    true
+);
+$searchForm .= '</form>';
+
+ui_toggle(
+    $searchForm,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
     '',
-    ['class' => 'sub search'],
-    true
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
 );
 
-html_print_table($table);
-
-'</form>';
-
-if ($search != '') {
+if (empty($search) === false) {
     $filter = ['string' => '%'.$search.'%'];
 } else {
     $filter = [];
@@ -489,6 +517,8 @@ $selectDescriptionUp = false;
 $selectDescriptionDown = false;
 $selectLastContactUp = false;
 $selectLastContactDown = false;
+$selectRemoteUp = false;
+$selectRemoteDown = false;
 $selectLastStatusChangeUp = false;
 $selectLastStatusChangeDown = false;
 $order = null;
@@ -736,7 +766,7 @@ if ($search != '') {
     );
 
     $id = db_get_all_rows_sql($sql);
-    if ($id != '') {
+    if (empty($id) === false) {
         $aux = $id[0]['id_agent'];
         $search_sql = sprintf(
             ' AND ( `nombre` LIKE "%%%s%%" OR tagente.id_agente = %d',
@@ -769,7 +799,7 @@ if ($search != '') {
     }
 }
 
-if (!empty($search_custom)) {
+if (empty($search_custom) === false) {
     $search_sql_custom = " AND EXISTS (SELECT * FROM tagent_custom_data 
 		WHERE id_agent = id_agente AND description LIKE '%$search_custom%')";
 } else {
@@ -806,7 +836,7 @@ if ($group_id > 0) {
     $groups = array_keys($user_groups);
 }
 
-$all_policies = in_array(0, $policies ?? []);
+$all_policies = in_array(0, ($policies ?? []));
 
 $id_os_sql = '';
 $policies_sql = '';
@@ -951,13 +981,15 @@ if (empty($agents)) {
     $agents = [];
 }
 
-if ($config['language'] == 'ja'
-    || $config['language'] == 'zh_CN'
-    || $own_info['language'] == 'ja'
-    || $own_info['language'] == 'zh_CN'
+if ($config['language'] === 'ja'
+    || $config['language'] === 'zh_CN'
+    || $own_info['language'] === 'ja'
+    || $own_info['language'] === 'zh_CN'
 ) {
     // Adds a custom font size for Japanese and Chinese language.
     $custom_font_size = 'custom_font_size';
+} else {
+    $custom_font_size = '';
 }
 
 // Urls to sort the table.
@@ -978,75 +1010,76 @@ $url_down_last = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&am
 $url_up_last_status_change = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_status_change&amp;sort=up';
 $url_down_last_status_change = 'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;group_id='.$group_id.'&amp;recursion='.$recursion.'&amp;search='.$search.'&amp;status='.$status.'&amp;sort_field=last_status_change&amp;sort=down';
 
-// Prepare pagination.
-ui_pagination(
-    $total_agents,
-    ui_get_url_refresh(['group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status])
-);
-
 // Show data.
-$table = new stdClass();
-$table->cellpadding = 0;
-$table->cellspacing = 0;
-$table->width = '100%';
-$table->class = 'info_table';
+$tableAgents = new stdClass();
+$tableAgents->cellpadding = 0;
+$tableAgents->cellspacing = 0;
+$tableAgents->id = 'agent_list';
+$tableAgents->class = 'info_table tactical_table';
 
-$table->head = [];
-$table->head[0] = __('Agent').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
-$table->size[0] = '12%';
+$tableAgents->head = [];
+$tableAgents->head[0] = '<span>'.__('Agent').'</span>';
+$tableAgents->head[0] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
+$tableAgents->size[0] = '12%';
 
-$table->head[1] = __('Description').ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
-$table->size[1] = '14%';
+$tableAgents->head[1] = '<span>'.__('Description').'</span>';
+$tableAgents->head[0] .= ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
+$tableAgents->size[1] = '16%';
 
-$table->head[12] = __('Remote').ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);
-$table->size[12] = '9%';
+$tableAgents->head[10] = '<span>'.__('Remote').'</span>';
+$tableAgents->head[10] .= ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);
+$tableAgents->size[10] = '9%';
 
-$table->head[2] = __('OS').ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
-$table->size[2] = '8%';
+$tableAgents->head[2] = '<span>'.__('OS').'</span>';
+$tableAgents->head[2] .= ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
+$tableAgents->size[2] = '8%';
 
-$table->head[3] = __('Interval').ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
-$table->size[3] = '8%';
+$tableAgents->head[3] = '<span>'.__('Interval').'</span>';
+$tableAgents->head[3] .= ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
+$tableAgents->size[3] = '10%';
 
-$table->head[4] = __('Group').ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
-$table->size[4] = '8%';
+$tableAgents->head[4] = '<span>'.__('Group').'</span>';
+$tableAgents->head[4] .= ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
+$tableAgents->size[4] = '8%';
 
-$table->head[5] = __('Type');
-$table->size[5] = '8%';
+$tableAgents->head[5] = '<span>'.__('Type').'</span>';
+$tableAgents->size[5] = '8%';
 
-$table->head[6] = __('Modules');
-$table->size[6] = '10%';
+$tableAgents->head[6] = '<span>'.__('Modules').'</span>';
+$tableAgents->size[6] = '10%';
 
-$table->head[7] = __('Status');
-$table->size[7] = '4%';
+$tableAgents->head[7] = '<span>'.__('Status').'</span>';
+$tableAgents->size[7] = '4%';
 
-$table->head[8] = __('Alerts');
-$table->size[8] = '4%';
+$tableAgents->head[8] = '<span>'.__('Alerts').'</span>';
+$tableAgents->size[8] = '4%';
 
-$table->head[9] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
-$table->size[9] = '8%';
+$tableAgents->head[9] = '<span>'.__('Last contact').'</span>';
+$tableAgents->head[9] .= ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
+$tableAgents->size[9] = '15%';
 
-$table->head[10] = __('Last status change').ui_get_sorting_arrows($url_up_last_status_change, $url_down_last_status_change, $selectLastStatusChangeUp, $selectLastStatusChangeDown);
-$table->size[10] = '10%';
+$tableAgents->head[10] = '<span>'.__('Last status change').'</span>';
+$tableAgents->head[10] .= ui_get_sorting_arrows($url_up_last_status_change, $url_down_last_status_change, $selectLastStatusChangeUp, $selectLastStatusChangeDown);
+$tableAgents->size[10] = '10%';
 
-$table->head[11] = __('Agent events');
-$table->size[11] = '4%';
+$tableAgents->head[11] = '<span>'.__('Agent events').'</span>';
+$tableAgents->size[11] = '4%';
 
-$table->align = [];
+$tableAgents->align = [];
 
-$table->align[2] = 'left';
-$table->align[3] = 'left';
-$table->align[4] = 'left';
-$table->align[5] = 'left';
-$table->align[6] = 'left';
-$table->align[7] = 'left';
-$table->align[8] = 'left';
-$table->align[9] = 'left';
-$table->align[10] = 'left';
-$table->align[11] = 'left';
+$tableAgents->align[2] = 'left';
+$tableAgents->align[3] = 'left';
+$tableAgents->align[4] = 'left';
+$tableAgents->align[5] = 'left';
+$tableAgents->align[6] = 'left';
+$tableAgents->align[7] = 'left';
+$tableAgents->align[8] = 'left';
+$tableAgents->align[9] = 'left';
+$tableAgents->align[10] = 'left';
+$tableAgents->align[11] = 'left';
 
-$table->style = [];
-
-$table->data = [];
+$tableAgents->style = [];
+$tableAgents->data = [];
 
 $rowPair = true;
 $iterator = 0;
@@ -1054,9 +1087,9 @@ foreach ($agents as $agent) {
     $cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
 
     if ($rowPair) {
-        $table->rowclass[$iterator] = 'rowPair';
+        $tableAgents->rowclass[$iterator] = 'rowPair';
     } else {
-        $table->rowclass[$iterator] = 'rowOdd';
+        $tableAgents->rowclass[$iterator] = 'rowOdd';
     }
 
     $rowPair = !$rowPair;
@@ -1083,7 +1116,13 @@ foreach ($agents as $agent) {
 
     $data[0] = '<div class="left_'.$agent['id_agente'].'">';
 
-    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"><b><span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.ui_print_truncate_text($agent['alias'], 'agent_medium', false, true, true).'</span></b></a>';
+    $data[0] .= html_print_anchor(
+        [
+            'href'    => ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente']),
+            'content' => ui_print_truncate_text($agent['alias'], 'agent_medium', false, true, true),
+        ],
+        true
+    );
 
     if ($agent['quiet']) {
         $data[0] .= '&nbsp;';
@@ -1102,7 +1141,7 @@ foreach ($agents as $agent) {
         $data[0] .= ui_print_help_tip(
             __('Agent in scheduled downtime'),
             true,
-            'images/minireloj-16.png'
+            'images/clock.svg'
         );
         $data[0] .= '</em>';
     }
@@ -1145,24 +1184,30 @@ foreach ($agents as $agent) {
 
     $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]').'</span>';
 
-    $data[12] = '';
+    $data[2] = '';
 
     if (enterprise_installed()) {
         enterprise_include_once('include/functions_config_agents.php');
         if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
-            $data[12] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
-                'images/application_edit.png',
+            $data[10] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
+                'images/remote-configuration@svg.svg',
                 true,
                 [
                     'align' => 'middle',
                     'title' => __('Remote config'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             ).'</a>';
         }
     }
 
-    $data[2] = ui_print_os_icon($agent['id_os'], false, true);
+    $data[2] = html_print_div(
+        [
+            'class'   => 'invert_filter main_menu_icon',
+            'content' => ui_print_os_icon($agent['id_os'], false, true),
+        ],
+        true
+    );
 
     $data[3] = '<span>'.human_time_description_raw(
         $agent['intervalo']
@@ -1173,7 +1218,10 @@ foreach ($agents as $agent) {
         true,
         'groups_small',
         '',
-        false
+        false,
+        false,
+        false,
+        'invert_filter main_menu_icon'
     );
     $data[4] .= '</a>';
     $agent['not_init_count'] = $agent['notinit_count'];
@@ -1206,39 +1254,36 @@ foreach ($agents as $agent) {
 
     $fb64 = base64_encode(json_encode($agent_event_filter));
     $data[11] = '<a href="index.php?sec=eventos&sec2=operation/events/events&fb64='.$fb64.'">'.html_print_image(
-        'images/lightning.png',
+        'images/event.svg',
         true,
         [
             'align' => 'middle',
             'title' => __('Agent events'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
-    // This old code was returning "never" on agents without modules, BAD !!
-    // And does not print outdated agents in red. WRONG !!!!
-    // $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
-    array_push($table->data, $data);
+    array_push($tableAgents->data, $data);
 }
 
-if (!empty($table->data)) {
+if (empty($tableAgents->data) === false) {
     if ($order['field'] === 'last_status_change') {
-            $order_direction = $order['order'];
-            usort(
-                $table->data,
-                function ($a, $b) use ($order_direction) {
-                    if ($order_direction === 'ASC') {
-                        return strtotime($a[10]) > strtotime($b[10]);
-                    } else {
-                        return strtotime($a[10]) < strtotime($b[10]);
-                    }
+        $order_direction = $order['order'];
+        usort(
+            $table->data,
+            function ($a, $b) use ($order_direction) {
+                if ($order_direction === 'ASC') {
+                    return strtotime($a[10]) > strtotime($b[10]);
+                } else {
+                    return strtotime($a[10]) < strtotime($b[10]);
                 }
-            );
+            }
+        );
     }
 
-    html_print_table($table);
+    html_print_table($tableAgents);
 
-    ui_pagination(
+    $tablePagination = ui_pagination(
         $total_agents,
         ui_get_url_refresh(
             [
@@ -1251,28 +1296,35 @@ if (!empty($table->data)) {
         ),
         0,
         0,
-        false,
-        'offset',
         true,
-        'pagination-bottom'
+        'offset',
+        false,
+        'dataTables_paginate paging_simple_numbers'
     );
-
-    if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
-        echo '<div class="right float-right">';
-        echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-            html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
-        echo '</form>';
-        echo '</div>';
-    }
 
     unset($table);
 } else {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);
-    echo '<div class="right float-right">';
+    $tablePagination = '';
+}
+
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true || (bool) check_acl($config['id_user'], 0, 'AM') === true) {
     echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-        html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create agent'),
+            'crt',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        [
+            'type'          => 'data_table',
+            'class'         => 'fixed_action_buttons',
+            'right_content' => $tablePagination,
+        ]
+    );
     echo '</form>';
-    echo '</div>';
 }
 
 // Load filter div for dialog.

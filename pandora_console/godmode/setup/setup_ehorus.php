@@ -1,12 +1,20 @@
 <?php
 /**
+ * View eHorus setup.
+ *
+ * @category   Setup
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
  *    ______                 ___                    _______ _______ ________
  *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
  *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +26,7 @@
  * ============================================================================
  */
 
+// Load globals.
 global $config;
 
 check_login();
@@ -68,6 +77,7 @@ $table_remote->id = 'ehorus-remote-setup';
 $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
+$table_remote->style['control'] = 'display: flex;align-items: center;';
 
 // Enable eHorus user configuration.
 $row = [];
@@ -109,7 +119,17 @@ $table_remote->data['ehorus_req_timeout'] = $row;
 // Test.
 $row = [];
 $row['name'] = __('Test');
-$row['control'] = html_print_button(__('Start'), 'test-ehorus', false, '', 'class="sub next"', true);
+$row['control'] = html_print_button(
+    __('Start'),
+    'test-ehorus',
+    false,
+    '',
+    [
+        'icon' => 'cog',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
 $row['control'] .= '<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
 $row['control'] .= '<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
 $row['control'] .= '<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
@@ -117,9 +137,9 @@ $row['control'] .= '&nbsp;<span id="test-ehorus-message" class="invisible"></spa
 $table_remote->data['ehorus_test'] = $row;
 
 // Print.
-echo '<div class="center pdd_b_20px">';
+echo '<div class="center pdd_b_20px mrgn_top_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
-if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+if ($config['style'] === 'pandora_black' && is_metaconsole() === true) {
     html_print_image(
         'include/ehorus/images/ehorus-logo.png',
         false,
@@ -175,12 +195,21 @@ echo '</div>';
 
     echo '</fieldset>';
     echo '</div>';
-     echo '<div class="action-buttons" style="width: '.$table_remote->width.'">';
-    html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'action-buttons w100p',
+            'content' => html_print_submit_button(
+                __('Update'),
+                'update_button',
+                false,
+                ['icon' => 'update'],
+                true
+            ),
+        ]
+    );
     echo '</form>';
 
-?>
+    ?>
 
 <script type="text/javascript">
 
@@ -229,7 +258,7 @@ if($('input:checkbox[name="ehorus_user_level_conf"]').is(':checked'))
     var handleUserLevel = function(event) {
         var is_checked = $('input:checkbox[name="ehorus_enabled"]').is(':checked');
         var is_checked_userlevel = $('input:checkbox[name="ehorus_user_level_conf"]').is(':checked');
-        
+
         if (event.target.value == '1' && is_checked && !is_checked_userlevel) {
             showUserPass();
             $('input:checkbox[name="ehorus_user_level_conf"]').attr('checked', true);
@@ -283,12 +312,12 @@ if($('input:checkbox[name="ehorus_user_level_conf"]').is(':checked'))
         var changeTestMessage = function (message) {
             $('span#test-ehorus-message').text(message);
         }
-        
+
         hideSuccessImage();
         hideFailureImage();
         hideMessage();
         showLoadingImage();
-       
+
         $.ajax({
             url: 'https://' + host + ':' + port + '/login',
             type: 'POST',
@@ -322,7 +351,7 @@ if($('input:checkbox[name="ehorus_user_level_conf"]').is(':checked'))
             else {
                 changeTestMessage(errorThrown);
             }
-                        
+
             showFailureImage();
             showMessage();
         })
@@ -330,8 +359,6 @@ if($('input:checkbox[name="ehorus_user_level_conf"]').is(':checked'))
             hideLoadingImage();
         });
     }
-    $('input#button-test-ehorus').click(handleTest);
-    
-
+    $('#button-test-ehorus').click(handleTest);
 
 </script>

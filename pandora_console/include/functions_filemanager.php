@@ -542,7 +542,7 @@ function filemanager_file_explorer(
                     break;
                     <?php if ($allowCreateText === true) : ?>
                     case 'create_text_file':
-                        title_action = "<?php echo __('Create a Text'); ?>";
+                        title_action = "<?php echo __('Create File'); ?>";
                         break;
                     <?php endif ?>
                 case 'upload_file':
@@ -744,15 +744,14 @@ function filemanager_file_explorer(
 
             // Actions buttons
             // Delete button.
-            $data[4] = '';
-            $data[4] .= '<span style="display: flex">';
+            $data[4] = '<div class="table_action_buttons flex">';
             $typefile = array_pop(explode('.', $fileinfo['name']));
             if (is_writable($fileinfo['realpath']) === true
                 && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
                 && ($readOnly === false)
             ) {
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
-                $data[4] .= '<input type="image" class="invert_filter" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[4] .= '<input type="image" style="margin-top: 2px;height:21px" class="invert_filter" src="images/delete.svg" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
                 $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['server_unique_identifier']), true);
                 $data[4] .= html_print_input_hidden('delete_file', 1, true);
@@ -774,7 +773,7 @@ function filemanager_file_explorer(
                         && ($typefile !== 'iso') && ($typefile !== 'docx') && ($typefile !== 'doc') && ($fileinfo['mime'] != MIME_DIR)
                     ) {
                         $hash = md5($fileinfo['realpath'].$config['server_unique_identifier']);
-                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'invert_filter']).'</a>';
+                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'main_menu_icon invert_filter']).'</a>';
                     }
                 }
             }
@@ -791,10 +790,10 @@ function filemanager_file_explorer(
                 && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
                 && ($readOnly === false)
             ) {
-                $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/book_edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter']).'</a>';
+                $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/enable.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
 
-            $data[4] .= '</span>';
+            $data[4] .= '</div>';
 
             array_push($table->data, $data);
         }
@@ -830,10 +829,10 @@ function filemanager_file_explorer(
                     'images/create_file.png',
                     true,
                     [
-                        'title' => __('Create a Text'),
+                        'title' => __('Create File'),
                         'class' => 'invert_filter',
                     ]
-                ).'<span>'.__('Create a Text').'</span>
+                ).'<span>'.__('Create File').'</span>
                     </a>
                 </li>';
             }
@@ -857,7 +856,7 @@ function filemanager_file_explorer(
             $createFolderElements = $tabs_dialog;
             $createFolderElements .= sprintf('<form method="POST" action="%s">', $url);
             $createFolderElements .= html_print_input_text('dirname', '', '', 30, 255, true);
-            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true);
+            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
             $createFolderElements .= html_print_input_hidden('directory', $relative_directory, true);
             $createFolderElements .= html_print_input_hidden('create_dir', 1, true);
             $createFolderElements .= html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true);
@@ -897,7 +896,7 @@ function filemanager_file_explorer(
                 $uploadFileElements .= html_print_input_hidden('upload_file', 1, true);
             }
 
-            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true);
+            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
             $uploadFileElements .= html_print_input_hidden('real_directory', $real_directory, true);
             $uploadFileElements .= html_print_input_hidden('directory', $relative_directory, true);
             $uploadFileElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
@@ -918,7 +917,7 @@ function filemanager_file_explorer(
                 $createTextElements = $tabs_dialog;
                 $createTextElements .= '<form method="post" action="'.$url.'">';
                 $createTextElements .= html_print_input_text('name_file', '', '', 30, 50, true);
-                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true);
+                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
                 $createTextElements .= html_print_input_hidden('real_directory', $real_directory, true);
                 $createTextElements .= html_print_input_hidden('directory', $relative_directory, true);
                 $createTextElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
@@ -937,47 +936,53 @@ function filemanager_file_explorer(
 
             echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";
 
-            echo "<a href='javascript: show_form_create_folder();'>";
-            echo html_print_image(
-                'images/create_directory.png',
-                true,
+            $buttons[] = html_print_button(
+                __('Create directory'),
+                'create_directory',
+                false,
+                'show_form_create_folder()',
                 [
-                    'title' => __('Create directory'),
-                    'class' => 'invert_filter',
-                ]
+                    'class' => 'margin-right-2 invert_filter secondary',
+                    'icon'  => 'create_directory',
+                ],
+                true,
+                false
             );
-            echo '</a>';
 
             if ($allowCreateText === true) {
-                echo "<a href='javascript: show_create_text_file();'>";
-                echo html_print_image(
-                    'images/create_file.png',
-                    true,
+                $buttons[] = html_print_button(
+                    __('Create file'),
+                    'create_text',
+                    false,
+                    'show_create_text_file()',
                     [
-                        'title' => __('Create text'),
-                        'class' => 'invert_filter',
-                    ]
+                        'class' => 'margin-right-2 invert_filter secondary',
+                        'icon'  => 'create_file',
+                    ],
+                    true,
+                    false
                 );
-                echo '</a>';
             }
 
-            echo "<a href='javascript: show_upload_file();'>";
-            echo html_print_image(
-                'images/upload_file.png',
-                true,
+            $buttons[] = html_print_button(
+                __('Upload file/s'),
+                'upload_file',
+                false,
+                'show_upload_file()',
                 [
-                    'title' => __('Upload file/s'),
-                    'class' => 'invert_filter',
-                ]
+                    'class' => 'margin-right-2 invert_filter secondary',
+                    'icon'  => 'upload_file',
+                ],
+                true,
+                false
             );
-            echo '</a>';
 
             // Show Modal Real Path
             $modal_real_path = "<div><b>Real path to plugin execution is:</b></div>
                                 <div id='real_path'></div>";
 
             if (isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'on' || $_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1') {
-                $modal_real_path .= "<div style='float:right;margin: 5em 0 0 auto';>".html_print_submit_button(__('Copy'), 'submit', false, 'class="sub next"', true).'</div>';
+                $modal_real_path .= "<div style='float:right;margin: 5em 0 0 auto';>".html_print_submit_button(__('Copy'), 'submit', false, ['icon' => 'wand', 'mode' => 'mini'], true).'</div>';
             }
 
             html_print_div(
@@ -991,12 +996,17 @@ function filemanager_file_explorer(
             echo '</div>';
         } else {
             echo "<div style='text-align: right; width: ".$table->width."; color:#AC4444; margin-bottom:10px;'>";
-            echo "<image class='invert_filter' src='images/info.png' />".__('The directory is read-only');
+            echo "<image class='main_menu_icon invert_filter' src='images/info@svg.svg' />".__('The directory is read-only');
             echo '</div>';
         }
     }
 
     html_print_table($table);
+
+    html_print_action_buttons(
+        implode('', $buttons),
+        ['type' => 'form_action']
+    );
 }
 
 

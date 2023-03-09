@@ -273,7 +273,7 @@ $labels = [];
 $hide_filter = !empty($main_value) && ($action === 'udp' || $action === 'tcp');
 foreach ($data as $item) {
     $row = [];
-    $row['main'] = '<div class="div-v-centered">';
+    $row['main'] = '<div class="flex_center">';
     $row['main'] .= $item['host'];
     if (!$hide_filter) {
         $row['main'] .= html_print_link_with_params(

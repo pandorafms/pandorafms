@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -392,15 +392,10 @@ class WelcomeWindow extends Wizard
             'class'    => 'modal',
         ];
 
-        $logo_url = '';
-        if (enterprise_installed()) {
-            $logo_url = ENTERPRISE_DIR.'/';
-        }
+        $logo_url = 'images/custom_logo/pandora_logo_head_white_bg.png';
 
-        if (empty($config['custom_logo_white_bg']) === false) {
-            $logo_url .= 'images/custom_logo/'.$config['custom_logo_white_bg'];
-        } else {
-            $logo_url .= 'images/custom_logo/pandora_logo_head_white_bg.png';
+        if (enterprise_installed() === true) {
+            $logo_url = ENTERPRISE_DIR.'/'.$logo_url;
         }
 
         $inputs = [
@@ -421,7 +416,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_configure_mail',
-                'class'         => 'hole flex-row w98p '.$li_configure_mail_class,
+                'class'         => 'hole flex-row flex-items-center w98p '.$li_configure_mail_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -436,7 +431,10 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_configure_mail_class.' second_background"',
+                            'attributes' => [
+                                'class' => (empty($btn_configure_mail_class) === false) ? $btn_configure_mail_class : 'invisible_important',
+                                'mode'  => 'onlyIcon',
+                            ],
                             'name'       => 'btn_email_conf',
                             'id'         => 'btn_email_conf',
                         ],
@@ -455,7 +453,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_create_agent',
-                'class'         => 'learn_content_indented flex-row w98p '.$li_create_agent_class,
+                'class'         => 'learn_content_indented flex-row flex-items-center w98p '.$li_create_agent_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -470,7 +468,10 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_agent_class.' second_background"',
+                            'attributes' => [
+                                'class' => (empty($btn_create_agent_class) === false) ? $btn_create_agent_class : 'invisible_important',
+                                'mode'  => 'onlyIcon',
+                            ],
                             'name'       => 'btn_create_agent',
                             'id'         => 'btn_create_agent',
                         ],
@@ -480,7 +481,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_indented flex-row w98p '.$li_create_module_class,
+                'class'         => 'learn_content_indented flex-row flex-items-center w98p '.$li_create_module_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -495,7 +496,10 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_module_class.' second_background"',
+                            'attributes' => [
+                                'class' => (empty($btn_create_module_class) === false) ? $btn_create_module_class : 'invisible_important',
+                                'mode'  => 'onlyIcon',
+                            ],
                             'name'       => 'btn_create_module',
                             'id'         => 'btn_create_module',
                         ],
@@ -505,7 +509,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'hole learn_content_indented flex-row w98p '.$li_create_alert_class,
+                'class'         => 'hole learn_content_indented flex-row flex-items-center w98p '.$li_create_alert_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -520,7 +524,10 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_alert_class.' second_background"',
+                            'attributes' => [
+                                'class' => (empty($btn_create_alert_class) === false) ? $btn_create_alert_class : 'invisible_important',
+                                'mode'  => 'onlyIcon',
+                            ],
                             'name'       => 'btn_create_alert',
                             'id'         => 'btn_create_alert',
                         ],
@@ -530,7 +537,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_discover',
-                'class'         => 'hole flex-row w98p '.$li_create_discovery_class,
+                'class'         => 'hole flex-row flex-items-center w98p '.$li_create_discovery_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -545,7 +552,10 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_discovery_class.' second_background"',
+                            'attributes' => [
+                                'class' => (empty($btn_create_discovery_class) === false) ? $btn_create_discovery_class : 'invisible_important',
+                                'mode'  => 'onlyIcon',
+                            ],
                             'name'       => 'btn_discover_devices',
                             'id'         => 'btn_discover_devices',
                         ],
@@ -554,11 +564,11 @@ class WelcomeWindow extends Wizard
             ],
         ];
 
-        if (enterprise_installed()) {
+        if (enterprise_installed() === true) {
             $inputs[] = [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_not_working',
-                'class'         => 'hole flex-row w98p',
+                'class'         => 'hole flex-row flex-items-center w98p',
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -773,7 +783,7 @@ class WelcomeWindow extends Wizard
         // Create Discovery task is pending.
         // Host&Devices finishses on page 2.
         if ($sec2 === 'godmode/servers/discovery'
-            && get_parameter('page', 0) == 2
+            && (int) get_parameter('page') === 2
         ) {
             // Discovery task have been created.
             $this->step = W_CREATE_TASK;
@@ -882,8 +892,8 @@ class WelcomeWindow extends Wizard
         window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$this->getWelcomeAgent().''); ?>';
     }
 
-    function monitorRemoteCommands() {        
-        window.location = '<?php echo ui_get_full_url(''); ?>'; 
+    function monitorRemoteCommands() {
+        window.location = '<?php echo ui_get_full_url(''); ?>';
     }
 
     function discoverDevicesNetwork() {
@@ -896,7 +906,7 @@ class WelcomeWindow extends Wizard
     function cierre_dialog(){
         this.dialog("close");
     }
-    </script>   
+    </script>
         <?php
         return ob_get_clean();
     }

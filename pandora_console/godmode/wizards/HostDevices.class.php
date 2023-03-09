@@ -635,6 +635,7 @@ class HostDevices extends Wizard
                 'form'   => [
                     'method' => 'POST',
                     'action' => $this->url.'&mode=netscan&page='.($this->page - 1).'&task='.$this->task['id_rt'],
+                    'class'  => 'flex_center',
                 ],
                 'inputs' => [
                     [
@@ -649,7 +650,10 @@ class HostDevices extends Wizard
                             'name'       => 'submit',
                             'label'      => __('Go back'),
                             'type'       => 'submit',
-                            'attributes' => 'class="sub cancel"',
+                            'attributes' => [
+                                'icon' => 'back',
+                                'mode' => 'secondary',
+                            ],
                             'return'     => true,
                         ],
                     ],
@@ -667,7 +671,7 @@ class HostDevices extends Wizard
                 $form['form']['action'] = $this->url.'&mode=netscan&page='.($this->page - 1);
             }
 
-            $this->printForm($form);
+            html_print_action_buttons($this->printForm($form, true));
             return null;
         }
 
@@ -734,6 +738,7 @@ class HostDevices extends Wizard
                 'form'   => [
                     'method' => 'POST',
                     'action' => $this->url.'&mode=netscan&page=0',
+                    'class'  => 'flex_center',
                 ],
                 'inputs' => [
                     [
@@ -748,14 +753,17 @@ class HostDevices extends Wizard
                             'name'       => 'submit',
                             'label'      => __('Go back'),
                             'type'       => 'submit',
-                            'attributes' => 'class="sub cancel"',
+                            'attributes' => [
+                                'icon' => 'back',
+                                'mode' => 'secondary',
+                            ],
                             'return'     => true,
                         ],
                     ],
                 ],
             ];
 
-            $this->printForm($form);
+            html_print_action_buttons($this->printForm($form, true));
             return null;
         }
 
@@ -786,15 +794,6 @@ class HostDevices extends Wizard
                     'width'  => '30%',
                     'style'  => 'padding: 9px;min-width: 250px;',
                     'inputs' => [
-                        '0' => [
-                            'arguments' => [
-                                'name'       => 'submit',
-                                'label'      => $str,
-                                'type'       => 'submit',
-                                'attributes' => 'class="sub next"',
-                                'return'     => true,
-                            ],
-                        ],
                         '1' => '<div class="height_50p mrgn_btn_35px">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close')], false).'</div>',
                         '2' => [
                             'label'     => '<b>'.__('Interval').':</b>'.ui_print_help_tip(
@@ -982,6 +981,7 @@ class HostDevices extends Wizard
                     'method'  => 'POST',
                     'enctype' => 'multipart/form-data',
                     'action'  => $this->url.'&mode=netscan&page='.($this->page + 1).$task_url,
+                    'id'      => 'form-netscan-definition',
                 ];
 
                 // Default.
@@ -1021,7 +1021,24 @@ class HostDevices extends Wizard
                     ';
 
                 $this->printFormAsGrid($form);
-                $this->printGoBackButton($this->url.'&page='.($this->page - 1));
+
+                $output_form = $this->printInput(
+                    [
+                        'name'       => 'submit',
+                        'label'      => $str,
+                        'type'       => 'submit',
+                        'attributes' => [
+                            'icon' => 'next',
+                            'form' => 'form-netscan-definition',
+                        ],
+                        'return'     => true,
+                        'width'      => 'initial',
+                    ]
+                );
+
+                $output_form .= $this->printGoBackButton($this->url.'&page='.($this->page - 1), true);
+
+                html_print_action_buttons($output_form);
             }
         }
 
@@ -1586,24 +1603,31 @@ class HostDevices extends Wizard
                 }
             }
 
-            // Submit button.
-            $form['inputs'][] = [
-                'arguments' => [
-                    'name'       => 'submit-finish',
-                    'label'      => __('Finish'),
-                    'type'       => 'submit',
-                    'attributes' => 'class="sub next"',
-                    'return'     => true,
-                ],
-            ];
-
             $form['form'] = [
                 'method' => 'POST',
                 'action' => $this->url.'&mode=netscan&page='.($this->page + 1).'&task='.$this->task['id_rt'],
+                'id'     => 'form-netscan-feature',
             ];
 
             $this->printFormAsList($form);
-            $this->printGoBackButton($this->url.'&mode=netscan&task='.$this->task['id_rt'].'&page='.($this->page - 1));
+
+            $output_form = $this->printInput(
+                [
+                    'name'       => 'submit-finish',
+                    'label'      => __('Finish'),
+                    'type'       => 'submit',
+                    'attributes' => [
+                        'icon' => 'next',
+                        'form' => 'form-netscan-feature',
+                    ],
+                    'return'     => true,
+                    'width'      => 'initial',
+                ]
+            );
+
+            $output_form .= $this->printGoBackButton($this->url.'&mode=netscan&task='.$this->task['id_rt'].'&page='.($this->page - 1), true);
+
+            html_print_action_buttons($output_form);
         }
 
         if ($this->page == 2) {

@@ -617,7 +617,7 @@ class EventsListWidget extends Widget
             'event_type',
             [
                 'text'  => 'options',
-                'class' => 'action_buttons w120px',
+                'class' => 'table_action_buttons w120px',
             ],
         ];
         $fields = explode(',', $config['event_fields']);

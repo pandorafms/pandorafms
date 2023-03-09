@@ -665,13 +665,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'bars_graph',
                 'clock',
             ];
-            $form_items['percentile_bar_row_1']['html'] = '<td align="left">'.__('Width').'</td>
-				<td align="left">'.html_print_input_text('width_percentile', 0, '', 3, 5, true).'</td>';
+            $form_items['percentile_bar_row_1']['html'] = '<td align="left">'.__('Widtzzzzh').html_print_input_text('width_percentile', 0, '', 3, 5, true).'</td>';
 
             $form_items['height_bars_graph_row'] = [];
             $form_items['height_bars_graph_row']['items'] = ['bars_graph'];
-            $form_items['height_bars_graph_row']['html'] = '<td align="left">'.__('Height').'</td>
-				<td align="left">'.html_print_input_text('bars_graph_height', 0, '', 3, 5, true).'</td>';
+            $form_items['height_bars_graph_row']['html'] = '<td align="left">'.__('Height').html_print_input_text('bars_graph_height', 0, '', 3, 5, true).'</td>';
 
             $form_items['percentile_bar_row_2'] = [];
             $form_items['percentile_bar_row_2']['items'] = [
@@ -1435,18 +1433,15 @@ function visual_map_print_button_editor(
     $class='',
     $imageButton=false
 ) {
-    if ($float == 'left') {
-        $margin = 'margin-right';
-    } else {
-        $margin = 'margin-left';
-    }
-
     html_print_button(
         $label,
         'button_toolbox2',
         $disabled,
         "click_button_toolbox('".$idDiv."');",
-        'class="sub visual_editor_button_toolbox '.$idDiv.' '.$class.'" style="float: '.$float.';"',
+        [
+            'icon' => $class,
+            'mode' => 'onlyIcon',
+        ],
         false,
         $imageButton
     );

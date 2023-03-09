@@ -202,8 +202,6 @@ if (isset($config['netflow_disable_custom_lvfilters'])) {
     $netflow_disable_custom_lvfilters = $config['netflow_disable_custom_lvfilters'];
 }
 
-enterprise_hook('open_meta_frame');
-
 $class = 'databox filters';
 
 echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
@@ -540,8 +538,6 @@ if (is_metaconsole()) {
             );
         }
     }
-
-    enterprise_hook('close_meta_frame');
 
     ui_include_time_picker();
     ?>

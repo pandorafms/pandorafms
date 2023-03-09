@@ -27,8 +27,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -39,32 +37,33 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
 }
 
 enterprise_include_once('meta/include/functions_users_meta.php');
-
-$tab = get_parameter('tab', 'profile');
-$pure = get_parameter('pure', 0);
-
+// Get parameters.
+$tab         = get_parameter('tab', 'profile');
+$pure        = get_parameter('pure', 0);
+$new_profile = (bool) get_parameter('new_profile');
+$id_profile  = (int) get_parameter('id');
 // Header.
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     $buttons = [
         'user'    => [
             'active' => false,
             'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                'images/gm_users.png',
+                'images/user.svg',
                 true,
                 [
                     'title' => __('User management'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             ).'</a>',
         ],
         'profile' => [
             'active' => false,
             'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                'images/profiles.png',
+                'images/suitcase@svg.svg',
                 true,
                 [
                     'title' => __('Profile management'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             ).'</a>',
         ],
@@ -72,23 +71,35 @@ if (!is_metaconsole()) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(
-        __('User management').' &raquo; '.__('Profiles defined on %s', get_product_name()),
-        'images/gm_users.png',
+    $profile = db_get_row('tperfil', 'id_perfil', $id_profile);
+
+    ui_print_standard_header(
+        __('Edit profile %s', $profile['name']),
+        'images/user.svg',
         false,
         'configure_profiles_tab',
         true,
-        $buttons
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage users'),
+            ],
+            [
+                'link'  => ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile'),
+                'label' => __('User Profile management'),
+            ],
+        ]
     );
     $sec2 = 'gusuarios';
 } else {
     user_meta_print_header();
     $sec2 = 'advanced';
 }
-
-
-$new_profile = (bool) get_parameter('new_profile');
-$id_profile = (int) get_parameter('id');
 
 // Edit profile.
 if ($id_profile || $new_profile) {
@@ -149,7 +160,7 @@ if ($id_profile || $new_profile) {
             echo '<div id="both">&nbsp;</div>';
             echo '</div>';
             echo '<div id="foot">';
-            include 'general/footer.php';
+            // include 'general/footer.php';
             echo '</div>';
             echo '</div>';
 
@@ -398,21 +409,31 @@ if ($id_profile || $new_profile) {
 
     html_print_table($table);
 
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    if ($new_profile) {
-        html_print_submit_button(__('Add'), 'crt', false, 'class="sub wand"');
+    $actionButtons = [];
+
+    if ($new_profile === true) {
+        $actionButtons[] = html_print_submit_button(__('Create profile'), 'crt', false, [ 'icon' => 'wand' ], true);
         html_print_input_hidden('create_profile', 1);
     } else {
+        $actionButtons[] = html_print_submit_button(__('Update'), 'upd', false, [ 'icon' => 'update' ], true);
         html_print_input_hidden('id', $id_profile);
         html_print_input_hidden('old_name_profile', $name);
         html_print_input_hidden('update_profile', 1);
-        html_print_submit_button(__('Update'), 'upd', false, 'class="sub upd"');
     }
 
-    echo '</div></form>';
-}
+    $actionButtons[] = html_print_go_back_button(
+        ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure=0'),
+        ['button_class' => ''],
+        true
+    );
 
-enterprise_hook('close_meta_frame');
+    html_print_action_buttons(
+        implode('', $actionButtons),
+        ['type' => 'form_action']
+    );
+
+    echo '</form>';
+}
 
 ?>
 

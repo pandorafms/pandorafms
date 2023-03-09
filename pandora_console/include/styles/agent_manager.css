@@ -30,13 +30,14 @@
 }
 
 .agent_qr {
-  width: 15%;
   text-align: center;
   box-sizing: border-box;
-  padding: 20px 0px;
+  padding: 10px 0px;
+  margin-top: 22px;
   display: flex;
   justify-content: center;
   flex-direction: column;
+  align-items: center;
   min-width: 150px;
 }
 
@@ -44,13 +45,10 @@ a#qr_code_agent_view {
   margin-top: 5px;
 }
 
-.p-switch {
-  margin-right: 1em;
-}
-
 .sg_source,
 .sg_target {
-  width: 35%;
+  width: 100%;
+  /*height: 110px;*/
 }
 
 .sg_source select,
@@ -168,8 +166,9 @@ a#qr_code_agent_view {
 }
 
 .agent_description {
-  min-height: 4.8em;
+  height: 126px;
 }
+/*
 .agent_custom_id {
   padding-bottom: 0.7em;
   padding-top: 0.5em;
@@ -178,6 +177,7 @@ a#qr_code_agent_view {
   border: 1px solid #ccc;
 }
 
+*/
 #safe_mode_module {
   margin-top: 0.6em;
 }

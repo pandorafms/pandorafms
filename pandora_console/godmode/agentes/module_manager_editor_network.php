@@ -128,6 +128,7 @@ if ($page === 'enterprise/godmode/policies/policy_modules') {
 
 // In ICMP modules, port is not configurable.
 if ($id_module_type !== 6 && $id_module_type !== 7) {
+    $tcp_port = (empty($tcp_port) === false) ? $tcp_port : get_parameter('tcp_port');
     $data[1] = html_print_input_text(
         'tcp_port',
         $tcp_port,
@@ -524,7 +525,7 @@ $data[0] .= html_print_button(
     __('Manage credentials'),
     'manage_credentials_button',
     false,
-    'window.location.assign(\'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox\')',
+    'window.location.assign("index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox")',
     [ 'mode' => 'link' ],
     true
 );

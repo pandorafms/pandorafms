@@ -235,7 +235,8 @@
 
 .table_action_buttons > a,
 .table_action_buttons > img,
-.table_action_buttons > button {
+.table_action_buttons > button,
+.table_action_buttons > form {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -246,7 +247,8 @@
 
 .info_table > tbody > tr:hover .table_action_buttons > a,
 .info_table > tbody > tr:hover .table_action_buttons > img,
-.info_table > tbody > tr:hover .table_action_buttons > button {
+.info_table > tbody > tr:hover .table_action_buttons > button,
+.info_table > tbody > tr:hover .table_action_buttons > form {
   visibility: visible;
 }
 
@@ -528,6 +530,7 @@ table.filter-table-adv td {
   vertical-align: top;
 }
 
+div.filter-table-adv-manual > div,
 table.filter-table-adv td > div {
   display: flex;
   flex-direction: column;
@@ -535,6 +538,7 @@ table.filter-table-adv td > div {
   align-items: normal;
 }
 
+div.filter-table-adv-manual > div label,
 table.filter-table-adv td > div label {
   color: #161628;
   font-size: 13px;
@@ -644,10 +648,6 @@ td#save_filter_form-1-0 > b {
   padding-bottom: 10px;
   font-size: 13px;
   line-height: 16px;
-}
-
-tr#save_filter_row1 {
-  display: flex !important;
 }
 
 td#save_filter_form-0-0,

@@ -297,6 +297,7 @@ td input[type="checkbox"] {
   padding: 10px;
   margin-top: 2px;
   display: table-cell;
+  height: 15px;
 }
 
 input[type="image"] {
@@ -675,6 +676,14 @@ select:-internal-list-box {
   width: 40%;
 }
 
+.w45p {
+  width: 45%;
+}
+
+.w48p {
+  width: 48%;
+}
+
 .w47p {
   width: 47%;
 }
@@ -709,6 +718,10 @@ select:-internal-list-box {
 
 .w80p {
   width: 80%;
+}
+
+.w88p {
+  width: 88%;
 }
 
 .w90p {
@@ -2097,6 +2110,10 @@ table.rounded_cells td {
   z-index: 5;
 }
 
+#principal_action_buttons {
+  z-index: 6;
+}
+
 .action-buttons > button {
   margin-left: 16px;
 }
@@ -2406,7 +2423,7 @@ ol.steps li.visited span {
 }
 
 ol.steps li.current {
-  border-left: 5px solid #778866;
+  border-left: 5px solid var(--primary-color);
   margin-left: 0;
   font-weight: bold;
   background-color: #e9f3d2;
@@ -2778,7 +2795,7 @@ td.cellBig {
 }
 
 .info_box_container:not(.info_box_information) {
-  z-index: 2;
+  z-index: 6;
 }
 
 .info_box_container.info_box_information {
@@ -4800,7 +4817,7 @@ div#dialog_messages table th:last-child {
   z-index: 900000;
   position: absolute;
   width: 550px;
-  margin-top: -5px;
+  margin-top: 55px;
   border-radius: 5px;
 }
 
@@ -5807,10 +5824,10 @@ div.label_select_child_left > span {
   overflow: hidden;
 }
 
-.switch_radio_button label {
+div.switch_radio_button label {
   background-color: #fff;
   color: rgba(0, 0, 0, 0.6);
-  line-height: 9pt;
+  line-height: 6px !important;
   text-align: center;
   padding: 14px 10px;
   margin-right: -1px;
@@ -5818,14 +5835,14 @@ div.label_select_child_left > span {
   transition: all 0.1s ease-in-out;
 }
 
-.switch_radio_button label:first {
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
+div.switch_radio_button label:first-of-type {
+  border-top-left-radius: 4px !important;
+  border-bottom-left-radius: 4px !important;
 }
 
-.switch_radio_button label:last-child {
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
+div.switch_radio_button label:last-of-type {
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
   margin-right: 0px;
 }
 
@@ -7519,6 +7536,9 @@ div.graph div.legend table {
 .pdd_t_0px {
   padding-top: 0px;
 }
+.pdd_t_0px_important {
+  padding-top: 0px !important;
+}
 
 .pdd_t_3px {
   padding-top: 3px;
@@ -7875,6 +7895,10 @@ div.graph div.legend table {
 
 .height_10px {
   height: 10px;
+}
+
+.height_15px {
+  height: 15px;
 }
 
 .height_20px {
@@ -11010,14 +11034,14 @@ pre.external_tools_output {
 .tag-editor .tag-editor-tag {
   padding: 5px !important;
   color: #fff !important;
-  background: #82b92e !important;
+  background: var(--primary-color) !important;
   border-radius: 0 2px 2px 0 !important;
 }
 
 .tag-editor .tag-editor-delete {
   padding: 5px !important;
   line-height: 16px !important;
-  background: #82b92e !important;
+  background: var(--primary-color) !important;
   border-radius: 2px 0 0 2px !important;
 }
 
@@ -11191,6 +11215,10 @@ table.table_modal_alternate
   height: 20px;
 }
 
+.header_help_icon {
+  width: 16px;
+  height: 16px;
+}
 .main_menu_icon.arrow_up {
   transform: rotate(90deg);
 }
@@ -11505,6 +11533,15 @@ div[role="dialog"] {
   /* font-weight: bold; */
 }
 
+.font-title-font {
+  font-size: 13px;
+  line-height: 16px;
+  color: #161628;
+  text-align: left;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
 .preimage_container span {
   font-size: 11pt;
   line-height: 28px;
@@ -11539,4 +11576,31 @@ table.alert-template-fields > tbody > tr > td > div > textarea {
 
 table.alert-template-fields > tbody > tr > td[id^="template-label_fields"] {
   text-align: center;
+}
+
+ul.tag-editor {
+  list-style-type: none;
+  padding: 0.5em !important;
+  margin: 0;
+  overflow: hidden;
+  border: 2px solid #c0ccdc;
+  border-radius: 6px;
+  cursor: text;
+  font: normal 14px sans-serif;
+  color: #333333;
+  background: #f6f7fb;
+  line-height: 20px;
+}
+
+.max-width-100p {
+  max-width: 100%;
+}
+
+/* Datatables overrides */
+.ui-dialog .ui-dialog-titlebar-close {
+  right: 1em !important;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+  display: block !important;
 }

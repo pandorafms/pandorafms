@@ -325,7 +325,7 @@ if ($edit === false) {
 
     $table_simple->data['module_n_type'][1] = '<span class="result_info_text">'.modules_get_moduletype_description($id_module_type).' ('.$type_names_hash[$id_module_type].')</span>';
 } else {
-    $idModuleType = (isset($id_module_type) === true) ? $idModuleType : '';
+    $idModuleType = (isset($id_module_type) === true) ? $id_module_type : '';
     // Removed web analysis and log4x from select.
     $tipe_not_in = '24, 25';
     if (is_metaconsole() === true) {
@@ -444,7 +444,7 @@ $tableBasicThresholds->data = [];
 $tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width pdd_t_10px';
 $tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
 $tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').'&nbsp;';
-if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === false)) {
+if ($edit_module === false && (isset($stringTypeModule) === false || $stringTypeModule === false)) {
     $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_minmax_warning">('.__('Min / Max').')</span>';
     $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
         'min_warning',
@@ -482,7 +482,7 @@ if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeM
     );
 }
 
-if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === true)) {
+if ($edit_module === false && isset($stringTypeModule) === true && $stringTypeModule === true) {
     $basicThresholdsIntervalWarning = [];
     $basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
     $basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
@@ -531,7 +531,7 @@ $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
 $tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
 $tableBasicThresholds->rowclass['critical_threshold'] = 'field_half_width';
 $tableBasicThresholds->data['caption_critical_threshold'][0] .= __('Critical threshold').'&nbsp;';
-if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === false)) {
+if ($edit_module === false && (isset($stringTypeModule) === false || $stringTypeModule === false)) {
     $tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_minmax_critical">('.__('Min / Max').')</span>';
     $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
         'min_critical',
@@ -569,7 +569,7 @@ if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeM
     );
 }
 
-if ($edit_module === false || (isset($stringTypeModule) === true && $stringTypeModule === true)) {
+if ($edit_module === false && isset($stringTypeModule) === true && $stringTypeModule === true) {
     $basicThresholdsIntervalCritical = [];
     $basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
     $basicThresholdsIntervalCritical[] = html_print_checkbox_switch(

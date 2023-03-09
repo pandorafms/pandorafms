@@ -183,29 +183,29 @@ class SnmpConsole extends HTML
 
         if (!isset($config['pure']) || $config['pure'] === false) {
             $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'">'.html_print_image(
-                'images/op_reporting.png',
+                'images/logs@svg.svg',
                 true,
                 [
                     'title' => __('Statistics'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
             $list['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0">'.html_print_image(
-                'images/op_snmp.png',
+                'images/SNMP-network-numeric-data@svg.svg',
                 true,
                 [
                     'title' => __('List'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
             $list['active'] = true;
 
             $screen['text'] = '<a href="#" onClick="javascript:fullscreen(1)">'.html_print_image(
-                'images/full_screen.png',
+                'images/fullscreen@svg.svg',
                 true,
                 [
-                    'title' => __('List'),
-                    'class' => 'invert_filter',
+                    'title' => __('View in full screen'),
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
 
@@ -242,11 +242,11 @@ class SnmpConsole extends HTML
 
             echo '<a href="#" onClick="javascript:fullscreen(0)">';
             echo html_print_image(
-                'images/normal_screen.png',
+                'images/exit_fullscreen@svg.svg',
                 true,
                 [
                     'title' => __('Exit fullscreen'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             echo '</a>';
@@ -844,7 +844,7 @@ class SnmpConsole extends HTML
                             $tmp->snmp_agent .= '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$tmp->source.'" title="'.__('Create agent').'">'.$tmp->source.'</a>';
                         } else {
                             $tmp->snmp_agent .= '<div class="'.$severity_class.' snmp-div"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'" title="'.__('View agent details').'">';
-                            $tmp->snmp_agent .= '<strong>'.$agent['alias'].ui_print_help_tip($tmp->source, true, 'images/tip.png');
+                            $tmp->snmp_agent .= '<strong>'.$agent['alias'].ui_print_help_tip($tmp->source, true);
                             '</strong></a></div>';
                         }
 

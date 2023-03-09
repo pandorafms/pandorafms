@@ -908,11 +908,11 @@ function ui_print_type_agent_icon(
     if ((int) $id_os === SATELLITE_OS_ID) {
         // Satellite.
         $options['title'] = __('Satellite');
-        $output = html_print_image('images/satellite@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image('images/satellite@os.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
     } else if ($remote_contact === $contact && $remote === 0 && empty($version) === true) {
         // Network.
         $options['title'] = __('Network');
-        $output = html_print_image('images/network-server@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image('images/network-server@os.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
     } else {
         // Software.
         $options['title'] = __('Software');
@@ -1214,7 +1214,7 @@ function ui_format_alert_row(
                 $forceTitle,
                 'force_execution_'.$alert['id'],
                 false,
-                'window.location.assign(\''.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl.'\');',
+                'window.location.assign("'.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl.'");',
                 [ 'mode' => 'link' ],
                 true
             );
@@ -1500,6 +1500,7 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
  * @param string  $image       Image path.
  * @param boolean $is_relative Route is relative or not.
  * @param string  $id          Target id.
+ * @param string  $isHeader    If true, the view is header.
  *
  * @return string The help tip
  */
@@ -1509,9 +1510,16 @@ function ui_print_help_icon(
     $home_url='',
     $image='images/info@svg.svg',
     $is_relative=false,
-    $id=''
+    $id='',
+    $isHeader=false
 ) {
     global $config;
+
+    if (empty($image) === true) {
+        $image = 'images/info@svg.svg';
+    }
+
+    $iconClass = ($isHeader === true) ? 'header_help_icon' : 'main_menu_icon';
 
     // Do not display the help icon if help is disabled.
     if ((bool) $config['disable_help'] === true) {
@@ -1537,7 +1545,7 @@ function ui_print_help_icon(
         $image,
         true,
         [
-            'class'   => 'img_help main_menu_icon',
+            'class'   => 'img_help '.$iconClass,
             'title'   => __('Help'),
             'onclick' => "open_help ('".ui_get_full_url($help_handler)."')",
             'id'      => $id,
@@ -2440,35 +2448,35 @@ function ui_print_session_action_icon($action, $return=false)
     global $config;
 
     $key_icon = [
-        'acl'             => 'images/delete.png',
-        'agent'           => 'images/agent.png',
-        'module'          => 'images/module.png',
-        'alert'           => 'images/bell.png',
-        'incident'        => 'images/default_list.png',
-        'logon'           => 'images/house.png',
-        'logoff'          => 'images/house.png',
-        'massive'         => 'images/config.png',
-        'hack'            => 'images/application_edit.png',
-        'event'           => 'images/lightning_go.png',
-        'policy'          => 'images/policies_mc.png',
-        'report'          => 'images/reporting.png',
-        'file collection' => 'images/collection_col.png',
-        'user'            => 'images/user_green.png',
-        'password'        => 'images/lock.png',
-        'session'         => 'images/heart_col.png',
-        'snmp'            => 'images/snmp.png',
-        'command'         => 'images/bell.png',
-        'category'        => 'images/category_col.png',
-        'dashboard'       => 'images/dashboard_col.png',
-        'api'             => 'images/eye.png',
-        'db'              => 'images/database.png',
-        'setup'           => 'images/cog.png',
+        'acl'             => 'images/delete.svg',
+        'agent'           => 'images/agents@svg.svg',
+        'module'          => 'images/modules@svg.svg',
+        'alert'           => 'images/alerts.svg',
+        'incident'        => 'images/logs@svg.svg',
+        'logon'           => 'images/house@svg.svg',
+        'logoff'          => 'images/house@svg.svg',
+        'massive'         => 'images/configuration@svg.svg',
+        'hack'            => 'images/custom-input@svg.svg',
+        'event'           => 'images/event.svg',
+        'policy'          => 'images/policy@svg.svg',
+        'report'          => 'images/agent-fields.svg',
+        'file collection' => 'images/file-collection@svg.svg',
+        'user'            => 'images/user.svg',
+        'password'        => 'images/password.svg',
+        'session'         => 'images/star@svg.svg',
+        'snmp'            => 'images/SNMP-network-numeric-data@svg.svg',
+        'command'         => 'images/external-tools@svg.svg',
+        'category'        => 'images/tag@svg.svg',
+        'dashboard'       => 'images/workstation@groups.svg',
+        'api'             => 'images/enable.svg',
+        'db'              => 'images/data-server@svg.svg',
+        'setup'           => 'images/configuration@svg.svg',
     ];
 
     $output = '';
     foreach ($key_icon as $key => $icon) {
         if (stristr($action, $key) !== false) {
-            $output = html_print_image($icon, true, ['title' => $action, 'class' => 'invert_filter'], false, false, false, true).' ';
+            $output = html_print_image($icon, true, ['title' => $action, 'class' => 'main_menu_icon invert_filter'], false, false, false, true).' ';
             break;
         }
     }
@@ -2500,6 +2508,10 @@ function ui_print_help_tip(
     $style='',
     $blink=false
 ) {
+    if (empty($img) === true) {
+        $img = 'images/info@svg.svg';
+    }
+
     $output = '<a href="javascript:" class="tip" style="'.$style.'" >';
     $output .= html_print_image(
         $img,
@@ -4507,8 +4519,8 @@ function ui_print_toggle($data)
         (isset($data['toggle_class']) === true) ? $data['toggle_class'] : '',
         (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
         (isset($data['main_class']) === true) ? $data['main_class'] : 'box-flat white_table_graph',
-        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
-        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
+        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow@svg.svg',
+        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow@svg.svg',
         (isset($data['clean']) === true) ? $data['clean'] : false,
         (isset($data['reverseImg']) === true) ? $data['reverseImg'] : false,
         (isset($data['switch']) === true) ? $data['switch'] : false,
@@ -5057,7 +5069,7 @@ function ui_print_page_header(
 
     if (is_metaconsole() === false) {
         if ($help != '') {
-            $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', 'images/help_g.png').'</div>';
+            $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', '', false, '', true).'</div>';
         }
     }
 
@@ -7158,7 +7170,7 @@ function ui_print_servertype_icon(int $id)
 
         case MODULE_NETWORK:
             $title = __('Network server');
-            $image = 'images/network-server@svg.svg';
+            $image = 'images/network-server@os.svg';
         break;
 
         case MODULE_PLUGIN:

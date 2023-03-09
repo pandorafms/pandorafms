@@ -4264,12 +4264,14 @@ function generator_chart_to_pdf(
             'type_graph_pdf'   => $type_graph_pdf,
             'data_module_list' => $module_list,
             'data_combined'    => $params_combined,
+            'id_user'          => $config['id_user'],
         ];
     } else {
         $data = [
             'data'           => $params,
             'session_id'     => $session_id,
             'type_graph_pdf' => $type_graph_pdf,
+            'id_user'        => $config['id_user'],
         ];
     }
 

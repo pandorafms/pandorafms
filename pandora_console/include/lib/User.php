@@ -54,10 +54,10 @@ class User extends Entity implements PublicLogin
     /**
      * Initializes a user object.
      *
-     * @param string|null $id_user User id.
+     * @param mixed $id_user User id.
      * - Username
      */
-    public function __construct(?string $id_user)
+    public function __construct($id_user)
     {
         $this->table = 'tusuario';
 

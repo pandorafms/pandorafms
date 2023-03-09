@@ -3918,10 +3918,15 @@ function ui_print_datatable(array $parameters)
             ordering: '.$ordering.',
             initComplete: function(settings, json) {
                 // Move elements to table_action_buttons bar.
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_length"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dt-buttons"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
             },
             columns: [';
 

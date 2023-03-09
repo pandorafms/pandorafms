@@ -111,7 +111,7 @@ $table->data[1][] = html_print_label_input_block(
                 $date_lower,
                 '',
                 10,
-                7,
+                10,
                 true
             ).html_print_input_text(
                 'time_lower',
@@ -141,16 +141,6 @@ $table->data[1][] = html_print_label_input_block(
             ),
         ],
         true
-    ).html_print_label_input_block(
-        '',
-        html_print_checkbox_switch(
-            'is_period',
-            1,
-            ($is_period === true) ? 1 : 0,
-            true,
-            false,
-            'network_report_click_period(event)'
-        ).'<label style="position:relative; top:13px">'.__('Defined period').'</label>',
     )
 );
 
@@ -165,7 +155,7 @@ $table->data[1][] = html_print_label_input_block(
                 $date_greater,
                 '',
                 10,
-                7,
+                10,
                 true
             ).html_print_input_text(
                 'time_greater',
@@ -177,6 +167,18 @@ $table->data[1][] = html_print_label_input_block(
             ),
         ],
         true
+    )
+);
+
+$table->data[2][] = html_print_label_input_block(
+    __('Defined period'),
+    html_print_checkbox_switch(
+        'is_period',
+        1,
+        ($is_period === true) ? 1 : 0,
+        true,
+        false,
+        'network_report_click_period(event)'
     )
 );
 

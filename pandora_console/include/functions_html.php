@@ -5590,7 +5590,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
 
         case 'submit':
-            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : 'width: 100%';
+            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : '';
             $output .= '<'.$wrapper.' class="action-buttons" style="'.$width.'">'.html_print_submit_button(
                 ((isset($data['label']) === true) ? $data['label'] : 'OK'),
                 ((isset($data['name']) === true) ? $data['name'] : ''),

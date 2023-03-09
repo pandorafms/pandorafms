@@ -1519,7 +1519,6 @@ require 'include/php_to_js_values.php';
 <script type="text/javascript" language="javascript">
     // Handle the scroll.
     $(document).ready(scrollFunction());
-    $(document).ready(menuActionButtonResizing());
     // When there are less than 5 rows, all rows must be white
     var theme = "<?php echo $config['style']; ?>";
     if (theme === 'pandora') {

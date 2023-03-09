@@ -2402,8 +2402,8 @@ function topFunction() {
 }
 
 function menuActionButtonResizing() {
-  $(".action_buttons_right_content").attr(
+  $("#principal_action_buttons").attr(
     "style",
-    "left: " + $("#menu_full").width() + "px;"
+    "width: calc(100% - " + $("#menu_full").width() + "px);"
   );
 }

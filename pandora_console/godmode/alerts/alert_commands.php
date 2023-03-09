@@ -809,10 +809,10 @@ foreach ($commands as $command) {
         if (is_user_admin($config['id_user']) === true) {
                     $data['action'] = '<span class="inline_flex">';
             $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'&offset='.$offset.'"
-            onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
+            onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
 
             $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'&offset='.$offset_delete.'"
-			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
             $data['action'] .= '</span>';
         }
     }

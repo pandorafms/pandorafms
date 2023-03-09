@@ -139,11 +139,11 @@ class Diagnostics extends Wizard
 
         $pdf_url = $this->url.'&pdf=true';
         $pdf_img = html_print_image(
-            'images/pdf.png',
+            'images/file-pdf.svg',
             true,
             [
                 'title'   => __('Export to PDF'),
-                'class'   => 'invert_filter',
+                'class'   => 'main_menu_icon invert_filter',
                 'onclick' => 'blockResubmit($(this))',
             ]
         );

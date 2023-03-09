@@ -1978,11 +1978,12 @@ if ($create_alert || $update_alert) {
                             $row['id_as']
                         ),
                         'content' => html_print_image(
-                            'images/copy.png',
+                            'images/copy.svg',
                             true,
                             [
                                 'alt'   => __('Duplicate'),
                                 'title' => __('Duplicate'),
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],
@@ -1995,11 +1996,12 @@ if ($create_alert || $update_alert) {
                             $row['id_as']
                         ),
                         'content' => html_print_image(
-                            'images/config.png',
+                            'images/edit.svg',
                             true,
                             [
                                 'alt'    => __('Update'),
                                 'border' => 0,
+                                'class'  => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],

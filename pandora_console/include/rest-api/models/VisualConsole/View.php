@@ -63,22 +63,25 @@ class View extends \HTML
 
         $tabs = [
             [
-                'name' => __('Label settings'),
-                'id'   => 'tab-label',
-                'href' => $url.'&tabSelected=label',
-                'img'  => 'label-settings.png',
+                'name'  => __('Label settings'),
+                'id'    => 'tab-label',
+                'href'  => $url.'&tabSelected=label',
+                'img'   => 'tag@svg.svg',
+                'class' => 'main_menu_icon invert_filter',
             ],
             [
-                'name' => __('General settings'),
-                'id'   => 'tab-general',
-                'href' => $url.'&tabSelected=general',
-                'img'  => 'general-settings.png',
+                'name'  => __('General settings'),
+                'id'    => 'tab-general',
+                'href'  => $url.'&tabSelected=general',
+                'img'   => 'configuration@svg.svg',
+                'class' => 'main_menu_icon invert_filter',
             ],
             [
-                'name' => __('Specific settings'),
-                'id'   => 'tab-specific',
-                'href' => $url.'&tabSelected=specific',
-                'img'  => 'specific-settings.png',
+                'name'  => __('Specific settings'),
+                'id'    => 'tab-specific',
+                'href'  => $url.'&tabSelected=specific',
+                'img'   => 'incremental-data@svg.svg',
+                'class' => 'main_menu_icon invert_filter',
             ],
         ];
 
@@ -91,26 +94,29 @@ class View extends \HTML
             $activetabs = 0;
             $tabs = [
                 [
-                    'name' => __('Specific settings'),
-                    'id'   => 'tab-specific',
-                    'href' => $url.'&tabSelected=specific',
-                    'img'  => 'event_responses_col.png',
+                    'name'  => __('Specific settings'),
+                    'id'    => 'tab-specific',
+                    'href'  => $url.'&tabSelected=specific',
+                    'img'   => 'responses.svg',
+                    'class' => 'main_menu_icon invert_filter',
                 ],
             ];
         } else if ($type === BOX_ITEM || $type === COLOR_CLOUD || $type === ODOMETER) {
             $activetabs = 1;
             $tabs = [
                 [
-                    'name' => __('General settings'),
-                    'id'   => 'tab-general',
-                    'href' => $url.'&tabSelected=general',
-                    'img'  => 'pencil.png',
+                    'name'  => __('General settings'),
+                    'id'    => 'tab-general',
+                    'href'  => $url.'&tabSelected=general',
+                    'img'   => 'edit.svg',
+                    'class' => 'main_menu_icon invert_filter',
                 ],
                 [
-                    'name' => __('Specific settings'),
-                    'id'   => 'tab-specific',
-                    'href' => $url.'&tabSelected=specific',
-                    'img'  => 'event_responses_col.png',
+                    'name'  => __('Specific settings'),
+                    'id'    => 'tab-specific',
+                    'href'  => $url.'&tabSelected=specific',
+                    'img'   => 'responses.svg',
+                    'class' => 'main_menu_icon invert_filter',
                 ],
             ];
         }

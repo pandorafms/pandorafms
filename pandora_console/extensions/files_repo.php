@@ -126,8 +126,30 @@ function pandora_files_repo_godmode()
         'godmode'   => $godmode,
         'operation' => $operation,
     ];
+
     // Header.
-    ui_print_page_header(__('Files repository manager'), 'images/extensions.png', false, '', true, $onheader);
+    ui_print_standard_header(
+        __('Extensions'),
+        'images/extensions.png',
+        false,
+        '',
+        true,
+        $onheader,
+        [
+            [
+                'link'  => '',
+                'label' => __('Admin tools'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Extension manager'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Files repository manager'),
+            ],
+        ]
+    );
 
     $full_extensions_dir = $config['homedir'].'/'.EXTENSIONS_DIR.'/';
     include_once $full_extensions_dir.'files_repo/functions_files_repo.php';

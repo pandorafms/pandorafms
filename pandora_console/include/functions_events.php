@@ -5172,7 +5172,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
             __('Add comment'),
             'comment_button',
             false,
-            'event_comment(\''.base64_encode(json_encode($event)).'\');',
+            'event_comment("'.base64_encode(json_encode($event)).'");',
             [
                 'icon' => 'next',
                 'mode' => 'mini secondary',

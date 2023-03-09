@@ -39,20 +39,20 @@ $refr = (int) get_parameter('refr', 0);
 $fullscreen = [];
 if ($config['pure']) {
     $fullscreen['text'] = '<a target="_top" href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=0&refr='.$refr.'">'.html_print_image(
-        'images/normal_screen.png',
+        'images/exit_fullscreen@svg.svg',
         true,
         [
             'title' => __('Normal screen'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 } else {
     $fullscreen['text'] = '<a target="_top" href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=1&refr='.$refr.'">'.html_print_image(
-        'images/full_screen.png',
+        'images/fullscreen@svg.svg',
         true,
         [
             'title' => __('Full screen'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 }
@@ -60,11 +60,11 @@ if ($config['pure']) {
 // List
 $list = [];
 $list['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image(
-    'images/op_snmp.png',
+    'images/SNMP-network-numeric-data@svg.svg',
     true,
     [
         'title' => __('List'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 
@@ -72,11 +72,11 @@ $list['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_v
 $statistics = [];
 $statistics['active'] = true;
 $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'&refr='.$refr.'">'.html_print_image(
-    'images/op_reporting.png',
+    'images/logs@svg.svg',
     true,
     [
         'title' => __('Statistics'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 

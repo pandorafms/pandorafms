@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / suitcase@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-suitcase" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M20.0019141,11.5325325 L20,19 C20,19.5522847 19.5522847,20 19,20 L1,20 C0.44771525,20 -4.11269976e-13,19.5522847 -4.11337631e-13,19 L-0.00103436985,11.5327058 C2.59639689,12.5166169 5.92845316,13.0002111 10.0002111,13.0002111 C14.0722082,13.0002111 17.4044167,12.5165601 20.0019141,11.5325325 Z M19,4 C19.5522847,4 20,4.44771525 20,5 L20.0006295,9.37075094 C17.5926765,10.449402 14.2568796,11.0002111 10.0002111,11.0002111 C5.74354268,11.0002111 2.40774577,10.449402 -0.000207276534,9.37075094 L-4.11337631e-13,5 C-4.11405285e-13,4.44771525 0.44771525,4 1,4 L19,4 Z" id="Rectangle-2" fill="#3F3F3F"></path>
+        <polyline id="Path-50" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="6 5 6 1 14 1 14 5"></polyline>
+    </g>
+</svg>

@@ -478,7 +478,7 @@ function visual_map_print_item(
                     if (!is_metaconsole()) {
                         $url = $config['homeurl'].'index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;pure='.$config['pure'].'&amp;id='.$layoutData['id_layout_linked'];
                     } else {
-                        $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$layoutData['id_layout_linked'].'&refr=0';
+                        $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id='.$layoutData['id_layout_linked'].'&refr=0';
                     }
                 } else {
                     if ($layoutData['id_agente_modulo'] != 0) {
@@ -565,7 +565,7 @@ function visual_map_print_item(
 
                 if ($is_a_link_to_other_visualconsole) {
                     if (is_metaconsole() === true) {
-                        $url = $config['homeurl'].'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$layoutData['id_layout_linked'].'&refr=300';
+                        $url = $config['homeurl'].'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id='.$layoutData['id_layout_linked'].'&refr=300';
                     } else {
                         $url = $config['homeurl'].'index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;pure='.$config['pure'].'&amp;id='.$layoutData['id_layout_linked'];
                     }
@@ -593,7 +593,7 @@ function visual_map_print_item(
                         $url = 'index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;pure='.$config['pure'].'&amp;id='.$layoutData['id_layout_linked'];
                     } else {
                         $pure = get_parameter('pure', 0);
-                        $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_visualmap='.$layoutData['id_layout_linked'].'&refr=0';
+                        $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$layoutData['id_layout_linked'].'&refr=0';
                     }
                 } else if (preg_match('/<a.*href=["\'](.*)["\']>/', $layoutData['label'], $matches)) {
                     // Link to an URL
@@ -641,7 +641,7 @@ function visual_map_print_item(
                         $url = 'index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;pure='.$config['pure'].'&amp;id='.$layoutData['id_layout_linked'];
                     } else {
                         $pure = get_parameter('pure', 0);
-                        $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_visualmap='.$layoutData['id_layout_linked'].'&refr=0';
+                        $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$layoutData['id_layout_linked'].'&refr=0';
                     }
                 } else if ($layoutData['id_agente_modulo'] != 0) {
                         // Link to an module
@@ -724,7 +724,7 @@ function visual_map_print_item(
                         $url = 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config['pure'].'&amp;id='.$layoutData['id_layout_linked'];
                     } else {
                         $pure = get_parameter('pure', 0);
-                        $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_visualmap='.$layoutData['id_layout_linked'].'&refr=0';
+                        $url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$layoutData['id_layout_linked'].'&refr=0';
                     }
                 }
             break;
@@ -780,7 +780,7 @@ function visual_map_print_item(
                         $url = $config['homeurl'].'/index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config['pure'].'&amp;id='.$layoutData['id_layout_linked'];
                     } else {
                         $pure = get_parameter('pure', 0);
-                        $url = $config['homeurl'].'/index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_visualmap='.$layoutData['id_layout_linked'].'&refr=0';
+                        $url = $config['homeurl'].'/index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$layoutData['id_layout_linked'].'&refr=0';
                     }
                 }
             break;

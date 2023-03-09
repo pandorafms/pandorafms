@@ -283,7 +283,7 @@ class WSManager extends WebSocketServer
             $user->address = $user->headers['x-forwarded-for'];
         }
 
-        $user->account = new User(['phpsessionid' => $php_session_id]);
+        $user->account = User::auth(['phpsessionid' => $php_session_id]);
         $_SERVER['REMOTE_ADDR'] = $user->address;
 
         // Ensure user is allowed to connect.

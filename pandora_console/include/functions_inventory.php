@@ -687,6 +687,183 @@ function inventory_get_data(
 }
 
 
+function inventory_get_datatable(
+    $agents_ids,
+    $inventory_module_name,
+    $utimestamp,
+    $inventory_search_string='',
+    $export_csv=false,
+    $return_mode=false,
+    $order_by_agent=false
+) {
+    global $config;
+
+    $offset = (int) get_parameter('offset');
+
+    $where = [];
+
+    array_push(
+        $where,
+        'tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory'
+    );
+
+    // Discart empty first position.
+    if (isset($agents_ids[0]) === true && empty($agents_ids[0]) === true) {
+        unset($agents_ids[0]);
+    }
+
+    // If there are no agents selected.
+    if (empty($agents_ids) === true) {
+        return ERR_NODATA;
+    }
+
+    if (array_search(-1, $agents_ids) === false) {
+        array_push($where, 'tagent_module_inventory.id_agente IN ('.implode(',', $agents_ids).')');
+    }
+
+    if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name !== ''
+        && $inventory_module_name !== 'all'
+    ) {
+        array_push($where, "tmodule_inventory.name IN ('".implode("','", (array) $inventory_module_name)."')");
+    }
+
+    if ($inventory_search_string != '') {
+        array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
+    }
+
+    $sql = sprintf(
+        'SELECT tmodule_inventory.*,
+            tagent_module_inventory.*,
+            tagente.alias as name_agent
+        FROM tmodule_inventory
+        INNER JOIN tagent_module_inventory
+            ON tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory
+        LEFT JOIN tagente
+            ON tagente.id_agente = tagent_module_inventory.id_agente
+        WHERE %s
+        ORDER BY tmodule_inventory.id_module_inventory 
+        LIMIT %d, %d',
+        implode(' AND ', $where),
+        $offset,
+        $config['block_size']
+    );
+
+    $rows = db_get_all_rows_sql($sql);
+
+    if ($order_by_agent === false) {
+        $modules = [];
+        foreach ($rows as $row) {
+            $data_rows = explode(PHP_EOL, $row['data']);
+            foreach ($data_rows as $data_key => $data_value) {
+                if (empty($data_value) === false) {
+                    $row['data'] = $data_value;
+                    $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
+                }
+            }
+        }
+
+        return $modules;
+    } else {
+        $agents_rows = [];
+        $agent_data = [];
+        $rows_tmp = [];
+        foreach ($rows as $row) {
+            $agent_data[$row['id_agente']][] = $row;
+        }
+
+        foreach ($agent_data as $id_agent => $rows) {
+            $rows_tmp['agent'] = $row['name_agent'];
+            foreach ($rows as $row) {
+                if ($utimestamp > 0) {
+                    $data_row = db_get_row_sql(
+                        sprintf(
+                            'SELECT `data`,
+                                `timestamp`
+                            FROM tagente_datos_inventory
+                            WHERE utimestamp <= "%s"
+                                AND id_agent_module_inventory = %d
+                            ORDER BY utimestamp DESC',
+                            $utimestamp,
+                            $row['id_agent_module_inventory']
+                        )
+                    );
+
+                    if ($data_row !== false) {
+                        $row['data'] = $data_row['data'];
+                        $row['timestamp'] = $data_row['timestamp'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            $rows_tmp['row'] = $rows;
+            array_push($agents_rows, $rows_tmp);
+        }
+
+        return $agents_rows;
+    }
+}
+
+
+function get_data_basic_info_sql($params, $count=false)
+{
+    $where = 'WHERE 1=1 ';
+    if ($params['id_agent'] > 0) {
+        $where .= sprintf(' AND id_agente = %d', $params['id_agent']);
+    }
+
+    if ($params['search'] > 0) {
+        $where .= sprintf(
+            ' AND ( alias LIKE "%%%s%%" )',
+            $params['search']
+        );
+    }
+
+    $limit_condition = '';
+    $order_condition = '';
+    $fields = 'count(*)';
+    if ($count !== true) {
+        $fields = '*';
+
+        $limit_condition = sprintf(
+            'LIMIT %d, %d',
+            $params['start'],
+            $params['length']
+        );
+
+        $order_condition = sprintf('ORDER BY %s', $params['order']);
+    }
+
+    $sql = sprintf(
+        'SELECT %s
+        FROM tagente
+        %s
+        %s
+        %s',
+        $fields,
+        $where,
+        $order_condition,
+        $limit_condition
+    );
+
+    if ($count !== true) {
+        $result = db_get_all_rows_sql($sql);
+        if ($result === false) {
+            $result = [];
+        }
+    } else {
+        $result = db_get_sql($sql);
+        if ($result === false) {
+            $result = 0;
+        }
+    }
+
+    return $result;
+}
+
+
 function inventory_get_dates($module_inventory_name, $inventory_agent, $inventory_id_group)
 {
     $sql = 'SELECT tagente_datos_inventory.utimestamp,

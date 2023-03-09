@@ -124,8 +124,14 @@ foreach ($stats as $stat) {
 }
 
 $status .= '</table>';
+$table->rowclass = [];
+$table->rowclass[0] = 'w100p';
+$table->rowclass[1] = 'w100p';
+$table->rowclass[2] = 'w100p';
+$table->rowclass[3] = 'w100p';
+$table->rowclass[4] = 'w100p';
+$table->rowclass[5] = 'w100p';
 $table->data[0][0] = $status;
-$table->rowclass[] = '';
 
 $table->data[] = $tdata;
 

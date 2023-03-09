@@ -519,6 +519,27 @@ function agents_get_agents(
         $search_custom = '';
     }
 
+    if (isset($filter['id_os'])) {
+        $id_os = $filter['id_os'];
+        unset($filter['id_os']);
+    } else {
+        $id_os = '';
+    }
+
+    if (isset($filter['policies'])) {
+        $policies = $filter['policies'];
+        unset($filter['policies']);
+    } else {
+        $policies = '';
+    }
+
+    if (isset($filter['other_condition'])) {
+        $other_condition = $filter['other_condition'];
+        unset($filter['other_condition']);
+    } else {
+        $other_condition = '';
+    }
+
     if (isset($filter['offset'])) {
         $offset = $filter['offset'];
         unset($filter['offset']);
@@ -692,25 +713,38 @@ function agents_get_agents(
         $where_nogroup = '1 = 1';
     }
 
+    $policy_join = '';
+
+    if ($policies !== '') {
+        $policy_join = 'INNER JOIN tpolicy_agents
+            ON tpolicy_agents.id_agent=tagente.id_agente';
+    }
+
     if ($extra) {
         $where = sprintf(
-            '(%s OR (%s)) AND (%s) AND (%s) %s AND %s',
+            '(%s OR (%s)) AND (%s) AND (%s) %s AND %s %s %s %s',
             $sql_extra,
             $where,
             $where_nogroup,
             $status_sql,
             $search,
-            $disabled
+            $disabled,
+            $id_os,
+            $policies,
+            $other_condition
         );
     } else {
         $where = sprintf(
-            '%s AND %s AND (%s) %s AND %s %s',
+            '%s AND %s AND (%s) %s AND %s %s %s %s %s',
             $where,
             $where_nogroup,
             $status_sql,
             $search,
             $disabled,
-            $search_custom
+            $search_custom,
+            $id_os,
+            $policies,
+            $other_condition
         );
     }
 
@@ -720,9 +754,11 @@ function agents_get_agents(
 		FROM `%s` tagente
         LEFT JOIN tagent_secondary_group
             ON tagent_secondary_group.id_agent=tagente.id_agente
+        %s
 		WHERE %s %s',
         implode(',', $fields),
         $table_name,
+        $policy_join,
         $where,
         $order
     );
@@ -3014,7 +3050,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_NO_MONITORS_BALL,
             __('No Monitors'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3026,7 +3065,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_ALERT_FIRED_BALL,
             __('Alert fired on agent'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3038,7 +3080,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_CRITICAL_BALL,
             __('At least one module in CRITICAL status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3048,7 +3093,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_WARNING_BALL,
             __('At least one module in WARNING status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3058,7 +3106,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_DOWN_BALL,
             __('At least one module is in UKNOWN status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3068,7 +3119,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_OK_BALL,
             __('All Monitors OK'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -4342,6 +4396,14 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 
     $total_modules = count($all_modules);
 
+    if ($width !== 0 && $height !== 0) {
+        $measuresProvided = false;
+        $width = 200;
+        $height = 50;
+    } else {
+        $measuresProvided = true;
+    }
+
     // Best square.
     $high = (float) max($width, $height);
     $low = 0.0;
@@ -4358,6 +4420,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 
     $square_length = min(($width / floor($width / $low)), ($height / floor($height / $low)));
 
+    // $measureSymbol = ($measuresProvided === true) ? '' : '%';
     // Print starmap.
     $html = sprintf(
         '<svg id="svg_%s" style="width: %spx; height: %spx;">',
@@ -4408,6 +4471,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
             $y,
             $row,
             $column,
+            // $square_length.$measureSymbol,
             $square_length,
             $square_length,
             $status,
@@ -4465,4 +4529,18 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
     $html .= '</svg>';
 
     return $html;
+}
+
+
+/**
+ * Defines a hash for agent name.
+ *
+ * @param string $alias         Alias.
+ * @param string $nombre_agente Agent name.
+ *
+ * @return string.
+ */
+function hash_agent_name(string $alias, string $nombre_agente)
+{
+    return hash('sha256', $alias.'|'.$nombre_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
 }

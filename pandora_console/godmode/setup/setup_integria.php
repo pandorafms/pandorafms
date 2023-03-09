@@ -1,12 +1,20 @@
 <?php
 /**
+ * Integria setup.
+ *
+ * @category   Setup
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
  *    ______                 ___                    _______ _______ ________
  *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
  *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +26,7 @@
  * ============================================================================
  */
 
+ // Load globals.
 global $config;
 
 check_login();
@@ -33,27 +42,19 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 
 require_once $config['homedir'].'/include/functions_integriaims.php';
 
-if (is_ajax()) {
+if (is_ajax() === true) {
     $operation = (string) get_parameter('operation', '');
-
-    if ($operation === 'check_api_access') {
-    } else if ($operation === 'sync_inventory') {
-    }
 
     $integria_user = get_parameter('integria_user', '');
     $integria_pass = get_parameter('integria_pass', '');
     $integria_api_hostname = get_parameter('api_hostname', '');
     $integria_api_pass = get_parameter('api_pass', '');
     $user_level_conf = get_parameter('user_level_conf', 0);
-    $user_level_conf_bool = $user_level_conf === 'true' ? true : false;
+    $user_level_conf_bool = ((bool) $user_level_conf === true);
 
     $login_result = integria_api_call($integria_api_hostname, $integria_user, $integria_pass, $integria_api_pass, 'get_login', [], false, '', '', $user_level_conf_bool);
 
-    if ($login_result != false) {
-        echo json_encode(['login' => 1]);
-    } else {
-        echo json_encode(['login' => 0]);
-    }
+    echo json_encode(['login' => ($login_result !== false) ? 1 : 0]);
 
     return;
 }
@@ -238,7 +239,7 @@ $integria_users_csv = integria_api_call(null, null, null, null, 'get_users', [])
 $csv_array = explode("\n", $integria_users_csv);
 
 foreach ($csv_array as $csv_line) {
-    if (!empty($csv_line)) {
+    if (empty($csv_line) === false) {
         $integria_users_values[$csv_line] = $csv_line;
     }
 }
@@ -271,6 +272,7 @@ $table_remote->id = 'integria-remote-setup';
 $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
+$table_remote->style['control'] = 'display: flex;align-items: center;';
 
 // Enable eHorus user configuration.
 $row = [];
@@ -312,7 +314,17 @@ $table_remote->data['integria_req_timeout'] = $row;
 
 $row = [];
 $row['name'] = __('Inventory');
-$row['control'] = html_print_button(__('Sync inventory'), 'sync-inventory', false, '', 'class="sub next"', true);
+$row['control'] = html_print_button(
+    __('Sync inventory'),
+    'sync-inventory',
+    false,
+    '',
+    [
+        'icon' => 'cog',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
 $row['control'] .= '<span id="test-integria-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
 $row['control'] .= '<span id="test-integria-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
 $row['control'] .= '<span id="test-integria-failure-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
@@ -564,7 +576,17 @@ $table_cr_settings->data['custom_response_incident_status'] = $row;
 // Test.
 $row = [];
 $row['name'] = __('Test');
-$row['control'] = html_print_button(__('Start'), 'test-integria', false, '', 'class="sub next"', true);
+$row['control'] = html_print_button(
+    __('Start'),
+    'test-integria',
+    false,
+    '',
+    [
+        'icon' => 'cog',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
 $row['control'] .= '<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
 $row['control'] .= '<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
 $row['control'] .= '<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
@@ -572,7 +594,7 @@ $row['control'] .= '&nbsp;<span id="test-integria-message" class="invisible"></s
 $table_remote->data['integria_test'] = $row;
 
 // Print.
-echo '<div class="center pdd_b_20px">';
+echo '<div class="center pdd_b_20px mrgn_top_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
 html_print_image(
     'images/integria_logo.svg',
@@ -628,13 +650,31 @@ if ($has_connection != false) {
     echo '</fieldset>';
     echo '</div>';
 
-    echo '<div class="action-buttons" style="width: '.$table_remote->width.'">';
-    html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'action-buttons w100p',
+            'content' => html_print_submit_button(
+                __('Update'),
+                'update_button',
+                false,
+                ['icon' => 'update'],
+                true
+            ),
+        ]
+    );
 } else {
-    echo '<div class="action-buttons" style="width: '.$table_remote->width.'">';
-    html_print_submit_button(__('Update and continue'), 'update_button', false, 'class="sub next"');
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'action-buttons w100p',
+            'content' => html_print_submit_button(
+                __('Update and continue'),
+                'update_button',
+                false,
+                ['icon' => 'update'],
+                true
+            ),
+        ]
+    );
 }
 
 
@@ -653,7 +693,7 @@ echo '</form>';
     var handleUserLevel = function(event) {
         var is_checked = $('input:checkbox[name="integria_enabled"]').is(':checked');
         var is_checked_userlevel = $('input:checkbox[name="integria_user_level_conf"]').is(':checked');
-        
+
         if (event.target.value == '1' && is_checked && !is_checked_userlevel) {
             showUserPass();
             $('input:checkbox[name="integria_user_level_conf"]').attr('checked', true);
@@ -797,11 +837,11 @@ echo '</form>';
     }
 
     var handleInventorySync = function (event) {
-    
+
         var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
         var notFoundMessage = '<?php echo __('User not found'); ?>';
         var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
-        
+
         var hideLoadingImage = function () {
             $('span#test-integria-spinner-sync').hide();
         }
@@ -821,7 +861,6 @@ echo '</form>';
             $('span#test-integria-failure-sync').show();
         }
 
-        
         hideSuccessImage();
         hideFailureImage();
         showLoadingImage();
@@ -887,9 +926,7 @@ echo '</form>';
         });
     }
 
-    $('input#button-test-integria').click(handleTest);
-    $('input#button-sync-inventory').click(handleInventorySync);
-    
-
+    $('#button-test-integria').click(handleTest);
+    $('#button-sync-inventory').click(handleInventorySync);
 
 </script>

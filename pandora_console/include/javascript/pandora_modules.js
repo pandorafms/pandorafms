@@ -13,23 +13,29 @@ function configure_modules_form() {
   $("#id_module_type").change(function() {
     if (id_modules_icmp.in_array(this.value)) {
       $(
-        "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials, tr#simple-tcp_send, tr#simple-tcp_receive"
+        "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials, tr#simple-caption_tcp_send_receive, tr#simple-tcp_send_receive"
       ).hide();
       $("#text-tcp_port").attr("disabled", "1");
     } else if (id_modules_snmp.in_array(this.value)) {
       $(
         "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials"
       ).show();
-      $("tr#simple-tcp_send, tr#simple-tcp_receive").hide();
+      $(
+        "tr#simple-caption_tcp_send_receive, tr#simple-tcp_send_receive"
+      ).hide();
       $("#text-tcp_port").removeAttr("disabled");
     } else if (id_modules_tcp.in_array(this.value)) {
       $(
         "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials"
       ).hide();
-      $("tr#simple-tcp_send, tr#simple-tcp_receive").show();
+      $(
+        "tr#simple-caption_tcp_send_receive, tr#simple-tcp_send_receive"
+      ).show();
       $("#text-tcp_port").removeAttr("disabled");
     } else if (id_modules_exec.in_array(this.value)) {
-      $("tr#simple-tcp_send, tr#simple-tcp_receive").hide();
+      $(
+        "tr#simple-caption_tcp_send_receive, tr#simple-tcp_send_receive"
+      ).hide();
       $(
         "tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-snmp_credentials"
       ).hide();
@@ -46,8 +52,7 @@ function configure_modules_form() {
       reset_data_module_form();
       return;
     }
-    $("#component_loading").show();
-    $(".error, #no_component").hide();
+    $(".error, #no_component").css("visibility", "hidden");
     $("option[value!=0]", $select).remove();
     jQuery.post(
       "ajax.php",
@@ -61,8 +66,7 @@ function configure_modules_form() {
       },
       function(data, status) {
         if (data == false) {
-          $("#component_loading").hide();
-          $("#no_component").show();
+          $(".error, #no_component").css("visibility", "visible");
           return;
         }
         jQuery.each(data, function(i, val) {
@@ -1080,8 +1084,7 @@ function network_component_group_change_event() {
     var $select = $("#network_component").hide();
     $("#component").hide();
     if (this.value == 0) return;
-    $("#component_loading").show();
-    $(".error, #no_component").hide();
+    $(".error, #no_component").css("visibility", "hidden");
     $("option[value!=0]", $select).remove();
     jQuery.post(
       "ajax.php",
@@ -1095,8 +1098,7 @@ function network_component_group_change_event() {
       },
       function(data, status) {
         if (data == false) {
-          $("#component_loading").hide();
-          $("#no_component").show();
+          $(".error, #no_component").css("visibility", "visible");
           return;
         }
         jQuery.each(data, function(i, val) {

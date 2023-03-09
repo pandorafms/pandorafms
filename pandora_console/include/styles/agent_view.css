@@ -6,12 +6,8 @@ div#bullets_modules span {
   font-weight: 700;
 }
 
-div.agent_details_agent_alias {
+div.agent_details_agent_caption {
   flex: 1;
-}
-
-div.agent_details_agent_alias * {
-  font-weight: 700;
 }
 
 #module_list {
@@ -19,11 +15,11 @@ div.agent_details_agent_alias * {
 }
 
 #module_filter_agent_view tr td {
-  padding-bottom: 3em;
+  /*padding-bottom: 3em;*/
 }
 
 #div_all_events_24h {
-  border-bottom: 1px solid #ebebeb;
+  /*border-bottom: 1px solid #ebebeb;*/
   padding-bottom: 3em;
 }
 

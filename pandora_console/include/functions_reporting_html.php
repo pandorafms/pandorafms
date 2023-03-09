@@ -5763,7 +5763,7 @@ function reporting_get_agents_by_status($data, $graph_width=250, $graph_height=1
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_ok.png', true, ['title' => __('Agents ok')]);
-    $agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='".$links['agents_ok']."'><b><span class='green_color font_12pt bolder big_data'>".format_numeric($data['agent_ok']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='".$links['agents_ok']."'><b><span class='pandora_green_text font_12pt bolder big_data'>".format_numeric($data['agent_ok']).'</span></b></a>';
 
     $agent_data[2] = html_print_image('images/agent_unknown.png', true, ['title' => __('Agents unknown')]);
     $agent_data[3] = "<a style='color: ".COL_UNKNOWN.";' href='".$links['agents_unknown']."'><b><span class='grey_color font_12pt bolder big_data'>".format_numeric($data['agent_unknown']).'</span></b></a>';
@@ -5883,7 +5883,7 @@ function reporting_get_events($data, $links=false)
         $table_events->data[0][1] = html_print_image('images/module_warning.png', true, ['title' => __('Warning events')]);
         $table_events->data[0][1] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder yellow_color' style='".$style."' href='".$links['warning']."'><b><span class='font_12pt bolder yellow_color;'>".format_numeric($data['warning']).'</span></b></a>';
         $table_events->data[0][2] = html_print_image('images/module_ok.png', true, ['title' => __('OK events')]);
-        $table_events->data[0][2] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder green_color' style='".$style."' href='".$links['normal']."'><b class='font_12pt bolder green_color'>".format_numeric($data['normal']).'</b></a>';
+        $table_events->data[0][2] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder pandora_green_text' style='".$style."' href='".$links['normal']."'><b class='font_12pt bolder pandora_green_text'>".format_numeric($data['normal']).'</b></a>';
         $table_events->data[0][3] = html_print_image('images/module_unknown.png', true, ['title' => __('Unknown events')]);
         $table_events->data[0][3] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder grey_color' style='".$style."' href='".$links['unknown']."'><b><span class='font_12pt bolder grey_color'>".format_numeric($data['unknown']).'</span></b></a>';
     }

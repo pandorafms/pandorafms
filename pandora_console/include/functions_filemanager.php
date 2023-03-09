@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Images File Manager functions.
  *
@@ -96,7 +97,7 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
 
     check_login();
 
-    if (! check_acl($config['id_user'], 0, 'AW')) {
+    if (!check_acl($config['id_user'], 0, 'AW')) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access File manager'
@@ -139,25 +140,8 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
                 $nombre_archivo = sprintf('%s/%s', $real_directory, $filename);
                 try {
                     $mimeContentType = mime_content_type($_FILES['file']['tmp_name']);
-                    $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 
-                    $validFileExtension = true;
-
-                    if (empty($fileExtension) === false) {
-                        $filtered_types = array_filter(
-                            $filterFilesType,
-                            function ($value) use ($fileExtension) {
-                                $mimeTypeExtensionName = explode('/', $value)[1];
-                                return $mimeTypeExtensionName === $fileExtension;
-                            }
-                        );
-
-                        if (empty($filtered_types) === true) {
-                            $validFileExtension = false;
-                        }
-                    }
-
-                    if ($validFileExtension === true && (empty($filterFilesType) === true || in_array($mimeContentType, $filterFilesType) === true)) {
+                    if (empty($filterFilesType) === true || in_array($mimeContentType, $filterFilesType) === true) {
                         $result = copy($_FILES['file']['tmp_name'], $nombre_archivo);
                     } else {
                         $error_message = 'The uploaded file is not allowed. Only gif, png or jpg files can be uploaded.';
@@ -240,7 +224,7 @@ function create_text_file($default_real_directory, $destination_directory)
 
     check_login();
 
-    if (! check_acl($config['id_user'], 0, 'AW')) {
+    if (!check_acl($config['id_user'], 0, 'AW')) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access File manager'
@@ -310,7 +294,7 @@ if ($create_dir === true) {
     $testHash  = md5($directory.$config['server_unique_identifier']);
 
     if ($hash !== $testHash) {
-         ui_print_error_message(__('Security error.'));
+        ui_print_error_message(__('Security error.'));
     } else {
         $dirname = filemanager_safe_directory((string) get_parameter('dirname'));
 
@@ -366,7 +350,7 @@ if ($delete_file === true) {
             }
         } else {
             if (unlink($filename) === true) {
-                    $config['filemanager']['delete'] = 1;
+                $config['filemanager']['delete'] = 1;
             } else {
                 $config['filemanager']['delete'] = 0;
             }
@@ -516,77 +500,116 @@ function filemanager_file_explorer(
             check_opened_dialog('create_folder');
         }
         <?php if ($allowCreateText === true) : ?>
-        function show_create_text_file() {
-            actions_dialog('create_text_file');
-            $("#create_text_file").css("display", "block");
-            check_opened_dialog('create_text_file');
-        }
+            function show_create_text_file() {
+                actions_dialog('create_text_file');
+                $("#create_text_file").css("display", "block");
+                check_opened_dialog('create_text_file');
+            }
         <?php endif ?>
+
         function show_upload_file() {
             actions_dialog('upload_file');
             $("#upload_file").css("display", "block");
             check_opened_dialog('upload_file');
         }
 
-        function check_opened_dialog(check_opened){
-            if(check_opened !== 'create_folder'){
+        function check_opened_dialog(check_opened) {
+            if (check_opened !== 'create_folder') {
                 if (($("#create_folder").hasClass("ui-dialog-content") && $('#create_folder').dialog('isOpen') === true)) {
                     $('#create_folder').dialog('close');
                 }
             }
             <?php if ($allowCreateText === true) : ?>
-            if(check_opened !== 'create_text_file'){
-                if (($("#create_text_file").hasClass("ui-dialog-content") && $('#create_text_file').dialog('isOpen') === true)) {
-                    $('#create_text_file').dialog('close');
+                if (check_opened !== 'create_text_file') {
+                    if (($("#create_text_file").hasClass("ui-dialog-content") && $('#create_text_file').dialog('isOpen') === true)) {
+                        $('#create_text_file').dialog('close');
+                    }
                 }
-            }
             <?php endif ?>
-            if(check_opened !== 'upload_file'){
+            if (check_opened !== 'upload_file') {
                 if (($("#upload_file").hasClass("ui-dialog-content") && $('#upload_file').dialog('isOpen')) === true) {
                     $('#upload_file').dialog('close');
                 }
             }
         }
 
-        function actions_dialog(action){
-            $('.'+action).addClass('file_table_modal_active');
-            var title_action ='';
+        function actions_dialog(action) {
+            $('.' + action).addClass('file_table_modal_active');
+            var title_action = '';
             switch (action) {
                 case 'create_folder':
-                title_action = "<?php echo __('Create a Directory'); ?>";
+                    title_action = "<?php echo __('Create a Directory'); ?>";
                     break;
-                <?php if ($allowCreateText === true) : ?>
-                case 'create_text_file':
-                title_action = "<?php echo __('Create a Text'); ?>";
-                    break;
-                <?php endif ?>
+                    <?php if ($allowCreateText === true) : ?>
+                    case 'create_text_file':
+                        title_action = "<?php echo __('Create File'); ?>";
+                        break;
+                    <?php endif ?>
                 case 'upload_file':
-                title_action = "<?php echo __('Upload Files'); ?>";
+                    title_action = "<?php echo __('Upload Files'); ?>";
                     break;
 
                 default:
                     break;
             }
 
-            $('#'+action)
-            .dialog({
-                title: title_action,
-                resizable: true,
-                draggable: true,
-                modal: true,
-                overlay: {
-                    opacity: 0.5,
-                    background: "black"
-                },
-                width: 500,
-                minWidth: 500,
-                minHeight: 210,
-                maxWidth: 800,
-                maxHeight: 300,
-                close: function () {
-                    $('.'+action).removeClass('file_table_modal_active');
-                }
-            }).show();
+            $('#' + action)
+                .dialog({
+                    title: title_action,
+                    resizable: true,
+                    draggable: true,
+                    modal: true,
+                    overlay: {
+                        opacity: 0.5,
+                        background: "black"
+                    },
+                    width: 500,
+                    minWidth: 500,
+                    minHeight: 210,
+                    maxWidth: 800,
+                    maxHeight: 300,
+                    close: function() {
+                        $('.' + action).removeClass('file_table_modal_active');
+                    }
+                }).show();
+        }
+
+        function show_modal_real_path(path) {
+            if (navigator.clipboard && window.isSecureContext) <?php $secure_con = true; ?>;
+            else <?php $secure_con = false; ?>;
+            $('#modal_real_path').addClass('file_table_modal_active');
+            $('#real_path').empty();
+            $('#real_path').html(path);
+            title_action = "<?php echo __('Real path'); ?>";
+            $('#modal_real_path')
+                .dialog({
+                    title: title_action,
+                    resizable: true,
+                    draggable: true,
+                    modal: true,
+                    overlay: {
+                        opacity: 0.5,
+                        background: "black"
+                    },
+                    width: 448,
+                    minWidth: 448,
+                    minHeight: 213,
+                    maxWidth: 800,
+                    maxHeight: 300,
+                    close: function() {
+                        $('#modal_real_path').removeClass('file_table_modal_active');
+                    }
+                }).show();
+
+            $("#submit-submit").on("click", copyToClipboard);
+        }
+
+        function copyToClipboard() {
+            if (navigator.clipboard && window.isSecureContext) {
+                window.navigator.clipboard.writeText($("#real_path").text()).then(function() {
+                    $('#modal_real_path').dialog('close');
+                });
+            }
         }
     </script>
     <?php
@@ -703,9 +726,9 @@ function filemanager_file_explorer(
             if (pathinfo($fileinfo['realpath'], PATHINFO_EXTENSION) === 'php'
                 && (is_readable($fileinfo['realpath']) === true || is_executable($fileinfo['realpath']) === true)
             ) {
-                        $error_message = __('This file could be executed by any user');
-                        $error_message .= '. '.__('Make sure it can\'t perform dangerous tasks');
-                        $data[1] = '<span class="error forced_title" data-title="'.$error_message.'" data-use_title_for_force_title="1">'.$data[1].'</span>';
+                $error_message = __('This file could be executed by any user');
+                $error_message .= '. '.__('Make sure it can\'t perform dangerous tasks');
+                $data[1] = '<span class="error forced_title" data-title="'.$error_message.'" data-use_title_for_force_title="1">'.$data[1].'</span>';
             }
 
             $data[2] = ui_print_timestamp(
@@ -719,17 +742,16 @@ function filemanager_file_explorer(
                 $data[3] = ui_format_filesize($fileinfo['size']);
             }
 
-                    // Actions buttons
-                    // Delete button.
-                    $data[4] = '';
-                    $data[4] .= '<span style="display: flex">';
-                    $typefile = array_pop(explode('.', $fileinfo['name']));
+            // Actions buttons
+            // Delete button.
+            $data[4] = '<div class="table_action_buttons flex">';
+            $typefile = array_pop(explode('.', $fileinfo['name']));
             if (is_writable($fileinfo['realpath']) === true
                 && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
                 && ($readOnly === false)
             ) {
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
-                $data[4] .= '<input type="image" class="invert_filter" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[4] .= '<input type="image" style="margin-top: 2px;height:21px" class="invert_filter" src="images/delete.svg" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
                 $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['server_unique_identifier']), true);
                 $data[4] .= html_print_input_hidden('delete_file', 1, true);
@@ -751,7 +773,7 @@ function filemanager_file_explorer(
                         && ($typefile !== 'iso') && ($typefile !== 'docx') && ($typefile !== 'doc') && ($fileinfo['mime'] != MIME_DIR)
                     ) {
                         $hash = md5($fileinfo['realpath'].$config['server_unique_identifier']);
-                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'invert_filter']).'</a>';
+                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'main_menu_icon invert_filter']).'</a>';
                     }
                 }
             }
@@ -764,9 +786,16 @@ function filemanager_file_explorer(
                 $data[4] .= '</a>';
             }
 
-                    $data[4] .= '</span>';
+            if (is_writable($fileinfo['realpath']) === true
+                && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
+                && ($readOnly === false)
+            ) {
+                $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/enable.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter main_menu_icon']).'</a>';
+            }
 
-                    array_push($table->data, $data);
+            $data[4] .= '</div>';
+
+            array_push($table->data, $data);
         }
     } else {
         ui_print_info_message(
@@ -800,10 +829,10 @@ function filemanager_file_explorer(
                     'images/create_file.png',
                     true,
                     [
-                        'title' => __('Create a Text'),
+                        'title' => __('Create File'),
                         'class' => 'invert_filter',
                     ]
-                ).'<span>'.__('Create a Text').'</span>
+                ).'<span>'.__('Create File').'</span>
                     </a>
                 </li>';
             }
@@ -827,7 +856,7 @@ function filemanager_file_explorer(
             $createFolderElements = $tabs_dialog;
             $createFolderElements .= sprintf('<form method="POST" action="%s">', $url);
             $createFolderElements .= html_print_input_text('dirname', '', '', 30, 255, true);
-            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true);
+            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
             $createFolderElements .= html_print_input_hidden('directory', $relative_directory, true);
             $createFolderElements .= html_print_input_hidden('create_dir', 1, true);
             $createFolderElements .= html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true);
@@ -859,7 +888,7 @@ function filemanager_file_explorer(
                         'content' => html_print_input_file(
                             'file',
                             true,
-                            [ 'style' => 'border:0; padding:0; width:100%' ]
+                            ['style' => 'border:0; padding:0; width:100%']
                         ),
                     ],
                     true
@@ -867,7 +896,7 @@ function filemanager_file_explorer(
                 $uploadFileElements .= html_print_input_hidden('upload_file', 1, true);
             }
 
-            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true);
+            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
             $uploadFileElements .= html_print_input_hidden('real_directory', $real_directory, true);
             $uploadFileElements .= html_print_input_hidden('directory', $relative_directory, true);
             $uploadFileElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
@@ -888,7 +917,7 @@ function filemanager_file_explorer(
                 $createTextElements = $tabs_dialog;
                 $createTextElements .= '<form method="post" action="'.$url.'">';
                 $createTextElements .= html_print_input_text('name_file', '', '', 30, 50, true);
-                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true);
+                $createTextElements .= html_print_submit_button(__('Create'), 'create', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
                 $createTextElements .= html_print_input_hidden('real_directory', $real_directory, true);
                 $createTextElements .= html_print_input_hidden('directory', $relative_directory, true);
                 $createTextElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
@@ -907,50 +936,77 @@ function filemanager_file_explorer(
 
             echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";
 
-            echo "<a href='javascript: show_form_create_folder();'>";
-            echo html_print_image(
-                'images/create_directory.png',
-                true,
+            $buttons[] = html_print_button(
+                __('Create directory'),
+                'create_directory',
+                false,
+                'show_form_create_folder()',
                 [
-                    'title' => __('Create directory'),
-                    'class' => 'invert_filter',
-                ]
+                    'class' => 'margin-right-2 invert_filter secondary',
+                    'icon'  => 'create_directory',
+                ],
+                true,
+                false
             );
-            echo '</a>';
 
             if ($allowCreateText === true) {
-                echo "<a href='javascript: show_create_text_file();'>";
-                echo html_print_image(
-                    'images/create_file.png',
-                    true,
+                $buttons[] = html_print_button(
+                    __('Create file'),
+                    'create_text',
+                    false,
+                    'show_create_text_file()',
                     [
-                        'title' => __('Create text'),
-                        'class' => 'invert_filter',
-                    ]
+                        'class' => 'margin-right-2 invert_filter secondary',
+                        'icon'  => 'create_file',
+                    ],
+                    true,
+                    false
                 );
-                echo '</a>';
             }
 
-            echo "<a href='javascript: show_upload_file();'>";
-            echo html_print_image(
-                'images/upload_file.png',
-                true,
+            $buttons[] = html_print_button(
+                __('Upload file/s'),
+                'upload_file',
+                false,
+                'show_upload_file()',
                 [
-                    'title' => __('Upload file/s'),
-                    'class' => 'invert_filter',
+                    'class' => 'margin-right-2 invert_filter secondary',
+                    'icon'  => 'upload_file',
+                ],
+                true,
+                false
+            );
+
+            // Show Modal Real Path
+            $modal_real_path = "<div><b>Real path to plugin execution is:</b></div>
+                                <div id='real_path'></div>";
+
+            if (isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'on' || $_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1') {
+                $modal_real_path .= "<div style='float:right;margin: 5em 0 0 auto';>".html_print_submit_button(__('Copy'), 'submit', false, ['icon' => 'wand', 'mode' => 'mini'], true).'</div>';
+            }
+
+            html_print_div(
+                [
+                    'id'      => 'modal_real_path',
+                    'class'   => 'invisible',
+                    'content' => $modal_real_path,
                 ]
             );
-            echo '</a>';
 
             echo '</div>';
         } else {
             echo "<div style='text-align: right; width: ".$table->width."; color:#AC4444; margin-bottom:10px;'>";
-            echo "<image class='invert_filter' src='images/info.png' />".__('The directory is read-only');
+            echo "<image class='main_menu_icon invert_filter' src='images/info@svg.svg' />".__('The directory is read-only');
             echo '</div>';
         }
     }
 
     html_print_table($table);
+
+    html_print_action_buttons(
+        implode('', $buttons),
+        ['type' => 'form_action']
+    );
 }
 
 

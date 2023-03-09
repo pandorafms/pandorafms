@@ -353,6 +353,23 @@ sub pandora_purgedb ($$$) {
 	else {
 		log_message ('PURGE', 'netflow_max_lifetime is set to 0. Old netflow data will not be deleted.');
 	}
+
+	# Delete old sflow data
+	if ($conf->{'_sflow_max_lifetime'} > 0) {
+		log_message ('PURGE', "Deleting old sflow data.");
+		if (! defined ($conf->{'_sflow_path'}) || ! -d $conf->{'_sflow_path'}) {
+			log_message ('!', "sflow data directory does not exist, skipping.");
+		}
+		elsif (! -x $conf->{'_sflow_nfexpire'}) {
+			log_message ('!', "Cannot execute " . $conf->{'_sflow_nfexpire'} . ", skipping.");
+		}
+		else {
+			`yes 2>/dev/null | $conf->{'_sflow_nfexpire'} -r "$conf->{'_sflow_path'}" -t $conf->{'_sflow_max_lifetime'}d`;
+		}
+	}
+	else {
+		log_message ('PURGE', 'sflow_max_lifetime is set to 0. Old sflow data will not be deleted.');
+	}
 	
 	# Delete old log data
 	log_message ('PURGE', "Deleting old log data.");

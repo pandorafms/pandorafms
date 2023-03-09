@@ -2620,9 +2620,10 @@ function reporting_agents_inventory($report, $content)
 
     $custom_field_sql = '';
     $search_sql = '';
+    $sql_order_by = 'ORDER BY tagente.id_agente ASC';
 
     if (empty(array_filter($es_agent_custom_fields)) === false) {
-        $custom_field_sql = 'INNER JOIN tagent_custom_data tacd ON tacd.id_agent = tagente.id_agente';
+        $custom_field_sql = 'LEFT JOIN tagent_custom_data tacd ON tacd.id_agent = tagente.id_agente';
         if ($es_agent_custom_fields[0] != 0) {
             $custom_field_sql .= ' AND tacd.id_field IN ('.implode(',', $es_agent_custom_fields).')';
         }
@@ -2656,6 +2657,12 @@ function reporting_agents_inventory($report, $content)
 
     $user_groups_to_sql = implode(',', array_keys(users_get_groups()));
 
+    if (array_search('alias', $es_agents_inventory_display_options) !== false) {
+        $sql_order_by = 'ORDER BY tagente.alias ASC';
+    } else if (array_search('direccion', $es_agents_inventory_display_options) !== false) {
+        $sql_order_by = 'ORDER BY tagente.direccion ASC';
+    }
+
     $sql = sprintf(
         'SELECT DISTINCT(tagente.id_agente) AS id_agente,
         tagente.id_os,
@@ -2671,12 +2678,12 @@ function reporting_agents_inventory($report, $content)
         LEFT JOIN tagente_modulo tam
             ON tam.id_agente = tagente.id_agente
         %s
-        WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
-            %s',
+        WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))%s%s',
         $custom_field_sql,
         $user_groups_to_sql,
         $user_groups_to_sql,
-        $search_sql
+        $search_sql,
+        $sql_order_by
     );
 
     if (is_metaconsole()) {
@@ -2808,11 +2815,16 @@ function reporting_modules_inventory($report, $content)
     $search_sql = '';
 
     if (empty($es_agent_group_filter) === false) {
-        $search_sql .= ' AND (ta.id_grupo = '.$es_agent_group_filter.' OR tasg.id_group = '.$es_agent_group_filter.')';
+        $search_sql .= '(ta.id_grupo = '.$es_agent_group_filter.' OR tasg.id_group = '.$es_agent_group_filter.')';
     }
 
     if (empty($module_group) === false && $module_group > -1) {
-        $search_sql .= ' AND tam.id_module_group = '.$module_group;
+        $modules = implode(',', $module_group);
+        if ($search_sql !== '') {
+            $search_sql .= ' AND ';
+        }
+
+        $search_sql .= 'tam.id_module_group IN ('.$modules.')';
     }
 
     $user_groups_to_sql = '';
@@ -2822,25 +2834,80 @@ function reporting_modules_inventory($report, $content)
     $user_groups = $user_groupsAR;
     $user_groups_to_sql = implode(',', array_keys($user_groups));
 
+    $sql_alias = '';
+    $sql_order_by = 'ORDER BY tam.nombre ASC';
+    if ((int) $external_source['alias'] === 1) {
+        $sql_alias = " ta.alias,\n       ";
+        $sql_order_by = 'ORDER BY ta.alias ASC, tam.nombre ASC';
+    }
+
+    $sql_description = '';
+    if ((int) $external_source['description_switch'] === 1) {
+        $sql_description = "\n        tam.descripcion,";
+    }
+
+    $sql_last_status = '';
+    $sql_last_status_join = '';
+    if ((int) $external_source['last_status_change'] === 1) {
+        $sql_last_status = ",\n        tae.last_status_change";
+        $sql_last_status_join = "\n        LEFT JOIN tagente_estado tae";
+        $sql_last_status_join .= "\n            ON tae.id_agente_modulo = tam.id_agente_modulo";
+    }
+
+    if (empty($external_source['search_module_name']) === false) {
+        if ($search_sql !== '') {
+            $search_sql .= ' AND ';
+        }
+
+        $search_sql .= "tam.nombre LIKE '%".$external_source['search_module_name']."%'";
+    }
+
+    $tags_condition = tags_get_user_tags();
+    $tags_imploded = implode(',', array_keys($tags_condition));
+    if (users_is_admin() === false) {
+        if ($search_sql !== '') {
+            $search_sql .= ' AND ';
+        }
+
+        $search_sql .= 'ttm.id_tag IN ('.$tags_imploded.')';
+    }
+
+    if (empty($external_source['tags']) === false) {
+        $external_tags_imploded = implode(',', $external_source['tags']);
+        if ($search_sql !== '') {
+            $search_sql .= ' AND ';
+        }
+
+        $search_sql .= 'ttm.id_tag IN ('.$external_tags_imploded.')';
+    }
+
+    $sql_where = '';
+    if (empty($search_sql) === false) {
+        $sql_where .= 'WHERE '.$search_sql;
+    }
+
     $sql = sprintf(
-        'SELECT tam.id_agente_modulo,
-        tam.nombre,
-        tam.descripcion,
+        'SELECT DISTINCT(tam.id_agente_modulo),
+        %s tam.id_agente_modulo,
+        tam.nombre,%s
         tam.id_module_group,
-        ttm.id_tag,
         ta.id_grupo AS group_id,
-        tasg.id_group AS sec_group_id
+        tasg.id_group AS sec_group_id%s
         FROM tagente_modulo tam
         INNER JOIN tagente ta
             ON tam.id_agente = ta.id_agente
         LEFT JOIN tagent_secondary_group tasg
             ON ta.id_agente = tasg.id_agent
         LEFT JOIN ttag_module ttm
-            ON ttm.id_agente_modulo = tam.id_agente_modulo
-        WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)) %s',
-        $user_groups_to_sql,
-        $user_groups_to_sql,
-        $search_sql
+            ON ttm.id_agente_modulo = tam.id_agente_modulo%s
+        %s 
+        %s',
+        $sql_alias,
+        $sql_description,
+        $sql_last_status,
+        $sql_last_status_join,
+        $sql_where,
+        $sql_order_by
     );
 
     if (is_metaconsole()) {
@@ -2866,6 +2933,23 @@ function reporting_modules_inventory($report, $content)
 
         $agents = db_get_all_rows_sql($sql);
 
+        foreach ($agents as $agent_key => $agent_value) {
+            $sql2 = 'SELECT tm.id_tag
+                        FROM ttag_module tm
+                        WHERE tm.id_agente_modulo = '.$agent_value['id_agente_modulo'];
+
+            $tags_rows = db_get_all_rows_sql($sql2);
+            $tags_ids = [];
+
+            foreach ($tags_rows as $tag_row) {
+                array_push($tags_ids, $tag_row['id_tag']);
+            }
+
+            $column_value = implode(',', $tags_ids);
+            $agents[$agent_key]['tags'] = $column_value;
+            $agents[$agent_key]['server_id'] = $server_id;
+        }
+
         $return_data[$server_id] = $agents;
 
         if (is_metaconsole()) {
@@ -2885,33 +2969,44 @@ function reporting_modules_inventory($report, $content)
 
     $module_row_data = [];
 
+    $i = 0;
+
     foreach ($return['data'] as $row) {
-        if (is_array($module_row_data[$row['id_agente_modulo']]) === false) {
-            $module_row_data[$row['id_agente_modulo']]['nombre'] = $row['nombre'];
-            $module_row_data[$row['id_agente_modulo']]['descripcion'] = $row['descripcion'];
-            $module_row_data[$row['id_agente_modulo']]['id_module_group'] = $row['id_module_group'];
-            $module_row_data[$row['id_agente_modulo']]['id_tag'] = [];
-            $module_row_data[$row['id_agente_modulo']]['group_id'] = [];
-            $module_row_data[$row['id_agente_modulo']]['sec_group_id'] = [];
+        if (array_key_exists('alias', $row) === true) {
+            $module_row_data[$i]['alias'] = $row['alias'];
         }
 
-        if (in_array($row['id_tag'], $module_row_data[$row['id_agente_modulo']]['id_tag']) === false
-            && $row['id_tag'] !== null
-        ) {
-            $module_row_data[$row['id_agente_modulo']]['id_tag'][] = $row['id_tag'];
+        if (array_key_exists('nombre', $row) === true) {
+            $module_row_data[$i]['nombre'] = $row['nombre'];
         }
 
-        if (in_array($row['group_id'], $module_row_data[$row['id_agente_modulo']]['group_id']) === false
-            && $row['group_id'] !== null
-        ) {
-            $module_row_data[$row['id_agente_modulo']]['group_id'][] = $row['group_id'];
+        if (array_key_exists('descripcion', $row) === true) {
+            $module_row_data[$i]['descripcion'] = $row['descripcion'];
         }
 
-        if (in_array($row['sec_group_id'], $module_row_data[$row['id_agente_modulo']]['sec_group_id']) === false
-            && $row['sec_group_id'] !== null
-        ) {
-            $module_row_data[$row['id_agente_modulo']]['sec_group_id'][] = $row['sec_group_id'];
+        $module_row_data[$i]['id_module_group'] = $row['id_module_group'];
+        $module_row_data[$i]['id_tag'] = [];
+        $module_row_data[$i]['group_id'] = [];
+        $module_row_data[$i]['sec_group_id'] = [];
+
+        if (array_key_exists('tags', $row) === true) {
+            $module_row_data[$i]['id_tag'][] = $row['tags'];
         }
+
+        if (array_key_exists('id_group', $row) === true) {
+            $module_row_data[$i]['group_id'][] = $row['group_id'];
+        }
+
+        if (array_key_exists('sec_group_id', $row) === true) {
+            $module_row_data[$i]['sec_group_id'][] = $row['sec_group_id'];
+        }
+
+        if (array_key_exists('last_status_change', $row) === true) {
+            $human_last_status_change = human_time_comparation($row['last_status_change']);
+            $module_row_data[$i]['last_status_change'] = $human_last_status_change;
+        }
+
+        $i++;
     }
 
     $return['data'] = $module_row_data;

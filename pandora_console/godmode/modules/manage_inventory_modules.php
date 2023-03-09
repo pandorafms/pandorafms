@@ -43,7 +43,7 @@ if (is_metaconsole() === true) {
 
     ui_print_standard_header(
         __('Inventory modules'),
-        'images/page_white_text.png',
+        'images/hardware-software-component@svg.svg',
         false,
         '',
         true,

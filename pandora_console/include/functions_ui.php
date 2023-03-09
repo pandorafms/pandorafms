@@ -728,7 +728,7 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
             }
 
             $output .= html_print_image(
-                'images/'.$icon,
+                'images/'.$icon.'.svg',
                 true,
                 [
                     'style' => $style,

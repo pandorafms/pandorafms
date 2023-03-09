@@ -2618,6 +2618,10 @@ function reporting_agents_inventory($report, $content)
         $es_agents_inventory_display_options = [];
     }
 
+    if ($es_agent_custom_fields === '') {
+        $es_agent_custom_fields = [];
+    }
+
     $custom_field_sql = '';
     $search_sql = '';
 

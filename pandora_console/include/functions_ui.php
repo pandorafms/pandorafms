@@ -3918,10 +3918,15 @@ function ui_print_datatable(array $parameters)
             ordering: '.$ordering.',
             initComplete: function(settings, json) {
                 // Move elements to table_action_buttons bar.
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_length"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dt-buttons"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
             },
             columns: [';
 
@@ -4519,8 +4524,8 @@ function ui_print_toggle($data)
         (isset($data['toggle_class']) === true) ? $data['toggle_class'] : '',
         (isset($data['container_class']) === true) ? $data['container_class'] : 'white-box-content',
         (isset($data['main_class']) === true) ? $data['main_class'] : 'box-flat white_table_graph',
-        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
-        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
+        (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow@svg.svg',
+        (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow@svg.svg',
         (isset($data['clean']) === true) ? $data['clean'] : false,
         (isset($data['reverseImg']) === true) ? $data['reverseImg'] : false,
         (isset($data['switch']) === true) ? $data['switch'] : false,

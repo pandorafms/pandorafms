@@ -5235,9 +5235,13 @@ function html_print_switch($attributes=[])
  *
  * @return string With HTML code.
  */
-function html_print_link_with_params($text, $params=[], $type='text', $style='')
+function html_print_link_with_params($text, $params=[], $type='text', $style='', $formStyle='')
 {
-    $html = '<form method=post>';
+    if (empty($formStyle) === false) {
+        $formStyle = ' style="'.$formStyle.'"';
+    }
+
+    $html = '<form method="POST"'.$formStyle.'>';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);
@@ -5245,7 +5249,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
 
         case 'text':
         default:
-            if (!empty($style)) {
+            if (empty($style) === false) {
                 $style = ' style="'.$style.'"';
             }
 
@@ -5253,7 +5257,10 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
                 $text,
                 $text,
                 false,
-                'class="button-as-link"'.$style,
+                [
+                    'mode'  => 'link',
+                    'style' => $style,
+                ],
                 true
             );
         break;
@@ -5587,7 +5594,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
 
         case 'submit':
-            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : 'width: 100%';
+            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : '';
             $output .= '<'.$wrapper.' class="action-buttons" style="'.$width.'">'.html_print_submit_button(
                 ((isset($data['label']) === true) ? $data['label'] : 'OK'),
                 ((isset($data['name']) === true) ? $data['name'] : ''),

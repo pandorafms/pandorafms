@@ -13,6 +13,10 @@ ul.wizard li {
   padding-top: 10px;
 }
 
+#principal_action_buttons ul.wizard li {
+  padding: 0px;
+}
+
 ul.wizard.inline li {
   display: flex;
   flex-direction: row;

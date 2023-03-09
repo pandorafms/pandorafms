@@ -34,7 +34,6 @@ $url = sprintf(
     $url_id_agente
 );
 
-enterprise_include('godmode/agentes/module_manager.php');
 $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -51,195 +50,9 @@ if (isset($policy_page) === false) {
 $checked = (bool) get_parameter('checked');
 $sec2 = (string) get_parameter('sec2');
 
-// Table for filter bar.
-$filterTable = new stdClass();
-$filterTable->class = 'fixed_filter_bar';
-$filterTable->data = [];
-$filterTable->cellstyle[0][0] = 'width:0';
-$filterTable->data[0][0] = __('Search');
-$filterTable->data[1][0] .= html_print_input_text(
-    'search_string',
-    $search_string,
-    '',
-    30,
-    255,
-    true,
-    false,
-    false,
-    '',
-    ''
-);
-$filterTable->data[0][0] .= html_print_input_hidden('search', 1, true);
-
-if ((bool) $policy_page === false) {
-    $filterTable->data[0][1] = __('Show in hierachy mode');
-    $filterTable->data[1][1] = html_print_checkbox_switch(
-        'status_hierachy_mode',
-        '',
-        ((string) $checked === 'true'),
-        true,
-        false,
-        'onChange=change_mod_filter();'
-    );
-}
-
-$filterTable->data[1][2] = html_print_submit_button(
-    __('Filter'),
-    'filter',
-    false,
-    [
-        'icon'  => 'search',
-        'class' => 'float-right',
-        'mode'  => 'secondary mini',
-    ],
-    true
-);
-
-// Print filter table.
-echo '<form id="create_module_type" method="post" action="'.$url.'">';
-html_print_table($filterTable);
-echo '</form>';
-// Check if there is at least one server of each type available to assign that
-// kind of modules. If not, do not show server type in combo.
-$network_available = db_get_sql(
-    'SELECT count(*)
-	FROM tserver
-	WHERE server_type = '.SERVER_TYPE_NETWORK
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-$wmi_available = db_get_sql(
-    'SELECT count(*)
-	FROM tserver
-	WHERE server_type = '.SERVER_TYPE_WMI
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-$plugin_available = db_get_sql(
-    'SELECT count(*)
-	FROM tserver
-	WHERE server_type = '.SERVER_TYPE_PLUGIN
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-$prediction_available = db_get_sql(
-    'SELECT count(*)
-	FROM tserver
-	WHERE server_type = '.SERVER_TYPE_PREDICTION
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-$web_available = db_get_sql(
-    'SELECT count(*)
-FROM tserver
-WHERE server_type = '.SERVER_TYPE_WEB
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-// Development mode to use all servers.
-if ($develop_bypass || is_metaconsole()) {
-    $network_available = 1;
-    $wmi_available = 1;
-    $plugin_available = 1;
-    // FIXME when prediction predictions server modules can be configured.
-    // on metaconsole.
-    $prediction_available = (is_metaconsole() === true) ? 0 : 1;
-}
-
-$modules = [];
-$modules['dataserver'] = __('Create a new data server module');
-if ($network_available) {
-    $modules['networkserver'] = __('Create a new network server module');
-}
-
-if ($plugin_available) {
-    $modules['pluginserver'] = __('Create a new plugin server module');
-}
-
-if ($wmi_available) {
-    $modules['wmiserver'] = __('Create a new WMI server module');
-}
-
-if ($prediction_available) {
-    $modules['predictionserver'] = __('Create a new prediction server module');
-}
-
-if (is_metaconsole() === true || $web_available >= '1') {
-    $modules['webserver'] = __('Create a new web Server module');
-}
-
-if (enterprise_installed() === true) {
-    set_enterprise_module_types($modules);
-}
-
-if (strstr($sec2, 'enterprise/godmode/policies/policies') !== false) {
-    // It is unset because the policies haven't a table tmodule_synth and the
-    // some part of code to apply this kind of modules in policy agents.
-    // But in the future maybe will be good to make this feature, but remember
-    // the modules to show in syntetic module policy form must be the policy
-    // modules from the same policy.
-    unset($modules['predictionserver']);
-    if (enterprise_installed() === true) {
-        unset($modules['webux']);
-    }
-}
-
-if (($policy_page === true) || (isset($agent) === true)) {
-    if ($policy_page === true) {
-        $show_creation = is_management_allowed();
-    } else {
-        if (isset($all_groups) === false) {
-            $all_groups = agents_get_all_groups_agent(
-                $agent['id_agente'],
-                $agent['id_grupo']
-            );
-        }
-
-        $show_creation = check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true;
-    }
-} else {
-    $show_creation = false;
-}
-
-if ($show_creation === true) {
-    // Create module/type combo.
-    $tableCreateModule = new stdClass();
-    $tableCreateModule->id = 'create';
-    $tableCreateModule->class = 'create_module_dialog';
-    $tableCreateModule->width = '100%';
-    $tableCreateModule->data = [];
-    $tableCreateModule->style = [];
-
-    $tableCreateModule->data['caption_type'] = html_print_input_hidden('edit_module', 1);
-    $tableCreateModule->data['caption_type'] .= __('Type');
-    $tableCreateModule->data['type'] = html_print_select(
-        $modules,
-        'moduletype',
-        '',
-        '',
-        '',
-        '',
-        true,
-        false,
-        false,
-        '',
-        false,
-        'width:380px;'
-    );
-
-    // Link for get more modules.
-    if ((bool) $config['disable_help'] === false) {
-        $tableCreateModule->data['get_more_modules'] = html_print_anchor(
-            [
-                'href'    => 'https://pandorafms.com/Library/Library/',
-                'target'  => '_blank',
-                'class'   => 'color-black-grey',
-                'content' => __('Get more modules on Monitoring Library'),
-            ],
-            true
-        );
-    }
-}
-
 if (isset($id_agente) === false) {
     return;
 }
-
 
 $module_action = (string) get_parameter('module_action');
 
@@ -1256,43 +1069,58 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
         [ 'type' => 'data_table' ]
     );
     echo '</form>';
-
-
-    $modalCreateModule = '<form name="create_module_form" method="post">';
-    $modalCreateModule .= html_print_table($tableCreateModule, true);
-    $modalCreateModule .= html_print_div(
-        [
-            'class'   => 'action-buttons',
-            'content' => html_print_submit_button(
-                __('Create'),
-                'create_module',
-                false,
-                [
-                    'icon' => 'next',
-                    'mode' => 'mini secondary',
-                ],
-                true
-            ),
-        ],
-        true
-    );
-    $modalCreateModule .= '</form>';
-
-    html_print_div(
-        [
-            'id'      => 'modal',
-            'style'   => 'display: none',
-            'content' => $modalCreateModule,
-        ]
-    );
 }
+
+$modalCreateModule = '<form name="create_module_form" method="post">';
+$input_type = html_print_input_hidden('edit_module', 1, true);
+$input_type .= html_print_select(
+    policies_type_modules_availables($sec2),
+    'moduletype',
+    '',
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    '',
+    false,
+    'max-width:300px;'
+);
+
+$modalCreateModule .= $input_type;
+$modalCreateModule .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Create'),
+            'create_module',
+            false,
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
+            true
+        ),
+    ],
+    true
+);
+$modalCreateModule .= '</form>';
+
+html_print_div(
+    [
+        'id'      => 'modal',
+        'style'   => 'display: none',
+        'content' => $modalCreateModule,
+    ]
+);
 ?>
 
 <script type="text/javascript">
 
     function create_module_dialog(){
-        $('#modal')
-        .dialog({
+        console.log('Entra');
+        $('#modal').dialog({
             title: '<?php echo __('Create Module'); ?>',
             resizable: true,
             draggable: true,

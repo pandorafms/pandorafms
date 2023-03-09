@@ -4643,7 +4643,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                     $table1->data[$k_chart][0] .= ' (24 x 7)';
                 }
 
-                $total_values += $sla_value;
+                $total_values .= $sla_value;
                 $count_total_charts++;
                 $table1->data[$k_chart][1] = $chart['chart'];
                 $table1->data[$k_chart][2] = "<span style = 'font-weight: bold; font-size: ".$font_size.'; color: '.$color."'>".$sla_value.'</span><br/>';
@@ -4720,7 +4720,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 
                     case 'result':
                     default:
-                        $total_values += $sla_value;
+                        $total_values .= $sla_value;
                         $count_total_charts++;
                         $title = '<b>'.__('Result').'</b>';
                         $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.$color."'>".$sla_value.'</span>';

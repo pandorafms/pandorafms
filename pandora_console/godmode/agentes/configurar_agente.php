@@ -476,11 +476,6 @@ if ($id_agente) {
         $inventorytab['active'] = false;
     }
 
-    $inventorytab = enterprise_hook('inventory_tab');
-    if ($inventorytab === ENTERPRISE_NOT_HOOK) {
-        $inventorytab = '';
-    }
-
     $has_remote_conf = enterprise_hook(
         'config_agents_has_remote_configuration',
         [$id_agente]

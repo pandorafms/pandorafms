@@ -8141,7 +8141,8 @@ div.graph div.legend table {
   min-height: 460px;
   position: relative;
   overflow: hidden;
-  background-color: #fafafa;
+  background-color: var(--secondary-color);
+  min-height: calc(100vh - 200px);
 }
 
 /*

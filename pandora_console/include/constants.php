@@ -695,9 +695,18 @@ define('NODE_IMAGE_PADDING', 5);
 
 // Pandora Database HA constants.
 define('HA_ACTION_NONE', 0);
-define('HA_ACTION_RESYNC', 1);
+define('HA_ACTION_DEPLOY', 1);
+define('HA_ACTION_RECOVER', 2);
+define('HA_ACTION_PROMOTE', 3);
+define('HA_ACTION_DEMOTE', 4);
 define('HA_ACTION_DISABLE', 5);
 define('HA_ACTION_ENABLE', 6);
+define('HA_ACTION_CLEANUP', 7);
+define('HA_ACTION_RESYNC', 8);
+
+define('HA_RESYNC', 1);
+define('HA_DISABLE', 5);
+define('HA_ENABLE', 6);
 
 
 define('HA_UNINITIALIZED', 0);

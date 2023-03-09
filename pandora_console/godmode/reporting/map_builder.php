@@ -511,9 +511,9 @@ if (!$maps && is_metaconsole() === false) {
         $data = [];
 
         if (is_metaconsole() === false) {
-            $data[0] = '<a href="index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;id='.$map['id'].'&amp;refr='.$refr.'">'.io_safe_output($map['name']).'</a>';
+            $data[0] = '<a href="index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;id='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
         } else {
-            $data[0] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$map['id'].'&amp;refr='.$refr.'">'.io_safe_output($map['name']).'</a>';
+            $data[0] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
         }
 
         $data[1] = ui_print_group_icon($map['id_group'], true);

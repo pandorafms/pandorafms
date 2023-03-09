@@ -165,7 +165,7 @@ switch ($activeTab) {
                 $background_color = (string) get_parameter('background_color');
                 $width = (int) get_parameter('width');
                 $height = (int) get_parameter('height');
-                $visualConsoleName = io_safe_input((string) get_parameter('name'));
+                $visualConsoleName = (string) get_parameter('name');
                 $is_favourite  = (int) get_parameter('is_favourite_sent');
                 $auto_adjust  = (int) get_parameter('auto_adjust_sent');
 

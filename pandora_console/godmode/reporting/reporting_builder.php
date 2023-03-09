@@ -2411,6 +2411,11 @@ switch ($action) {
                                 $es['agent_server_filter'] = get_parameter('agent_server_filter');
                                 $es['module_group'] = get_parameter('module_group');
                                 $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['search_module_name'] = get_parameter('search_module_name');
+                                $es['tags'] = get_parameter('tags');
+                                $es['alias'] = get_parameter('alias', '');
+                                $es['description_switch'] = get_parameter('description_switch', '');
+                                $es['last_status_change'] = get_parameter('last_status_change', '');
 
                                 $values['external_source'] = json_encode($es);
                             break;
@@ -3199,6 +3204,11 @@ switch ($action) {
                                 $es['agent_server_filter'] = get_parameter('agent_server_filter');
                                 $es['module_group'] = get_parameter('module_group');
                                 $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['search_module_name'] = get_parameter('search_module_name');
+                                $es['tags'] = get_parameter('tags');
+                                $es['alias'] = get_parameter('alias', '');
+                                $es['description_switch'] = get_parameter('description_switch', '');
+                                $es['last_status_change'] = get_parameter('last_status_change', '');
 
                                 $values['external_source'] = json_encode($es);
                             break;

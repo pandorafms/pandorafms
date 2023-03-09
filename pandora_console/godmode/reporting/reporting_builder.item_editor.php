@@ -2633,7 +2633,8 @@ $class = 'databox filters';
                     'render_definition',
                     3,
                     25,
-                    $render_definition
+                    $render_definition,
+                    'style=width:100%'
                 );
                 ?>
             </td>

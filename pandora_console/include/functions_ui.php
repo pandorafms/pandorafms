@@ -727,6 +727,7 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
                 }
             }
 
+            $icon = (str_contains($icon, '.svg') === true) ? $icon : $icon.'.svg';
             $output .= html_print_image(
                 'images/'.$icon,
                 true,

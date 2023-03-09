@@ -11462,6 +11462,7 @@ form#satellite_conf_edit > fieldset.full-column {
   background-repeat: no-repeat;
   background-size: 24px;
   background-image: url("../../images/enable.svg");
+  padding-right: 45px;
 }
 
 .orientation-report {

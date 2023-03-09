@@ -11614,3 +11614,9 @@ ul.tag-editor {
 .ui-dialog .ui-dialog-titlebar {
   display: block !important;
 }
+
+.select2-container--default .select2-search--inline .select2-search__field {
+  height: 20px;
+  padding-left: 5px !important;
+  font-size: 20px !important;
+}

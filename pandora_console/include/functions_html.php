@@ -495,7 +495,8 @@ function html_print_select_groups(
     $size=false,
     $simple_multiple_options=false,
     $required=false,
-    $inverse=''
+    $inverse='',
+    $form=''
 ) {
     $output = '';
 
@@ -609,7 +610,12 @@ function html_print_select_groups(
         '',
         false,
         $simple_multiple_options,
-        $required
+        $required,
+        false,
+        true,
+        false,
+        false,
+        $form
     );
 
     if ($required !== false) {
@@ -761,7 +767,8 @@ function html_print_select(
     $truncate_size=false,
     $select2_enable=true,
     $select2_multiple_enable=false,
-    $select2_multiple_enable_all=false
+    $select2_multiple_enable_all=false,
+    $form=''
 ) {
     $output = "\n";
 
@@ -800,6 +807,10 @@ function html_print_select(
 
     if (!empty($class)) {
         $attributes .= ' class="'.$class.'"';
+    }
+
+    if (!empty($form)) {
+        $attributes .= ' form="'.$form.'"';
     }
 
     if (!empty($disabled)) {

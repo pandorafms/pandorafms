@@ -1131,7 +1131,6 @@ div#container {
 div#main {
   display: flex;
   background-color: #f6f7fb;
-  padding-bottom: 3em;
   position: relative;
   flex-direction: column;
   height: 100%;
@@ -6142,18 +6141,12 @@ div#status_pie {
   padding-left: 15px;
 }
 
-/*
-.agent_details_graph {
-  text-align: center;
-  margin: 0 auto;
-}
-
 .agent_details_info {
-  max-width: 45%;
-  overflow: hidden;
-  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-*/
 
 .agent_details_agent_data {
   display: flex;
@@ -8142,7 +8135,7 @@ div.graph div.legend table {
   position: relative;
   overflow: hidden;
   background-color: var(--secondary-color);
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - 220px);
 }
 
 /*
@@ -11241,8 +11234,8 @@ table.table_modal_alternate
 }
 
 .subsection_header_title {
-  font-size: 18px;
-  font-weight: initial;
+  font-size: 14px;
+  font-weight: "lato-bold";
 }
 
 span.subsection_header_title {

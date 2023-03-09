@@ -532,6 +532,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
         if (isset($item['data']) === true) {
             $table1 = new stdClass();
             $table1->width = '99%';
+            $table1->class = 'info_table';
 
             $table1->align = [];
             $table1->align[0] = 'left';
@@ -567,6 +568,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             // Second_table for time globals.
             $table2 = new stdClass();
             $table2->width = '99%';
+            $table2->class = 'info_table';
 
             $table2->align = [];
             $table2->align[0] = 'left';
@@ -600,6 +602,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             // Third_table for time globals.
             $table3 = new stdClass();
             $table3->width = '99%';
+            $table3->class = 'info_table';
 
             $table3->align = [];
             $table3->align[0] = 'left';
@@ -926,6 +929,7 @@ function reporting_html_top_n($table, $item, $pdf=0)
     } else {
         $table1 = new stdClass();
         $table1->width = '99%';
+        $table1->class = 'info_table';
 
         $table1->align = [];
         $table1->align[0] = 'left';
@@ -1034,6 +1038,7 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
     if ($item['total_events']) {
         $table1 = new stdClass();
         $table1->width = '99%';
+        $table1->class = 'info_table';
 
         $table1->align = [];
         $table1->align[0] = 'center';
@@ -1305,6 +1310,7 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
             foreach ($item['data'] as $item) {
                 $table1 = new stdClass();
                 $table1->width = '99%';
+                $table1->class = 'info_table';
                 $table1->data = [];
                 $table1->head = [];
                 $table1->align = [];
@@ -1531,7 +1537,7 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
     $table1->width = '100%';
 
     $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
-    $table1->class = 'databox data';
+    $table1->class = 'info_table';
     $table1->cellpadding = 1;
     $table1->cellspacing = 1;
     $table1->styleTable = 'overflow: wrap; table-layout: fixed;';
@@ -1749,7 +1755,7 @@ function reporting_html_modules_inventory($table, $item, $pdf=0)
     $table1->width = '100%';
 
     $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
-    $table1->class = 'databox data';
+    $table1->class = 'info_table';
     $table1->cellpadding = 1;
     $table1->cellspacing = 1;
     $table1->styleTable = 'overflow: wrap; table-layout: fixed;';
@@ -1919,6 +1925,7 @@ function reporting_html_inventory_changes($table, $item, $pdf=0)
         foreach ($item['data'] as $module_item) {
             $table1 = new stdClass();
             $table1->width = '99%';
+            $table1->class = 'info_table';
             $table1->cellstyle = [];
 
             $table1->cellstyle[0][0] = 'background: #373737; color: #FFF;';
@@ -2013,6 +2020,7 @@ function reporting_html_inventory($table, $item, $pdf=0)
             foreach ($type_modules as $key_type_module => $type_module) {
                 $table1 = new stdClass();
                 $table1->width = '99%';
+                $table1->class = 'info_table';
                 $table1->data = [];
                 $table1->head = [];
                 $table1->cellstyle = [];
@@ -2103,7 +2111,7 @@ function reporting_html_agent_module($table, $item)
     if (!empty($item['failed'])) {
         $table->data['agent_module']['cell'] = $item['failed'];
     } else {
-        $table_data = '<table class="border_table" cellpadding="0" cellspacing="0" cellspacing="0">';
+        $table_data = '<table class="info_table" cellpadding="0" cellspacing="0" cellspacing="0">';
         $table_data .= '<tr class="border_th">';
         $table_data .= '<th class="bg_th">'.__('Agents').' / '.__('Modules').'</th>';
 
@@ -2452,6 +2460,7 @@ function reporting_html_exception($table, $item, $pdf=0)
     } else {
         $table1 = new stdClass();
         $table1->width = '99%';
+        $table1->class = 'info_table';
 
         $table1->align = [];
         $table1->align['agent'] = 'left';
@@ -2569,7 +2578,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
 
     $table->colspan['group_report']['cell'] = 3;
     $table->cellstyle['group_report']['cell'] = 'text-align: center;';
-    $data = "<table class='databox' width='100%'>
+    $data = "<table class='info_table' width='100%'>
         <tbody><tr>
             <td></td>
             <td colspan='3' class='cellBold cellCenter'>".__('Total')."</td>
@@ -2631,6 +2640,7 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
     if ($item['total_events'] != 0) {
         $table1 = new stdClass();
         $table1->width = '99%';
+        $table1->class = 'info_table';
         $table1->align = [];
         $table1->align[0] = 'center';
         $table1->align[1] = 'center';
@@ -2853,6 +2863,7 @@ function reporting_html_historical_data($table, $item, $pdf=0)
 
     $table1 = new stdClass();
     $table1->width = '100%';
+    $table1->class = 'info_table';
     $table1->head = [
         __('Date'),
         __('Data'),
@@ -2937,6 +2948,7 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
 
     $table1 = new stdClass();
     $table1->width = '100%';
+    $table1->class = 'info_table';
     $table1->head = [
         __('Date'),
         __('Data'),
@@ -3005,6 +3017,7 @@ function reporting_html_last_value($table, $item, $pdf=0)
     if (empty($item['data']) === false) {
         $table_data = new stdClass();
         $table_data->width = '100%';
+        $table_data->class = 'info_table';
         $table_data->headstyle = [];
         $table_data->headstyle[0] = 'text-align: left;';
         $table_data->style = [];
@@ -3167,6 +3180,7 @@ function reporting_html_group_configuration($table, $item, $pdf=0)
         if ($pdf === 0) {
             $table2 = new stdClass();
             $table2->width = '100%';
+            $table2->class = 'info_table';
             $table2->data = [];
             reporting_html_agent_configuration(
                 $table2,
@@ -3317,6 +3331,7 @@ function reporting_html_network_interfaces_report($table, $item, $pdf=0)
         foreach ($item['data'] as $agent) {
             $table_agent = new StdCLass();
             $table_agent->width = '100%';
+            $table_agent->class = 'info_table';
             $table_agent->data = [];
             $table_agent->head = [];
             $table_agent->head[0] = __('Agent').' '.$agent['agent'];
@@ -3440,6 +3455,7 @@ function reporting_html_alert_report($table, $item, $pdf=0)
 
     $table1 = new stdClass();
     $table1->width   = '99%';
+    $table1->class = 'info_table';
     $table1->head    = [];
     $table1->data    = [];
     $table1->rowspan = [];
@@ -3564,6 +3580,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
 
     $table1 = new stdClass();
     $table1->width = '99%';
+    $table1->class = 'info_table';
     $table1->head = [];
     $table1->data = [];
     if ($item['data']['unknown'] == 1) {
@@ -3663,6 +3680,7 @@ function reporting_html_agent_configuration(
     $table1 = new stdClass();
     $table1->width = '99%';
     $table1->head = [];
+    $table1->class = 'info_table';
     $table1->head['name'] = __('Agent name');
     $table1->head['group'] = __('Group');
     $table1->head['os'] = __('OS');
@@ -3837,6 +3855,7 @@ function reporting_html_value(
     ) {
         $table2 = new stdClass();
         $table2->width = '100%';
+        $table2->class = 'info_table';
         switch ($item['type']) {
             case 'max_value':
                 $table2->head = [
@@ -4143,6 +4162,7 @@ function reporting_html_availability($table, $item, $pdf=0)
     if (empty($item['data']) === false) {
         $table1 = new stdClass();
         $table1->width = '99%';
+        $table1->class = 'info_table';
         $table1->data = [];
 
         $table1->head = [];
@@ -4726,6 +4746,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 ) {
                     $table1 = new stdClass();
                     $table1->width = '100%';
+                    $table1->class = 'info_table';
                     $table1->autosize = 1;
                     $table1->styleTable = 'overflow: wrap; table-layout: fixed;';
                     $table1->data = [];
@@ -4746,7 +4767,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                     $table1->data[$k_chart][0] .= ' (24 x 7)';
                 }
 
-                $total_values += $sla_value;
+                $total_values .= $sla_value;
                 $count_total_charts++;
                 $table1->data[$k_chart][1] = $chart['chart'];
                 $table1->data[$k_chart][2] = "<span style = 'font-weight: bold; font-size: ".$font_size.'; color: '.$color."'>".$sla_value.'</span><br/>';
@@ -4823,7 +4844,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 
                     case 'result':
                     default:
-                        $total_values += $sla_value;
+                        $total_values .= $sla_value;
                         $count_total_charts++;
                         $title = '<b>'.__('Result').'</b>';
                         $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.(($pdf === 0) ? ' !important' : '').'; color: '.$color."'>".$sla_value.'</span>';
@@ -4967,6 +4988,7 @@ function reporting_html_general($table, $item, $pdf=0)
                 if (!$data_in_same_row) {
                     $table1 = new stdClass();
                     $table1->width = '99%';
+                    $table1->class = 'info_table';
                     $table1->data = [];
                     $table1->head = [];
                     $table1->head[0] = __('Agent');
@@ -5168,7 +5190,7 @@ function reporting_html_sql($table, $item, $pdf=0)
         $first = true;
 
         $table2 = new stdClass();
-        $table2->class = 'databox';
+        $table2->class = 'info_table';
         $table2->width = '100%';
 
         foreach ($item['data'] as $row) {
@@ -6475,7 +6497,7 @@ function reporting_html_permissions($table, $item, $pdf=0)
     $table1->width = '100%';
 
     $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
-    $table1->class = 'databox data';
+    $table1->class = 'info_table';
     $table1->cellpadding = 1;
     $table1->cellspacing = 1;
     $table1->styleTable = 'overflow: wrap; table-layout: fixed;';

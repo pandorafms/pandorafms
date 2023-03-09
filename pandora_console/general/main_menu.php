@@ -98,6 +98,7 @@ echo '</div>';
 ?>
 <script type="text/javascript">
     $(document).ready(function() {
+        menuActionButtonResizing();
         const menuTypeClass = '<?php echo $menuTypeClass; ?>';
         if (menuTypeClass === 'classic' && menuTypeClass !== localStorage.getItem('menuType')) {
             localStorage.setItem('menuType', 'classic');

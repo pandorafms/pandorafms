@@ -43,7 +43,7 @@ if (is_metaconsole() === true) {
 
     ui_print_standard_header(
         __('Inventory modules'),
-        'images/page_white_text.png',
+        'images/hardware-software-component@svg.svg',
         false,
         '',
         true,
@@ -293,6 +293,7 @@ $table->head[3] = __('Interpreter');
 
 if ($management_allowed === true) {
     $table->head[4] = __('Action').html_print_checkbox('all_delete', 0, false, true, false);
+    $table->size[4] = '80px';
 }
 
 $result = inventory_get_modules_list($offset);
@@ -414,30 +415,14 @@ if (is_metaconsole() === true) {
 
 ?>
 <script type="text/javascript">
-
     $( document ).ready(function() {
-
-        $('[id^=checkbox-delete_multiple]').change(function(){
-            if($(this).parent().parent().hasClass('checkselected')){
-                $(this).parent().parent().removeClass('checkselected');
-            }
-            else{
-                $(this).parent().parent().addClass('checkselected');
-            }
-        });
-
         $('[id^=checkbox-all_delete]').change(function() {
-            if ($("#checkbox-all_delete").prop("checked")) {
-                $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
-                $(".check_delete").prop("checked", true);
+            if ($("input[name=all_delete]").prop("checked")) {
+                $(".custom_checkbox_input").prop("checked", true);
             }
             else {
-                $('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
-                $(".check_delete").prop("checked", false);
+                $(".custom_checkbox_input").prop("checked", false);
             }
         });
-
     });
-
-
 </script>

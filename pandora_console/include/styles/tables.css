@@ -309,11 +309,6 @@ table.dataTable.info_table.no-footer {
   border-bottom: none;
 }
 
-/* Datatables pagination */
-.dataTables_paginate.paging_simple_numbers {
-  margin: 2em 0;
-}
-
 a.pandora_pagination {
   background-color: #f6f7fb;
   padding: 11px;

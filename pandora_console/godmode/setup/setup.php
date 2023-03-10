@@ -154,6 +154,20 @@ if (check_acl($config['id_user'], 0, 'AW')) {
             ).'</a>',
         ];
     }
+
+    if ($config['activate_sflow']) {
+        $buttons['sflow'] = [
+            'active' => false,
+            'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=sflow').'">'.html_print_image(
+                'images/op_netflow.png',
+                true,
+                [
+                    'title' => __('Sflow'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
+        ];
+    }
 }
 
 $buttons['integria'] = [
@@ -272,6 +286,12 @@ switch ($section) {
         $help_header = 'setup_netflow_tab';
     break;
 
+    case 'sflow':
+        $buttons['sflow']['active'] = true;
+        $subpage = ' &raquo '.__('Sflow');
+        $help_header = 'setup_flow_tab';
+    break;
+
     case 'ehorus':
         $buttons['ehorus']['active'] = true;
         $subpage = ' &raquo '.__('eHorus');
@@ -379,6 +399,10 @@ switch ($section) {
 
     case 'net':
         include_once $config['homedir'].'/godmode/setup/setup_netflow.php';
+    break;
+
+    case 'sflow':
+        include_once $config['homedir'].'/godmode/setup/setup_sflow.php';
     break;
 
     case 'vis':

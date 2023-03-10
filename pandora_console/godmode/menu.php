@@ -364,6 +364,11 @@ if ($access_console_node === true) {
                 $sub2['godmode/setup/setup&section=net']['text'] = __('Netflow');
                 $sub2['godmode/setup/setup&section=net']['refr'] = 0;
             }
+
+            if ((bool) $config['activate_sflow'] === true) {
+                $sub2['godmode/setup/setup&section=sflow']['text'] = __('Sflow');
+                $sub2['godmode/setup/setup&section=sflow']['refr'] = 0;
+            }
         }
 
         $sub2['godmode/setup/setup&section=ehorus']['text'] = __('eHorus');

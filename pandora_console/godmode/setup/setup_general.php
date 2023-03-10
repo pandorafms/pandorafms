@@ -246,7 +246,31 @@ $table->data[$i++][1] = html_print_checkbox_switch_extended(
     true
 );
 
+$table->data[$i][0] = __('Enable Sflow');
+$rbt_disabled = false;
+if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+    $rbt_disabled = true;
+}
 
+$table->data[$i++][1] = html_print_checkbox_switch_extended(
+    'activate_sflow',
+    1,
+    $config['activate_sflow'],
+    $rbt_disabled,
+    '',
+    '',
+    true
+);
+
+$table->data[$i][0] = __('General network path');
+$table->data[$i++][1] = html_print_input_text(
+    'general_network_path',
+    $config['general_network_path'],
+    '',
+    40,
+    255,
+    true
+);
 $zone_name = [
     'Africa'     => __('Africa'),
     'America'    => __('America'),

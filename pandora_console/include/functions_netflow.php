@@ -1025,9 +1025,29 @@ function netflow_get_command($options, $filter)
     // Build command.
     $command = io_safe_output($config['netflow_nfdump']).' -N';
 
-    // Netflow data path.
-    if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
-        $command .= ' -R. -M '.$config['netflow_path'];
+    if ($config['activate_sflow'] && $config['activate_netflow']) {
+        if (isset($config['sflow_name_dir']) && $config['sflow_name_dir'] !== ''
+            && isset($config['netflow_name_dir']) && $config['netflow_name_dir'] !== ''
+            && isset($config['general_network_path']) && $config['general_network_path'] !== ''
+        ) {
+            $command .= ' -R. -M '.$config['general_network_path'].$config['netflow_name_dir'].':'.$config['sflow_name_dir'];
+        }
+    } else {
+        if ($config['activate_sflow']) {
+            if (isset($config['sflow_name_dir']) && $config['sflow_name_dir'] !== ''
+                && isset($config['general_network_path']) && $config['general_network_path'] !== ''
+            ) {
+                $command .= ' -R. -M '.$config['general_network_path'].$config['sflow_name_dir'];
+            }
+        }
+
+        if ($config['activate_netflow']) {
+            if (isset($config['netflow_name_dir']) && $config['netflow_name_dir'] !== ''
+                && isset($config['general_network_path']) && $config['general_network_path'] !== ''
+            ) {
+                $command .= ' -R. -M '.$config['general_network_path'].$config['netflow_name_dir'];
+            }
+        }
     }
 
     // Add options.
@@ -1035,7 +1055,7 @@ function netflow_get_command($options, $filter)
 
     // Filter options.
     $command .= ' '.netflow_get_filter_arguments($filter);
-
+    hd($command, true);
     return $command;
 }
 

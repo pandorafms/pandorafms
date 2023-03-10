@@ -29,25 +29,24 @@
 // Extras required.
 \ui_require_css_file('wizard');
 \enterprise_include_once('meta/include/functions_alerts_meta.php');
-\enterprise_hook('open_meta_frame');
 
 if (\is_metaconsole() === true) {
     \alerts_meta_print_header($tabs);
 } else {
     // Header.
-    \ui_print_page_header(
-        // Title.
-        __('Calendars Edit'),
-        // Icon.
+    \ui_print_standard_header(
+        __('Alerts'),
         'images/gm_alerts.png',
-        // Return.
         false,
-        // Help.
         'alert_special_days',
-        // Godmode.
         true,
-        // Options.
-        $tabs
+        $tabs,
+        [
+            [
+                'link'  => '',
+                'label' => __('Calendars Edit'),
+            ],
+        ]
     );
 }
 
@@ -115,19 +114,24 @@ $inputs[] = [
         'rows'     => 50,
         'columns'  => 30,
     ],
+    'class'     => 'w100p',
 ];
 
-
+$button_create = '';
 if ($is_management_allowed === true) {
     // Submit.
-    $inputs[] = [
-        'arguments' => [
-            'name'       => 'button',
-            'label'      => (($create === true) ? __('Create') : __('Update')),
-            'type'       => 'submit',
-            'attributes' => 'class="sub next"',
-        ],
-    ];
+    html_print_action_buttons(
+        html_print_submit_button(
+            (($create === true) ? __('Create') : __('Update')),
+            'button',
+            false,
+            [
+                'icon' => 'wand',
+                'form' => 'create_specia_days',
+            ],
+            true
+        )
+    );
 }
 
 // Print form.
@@ -136,11 +140,11 @@ HTML::printForm(
         'form'   => [
             'action' => $url.'&op=edit&action=save&id='.$calendar->id(),
             'method' => 'POST',
+            'id'     => 'create_specia_days',
+            'class'  => 'aaaa',
         ],
         'inputs' => $inputs,
     ],
     false,
     true
 );
-
-\enterprise_hook('close_meta_frame');

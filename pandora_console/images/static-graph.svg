@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / static-graph@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-static-graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(1.000000, 1.000000)">
+            <circle id="Oval" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" cx="15" cy="3" r="3"></circle>
+            <path d="M9,3 L1,3 C0.44771525,3 -6.76353751e-17,3.44771525 0,4 L0,17 C6.76353751e-17,17.5522847 0.44771525,18 1,18 L16,18 C16.5522847,18 17,17.5522847 17,17 L17,9 L17,9" id="Path-2" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M0,11.9867169 L3.54713251,8.64577716 C3.93225581,8.28304085 4.53327438,8.28304085 4.91839768,8.64577716 L9.93074996,13.3667643 C10.3158733,13.7295006 10.9168918,13.7295006 11.3020151,13.3667643 L13.1225587,11.6520479 C13.507682,11.2893116 14.1087006,11.2893116 14.4938239,11.6520479 L17,14.0125414 L17,14.0125414 L17,17 C17,17.5522847 16.5522847,18 16,18 L1,18 C0.44771525,18 6.76353751e-17,17.5522847 0,17 L0,11.9867169 L0,11.9867169 Z" id="Path" fill="#3F3F3F"></path>
+        </g>
+    </g>
+</svg>

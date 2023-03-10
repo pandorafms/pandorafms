@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,7 +60,7 @@ set_unless_defined($idVisualConsole, 0);
 // Set default.
 $idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
 if (empty($idVisualConsole) === true) {
-    $idVisualConsole = get_parameter('id_visualmap', 0);
+    $idVisualConsole = get_parameter('id', 0);
 }
 
 if (!defined('METACONSOLE')) {
@@ -81,7 +81,6 @@ $action = get_parameterBetweenListValues(
     ],
     'new'
 );
-
 $activeTab = get_parameterBetweenListValues(
     'tab',
     [
@@ -94,20 +93,17 @@ $activeTab = get_parameterBetweenListValues(
     'data'
 );
 
-// Visual console creation tab and actions
+
+// Visual console creation tab and actions.
 if (empty($idVisualConsole)) {
     $visualConsole = null;
 
-    // General ACL
-    // $vconsole_read = check_acl ($config['id_user'], 0, "VR");
+    // General ACL.
     $vconsole_write = check_acl($config['id_user'], 0, 'VW');
     $vconsole_manage = check_acl($config['id_user'], 0, 'VM');
-}
-// The visual console exists
-else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
-    // Load the visual console data
+} else {
+    // Load the visual console data.
     $visualConsole = db_get_row_filter('tlayout', ['id' => $idVisualConsole]);
-
     // The visual console should exist.
     if (empty($visualConsole)) {
         db_pandora_audit(
@@ -118,20 +114,12 @@ else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
         return;
     }
 
-    // The default group id is 0
+    // The default group id is 0.
     set_unless_defined($visualConsole['id_group'], 0);
 
-    // ACL for the existing visual console
-    // $vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
+    // ACL for the existing visual console.
     $vconsole_write = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VW');
     $vconsole_manage = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VM');
-} else {
-    db_pandora_audit(
-        AUDIT_LOG_ACL_VIOLATION,
-        'Trying to access report builder'
-    );
-    include 'general/noaccess.php';
-    return;
 }
 
 // This section is only to manage the visual console
@@ -177,7 +165,7 @@ switch ($activeTab) {
                 $background_color = (string) get_parameter('background_color');
                 $width = (int) get_parameter('width');
                 $height = (int) get_parameter('height');
-                $visualConsoleName = io_safe_input((string) get_parameter('name'));
+                $visualConsoleName = (string) get_parameter('name');
                 $is_favourite  = (int) get_parameter('is_favourite_sent');
                 $auto_adjust  = (int) get_parameter('auto_adjust_sent');
 
@@ -803,7 +791,7 @@ if (!defined('METACONSOLE')) {
     $url_view = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$idVisualConsole.'&refr='.$view_refresh;
 } else {
     $url_base = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&action2=';
-    $url_view = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$idVisualConsole.'&refr='.$view_refresh;
+    $url_view = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id='.$idVisualConsole.'&refr='.$view_refresh;
 }
 
 // Hash for auto-auth in public link.
@@ -813,31 +801,31 @@ $buttons = [];
 
 $buttons['consoles_list'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/visual_console.png', true, ['title' => __('Visual consoles list'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Visual consoles list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['public_link'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public Visual Console'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['data'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=data&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=data&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/bars-graph.svg', true, ['title' => __('Main data'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['list_elements'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=list_elements&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/list.png', true, ['title' => __('List elements'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=list_elements&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/edit_columns@svg.svg', true, ['title' => __('List elements'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 
 if (enterprise_installed()) {
     $buttons['wizard_services'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=wizard_services&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand_services.png', true, ['title' => __('Services wizard'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$url_base.$action.'&tab=wizard_services&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand_services.png', true, ['title' => __('Services wizard'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ];
 }
 
 $buttons['wizard'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand.png', true, ['title' => __('Wizard'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wizard@svg.svg', true, ['title' => __('Wizard'), 'class' => 'invert_filter']).'</a>',
 ];
 if ($config['legacy_vc']) {
     $buttons['editor'] = [
@@ -848,7 +836,7 @@ if ($config['legacy_vc']) {
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/eye.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/enable.svg', true, ['title' => __('View'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 
 if ($idVisualConsole === false) {
@@ -863,27 +851,24 @@ $buttons[$activeTab]['active'] = true;
 
 $tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
 
-if (is_metaconsole() === false) {
-    // Header.
-    ui_print_standard_header(
-        $visualConsoleName,
-        'images/visual_console.png',
-        false,
-        $tab_builder,
-        false,
-        $buttons,
+ui_print_standard_header(
+    $visualConsoleName,
+    'images/visual_console.png',
+    false,
+    $tab_builder,
+    false,
+    $buttons,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Topology maps'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Visual console'),
-            ],
-        ]
-    );
-}
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Visual console'),
+        ],
+    ]
+);
 
 if ($statusProcessInDB !== null) {
     echo $statusProcessInDB['message'];

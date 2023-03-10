@@ -21,11 +21,8 @@
   margin-left: 20px;
 }
 
-ul.mn {
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  justify-content: center;
+#menu_tab {
+  margin: 0px;
 }
 
 #menu_tab li.nomn.tab_operation img,
@@ -111,8 +108,6 @@ h1 {
 }
 
 .grid-stack-item .grid-stack-item-content .header-widget {
-  background-color: black;
-  color: #fff;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -144,10 +139,6 @@ h1 {
   div:not(:first-child)
   img {
   cursor: pointer;
-}
-
-label span.p-slider {
-  width: 30px;
 }
 
 #modal-add-widget .container-list-widgets {
@@ -510,28 +501,6 @@ div#main_pure {
   align-items: center;
 }
 
-#form-config-widget .info_box,
-.content-widget .info_box {
-  border-radius: 5px;
-  width: 100%;
-}
-
-#form-config-widget .info_box {
-  margin: 0 auto;
-}
-#form-config-widget .info_box tbody tr td,
-.content-widget .info_box tbody tr td {
-  padding: 10px;
-}
-#form-config-widget .info_box tbody tr td.icon,
-.content-widget .info_box tbody tr td.icon {
-  padding-right: 10px !important;
-}
-
-#form-config-widget .info_box tbody tr td {
-  font-size: 8pt;
-}
-
 .content-widget .databox.filters > tbody > tr > td {
   padding-right: 30px;
 }
@@ -624,6 +593,7 @@ form.modal-dashboard
   .select2-selection--multiple
   .select2-selection__choice {
   margin: 0px;
+  height: 100% !important;
 }
 
 .container-tabs {

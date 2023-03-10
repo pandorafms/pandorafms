@@ -311,7 +311,7 @@ class HTML
     public function printBreadcrum()
     {
         return implode(
-            '<span class="breadcrumb_link">&nbsp/&nbsp</span>',
+            '<span class="breadcrumb_link_separator">&nbsp/&nbsp</span>',
             $this->breadcrum
         );
     }
@@ -398,7 +398,7 @@ class HTML
      *
      * @return void
      */
-    public static function printGoBackButton($url=null)
+    public static function printGoBackButton($url=null, $return=false)
     {
         if (isset($url) === false) {
             $url = ui_get_full_url(
@@ -418,14 +418,21 @@ class HTML
                         'name'       => 'submit',
                         'label'      => __('Go back'),
                         'type'       => 'submit',
-                        'attributes' => 'class="sub cancel"',
+                        'attributes' => [
+                            'icon' => 'back',
+                            'mode' => 'secondary',
+                        ],
                         'return'     => true,
                     ],
                 ],
             ],
         ];
 
-        self::printForm($form);
+        if ($return === true) {
+            return self::printForm($form, $return);
+        }
+
+        self::printForm($form, $return);
     }
 
 
@@ -537,7 +544,7 @@ class HTML
                         'container_class' => $input['toggle_container_class'],
                         'img_a'           => $input['toggle_img_a'],
                         'img_b'           => $input['toggle_img_b'],
-                        'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                        'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : false),
                     ]
                 );
             } else {
@@ -803,9 +810,12 @@ class HTML
                 $output_head .= 'id="'.$form['id'].'" ';
             }
 
+            $output_head .= 'class="max_floating_element_size ';
             if (isset($form['class']) === true) {
-                $output_head .= 'class="discovery '.$form['class'].'" ';
+                $output_head .= 'discovery '.$form['class'].' ';
             }
+
+            $output_head .= '"';
 
             if (isset($form['onsubmit']) === true) {
                 $output_head .= 'onsubmit="'.$form['onsubmit'].'" ';
@@ -870,7 +880,7 @@ class HTML
             $output .= '</div>';
         } else {
             if ($print_white_box === true) {
-                $output .= '<div class="white_box">';
+                $output .= '<div class="white_box pdd_15px">';
             }
 
             $output .= '<ul class="wizard">';
@@ -936,7 +946,7 @@ class HTML
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'"  enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" id="'.$form['id'].'" '.$form['extra'].'>';
 
         if (isset($form['title']) === true && empty($form['title']) === false) {
@@ -1077,7 +1087,7 @@ class HTML
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form class="discovery" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+        $output_head = '<form class="discovery max_floating_element_size" id="'.$form['id'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
 
         if ($return === false) {
@@ -1095,7 +1105,7 @@ class HTML
             error_log('Error executing wizard callback: ', $e->getMessage());
         }
 
-        $output = '<div class="white_box">';
+        $output = '<div class="white_box pdd_15px">';
         $output .= '<ul class="wizard">';
 
         foreach ($inputs as $input) {

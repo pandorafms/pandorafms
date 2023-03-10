@@ -1,22 +1,39 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Visual console Builder editor.
+ *
+ * @category   Topology maps
+ * @package    Pandora FMS
+ * @subpackage Visual consoles
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
-// Visual console required
-if (empty($visualConsole)) {
+// Visual console required.
+if (empty($visualConsole) === true) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
@@ -27,18 +44,16 @@ if (empty($visualConsole)) {
 
 ui_require_css_file('visual_maps');
 
-// ACL for the existing visual console
-// if (!isset($vconsole_read))
-// $vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
-if (!isset($vconsole_write)) {
+// ACL for the existing visual console.
+if (isset($vconsole_write) === false) {
     $vconsole_write = check_acl($config['id_user'], $visualConsole['id_group'], 'VW');
 }
 
-if (!isset($vconsole_manage)) {
+if (isset($vconsole_manage) === false) {
     $vconsole_manage = check_acl($config['id_user'], $visualConsole['id_group'], 'VM');
 }
 
-if (!$vconsole_write && !$vconsole_manage) {
+if ((bool) $vconsole_write === false && (bool) $vconsole_manage === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
@@ -48,7 +63,7 @@ if (!$vconsole_write && !$vconsole_manage) {
 }
 
 $metaconsole_hack = '';
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
     $metaconsole_hack = '../../';
 }
 
@@ -72,17 +87,12 @@ if ($layoutDatas === false) {
     $layoutDatas = [];
 }
 
-// Set the hidden value for the javascript
-if (defined('METACONSOLE')) {
-    html_print_input_hidden('metaconsole', 1);
-} else {
-    html_print_input_hidden('metaconsole', 0);
-}
+html_print_input_hidden('metaconsole', (is_metaconsole() === true) ? 1 : 0);
 
 visual_map_editor_print_hack_translate_strings();
 visual_map_editor_print_item_palette($visualConsole['id'], $background);
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     echo '<div id="frame_view" class="frame_view_meta">';
 } else {
     echo '<div id="frame_view" class="frame_view_node mrgn_top_meta_35px">';
@@ -100,7 +110,7 @@ echo "<div id='background_grid'
 foreach ($layoutDatas as $layoutData) {
     $layoutData['status_calculated'] = visual_map_get_status_element($layoutData);
 
-    // Pending delete and disable modules must be ignored
+    // Pending delete and disable modules must be ignored.
     $delete_pending_module = db_get_value(
         'delete_pending',
         'tagente_modulo',
@@ -163,27 +173,27 @@ html_print_input_hidden('id_visual_console', $visualConsole['id']);
 html_print_input_hidden('message_size', __('Min allowed size is 1024x768'));
 
 
-// Loading dialog
+// Loading dialog.
 echo "<div id='loading_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Loading in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
 echo "<div id='saving_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Saving in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
 echo "<div id='delete_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Deletion in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
-// CSS
+// CSS.
 ui_require_css_file('color-picker', 'include/styles/js/');
 ui_require_css_file('jquery-ui.min', 'include/styles/js/');
 ui_require_jquery_file('jquery-ui_custom');
 
-// Javascript
+// Javascript.
 ui_require_jquery_file('colorpicker');
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
 ui_require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
-ui_require_javascript_file_enterprise('functions_visualmap', defined('METACONSOLE'));
+ui_require_javascript_file_enterprise('functions_visualmap', is_metaconsole() === true);
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
-// Javascript file for base 64 encoding of label parameter
+// Javascript file for base 64 encoding of label parameter.
 ui_require_javascript_file('encode_decode_base64');
 ?>
 <style type="text/css">
@@ -195,11 +205,11 @@ ui_require_javascript_file('encode_decode_base64');
 <script type="text/javascript">
     id_visual_console = <?php echo $visualConsole['id']; ?>;
     visual_map_main();
-    
+
      var added_config = {
         "plugins": "noneditable",
         "elements": "text-label",
-        "theme_advanced_buttons1": 
+        "theme_advanced_buttons1":
           "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
         "valid_children": "+body[style]",
         "theme_advanced_font_sizes": "true",
@@ -213,9 +223,9 @@ ui_require_javascript_file('encode_decode_base64');
     defineTinyMCE(added_config);
 
     $('.item img').each(function(){
-        
+
         if($(this).css('float')=='left' || $(this).css('float')=='right'){
-            
+
         $(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
         $(this).css('margin-left','');
         }
@@ -223,9 +233,9 @@ ui_require_javascript_file('encode_decode_base64');
             $(this).css('margin-left',(parseInt($(this).parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
             $(this).css('margin-top','');
         }
-        
+
     });
-    
+
     $('#process_value').change(function(){
         if($(this).val() == 0){
             $('#period_row').css('display','none');
@@ -234,5 +244,5 @@ ui_require_javascript_file('encode_decode_base64');
             $('#period_row').css('display','');
         }
     });
-            
+
 </script>

@@ -755,7 +755,7 @@ function getGroupIcon(id_group, img_container) {
       id_group: id_group
     },
     success: function(data) {
-      img_container.attr("src", "images/groups_small/" + data["icon"] + ".png");
+      img_container.attr("src", "images/" + data["icon"]);
     },
     error: function() {
       img_container.attr("src", "");

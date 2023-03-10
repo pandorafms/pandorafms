@@ -84,7 +84,7 @@ class SatelliteCollection extends HTML
             return;
         }
 
-        if ((int) $config['license_nms'] === 0) {
+        if ((int) $config['license_nms'] === 1) {
             db_pandora_audit(
                 AUDIT_LOG_NMS_VIOLATION,
                 'Trying to access satellite collections'
@@ -118,11 +118,6 @@ class SatelliteCollection extends HTML
         ui_require_css_file('discovery');
 
         $this->createBlock();
-
-        if (is_metaconsole() === true) {
-            // Only in case of Metaconsole, format the frame.
-            open_meta_frame();
-        }
 
         // Datatables list.
         try {
@@ -177,11 +172,6 @@ class SatelliteCollection extends HTML
             );
         } catch (Exception $e) {
             echo $e->getMessage();
-        }
-
-        if (is_metaconsole() === true) {
-            // Close the frame.
-            close_meta_frame();
         }
 
         echo '<div id="aux" class="invisible"></div>';
@@ -485,27 +475,11 @@ class SatelliteCollection extends HTML
      */
     private function ajaxMsg(string $type, string $msg)
     {
-        if ($type === 'error') {
-            echo json_encode(
-                [
-                    $type => ui_print_error_message(
-                        __($msg),
-                        '',
-                        true
-                    ),
-                ]
-            );
-        } else {
-            echo json_encode(
-                [
-                    $type => ui_print_success_message(
-                        __($msg),
-                        '',
-                        true
-                    ),
-                ]
-            );
-        }
+        echo json_encode(
+            [
+                $type => __($msg),
+            ]
+        );
 
         exit;
     }

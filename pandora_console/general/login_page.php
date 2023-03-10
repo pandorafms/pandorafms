@@ -30,16 +30,21 @@ require_once __DIR__.'/../include/functions_html.php';
 
 if ($config['visual_animation']) {
     echo '<style>
-	@keyframes login_move {
-        from {margin-left: 10%;margin-right: 10%;opacity:0.1}
-        to {margin-left: 5%;margin-right: 5%;opacity:1}
-	}
-	
-	
-	div.container_login{
-		animation-name: login_move;
-		animation-duration: 3s;
-	}
+        div.container_login {
+            animation: container_login 3s ease;
+        }
+        
+        @keyframes container_login {
+            0% {
+                transform: scale(.9);
+                opacity: 0.1;
+            }
+            
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
 	</style>';
 }
 
@@ -87,17 +92,35 @@ if (!empty($page) && !empty($sec)) {
 }
 
 $login_body_style = '';
-$login_body_class = '';
 // Overrides the default background with the defined by the user.
-if (!empty($config['login_background'])) {
+$background_url = 'images/backgrounds/background_pandora_console_keys.jpg';
+
+if (empty($config['random_background']) === false) {
+    $random_backgrounds = scandir($config['homedir'].'/images/backgrounds/random_backgrounds');
+    unset($random_backgrounds[0], $random_backgrounds[1]);
+    $random_background = array_rand($random_backgrounds);
+    $background_url = 'images/backgrounds/random_backgrounds/'.$random_backgrounds[$random_background];
+    $background_100 = 'background-size: 100% 100% !important; ';
+}
+
+if (empty($config['login_background']) === false) {
     $background_url = 'images/backgrounds/'.$config['login_background'];
-    $login_body_style = "style=\"background-size: 100% 100% !important;background:linear-gradient(74deg, rgba(2, 2, 2, 0.333) 36%, transparent 36%), url('".$background_url."');\"";
+    $background_100 = 'background-size: 100% 100% !important; ';
 }
 
 // Support for Internet Explorer and Microsoft Edge browsers
 if (strpos($_SERVER['HTTP_USER_AGENT'], 'Trident') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Edge') !== false) {
-    $login_body_class = "class='login_body_trident'";
+    $background_url = 'images/backgrounds/background_pandora_console_keys.jpg';
+    $background_100 = '';
 }
+
+if (empty($config['background_opacity']) === false) {
+    $opacity = $config['background_opacity'];
+} else {
+    $opacity = 30;
+}
+
+$login_body_style = 'style="'.$background_100.'background: linear-gradient(rgba(0,0,0,.'.$opacity.'), rgba(0,0,0,.'.$opacity.")), url('".$background_url."');\"";
 
 // Get alternative custom in case of db fail.
 $custom_fields = [
@@ -123,36 +146,36 @@ foreach ($custom_fields as $field) {
 // Get the custom icons.
 $docs_logo = ui_get_docs_logo();
 $support_logo = ui_get_support_logo();
-echo '<div id="login_body" '.$login_body_class.' '.$login_body_style.'>';
+echo '<div id="login_body" '.$login_body_style.'>';
 echo '<div id="header_login">';
 
 echo '<div id="list_icon_docs_support"><ul>';
 
 if (isset($config['custom_docs_url'])) {
     if ($docs_logo !== false) {
-        echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+        echo '<li id="li_margin_doc_img"><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
     }
 
-    echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_doc"><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
 } else if (!$custom_conf_enabled) {
-    echo '<li><a href="https://pandorafms.com/manual/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
-    echo '<li><a href="https://pandorafms.com/manual/" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_doc_img"><a href="https://pandorafms.com/manual/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+    echo '<li id="li_margin_doc"><a href="https://pandorafms.com/manual/" target="_blank">'.__('Docs').'</li>';
 }
 
 if (isset($config['custom_support_url'])) {
     if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         if ($support_logo !== false) {
-            echo '<li id="li_margin_left"><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+            echo '<li id="li_margin_support_img"><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
         }
 
-        echo '<li><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank">'.__('Support').'</li>';
+        echo '<li id="li_margin_support"><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank">'.__('Support').'</li>';
     } else {
-        echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-        echo '<li>'.__('Support').'</li>';
+        echo '<li id="li_margin_support_img"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+        echo '<li id="li_margin_support"><a href="https://support.pandorafms.com" target="_blank">'.__('Support').'</a></li>';
     }
 } else if (!$custom_conf_enabled) {
-    echo '<li id="li_margin_left"><a href="https://support.pandorafms.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-    echo '<li><a href="https://support.pandorafms.com" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_support_img"><a href="https://support.pandorafms.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+    echo '<li id="li_margin_support"><a href="https://support.pandorafms.com" target="_blank">'.__('Support').'</a></li>';
 }
 
         echo '</ul></div>';
@@ -248,15 +271,30 @@ switch ($login_screen) {
             echo '</div>';
 
             echo '<div id="log_button" class="login_button invisible">';
-                html_print_submit_button(__('Login as admin'), 'login_button', false, 'class="next_login"');
+                html_print_submit_button(__('Login as admin'), 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
             echo '</div>';
 
             echo '<div class="login_button" id="remove_button">';
-                echo '<input type="button" id="input_saml" value="Login as admin" onclick="show_normal_menu()">';
+                html_print_submit_button(
+                    __('Login as admin'),
+                    'input_saml',
+                    false,
+                    [
+                        'fixed_id' => 'submit-login_button',
+                        'class'    => 'next_login',
+                        'onclick'  => 'show_normal_menu()',
+                        'id'       => 'input_saml',
+                    ]
+                );
             echo '</div>';
 
             echo '<div class="login_button login_button_saml">';
-                html_print_submit_button(__('Login with SAML'), 'login_button_saml', false, '');
+                html_print_submit_button(
+                    __('Login with SAML'),
+                    'login_button_saml',
+                    false,
+                    ['class' => 'next_login secondary']
+                );
             echo '</div>';
         } else {
             echo '<div class="login_nick">';
@@ -288,7 +326,15 @@ switch ($login_screen) {
                 );
             echo '</div>';
             echo '<div class="login_button">';
-                html_print_submit_button(__('Login'), 'login_button', false, 'class="next_login"');
+                html_print_submit_button(
+                    __('Login'),
+                    'login_button',
+                    false,
+                    [
+                        'fixed_id' => 'submit-login_button',
+                        'icon'     => 'signin',
+                    ]
+                );
             echo '</div>';
         }
     break;
@@ -302,12 +348,13 @@ switch ($login_screen) {
 
         echo '<div class="login_nick">';
         echo '<div>';
-            html_print_image('/images/icono_autenticacion.png', false);
+
         echo '</div>';
         html_print_input_text_extended('auth_code', '', 'auth_code', '', '', '', false, '', 'class="login login_password" placeholder="'.__('Authentication code').'"', false, true);
         echo '</div>';
         echo '<div class="login_button">';
-        html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, 'class="next_login"');
+        // html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, 'class="next_login"');
+        html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
         echo '</div>';
     break;
 
@@ -337,17 +384,18 @@ if ($config['enterprise_installed']) {
             echo '<a href="javascript:centralized_mode_reset_dialog();">'.__('Forgot your password?');
             echo '</a>';
 
-            echo '<div id="centralized_mode_reset_dialog" title="'.__('Password reset').'" style="display:none">';
+            echo '<div id="centralized_mode_reset_dialog" title="'.__('Centralized mode').'" style="display:none">';
                 echo '<div class="content_alert">';
                     echo '<div class="icon_message_alert">';
-                        echo html_print_image('images/icono_stop.png', true, ['alt' => __('Password reset'), 'border' => 0]);
+                        echo html_print_image('images/icono_stop.png', true, ['alt' => __('Centralized mode'), 'border' => 0]);
                     echo '</div>';
                     echo '<div class="content_message_alert">';
                         echo '<div class="text_message_alert">';
                             echo '<p>'.__('This node is configured with centralized mode. Go to metaconsole to reset the password').'</p>';
                         echo '</div>';
+                        echo '<br>';
                         echo '<div class="button_message_alert">';
-                            html_print_submit_button('Ok', 'centralized_mode_reset_button', false);
+                            html_print_submit_button('Ok', 'centralized_mode_reset_button', false, ['class' => 'mini float-right']);
                         echo '</div>';
                     echo '</div>';
                 echo '</div>';
@@ -357,6 +405,16 @@ if ($config['enterprise_installed']) {
         echo '</div>';
     }
 }
+
+echo '
+    <div class="loader" id="spinner_login">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+';
+echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'</div>';
 
 // CSRF validation.
 if (isset($_SESSION['csrf_code']) === true) {
@@ -368,7 +426,7 @@ html_print_csrf_hidden();
     echo '</form></div>';
     echo '<div class="login_data">';
         echo '<div class ="text_banner_login">';
-            echo '<div><span class="span1 pandora_upper">';
+            echo '<div><span class="span1">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if ($config['custom_title1_login']) {
         echo io_safe_output($config['custom_title1_login']);
@@ -395,7 +453,7 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         echo '</div>';
         echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
-    if (isset($config['custom_splash_login'])) {
+    if (empty($config['custom_splash_login']) === false && $config['custom_splash_login'] !== 'default') {
         html_print_image(
             'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
             false,
@@ -407,25 +465,39 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
             false
         );
     } else {
-        html_print_image(
-            'enterprise/images/custom_splash_login/splash_image_default.png',
-            false,
-            [
-                'alt'    => 'logo',
-                'border' => 0,
-            ],
-            false,
-            false
-        );
+        echo '
+            <div class="loginimg-container">
+                <div class="lineone"></div> 
+                <div class="linetwo"></div>
+                <div class="linethree"></div>
+                <div style="display:flex;">
+                    <div class="towerone"></div>
+                    <div class="towertwo"></div>
+                    <div class="towerthree"></div>
+                    <div class="towerfour"></div>
+                </div>
+            </div>
+        ';
     }
 } else {
-    html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
+    echo '
+            <div class="loginimg-container">
+                <div class="lineone"></div> 
+                <div class="linetwo"></div>
+                <div class="linethree"></div>
+                <div style="display:flex;">
+                    <div class="towerone"></div>
+                    <div class="towertwo"></div>
+                    <div class="towerthree"></div>
+                    <div class="towerfour"></div>
+                </div>
+            </div>
+        ';
 }
 
         echo '</div>';
     echo '</div>';
 echo '</div>';
-echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'</div>';
 echo '</div>';
 
 if (empty($process_error_message) && isset($mail)) {
@@ -439,25 +511,28 @@ if (empty($process_error_message) && isset($mail)) {
                     echo '<h1>'.__('INFO').'</h1>';
                     echo '<p>'.__('An email has been sent to your email address').'</p>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'reset_correct_button', false);
+                    html_print_submit_button('Ok', 'reset_correct_button', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
     echo '</div>';
 } else if (isset($process_error_message) && !empty($process_error_message)) {
-    echo '<div id="reset_correct" title="'.__('Password reset').'">';
+    echo '<div id="reset_correct" title="'.__('Error').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
-                echo html_print_image('images/icono_stop.png', true, ['alt' => __('Password reset'), 'border' => 0]);
+                echo html_print_image('images/icono_stop.png', true, ['alt' => __('Forbidden'), 'border' => 0]);
             echo '</div>';
             echo '<div class="content_message_alert">';
                 echo '<div class="text_message_alert">';
                     echo '<h1>'.__('ERROR').'</h1>';
                     echo '<p>'.$process_error_message.'</p>';
+                    echo '<br>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'reset_correct_button', false);
+                    html_print_submit_button('Ok', 'reset_correct_button', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -476,8 +551,9 @@ if (isset($correct_reset_pass_process)) {
                     echo '<h1>'.__('SUCCESS').'</h1>';
                     echo '<p>'.$correct_reset_pass_process.'</p>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'final_process_correct_button', false);
+                    html_print_submit_button('Ok', 'final_process_correct_button', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -485,9 +561,36 @@ if (isset($correct_reset_pass_process)) {
 }
 
 if (isset($login_failed)) {
-    $nick = get_parameter_post('nick');
-    $fails = db_get_value('failed_attempt', 'tusuario', 'id_user', $nick);
+    $nick = io_safe_input(get_parameter_post('nick'));
+    $user_in_db = db_get_row_filter(
+        'tusuario',
+        ['id_user' => $nick],
+        '*'
+    );
+    $fails = $user_in_db['failed_attempt'];
+    // If user not exist, and attempts its enable, lets make array and fails attemps.
+    if ($fails == false && $config['enable_pass_policy'] && $user_in_db === false) {
+        $nick_array_error = json_decode(base64_decode($config['nicks_error']), true);
+        $nick = strtolower($nick);
+        if (isset($nick_array_error[$nick]) !== false) {
+            $nick_array_error[$nick] += 1;
+        } else {
+            $nick_array_error[$nick] = 1;
+        }
+
+        $fails = $nick_array_error[$nick];
+        // Save or update the array.
+        if ($config['nicks_error']) {
+            config_update_value('nicks_error', base64_encode(json_encode($nick_array_error)));
+        } else {
+            config_create_value('nicks_error', base64_encode(json_encode($nick_array_error)));
+        }
+    } else {
+        $fails = ++$fails;
+    }
+
     $attemps = ($config['number_attempts'] - $fails);
+    $attemps = ($attemps < 0) ? 0 : $attemps;
     echo '<div id="login_failed" title="'.__('Login failed').'">';
         echo '<div class="content_alert">';
             echo '<div class="icon_message_alert">';
@@ -500,12 +603,18 @@ if (isset($login_failed)) {
                 echo '</div>';
     if ($config['enable_pass_policy']) {
         echo '<div class="text_message_alert">';
-            echo '<p><strong>Remaining attempts: '.$attemps.'</strong></p>';
+        if ($attemps !== 0 && $user_in_db['login_blocked'] == 0) {
+            echo '<p><strong>'.__('Remaining attempts: ').$attemps.'</strong></p>';
+        } else {
+            echo '<p><strong>'.__('User is blocked').'</strong></p>';
+        }
+
         echo '</div>';
     }
 
+    echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-error', false);
+                    html_print_submit_button('Ok', 'hide-login-error', false, ['class' => ' mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -528,8 +637,9 @@ if ($login_screen == 'logout') {
     }
 
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-logout', false);
+                    html_print_submit_button('Ok', 'hide-login-logout', false, ['class' => ' mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -547,8 +657,9 @@ if ($login_screen === 'disabled_access_node') {
                     echo '<h1>'.__('Centralized user in metaconsole').'</h1>';
                     echo '<p>'.__('This user does not have access on node, please enable node access on this user from metaconsole.').'</p>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-logout', false);
+                    html_print_submit_button('Ok', 'hide-login-logout', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -655,8 +766,9 @@ if ($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' 
                     echo '<h1>'.$title.'</h1>';
                     echo '<p> '.$message.'</h1>';
                 echo '</div>';
+                echo '<br>';
                 echo '<div class="button_message_alert">';
-                    html_print_submit_button('Ok', 'hide-login-error', false);
+                    html_print_submit_button('Ok', 'hide-login-error', false, ['class' => 'mini float-right']);
                 echo '</div>';
             echo '</div>';
         echo '</div>';
@@ -711,7 +823,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     });
                 });
 
-                $("#submit-hide-login-error").click (function () {
+                $("#button-hide-login-error").click (function () {
                     $("#modal_alert" ).dialog('close');
                     
                 });
@@ -726,19 +838,23 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 220,
                         width: 528,
                         clickOutside: true,
                         overlay: {
                             opacity: 0.5,
                             background: "black"
+                        },
+                        open: function (event, ui) {
+                            $(".ui-widget-overlay").click(function () {
+                                $('#login_logout').dialog('close');
+                            });
                         }
                     });
                 });
 
-                $("#submit-hide-login-logout").click (function () {
-                    document.location = "<?php echo ui_get_full_url('index.php'); ?>";
-                });        
+                $("#button-hide-login-logout").click (function () {
+                    $( "#login_logout" ).dialog( "close" );
+                });
             });
         break;
 
@@ -749,7 +865,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 220,
                         width: 528,
                         clickOutside: true,
                         overlay: {
@@ -759,7 +874,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     });
                 });
 
-                $("#submit-hide-login-logout").click (function () {
+                $("#button-hide-login-logout").click (function () {
                     document.location = "<?php echo ui_get_full_url('index.php'); ?>";
                 });        
             });
@@ -773,7 +888,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 400,
                         width: 700,
                         overlay: {
                             opacity: 0.5,
@@ -791,8 +905,8 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                         resizable: true,
                         draggable: true,
                         modal: true,
-                        height: 220,
-                        width: 528,
+                        height: 230,
+                        width: 530,
                         overlay: {
                             opacity: 0.5,
                             background: "black"
@@ -800,12 +914,11 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                     });
                 });
 
-                $("#submit-hide-login-error").click (function () {
+                $("#button-hide-login-error").click (function () {
                     $("#login_failed" ).dialog('close');
                     $("#login_correct_pass").dialog('close');
                 });
             });
-            
             $('#nick').focus();
         break;
     }
@@ -816,7 +929,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                 resizable: true,
                 draggable: true,
                 modal: true,
-                height: 220,
                 width: 528,
                 clickOutside: true,
                 overlay: {
@@ -826,7 +938,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             });
         });
 
-        $("#submit-reset_correct_button").click (function () {
+        $("#button-reset_correct_button").click (function () {
             $("#reset_correct").dialog('close');
         });        
     });
@@ -837,7 +949,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                 resizable: true,
                 draggable: true,
                 modal: true,
-                height: 220,
                 width: 528,
                 clickOutside: true,
                 overlay: {
@@ -857,7 +968,6 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             resizable: true,
             draggable: true,
             modal: true,
-            height: 220,
             width: 528,
             overlay: {
                 opacity: 0.5,
@@ -869,6 +979,19 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             $("#centralized_mode_reset_dialog").dialog('close');
         });
     }
+
+    $(document).ready(function () {
+        $('#submit-login_button span').removeAttr('style');
+        $('#spinner_login').hide();
+    });
+
+    $('#submit-login_button').click(function (e) {
+        $('.login_nick').hide();
+        $('.login_pass').hide();
+        $('.login_button').hide();
+        $('.reset_password').hide();
+        $('#spinner_login').show();
+    });
 
     /* ]]> */
 </script>

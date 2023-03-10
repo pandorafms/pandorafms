@@ -34,7 +34,24 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
 
 $action = get_parameter('action', 'listeners');
 
-ui_print_page_header(__('Netflow explorer'));
+ui_print_standard_header(
+    __('Netflow explorer'),
+    '',
+    false,
+    '',
+    false,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Network'),
+        ],
+    ]
+);
 
 if (netflow_print_check_version_error()) {
     include $config['homedir'].'/operation/network/network_report.php';

@@ -76,22 +76,19 @@ function attachActionButton(
         break;
     }
 
-    return html_print_div(
-        [
-            'class'   => 'action-buttons',
-            'style'   => sprintf('width: %s', $tableWidth),
-            'content' => html_print_input_hidden(
-                $action,
-                1
-            ).html_print_button(
-                __($caption),
-                'go',
-                false,
-                '',
-                sprintf('class="sub %s"', $class),
-                true
-            ),
-        ],
+    html_print_action_buttons(
+        html_print_input_hidden(
+            $action,
+            1
+        ).html_print_button(
+            __($caption),
+            'go',
+            false,
+            '',
+            ['icon' => $class],
+            true
+        ),
+        [],
         $return
     );
 }

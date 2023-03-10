@@ -47,21 +47,67 @@ function menu_print_menu(&$menu)
 {
     global $config;
     global $menuTypeClass;
+    global $tab_active;
+    global $menu1_selected;
+    global $menu2_selected;
     static $idcounter = 0;
 
     echo '<div class="menu">';
 
     $sec = (string) get_parameter('sec');
     $sec2 = (string) get_parameter('sec2');
-    if ($sec2 == 'operation/agentes/ver_agente') {
+    if ($sec2 === 'operation/agentes/ver_agente') {
         $sec2 = 'godmode/agentes/configurar_agente';
-    } else if ($sec2 == 'godmode/servers/discovery') {
+    } else if ($sec2 === 'godmode/servers/discovery') {
         $wiz = (string) get_parameter('wiz');
         $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
-    } else if ($sec2 == 'godmode/groups/group_list') {
+        $mode = (string) get_parameter('mode', '');
+        if (empty($mode) === false) {
+            $sec2 .= '&mode='.$mode;
+        }
+    } else if ($sec2 === 'godmode/groups/group_list') {
         $tab = (string) get_parameter('tab');
         if ($tab === 'credbox') {
             $sec2 = 'godmode/groups/group_list&tab='.$tab;
+        }
+    } else if ($sec2 === 'godmode/setup/setup') {
+        $section = (string) get_parameter('section');
+        $sec2 = 'godmode/setup/setup&section='.$section;
+    } else if ($sec2 === 'godmode/massive/massive_operations') {
+        $tab = (string) get_parameter('tab');
+        $sec2 = 'godmode/massive/massive_operations&tab='.$tab;
+    } else if ($sec2 === 'godmode/events/events') {
+        $section = (string) get_parameter('section');
+        $sec2 = 'godmode/events/events&section='.$section;
+    } else if ($sec2 === 'operation/dashboard/dashboard') {
+        $id = (int) get_parameter('dashboardId', 0);
+        if (empty($id) === false) {
+            $sec2 = 'operation/dashboard/dashboard&dashboardId='.$id;
+        }
+    } else if ($sec2 === 'enterprise/operation/services/services') {
+        $tab = (string) get_parameter('tab', '');
+        $action = (string) get_parameter('action', '');
+        $id_service = (int) get_parameter('id_service', 0);
+        if (empty($tab) === false
+            && empty($action) === false
+            && empty($id_service) === false
+        ) {
+            $sec2 = sprintf(
+                'enterprise/operation/services/services&tab=%s&action=%s&id_service=%d',
+                $tab,
+                $action,
+                $id_service
+            );
+        }
+    } else if ($sec2 === 'operation/visual_console/render_view') {
+        $id = (int) get_parameter('id', 0);
+        if (empty($id) === false) {
+            $sec2 = 'operation/visual_console/render_view&id='.$id;
+        }
+    } else if ($sec2 === 'operation/messages/message_edit') {
+        $new_msg = (int) get_parameter('new_msg', 0);
+        if (empty($new_msg) === false) {
+            $sec2 = 'operation/messages/message_edit&new_msg='.$new_msg;
         }
     } else {
         $sec2 = (string) get_parameter('sec2');
@@ -70,58 +116,39 @@ function menu_print_menu(&$menu)
     $menu_selected = false;
 
     $allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);
-    if (isset($allsec2[1])) {
+    if (isset($allsec2[1]) === true) {
         $allsec2 = $allsec2[1];
     } else {
         $allsec2 = $sec2;
     }
 
     // Open list of menu.
-    echo '<ul'.(isset($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
+    echo '<ul'.((isset($menu['class']) === true) ? ' class="'.$menu['class'].'"' : '').'>';
 
     // Use $config because a global var is required because normal
     // and godmode menu are painted separately.
-    if (!isset($config['count_main_menu'])) {
+    if (isset($config['count_main_menu']) === false) {
         $config['count_main_menu'] = 0;
     }
 
     foreach ($menu as $mainsec => $main) {
-        $extensionInMenuParameter = (string) get_parameter('extension_in_menu', '');
+        $extensionInMenuParameter = (string) get_parameter('extension_in_menu');
 
         $showSubsection = true;
-        if ($extensionInMenuParameter != '') {
-            if ($extensionInMenuParameter == $mainsec) {
-                $showSubsection = true;
-            } else {
-                $showSubsection = false;
-            }
+        if (empty($extensionInMenuParameter) === false) {
+            $showSubsection = ($extensionInMenuParameter === $mainsec);
         }
 
-        if ($mainsec == 'class') {
+        if ($mainsec === 'class') {
             continue;
         }
 
-        // ~ if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec)) == false)
-            // ~ continue;
-        if (! isset($main['id'])) {
-            $id = 'menu_'.(++$idcounter);
-        } else {
-            $id = $main['id'];
-        }
-
+        $id = (isset($main['id']) === false) ? 'menu_'.(++$idcounter) : $main['id'];
         $submenu = false;
-
-        if ($menuTypeClass === 'classic') {
-            $classes = [
-                'menu_icon',
-                'no_hidden_menu',
-            ];
-        } else {
-            $classes = [
-                'menu_icon',
-                'menu_icon_collapsed',
-            ];
-        }
+        $classes = [
+            'menu_icon',
+            ($menuTypeClass === 'classic') ? 'no_hidden_menu' : 'menu_icon_collapsed',
+        ];
 
         if (isset($main['sub']) === true) {
             $classes[] = '';
@@ -132,11 +159,11 @@ function menu_print_menu(&$menu)
             $main['refr'] = 0;
         }
 
-        if (($sec == $mainsec) && ($showSubsection)) {
+        if (($sec === $mainsec) && ((bool) $showSubsection === true)) {
             $classes[] = '';
         } else {
             $classes[] = '';
-            if ($extensionInMenuParameter == $mainsec) {
+            if ($extensionInMenuParameter === $mainsec) {
                 $classes[] = '';
             }
         }
@@ -225,17 +252,19 @@ function menu_print_menu(&$menu)
             // Set class.
             if (($sec2 == $subsec2 || $allsec2 == $subsec2
                 || $selected_submenu2) && isset($sub[$subsec2]['options'])
-                && (                    get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])
+                && (get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])
             ) {
                 // If the subclass is selected and there are options and that options value is true.
                 $class .= 'submenu_selected selected';
                 $menu_selected = true;
+                $menu2_selected = $sub['id'];
                 $selected = true;
                 $visible = true;
             } else if (($sec2 === $subsec2 || $allsec2 === $subsec2 || $selected_submenu2 === true) && isset($sub[$subsec2]['options']) === false) {
                 $class .= 'submenu_selected selected';
                 $selected = true;
                 $menu_selected = true;
+                $menu2_selected = $sub['id'];
                 $hasExtensions = (array_key_exists('hasExtensions', $main) === true) ? $main['hasExtensions'] : false;
                 if ((empty($extensionInMenuParameter) === false) && ((bool) $hasExtensions === true)) {
                     $visible = true;
@@ -252,20 +281,16 @@ function menu_print_menu(&$menu)
             }
 
             // Define submenu class to draw tree image.
-            if ($count_sub >= count($main['sub'])) {
-                $sub_tree_class = 'submenu_text submenu_text_last';
-            } else {
-                $sub_tree_class = 'submenu_text submenu_text_middle';
-            }
+            $sub_tree_class = 'submenu_text';
 
             if (isset($sub['type']) && $sub['type'] == 'direct') {
                 // This is an external link.
                 $submenu_output .= '<li title="'.$sub['id'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
-                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'">'.$sub['text'].'</div>';
+                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p arrow_menu_down"></div></div>';
                 } else if (isset($sub['subtype']) && $sub['subtype'] == 'new_blank') {
-                        $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
+                    $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 } else {
                     $submenu_output .= '<a href="'.$subsec2.'"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 }
@@ -409,14 +434,29 @@ function menu_print_menu(&$menu)
 
         if ($menu_selected) {
             $seleccionado = 'selected';
+            $menu1_selected = $id;
+            if ($menu['class'] === 'operation') {
+                $tab_active = 'display';
+            } else {
+                $tab_active = 'management';
+            }
         } else {
             $seleccionado = '';
         }
 
         // Print out the first level.
-        $output .= '<li title="'.$main['text'].'" class="'.implode(' ', $classes).' '.$seleccionado.'" id="icon_'.$id.'">';
+        $output .= '<li title="'.$main['text'].'" class="'.implode(' ', $classes).' '.$seleccionado.' flex_li" id="icon_'.$id.'">';
+        if ($menuTypeClass === 'collapsed') {
+            $div = '<div class="icon_'.$id.' w100p"></div><span class="w55p" style="display: none">'.$main['text'].'</span><div class="arrow_menu_down w30p" style="display: none"></div>';
+        } else {
+            if ($id === 'about') {
+                $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span>';
+            } else {
+                $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="arrow_menu_down w30p"></div>';
+            }
+        }
 
-        $output .= sprintf('<div id="title_menu" class="title_menu_%s">%s</div>', $menuTypeClass, $main['text']);
+        $output .= sprintf('<div id="title_menu" class="title_menu_classic">%s</div>', $div);
 
         // Add the notification ball if defined.
         if (isset($main['notification']) === true) {
@@ -841,6 +881,20 @@ if (is_ajax()) {
             }
         }
 
+        if (is_metaconsole() === true) {
+            $image_about = ui_get_full_url('/enterprise/images/custom_logo/pandoraFMS_metaconsole_full.svg', false, false, false);
+
+            if ($config['meta_custom_logo'] === 'pandoraFMS_metaconsole_full.svg') {
+                $image_about = 'images/custom_logo/'.$config['meta_custom_logo'];
+            } else {
+                $image_about = '../images/custom_logo/'.$config['meta_custom_logo'];
+            }
+
+            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
+                $image_about = $image_about;
+            }
+        }
+
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
                 <ul>
@@ -856,22 +910,51 @@ if (is_ajax()) {
                     <table class="table-about">
                         <tbody>
                             <tr>
-                                <th style="width: 40%;">
+                                <th style="width: 40%; border: 0px;">
                                     <img src="'.$image_about.'" alt="logo" width="70%">
                                 </th>
-                                <th style="width: 60%; text-align: left;">
+                                <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
                                     <p><span>'.__('Version').' '.$pandora_version.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
                                     <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
                                     <p><span>'.__('Build').'</span> '.$build_version.'</p>
                                     <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span> 2023/04/26</p>';
-        if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
-            $dialog .= '
-                                    <div style="display: inline;">
-                                        <button class="sub" onclick="location.href=\''.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'\'">'.__('Update manager').'</button>
-                                        <button class="sub" onclick="location.href=\''.ui_get_full_url('/index.php?sec=gextensions&sec2=tools/diagnostics', false, false, false).'\'">'.__('System report').'</button>
-                                    </div>
-                                        ';
+
+        if (((bool) check_acl($config['id_user'], 0, 'PM') === true) && (is_metaconsole() === false)) {
+            $dialogButtons = [];
+
+            $dialogButtons[] = html_print_button(
+                __('Update manager'),
+                'update_manager',
+                false,
+                'location.href="'.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'"',
+                [
+                    'icon' => 'cog',
+                    'mode' => 'mini secondary',
+                ],
+                true
+            );
+
+            $dialogButtons[] = html_print_button(
+                __('System report'),
+                'system_report',
+                false,
+                'location.href="'.ui_get_full_url('/index.php?sec=gextensions&sec2=tools/diagnostics', false, false, false).'"',
+                [
+                    'icon' => 'info',
+                    'mode' => 'mini secondary',
+                ],
+                true
+            );
+
+            $dialog .= html_print_div(
+                [
+                    'style'   => 'flex-direction: row;',
+                    'class'   => 'action-buttons',
+                    'content' => implode('', $dialogButtons),
+                ],
+                true
+            );
         }
 
         $dialog .= '</th>

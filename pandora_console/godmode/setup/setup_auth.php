@@ -1,30 +1,30 @@
 <?php
 /**
- * Extension to self monitor Pandora FMS Console
+ * Authentication setup.
  *
- * @package Pandora FMS
- * @version 1.0.0
- * @license See below
- * Pandora FMS - http://pandorafms.com
- * * ==================================================
- * * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * * Please see http://pandorafms.org for full contribution list
- * * This program is free software; you can redistribute it and/or
- * * modify it under the terms of the GNU General Public License
- * * as published by the Free Software Foundation for version 2.
- * * This program is distributed in the hope that it will be useful,
- * * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * * GNU General Public License for more details.
- * * Warning: This file may be required into the metaconsole's setup
- * * Load global vars
+ * @category   Setup
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2022 Artica Soluciones Tecnologicas, http://www.artica.es
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannnot redistribute it without written permission of copyright holder.
+ * ============================================================================
  */
 
 global $config;
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true && is_user_admin($config['id_user']) === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Setup Management'
@@ -36,10 +36,10 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 // Load enterprise extensions.
 enterprise_include('godmode/setup/setup_auth.php');
 
-if (is_ajax()) {
+if (is_ajax() === true) {
     $change_auth_metod = (bool) get_parameter('change_auth_metod');
 
-    if ($change_auth_metod) {
+    if ($change_auth_metod === true) {
         $table = new StdClass();
         $table->data = [];
         $table->width = '100%';
@@ -62,7 +62,7 @@ if (is_ajax()) {
             );
             $table->data['fallback_local_auth'] = $row;
 
-            if (enterprise_installed()) {
+            if (enterprise_installed() === true) {
                 $is_management_allowed = is_management_allowed();
                 // Autocreate remote users.
                 $row = [];
@@ -84,9 +84,6 @@ if (is_ajax()) {
         }
 
         switch ($type_auth) {
-            case 'mysql':
-            break;
-
             case 'ldap':
                 // LDAP server.
                 $row = [];
@@ -351,11 +348,12 @@ if (is_ajax()) {
             case 'saml':
             case 'integria':
                 // Add enterprise authentication options.
-                if (enterprise_installed()) {
+                if (enterprise_installed() === true) {
                     add_enterprise_auth_options($table, $type_auth);
                 }
             break;
 
+            case 'mysql':
             default:
                 // Default case.
             break;
@@ -389,7 +387,7 @@ if (is_ajax()) {
             true
         );
 
-        if (!$config['double_auth_enabled']) {
+        if ((bool) $config['double_auth_enabled'] === false) {
             $table->rowclass['2FA_all_users'] = 'invisible';
         } else {
             $table->rowclass['2FA_all_users'] = '';
@@ -448,7 +446,7 @@ $auth_methods = [
     'mysql' => __('Local %s', get_product_name()),
     'ldap'  => __('ldap'),
 ];
-if (enterprise_installed()) {
+if (enterprise_installed()  === true) {
     add_enterprise_auth_methods($auth_methods);
 }
 
@@ -468,7 +466,7 @@ $table->data['auth'] = $row;
 // Form.
 echo '<form id="form_setup" method="post">';
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     html_print_input_hidden('update_config', 1);
 } else {
     // To use it in the metasetup.
@@ -479,15 +477,20 @@ if (!is_metaconsole()) {
 html_print_csrf_hidden();
 
 html_print_table($table);
-echo '<div id="table_auth_result"></div>';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(
-    __('Update'),
-    'update_button',
-    false,
-    'class="sub upd"'
+html_print_div([ 'id' => 'table_auth_result' ]);
+html_print_div(
+    [
+        'class'   => 'action-buttons w100p',
+        'content' => html_print_submit_button(
+            __('Update'),
+            'update_button',
+            false,
+            [ 'icon' => 'update' ],
+            true
+        ),
+    ]
 );
-echo '</div>';
+
 echo '</form>';
 ?>
 

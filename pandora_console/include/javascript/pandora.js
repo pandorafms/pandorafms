@@ -247,7 +247,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       id_server: id_server,
       status_module: module_status,
       id_group: id_group,
-      pendingdelete: event.target.dataset.pendingdelete // Get pendingdelete attribute from target
+      pendingdelete:
+        event.target != undefined ? event.target.dataset.pendingdelete : 0 // Get pendingdelete attribute from target
     },
     function(data) {
       $("#module").empty();
@@ -894,7 +895,7 @@ function post_process_select_events(name) {
 function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
   $("#" + name + "_manual").css("display", "none");
-  $("#" + name + "_default").css("display", "inline");
+  $("#" + name + "_default").css("display", "flex");
   // If the text input is empty, we put on it 5 minutes by default
   if ($("#text-" + name + "_text").val() == "") {
     $("#text-" + name + "_text").val(300);
@@ -907,7 +908,7 @@ function period_select_init(name, allow_zero) {
     }
   } else if ($("#text-" + name + "_text").val() == 0 && allow_zero == 1) {
     $("#" + name + "_units option:last").prop("selected", false);
-    $("#" + name + "_manual").css("display", "inline");
+    $("#" + name + "_manual").css("display", "flex");
     $("#" + name + "_default").css("display", "none");
   }
 }
@@ -996,13 +997,13 @@ function selectFirst(name) {
  */
 function toggleBoth(name) {
   if ($("#" + name + "_default").css("display") == "none") {
-    $("#" + name + "_default").css("display", "inline");
+    $("#" + name + "_default").css("display", "flex");
   } else {
     $("#" + name + "_default").css("display", "none");
   }
 
   if ($("#" + name + "_manual").css("display") == "none") {
-    $("#" + name + "_manual").css("display", "inline");
+    $("#" + name + "_manual").css("display", "flex");
   } else {
     $("#" + name + "_manual").css("display", "none");
   }
@@ -2328,3 +2329,81 @@ $(document).ready(function() {
     });
   }
 });
+
+function close_info_box(id) {
+  $("#" + id).fadeOut("slow", function() {
+    $("#" + id).remove();
+  });
+}
+
+function autoclose_info_box(id, autoCloseTime) {
+  setTimeout(() => {
+    close_info_box(id);
+  }, autoCloseTime);
+}
+
+function show_hide_password(e, url) {
+  let inputPass = e.target.previousElementSibling;
+
+  if (inputPass.type === "password") {
+    inputPass.type = "text";
+    inputPass.style.backgroundImage = "url(" + url + "/images/disable.svg)";
+  } else {
+    inputPass.type = "password";
+    inputPass.style.backgroundImage = "url(" + url + "/images/enable.svg)";
+  }
+}
+
+// Add observer to clear value when type attribute changes.
+function observerInputPassword(name) {
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === "attributes" && mutation.attributeName === "type") {
+        mutation.target.value = "";
+      }
+    });
+  });
+
+  Array.from($("input[type=password]")).forEach(function(input) {
+    observer.observe(input, { attributes: true });
+  });
+}
+
+function scrollFunction() {
+  if (
+    document.body.scrollTop > 400 ||
+    document.documentElement.scrollTop > 400
+  ) {
+    if (document.getElementById("top_btn")) {
+      document.getElementById("top_btn").style.display = "block";
+    }
+  } else {
+    if (document.getElementById("top_btn")) {
+      document.getElementById("top_btn").style.display = "none";
+    }
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document.
+function topFunction() {
+  /*
+   * Safari.
+   * document.body.scrollTop = 0;
+   * For Chrome, Firefox, IE and Opera.
+   * document.documentElement.scrollTop = 0;
+   */
+
+  $("HTML, BODY").animate(
+    {
+      scrollTop: 0
+    },
+    500
+  );
+}
+
+function menuActionButtonResizing() {
+  $("#principal_action_buttons").attr(
+    "style",
+    "width: calc(100% - " + $("#menu_full").width() + "px);"
+  );
+}

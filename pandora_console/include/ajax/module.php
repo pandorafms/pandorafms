@@ -248,7 +248,7 @@ if (check_login()) {
             false,
             false
         );
-        $formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(".$module_id.', '.$agentId.', "'.$server_name.'", 0, -1,"'.modules_get_agentmodule_name($module_id)."\")'>".html_print_image('images/refresh.png', true, ['style' => 'vertical-align: middle;', 'border' => '0', 'class' => 'invert_filter' ]).'</a>';
+        $formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(".$module_id.', '.$agentId.', "'.$server_name.'", 0, -1,"'.modules_get_agentmodule_name($module_id)."\")'>".html_print_image('images/refresh@svg.svg', true, ['style' => 'vertical-align: middle;', 'border' => '0', 'class' => 'main_menu_icon invert_filter' ]).'</a>';
         $formtable->rowspan[0][3] = 2;
         $formtable->cellstyle[0][3] = 'vertical-align: middle;';
 

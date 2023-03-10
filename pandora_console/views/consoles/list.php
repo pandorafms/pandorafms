@@ -85,7 +85,7 @@ try {
         [
             'id'                  => $tableId,
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'ajax_url'            => 'include/ajax/consoles.ajax',
@@ -145,8 +145,6 @@ try {
                             },
                             datatype: "json",
                             success: function (data) {
-                                console.log("dataaaa");
-                                console.log(data);
                                 showMsg(data);
                             },
                             error: function(e) {

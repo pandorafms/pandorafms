@@ -2158,6 +2158,7 @@ button.filter,
 button.cancel,
 button.default,
 button.deploy,
+button.preview,
 input.deploy,
 input.next,
 input.upd,
@@ -2178,7 +2179,8 @@ input.filter,
 input.cancel,
 input.default,
 input.pdf,
-input.spinn {
+input.spinn,
+input.preview {
   padding-right: 30px;
 }
 
@@ -10513,6 +10515,11 @@ button div.create_directory {
   mask: url(../../images/create_directory.png) no-repeat center / contain;
   -webkit-mask: url(../../images/create_directory.png) no-repeat center /
     contain;
+}
+
+button div.preview {
+  mask: url(../../images/eye.png) no-repeat center / contain;
+  -webkit-mask: url(../../images/eye.png) no-repeat center / contain;
 }
 
 button div.cog.rotation {

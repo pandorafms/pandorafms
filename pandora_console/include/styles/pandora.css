@@ -10071,7 +10071,11 @@ select:focus {
 }
 
 .dataTables_length > label > select {
-  min-height: 3em;
+  min-height: 42px;
+}
+
+.dataTables_length > label {
+  font-size: 0px;
 }
 
 input[type="button"],

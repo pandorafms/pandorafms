@@ -4457,7 +4457,6 @@ function ui_toggle(
         $output .= "		    }\n";
         $output .= "		});\n";
         $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
-        $output .= "				console.log('#image_".$uniqid."');";
         $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
         $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";

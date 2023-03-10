@@ -249,6 +249,11 @@ class ConsoleSupervisor
         $this->checkAuditLogOldLocation();
 
         /*
+         * Check if performance variables are corrects
+         */
+        $this->checkPerformanceVariables();
+
+        /*
          * Checks if sync queue is longer than limits.
          *  NOTIF.SYNCQUEUE.LENGTH
          */
@@ -258,6 +263,21 @@ class ConsoleSupervisor
             $this->checkSyncQueueStatus();
         }
 
+        /*
+         * Check number of agents is equals and more than 200.
+         * NOTIF.ACCESSSTASTICS.PERFORMANCE
+         */
+
+        $this->checkAccessStatisticsPerformance();
+
+        /*
+         * Checkc agent missing libraries.
+         * NOTIF.AGENT.LIBRARY
+         */
+
+        if ((bool) enterprise_installed() === true) {
+            $this->checkLibaryError();
+        }
     }
 
 
@@ -510,6 +530,11 @@ class ConsoleSupervisor
         $this->checkAuditLogOldLocation();
 
         /*
+         * Check if performance variables are corrects
+         */
+        $this->checkPerformanceVariables();
+
+        /*
          * Checks if sync queue is longer than limits.
          *  NOTIF.SYNCQUEUE.LENGTH
          */
@@ -518,6 +543,108 @@ class ConsoleSupervisor
             $this->checkSyncQueueLength();
             $this->checkSyncQueueStatus();
         }
+
+        /*
+         * Check number of agents is equals and more than 200.
+         * NOTIF.ACCESSSTASTICS.PERFORMANCE
+         */
+
+        $this->checkAccessStatisticsPerformance();
+
+        /*
+         * Checkc agent missing libraries.
+         * NOTIF.AGENT.LIBRARY
+         */
+
+        if ((bool) enterprise_installed() === true) {
+            $this->checkLibaryError();
+        }
+
+    }
+
+
+    /**
+     * Check if performance variables are corrects
+     *
+     * @return void
+     */
+    public function checkPerformanceVariables()
+    {
+        global $config;
+
+        $names = [
+            'event_purge'                      => 'Max. days before events are deleted',
+            'trap_purge'                       => 'Max. days before traps are deleted',
+            'audit_purge'                      => 'Max. days before audited events are deleted',
+            'string_purge'                     => 'Max. days before string data is deleted',
+            'gis_purge'                        => 'Max. days before GIS data is deleted',
+            'days_purge'                       => 'Max. days before purge',
+            'days_compact'                     => 'Max. days before data is compacted',
+            'days_delete_unknown'              => 'Max. days before unknown modules are deleted',
+            'days_delete_not_initialized'      => 'Max. days before delete not initialized modules',
+            'days_autodisable_deletion'        => 'Max. days before autodisabled agents are deleted',
+            'delete_old_network_matrix'        => 'Max. days before delete old network matrix data',
+            'report_limit'                     => 'Item limit for real-time reports',
+            'event_view_hr'                    => 'Default hours for event view',
+            'big_operation_step_datos_purge'   => 'Big Operation Step to purge old data',
+            'small_operation_step_datos_purge' => 'Small Operation Step to purge old data',
+            'row_limit_csv'                    => 'Row limit in csv log',
+            'limit_parameters_massive'         => 'Limit for bulk operations',
+            'block_size'                       => 'Block size for pagination',
+            'short_module_graph_data'          => 'Data precision',
+            'graph_precision'                  => 'Data precision in graphs',
+        ];
+
+        $variables = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
+        foreach ($variables as $variable => $values) {
+            if (empty($config[$variable]) === true || $config[$variable] === '') {
+                continue;
+            }
+
+            $message = '';
+            $limit_value = '';
+            if ($config[$variable] > $values->max) {
+                $message = 'Check the setting of %s, a value greater than %s is not recommended';
+                $limit_value = $values->max;
+            }
+
+            if ($config[$variable] < $values->min) {
+                $message = 'Check the setting of %s, a value less than %s is not recommended';
+                $limit_value = $values->min;
+            }
+
+            if ($limit_value !== '' && $message !== '') {
+                if (is_metaconsole() === true) {
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                            'title'   => __('Incorrect config value'),
+                            'message' => __(
+                                $message,
+                                $names[$variable],
+                                $limit_value
+                            ),
+                            'url'     => '__url__index.php?sec=advanced&sec2=advanced/metasetup',
+                        ]
+                    );
+                } else {
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                            'title'   => __('Incorrect config value'),
+                            'message' => __(
+                                $message,
+                                $names[$variable],
+                                $limit_value
+                            ),
+                            'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup',
+                        ]
+                    );
+                }
+            }
+        }
+
     }
 
 
@@ -529,6 +656,34 @@ class ConsoleSupervisor
     public function maintenanceOperations()
     {
 
+    }
+
+
+    /**
+     * Check number of agents and disable agentaccess token if number
+     * is equals and more than 200.
+     *
+     * @return void
+     */
+    public function checkAccessStatisticsPerformance()
+    {
+        $total_agents = db_get_value('count(*)', 'tagente');
+
+        if ($total_agents >= 200) {
+            db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.ACCESSSTASTICS.PERFORMANCE',
+                    'title'   => __('Access statistics performance'),
+                    'message' => __(
+                        'Usage of agent access statistics IS NOT RECOMMENDED on systems with more than 200 agents due performance penalty'
+                    ),
+                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
+        }
     }
 
 
@@ -2379,7 +2534,7 @@ class ConsoleSupervisor
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
-                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
+                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
                 $message_conf_cron .= str_replace(
                     ENTERPRISE_DIR.'/meta/',
                     '',
@@ -2707,7 +2862,7 @@ class ConsoleSupervisor
             return;
         }
 
-        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
+        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer(true);
         $counts = $sync->getQueues(true);
 
         if (count($counts) === 0) {
@@ -2764,7 +2919,7 @@ class ConsoleSupervisor
             return;
         }
 
-        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
+        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer(true);
         $queues = $sync->getQueues();
         if (count($queues) === 0) {
             // Clean all.
@@ -2803,6 +2958,32 @@ class ConsoleSupervisor
             }
         }
 
+    }
+
+
+    /**
+     * Chechs if an agent has a dependency eror on omnishell
+     *
+     * @return void
+     */
+    public function checkLibaryError()
+    {
+        $sql = 'SELECT COUNT(errorlevel) from tremote_command_target WHERE errorlevel = 2';
+
+        $error_dependecies = db_get_sql($sql);
+        if ($error_dependecies > 0) {
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.AGENT.LIBRARY',
+                    'title'   => __('Agent dependency error'),
+                    'message' => __(
+                        'There are omnishell agents with dependency errors',
+                    ),
+
+                    'url'     => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
+                ]
+            );
+        }
     }
 
 

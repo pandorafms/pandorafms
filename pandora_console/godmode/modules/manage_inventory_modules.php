@@ -33,7 +33,6 @@ $management_allowed = is_management_allowed();
 if (is_metaconsole() === true) {
     $sec = 'advanced';
     enterprise_include_once('meta/include/functions_components_meta.php');
-    enterprise_hook('open_meta_frame');
     components_meta_print_header();
 
     if ($management_allowed === false) {
@@ -41,12 +40,24 @@ if (is_metaconsole() === true) {
     }
 } else {
     $sec = 'gmodules';
-    ui_print_page_header(
-        __('Module management').' &raquo; '.__('Inventory modules'),
-        'images/page_white_text.png',
+
+    ui_print_standard_header(
+        __('Inventory modules'),
+        'images/hardware-software-component@svg.svg',
         false,
         '',
-        true
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Inventory modules'),
+            ],
+        ]
     );
 
     if ($management_allowed === false) {
@@ -266,7 +277,7 @@ if ($create_module_inventory === true) {
 $total_modules = db_get_sql('SELECT COUNT(*) FROM tmodule_inventory');
 
 $table = new stdClass();
-$table->width = '100%';
+$table->styleTable = 'margin: 10px 10px 0; width: -webkit-fill-available; width: -moz-available';
 $table->class = 'info_table';
 $table->size = [];
 $table->size[0] = '140px';
@@ -282,6 +293,7 @@ $table->head[3] = __('Interpreter');
 
 if ($management_allowed === true) {
     $table->head[4] = __('Action').html_print_checkbox('all_delete', 0, false, true, false);
+    $table->size[4] = '80px';
 }
 
 $result = inventory_get_modules_list($offset);
@@ -302,9 +314,15 @@ if ($result === false) {
 
         $data[1] = $row['description'];
         if ($row['os_name'] == null) {
-            $data[2] = html_print_image('images/agent.png', true, ['border' => '0', 'alt' => __('Agent'), 'title' => __('Agent'), 'height' => '18', 'class' => 'invert_filter']);
+            $data[2] = html_print_image('images/agents@svg.svg', true, ['border' => '0', 'alt' => __('Agent'), 'title' => __('Agent'), 'height' => '18', 'class' => 'invert_filter main_menu_icon']);
         } else {
-            $data[2] = ui_print_os_icon($row['id_os'], false, true);
+            $data[2] = html_print_div(
+                [
+                    'class'   => 'invert_filter main_menu_icon',
+                    'content' => ui_print_os_icon($row['id_os'], false, true),
+                ],
+                true
+            );
         }
 
         if ($row['interpreter'] == '') {
@@ -315,45 +333,78 @@ if ($result === false) {
 
         if ($management_allowed === true) {
             // Update module.
-            $data[4] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form&id_module_inventory='.$row['id_module_inventory'].'">';
-            $data[4] .= html_print_image('images/config.png', true, ['border' => '0', 'title' => __('Update'), 'class' => 'invert_filter']).'</b></a>';
+            $data[4] = '<div class="table_action_buttons">';
+            $data[4] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form&id_module_inventory='.$row['id_module_inventory'].'">';
+            $data[4] .= html_print_image('images/edit.svg', true, ['border' => '0', 'title' => __('Update'), 'class' => 'main_menu_icon invert_filter']).'</b></a>';
 
             // Delete module.
             $data[4] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules&delete_inventory_module='.$row['id_module_inventory'].'" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-            $data[4] .= html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete'), 'class' => 'invert_filter']);
+            $data[4] .= html_print_image('images/delete.svg', true, ['border' => '0', 'title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']);
             $data[4] .= '</b></a>&nbsp;&nbsp;';
             $data[4] .= html_print_checkbox_extended('delete_multiple[]', $row['id_module_inventory'], false, false, '', 'class="check_delete"', true);
+            $data[4] .= '</div>';
         }
 
         array_push($table->data, $data);
     }
 
-    echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_inventory_modules'>";
+    echo '<form id="form_delete" method="POST" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules">';
     html_print_input_hidden('multiple_delete', 1);
-    ui_pagination($total_modules, 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules', $offset);
     html_print_table($table);
-    ui_pagination($total_modules, 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules', $offset, 0, false, 'offset', true, 'pagination-bottom');
-    echo "<div class='pdd_l_5px float-right'>";
+    echo '</form>';
+
+    echo '<form id="form_create" method="post" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form">';
+    echo html_print_input_hidden('create_module_inventory', 1);
+    echo '<form>';
+
+    $tablePagination = ui_pagination(
+        $total_modules,
+        'index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules',
+        $offset,
+        0,
+        true,
+        'offset',
+        false
+    );
+
+    $actionButtons = '';
+
     if ($management_allowed === true) {
-        html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+        $actionButtons .= html_print_submit_button(
+            __('Create'),
+            'crt',
+            false,
+            [
+                'icon' => 'wand',
+                'form' => 'form_create',
+            ],
+            true
+        );
+
+        $actionButtons .= html_print_submit_button(
+            __('Delete'),
+            'delete_btn',
+            false,
+            [
+                'icon' => 'delete',
+                'mode' => 'secondary',
+                'form' => 'form_delete',
+            ],
+            true
+        );
     }
 
-    echo '</div>';
-    echo '</form>';
+    html_print_action_buttons(
+        $actionButtons,
+        [
+            'type'          => 'form_action',
+            'right_content' => $tablePagination,
+        ],
+        false
+    );
 }
-
-if ($management_allowed === true) {
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_inventory_modules_form">';
-    echo '<div class="float-right mrgn_btn_15px">';
-    html_print_input_hidden('create_module_inventory', 1);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
-    echo '</div>';
-    echo '</form>';
-}
-
 
 if (is_metaconsole() === true) {
-    enterprise_hook('close_meta_frame');
     echo '<div id="deploy_messages" class="invisible">';
     echo '<span>'.__(
         'The configurations of inventory modules from the nodes have been unified.
@@ -364,30 +415,14 @@ if (is_metaconsole() === true) {
 
 ?>
 <script type="text/javascript">
-
     $( document ).ready(function() {
-
-        $('[id^=checkbox-delete_multiple]').change(function(){
-            if($(this).parent().parent().hasClass('checkselected')){
-                $(this).parent().parent().removeClass('checkselected');
-            }
-            else{
-                $(this).parent().parent().addClass('checkselected');
-            }
-        });
-
         $('[id^=checkbox-all_delete]').change(function() {
-            if ($("#checkbox-all_delete").prop("checked")) {
-                $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
-                $(".check_delete").prop("checked", true);
+            if ($("input[name=all_delete]").prop("checked")) {
+                $(".custom_checkbox_input").prop("checked", true);
             }
             else {
-                $('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
-                $(".check_delete").prop("checked", false);
+                $(".custom_checkbox_input").prop("checked", false);
             }
         });
-
     });
-
-
 </script>

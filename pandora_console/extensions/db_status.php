@@ -21,13 +21,23 @@ function extension_db_status()
     $db_name = get_parameter('db_name', '');
     $db_status_execute = (bool) get_parameter('db_status_execute', false);
 
-    ui_print_page_header(
+    ui_print_standard_header(
         __('DB Schema check'),
         'images/extensions.png',
         false,
         'db_status_tab',
         true,
-        ''
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Admin tools'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Run test'),
+            ],
+        ]
     );
 
     if (!is_user_admin($config['id_user'])) {
@@ -46,32 +56,89 @@ function extension_db_status()
         __('At the moment the checks is for MySQL/MariaDB.')
     );
 
-    echo "<form method='post'>";
+    echo "<form method='post' class='max_floating_element_size'>";
 
     echo '<fieldset>';
     echo '<legend>'.__('DB settings').'</legend>';
     $table = new stdClass();
     $table->data = [];
     $row = [];
-    $row[] = __('DB User with privileges');
-    $row[] = html_print_input_text('db_user', $db_user, '', 50, 255, true);
-    $row[] = __('DB Password for this user');
-    $row[] = html_print_input_password('db_password', $db_password, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('DB User with privileges'),
+        html_print_input_text(
+            'db_user',
+            $db_user,
+            '',
+            50,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w100p mrgn_top_10px'
+        )
+    );
+    $row[] = html_print_label_input_block(
+        __('DB Password for this user'),
+        html_print_input_password(
+            'db_password',
+            $db_password,
+            '',
+            50,
+            255,
+            true,
+            false,
+            false,
+            'w100p mrgn_top_10px'
+        )
+    );
     $table->data[] = $row;
     $row = [];
-    $row[] = __('DB Hostname');
-    $row[] = html_print_input_text('db_host', $db_host, '', 50, 255, true);
-    $row[] = __('DB Name (temporal for testing)');
-    $row[] = html_print_input_text('db_name', $db_name, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('DB Hostname'),
+        html_print_input_text(
+            'db_host',
+            $db_host,
+            '',
+            50,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w100p mrgn_top_10px'
+        )
+    );
+    $row[] = html_print_label_input_block(
+        __('DB Name (temporal for testing)'),
+        html_print_input_text(
+            'db_name',
+            $db_name,
+            '',
+            50,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w100p mrgn_top_10px'
+        )
+    );
     $table->data[] = $row;
     html_print_table($table);
     echo '</fieldset>';
 
-    echo "<div class='right'>";
-    html_print_input_hidden('db_status_execute', 1);
-    html_print_submit_button(__('Execute Test'), 'submit', false, 'class="sub next"');
-    echo '</div>';
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Execute Test'),
+            'submit',
+            false,
+            [ 'icon' => 'cog' ],
+            true
+        )
+    );
 
+    html_print_input_hidden('db_status_execute', 1);
     echo '</form>';
 
     if ($db_status_execute) {

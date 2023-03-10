@@ -104,6 +104,7 @@ class Diagnostics extends Wizard
         'getChartAjax',
         'formFeedback',
         'createdScheduleFeedbackTask',
+        'getSystemDate',
     ];
 
 
@@ -154,13 +155,19 @@ class Diagnostics extends Wizard
         ];
 
         // Header.
-        ui_print_page_header(
-            __('%s Diagnostic tool', $this->product_name),
+        ui_print_standard_header(
+            __('Admin tools'),
             'images/gm_massive_operations.png',
             false,
             '',
             true,
-            $header_buttons
+            $header_buttons,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('%s Diagnostic tool', $this->product_name),
+                ],
+            ]
         );
 
         // Print all Methods Diagnostic Info.
@@ -209,6 +216,7 @@ class Diagnostics extends Wizard
             'getAttachmentFolder',
             'getInfoTagenteDatos',
             'getServerThreads',
+            'getSystemDate',
         ];
 
         if ($this->pdf === true) {
@@ -276,6 +284,10 @@ class Diagnostics extends Wizard
 
                 case 'getShowEngine':
                     $title = __('SQL show engine innodb status');
+                break;
+
+                case 'getSystemDate':
+                    $title = __('Date system');
                 break;
 
                 default:
@@ -517,6 +529,27 @@ class Diagnostics extends Wizard
 
 
     /**
+     * Date system
+     *
+     * @return string
+     */
+    public function getSystemDate(): string
+    {
+        $result = [
+            'error' => false,
+            'data'  => [
+                'date' => [
+                    'name'  => __('System Date (Console)'),
+                    'value' => date('H:i:s Y-m-d'),
+                ],
+            ],
+        ];
+
+        return json_encode($result);
+    }
+
+
+    /**
      * Database size stats.
      *
      * @return string
@@ -619,7 +652,7 @@ class Diagnostics extends Wizard
         $currentTime = time();
 
         $pandoraDbLastRun = __('Pandora DB has never been executed');
-        if ($dateDbMantenaince !== false) {
+        if ($dateDbMantenaince !== false && empty($dateDbMantenaince) === false) {
             $difference = ($currentTime - $dateDbMantenaince);
             $pandoraDbLastRun = human_time_description_raw(
                 $difference,
@@ -1542,7 +1575,7 @@ class Diagnostics extends Wizard
                         [
                             'id'                  => $tableId,
                             'class'               => 'info_table caption_table',
-                            'style'               => 'width: 100%',
+                            'style'               => 'width: 99%',
                             'columns'             => $columns,
                             'column_names'        => $columnNames,
                             'ajax_data'           => [

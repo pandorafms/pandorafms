@@ -170,46 +170,118 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
     $table->id = 'news';
     $table->cellpadding = 4;
     $table->cellspacing = 4;
-    $table->class = 'databox filters';
+    $table->class = 'databox filters filter-table-adv';
     $table->head = [];
     $table->data = [];
-    $table->style[0] = 'font-weight: bold;';
-    $table->style[1] = 'font-weight: bold;';
-    $table->style[2] = 'font-weight: bold;';
-    $table->style[3] = 'font-weight: bold;';
-    $table->style[4] = 'font-weight: bold;';
+    $table->size[0] = '33%';
+    $table->size[1] = '33%';
+    $table->colspan[2][0] = 2;
+    $table->rowclass[2] = 'w100p';
 
     $data = [];
-    $data[0] = __('Subject').'<br>';
-    $data[0] .= '<input type="text" class="text_input" name="subject" size="35" value="'.$subject.'" >';
+    $data[0] = html_print_label_input_block(
+        __('Subject'),
+        html_print_input_text(
+            'subject',
+            $subject,
+            '',
+            35,
+            255,
+            true
+        )
+    );
 
-    $data[1] = __('Group').'<br>';
-    $data[1] .= '<div class="w250px">';
-    $data[1] .= html_print_select_groups($config['id_user'], 'ER', users_can_manage_group_all(), 'id_group', $id_group, '', '', 0, true, false, false, '');
-    $data[1] .= '</div>';
+    $data[1] = html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups(
+            $config['id_user'],
+            'ER',
+            users_can_manage_group_all(),
+            'id_group',
+            $id_group,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            'w100p',
+            false,
+            'width: 100%;'
+        )
+    );
+    $table->data[] = $data;
 
-    $data[2] = __('Modal screen').'<br>';
-    $data[2] .= html_print_checkbox_extended('modal', 1, $modal, false, '', 'class="mrgn_top_5 mrg_btt_7"', true);
+    $data = [];
+    $data[0] = html_print_label_input_block(
+        __('Modal screen'),
+        html_print_checkbox_extended(
+            'modal',
+            1,
+            $modal,
+            false,
+            '',
+            'class="w100p"',
+            true
+        )
+    );
 
-    $data[3] = __('Expire').'<br>';
-    $data[3] .= html_print_checkbox_extended('expire', 1, $expire, false, '', 'class="mrgn_top_5 mrg_btt_7"', true);
-
-    $data[4] = __('Expiration').'<br>';
-    $data[4] .= html_print_input_text('expire_date', $expire_date, '', 12, 10, true).' ';
-    $data[4] .= html_print_input_text('expire_time', $expire_time, '', 10, 7, true).' ';
+    $data[1] = '<div style="display: inline-flex; flex-direction: row;">'.html_print_label_input_block(
+        __('Expire'),
+        html_print_checkbox_extended(
+            'expire',
+            1,
+            $expire,
+            false,
+            '',
+            'class="w100p"',
+            true
+        ),
+        ['div_class' => 'display-grid']
+    );
+    $data[1] .= html_print_label_input_block(
+        __('Expiration'),
+        '<div>'.html_print_input_text(
+            'expire_date',
+            $expire_date,
+            '',
+            12,
+            10,
+            true
+        ).' '.html_print_input_text(
+            'expire_time',
+            $expire_time,
+            '',
+            10,
+            7,
+            true
+        ).'</div>',
+        [
+            'div_class' => 'display-grid mrgn_lft_20px',
+            'div_id'    => 'news-0-4',
+        ]
+    ).'</div>';
 
     $table->rowclass[] = '';
     $table->data[] = $data;
 
     $data = [];
-    $data[0] = __('Text').'<br>';
-    $data[0] .= html_print_textarea('text', 25, 15, $text, '', true);
-    $table->rowclass[] = '';
-    $table->colspan[1][0] = 5;
+    $data[0] = html_print_label_input_block(
+        __('Text'),
+        html_print_textarea(
+            'text',
+            25,
+            100,
+            $text,
+            '',
+            true,
+            'w100p'
+        )
+    );
 
     $table->data[] = $data;
 
-    echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/news">';
+    echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/news" class="max_floating_element_size">';
     if ($creation_mode == 1) {
         echo "<input type='hidden' name='create' value='1'>";
     } else {
@@ -228,10 +300,24 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
     echo "<table width='".$table->width."'>";
     echo "<tr><td align='right'>";
     if (isset($_GET['form_add'])) {
-        echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+        $submit_button = html_print_submit_button(
+            __('Create'),
+            'crtbutton',
+            false,
+            ['icon' => 'wand'],
+            true
+        );
     } else {
-        echo "<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+        $submit_button = html_print_submit_button(
+            __('Update'),
+            'crtbutton',
+            false,
+            ['icon' => 'wand'],
+            true
+        );
     }
+
+    html_print_action_buttons($submit_button);
 
     echo '</form></td></tr></table>';
 } else {
@@ -287,17 +373,23 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
                 echo "<td class='$tdcolor'>".__('No').'</b></td>';
             }
 
-            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a></td></tr>';
+            echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a></td></tr>';
         }
 
         echo '</table>';
     }
 
-    echo "<table width='100%'>";
-    echo "<tr><td align='right'>";
     echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/news&form_add=1'>";
-    echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";
-    echo '</form></table>';
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Add'),
+            'form_add',
+            false,
+            ['icon' => 'wand'],
+            true
+        )
+    );
+    echo '</form>';
 }
 
 /*

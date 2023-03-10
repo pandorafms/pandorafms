@@ -96,7 +96,10 @@ class AuditLog extends HTML
         // Datatables list.
         try {
             $columns = [
-                'id_usuario',
+                [
+                    'text'  => 'id_usuario',
+                    'class' => 'w50px',
+                ],
                 'accion',
                 'fecha',
                 'ip_origen',
@@ -116,11 +119,11 @@ class AuditLog extends HTML
                     $columns,
                     [
                         'text'  => 'security',
-                        'class' => 'w80px action_buttons show_security_info',
+                        'class' => 'w80px table_action_buttons show_security_info',
                     ],
                     [
                         'text'  => 'action',
-                        'class' => 'w80px action_buttons show_extended_info',
+                        'class' => 'w80px table_action_buttons show_extended_info',
                     ]
                 );
 
@@ -129,32 +132,24 @@ class AuditLog extends HTML
 
             $this->tableId = 'audit_logs';
 
-            // Header (only in Node).
-            if (is_metaconsole() === false) {
-                ui_print_standard_header(
-                    __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
-                    'images/gm_log.png',
-                    false,
-                    '',
-                    false,
-                    [],
+            ui_print_standard_header(
+                __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
+                'images/gm_log.png',
+                false,
+                '',
+                false,
+                [],
+                [
                     [
-                        [
-                            'link'  => '',
-                            'label' => __('Admin Tools'),
-                        ],
-                        [
-                            'link'  => '',
-                            'label' => __('System Audit log'),
-                        ],
-                    ]
-                );
-            }
-
-            if (is_metaconsole() === true) {
-                // Only in case of Metaconsole, format the frame.
-                open_meta_frame();
-            }
+                        'link'  => '',
+                        'label' => __('Admin Tools'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('System Audit log'),
+                    ],
+                ]
+            );
 
             $buttons = [];
 
@@ -162,6 +157,7 @@ class AuditLog extends HTML
                 'id'      => 'load-filter',
                 'class'   => 'float-left margin-right-2 margin-left-2 sub config',
                 'text'    => __('Load filter'),
+                'icon'    => 'load',
                 'onclick' => '',
             ];
 
@@ -169,6 +165,7 @@ class AuditLog extends HTML
                 'id'      => 'save-filter',
                 'class'   => 'float-left margin-right-2 sub wand',
                 'text'    => __('Save filter'),
+                'icon'    => 'save',
                 'onclick' => '',
             ];
 
@@ -181,7 +178,7 @@ class AuditLog extends HTML
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -199,21 +196,33 @@ class AuditLog extends HTML
                             [
                                 'label' => __('Free search').ui_print_help_tip(__('Search filter by User, Action, Date, Source IP or Comments fields content'), true),
                                 'type'  => 'text',
-                                'class' => 'w200px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_text',
                                 'name'  => 'filter_text',
                             ],
                             [
-                                'label' => __('Max. hours old'),
-                                'type'  => 'text',
-                                'class' => 'w100px',
-                                'id'    => 'filter_period',
-                                'name'  => 'filter_period',
+                                'label'          => __('Max. hours old'),
+                                'type'           => 'select',
+                                'class'          => 'w20px',
+                                'select2_enable' => true,
+                                'sort'           => false,
+                                'selected'       => 168,
+                                'fields'         => [
+                                    24   => __('1 day'),
+                                    168  => __('7 days'),
+                                    360  => __('15 days'),
+                                    744  => __('1 month'),
+                                    2160 => __('3 months'),
+                                    4320 => __('6 months'),
+                                    8760 => __('1 Year'),
+                                ],
+                                'id'             => 'filter_period',
+                                'name'           => 'filter_period',
                             ],
                             [
                                 'label' => __('IP'),
                                 'type'  => 'text',
-                                'class' => 'w100px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_ip',
                                 'name'  => 'filter_ip',
                             ],
@@ -223,7 +232,7 @@ class AuditLog extends HTML
                                 'nothing'       => __('All'),
                                 'nothing_value' => '-1',
                                 'sql'           => 'SELECT DISTINCT(accion), accion AS text FROM tsesion',
-                                'class'         => 'mw250px',
+                                'class'         => 'mw200px',
                                 'id'            => 'filter_type',
                                 'name'          => 'filter_type',
                             ],
@@ -235,25 +244,23 @@ class AuditLog extends HTML
                                 'sql'           => 'SELECT id_user, id_user AS text FROM tusuario UNION SELECT "SYSTEM"
                                                     AS id_user, "SYSTEM" AS text UNION SELECT "N/A"
                                                     AS id_user, "N/A" AS text',
-                                'class'         => 'mw250px',
+                                'class'         => 'mw200px',
                                 'id'            => 'filter_user',
                                 'name'          => 'filter_user',
                             ],
                         ],
                     ],
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                 ]
             );
         } catch (Exception $e) {
             echo $e->getMessage();
         }
 
-        if (is_metaconsole() === true) {
-            // Close the frame.
-            close_meta_frame();
-        }
-
         // Load own javascript file.
         echo $this->loadJS();
+
+        html_print_action_buttons([], ['type' => 'form_action']);
     }
 
 
@@ -346,9 +353,12 @@ class AuditLog extends HTML
                     ).ui_print_timestamp($tmp->utimestamp, true);
 
                     if (enterprise_installed() === true) {
-                        $tmp->security     = enterprise_hook('cell1EntepriseAudit', [$tmp->id_sesion]);
-                        $tmp->action       = enterprise_hook('cell2EntepriseAudit', []);
-                        $tmp->extendedInfo = enterprise_hook('rowEnterpriseAudit', [$tmp->id_sesion]);
+                        $extendedInfo = enterprise_hook('rowEnterpriseAudit', [$tmp->id_sesion]);
+                        if (empty($extendedInfo) === false) {
+                            $tmp->security     = enterprise_hook('cell1EntepriseAudit', [$tmp->id_sesion]);
+                            $tmp->action       = enterprise_hook('cell2EntepriseAudit', []);
+                            $tmp->extendedInfo = $extendedInfo;
+                        }
                     }
 
                     $carry[] = $tmp;
@@ -427,7 +437,7 @@ class AuditLog extends HTML
                     $('#audit_logs').css('width','95% !important');
                 });
 
-                $('#save-filter').click(function() {
+                $('#button-save-filter').click(function() {
                     if ($('#save-filter-select').length) {
                         $('#save-filter-select').dialog({
                             width: "20%",
@@ -485,7 +495,7 @@ class AuditLog extends HTML
                 });
 
                 /* Filter management */
-                $('#load-filter').click(function (){
+                $('#button-load-filter').click(function (){
                     if($('#load-filter-select').length) {
                         $('#load-filter-select').dialog({width: "20%",
                             maxWidth: "25%",

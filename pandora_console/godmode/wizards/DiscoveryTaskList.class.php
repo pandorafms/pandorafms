@@ -175,6 +175,7 @@ class DiscoveryTaskList extends HTML
                     'action' => ui_get_full_url(
                         'index.php?sec=gservers&sec2=godmode/servers/discovery'
                     ),
+                    'class'  => 'flex_center',
                 ],
                 'inputs' => [
                     [
@@ -182,25 +183,27 @@ class DiscoveryTaskList extends HTML
                             'name'       => 'submit',
                             'label'      => __('Go back'),
                             'type'       => 'submit',
-                            'attributes' => 'class="sub cancel"',
+                            'attributes' => [
+                                'icon' => 'back',
+                                'mode' => 'secondary',
+                            ],
                             'return'     => true,
                         ],
                     ],
                     [
-                        'class'     => 'action-buttons rule-builder-actions',
                         'arguments' => [
                             'name'       => 'refresh',
                             'label'      => __('Refresh'),
                             'type'       => 'button',
-                            'attributes' => 'class="sub upd"',
+                            'attributes' => [ 'icon' => 'cog'],
                             'return'     => true,
-                            'script'     => 'location.href = \''.$this->url.'\';',
+                            'script'     => 'location.href = "'.$this->url.'";',
                         ],
                     ],
                 ],
             ];
 
-            $this->printForm($form);
+            html_print_action_buttons($this->printForm($form, true));
         }
 
         return $ret;
@@ -955,29 +958,42 @@ class DiscoveryTaskList extends HTML
                     )
                     ) {
                         if ($ipam === true) {
-                            $data[9] .= '<a href="'.ui_get_full_url(
-                                sprintf(
-                                    'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=edit&id=%d',
-                                    $tipam_task_id
-                                )
-                            ).'">'.html_print_image(
-                                'images/config.png',
-                                true,
-                                [
-                                    'title' => __('Edit task'),
-                                    'class' => 'invert_filter',
-                                ]
-                            ).'</a>';
-                            $data[9] .= '<a href="'.ui_get_full_url(
-                                'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=delete&id='.$tipam_task_id
-                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                                'images/cross.png',
-                                true,
-                                [
-                                    'title' => __('Delete task'),
-                                    'class' => 'invert_filter',
-                                ]
-                            ).'</a>';
+                            if (empty($tipam_task_id) === false) {
+                                $data[9] .= '<a href="'.ui_get_full_url(
+                                    sprintf(
+                                        'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=edit&id=%d',
+                                        $tipam_task_id
+                                    )
+                                ).'">'.html_print_image(
+                                    'images/config.png',
+                                    true,
+                                    [
+                                        'title' => __('Edit task'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ).'</a>';
+                                $data[9] .= '<a href="'.ui_get_full_url(
+                                    'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=delete&id='.$tipam_task_id
+                                ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                    'images/cross.png',
+                                    true,
+                                    [
+                                        'title' => __('Delete task'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ).'</a>';
+                            } else {
+                                $data[9] .= '<a href="'.ui_get_full_url(
+                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
+                                ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                    'images/cross.png',
+                                    true,
+                                    [
+                                        'title' => __('Delete task'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                ).'</a>';
+                            }
                         } else {
                             // Check if is a H&D, Cloud or Application or IPAM.
                             $data[9] .= '<a href="'.ui_get_full_url(
@@ -1033,7 +1049,7 @@ class DiscoveryTaskList extends HTML
                     $data[9] = '-';
                 }
 
-                $table->cellclass[][9] = 'action_buttons';
+                $table->cellclass[][9] = 'table_action_buttons';
 
                 // Div neccesary for modal progress task.
                 echo '<div id="progress_task_'.$task['id_rt'].'" class="invisible"></div>';

@@ -1147,11 +1147,11 @@ class Item extends CachedModel
 
                 return $baseUrl.'?'.http_build_query(
                     [
-                        'sec'          => 'screen',
-                        'sec2'         => 'screens/screens',
-                        'action'       => 'visualmap',
-                        'id_visualmap' => $vcId,
-                        'pure'         => (int) (isset($config['pure']) === true) ? $config['pure'] : 0,
+                        'sec'    => 'screen',
+                        'sec2'   => 'screens/screens',
+                        'action' => 'visualmap',
+                        'id'     => $vcId,
+                        'pure'   => (int) (isset($config['pure']) === true) ? $config['pure'] : 0,
                     ]
                 );
             } else if (empty($linkedLayoutNodeId) === true

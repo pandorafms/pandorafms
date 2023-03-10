@@ -5,6 +5,7 @@
   background-size: 100% 100%;
   background-position: center;
   margin-top: 5px;
+  z-index: 0;
 }
 
 .is-maintenance {
@@ -856,6 +857,5 @@ div.module-graph .gauge_d3_class {
 .visual-console-item .analogic-clock .second-hand {
   animation: rotate-second 60s infinite linear;
 }
-
 
 /*# sourceMappingURL=vc.main.css.map*/

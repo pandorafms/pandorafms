@@ -169,7 +169,7 @@ fieldset legend {
 
 .container_network {
   margin: 20px;
-  width: 100%;
+  width: 95%;
   display: flex;
   justify-content: space-around;
 }
@@ -194,13 +194,17 @@ fieldset legend {
   margin-right: 30px;
 }
 
+.vlan_statistics {
+  width: 600px;
+}
+
 .vlan_statistics p {
   margin-left: 10px;
   font-style: italic;
 }
 
 .vlan_statistics div div {
-  width: 95%;
+  width: 90%;
 }
 
 .container_button {

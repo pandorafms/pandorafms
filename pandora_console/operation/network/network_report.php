@@ -62,95 +62,172 @@ $style_period = ($is_period) ? '' : 'display: none;';
 
 // Build the table.
 $table = new stdClass();
-$table->class = 'databox filters';
-$table->styleTable = 'width: 100%';
-$table->data['0']['0'] = __('Data to show').'&nbsp;&nbsp;';
-$table->data['0']['0'] .= html_print_select(
-    network_get_report_actions(false),
-    'action',
-    $action,
-    '',
-    '',
-    0,
-    true
+$table->class = 'filter-table-adv';
+$table->width = '100%';
+$table->data = [];
+
+$table->data[0][] = html_print_label_input_block(
+    __('Data to show'),
+    html_print_select(
+        network_get_report_actions(false),
+        'action',
+        $action,
+        '',
+        '',
+        0,
+        true
+    )
 );
 
-$table->data['0']['1'] = __('Number of result to show').'&nbsp;&nbsp;';
-$table->data['0']['1'] .= html_print_select(
-    [
-        '5'   => 5,
-        '10'  => 10,
-        '15'  => 15,
-        '20'  => 20,
-        '25'  => 25,
-        '50'  => 50,
-        '100' => 100,
-        '250' => 250,
-    ],
-    'top',
-    $top,
-    '',
-    '',
-    0,
-    true
+$table->data[0][] = html_print_label_input_block(
+    __('Number of result to show'),
+    html_print_select(
+        [
+            '5'   => 5,
+            '10'  => 10,
+            '15'  => 15,
+            '20'  => 20,
+            '25'  => 25,
+            '50'  => 50,
+            '100' => 100,
+            '250' => 250,
+        ],
+        'top',
+        $top,
+        '',
+        '',
+        0,
+        true
+    )
 );
 
-$table->data['0']['2'] = '';
-
-$table->data['1']['0'] = '<div class="flex">';
-$table->data['1']['0'] .= '<div id="end_date_container" style="'.$style_end.'">';
-$table->data['1']['0'] .= __('Start date').'&nbsp;&nbsp;';
-$table->data['1']['0'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
-$table->data['1']['0'] .= '&nbsp;&nbsp;';
-$table->data['1']['0'] .= html_print_input_text('time_lower', $time_lower, '', 7, 8, true);
-$table->data['1']['0'] .= '</div>';
-
-$table->data['1']['0'] .= '<div id="period_container" style="'.$style_period.'">';
-$table->data['1']['0'] .= __('Time Period').'&nbsp;&nbsp;';
-$table->data['1']['0'] .= html_print_extended_select_for_time('period', $period, '', '', 0, false, true);
-$table->data['1']['0'] .= '</div>';
-$table->data['1']['0'] .= html_print_checkbox(
-    'is_period',
-    1,
-    ($is_period === true) ? 1 : 0,
-    true,
-    false,
-    'network_report_click_period(event)'
+$table->data[1][] = html_print_label_input_block(
+    __('Start date'),
+    html_print_div(
+        [
+            'id'      => 'end_date_container',
+            'content' => html_print_input_text(
+                'date_lower',
+                $date_lower,
+                '',
+                10,
+                10,
+                true
+            ).html_print_input_text(
+                'time_lower',
+                $time_lower,
+                '',
+                7,
+                8,
+                true
+            ),
+        ],
+        true
+    ).html_print_div(
+        [
+            'id'      => 'period_container',
+            'style'   => 'display: none;',
+            'content' => html_print_label_input_block(
+                '',
+                html_print_extended_select_for_time(
+                    'period',
+                    $period,
+                    '',
+                    '',
+                    0,
+                    false,
+                    true
+                ),
+            ),
+        ],
+        true
+    )
 );
-$table->data['1']['0'] .= ui_print_help_tip(
-    __('Select this checkbox to write interval instead a date.'),
-    true
-);
-$table->data['1']['0'] .= '</div>';
 
-$table->data['1']['1'] = __('End date').'&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_input_text('date_greater', $date_greater, '', 10, 7, true);
-$table->data['1']['1'] .= '&nbsp;&nbsp;';
-$table->data['1']['1'] .= html_print_input_text('time_greater', $time_greater, '', 7, 8, true);
-
-$table->data['1']['2'] = html_print_submit_button(
-    __('Update'),
-    'update',
-    false,
-    'class="sub upd"',
-    true
+$table->data[1][] = html_print_label_input_block(
+    __('End date'),
+    html_print_div(
+        [
+            'id'      => '',
+            'class'   => '',
+            'content' => html_print_input_text(
+                'date_greater',
+                $date_greater,
+                '',
+                10,
+                10,
+                true
+            ).html_print_input_text(
+                'time_greater',
+                $time_greater,
+                '',
+                7,
+                8,
+                true
+            ),
+        ],
+        true
+    )
 );
-$table->data['1']['2'] .= '&nbsp;&nbsp;';
-$table->data['1']['2'] .= html_print_submit_button(
-    __('Export to CSV'),
-    'export_csv',
-    false,
-    'class="sub next" onclick="blockResumit($(this))"',
-    true
+
+$table->data[2][] = html_print_label_input_block(
+    __('Defined period'),
+    html_print_checkbox_switch(
+        'is_period',
+        1,
+        ($is_period === true) ? 1 : 0,
+        true,
+        false,
+        'network_report_click_period(event)'
+    )
 );
 
 echo '<form method="post">';
 html_print_input_hidden('order_by', $order_by);
-if (!empty($main_value)) {
+if (empty($main_value) === false) {
     html_print_input_hidden('main_value', $main_value);
 }
 
-html_print_table($table);
+$outputTable = html_print_table($table, true);
+$outputTable .= html_print_div(
+    [
+        'class'   => 'action-buttons-right-forced',
+        'content' => html_print_submit_button(
+            __('Filter'),
+            'update',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        ),
+    ],
+    true
+);
+ui_toggle(
+    $outputTable,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    __('Filters'),
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Export to CSV'),
+        'export_csv',
+        false,
+        [
+            'icon'    => 'load',
+            'onclick' => 'blockResumit($(this))',
+        ],
+        true
+    )
+);
 echo '</form>';
 
 // Print the data.
@@ -178,7 +255,8 @@ $hidden_main_link = [
 
 unset($table);
 $table = new stdClass();
-$table->styleTable = 'width: 60%';
+$table->id = '';
+$table->width = '100%';
 // Print the header.
 $table->head = [];
 $table->head['main'] = __('IP');
@@ -252,20 +330,6 @@ if (get_parameter('export_csv')) {
     exit;
 }
 
-// Print the filter remove link.
-if (!empty($main_value)) {
-    echo html_print_link_with_params(
-        in_array($action, ['udp', 'tcp']) ? __('Filtered by port %s. Click here to remove the filter.', $main_value) : __('Filtered by IP %s. Click here to remove the filter.', $main_value),
-        array_merge(
-            $hidden_main_link,
-            [
-                'main_value'    => $main_value,
-                'remove_filter' => 1,
-            ]
-        )
-    );
-}
-
 // Print the data and build the chart.
 $table->data = [];
 $chart_data = [];
@@ -273,11 +337,11 @@ $labels = [];
 $hide_filter = !empty($main_value) && ($action === 'udp' || $action === 'tcp');
 foreach ($data as $item) {
     $row = [];
-    $row['main'] = '<div class="div-v-centered">';
+    $row['main'] = '<div class="flex_center">';
     $row['main'] .= $item['host'];
     if (!$hide_filter) {
         $row['main'] .= html_print_link_with_params(
-            'images/filter.png',
+            'images/filters@svg.svg',
             array_merge($hidden_main_link, ['main_value' => $item['host']]),
             'image'
         );
@@ -316,9 +380,7 @@ foreach ($data as $item) {
 if (empty($data)) {
     ui_print_info_message(__('No data found'));
 } else {
-    echo '<div class="flex mrgn_top_10px">';
-    html_print_table($table);
-
+    // Pie graph options.
     $options = [
         'height' => 230,
         'legend' => [
@@ -328,15 +390,35 @@ if (empty($data)) {
         ],
         'labels' => $labels,
     ];
-
-    // Print the graph.
-    echo '<div class="mrgn_top_50px w40p">';
-    echo pie_graph(
-        $chart_data,
-        $options
+    // Pie graph.
+    html_print_div(
+        [
+            'class'   => 'databox netflow-pie-graph-container padding-2 white_box',
+            'content' => pie_graph(
+                $chart_data,
+                $options
+            ),
+        ]
     );
-    echo '</div>';
-    echo '</div>';
+    // Print the filter remove link.
+    if (empty($main_value) === false) {
+        echo html_print_link_with_params(
+            in_array($action, ['udp', 'tcp']) ? __('Filtered by port %s. Click here to remove the filter.', $main_value) : __('Filtered by IP %s. Click here to remove the filter.', $main_value),
+            array_merge(
+                $hidden_main_link,
+                [
+                    'main_value'    => $main_value,
+                    'remove_filter' => 1,
+                ]
+            ),
+            'text',
+            '',
+            'width: 100%; display: flex; justify-content: center;'
+        );
+    }
+
+    // Print results.
+    html_print_table($table);
 }
 
 ?>

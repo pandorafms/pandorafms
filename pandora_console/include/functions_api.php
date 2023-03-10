@@ -198,6 +198,16 @@ function returnError($typeError, $returnType='string')
             );
         break;
 
+        case 'license_error':
+            returnData(
+                $returnType,
+                [
+                    'type' => 'string',
+                    'data' => __('License not allowed for this operation.'),
+                ]
+            );
+        break;
+
         default:
             returnData(
                 $returnType,
@@ -11061,20 +11071,55 @@ function api_set_event_validate_filter($trash1, $trash2, $other, $trash3)
 
 function api_set_validate_events($id_event, $trash1, $other, $return_type, $user_in_db)
 {
-    $text = $other['data'];
+    $node_int = 0;
+    if ($other['type'] == 'string') {
+        returnError('Parameter error.');
+        return;
+    } else if ($other['type'] == 'array') {
+        $text = $other['data'][0];
+        if (is_metaconsole() === true) {
+            if (isset($other['data'][1]) === true
+                && empty($other['data'][1]) === false
+            ) {
+                $node_int = $other['data'][1];
+            }
+        }
+    }
 
-    // Set off the standby mode when close an event
-    $event = events_get_event($id_event);
-    alerts_agent_module_standby($event['id_alert_am'], 0);
+    try {
+        if (is_metaconsole() === true
+            && (int) $node_int > 0
+        ) {
+            $node = new Node($node_int);
+            $node->connect();
+        }
 
-    $result = events_change_status($id_event, EVENT_VALIDATE);
+        // Set off the standby mode when close an event
+        $event = events_get_event($id_event);
+        alerts_agent_module_standby($event['id_alert_am'], 0);
+        $result = events_change_status($id_event, EVENT_VALIDATE);
 
-    if ($result) {
         if (!empty($text)) {
             // Set the comment for the validation
             events_comment($id_event, $text);
         }
+    } catch (\Exception $e) {
+        if (is_metaconsole() === true
+            && $node_int > 0
+        ) {
+            $node->disconnect();
+        }
 
+        $result = false;
+    } finally {
+        if (is_metaconsole() === true
+            && $node_int > 0
+        ) {
+            $node->disconnect();
+        }
+    }
+
+    if ($result) {
         returnData(
             'string',
             [

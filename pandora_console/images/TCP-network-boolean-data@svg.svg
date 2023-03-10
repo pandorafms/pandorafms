@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / TCP-network-boolean-data@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-TCP-network-boolean-data" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M6,0 L14,0 L14,3 L17,3 L17,7 L19,7 C19.5522847,7 20,7.44771525 20,8 L20,19 C20,19.5522847 19.5522847,20 19,20 L1,20 C0.44771525,20 6.76353751e-17,19.5522847 0,19 L0,8 C-6.76353751e-17,7.44771525 0.44771525,7 1,7 L3,7 L3,3 L6,3 L6,0 Z M12.5,10 L7.5,10 C5.56700338,10 4,11.5670034 4,13.5 C4,15.4329966 5.56700338,17 7.5,17 L7.5,17 L12.5,17 C14.4329966,17 16,15.4329966 16,13.5 C16,11.5670034 14.4329966,10 12.5,10 L12.5,10 Z M7.5,11 C8.88071187,11 10,12.1192881 10,13.5 C10,14.8807119 8.88071187,16 7.5,16 C6.11928813,16 5,14.8807119 5,13.5 C5,12.1192881 6.11928813,11 7.5,11 Z" id="Rectangle-3" fill="#3F3F3F"></path>
+    </g>
+</svg>

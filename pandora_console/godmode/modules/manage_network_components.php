@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,8 +29,6 @@
 global $config;
 
 check_login();
-
-enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
@@ -287,16 +285,25 @@ if (is_metaconsole() === true) {
         $help_header = 'network_component_tab';
     }
 
-    ui_print_page_header(
-        __('Module management').' &raquo; '.__('Remote component management'),
+    ui_print_standard_header(
+        __('Remote component management'),
         '',
         false,
         $help_header,
         true,
-        '',
-        false,
-        'modulemodal'
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Templates'),
+            ],
+        ]
     );
+
     $sec = 'gmodules';
 }
 
@@ -597,9 +604,10 @@ if ((bool) $id !== false || $new_component
 $search_id_group = (int) get_parameter('search_id_group');
 $search_string = (string) get_parameter('search_string');
 
+$offset = (int) get_parameter('offset');
 $url = ui_get_url_refresh(
     [
-        'offset'          => false,
+        'offset'          => $offset,
         'search_string'   => $search_string,
         'search_id_group' => $search_id_group,
         'id'              => $id,
@@ -607,18 +615,6 @@ $url = ui_get_url_refresh(
     true,
     false
 );
-
-$table = new stdClass();
-$table->width = '100%';
-$table->class = 'databox filters';
-
-$table->style = [];
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
-
-$table->data = [];
-
-$table->data[0][0] = __('Group');
 
 $component_groups = network_components_get_groups();
 
@@ -648,54 +644,81 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
     }
 }
 
-$table->data[0][1] = html_print_select(
-    $component_groups,
-    'search_id_group',
-    $search_id_group,
+$name_url = 'index.php?sec=templates&sec2=godmode/modules/manage_network_components';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'filter-table-adv';
+
+$table->style = [];
+$table->style[0] = 'font-weight: bold';
+$table->style[2] = 'font-weight: bold';
+
+$table->data = [];
+
+$table->data[0][] = html_print_label_input_block(
+    __('Group'),
+    html_print_select(
+        $component_groups,
+        'search_id_group',
+        $search_id_group,
+        '',
+        __('All'),
+        0,
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width: 100%'
+    )
+);
+
+$table->data[0][] = html_print_label_input_block(
+    __('Free Search'),
+    html_print_input_text(
+        'search_string',
+        $search_string,
+        '',
+        25,
+        255,
+        true
+    ).ui_print_input_placeholder(
+        __('Search by name, description, tcp send or tcp rcv, list matches.'),
+        true
+    )
+);
+
+$toggleFilters = '<form class="filters_form" method="POST" action="'.$url.'">';
+$toggleFilters .= html_print_table($table, true);
+$toggleFilters .= html_print_div(
+    [
+        'class'   => 'action-buttons-right-forced',
+        'content' => html_print_submit_button(
+            __('Filter'),
+            'search',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        ),
+    ],
+    true
+);
+$toggleFilters .= '</form>';
+
+ui_toggle(
+    $toggleFilters,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
     '',
-    __('All'),
-    0,
     true,
     false,
-    false
-);
-$table->data[0][2] = __('Free Search').ui_print_help_tip(
-    __('Search by name, description, tcp send or tcp rcv, list matches.'),
-    true
-);
-$table->data[0][3] = html_print_input_text(
-    'search_string',
-    $search_string,
     '',
-    25,
-    255,
-    true
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
 );
-if (is_metaconsole() === true) {
-    $table->data[0][4] = '<div>';
-} else {
-    $table->data[0][4] = '<div class="action-buttons">';
-}
-
-$table->data[0][4] .= html_print_submit_button(
-    __('Search'),
-    'search',
-    false,
-    'class="sub search"',
-    true
-);
-$table->data[0][4] .= '</div>';
-
-if (is_metaconsole() === true) {
-    $filter = '<form class="filters_form" method="post" action="'.$url.'">';
-    $filter .= html_print_table($table, true);
-    $filter .= '</form>';
-    ui_toggle($filter, __('Show Options'));
-} else {
-    echo '<form method="post" action="'.$url.'">';
-    html_print_table($table);
-    echo '</form>';
-}
 
 $filter = [];
 if ($search_id_group) {
@@ -712,7 +735,7 @@ $total_components = network_components_get_network_components(
     'COUNT(*) AS total'
 );
 $total_components = $total_components[0]['total'];
-ui_pagination($total_components, $url);
+$offset_delete = ($offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
 $filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = network_components_get_network_components(
@@ -735,7 +758,7 @@ if ($components === false) {
 }
 
 $table = new stdClass();
-$table->width = '100%';
+$table->styleTable = 'margin: 10px 10px 0; width: -webkit-fill-available; width: -moz-available';
 $table->head = [];
 $table->class = 'info_table';
 if ($is_management_allowed === true) {
@@ -791,62 +814,14 @@ foreach ($components as $component) {
             true
         );
 
-        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
+        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'&offset='.$offset.'">';
         $data[0] .= io_safe_output($component['name']);
         $data[0] .= '</a>';
     } else {
         $data[0] = io_safe_output($component['name']);
     }
 
-    switch ($component['id_modulo']) {
-        case MODULE_NETWORK:
-            $data[1] .= html_print_image(
-                'images/op_network.png',
-                true,
-                [
-                    'title' => __('Network module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_WMI:
-            $data[1] .= html_print_image(
-                'images/wmi.png',
-                true,
-                [
-                    'title' => __('WMI module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_PLUGIN:
-            $data[1] .= html_print_image(
-                'images/plugin.png',
-                true,
-                [
-                    'title' => __('Plug-in module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case MODULE_WIZARD:
-            $data[1] .= html_print_image(
-                'images/wand.png',
-                true,
-                [
-                    'title' => __('Wizard module'),
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        default:
-            // Not possible.
-        break;
-    }
+    $data[1] .= ui_print_servertype_icon((int) $component['id_modulo']);
 
     $data[2] = ui_print_moduletype_icon($component['type'], true);
     $data[3] = "<span class='font_8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';
@@ -854,59 +829,59 @@ foreach ($components as $component) {
     $data[5] = $component['max'].' / '.$component['min'];
 
     if ($is_management_allowed === true) {
-        $table->cellclass[][6] = 'action_buttons';
-        $data[6] = '<a class="inline_line float-left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image(
-            'images/copy.png',
-            true,
+        $table->cellclass[][6] = 'table_action_buttons';
+
+        $data[6] = html_print_anchor(
             [
-                'alt'   => __('Duplicate'),
-                'title' => __('Duplicate'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
-        $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image(
-            'images/cross.png',
-            true,
+                'href'    => $url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'&offset='.$offset,
+                'content' => html_print_image(
+                    'images/copy.svg',
+                    true,
+                    [
+                        'title' => __('Duplicate'),
+                        'class' => 'invert_filter main_menu_icon',
+                    ]
+                ),
+            ],
+            true
+        );
+
+        $data[6] .= html_print_anchor(
             [
-                'alt'   => __('Delete'),
-                'title' => __('Delete'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
+                'href'    => $url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'&offset='.$offset_delete,
+                'onClick' => 'if (! confirm (\''.__('Are you sure?').'\')) return false',
+                'content' => html_print_image(
+                    'images/delete.svg',
+                    true,
+                    [
+                        'title' => __('Delete'),
+                        'class' => 'invert_filter main_menu_icon',
+                    ]
+                ),
+            ],
+            true
+        );
     }
 
     array_push($table->data, $data);
 }
 
-if (isset($data) === true) {
-    if ($is_management_allowed === true) {
-        echo "<form method='post' action='index.php?sec=".$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure."'>";
-        html_print_input_hidden('multiple_delete', 1);
-    }
+$tablePagination = ui_pagination(
+    $total_components,
+    $url,
+    0,
+    0,
+    true,
+    'offset',
+    false
+);
 
-    html_print_table($table);
-    ui_pagination(
-        $total_components,
-        $url,
-        0,
-        0,
-        false,
-        'offset',
-        true,
-        'pagination-bottom'
-    );
-    if ($is_management_allowed === true) {
-        echo "<div id='btn_delete_5' class='float-right'>";
-        html_print_submit_button(
-            __('Delete'),
-            'delete_btn',
-            false,
-            'class="sub delete"'
-        );
-        echo '</div>';
-        echo '</form>';
-    }
-} else {
+echo '<form id="form_delete" method="POST" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure.'">';
+html_print_table($table);
+html_print_input_hidden('multiple_delete', 1);
+echo '</form>';
+
+if (isset($data) === false) {
     ui_print_info_message(
         [
             'no_close' => true,
@@ -915,11 +890,33 @@ if (isset($data) === true) {
     );
 }
 
+$actionButtons = [];
 if ($is_management_allowed === true) {
-    echo '<form method="post" action="'.$url.'">';
-    echo '<div class="right_align mrgn_btn_15px">';
-    html_print_input_hidden('new_component', 1);
-    html_print_select(
+    $actionButtons[] = html_print_submit_button(
+        __('Create'),
+        'crt',
+        false,
+        [
+            'icon' => 'wand',
+            'form' => 'form_create',
+        ],
+        true
+    );
+    $actionButtons[] = html_print_submit_button(
+        __('Delete'),
+        'delete_btn',
+        false,
+        [
+            'icon' => 'delete',
+            'mode' => 'secondary',
+            'form' => 'form_delete',
+        ],
+        true
+    );
+    // Create.
+    $actionButtons[] = '<form style="z-index: 10" id="form_create" method="post" action="'.$url.'">';
+    $actionButtons[] = html_print_input_hidden('new_component', 1, true);
+    $actionButtons[] = html_print_select(
         [
             COMPONENT_TYPE_NETWORK => __('Create a new network component'),
             COMPONENT_TYPE_PLUGIN  => __('Create a new plugin component'),
@@ -931,47 +928,41 @@ if ($is_management_allowed === true) {
         '',
         '',
         '',
-        ''
-    );
-    html_print_submit_button(
-        __('Create'),
-        'crt',
+        true,
         false,
-        'class="sub next mrgn_lft_5px"'
+        true,
+        '',
+        false,
+        'z-index: 10'
     );
-    echo '</div>';
-    echo '</form>';
+    $actionButtons[] = '</form>';
 }
 
-enterprise_hook('close_meta_frame');
+html_print_action_buttons(
+    implode('', $actionButtons),
+    [
+        'type'          => 'form_action',
+        'right_content' => $tablePagination,
+    ]
+);
 
 ?>
 <script type="text/javascript">
     $( document ).ready(function() {
-        $('[id^=checkbox-delete_multiple]').change(function(){
-            if($(this).parent().parent().hasClass('checkselected')){
-                $(this).parent().parent().removeClass('checkselected');
-            }
-            else{
-                $(this).parent().parent().addClass('checkselected');
+        $('[id^=checkbox-delete_multiple]').click(function(){
+            if($(this).prop("checked") === false ){
+                $(this).prop("checked", false);
+            } else {
+                $(this).prop("checked", true);
             }
         });
 
-        $('[id^=checkbox-all_delete]').change(function(){
-            if ($("#checkbox-all_delete").prop("checked")) {
-                $('[id^=checkbox-delete_multiple]')
-                    .parent()
-                    .parent()
-                    .addClass('checkselected');
-                $(".check_delete")
-                    .prop("checked", true);
+        $('#checkbox-all_delete').click(function(){
+            if ($("#checkbox-all_delete").prop("checked") === true) {
+                $("[id^=checkbox-delete_multiple]").prop("checked", true);
             }
             else{
-                $('[id^=checkbox-delete_multiple]')
-                    .parent()
-                    .parent()
-                    .removeClass('checkselected');
-                $(".check_delete").prop("checked", false);
+                $("[id^=checkbox-delete_multiple]").prop("checked", false);
             }
         });
     });

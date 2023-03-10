@@ -144,6 +144,8 @@ class View extends \HTML
                                 tinyMCE.init({
                                     selector: "#textarea_label",
                                     theme: "advanced",
+                                    convert_urls:false,
+                                    relative_urls:false,
                                     content_css: "'.ui_get_full_url(false, false, false, false).'include/styles/pandora.css",
                                     theme_advanced_font_sizes:
                                     "4pt=.visual_font_size_4pt, " +

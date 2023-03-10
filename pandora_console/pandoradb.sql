@@ -557,7 +557,8 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
   FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   UNIQUE (`id_agent_module`, `id_alert_template`, `id_policy_alerts`),
-  INDEX force_execution (`force_execution`)
+  INDEX force_execution (`force_execution`),
+  INDEX idx_disabled (disabled)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
@@ -719,7 +720,8 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   PRIMARY KEY  (`id_evento`),
   KEY `idx_agente` (`id_agente`),
   KEY `idx_agentmodule` (`id_agentmodule`),
-  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
+  KEY `idx_utimestamp` USING BTREE (`utimestamp`),
+  INDEX `agente_modulo_estado`(`estado`, `id_agentmodule`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 -- Criticity: 0 - Maintance (grey)
 -- Criticity: 1 - Informational (blue)
@@ -2323,7 +2325,7 @@ CREATE TABLE IF NOT EXISTS `tsessions_php` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmap` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_group` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_group` TEXT NOT NULL DEFAULT '',
   `id_user` VARCHAR(255) NOT NULL DEFAULT '',
   `type` INT UNSIGNED NOT NULL DEFAULT 0,
   `subtype` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -4177,3 +4179,44 @@ CREATE TABLE IF NOT EXISTS `tmonitor_filter` (
   `ag_custom_fields` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tagent_filter` (
+  `id_filter`  INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_name` VARCHAR(600) NOT NULL,
+  `id_group_filter` INT NOT NULL DEFAULT 0,
+  `group_id` INT NOT NULL DEFAULT 0,
+  `recursion` TEXT,
+  `status` INT NOT NULL DEFAULT -1,
+  `search` TEXT,
+  `id_os` INT NOT NULL DEFAULT 0,
+  `policies` TEXT,
+  `search_custom` TEXT,
+  `ag_custom_fields` TEXT,
+  PRIMARY KEY  (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- Table `tevent_sound`
+-- ---------------------------------------------------------------------
+CREATE TABLE `tevent_sound` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `name` TEXT NULL,
+    `sound` TEXT NULL,
+    `active` TINYINT NOT NULL DEFAULT '1',
+PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tsesion_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsesion_filter` (
+    `id_filter` INT NOT NULL AUTO_INCREMENT,
+    `id_name` TEXT NULL,
+    `text` TEXT NULL,
+    `period` TEXT NULL,
+    `ip` TEXT NULL,
+    `type` TEXT NULL,
+    `user` TEXT NULL,
+    PRIMARY KEY (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

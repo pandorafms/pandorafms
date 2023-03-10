@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -182,7 +182,7 @@ if ($save_empty_networkmap === true) {
 
     $values = [];
     $values['name'] = $name;
-    $values['id_group'] = $id_group;
+    $values['id_group'] = implode(',', $id_group);
 
     $values['generation_method'] = 4;
 
@@ -237,7 +237,7 @@ if ($new_networkmap || $save_networkmap) {
     }
 
     if ($save_networkmap) {
-        $id_group = (int) get_parameter('id_group', 0);
+        $id_group = get_parameter('id_group', 0);
         $id_group_map = (int) get_parameter('id_group_map', 0);
 
 
@@ -292,7 +292,7 @@ if ($new_networkmap || $save_networkmap) {
 
         $values = [];
         $values['name'] = $name;
-        $values['id_group'] = $id_group;
+        $values['id_group'] = implode(',', $id_group);
         $values['source_period'] = 60;
         $values['width'] = $width;
         $values['height'] = $height;
@@ -333,7 +333,7 @@ if ($new_networkmap || $save_networkmap) {
 
         if ($source == 'group') {
             $values['source'] = 0;
-            $values['source_data'] = $id_group;
+            $values['source_data'] = implode(',', $id_group);
         } else if ($source == 'recon_task') {
             $values['source'] = 1;
             $values['source_data'] = $recon_task_id;
@@ -444,7 +444,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
     }
 
     if ($update_networkmap) {
-        $id_group = (int) get_parameter('id_group', 0);
+        $id_group = get_parameter('id_group', 0);
         // Get id of old group source to check changes.
         $id_group_old = db_get_value('id_group', 'tmap', 'id', $id);
 
@@ -480,7 +480,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         $values = [];
         $values['name'] = $name;
-        $values['id_group'] = $id_group;
+        $values['id_group'] = implode(',', $id_group);
         $values['id_group_map'] = $id_group_map;
 
         $description = get_parameter('description', '');
@@ -685,29 +685,22 @@ switch ($tab) {
         $table->class = 'info_table';
         $table->cellpadding = 0;
         $table->cellspacing = 0;
-        $table->headstyle['copy'] = 'text-align: center;';
-        $table->headstyle['edit'] = 'text-align: center;';
+        $table->headstyle['actions'] = 'text-align: right;';
 
         $table->style = [];
         $table->style['name'] = '';
-        $table->style['nodes'] = 'text-align: center;';
-
+        $table->style['nodes'] = 'text-align: left;';
         $table->style['groups'] = 'text-align: left;';
         if ($networkmaps_write === true || $networkmaps_manage === true) {
-            $table->style['copy'] = 'text-align: center;';
-            $table->style['edit'] = 'text-align: center;';
-            $table->style['delete'] = 'text-align: center;';
+            $table->style['actions'] = 'text-align: right;';
         }
 
         $table->size = [];
-        $table->size['name'] = '60%';
-        $table->size['nodes'] = '30px';
-
+        $table->size['name'] = '40%';
+        $table->size['nodes'] = '15%';
         $table->size['groups'] = '400px';
         if ($networkmaps_write === true || $networkmaps_manage === true) {
-            $table->size['copy'] = '30px';
-            $table->size['edit'] = '30px';
-            $table->size['delete'] = '30px';
+            $table->size['actions'] = '10%';
         }
 
         $table->head = [];
@@ -716,9 +709,7 @@ switch ($tab) {
 
         $table->head['groups'] = __('Groups');
         if ($networkmaps_write === true || $networkmaps_manage === true) {
-            $table->head['copy'] = __('Copy');
-            $table->head['edit'] = __('Edit');
-            $table->head['delete'] = __('Delete');
+            $table->head['actions'] = __('Actions');
         }
 
         $id_groups = array_keys(users_get_groups());
@@ -796,45 +787,70 @@ switch ($tab) {
 
                 $data['groups'] = ui_print_group_icon($network_map['id_group_map'], true);
 
-                $data['copy'] = '';
-                $data['edit'] = '';
-                $data['delete'] = '';
+                $data['actions'] = '';
 
                 if ($networkmap_write || $networkmap_manage) {
-                    $table->cellclass[] = [
-                        'copy'   => 'action_buttons',
-                        'edit'   => 'action_buttons',
-                        'delete' => 'action_buttons',
-                    ];
-                    $data['copy'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&amp;'.'copy_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Copy').'">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
-                    $data['edit'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'tab=edit&'.'edit_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Config').'">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a>';
-                    $data['delete'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'delete=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Delete').'" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
+                    $tableActionButtons = [];
+
+                    $tableActionButtons[] = html_print_anchor(
+                        [
+                            'title'   => __('Copy'),
+                            'href'    => 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&amp;copy_networkmap=1&id_networkmap='.$network_map['id'],
+                            'content' => html_print_image('images/copy.svg', true, ['class' => 'main_menu_icon invert_filter']),
+                        ],
+                        true
+                    );
+
+                    $tableActionButtons[] = html_print_anchor(
+                        [
+                            'title'   => __('Edit'),
+                            'href'    => 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=edit&edit_networkmap=1&id_networkmap='.$network_map['id'],
+                            'content' => html_print_image('images/edit.svg', true, ['class' => 'main_menu_icon invert_filter']),
+                        ],
+                        true
+                    );
+
+                    $tableActionButtons[] = html_print_anchor(
+                        [
+                            'title'   => __('Delete'),
+                            'href'    => 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&delete=1&id_networkmap='.$network_map['id'],
+                            'content' => html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']),
+                        ],
+                        true
+                    );
+
+                    $data['actions'] = html_print_div(
+                        [
+                            'class'   => 'table_action_buttons',
+                            'content' => implode('', $tableActionButtons),
+                        ],
+                        true
+                    );
                 }
 
                 $table->data[] = $data;
             }
 
-            ui_pagination($count_maps, false, $offset);
             html_print_table($table);
-            ui_pagination($count_maps, false, 0, 0, false, 'offset', true, 'pagination-bottom');
+            $tablePagination = ui_pagination($count_maps, false, 0, 0, true, 'offset', false);
         } else {
             ui_print_info_message(['no_close' => true, 'message' => __('There are no maps defined.') ]);
         }
 
         if ($networkmaps_write || $networkmaps_manage) {
-            echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
-            echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
+            echo '<form id="new_networkmap" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
             html_print_input_hidden('new_networkmap', 1);
-            html_print_submit_button(__('Create network map'), 'crt', false, 'class="sub next float-right"');
             echo '</form>';
-            echo '</div>';
 
-            echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
-            echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
+            echo '<form id="empty_networkmap" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
             html_print_input_hidden('new_empty_networkmap', 1);
-            html_print_submit_button(__('Create empty network map'), 'crt', false, 'class="sub next float-right mrgn_right_20px"');
             echo '</form>';
-            echo '</div>';
         }
+
+        html_print_action_buttons(
+            html_print_submit_button(__('Create network map'), 'crt', false, [ 'icon' => 'next', 'form' => 'new_networkmap' ], true).html_print_submit_button(__('Create empty network map'), 'crt', false, [ 'icon' => 'next', 'form' => 'empty_networkmap' ], true),
+            [ 'right_content' => $tablePagination ],
+        );
+
     break;
 }

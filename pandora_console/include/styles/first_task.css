@@ -9,7 +9,6 @@
 }
 
 .new_task {
-  margin-top: 30px;
   min-width: 600px;
   width: 100%;
   left: 20px;
@@ -19,10 +18,8 @@
   clear: both;
   display: flex;
   flex-direction: row;
-  padding-top: 1em;
-  padding-bottom: 5em;
+  padding: 1em 0 1em;
   align-items: center;
-  align-content: center;
 }
 
 .title_task {

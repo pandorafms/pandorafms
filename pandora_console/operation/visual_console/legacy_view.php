@@ -21,11 +21,7 @@ ui_require_css_file('visual_maps');
 
 check_login();
 
-if (!defined('METACONSOLE')) {
-    $id_layout = (int) get_parameter('id');
-} else {
-    $id_layout = (int) get_parameter('id_visualmap');
-}
+$id_layout = (int) get_parameter('id');
 
 if ($id_layout) {
     $default_action = 'edit';
@@ -247,7 +243,7 @@ if ($config['pure']) {
     if (!is_metaconsole()) {
         echo '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'">';
     } else {
-        echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$id_layout.'&refr='.$refr.'">';
+        echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id='.$id_layout.'&refr='.$refr.'">';
     }
 
     echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode'), 'class' => 'invert_filter']);

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / item-box@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-item-box" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Group" transform="translate(1.000000, 1.000000)" stroke="#3F3F3F" stroke-width="2">
+            <rect id="Rectangle" x="0" y="0" width="4" height="4" rx="0.5"></rect>
+            <rect id="Rectangle-Copy-3" x="14" y="14" width="4" height="4" rx="0.5"></rect>
+            <polyline id="Path-3" points="2 4 2 16 14 16"></polyline>
+            <polyline id="Path-4" points="4 2 14 2 16 2 16 14"></polyline>
+        </g>
+    </g>
+</svg>

@@ -110,6 +110,16 @@ function form_controls_massive_operations_agents(metaconsole) {
     $("#id_group").trigger("change");
   });
 
+  if (metaconsole == 1) {
+    $("#nodes").change(function() {
+      disabled = $("#disabled").val();
+    });
+
+    $("#id_group").change(function() {
+      disabled = $("#disabled").val();
+    });
+  }
+
   var nodes;
   $("#nodes").change(function() {
     nodes = $("#nodes").val();

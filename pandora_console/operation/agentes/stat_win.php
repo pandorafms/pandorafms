@@ -118,12 +118,12 @@ ui_print_message_dialog(
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
         <link rel="stylesheet" href="../../include/styles/select2.min.css" type="text/css" />
-        <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
         <script type='text/javascript' src='../../include/javascript/select2.min.js'></script>
+        <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
         <?php
         require_once $config['homedir'].'/include/graphs/functions_flot.php';
             echo include_javascript_dependencies_flot_graph(true, '../');
@@ -202,10 +202,10 @@ ui_print_message_dialog(
         $table = html_get_predefined_table('transparent', 2);
         $table->width = '100%';
         $table->id = 'stat_win_form_div';
-        $table->style[0] = 'text-align:left;';
-        $table->style[1] = 'text-align:left;';
-        $table->style[2] = 'text-align:left;font-weight: bold;';
-        $table->style[3] = 'text-align:left;';
+        $table->style[0] = 'text-align:left;font-weight: bold;font-size:8.5pt;line-height:30pt;';
+        $table->style[1] = 'text-align:left;font-weight: bold;line-height:30pt;';
+        $table->style[2] = 'text-align:left;font-weight: bold;line-height:30pt;';
+        $table->style[3] = 'text-align:left;font-weight: bold;line-height:30pt;';
         $table->class = 'table_modal_alternate';
         $table->data = [];
 
@@ -446,66 +446,47 @@ ui_print_message_dialog(
         }
 
         $form_table = html_print_table($table, true);
-        $form_table .= '<div class="w100p right mrgn_top_15px right_align">';
-        $form_table .= html_print_submit_button(
-            __('Reload'),
-            'submit',
-            false,
-            'class="sub upd"',
+        $form_table .= html_print_div(
+            [
+                'class'   => 'action-buttons-right-forced',
+                'content' => html_print_submit_button(
+                    __('Reload'),
+                    'submit',
+                    false,
+                    [
+                        'icon'  => 'search',
+                        'mode'  => 'secondary mini',
+                        'class' => 'float-right',
+                    ],
+                    true
+                ),
+            ],
             true
         );
-        $form_table .= '</div>';
 
-        // Menu.
-        $menu_form = "<form method='get' action='stat_win.php' class='mrgn_top_10px'>";
-        $menu_form .= html_print_input_hidden('id', $id, true);
-        $menu_form .= html_print_input_hidden('label', $label, true);
+        echo '<form method="GET" action="stat_win.php" style="margin-bottom: 0">';
+        html_print_input_hidden('id', $id);
+        html_print_input_hidden('label', $label);
 
         if (empty($server_id) === false) {
-            $menu_form .= html_print_input_hidden('server', $server_id, true);
+            html_print_input_hidden('server', $server_id);
         }
 
-        $menu_form .= html_print_input_hidden('histogram', $histogram, true);
+        html_print_input_hidden('histogram', $histogram);
 
         if (isset($_GET['type']) === true) {
             $type = get_parameter_get('type');
-            $menu_form .= html_print_input_hidden('type', $type, true);
+            html_print_input_hidden('type', $type);
         }
 
-        $menu_form .= '<div class="module_graph_menu_dropdown">';
-        $menu_form .= '<div id="module_graph_menu_header" class="module_graph_menu_header">';
-        $menu_form .= html_print_image(
-            'images/arrow_down_green.png',
-            true,
-            [
-                'class' => 'module_graph_menu_arrow',
-                'float' => 'left',
-            ],
-            false,
-            false,
-            true
+        ui_toggle(
+            $form_table,
+            '<span class="subsection_header_title">'.__('Graph configuration menu').'</span>'.ui_print_help_tip(
+                __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+                true
+            )
         );
-        $menu_form .= '<span style="flex: 2; justify-content:center;" class="flex-row">';
-        $menu_form .= '<b>'.__('Graph configuration menu').'</b>';
-        $menu_form .= ui_print_help_tip(
-            __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
-            true
-        );
-        $menu_form .= '</span>';
-        $menu_form .= '</div>';
-
-        $class = 'module_graph_menu_content';
-        if ($histogram === false) {
-            $class .= ' module_graph_menu_content_closed invisible';
-        }
-
-        $menu_form .= '<div class="'.$class.'">';
-        $menu_form .= $form_table;
-        $menu_form .= '</div>';
-        $menu_form .= '</div>';
-        $menu_form .= '</form>';
-
-        echo $menu_form;
+        echo '</form>';
 
         // Hidden div to forced title.
         html_print_div(
@@ -541,7 +522,7 @@ ui_print_message_dialog(
         ];
 
         // Graph.
-        $output = '<div id="stat-win-module-graph">';
+        $output = '<div class="white_box margin-lr-10" id="stat-win-module-graph">';
         $output .= '<div id="stat-win-spinner" class="stat-win-spinner">';
         $output .= html_print_image('images/spinner_charts.gif', true);
         $output .= '</div>';

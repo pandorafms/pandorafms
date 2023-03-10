@@ -179,7 +179,7 @@ function config_wiz_modal(
         __('Cancel'),
         'cancel',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub cancel submit-cancel w100px"',
+        ['icon' => 'cancel'],
         true
     );
     $output .= '</div>';
@@ -188,7 +188,7 @@ function config_wiz_modal(
         __('Continue'),
         'register-next',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
+        ['icon' => 'next'],
         true
     );
     $output .= '</div>';
@@ -287,7 +287,7 @@ function show_configuration_wizard() {
 
 
     // CLICK EVENTS: Cancel and Registration
-    $("#submit-cancel").click (function (e) {
+    $("#button-cancel").click (function (e) {
         e.preventDefault();
         $("#wiz_ensure_cancel").dialog({
             buttons: [
@@ -320,7 +320,7 @@ function show_configuration_wizard() {
         $("#wiz_ensure_cancel").dialog('open');
     });
 
-    $("#submit-register-next").click (function () {
+    $("#button-register-next").click (function () {
         // All fields are required.
         if ($("#text-email").val() == '') {
             $("#all-required").show();

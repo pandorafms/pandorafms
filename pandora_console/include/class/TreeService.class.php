@@ -222,22 +222,30 @@ class TreeService extends Tree
 
             switch ($status) {
                 case SERVICE_STATUS_NORMAL:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_ok_ball.png').'" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                    $serviceStatusLine = COL_NORMAL;
                 break;
 
                 case SERVICE_STATUS_CRITICAL:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_critical_ball.png').'" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                    $serviceStatusLine = COL_CRITICAL;
                 break;
 
                 case SERVICE_STATUS_WARNING:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_warning_ball.png').'" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                    $serviceStatusLine = COL_WARNING;
                 break;
 
                 case SERVICE_STATUS_UNKNOWN:
                 default:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_no_data_ball.png').'" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                    $serviceStatusLine = COL_UNKNOWN;
                 break;
             }
+
+            $processed_items[$row['id']]['statusImageHTML'] = html_print_div(
+                [
+                    'class' => 'node-service-status',
+                    'style' => 'background-color: '.$serviceStatusLine,
+                ],
+                true
+            );
         }
 
         $this->tree = $processed_items;
@@ -510,14 +518,11 @@ class TreeService extends Tree
                     $tmp['eventAgent'] = $item->module()->id_agente();
                     $tmp['disabled'] = $item->module()->disabled();
 
-                    $html = '<img src="';
-                    $html .= ui_get_full_url(
-                        '/images/status_sets/default/'.$item->module()->lastStatusImage()
+                    $html = html_print_div(
+                        [ 'style' => 'width:7px;background-color: '.$item->module()->lastStatusColor() ],
+                        true
                     );
-                    $html .= '" data-title="'.$title;
-                    $html .= '" data-use_title_for_force_title="1" ';
-                    $html .= 'class="forced_title" alt="';
-                    $html .= $item->module()->lastStatusTitle().'" />';
+
                     $tmp['statusImageHTML'] = $html;
                     $tmp = array_merge(
                         $tmp,

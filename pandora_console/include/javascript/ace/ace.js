@@ -20949,7 +20949,6 @@ ace.define(
     bottom: 0;\
     left: 0;\
     cursor: default;\
-    z-index: 4;\
     -ms-user-select: none;\
     -moz-user-select: none;\
     -webkit-user-select: none;\

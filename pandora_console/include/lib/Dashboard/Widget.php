@@ -420,6 +420,7 @@ class Widget
                 case 'ColorModuleTabs':
                 case 'BlockHistogram':
                 case 'DataMatrix':
+                case 'EventCardboard':
                     $className .= '\\'.$name;
                 break;
 

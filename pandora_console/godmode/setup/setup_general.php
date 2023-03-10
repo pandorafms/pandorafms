@@ -47,6 +47,8 @@ if (is_ajax()) {
     exit();
 }
 
+$performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
 $table = new StdClass();
 $table->class = 'databox filters';
 $table->id = 'setup_general';
@@ -205,7 +207,7 @@ $table->data[$i++][1] = html_print_textarea(
     2,
     25,
     $list_ACL_IPs_for_API,
-    'class="height_50px w300px"',
+    'class="height_130px w300px"',
     true
 );
 
@@ -512,13 +514,17 @@ $table->data[$i++][1] = html_print_checkbox_switch(
 );
 
 $table->data[$i][0] = __('Limit for bulk operations');
-$table->data[$i++][1] = html_print_input_text(
-    'limit_parameters_massive',
-    $config['limit_parameters_massive'],
-    '',
-    10,
-    10,
-    true
+$table->data[$i++][1] = html_print_input(
+    [
+        'type'   => 'number',
+        'size'   => 5,
+        'max'    => $performance_variables_control['limit_parameters_massive']->max,
+        'name'   => 'limit_parameters_massive',
+        'value'  => $config['limit_parameters_massive'],
+        'return' => true,
+        'min'    => $performance_variables_control['limit_parameters_massive']->min,
+        'style'  => 'width:50px',
+    ]
 );
 
 $table->data[$i][0] = __('Include agents manually disabled');
@@ -701,7 +707,7 @@ echo '<legend>'.__('Mail configuration').'</legend>';
         'email_test_dialog',
         false,
         "show_email_test('".$uniqid."');",
-        'class="sub next"',
+        [ 'icon' => 'next' ],
         true
     );
 
@@ -713,11 +719,20 @@ echo '<legend>'.__('Mail configuration').'</legend>';
 
     echo '</fieldset>';
 
-    echo '<fieldset>';
 
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'action-buttons w100p',
+            'content' => html_print_submit_button(
+                __('Update'),
+                'update_button',
+                false,
+                ['icon' => 'update'],
+                true
+            ),
+        ]
+    );
+
     echo '</form>';
 
 
@@ -748,16 +763,25 @@ echo '<legend>'.__('Mail configuration').'</legend>';
             true
         );
 
-        $table_mail_test->data[1][0] = html_print_button(
-            __('Send'),
-            'email_test',
-            false,
-            '',
-            'class="sub next"',
+        $table_mail_test->data[1][0] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
+
+        $table_mail_test->data[1][1] = html_print_div(
+            [
+                'class'   => 'action-buttons w100p',
+                'content' => html_print_button(
+                    __('Send'),
+                    'email_test',
+                    false,
+                    '',
+                    [
+                        'icon' => 'cog',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
             true
         );
-
-        $table_mail_test->data[1][1] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
 
         echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).'</div>';
     }
@@ -895,7 +919,7 @@ $(document).ready (function () {
         }
     })
 
-    $('input#button-email_test').click(perform_email_test);
+    $('#button-email_test').click(perform_email_test);
 
     $("#right_iblacklist").click (function () {
         jQuery.each($("select[name='inventory_changes_blacklist_out[]'] option:selected"), function (key, value) {

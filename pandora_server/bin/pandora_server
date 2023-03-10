@@ -42,9 +42,6 @@ use PandoraFMS::PredictionServer;
 use PandoraFMS::WebServer;
 use PandoraFMS::InventoryServer;
 
-# Constants for Win32 services.
-use constant WIN32_SERVICE_STOPPED => 0x01;
-use constant WIN32_SERVICE_RUNNING => 0x04;
 
 # Global vars
 my %Config :shared;
@@ -255,7 +252,6 @@ sub pandora_crash () {
 	print_message (\%Config, " Error description:\n", 0);
 	print_message (\%Config, $full_error, 0);
 	
-	callback_stop() if ($^O eq 'MSWin32' && defined($Config{'win32_service'}));
 }
 
 ########################################################################################
@@ -508,135 +504,6 @@ sub pandora_server_tasks ($) {
 	}
 
 	db_disconnect($dbh);
-}
-
-################################################################################
-## Install the Windows service.
-################################################################################
-sub win32_install_service() {
-
-	# Load Win32::Daemon.
-	eval "use Win32::Daemon";
-	die($@) if ($@);
-
-	# Configure and install the service.
-	my $service_path = $0;
-	my $service_params = "-S run \"" . $Config{'pandora_path'} ."\"";
-	my %service_hash = (
-		machine =>  '',
-		name	=>  'PANDORAFMSSRV',
-		display =>  'Pandora FMS Server',
-		path	=>  $service_path,
-		user	=>  '',
-		pwd	 =>  '',
-		description => 'Pandora FMS Server http://pandorafms.com/',
-		parameters => $service_params
-	);
-	
-	if (Win32::Daemon::CreateService(\%service_hash)) {
-		print "Successfully added.\n";
-		exit 0;
-	} else {
-		print "Failed to add service: " . Win32::FormatMessage(Win32::Daemon::GetLastError()) . "\n";
-		exit 1;
-	}
-}
-
-################################################################################
-## Install the Windows service.
-################################################################################
-sub win32_uninstall_service() {
-
-	# Load Win32::Daemon.
-	eval "use Win32::Daemon";
-	die($@) if ($@);
-
-	# Uninstall the service.
-	if (Win32::Daemon::DeleteService('', 'PANDORAFMSSRV')) {
-		print "Successfully deleted.\n";
-		exit 0;
-	} else {
-		print "Failed to delete service: " . Win32::FormatMessage(Win32::Daemon::GetLastError()) . "\n";
-		exit 1;
-	}
-}
-
-################################################################################
-## Windows service callback function for the running event.
-################################################################################
-sub callback_running {
-	if (Win32::Daemon::State() == WIN32_SERVICE_RUNNING) {
-	}
-}
-
-################################################################################
-## Windows service callback function for the start event.
-################################################################################
-sub callback_start {
-	no strict;
-
-	# Accept_connections ();
-	my $thr = threads->create(\&main);
-	if (!defined($thr)) {
-		Win32::Daemon::State(WIN32_SERVICE_STOPPED);
-		Win32::Daemon::StopService();
-		return;
-	}
-	$thr->detach();
-
-	Win32::Daemon::State(WIN32_SERVICE_RUNNING);
-}
-
-################################################################################
-## Windows service callback function for the stop event.
-################################################################################
-sub callback_stop {
-
-	$RUN = 0;
-	Win32::Daemon::State(WIN32_SERVICE_STOPPED);
-	Win32::Daemon::StopService();
-}
-
-################################################################################
-# Run as a Windows service.
-################################################################################
-sub win32_service_run() {
-
-	# Load Win32::Daemon.
-	eval "use Win32::Daemon";
-	die($@) if ($@);
-
-	# Run the Pandora FMS Server as a Windows service.
-	Win32::Daemon::RegisterCallbacks({
-        start       =>  \&callback_start,
-        running     =>  \&callback_running,
-        stop        =>  \&callback_stop,
-	});
-	Win32::Daemon::StartService();
-}
-
-################################################################################
-## Parse command line options.
-################################################################################
-sub parse_service_options ($) {
-	my $config = shift;
-
-	# Sanity checks.
-	return unless defined($config->{'win32_service'});
-	die ("[ERROR] Windows services are only available on Win32.\n\n") if ($^O ne 'MSWin32');
-
-	# Win32 service management.
-	eval "use Win32::Daemon";
-	die($@) if ($@);
-
-	if ($config->{'win32_service'} eq 'install') {
-		win32_install_service();
-	} elsif ($config->{'win32_service'} eq 'uninstall') {
-		win32_uninstall_service();
-	} elsif ($config->{'win32_service'} eq 'run') {
-	} else {
-		die("[ERROR] Unknown action: " . $config->{'win32_service'});
-	}
 }
 
 ################################################################
@@ -967,17 +834,9 @@ $SIG{'ALRM'} = 'IGNORE';
 pandora_init(\%Config, pandora_get_initial_product_name() . ' Server');
 pandora_load_config (\%Config);
 	
-# Parse command line options.
-parse_service_options(\%Config);
 
 # Run as a regular process.
-if (!defined($Config{'win32_service'})) {
-	main();
-}
-# Run as a Windows service.
-else {
-	win32_service_run();
-}
+main();
 
 ################################################################################
 # Kill any scripts started by the Pandora FMS Server that are still running.

@@ -15,6 +15,66 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#div_display {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#div_display::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+#div_display::-webkit-scrollbar:vertical {
+  width: 5px;
+}
+
+#div_display::-webkit-scrollbar-button:increment,
+#div_display::-webkit-scrollbar-button {
+  display: none;
+}
+
+#div_display::-webkit-scrollbar-thumb {
+  background-color: #6c7587;
+  border-radius: 2.5px;
+  opacity: 0.5;
+  height: 50px;
+}
+
+#div_display::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+#div_management {
+  display: none;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#div_management::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+#div_management::-webkit-scrollbar:vertical {
+  width: 5px;
+}
+
+#div_management::-webkit-scrollbar-button:increment,
+#div_management::-webkit-scrollbar-button {
+  display: none;
+}
+
+#div_management::-webkit-scrollbar-thumb {
+  background-color: #6c7587;
+  border-radius: 2.5px;
+  opacity: 0.5;
+  height: 50px;
+}
+
+#div_management::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
 
 .operation li,
 .godmode li {
@@ -30,8 +90,12 @@
 
 .operation .menu_icon ul.submenu > li,
 .godmode .menu_icon ul.submenu > li {
-  background-color: #282828;
-  padding-left: 1.5em;
+  background-color: #ffffff;
+  padding-left: 24px !important;
+}
+
+.menu {
+  height: 100%;
 }
 
 .menu ul {
@@ -39,54 +103,61 @@
   padding: 0;
   margin: 0;
 }
+
 .menu li.selected,
 .menu li.not_selected {
   margin: 0;
 }
 
 .menu li a {
-  color: #ffffff;
   text-decoration: none;
   width: 100%;
 }
 
 .menu_full li:hover ul {
   display: block;
+  background-color: red;
 }
 
 .submenu_text {
   margin-left: 0px;
   width: 100%;
-  color: #b9b9b9;
   font-size: 9.4pt;
+  user-select: none;
 }
 
 .menu a:hover {
   text-decoration: none;
   border: 0px;
 }
+
 .submenu {
   margin: 0px 0px 0px 0px;
-  position: absolute;
-  z-index: 999;
-  width: 240px;
+  /* position: absolute; */
+  width: 260px;
+  margin-left: 20px !important;
 }
 
 .submenu2 {
-  position: absolute;
+  /* position: absolute; */
   z-index: 999;
-  left: 240px;
-  width: 240px;
+  width: 238px;
 }
 
 .sub_subMenu {
   font-weight: normal;
-  background-color: #202020;
+  background-color: #f0f3f3;
   padding-left: 1.5em;
+  color: #161628 !important;
 }
 
 .sub_subMenu.selected {
   font-weight: 600;
+  background-color: #002f33 !important;
+}
+
+.sub_subMenu.selected a {
+  color: #fff !important;
 }
 
 .submenu2 li a {
@@ -102,8 +173,19 @@
 }
 
 .menu li.has_submenu {
-  background: url(../../images/arrow.png) no-repeat 95% 50%;
-  z-index: 1; /* Positions it on top of the rest */
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.has_submenu {
+  color: #161628 !important;
+}
+
+.span_has_menu_text {
+  font-weight: normal;
+  font-size: 9.4pt;
+  color: #3f3f3f;
 }
 
 .menu li.submenu_not_selected a,
@@ -113,19 +195,26 @@
 
 .submenu_selected {
   margin-bottom: 0px;
-  box-shadow: inset 4px 0 #82b92e;
-}
-.selected.submenu_selected {
-  background-color: #202020;
+  background-color: #eff2f2 !important;
 }
 
-li.submenu_selected.selected {
-  background-color: #202020;
-  font-weight: 600;
+.submenu_selected_no_submenu {
+  background-color: #eff2f2 !important;
+  background-color: #002f33 !important;
+  color: #ffffff !important;
 }
 
-li.sub_subMenu.selected {
-  background-color: #161616;
+.element_submenu_selected {
+  min-height: 0px !important;
+  height: 20px;
+  border-left: 4px solid #82b92e;
+  position: absolute;
+  left: 4%;
+  border-radius: 5px;
+}
+
+.left_3 {
+  left: 3%;
 }
 
 .menu .menu_icon,
@@ -139,81 +228,129 @@ li.sub_subMenu.selected {
   background-position: 4px 8px;
 }
 
+.flex_li {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Icons specified here */
-#icon_oper-networkconsole {
-  background-image: url(../../images/menu/op_network.menu_gray.png);
+.icon_oper-networkconsole {
+  background: url(../../images/menu/network.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_oper-agents {
-  background-image: url(../../images/menu/op_monitoring.menu_gray.png);
+
+.icon_oper-agents {
+  background: url(../../images/menu/monitoring.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_oper-events {
-  background-image: url(../../images/menu/op_events.menu_gray.png);
+
+.icon_oper-events {
+  background: url(../../images/menu/events.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 /* users */
-#icon_oper-users {
-  background-image: url(../../images/menu/op_workspace.menu_gray.png);
+.icon_oper-users {
+  background: url(../../images/menu/workspace.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
+
 /* trap console */
-#icon_oper-snmpc,
-#icon_god-snmpc {
-  background-image: url(../../images/menu/op_snmp.menu.png);
+.icon_oper-snmpc,
+.icon_god-snmpc {
+  background: url(../../images/menu/op_snmp.menu.png) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_oper-reporting {
-  background-image: url(../../images/menu/op_reporting.menu_gray.png);
+
+.icon_oper-reporting {
+  background: url(../../images/menu/reporting.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_oper-gismaps {
-  background-image: url(../../images/menu/op_gis.menu.png);
+
+.icon_oper-gismaps {
+  background: url(../../images/menu/op_gis.menu.png) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_oper-netflow {
-  background-image: url(../../images/menu/op_netflow.menu.png);
+
+.icon_oper-netflow {
+  background: url(../../images/menu/op_netflow.menu.png) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_oper-extensions {
-  background-image: url(../../images/menu/extensions.menu_gray.png);
+
+.icon_oper-extensions {
+  background: url(../../images/menu/tools.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 /* Godmode images */
-#icon_god-discovery {
-  background-image: url(../../images/menu/gm_discovery.menu.png);
+.icon_god-discovery {
+  background: url(../../images/menu/discovery.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-resources {
-  background-image: url(../../images/menu/gm_resources.menu_gray.png);
+
+.icon_god-resources {
+  background: url(../../images/menu/resources.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-configuration {
-  background-image: url(../../images/menu/gm_configuration.menu_gray.png);
+
+.icon_god-configuration {
+  background: url(../../images/menu/configuration.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-alerts {
-  background-image: url(../../images/menu/gm_alerts.menu_gray.png);
+
+.icon_god-alerts {
+  background: url(../../images/menu/alerts.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-users {
-  background-image: url(../../images/menu/gm_users.menu_gray.png);
+
+.icon_god-users {
+  background: url(../../images/menu/users.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-reporting {
-  background-image: url(../../images/menu/reporting_edit.menu.png);
+
+.icon_god-reporting {
+  background: url(../../images/menu/reporting_edit.menu.png) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-servers {
-  background-image: url(../../images/menu/gm_servers.menu_gray.png);
+
+.icon_god-servers {
+  background: url(../../images/menu/servers.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-setup {
-  background-image: url(../../images/menu/gm_setup.menu_gray.png);
+
+.icon_god-setup {
+  background: url(../../images/menu/settings.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-events {
-  background-image: url(../../images/menu/gm_events.menu_gray.png);
+
+.icon_god-events {
+  background: url(../../images/menu/events_2.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-extensions {
-  background-image: url(../../images/menu/builder.menu_gray.png);
+
+.icon_god-extensions {
+  background: url(../../images/menu/admin_tools.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-links {
-  background-image: url(../../images/menu/links.menu_gray.png);
+
+.icon_god-links {
+  background: url(../../images/menu/links.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-um_messages {
-  background-image: url(../../images/menu/um_messages.menu_gray.png);
+
+.icon_god-um_messages {
+  background: url(../../images/menu/warp_update.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_god-module_library {
-  background-image: url(../../images/menu/gm_library.menu_gray.png);
+
+.icon_god-module_library {
+  background: url(../../images/menu/library.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
-#icon_about {
-  background-image: url(../../images/menu/about.menu_gray.png);
+
+.icon_about {
+  background: url(../../images/menu/about.svg) no-repeat 50% 50%;
+  background-size: 18px;
 }
 
 #menu_container {
@@ -248,8 +385,8 @@ ul li {
 }
 
 .menu li ul {
-  position: absolute;
-  top: 0;
+  /* position: absolute; */
+  /* top: 0; */
   display: none;
 }
 
@@ -258,9 +395,11 @@ ul li {
   float: left;
   height: 1%;
 }
+
 * html ul li a {
   height: 1%;
 }
+
 /* End */
 
 /*
@@ -270,36 +409,28 @@ ul li {
  */
 
 .menu_icon:hover {
-  background-color: #282828;
+  background-color: #f6f7fb;
 }
+
 .submenu_not_selected:hover {
-  background-color: #202020;
+  background-color: #eff2f2 !important;
 }
-.submenu_selected:hover {
-  background-color: #202020;
-}
+
 .sub_subMenu:hover {
-  background-color: #161616;
+  background-color: #d9e0e1;
 }
 
 .menu li.selected {
-  box-shadow: inset 4px 0 #82b92e;
+  /* box-shadow: inset 4px 0 #82b92e; */
 }
 
 .operation {
-  background-color: #3d3d3d;
   padding-top: 20px;
 }
 
 .operation .selected,
 .godmode .selected {
-  background-color: #282828;
-}
-
-.operation .selected #title_menu,
-.godmode .selected #title_menu {
-  color: #fff;
-  font-weight: 600;
+  background-color: #f6f7fb;
 }
 
 .menu > .operation {
@@ -314,72 +445,8 @@ ul li {
   align-items: center;
 }
 
-.menu li div {
-  background-clip: text; /* Very important to fix a bug in Firefox */
-}
-
 .godmode {
-  padding-bottom: 4px;
-  background-color: #343434;
-}
-
-/* Menu icons active */
-.selected#icon_oper-networkconsole {
-  background-image: url(../../images/menu/op_network.menu_white.png);
-}
-.selected#icon_oper-agents {
-  background-image: url(../../images/menu/op_monitoring.menu_white.png);
-}
-.selected#icon_oper-events {
-  background-image: url(../../images/menu/op_events.menu_white.png);
-}
-.selected#icon_oper-users {
-  background-image: url(../../images/menu/op_workspace.menu_white.png);
-}
-.selected#icon_oper-reporting {
-  background-image: url(../../images/menu/op_reporting.menu_white.png);
-}
-.selected#icon_oper-extensions {
-  background-image: url(../../images/menu/extensions.menu_white.png);
-}
-.selected#icon_god-discovery {
-  background-image: url(../../images/menu/gm_discovery.menu_white.png);
-}
-.selected#icon_god-resources {
-  background-image: url(../../images/menu/gm_resources.menu_white.png);
-}
-.selected#icon_god-configuration {
-  background-image: url(../../images/menu/gm_configuration.menu_white.png);
-}
-.selected#icon_god-alerts {
-  background-image: url(../../images/menu/gm_alerts.menu_white.png);
-}
-.selected#icon_god-users {
-  background-image: url(../../images/menu/gm_users.menu_white.png);
-}
-.selected#icon_god-servers {
-  background-image: url(../../images/menu/gm_servers.menu_white.png);
-}
-.selected#icon_god-setup {
-  background-image: url(../../images/menu/gm_setup.menu_white.png);
-}
-.selected#icon_god-events {
-  background-image: url(../../images/menu/gm_events.menu_white.png);
-}
-.selected#icon_god-extensions {
-  background-image: url(../../images/menu/builder.menu_white.png);
-}
-.selected#icon_god-links {
-  background-image: url(../../images/menu/links.menu_white.png);
-}
-.selected#icon_god-um_messages {
-  background-image: url(../../images/menu/um_messages.menu_white.png);
-}
-.selected#icon_god-module_library {
-  background-image: url(../../images/menu/gm_library.menu_white.png);
-}
-.selected#icon_about {
-  background-image: url(../../images/menu/about.menu_white.png);
+  padding-top: 2em !important;
 }
 
 #menu_full {
@@ -390,7 +457,8 @@ ul li {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #343434;
+  background-color: #ffffff;
+  border-right: 1px solid #eee;
 }
 
 .button_collapse {
@@ -408,41 +476,54 @@ ul li {
   background-color: #fff;
   min-height: 60px;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
 }
 
 .menu_full_classic,
 .button_classic {
-  width: 215px;
+  width: 250px;
 }
 
 .menu_full_collapsed,
 .button_collapsed {
-  width: 60px;
+  width: 80px;
 }
 
 .menu_full_classic .title_menu_classic {
   display: flex !important;
+}
+
+.submenu_text,
+.span_has_menu_text,
+.title_menu_classic span {
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: -0.3px;
+  height: 18px;
 }
 .menu_icon_collapsed {
   background-position: 50% 50%;
 }
 
 .menu_full_collapsed .title_menu_collapsed {
-  display: none !important;
+  display: flex !important;
 }
 
 .button_classic {
-  background-image: url(../../images/button_collapse_menu.png);
+  background-image: url(../../images/menu/contraer.svg);
   background-repeat: no-repeat;
   background-position: center;
+  height: 35px;
+  width: 35px;
 }
 
 .button_collapsed {
-  background-image: url(../../images/button_classic_menu.png);
+  background-image: url(../../images/menu/expandir.svg);
   background-repeat: no-repeat;
   background-position: center;
+  height: 35px;
+  width: 35px;
 }
 
 /* Menu height: 601px, 720px, 735px */
@@ -458,6 +539,7 @@ ul li {
   .operation {
     padding-top: 10px;
   }
+
   .button_collapse {
     margin-top: 10px;
   }
@@ -469,17 +551,147 @@ ul li {
  * ---------------------------------------------------------------------
  */
 .page_classic {
-  padding-left: 215px;
+  padding-left: 250px;
 }
 
 .page_collapsed {
-  padding-left: 60px;
+  padding-left: 80px;
 }
 
 .header_table_classic {
-  padding-left: 235px; /* 215 + 35 */
+  padding-left: 270px;
+  /* 280 + 35 */
 }
 
 .header_table_collapsed {
-  padding-left: 80px; /* 60 + 35 */
+  padding-left: 100px;
+  /* 80 + 35 */
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * - TABS styles                                                       -
+ * ---------------------------------------------------------------------
+ */
+
+#menu_tabs {
+  height: 49px;
+  border-bottom: 1px solid #c1ccdc;
+}
+
+.div_border_line {
+  height: 3px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  margin-top: -5px;
+}
+
+.border_line {
+  width: 100px;
+  height: 100%;
+}
+
+.tabs_ul {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 50px;
+}
+
+.tabs_li {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tabs_li span {
+  color: #161628;
+  font-size: 14px;
+  font-weight: 400;
+  user-select: none;
+}
+
+.tabs_selected {
+  background-color: #82b92e;
+}
+
+.arrow_menu_down {
+  background: url(../../images/menu/arrow_down_grey.svg) no-repeat 75% 50%;
+  z-index: 1;
+}
+
+.arrow_menu_up {
+  background: url(../../images/menu/arrow_up_grey.svg) no-repeat 75% 50%;
+  z-index: 1;
+}
+
+.span_selected {
+  color: #1d7874 !important;
+  font-weight: bold !important;
+}
+
+.tabs_collapsed {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tabs_collapsed_container {
+  background-color: #002f33;
+  border-radius: 16px;
+  width: 60px;
+  height: 32px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.tabs_collapsed_div {
+  height: 21px;
+  width: 21px;
+  cursor: pointer;
+}
+
+.tabs_collapsed_display {
+  background-image: url(../../images/menu/display.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 21px;
+  height: 21px;
+}
+
+.tabs_collapsed_management {
+  background-image: url(../../images/menu/management.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 21px;
+  height: 21px;
+}
+
+.tabs_collapsed_oval {
+  background-color: #ffffff;
+  border-radius: 100%;
+  opacity: 0.33;
+  width: 8px;
+  height: 8px;
+  cursor: pointer;
+  margin: 6px;
+}
+
+.logo_icon {
+  margin-left: 16px;
+}
+
+.head_tab_selected span {
+  color: #161628;
+}
+
+.head_tab_unselected span {
+  color: #95a3bf;
 }

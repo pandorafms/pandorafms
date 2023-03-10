@@ -117,79 +117,91 @@ if ($not_found) {
     $table = new StdClass();
     $table->id = 'form_editor';
 
-    $table->width = '98%';
-    $table->class = 'databox_color';
-
-    $table->head = [];
-
-    $table->size = [];
-    $table->size[0] = '30%';
+    $table->width = '100%';
+    $table->class = 'databox filter-table-adv';
 
     $table->style = [];
-    $table->style[0] = 'font-weight: bold; width: 150px;';
+    $table->style[0] = 'width: 50%';
     $table->data = [];
 
-    $table->data[0][0] = __('Name');
-    $table->data[0][1] = html_print_input_text(
-        'name',
-        $name,
-        '',
-        30,
-        100,
-        true
-    );
-    $table->data[1][0] = __('Group');
-    $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
-        false,
-        'AR',
-        true,
-        'id_group',
-        $id_group,
-        '',
-        '',
-        0,
-        true
-    ).'</div>';
-
-    $table->data[2][0] = __('Node radius');
-    $table->data[2][1] = html_print_input_text(
-        'node_radius',
-        $node_radius,
-        '',
-        2,
-        10,
-        true
+    $table->data[0][] = html_print_label_input_block(
+        __('Name'),
+        html_print_input_text(
+            'name',
+            $name,
+            '',
+            30,
+            100,
+            true
+        ),
+        [ 'div_class' => 'w50p' ]
     );
 
-    $table->data[3][0] = __('Description');
-    $table->data[3][1] = html_print_textarea('description', 7, 25, $description, '', true);
+    $table->data[1][] = html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups(
+            false,
+            'AR',
+            true,
+            'id_group',
+            $id_group,
+            '',
+            '',
+            0,
+            true
+        ),
+        [ 'div_class' => 'w50p' ]
+    );
+
+    $table->data[2][] = html_print_label_input_block(
+        __('Node radius'),
+        html_print_input_text(
+            'node_radius',
+            $node_radius,
+            '',
+            2,
+            10,
+            true
+        ),
+        [ 'div_class' => 'w50p' ]
+    );
+
+    $table->data[3][] = html_print_label_input_block(
+        __('Description'),
+        html_print_textarea(
+            'description',
+            7,
+            25,
+            $description,
+            '',
+            true
+        )
+    );
 
     echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 
     html_print_table($table);
 
-    echo "<div style='width: ".$table->width."; text-align: right; margin-top:20px;'>";
     if ($new_empty_networkmap) {
         html_print_input_hidden('save_empty_networkmap', 1);
-        html_print_submit_button(
-            __('Save networkmap'),
-            'crt',
-            false,
-            'class="sub next"'
-        );
+        $titleButton = __('Save networkmap');
     }
 
     if ($edit_networkmap) {
         html_print_input_hidden('id_networkmap', $id);
         html_print_input_hidden('update_empty_networkmap', 1);
-        html_print_submit_button(
-            __('Update networkmap'),
-            'crt',
-            false,
-            'class="sub upd"'
-        );
+        $titleButton = __('Update networkmap');
     }
 
+    html_print_action_buttons(
+        html_print_submit_button(
+            $titleButton,
+            'crt',
+            false,
+            ['icon' => 'next'],
+            true
+        )
+    );
+
     echo '</form>';
-    echo '</div>';
 }

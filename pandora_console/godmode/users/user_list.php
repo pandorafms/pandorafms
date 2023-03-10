@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -132,8 +132,6 @@ if (is_ajax()) {
     }
 }
 
-enterprise_hook('open_meta_frame');
-
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $tab = get_parameter('tab', 'user');
@@ -247,22 +245,22 @@ if (is_metaconsole() === true) {
             'user'    => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                    'images/gm_users.png',
+                    'images/user.svg',
                     true,
                     [
                         'title' => __('User management'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
             ],
             'profile' => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                    'images/profiles.png',
+                    'images/suitcase@svg.svg',
                     true,
                     [
                         'title' => __('Profile management'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
             ],
@@ -272,11 +270,11 @@ if (is_metaconsole() === true) {
             'user' => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                    'images/gm_users.png',
+                    'images/user.svg',
                     true,
                     [
                         'title' => __('User management'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
             ],
@@ -285,13 +283,24 @@ if (is_metaconsole() === true) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(
-        __('User management').' &raquo; '.__('Users defined on %s', get_product_name()),
-        'images/gm_users.png',
+    // Header.
+    ui_print_standard_header(
+        __('Users management'),
+        'images/user.svg',
         false,
         '',
-        true,
-        $buttons
+        false,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage users'),
+            ],
+        ]
     );
 
     $sec = 'gusuarios';
@@ -326,8 +335,11 @@ if ($delete_user === true) {
             );
 
             if (isset($private_dashboards) === true) {
-                db_process_sql_delete('tdashboard', ['id_user' => $id_user]);
-                header('Refresh:1');
+                $dashboardRemoveResult = db_process_sql_delete('tdashboard', ['id_user' => $id_user]);
+                // Refresh the view when delete private dashboards. For review.
+                if ($dashboardRemoveResult === false || (int) $dashboardRemoveResult > 0) {
+                    header('Refresh:1');
+                }
             }
 
             $result = delete_user($id_user);
@@ -449,12 +461,14 @@ if (($filter_group == 0) && ($filter_search == '')) {
     $search = false;
 }
 
-$table = new stdClass();
-$table->width = '100%';
-$table->class = 'databox filters';
-$table->rowclass[0] = '';
-$table->data[0][0] = '<b>'.__('Group').'</b>';
-$table->data[0][1] = html_print_select_groups(
+$filterTable = new stdClass();
+$filterTable->width = '100%';
+$filterTable->class = 'fixed_filter_bar';
+$filterTable->rowclass[0] = '';
+$filterTable->cellstyle[0][0] = 'width:0';
+$filterTable->cellstyle[0][1] = 'width:0';
+$filterTable->data[0][0] = __('Group');
+$filterTable->data[1][0] = html_print_select_groups(
     false,
     'AR',
     true,
@@ -465,8 +479,8 @@ $table->data[0][1] = html_print_select_groups(
     0,
     true
 );
-$table->data[0][2] = '<b>'.__('Search').'</b>'.ui_print_help_tip(__('Search by username, fullname or email'), true);
-$table->data[0][3] = html_print_input_text(
+$filterTable->data[0][1] = __('Search').ui_print_help_tip(__('Search by username, fullname or email'), true);
+$filterTable->data[1][1] = html_print_input_text(
     'filter_search',
     $filter_search,
     __('Search by username, fullname or email'),
@@ -474,11 +488,16 @@ $table->data[0][3] = html_print_input_text(
     90,
     true
 );
-$table->data[0][4] = html_print_submit_button(
+$filterTable->cellstyle[1][2] = 'vertical-align: bottom';
+$filterTable->data[1][2] = html_print_submit_button(
     __('Search'),
     'search',
     false,
-    ['class' => 'sub search'],
+    [
+        'icon'  => 'search',
+        'class' => 'float-right',
+        'mode'  => 'secondary mini',
+    ],
     true
 );
 
@@ -503,22 +522,16 @@ if (is_metaconsole() === false && is_management_allowed() === false) {
 
 
 if (is_metaconsole() === true) {
-    $table->width = '96%';
+    $filterTable->width = '96%';
     $form_filter = "<form class='filters_form' method='post'>";
-    $form_filter .= html_print_table($table, true);
+    $form_filter .= html_print_table($filterTable, true);
     $form_filter .= '</form>';
     ui_toggle($form_filter, __('Show Options'));
 } else {
     $form_filter = "<form method='post'>";
-    $form_filter .= html_print_table($table, true);
+    $form_filter .= html_print_table($filterTable, true);
     $form_filter .= '</form>';
-    ui_toggle(
-        $form_filter,
-        __('Users control filter'),
-        __('Toggle filter(s)'),
-        '',
-        !$search
-    );
+    echo $form_filter;
 }
 
 // Urls to sort the table.
@@ -533,8 +546,9 @@ $url_down_last = '?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_con
 $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
-$table->width = '100%';
-$table->class = 'info_table';
+$table->class = 'info_table tactical_table';
+$table->id = 'user_list';
+$table->styleTable = 'margin: 0 10px';
 
 $table->head = [];
 $table->data = [];
@@ -542,15 +556,18 @@ $table->align = [];
 $table->size = [];
 $table->valign = [];
 
-$table->head[0] = __('User ID').ui_get_sorting_arrows($url_up_id, $url_down_id, $selectUserIDUp, $selectUserIDDown);
-$table->head[1] = __('Name').ui_get_sorting_arrows($url_up_name, $url_down_name, $selectFullnameUp, $selectFullnameDown);
-$table->head[2] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastConnectUp, $selectLastConnectDown);
+$table->head[0] = '<span>'.__('User ID').'</span>';
+$table->head[0] .= ui_get_sorting_arrows($url_up_id, $url_down_id, $selectUserIDUp, $selectUserIDDown);
+$table->head[1] = '<span>'.__('Name').'</span>';
+$table->head[1] .= ui_get_sorting_arrows($url_up_name, $url_down_name, $selectFullnameUp, $selectFullnameDown);
+$table->head[2] = '<span>'.__('Last contact').'</span>';
+$table->head[2] .= ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastConnectUp, $selectLastConnectDown);
 
-$table->head[3] = __('Admin');
-$table->head[4] = __('Profile / Group');
-$table->head[5] = __('Description');
+$table->head[3] = '<span>'.__('Admin').'</span>';
+$table->head[4] = '<span>'.__('Profile / Group').'</span>';
+$table->head[5] = '<span>'.__('Description').'</span>';
 if ($is_management_allowed === true) {
-    $table->head[6] = '<span title="Operations">'.__('Op.').'</span>';
+    $table->head[6] = '<span>'.__('Actions').'</span>';
 }
 
 if (is_metaconsole() === false) {
@@ -585,7 +602,7 @@ if ($user_is_admin) {
 } else {
     $group_um = users_get_groups_UM($config['id_user']);
     // 0 is the group 'all'.
-    if (isset($group_um[0])) {
+    if (isset($group_um[0]) === true) {
         $info1 = get_users($order);
     } else {
         foreach ($group_um as $group => $value) {
@@ -641,9 +658,6 @@ foreach ($info1 as $user_id => $user_info) {
 }
 
 $info = $info1;
-
-// Prepare pagination.
-ui_pagination(count($info));
 
 $offset = (int) get_parameter('offset');
 $limit = (int) $config['block_size'];
@@ -714,7 +728,13 @@ foreach ($info as $user_id => $user_info) {
         || isset($group_um[0]) || (isset($user_info['edit'])
         && $user_info['edit']))))
     ) {
-        $data[0] = '<a href="#" onclick="document.forms[\'edit_user_form_'.$user_info['id_user'].'\'].submit();">'.$user_id.'</a>';
+        $data[0] = html_print_anchor(
+            [
+                'href'    => ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$user_id),
+                'content' => $user_id,
+            ],
+            true
+        );
     } else {
         $data[0] = $user_id;
     }
@@ -728,12 +748,12 @@ foreach ($info as $user_id => $user_info) {
 
     if ($user_info['is_admin']) {
         $data[3] = html_print_image(
-            'images/user_suit.png',
+            'images/user.svg',
             true,
             [
                 'alt'   => __('Admin'),
                 'title' => __('Administrator'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'&nbsp;';
     } else {
@@ -792,10 +812,10 @@ foreach ($info as $user_id => $user_info) {
     }
 
     $data[5] = ui_print_string_substr($user_info['comments'], 24, true);
-
+    $table->cellclass[][6] = 'table_action_buttons';
+    $data[6] = '';
+    $userListActionButtons = [];
     if ($is_management_allowed === true) {
-        $table->cellclass[][6] = 'action_buttons';
-        $data[6] = '';
         if ($user_is_admin
             || $config['id_user'] == $user_info['id_user']
             || isset($group_um[0])
@@ -804,32 +824,49 @@ foreach ($info as $user_id => $user_info) {
         ) {
             // Disable / Enable user.
             if (isset($user_info['not_delete']) === false) {
-                if ($user_info['disabled'] == 0) {
+                if ((int) $user_info['disabled'] === 0) {
                     $toDoString = __('Disable');
                     $toDoAction = '1';
-                    $toDoImage  = 'images/lightbulb.png';
+                    $toDoImage  = 'images/disable.svg';
                     $toDoClass  = '';
                 } else {
                     $toDoString = __('Enable');
                     $toDoAction = '0';
-                    $toDoImage  = 'images/lightbulb_off.png';
+                    $toDoImage  = 'images/enable.svg';
                     $toDoClass  = 'filter_none';
                 }
 
-                $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
-                $data[6] .= html_print_input_hidden(
+                $userListActionButtons[] = html_print_menu_button(
+                    [
+                        'href'  => ui_get_full_url(
+                            sprintf(
+                                'index.php?sec=%s&amp;sec2=godmode/users/user_list&disable_user=%s&pure=%s&id=%s',
+                                $sec,
+                                $toDoAction,
+                                $pure,
+                                $user_info['id_user']
+                            )
+                        ),
+                        'image' => $toDoImage,
+                        'title' => $toDoString,
+                    ],
+                    true
+                );
+                /*
+                    $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'&offset='.$offset.'" class="inline">';
+                    $data[6] .= html_print_input_hidden(
                     'id',
                     $user_info['id_user'],
                     true
-                );
-                // Same csrf for every disable button for submit.
-                $data[6] .= $csrf;
-                $data[6] .= html_print_input_hidden(
+                    );
+                    // Same csrf for every disable button for submit.
+                    $data[6] .= $csrf;
+                    $data[6] .= html_print_input_hidden(
                     'disable_user',
                     $toDoAction,
                     true
-                );
-                $data[6] .= html_print_input_image(
+                    );
+                    $data[6] .= html_print_input_image(
                     'submit_disable_enable',
                     $toDoImage,
                     '',
@@ -838,66 +875,102 @@ foreach ($info as $user_id => $user_info) {
                     [
                         'data-title'                     => $toDoString,
                         'data-use_title_for_force_title' => '1',
-                        'class'                          => 'forced_title no-padding '.$toDoClass,
+                        'class'                          => 'main_menu_icon forced_title no-padding '.$toDoClass,
                     ]
-                );
-                $data[6] .= '</form>';
+                    );
+                    $data[6] .= '</form>';
+                */
             }
 
-            // Edit user.
-            $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'" id="edit_user_form_'.$user_info['id_user'].'" class="inline">';
-            $data[6] .= html_print_input_hidden(
+            /*
+                // Edit user.
+                $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'" id="edit_user_form_'.$user_info['id_user'].'" class="inline">';
+                $data[6] .= html_print_input_hidden(
                 'id_user',
                 $user_info['id_user'],
                 true
-            );
-            $data[6] .= html_print_input_hidden(
+                );
+                $data[6] .= html_print_input_hidden(
                 'edit_user',
                 '1',
                 true
-            );
-            $data[6] .= html_print_input_image(
+                );
+                $data[6] .= html_print_input_image(
                 'submit_edit_user',
-                'images/config.png',
+                'images/edit.svg',
                 '',
                 'padding:0',
                 true,
                 [
                     'data-title'                     => __('Edit'),
                     'data-use_title_for_force_title' => '1',
-                    'class'                          => 'forced_title no-padding',
+                    'class'                          => 'main_menu_icon forced_title no-padding',
                 ]
+                );
+            $data[6] .= '</form>';*/
+
+            $userListActionButtons[] = html_print_menu_button(
+                [
+                    'href'  => ui_get_full_url(
+                        sprintf(
+                            'index.php?sec=%s&amp;sec2=godmode/users/configure_user&edit_user=1&pure=%s&id_user=%s',
+                            $sec,
+                            $pure,
+                            $user_info['id_user']
+                        )
+                    ),
+                    'image' => 'images/edit.svg',
+                    'title' => __('Edit user'),
+                ],
+                true
             );
-            $data[6] .= '</form>';
 
             if ($config['admin_can_delete_user']
                 && $user_info['id_user'] != $config['id_user']
                 && isset($user_info['not_delete']) === false
             ) {
-                $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
-                $data[6] .= html_print_input_hidden(
+                /*
+                    $offset_delete = ($offset >= count($info) - 1) ? ($offset - $config['block_size']) : $offset;
+                    $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'&offset='.$offset_delete.'" class="inline">';
+                    $data[6] .= html_print_input_hidden(
                     'delete_user',
                     $user_info['id_user'],
                     true
-                );
-                $data[6] .= html_print_input_hidden(
+                    );
+                    $data[6] .= html_print_input_hidden(
                     'user_del',
                     '1',
                     true
-                );
-                $data[6] .= html_print_input_image(
+                    );
+                    $data[6] .= html_print_input_image(
                     'submit_delete_user',
-                    'images/cross.png',
+                    'images/delete.svg',
                     '',
                     'padding:0',
                     true,
                     [
                         'data-title'                     => __('Delete'),
                         'data-use_title_for_force_title' => '1',
-                        'class'                          => 'forced_title no-padding',
+                        'class'                          => 'main_menu_icon forced_title no-padding',
                     ]
+                    );
+                    $data[6] .= '</form>';
+                */
+                $userListActionButtons[] = html_print_menu_button(
+                    [
+                        'href'  => ui_get_full_url(
+                            sprintf(
+                                'index.php?sec=%s&amp;sec2=godmode/users/user_list&user_del=1&pure=%s&delete_user=%s',
+                                $sec,
+                                $pure,
+                                $user_info['id_user']
+                            )
+                        ),
+                        'image' => 'images/delete.svg',
+                        'title' => __('Delete'),
+                    ],
+                    true
                 );
-                $data[6] .= '</form>';
 
                 if (is_metaconsole() === true) {
                     $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
@@ -917,11 +990,16 @@ foreach ($info as $user_id => $user_info) {
                         true
                     );
                     $data[6] .= '</form>';
+                } else {
+                    $data[6] = implode('', $userListActionButtons);
                 }
             } else {
                 $data[6] .= '';
                 // Delete button not in this mode.
             }
+
+            // TODO. Check this in META!!!
+            $data[6] = implode('', $userListActionButtons);
         } else {
             $data[6] .= '';
             // Delete button not in this mode.
@@ -932,25 +1010,44 @@ foreach ($info as $user_id => $user_info) {
 }
 
 html_print_table($table);
-ui_pagination(count($info), false, 0, 0, false, 'offset', true, 'pagination-bottom');
-
-echo '<div style="width: '.$table->width.'" class="action-buttons">';
+$tablePagination = ui_pagination(count($info), false, 0, 0, true, 'offset', false, 'dataTables_paginate paging_simple_numbers');
 unset($table);
 if ($is_management_allowed === true) {
     if ($config['admin_can_add_user'] !== false) {
         echo '<form method="post" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'">';
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Create user'),
+                'crt',
+                false,
+                [ 'icon' => 'wand' ],
+                true
+            ),
+            [
+                'type'          => 'form_action',
+                'right_content' => $tablePagination,
+            ],
+        );
         html_print_input_hidden('new_user', 1);
-        html_print_submit_button(__('Create user'), 'crt', false, 'class="sub next"');
         echo '</form>';
     } else {
         echo '<i>'.__("The current authentication scheme doesn't support creating users on %s", get_product_name()).'</i>';
     }
+} else {
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create user'),
+            'none',
+            true,
+            [ 'icon' => 'wand' ],
+            true
+        ),
+        [
+            'type'          => 'form_action',
+            'right_content' => $tablePagination,
+        ],
+    );
 }
-
-
-echo '</div>';
-
-enterprise_hook('close_meta_frame');
 
 ?>
 <script type="text/javascript">

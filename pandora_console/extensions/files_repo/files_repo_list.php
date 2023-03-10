@@ -98,7 +98,7 @@ if (!empty($files)) {
         // Last modification
         // Public URL
         $data[4] = '';
-        $table->cellclass[][4] = 'action_buttons';
+        $table->cellclass[][4] = 'table_action_buttons';
         if (!empty($file['hash'])) {
             $public_url = ui_get_full_url(
                 EXTENSIONS_DIR.'/files_repo/files_repo_get_file.php?file='.$file['hash']

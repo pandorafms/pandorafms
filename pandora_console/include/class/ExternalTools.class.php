@@ -64,8 +64,8 @@ class ExternalTools extends HTML
             }
 
             // Capture needed parameter for agent form.
-            $this->id_agente    = (int) get_parameter('id_agente', 0);
-            $this->operation    = get_parameter('operation', 0);
+            $this->id_agente    = (int) get_parameter('id_agente');
+            $this->operation    = (int) get_parameter('operation');
             $this->community    = (string) get_parameter('community', 'public');
             $this->ip           = (string) get_parameter('select_ips');
             $this->snmp_version = (string) get_parameter('select_version');
@@ -389,7 +389,13 @@ class ExternalTools extends HTML
                 'id'      => '',
                 'class'   => 'action-buttons',
                 'style'   => 'width: 100%',
-                'content' => html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"', true),
+                'content' => html_print_submit_button(
+                    __('Update'),
+                    'update_button',
+                    false,
+                    [ 'icon' => 'update' ],
+                    true
+                ),
             ],
             true
         );
@@ -522,14 +528,16 @@ class ExternalTools extends HTML
 
         // Form table.
         $table = new StdClass();
-        $table->class = 'databox filters w100p';
+        $table->class = 'fixed_filter_bar';
         $table->id = 'externalToolTable';
-
+        $table->cellstyle['captions'][0] = 'width: 0';
+        $table->cellstyle['captions'][1] = 'width: 0';
+        $table->cellstyle['captions'][2] = 'width: 0';
         $table->data = [];
 
-        $table->data[0][0] = __('Operation');
+        $table->data['captions'][0] = __('Operation');
 
-        $table->data[0][1] = html_print_select(
+        $table->data['inputs'][0] = html_print_select(
             $commandList,
             'operation',
             $this->operation,
@@ -539,8 +547,8 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->data[0][2] = __('IP Adress');
-        $table->data[0][3] = html_print_select(
+        $table->data['captions'][1] = __('IP Adress');
+        $table->data['inputs'][1] = html_print_select(
             $ipsSelect,
             'select_ips',
             $principal_ip,
@@ -550,10 +558,10 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->cellclass[0][4] = 'snmpcolumn';
-        $table->data[0][4] = __('SNMP Version');
-        $table->data[0][4] .= '&nbsp;';
-        $table->data[0][4] .= html_print_select(
+        $table->cellclass['captions'][2] = 'snmpcolumn';
+        $table->cellclass['inputs'][2] = 'snmpcolumn';
+        $table->data['captions'][2] = __('SNMP Version');
+        $table->data['inputs'][2] = html_print_select(
             [
                 '1'  => 'v1',
                 '2c' => 'v2c',
@@ -566,10 +574,10 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->cellclass[0][5] = 'snmpcolumn';
-        $table->data[0][5] = __('SNMP Community');
-        $table->data[0][5] .= '&nbsp;';
-        $table->data[0][5] .= html_print_input_text(
+        $table->cellclass['captions'][3] = 'snmpcolumn';
+        $table->cellclass['inputs'][3] = 'snmpcolumn';
+        $table->data['captions'][3] = __('SNMP Community');
+        $table->data['inputs'][3] = html_print_input_text(
             'community',
             $this->community,
             '',
@@ -578,7 +586,22 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->data[0][6] = "<input style='margin:0px;' name=submit type=submit class='sub next' value='".__('Execute')."'>";
+        $table->data['inputs'][4] = html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Execute'),
+                    'submit',
+                    false,
+                    [
+                        'icon' => 'cog',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
 
         // Output string.
         $output = '';
@@ -698,10 +721,10 @@ class ExternalTools extends HTML
         try {
             // If caption is not added, don't show anything.
             if (empty($caption) === false) {
-                $output .= sprintf('<h3>%s</h3>', $caption);
+                $output .= sprintf('<h3 class="external_tools_title">%s</h3>', $caption);
             }
 
-            $output .= '<pre>';
+            $output .= '<pre class="external_tools_output">';
 
             // Only perform an execution if command is passed. Avoid errors.
             if (empty($command) === false) {
@@ -766,7 +789,7 @@ class ExternalTools extends HTML
                     'format'         => '-Oqn',
                 ];
 
-                echo '<h3>'.__('SNMP information for ').$ip.'</h3>';
+                echo '<h3 class="external_tools_title">'.__('SNMP information for ').$ip.'</h3>';
 
                 $snmp_obj['base_oid'] = '.1.3.6.1.2.1.1.3.0';
                 $result = get_h_snmpwalk($snmp_obj);
@@ -828,7 +851,7 @@ class ExternalTools extends HTML
 
                 html_print_table($table);
             } else if ((int) $operation === COMMAND_DIGWHOIS) {
-                echo '<h3>'.__('Domain and IP information for ').$ip.'</h3>';
+                echo '<h3 class="external_tools_title">'.__('Domain and IP information for ').$ip.'</h3>';
 
                 // Dig execution.
                 $dig = $this->whereIsTheCommand('dig');

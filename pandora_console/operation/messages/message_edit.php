@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,7 +52,7 @@ $buttons['message_list'] = [
         true,
         [
             'title' => __('Received messages'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -64,7 +64,7 @@ $buttons['sent_messages'] = [
         true,
         [
             'title' => __('Sent messages'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -76,15 +76,10 @@ $buttons['create_message'] = [
         true,
         [
             'title' => __('Create message'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
-
-// Header.
-if (is_metaconsole() === true) {
-    enterprise_hook('open_meta_frame');
-}
 
 ui_print_standard_header(
     __('Compose message'),
@@ -198,24 +193,34 @@ if ($read_message) {
         html_print_input_hidden('orig_user', $message['id_usuario_destino']);
     echo '</form>';
 
-    echo "<div class= 'action-buttons' style=' width:".$table->width."'>";
-    html_print_submit_button(
-        __('Delete conversation'),
-        'delete_btn',
-        false,
-        'form="delete_message" class="sub delete"'
-    );
-    echo '&nbsp';
     if (empty($message['id_usuario_origen']) !== true) {
-        html_print_submit_button(
+        $outputButtons .= html_print_submit_button(
             __('Reply'),
             'reply',
             false,
-            'form="reply_message" class="sub next"'
+            [
+                'icon' => 'next',
+                'form' => 'reply_message',
+            ],
+            true
         );
     }
 
-    echo '</div>';
+    $outputButtons .= html_print_submit_button(
+        __('Delete conversation'),
+        'delete_btn',
+        false,
+        [
+            'icon' => 'delete',
+            'mode' => 'secondary',
+            'form' => 'delete_message',
+        ],
+        true
+    );
+
+    html_print_action_buttons(
+        $outputButtons
+    );
 
     return;
 }
@@ -256,18 +261,6 @@ if ($send_mes === true) {
 // User info.
 $own_info = get_user_info($config['id_user']);
 
-$table = new stdClass();
-$table->width = '100%';
-$table->class = 'databox filters';
-
-$table->data = [];
-
-$table->data[0][0] = __('Sender');
-
-$table->data[0][1] = (empty($own_info['fullname']) === false) ? $own_info['fullname'] : $config['id_user'];
-
-$table->data[1][0] = __('Destination');
-
 $is_admin = (bool) db_get_value(
     'is_admin',
     'tusuario',
@@ -297,15 +290,29 @@ foreach ($users_full as $user_id => $user_info) {
     $users[$user_info['id_user']] = (empty($user_info['fullname']) === true) ? $user_info['id_user'] : $user_info['fullname'];
 }
 
+$table = new stdClass();
+$table->id = 'send_message_table';
+$table->width = '100%';
+$table->class = 'databox max_floating_element_size filter-table-adv';
+$table->style = [];
+$table->style[0] = 'width: 30%';
+$table->style[1] = 'width: 70%';
+$table->data = [];
+
+$table->data[0][] = html_print_label_input_block(
+    __('Sender'),
+    '<span class="result_info_text">'.((empty($own_info['fullname']) === false) ? $own_info['fullname'] : $config['id_user']).'</span>'
+);
+
 // Check if the user to reply is in the list, if not add reply user.
 if ($reply === true) {
-    $table->data[1][1] = (array_key_exists($dst_user, $users) === true) ? $users[$dst_user] : $dst_user;
-    $table->data[1][1] .= html_print_input_hidden(
+    $destinationInputs = (array_key_exists($dst_user, $users) === true) ? $users[$dst_user] : $dst_user;
+    $destinationInputs .= html_print_input_hidden(
         'dst_user',
         $dst_user,
         true
     );
-    $table->data[1][1] .= html_print_input_hidden(
+    $destinationInputs .= html_print_input_hidden(
         'replied',
         '1',
         true
@@ -316,21 +323,27 @@ if ($reply === true) {
 
     $groups = users_get_groups($config['id_user'], 'AR');
     // Get a list of all groups.
-    $table->data[1][1] = html_print_select(
-        $users,
-        'dst_user',
-        $dst_user,
-        'changeStatusOtherSelect(\'dst_user\', \'dst_group\')',
-        __('Select user'),
-        false,
-        true,
-        false,
-        ''
-    );
-    $table->data[1][1] .= '&nbsp;&nbsp;'.__('OR').'&nbsp;&nbsp;';
-    $table->data[1][1] .= html_print_div(
+    $destinationInputs = html_print_div(
         [
-            'class'   => 'w250px inline',
+            'class'   => 'select_users mrgn_right_5px',
+            'content' => html_print_select(
+                $users,
+                'dst_user',
+                $dst_user,
+                'changeStatusOtherSelect(\'dst_user\', \'dst_group\')',
+                __('Select user'),
+                false,
+                true,
+                false,
+                ''
+            ),
+        ],
+        true
+    );
+    $destinationInputs .= __('OR');
+    $destinationInputs .= html_print_div(
+        [
+            'class'   => 'mrgn_lft_5px',
             'content' => html_print_select_groups(
                 $config['id_user'],
                 'AR',
@@ -347,24 +360,41 @@ if ($reply === true) {
     );
 }
 
-$table->data[2][0] = __('Subject');
-$table->data[2][1] = html_print_input_text(
-    'subject',
-    $subject,
-    '',
-    50,
-    70,
-    true
+$table->data[0][] = html_print_label_input_block(
+    __('Destination'),
+    html_print_div(
+        [
+            'class'   => 'flex-content-left',
+            'content' => $destinationInputs,
+        ],
+        true
+    )
 );
 
-$table->data[3][0] = __('Message');
-$table->data[3][1] = html_print_textarea(
-    'message',
-    15,
-    255,
-    $message,
-    '',
-    true
+$table->colspan[1][] = 2;
+$table->data[1][] = html_print_label_input_block(
+    __('Subject'),
+    html_print_input_text(
+        'subject',
+        $subject,
+        '',
+        50,
+        70,
+        true
+    )
+);
+
+$table->colspan[2][] = 2;
+$table->data[2][] = html_print_label_input_block(
+    __('Message'),
+    html_print_textarea(
+        'message',
+        15,
+        50,
+        $message,
+        '',
+        true
+    )
 );
 
 $jsOutput = '';
@@ -388,22 +418,15 @@ echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/
 // Print the main table.
 html_print_table($table);
 // Print the action buttons section.
-html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'style'   => 'width: '.$table->width,
-        'content' => html_print_submit_button(
-            __('Send message'),
-            'send_mes',
-            false,
-            'class="sub wand"',
-            true
-        ),
-    ]
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Send message'),
+        'send_mes',
+        false,
+        [ 'icon' => 'wand' ],
+        true
+    )
 );
 
 echo '</form>';
 echo $jsOutput;
-if (is_metaconsole() === true) {
-    enterprise_hook('close_meta_frame');
-}

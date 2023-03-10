@@ -373,7 +373,7 @@ class WuxWidget extends Widget
                     $output .= '</span>';
                 } else {
                     $output .= __('Global status').': ';
-                    $output .= "<span class='color_82b92e font_20px'>";
+                    $output .= "<span class='pandora_green_bg font_20px'>";
                     $output .= __('Ok');
                     $output .= '</span>';
                 }

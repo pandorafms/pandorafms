@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,14 +30,14 @@
 global $config;
 
 // Ajax tooltip to deploy modules's tag info.
-if (is_ajax()) {
+if (is_ajax() === true) {
     $get_tag_tooltip = (bool) get_parameter('get_tag_tooltip', 0);
     $get_relations_tooltip = (bool) get_parameter('get_relations_tooltip', 0);
 
 
-    if ($get_tag_tooltip) {
+    if ($get_tag_tooltip === true) {
         $id_agente_modulo = (int) get_parameter('id_agente_modulo');
-        if ($id_agente_modulo == false) {
+        if ($id_agente_modulo === 0) {
             return;
         }
 
@@ -80,9 +80,9 @@ if (is_ajax()) {
     }
 
 
-    if ($get_relations_tooltip) {
+    if ($get_relations_tooltip === true) {
         $id_agente_modulo = (int) get_parameter('id_agente_modulo');
-        if ($id_agente_modulo == false) {
+        if ($id_agente_modulo === 0) {
             return;
         }
 
@@ -94,7 +94,7 @@ if (is_ajax()) {
         ];
         $relations = modules_get_relations($params);
 
-        if (empty($relations)) {
+        if (empty($relations) === true) {
             return;
         }
 
@@ -136,7 +136,7 @@ if (is_ajax()) {
     return;
 }
 
-if (!isset($id_agente)) {
+if (isset($id_agente) === false) {
     // This page is included, $id_agente should be passed to it.
     db_pandora_audit(
         AUDIT_LOG_HACK_ATTEMPT,
@@ -172,29 +172,41 @@ print_form_filter_monitors(
     $status_hierachy_mode
 );
 
-echo '<div id="module_list"></div>';
+echo html_print_div(
+    [
+        'id'      => 'module_list',
+        'content' => '',
+    ],
+    true
+);
 
 $html_toggle = ob_get_clean();
 
-ui_toggle(
-    $html_toggle,
-    __('List of modules').$help_not_init.ui_print_help_tip(
-        __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
-        true
-    ).reporting_tiny_stats(
-        $agent,
-        true,
-        'modules',
-        ':',
-        true
-    ),
-    'status_monitor_agent',
-    false,
-    false,
-    '',
-    'white_table_graph_content no-padding-imp'
+html_print_div(
+    [
+        'class'   => 'agent_details_line',
+        'content' => ui_toggle(
+            $html_toggle,
+            '<span class="subsection_header_title">'.__('List of modules').'</span>'.$help_not_init.ui_print_help_tip(
+                __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
+                true
+            ).reporting_tiny_stats(
+                $agent,
+                true,
+                'modules',
+                ':',
+                true,
+            ),
+            'status_monitor_agent',
+            false,
+            false,
+            true,
+            'box-flat agent_details_col',
+            'white-box-content',
+            'width_available'
+        ),
+    ],
 );
-
 
 ?>
 <script type="text/javascript">
@@ -256,12 +268,10 @@ ui_toggle(
         parameters["status_text_monitor"] = filter_text;
         parameters["status_module_group"] = filter_group;
         parameters["page"] = "include/ajax/module";
-        
-        
+
         $("#module_list").empty();
         $("#module_list_loading").show();
-        
-        
+
         jQuery.ajax ({
             data: parameters,
             type: 'POST',
@@ -269,13 +279,12 @@ ui_toggle(
             dataType: 'html',
             success: function (data) {
                 $("#module_list_loading").hide();
-                
                 $("#module_list").empty();
                 $("#module_list").html(data);
             }
         });
     }
-    
+
     function filter_modules() {
         filter_status = $("#status_filter_monitor").val();
         filter_group = $("#status_module_group").val();
@@ -502,20 +511,6 @@ function print_form_filter_monitors(
     $status_module_group=-1,
     $status_hierachy_mode=-1
 ) {
-    $form_text = '';
-    $table = new stdClass();
-    $table->class = 'info_table';
-    $table->id = 'module_filter_agent_view';
-    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0;';
-    $table->width = '100%';
-    $table->style[0] = 'font-weight: bold;';
-    $table->style[2] = 'font-weight: bold;';
-    $table->style[4] = 'font-weight: bold;';
-    $table->style[6] = 'font-weight: bold;';
-    $table->style[6] = 'min-width: 150px;';
-    $table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
-    $table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
-    $table->data[0][0] .= __('Status:');
     $status_list = [
         -1                                 => __('All'),
         AGENT_MODULE_STATUS_CRITICAL_BAD   => __('Critical'),
@@ -526,30 +521,6 @@ function print_form_filter_monitors(
         AGENT_MODULE_STATUS_UNKNOWN        => __('Unknown'),
     ];
 
-    $table->data[0][1] = html_print_select(
-        $status_list,
-        'status_filter_monitor',
-        $status_filter_monitor,
-        '',
-        '',
-        0,
-        true
-    );
-
-    $table->data[0][2] = __('Free text for search (*):').ui_print_help_tip(
-        __('Search by module name or alert name, list matches.'),
-        true
-    );
-
-    $table->data[0][3] = html_print_input_text(
-        'status_text_monitor',
-        $status_text_monitor,
-        '',
-        '',
-        100,
-        true
-    );
-    $table->data[0][4] = __('Module group');
     $rows = db_get_all_rows_sql(
         sprintf(
             'SELECT * 
@@ -563,13 +534,50 @@ function print_form_filter_monitors(
     );
 
     $rows_select[-1] = __('All');
-    if (!empty($rows)) {
+    if (empty($rows) === false) {
         foreach ($rows as $module_group) {
             $rows_select[$module_group['id_mg']] = __($module_group['name']);
         }
     }
 
-    $table->data[0][5] = html_print_select(
+    $form_text = '';
+    $table = new stdClass();
+    $table->class = 'filter_table';
+    $table->id = 'module_filter_agent_view';
+    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0 0 10px;';
+    $table->width = '100%';
+    $table->cellstyle[0][0] = 'width: 0';
+    $table->cellstyle[0][1] = 'width: 0';
+    $table->cellstyle[0][2] = 'width: 0';
+    // Captions.
+    $table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
+    $table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
+    $table->data[0][0] .= __('Status:');
+    $table->data[0][1] = __('Free text for search (*):').ui_print_help_tip(
+        __('Search by module name, list matches.'),
+        true
+    );
+    $table->data[0][2] = __('Module group');
+    $table->data[0][3] = __('Show in hierachy mode');
+    // Inputs.
+    $table->data[1][0] = html_print_select(
+        $status_list,
+        'status_filter_monitor',
+        $status_filter_monitor,
+        '',
+        '',
+        0,
+        true
+    );
+    $table->data[1][1] = html_print_input_text(
+        'status_text_monitor',
+        $status_text_monitor,
+        '',
+        '',
+        100,
+        true
+    );
+    $table->data[1][2] = html_print_select(
         $rows_select,
         'status_module_group',
         $status_module_group,
@@ -578,40 +586,56 @@ function print_form_filter_monitors(
         0,
         true
     );
-    $table->data[0][6] = '<div class="flex_center">';
-    $table->data[0][6] .= __('Show in hierachy mode');
-    $table->data[0][6] .= html_print_switch(
+    $table->data[1][3] = html_print_switch(
         [
             'name'     => 'status_hierachy_mode',
             'value'    => $all_events_24h,
             'onchange' => 'change_module_filter()',
             'id'       => 'checkbox-status_hierachy_mode',
-            'style'    => 'margin-left: 1em;',
         ]
     );
-    $table->data[0][6] .= '</div>';
-    $table->data[0][7] = html_print_button(
+
+    $filtersButtons = [];
+
+    $filtersButtons[] = html_print_button(
         __('Filter'),
         'filter',
         false,
         'filter_modules();',
-        'class="sub search"',
+        [
+            'icon' => 'search',
+            'mode' => 'secondary mini',
+        ],
         true
     );
-    $table->data[0][8] = html_print_button(
+
+    $filtersButtons[] = html_print_button(
         __('Reset'),
         'filter',
         false,
         'reset_filter_modules();',
-        'class="sub upd mgn_tp_0"',
+        [
+            'icon' => 'fail',
+            'mode' => 'secondary mini',
+        ],
         true
     );
+
+    $table->data[1][4] = html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => implode('', $filtersButtons),
+        ],
+        true
+    );
+
     $form_text .= html_print_table($table, true);
 
-    $filter_hidden = false;
-
-    if ($status_filter_monitor == -1 && $status_text_monitor == '' && $status_module_group == -1) {
+    // TODO. Unused code.
+    if ($status_filter_monitor === -1 && empty($status_text_monitor) === true && $status_module_group === -1) {
         $filter_hidden = true;
+    } else {
+        $filter_hidden = false;
     }
 
     echo $form_text;

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / details@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-details" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group">
+            <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+            <line x1="12" y1="12" x2="18" y2="18" id="Path-9" stroke="#3F3F3F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></line>
+            <circle id="Oval" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" cx="7" cy="7" r="6"></circle>
+        </g>
+    </g>
+</svg>

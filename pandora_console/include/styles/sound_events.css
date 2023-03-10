@@ -1,15 +1,14 @@
 /*
  * Css Modal Sound events.
  */
+div.container-button-play > button#button-start-search {
+  transition: none !important;
+}
 #modal-sound {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 0px 20px !important;
-}
-
-#tabs-sound-modal {
-  margin-top: 20px;
 }
 
 .actions-sound-modal {
@@ -46,7 +45,6 @@
 }
 
 #tabs-sound-modal ul.wizard li label {
-  color: #95a3bf;
   font-size: 13px;
   line-height: 16px;
   text-align: left;
@@ -88,19 +86,13 @@
 
 #tabs-sound-modal ul.wizard li.test-sounds input[type="button"] {
   border: 1px solid #dddddd;
-  border-radius: 4px;
+  border-radius: 8px;
   width: 131px;
   height: 38px;
   color: #95a3bf;
   font-size: 14px;
   padding: 0px;
   padding-right: 40px;
-}
-
-#tabs-sound-modal button.upd,
-#button-melody_sound {
-  background-image: url(../../images/sound_wave.png);
-  background-position: 90px 8px;
 }
 
 #tabs-sound-modal ul.wizard .select2 {
@@ -211,7 +203,7 @@
 
 .actions-sound-modal .buttons-sound-modal input[type="button"] {
   border: 1px solid #dddddd;
-  border-radius: 4px;
+  border-radius: 8px;
   width: 107px;
   height: 50px;
   font-size: 18px;
@@ -223,7 +215,7 @@
 .actions-sound-modal .buttons-sound-modal input[type="button"].play {
   background: url(../../images/play-white.png), transparent;
   background-repeat: no-repeat;
-  background-position: 70px 17px;
+  background-position: 82px 14px;
   color: #ffffff;
   padding-left: 20px;
   border: 0;
@@ -231,22 +223,30 @@
 
 .actions-sound-modal .buttons-sound-modal button.stop,
 .actions-sound-modal .buttons-sound-modal input[type="button"].stop {
-  background: url(../../images/stop.png), transparent;
+  background: url(../../images/stop.png), var(--primary-color);
   background-repeat: no-repeat;
-  background-position: 70px 17px;
+  background-position: 82px 14px;
   color: #ffffff;
   padding-left: 20px;
   border: 0;
 }
 
+button#button-start-search:hover {
+  background-position: 82px 14px !important;
+}
+
 .actions-sound-modal .buttons-sound-modal button.alerts,
 .actions-sound-modal .buttons-sound-modal input[type="button"].alerts {
   width: 154px;
-  color: #95a3bf;
+  color: var(--primary-color);
   background: url(../../images/alarm-off.png), transparent;
   background-repeat: no-repeat;
-  background-position: 108px 9px;
+  background-position: 108px 4px;
   padding-left: 20px;
+}
+
+button#button-no-alerts.alerts:hover {
+  background-position: 108px 4px !important;
 }
 
 .actions-sound-modal .buttons-sound-modal button.silence-alerts,
@@ -255,18 +255,30 @@
   color: #ffffff;
   background: url(../../images/silence-alerts.png), transparent;
   background-repeat: no-repeat;
-  background-position: 138px 9px;
+  background-position: 138px 4px;
   padding-left: 20px;
 }
 
+button#button-no-alerts.silence-alerts:hover {
+  background-position: 138px 4px !important;
+}
+
 .actions-sound-modal .container-button-play {
-  background: radial-gradient(118.26% 33.15%, #82b92e 0%, #1d4e4a 100%);
-  border-radius: 4px;
+  background-color: var(--primary-color);
+  border-radius: 8px;
 }
 
 .actions-sound-modal .container-button-alert.fired {
   background: #ee2132;
-  border-radius: 4px;
+  border-radius: 8px;
+}
+
+.actions-sound-modal .container-button-alert.fired > button {
+  font-weight: bold;
+}
+
+.actions-sound-modal .container-button-alert.fired > button:hover {
+  color: #ffffff !important;
 }
 
 .actions-sound-modal .progressbar {
@@ -350,10 +362,15 @@
     opacity: 1;
   }
 }
-.blink-image {
+
+.blink-image#button-melody_sound {
+  background: var(--primary-color);
+}
+.blink-image > div.sound,
+div.fired > button.silence-alerts {
   -moz-animation: blink normal 2s infinite ease-in-out; /* Firefox */
   -webkit-animation: blink normal 2s infinite ease-in-out; /* Webkit */
   -ms-animation: blink normal 2s infinite ease-in-out; /* IE */
   animation: blink normal 2s infinite ease-in-out; /* Opera and prob css3 final iteration */
-  filter: hue-rotate(120deg);
+  /* filter: hue-rotate(120deg); */
 }

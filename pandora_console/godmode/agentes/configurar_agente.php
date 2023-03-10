@@ -462,11 +462,11 @@ if ($id_agente) {
 
     // Inventory.
     $inventorytab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
-        'images/page_white_text.png',
+        'images/hardware-software-component@svg.svg',
         true,
         [
             'title' => __('Inventory'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
@@ -474,11 +474,6 @@ if ($id_agente) {
         $inventorytab['active'] = true;
     } else {
         $inventorytab['active'] = false;
-    }
-
-    $inventorytab = enterprise_hook('inventory_tab');
-    if ($inventorytab === ENTERPRISE_NOT_HOOK) {
-        $inventorytab = '';
     }
 
     $has_remote_conf = enterprise_hook(

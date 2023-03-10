@@ -6,7 +6,7 @@
 
 /* Calendar background */
 table.scw {
-  background-color: #82b92e;
+  background-color: var(--secondary-color);
   border: 0 !important;
   border-radius: 4px;
 }
@@ -64,4 +64,20 @@ td.scwFoot {
   background-color: #fff !important;
   color: #3c3c3c !important;
   border: 0 !important;
+}
+
+.scwHead input {
+  line-height: 6px;
+  padding-left: 5px;
+  background-color: #000;
+  color: #cccccc;
+}
+
+.scwHead input:hover {
+  background-color: #cccccc;
+  color: #000;
+}
+
+table.scw {
+  border: 2px solid #c0ccdc;
 }

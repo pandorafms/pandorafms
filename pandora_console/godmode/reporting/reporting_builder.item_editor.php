@@ -923,6 +923,12 @@ switch ($action) {
 
                     $selected_agent_group_filter = $es['agent_group_filter'];
                     $selected_module_group = $es['module_group'];
+
+                    $search_module_name = $es['search_module_name'];
+                    $tags = $es['tags'];
+                    $alias = $es['alias'];
+                    $description_switch = $es['description_switch'];
+                    $last_status_change = $es['last_status_change'];
                 break;
 
                 case 'inventory':
@@ -2633,7 +2639,8 @@ $class = 'databox filters';
                     'render_definition',
                     3,
                     25,
-                    $render_definition
+                    $render_definition,
+                    'style=width:100%'
                 );
                 ?>
             </td>
@@ -3920,37 +3927,92 @@ $class = 'databox filters';
             <?php
             $rows_select = [];
             $rows_select[0] = __('Not assigned');
-            if ($is_metaconsole === false) {
-                $rows = db_get_all_rows_sql(
-                    'SELECT * FROM tmodule_group ORDER BY name'
-                );
-                $rows = io_safe_output($rows);
-                if (empty($rows) === false) {
-                    foreach ($rows as $module_group) {
-                        $rows_select[$module_group['id_mg']] = $module_group['name'];
-                    }
-                }
-            } else {
-                $rows_select = modules_get_modulegroups();
-            }
+            $rows_select = modules_get_modulegroups();
 
             html_print_select($rows_select, 'modulegroup', $modulegroup, '', __($is_none), -1, true, false, true, '', false, 'width: 120px;');
             html_print_select(
                 $rows_select,
-                'module_group',
+                'module_group[]',
                 $selected_module_group,
                 '',
-                __('All'),
-                -1,
+                '',
+                '',
                 false,
-                false,
+                true,
                 true,
                 '',
                 false,
-                'width: 120px;'
+                'width: 200px;'
             );
             ?>
             </td>
+        </tr>
+
+        <tr id="row_search_module_name"   class="datos">
+            <td class="bolder">
+                <?php echo __('Search module name'); ?>
+            </td>
+            <td  >
+                <?php
+                html_print_input_text('search_module_name', $search_module_name, '', 40, 100);
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_tags" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Tags');
+                ?>
+            </td>
+            <td>
+            <?php
+            $rows_select = [];
+            $rows_select = tags_get_user_tags();
+
+            html_print_select(
+                $rows_select,
+                'tags[]',
+                $tags,
+                '',
+                '',
+                '',
+                false,
+                true,
+                true,
+                '',
+                false,
+                'width: 200px;'
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_alias"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Alias');
+            ?>
+            </td>
+            <td><?php html_print_checkbox_switch('alias', 1, $alias); ?></td>
+        </tr>
+
+        <tr id="row_description_switch"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Description');
+            ?>
+            </td>
+            <td><?php html_print_checkbox_switch('description_switch', 1, $description_switch); ?></td>
+        </tr>
+
+        <tr id="row_last_status_change"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Last status change');
+            ?>
+            </td>
+            <td><?php html_print_checkbox_switch('last_status_change', 1, $last_status_change); ?></td>
         </tr>
     </tbody>
 </table>
@@ -6421,6 +6483,11 @@ function chooseType() {
     $("#row_agent_group_filter").hide();
     $("#row_module_group_filter").hide();
     $("#row_module_group_filter").hide();
+    $("#row_alias").hide();
+    $("#row_search_module_name").hide();
+    $("#row_description_switch").hide();
+    $("#row_last_status_change").hide();
+    $("#row_tags").hide();
     $("#row_os").hide();
     $("#row_custom_field_filter").hide();
     $("#row_custom_field").hide();
@@ -7047,7 +7114,6 @@ function chooseType() {
             $("#row_agents_inventory_display_options").show();
             $("#row_agent_server_filter").show();
             $("#row_agent_group_filter").show();
-            $("#row_group").show();
             $("#row_os").show();
             $("#row_custom_field").show();
             $("#row_custom_field_filter").show();
@@ -7073,10 +7139,14 @@ function chooseType() {
             break;
 
         case 'modules_inventory':
-            $("#row_group").show();
             $("#row_agent_server_filter").show();
             $("#row_agent_group_filter").show();
             $("#row_module_group_filter").show();
+            $("#row_alias").show();
+            $("#row_search_module_name").show();
+            $("#row_description_switch").show();
+            $("#row_last_status_change").show();
+            $("#row_tags").show();
 
             break;
 

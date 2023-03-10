@@ -176,13 +176,16 @@ if ($total_agentes > 0) {
 }
 
 echo '<table width="100%" class="info_table">';
+    echo '<thead>';
     echo '<tr>';
         echo "<th colspan=2 class='center'>".__('Summary of the status groups').'</th>';
     echo '</tr>';
     echo '<tr>';
-        echo "<th width=50% class='center'>".__('Agents').'</th>';
-        echo "<th width=50% class='center'>".__('Modules').'</th>';
+        echo "<th class='center'>".__('Agents').'</th>';
+        echo "<th class='center'>".__('Modules').'</th>';
     echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
     echo "<tr height=70px'>";
         echo "<td align='center'>";
             echo "<span id='sumary' class='red_background'>".$total_agent_critical.'%</span>';
@@ -199,6 +202,7 @@ echo '<table width="100%" class="info_table">';
             echo "<span id='sumary' class='bg_4a83f3'>".$total_monitor_not_init.'%</span>';
         echo '</td>';
     echo '</tr>';
+    echo '</tbody>';
 echo '</table>';
 
 if ($count == 1) {
@@ -224,6 +228,7 @@ if (empty($result_groups) === false) {
     );
 
     echo '<table class="info_table mrgn_top_10px" border="0" width="100%">';
+        echo '<thead>';
         echo '<tr>';
             echo '<th colspan=2 ></th>';
             echo '<th colspan=6>'.__('Agents').'</th>';
@@ -246,6 +251,7 @@ if (empty($result_groups) === false) {
             echo "<th width='10%' class='mw60px center'>".__('Critical').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Alert fired').'</th>';
         echo '</tr>';
+        echo '</thead>';
 
     foreach ($result_groups as $data) {
         if ((bool) $config['show_empty_groups'] === false

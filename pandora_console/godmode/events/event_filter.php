@@ -243,11 +243,7 @@ $submitButtons .= html_print_submit_button(
 );
 
 html_print_action_buttons(
-    $submitButtons,
-    [
-        'type' => 'form_action',
-        'id'   => 'list-events-filters',
-    ]
+    $submitButtons
 );
 ?>
 

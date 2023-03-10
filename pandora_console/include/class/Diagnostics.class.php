@@ -155,13 +155,19 @@ class Diagnostics extends Wizard
         ];
 
         // Header.
-        ui_print_page_header(
-            __('%s Diagnostic tool', $this->product_name),
+        ui_print_standard_header(
+            __('Admin tools'),
             'images/gm_massive_operations.png',
             false,
             '',
             true,
-            $header_buttons
+            $header_buttons,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('%s Diagnostic tool', $this->product_name),
+                ],
+            ]
         );
 
         // Print all Methods Diagnostic Info.
@@ -1569,7 +1575,7 @@ class Diagnostics extends Wizard
                         [
                             'id'                  => $tableId,
                             'class'               => 'info_table caption_table',
-                            'style'               => 'width: 100%',
+                            'style'               => 'width: 99%',
                             'columns'             => $columns,
                             'column_names'        => $columnNames,
                             'ajax_data'           => [

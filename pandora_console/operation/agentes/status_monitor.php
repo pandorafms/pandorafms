@@ -1448,7 +1448,7 @@ $url_timestamp_down .= '&sort_field=timestamp&sort=down';
 if (empty($result) === false) {
     if (is_metaconsole() === true) {
         html_print_action_buttons(
-            html_print_div(['style' => 'float:left; height: 55px;', 'class' => 'mrgn_top_15px'], true),
+            '',
             [
                 'type'          => 'form_action',
                 'right_content' => $tablePagination,
@@ -2229,7 +2229,7 @@ if (empty($result) === false) {
 
 if (is_metaconsole() !== true) {
     html_print_action_buttons(
-        html_print_div(['style' => 'float:left; height: 55px;'], true),
+        '',
         [
             'type'          => 'form_action',
             'right_content' => $tablePagination,

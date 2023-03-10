@@ -174,7 +174,7 @@ if (is_ajax()) {
                         5,
                         1,
                         '',
-                        'class="fields"',
+                        'class="fields w100p"',
                         true,
                         '',
                         $is_management_allowed
@@ -307,7 +307,8 @@ if (is_ajax()) {
                             false,
                             false,
                             'fields',
-                            $is_management_allowed
+                            $is_management_allowed,
+                            'width: 100%;'
                         );
 
                         $rfield .= html_print_select(
@@ -321,7 +322,8 @@ if (is_ajax()) {
                             false,
                             false,
                             'fields',
-                            $is_management_allowed
+                            $is_management_allowed,
+                            'width: 100%;'
                         );
 
                         $ffield .= html_print_input_text('field'.$i.'_value[]', '', '', 10, 10, true, false, false, '', 'datepicker');
@@ -487,7 +489,7 @@ if (is_ajax()) {
                             5,
                             1,
                             $fv[0],
-                            'style="'.$style.'" class="fields min-height-40px"',
+                            'style="'.$style.'" class="fields min-height-40px w100p"',
                             true,
                             '',
                             $is_management_allowed
@@ -497,7 +499,7 @@ if (is_ajax()) {
                             5,
                             1,
                             $fv[0],
-                            'style="'.$style.'" class="fields_recovery min-height-40px',
+                            'style="'.$style.'" class="fields_recovery min-height-40px w100p',
                             true,
                             '',
                             $is_management_allowed
@@ -510,7 +512,7 @@ if (is_ajax()) {
                     5,
                     1,
                     '',
-                    'style="'.$style.'" class="fields min-height-40px"',
+                    'style="'.$style.'" class="fields min-height-40px w100p"',
                     true,
                     '',
                     $is_management_allowed
@@ -520,7 +522,7 @@ if (is_ajax()) {
                     5,
                     1,
                     '',
-                    'style="'.$style.'" class="fields_recovery min-height-40px"',
+                    'style="'.$style.'" class="fields_recovery min-height-40px w100p"',
                     true,
                     '',
                     $is_management_allowed

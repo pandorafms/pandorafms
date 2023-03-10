@@ -426,6 +426,9 @@ a.pandora_pagination {
   color: #fff;
 }
 
+span.reinvert_filter {
+  filter: invert(1);
+}
 /* firts_task.css */
 .new_task,
 div.new_task,
@@ -449,7 +452,11 @@ div.new_task > div {
 }
 
 /* tree.css */
-.node-content:hover {
+.tree-node div.node-content {
+  background-color: #444;
+}
+
+.tree-node div.node-content:hover {
   background-color: #222;
 }
 

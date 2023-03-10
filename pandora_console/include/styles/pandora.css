@@ -11220,6 +11220,7 @@ table.table_modal_alternate
   border-left: 0;
 }
 
+div.main_menu_icon,
 img.main_menu_icon[src$=".svg"] {
   width: 20px;
   height: 20px;

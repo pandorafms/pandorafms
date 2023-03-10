@@ -67,7 +67,7 @@ function show_event_dialog(event, dialog_page) {
             background: "black"
           },
           width: 710,
-          height: 600,
+          height: 650,
           autoOpen: true,
           open: function() {
             if (

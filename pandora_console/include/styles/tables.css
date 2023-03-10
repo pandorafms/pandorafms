@@ -688,7 +688,7 @@ table.events-filters-create
   > div
   > div
   > .ui-autocomplete-input {
-  width: 94%;
+  width: 100%;
 }
 
 table.events-filters-create > tbody > tr > td > div.flex-row > div {

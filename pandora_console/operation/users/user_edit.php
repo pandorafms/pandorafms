@@ -584,19 +584,6 @@ if ((bool) check_acl($config['id_user'], 0, 'ER') === true) {
     ).'</div>';
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';

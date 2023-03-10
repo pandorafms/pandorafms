@@ -1309,6 +1309,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `id_filter`  INT UNSIGNED NULL DEFAULT NULL,
   `session_time` INT signed NOT NULL DEFAULT 0,
   `default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
+  `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `autorefresh_white_list` TEXT ,
   `time_autorefresh` INT UNSIGNED NOT NULL DEFAULT 30,
   `default_custom_view` INT UNSIGNED NULL DEFAULT 0,
@@ -4220,3 +4221,28 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `user` TEXT NULL,
     PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `twelcome_tip` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_lang` VARCHAR(20) NULL,
+  `id_profile` INT NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `text` TEXT NOT NULL,
+  `url` VARCHAR(255) NULL,
+  `enable` TINYINT NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+
+CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `twelcome_tip_file` INT NOT NULL,
+  `filename` VARCHAR(255) NOT NULL,
+  `path` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `twelcome_tip_file`
+    FOREIGN KEY (`twelcome_tip_file`)
+    REFERENCES `twelcome_tip` (`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

@@ -236,7 +236,7 @@ class SatelliteCollection extends HTML
 
                         $tmp->actions = '';
                         $tmp->actions .= html_print_image(
-                            ($delete === 0) ? 'images/add.png' : 'images/cross.png',
+                            ($delete === 0) ? 'images/add.png' : 'images/delete.svg',
                             true,
                             [
                                 'border'  => '0',

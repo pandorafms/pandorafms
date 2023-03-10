@@ -26,7 +26,7 @@ if (!$modules || !$searchModules) {
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';
-    $table->class = 'databox';
+    $table->class = 'info_table';
 
     $table->head = [];
     $table->head[0] = __('Module').' <a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleNameUp]).'</a><a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleNameDown]).'</a>';
@@ -209,7 +209,7 @@ if (!$modules || !$searchModules) {
 
             $url_edit = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&id_agent_module='.$module['id_agente_modulo'].'&edit_module=1';
 
-            $edit_module = '<a href="'.$url_edit.'">'.html_print_image('images/config.png', true).'</a>';
+            $edit_module = '<a href="'.$url_edit.'">'.html_print_image('images/edit.svg', true).'</a>';
         } else {
             $edit_module = '';
         }
@@ -232,8 +232,24 @@ if (!$modules || !$searchModules) {
     }
 
     echo '<br />';
-    ui_pagination($totalModules);
     html_print_table($table);
     unset($table);
-    ui_pagination($totalModules);
+    $tablePagination = ui_pagination(
+        $totalModules,
+        false,
+        0,
+        0,
+        true,
+        'offset',
+        false
+    );
+
+    html_print_action_buttons(
+        '',
+        [
+            'type'          => 'data_table',
+            'class'         => 'fixed_action_buttons',
+            'right_content' => $tablePagination,
+        ]
+    );
 }

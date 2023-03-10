@@ -104,7 +104,7 @@ function generateExtraFields($extra_fields, $protocol)
             'class'   => 'float-right',
             'style'   => $cntFields <= 1 ? 'opacity: 0.5;' : '',
             'content' => html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 true,
                 [
                     'title'   => __('Remove last macro oid'),

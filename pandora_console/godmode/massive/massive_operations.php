@@ -216,7 +216,7 @@ if ($option == '') {
 
 $alertstab = [
     'text'   => '<a href="'.$url.'&tab=massive_alerts">'.html_print_image(
-        'images/bell.png',
+        'images/alert@svg.svg',
         true,
         [
             'title' => __('Alerts operations'),
@@ -228,7 +228,7 @@ $alertstab = [
 
 $userstab = [
     'text'   => '<a href="'.$url.'&tab=massive_users">'.html_print_image(
-        'images/user.png',
+        'images/user.svg',
         true,
         [
             'title' => __('Users operations'),
@@ -240,7 +240,7 @@ $userstab = [
 
 $agentstab = [
     'text'   => '<a href="'.$url.'&tab=massive_agents">'.html_print_image(
-        'images/agent.png',
+        'images/agents@svg.svg',
         true,
         [
             'title' => __('Agents operations'),
@@ -252,7 +252,7 @@ $agentstab = [
 
 $modulestab = [
     'text'   => '<a href="'.$url.'&tab=massive_modules">'.html_print_image(
-        'images/module.png',
+        'images/modules@svg.svg',
         true,
         [
             'title' => __('Modules operations'),
@@ -264,7 +264,7 @@ $modulestab = [
 
 $pluginstab = [
     'text'   => '<a href="'.$url.'&tab=massive_plugins">'.html_print_image(
-        'images/plugin.png',
+        'images/plugins@svg.svg',
         true,
         [
             'title' => __('Plugins operations'),

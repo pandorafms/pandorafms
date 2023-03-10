@@ -1452,7 +1452,7 @@ $table->data['module'][1] = "
                 <td class='cell_delete_button' style='text-align: right; width:10%;' id=''>".'<a class="link_delete"
                         onclick="if(!confirm(\''.__('Are you sure?').'\')) return false;"
                         href="">'.html_print_image(
-                            'images/cross.png',
+                            'images/delete.svg',
                             true,
                             [
                                 'border' => '0',

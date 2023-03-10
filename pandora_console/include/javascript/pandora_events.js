@@ -628,7 +628,7 @@ function delete_event(table, id_evento, event_rep, row, server_id) {
     },
     onDeny: function() {
       button.children[0];
-      button.children[0].src = "images/cross.png";
+      button.children[0].src = "images/delete.svg";
       return;
     }
   });

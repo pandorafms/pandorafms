@@ -403,3 +403,7 @@ div#tree-controller-recipient {
   margin-left: 5px;
   border-radius: 5px;
 }
+
+.tree-node .node-icon.node-status {
+  border: 0;
+}

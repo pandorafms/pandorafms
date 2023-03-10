@@ -30,7 +30,7 @@ $buttons['report_items']['active'] = true;
 $buttons['report_items']['text'] = '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">'.html_print_image('images/god6.png', true, ['title' => __('Report items')]).'</a>';
 
 $buttons['edit_report']['active'] = false;
-$buttons['edit_report']['text'] = '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$id.'">'.html_print_image('images/config.png', true, ['title' => __('Edit report')]).'</a>';
+$buttons['edit_report']['text'] = '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$id.'">'.html_print_image('images/edit.svg', true, ['title' => __('Edit report')]).'</a>';
 
 // Header
 if (! defined('METACONSOLE')) {
@@ -260,7 +260,7 @@ foreach ($reports_item as $item) {
     }
 
     $data[5] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-		href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc='.$item['id_rc'].'&id='.$id."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>'.html_print_checkbox_extended('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
+		href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc='.$item['id_rc'].'&id='.$id."&offset=0'>".html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>'.html_print_checkbox_extended('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
 
     array_push($table->data, $data);
 }

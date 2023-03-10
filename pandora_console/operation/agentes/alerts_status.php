@@ -545,7 +545,7 @@ function alerts_table_controls() {
     
     $(document).ready ( function () {
         alerts_table_controls();
-        $('#submit-alert_validate').on('click', function () {
+        $('#button-alert_validate').on('click', function () {
             validateAlerts();
         });
     });

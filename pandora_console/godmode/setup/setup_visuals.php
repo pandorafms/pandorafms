@@ -1626,11 +1626,11 @@ if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['c
         true
     );
     $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
         [
             'id'    => 'select',
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 } else {
@@ -1646,11 +1646,11 @@ if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['c
         false
     );
     $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
-        'images/pencil.png',
+        'images/edit.svg',
         true,
         [
             'id'    => 'pencil',
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 }
@@ -1777,7 +1777,7 @@ function edit_csv_divider () {
         $("#text-csv_divider").val(value);
     }
     else {
-        $("#csv_divider_custom img").attr("src", "images/pencil.png");
+        $("#csv_divider_custom img").attr("src", "images/edit.svg");
         $("#csv_divider_custom img").attr("id", "pencil");
         $("#text-csv_divider").replaceWith("<select id='csv_divider' name='csv_divider'>");
         var o = new Option(";", ";");

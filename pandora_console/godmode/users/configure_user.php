@@ -1888,7 +1888,7 @@ echo '</div>';
 // This is an image generated for JS.
 $delete_image = html_print_input_image(
     'del',
-    'images/cross.png',
+    'images/delete.svg',
     1,
     '',
     true,

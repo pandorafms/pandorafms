@@ -401,7 +401,7 @@ class SatelliteAgent extends HTML
 
                         if ($disable === false) {
                             $tmp->actions .= html_print_image(
-                                ($delete === true) ? 'images/add.png' : 'images/cross.png',
+                                ($delete === true) ? 'images/add.png' : 'images/delete.svg',
                                 true,
                                 [
                                     'border'  => '0',

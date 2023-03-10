@@ -698,7 +698,7 @@ echo '</form>';
             <td><a id="delete_row" href="none">
             <?php
             html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 false,
                 [
                     'alt'   => '',
@@ -1005,7 +1005,7 @@ function getAgentRow (layerId, agentId, agentAlias) {
     var $deleteCol = $("<td />");
 
     var $agentAlias = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + agentAlias + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/cross.png', false, ['class' => 'invert_filter']); ?> </a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/delete.svg', false, ['class' => 'invert_filter']); ?> </a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);
@@ -1061,7 +1061,7 @@ function getGroupRow (layerId, groupId, groupName, agentId, agentAlias) {
         + "<i>" + agentAlias + "</i>"
         + ")"
         + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter']); ?></a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);
@@ -1139,8 +1139,8 @@ function getLayerRow (layerId, layerData) {
     var $layerName = $("<span class=\"layer_name\">" + layerData.name + "</span>");
     var $sortUpBtn = $("<a class=\"up_arrow\" href=\"javascript:;\" />");
     var $sortDownBtn = $("<a class=\"down_arrow\" href=\"javascript:;\" />");
-    var $editBtn = $('<a class="edit_layer" href="javascript:;"><?php echo html_print_image('images/config.png', true, ['class' => 'invert_filter']); ?></a>');
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?></a>');
+    var $editBtn = $('<a class="edit_layer" href="javascript:;"><?php echo html_print_image('images/edit.svg', true, ['class' => 'invert_filter']); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter']); ?></a>');
 
     $sortUpBtn.click(moveLayerRowUpOnClick);
     $sortDownBtn.click(moveLayerRowDownOnClick);

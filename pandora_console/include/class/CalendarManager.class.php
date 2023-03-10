@@ -155,11 +155,11 @@ class CalendarManager
             'text'   => '<a href="'.ui_get_full_url(
                 $this->url.'&tab_calendar=list'
             ).'&pure='.(int) $config['pure'].'">'.html_print_image(
-                'images/list.png',
+                'images/logs@svg.svg',
                 true,
                 [
                     'title' => __('Alert calendar list'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>',
         ];
@@ -177,11 +177,11 @@ class CalendarManager
                 'text'   => '<a href="'.ui_get_full_url(
                     $this->url.'&tab_calendar=list&op=edit&id='.$id
                 ).'&pure='.(int) $config['pure'].'">'.html_print_image(
-                    'images/pencil.png',
+                    'images/edit.svg',
                     true,
                     [
                         'title' => __('Edit calendar'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ];
@@ -195,7 +195,7 @@ class CalendarManager
                     true,
                     [
                         'title' => __('Alert special days'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ];
@@ -697,7 +697,7 @@ class CalendarManager
                                 );
                                 $tmp->options .= '">';
                                 $tmp->options .= html_print_image(
-                                    'images/config.png',
+                                    'images/edit.svg',
                                     true,
                                     [
                                         'title' => __('Edit'),
@@ -731,7 +731,7 @@ class CalendarManager
                                 );
                                 $tmp->options .= '">';
                                 $tmp->options .= html_print_image(
-                                    'images/cross.png',
+                                    'images/delete.svg',
                                     true,
                                     [
                                         'title' => __('Delete'),

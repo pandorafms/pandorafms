@@ -695,3 +695,8 @@ ul li {
 .head_tab_unselected span {
   color: #95a3bf;
 }
+
+.logo_full {
+  width: 215px !important;
+  height: auto !important;
+}

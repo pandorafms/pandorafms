@@ -1,6 +1,6 @@
 .tree-root {
   margin-top: 0px;
-  margin-bottom: 0px;
+  margin-bottom: 40px;
 }
 
 .tree-node.tree-node-header {
@@ -8,12 +8,6 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  /*
-  width: calc(100% - 24px);
-  border: 1px solid #eaeaea;
-  border-radius: 4px;
-  background-color: #fff;
-  */
   margin-bottom: 8px;
 }
 
@@ -392,6 +386,20 @@ div#tree-controller-recipient {
 .tree-node > .node-content > .agent-alerts-fired {
   float: left;
   position: relative;
-  left: 26px;
+  left: 13px;
   top: -5px;
+}
+
+.tree-node > .node-content > div.tree-service-status {
+  width: 7px;
+  height: 20px;
+  margin-left: 0;
+  border-radius: 5px;
+}
+
+.tree-node > .node-content.node-service > div.tree-service-status {
+  width: 7px;
+  height: 20px;
+  margin-left: 5px;
+  border-radius: 5px;
 }

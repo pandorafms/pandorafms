@@ -1135,6 +1135,7 @@ div#main {
   flex-direction: column;
   height: 100%;
   margin: 25px;
+  margin-bottom: 50px;
 }
 
 textarea.conf_editor {
@@ -8135,7 +8136,7 @@ div.graph div.legend table {
   position: relative;
   overflow: hidden;
   background-color: var(--secondary-color);
-  min-height: calc(100vh - 220px);
+  min-height: calc(100vh - 235px);
 }
 
 /*
@@ -10866,7 +10867,6 @@ tr.bring_next_field {
 .dataTables_wrapper {
   overflow: auto;
   width: 100%;
-  margin-bottom: 25px;
 }
 
 .dataTables_wrapper .dataTables_processing {

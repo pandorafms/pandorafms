@@ -144,7 +144,7 @@ function snmp_browser_get_html_tree(
         // Branch or leave with branches!
         if (isset($sub_level['__OID__'])) {
             $output .= "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"".addslashes($sub_level['__OID__'])."\");'>";
-            $output .= '<img src="'.$url.'/../../images/operation.png" class="vertical_middle">';
+            $output .= '<img src="'.$url.'/../../images/details.svg" class="main_menu_icon invert_filter vertical_middle">';
             $output .= '</a>';
         }
 

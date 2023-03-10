@@ -74,7 +74,6 @@ div#head {
 .menu_full_classic #menu_tabs {
   height: 49px;
   border-bottom: 1px solid #82b92e;
-  padding-bottom: 2px;
 }
 
 .menu_full_collapsed #menu_tabs {
@@ -1070,10 +1069,6 @@ div.integria_details_description textarea {
 }
 
 .networkconsole {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
   background-color: #111;
 }
 
@@ -1413,11 +1408,6 @@ p.trademark-copyright {
   overflow: auto;
 }
 
-.action_buttons_background_mask {
-  background-color: #222;
-  border-top: 1px solid #82b92e;
-}
-
 button.buttonButton,
 button.submitButton {
   box-shadow: 0px 3px 6px #111;
@@ -1507,4 +1497,8 @@ div.white_box.white_box_opened.no_border {
 
 table.filter-table-adv td > div label {
   color: white !important;
+}
+
+#principal_action_buttons {
+  background: #111111;
 }

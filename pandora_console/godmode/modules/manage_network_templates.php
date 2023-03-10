@@ -266,7 +266,7 @@ foreach ($result as $row) {
     $table->cellclass[][3] = 'table_action_buttons';
     $data[3] = html_print_input_image(
         'delete_profile',
-        'images/cross.png',
+        'images/delete.svg',
         $row['id_np'],
         '',
         true,
@@ -286,7 +286,7 @@ foreach ($result as $row) {
             'class' => 'invert_filter',
         ]
     );
-    $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+    $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
     $data[3] .= '<a onclick="blockResubmit($(this))" href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
 
     array_push($table->data, $data);

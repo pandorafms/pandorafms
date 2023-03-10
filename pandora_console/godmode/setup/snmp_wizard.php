@@ -107,7 +107,7 @@ html_print_table($table);
 
 function cell_op($oid='')
 {
-    return '<img class="loading invisible" src="'.'images/spinner.gif'.'" />'.'<a class="button_edit_snmp" href="javascript: edit_snmp(\''.$oid.'\');">'.html_print_image('images/cog.png', true, ['class' => 'invert_filter', 'title' => __('Edit')]).'</a>'.'<a class="delete_button_snmp" href="javascript: delete_snmp(\''.$oid.'\');">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+    return '<img class="loading invisible" src="'.'images/spinner.gif'.'" />'.'<a class="button_edit_snmp" href="javascript: edit_snmp(\''.$oid.'\');">'.html_print_image('images/cog.png', true, ['class' => 'invert_filter', 'title' => __('Edit')]).'</a>'.'<a class="delete_button_snmp" href="javascript: delete_snmp(\''.$oid.'\');">'.html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
 }
 
 

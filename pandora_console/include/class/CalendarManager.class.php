@@ -697,7 +697,7 @@ class CalendarManager
                                 );
                                 $tmp->options .= '">';
                                 $tmp->options .= html_print_image(
-                                    'images/config.png',
+                                    'images/edit.svg',
                                     true,
                                     [
                                         'title' => __('Edit'),
@@ -731,7 +731,7 @@ class CalendarManager
                                 );
                                 $tmp->options .= '">';
                                 $tmp->options .= html_print_image(
-                                    'images/cross.png',
+                                    'images/delete.svg',
                                     true,
                                     [
                                         'title' => __('Delete'),

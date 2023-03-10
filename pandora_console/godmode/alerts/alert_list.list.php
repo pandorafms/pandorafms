@@ -766,7 +766,7 @@ foreach ($simple_alerts as $alert) {
             $data[3] .= '</form>';
             $data[3] .= html_print_input_image(
                 'update_action',
-                'images/config.png',
+                'images/edit.svg',
                 1,
                 'padding:0px;',
                 true,

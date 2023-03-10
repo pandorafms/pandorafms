@@ -136,6 +136,8 @@ if (!$agents || !$searchAgents) {
             ).'</a>';
         }
 
+        $table->cellclass[][9] = 'table_action_buttons';
+
         array_push(
             $table->data,
             [

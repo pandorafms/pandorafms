@@ -1279,14 +1279,14 @@ if (check_login()) {
                         $linkCaption = __('Refresh');
                     }
 
-                    $moduleActionButtons[] = html_print_button(
-                        $linkCaption,
-                        'additional_action_for_'.$idAgenteModulo,
-                        false,
-                        'window.location.assign("index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$addedLinkParams.'")',
+                    $moduleActionButtons[] = html_print_anchor(
                         [
-                            'mode'  => 'link',
-                            'style' => 'justify-content: flex-end;',
+                            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$addedLinkParams.'"',
+                            'content' => html_print_image(
+                                'images/go-back@svg.svg',
+                                true,
+                                [ 'class' => 'main_menu_icon' ]
+                            ),
                         ],
                         true
                     );
@@ -1296,14 +1296,14 @@ if (check_login()) {
             if ((bool) check_acl($config['id_user'], $id_grupo, 'AW') === true
                 && $cluster_view === false
             ) {
-                $moduleActionButtons[] = html_print_button(
-                    __('Edit'),
-                    'edit_module_'.$idAgenteModulo,
-                    false,
-                    'window.location.assign("index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'")',
+                $moduleActionButtons[] = html_print_anchor(
                     [
-                        'mode'  => 'link',
-                        'style' => 'justify-content: flex-end;',
+                        'href'    => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'"',
+                        'content' => html_print_image(
+                            'images/edit.svg',
+                            true,
+                            [ 'class' => 'main_menu_icon' ]
+                        ),
                     ],
                     true
                 );

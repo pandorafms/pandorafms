@@ -774,6 +774,11 @@ form ul.form_flex {
   filter: invert(100%);
 }
 
+.info_table .invert_filter,
+.info_table .labels {
+  filter: invert(100%);
+}
+
 .graph_conteiner_inside,
 .container_table,
 .second_background,

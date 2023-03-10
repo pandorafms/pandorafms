@@ -7231,8 +7231,7 @@ sub process_inventory_data ($$$$$$$) {
 					$data_list .= $data . "\n";
 				}
 			}
-			
-			next if ($data_list eq '');
+
 			process_inventory_module_data ($pa_config, $data_list, $server_id, $agent_name, $module_name, $interval, $timestamp, $dbh);
 		}
 	}

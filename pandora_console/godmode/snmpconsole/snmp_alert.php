@@ -1943,7 +1943,7 @@ if ($create_alert || $update_alert) {
                 $data[1] .= '<tr>';
                 $data[1] .= '<td>'.alerts_get_alert_action_name($action['alert_type']).'</td>';
                 $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
-                    'images/cross.png',
+                    'images/delete.svg',
                     true,
                     [
                         'border' => '0',
@@ -2027,7 +2027,7 @@ if ($create_alert || $update_alert) {
                     [
                         'href'    => 'javascript: ',
                         'content' => html_print_image(
-                            'images/cross.png',
+                            'images/delete.svg',
                             true,
                             [
                                 'title' => __('Delete action'),

@@ -1028,7 +1028,7 @@ $tableAgents->size[1] = '14%';
 
 $tableAgents->head[2] = '<span>'.__('OS').'</span>';
 $tableAgents->head[2] .= ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
-$tableAgents->size[2] = '7%';
+$tableAgents->size[2] = '5%';
 
 $tableAgents->head[3] = '<span>'.__('Interval').'</span>';
 $tableAgents->head[3] .= ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
@@ -1054,16 +1054,12 @@ $tableAgents->head[9] = '<span>'.__('Last contact').'</span>';
 $tableAgents->head[9] .= ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
 $tableAgents->size[9] = '7%';
 
-$tableAgents->head[10] = '<span>'.__('Last status change').'</span>';
+$tableAgents->head[10] = '<span>'.__('L.S change').'</span>';
 $tableAgents->head[10] .= ui_get_sorting_arrows($url_up_last_status_change, $url_down_last_status_change, $selectLastStatusChangeUp, $selectLastStatusChangeDown);
-$tableAgents->size[10] = '10%';
+$tableAgents->size[10] = '8%';
 
-$tableAgents->head[11] = '<span>'.__('Remote').'</span>';
-$tableAgents->head[11] .= ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);
-$tableAgents->size[11] = '7%';
-
-$tableAgents->head[12] = '<span>'.__('Op').'</span>';
-$tableAgents->size[12] = '4%';
+$tableAgents->head[11] = '<span>'.__('Op').'</span>';
+$tableAgents->size[11] = '6%';
 
 $tableAgents->align = [];
 
@@ -1076,10 +1072,10 @@ $tableAgents->align[7] = 'left';
 $tableAgents->align[8] = 'left';
 $tableAgents->align[9] = 'left';
 $tableAgents->align[10] = 'left';
-$tableAgents->align[11] = 'left';
 
 $tableAgents->style = [];
 $tableAgents->data = [];
+$tableAgents->cellclass = [];
 
 $rowPair = true;
 $iterator = 0;
@@ -1198,6 +1194,21 @@ foreach ($agents as $agent) {
         $agent['agent_version']
     );
 
+    if (enterprise_installed()) {
+        enterprise_include_once('include/functions_config_agents.php');
+        if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
+            $data[5] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
+                'images/remote-configuration@svg.svg',
+                true,
+                [
+                    'align' => 'middle',
+                    'title' => __('Remote config'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ).'</a>';
+        }
+    }
+
     $data[6] = reporting_tiny_stats($agent, true, 'modules', ':', $strict_user);
 
     $data[7] = $status_img;
@@ -1216,24 +1227,9 @@ foreach ($agents as $agent) {
         'status'        => -1,
     ];
 
-    $data[11] = '';
-    if (enterprise_installed()) {
-        enterprise_include_once('include/functions_config_agents.php');
-        if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
-            $data[11] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
-                'images/remote-configuration@svg.svg',
-                true,
-                [
-                    'align' => 'middle',
-                    'title' => __('Remote config'),
-                    'class' => 'invert_filter main_menu_icon',
-                ]
-            ).'</a>';
-        }
-    }
-
     $fb64 = base64_encode(json_encode($agent_event_filter));
-    $data[12] = '<a href="index.php?sec=eventos&sec2=operation/events/events&fb64='.$fb64.'">'.html_print_image(
+    $tableAgents->cellclass[][11] = 'table_action_buttons';
+    $data[11] = '<a href="index.php?sec=eventos&sec2=operation/events/events&fb64='.$fb64.'">'.html_print_image(
         'images/event.svg',
         true,
         [
@@ -1257,7 +1253,7 @@ foreach ($agents as $agent) {
             $url = 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent['id_agente'];
         }
 
-        $data[12] .= '<a href="'.$url.'">'.html_print_image(
+        $data[11] .= '<a href="'.$url.'">'.html_print_image(
             'images/edit.svg',
             true,
             [

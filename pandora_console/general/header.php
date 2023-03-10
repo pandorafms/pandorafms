@@ -117,6 +117,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 }
             }
 
+            $search_bar .= '<div id="result_order" class="result_order"></div>';
             $search_bar .= '<input id="keywords" name="keywords"';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= "value='".__('Enter keywords to search')."'";
@@ -126,13 +127,11 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 $search_bar .= "value='".$config['search_keywords']."'";
             }
 
-            $search_bar .= 'type="search" onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-                    onkeyup="showinterpreter()" class="search_input"/>';
+            $search_bar .= 'type="search" onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');" onkeyup="showinterpreter()" class="search_input"/>';
 
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';
-
             $header_searchbar = '<div id="header_searchbar">'.$search_bar.'</div>';
         }
 

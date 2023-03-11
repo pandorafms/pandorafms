@@ -72,6 +72,7 @@ if (!$modules || !$searchModules) {
         'web_content_string'
     );
 
+    $i = 0;
     foreach ($modules as $module) {
         $module['datos'] = modules_get_last_value($module['id_agente_modulo']);
         $module['module_name'] = $module['nombre'];
@@ -162,6 +163,7 @@ if (!$modules || !$searchModules) {
         }
 
         $graphCell = '';
+        $table->cellclass[$i][5] = 'table_action_buttons';
         if ($module['history_data'] == 1) {
             $graph_type = return_graphtype($module['id_tipo_modulo']);
 
@@ -204,6 +206,7 @@ if (!$modules || !$searchModules) {
 
         $group_agent = agents_get_agent_group($module['id_agente']);
 
+        $table->cellclass[$i][8] = 'table_action_buttons';
         if (check_acl($config['id_user'], $group_agent, 'AW')) {
             $edit_module = 'aaa';
 
@@ -229,6 +232,8 @@ if (!$modules || !$searchModules) {
                 $edit_module,
             ]
         );
+
+        $i++;
     }
 
     echo '<br />';

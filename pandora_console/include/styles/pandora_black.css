@@ -1111,6 +1111,7 @@ select,
   border: 1px solid #707070;
   background-color: #222 !important;
   color: #fff !important;
+  border-radius: 0;
 }
 
 .white_table_graph {
@@ -1475,13 +1476,6 @@ span.select2-dropdown.select2-dropdown--below {
   z-index: 1200;
 }
 
-div.fixed_filter_bar,
-div.white_table_graph_header {
-  border-radius: 0;
-  border-left: 0px;
-  border-right: 0px;
-}
-
 div.white_table_graph {
   border-radius: 0;
 }
@@ -1501,4 +1495,10 @@ table.filter-table-adv td > div label {
 
 #principal_action_buttons {
   background: #111111;
+}
+div.fixed-bottom-box,
+div.fixed-bottom-box
+  > div.fixed-bottom-box-head
+  > div.fixed-bottom-box-head-body {
+  background-color: #111111 !important;
 }

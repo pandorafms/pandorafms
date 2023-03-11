@@ -11262,6 +11262,7 @@ span.subsection_header_title {
 
 span.subsection_header_title.secondary {
   height: 14px;
+  line-height: 14px;
 }
 
 .regular_font {

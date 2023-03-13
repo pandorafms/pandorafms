@@ -629,9 +629,6 @@ ui_toggle(
 );
 
 if (empty($draw) === false) {
-    // Draw.
-    echo '<br/>';
-
     // No filter selected.
     if ($netflow_disable_custom_lvfilters && $filter_selected == 0) {
         ui_print_error_message(__('No filter selected'));
@@ -659,10 +656,18 @@ if (empty($draw) === false) {
             ]
         );
     }
+} else {
+    ui_print_info_message(__('No data to show'));
 }
 
 ui_include_time_picker();
 ?>
+
+<style>
+    .parent_graph {
+        margin: 0 auto !important;
+    }
+</style>
 
 <script type="text/javascript">
     function edit_max_value () {

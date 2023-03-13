@@ -266,6 +266,7 @@ unset($table);
 $table = new stdClass();
 $table->id = '';
 $table->width = '100%';
+$table->class = 'info_table';
 // Print the header.
 $table->head = [];
 $table->head['main'] = __('IP');
@@ -394,8 +395,8 @@ if (empty($data)) {
         'height' => 230,
         'legend' => [
             'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
+            'position' => 'top',
+            'align'    => 'left',
         ],
         'labels' => $labels,
     ];
@@ -403,7 +404,7 @@ if (empty($data)) {
     $resultsTable = html_print_div(
         [
             'class'   => '',
-            'style'   => 'flex: 50;margin-right: 5px;',
+            'style'   => 'flex: 75;margin-right: 5px;',
             'content' => html_print_table($table, true),
         ],
         true
@@ -412,7 +413,7 @@ if (empty($data)) {
     $pieGraph = html_print_div(
         [
             'class'   => 'databox netflow-pie-graph-container padding-2 white_box',
-            'style'   => 'flex: 50;margin-left: 5px;',
+            'style'   => 'flex: 25;margin-left: 5px;',
             'content' => pie_graph(
                 $chart_data,
                 $options

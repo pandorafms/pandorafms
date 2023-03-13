@@ -10532,6 +10532,11 @@ button div.preview {
   -webkit-mask: url(../../images/eye.png) no-repeat center / contain;
 }
 
+button div.plus {
+  mask: url(../../images/plus-black.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/plus-black.svg) no-repeat center / contain;
+}
+
 button div.cog.rotation {
   animation: rotation 4s infinite linear;
 }
@@ -11240,8 +11245,8 @@ input.main_menu_icon[src$=".svg"] {
 }
 
 .header_help_icon {
-  width: 16px;
-  height: 16px;
+  width: 16px !important;
+  height: 16px !important;
 }
 .main_menu_icon.arrow_up {
   transform: rotate(90deg);
@@ -11264,6 +11269,10 @@ span.subsection_header_title {
   height: 18px;
 }
 
+.agent_details_header span.subsection_header_title {
+  font-weight: 700;
+  color: #000;
+}
 .subsection_header_title.secondary {
   font-size: 14px;
 }

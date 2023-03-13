@@ -315,48 +315,26 @@ if (is_metaconsole() === false) {
     }
 }
 
-if ($loaded_filter['id_filter'] > 0) {
-    // Header.
-    ui_print_standard_header(
-        __('Monitor detail').$subpage,
-        'images/agent.png',
-        false,
-        '',
-        true,
-        $buttons,
+// Header.
+ui_print_standard_header(
+    __('Monitor detail').$subpage,
+    'images/agent.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Monitoring'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Views'),
-            ],
+            'link'  => '',
+            'label' => __('Monitoring'),
         ],
-        $fav_menu
-    );
-} else {
-    // Header.
-    ui_print_standard_header(
-        __('Monitor detail').$subpage,
-        'images/agent.png',
-        false,
-        '',
-        true,
-        $buttons,
         [
-            [
-                'link'  => '',
-                'label' => __('Monitoring'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Views'),
-            ],
+            'link'  => '',
+            'label' => __('Views'),
         ],
-    );
-}
+    ],
+    (empty($fav_menu) === true) ? [] : $fav_menu
+);
 
 
 $all_groups = [];

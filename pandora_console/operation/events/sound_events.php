@@ -173,7 +173,7 @@ ui_print_message_dialog(
     $conn_title,
     $conn_text,
     'connection',
-    '/images/error_1.png'
+    '/images/fail@svg.svg'
 );
 
 $inputs = [];

@@ -1135,6 +1135,11 @@ div#main {
   flex-direction: column;
   height: 100%;
   margin: 25px;
+  margin-bottom: 70px;
+}
+
+div#main:has(.networkconsole) {
+  margin-bottom: 0px;
 }
 
 textarea.conf_editor {
@@ -1430,7 +1435,7 @@ div#head {
   min-width: 882px;
   background-color: #fff;
   color: #000;
-  z-index: 1;
+  z-index: 2;
 }
 
 .fixed_header {
@@ -8133,11 +8138,11 @@ div.graph div.legend table {
 .networkconsole {
   width: 100%;
   height: 100%;
-  min-height: 460px;
   position: relative;
   overflow: hidden;
   background-color: var(--secondary-color);
-  min-height: calc(100vh - 220px);
+  min-height: calc(100vh - 200px);
+  border: 1px solid #cacaca;
 }
 
 /*
@@ -10072,7 +10077,11 @@ select:focus {
 }
 
 .dataTables_length > label > select {
-  min-height: 3em;
+  min-height: 42px;
+}
+
+.dataTables_length > label {
+  font-size: 0px;
 }
 
 input[type="button"],
@@ -10873,7 +10882,6 @@ tr.bring_next_field {
 .dataTables_wrapper {
   overflow: auto;
   width: 100%;
-  margin-bottom: 25px;
 }
 
 .dataTables_wrapper .dataTables_processing {
@@ -11219,9 +11227,15 @@ table.table_modal_alternate
   border-left: 0;
 }
 
-.main_menu_icon {
+div.main_menu_icon,
+img.main_menu_icon[src$=".svg"] {
   width: 20px;
   height: 20px;
+}
+
+input.main_menu_icon[src$=".svg"] {
+  width: 22px;
+  height: 22px;
 }
 
 .header_help_icon {

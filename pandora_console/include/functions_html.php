@@ -4565,6 +4565,12 @@ function html_print_image(
     // Dont use safe_input here or the performance will dead.
     $style = '';
 
+    if (empty($options) === false && isset($options['class']) === true) {
+        $options['class'] .= ' main_menu_icon';
+    } else {
+        $options['class'] = 'main_menu_icon invert_filter';
+    }
+
     if (!empty($options)) {
         // Deprecated or value-less attributes.
         if (isset($options['align'])) {
@@ -6730,6 +6736,32 @@ function html_print_extended_select_for_downtime_cron(
         return $returnString;
     } else {
         echo $returnString;
+    }
+}
+
+
+/**
+ * Ellipse string to x characters.
+ *
+ * @param  string  $string     String to ellipsis.
+ * @param  integer $characters Characters size to show.
+ * @return string String ellipsed.
+ */
+function html_ellipsis_characters(
+    string $string,
+    int $characters,
+    bool $return=false
+) {
+    $out = $string;
+
+    if (strlen($string) > $characters) {
+        $out = substr($string, 0, $characters).'...';
+    }
+
+    if ($return === true) {
+        return $out;
+    } else {
+        echo $out;
     }
 }
 

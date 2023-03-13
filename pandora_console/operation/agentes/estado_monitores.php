@@ -542,7 +542,7 @@ function print_form_filter_monitors(
 
     $form_text = '';
     $table = new stdClass();
-    $table->class = 'filter_table';
+    $table->class = 'filter-table-adv';
     $table->id = 'module_filter_agent_view';
     $table->styleTable = 'border-radius: 0;padding: 0;margin: 0 0 10px;';
     $table->width = '100%';

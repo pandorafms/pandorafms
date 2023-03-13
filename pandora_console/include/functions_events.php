@@ -3453,7 +3453,7 @@ function events_page_responses($event)
             __('Update'),
             'status_button',
             false,
-            'event_change_status(\''.$event['similar_ids'].'\','.$event['server_id'].');',
+            'event_change_status("'.$event['similar_ids'].'",'.$event['server_id'].');',
             [
                 'icon' => 'next',
                 'mode' => 'link',
@@ -3484,7 +3484,7 @@ function events_page_responses($event)
             __('Add comment'),
             'comment_button',
             false,
-            '$(\'#link_comments\').trigger(\'click\');',
+            '$("#link_comments").trigger("click");',
             [
                 'icon' => 'next',
                 'mode' => 'link',
@@ -3511,7 +3511,7 @@ function events_page_responses($event)
             __('Delete event'),
             'delete_button',
             false,
-            'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();',
+            'if(!confirm("'.__('Are you sure?').'")) { return false; } this.form.submit();',
             [
                 'icon' => 'cancel',
                 'mode' => 'link',
@@ -4260,7 +4260,7 @@ function events_page_details($event, $server_id=0)
             __('View custom fields'),
             'custom_button',
             false,
-            '$(\'#link_custom_fields\').trigger(\'click\');',
+            '$("#link_custom_fields").trigger("click");',
             [ 'mode' => 'link' ],
             true
         );
@@ -5172,7 +5172,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
             __('Add comment'),
             'comment_button',
             false,
-            'event_comment(\''.base64_encode(json_encode($event)).'\');',
+            'event_comment("'.base64_encode(json_encode($event)).'");',
             [
                 'icon' => 'next',
                 'mode' => 'mini secondary',
@@ -5779,7 +5779,7 @@ function get_row_response_action(
         __('Execute again'),
         'btn_str',
         false,
-        'perform_response(\''.base64_encode(json_encode($event_response)).'\','.$response_id.',\''.trim($index).'\')',
+        'perform_response("'.base64_encode(json_encode($event_response)).'",'.$response_id.',"'.trim($index).'")',
         [
             'icon' => 'next',
             'mode' => 'mini secondary',

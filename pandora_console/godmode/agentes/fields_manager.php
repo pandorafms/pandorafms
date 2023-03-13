@@ -174,7 +174,7 @@ foreach ($fields as $field) {
     $data[1] = $field['name'];
 
     $data[2] = html_print_image(
-        ((bool) $field['display_on_front'] === true) ? 'images/validate.svg' : 'images/icono_stop.png',
+        ((bool) $field['display_on_front'] === true) ? 'images/validate.svg' : 'images/fail@svg.svg',
         true,
         ['class' => 'main_menu_icon invert_filter']
     );

@@ -295,7 +295,8 @@ foreach ($extensions as $file => $extension) {
             $data[] = html_print_menu_button(
                 [
                     'href'    => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file,
-                    'image'   => 'images/cross.png',
+                    'image'   => 'images/delete.svg',
+                    'class'   => 'main_menu_icon invert_filter',
                     'title'   => __('Delete'),
                     'onClick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
                 ],

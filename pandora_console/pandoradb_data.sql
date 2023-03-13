@@ -73,7 +73,6 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('activate_gis', '0'),
 ('activate_netflow', '0'),
 ('activate_sflow', '0'),
-('general_network_path', '/var/spool/pandora/data_in/'),
 ('timezone', 'Europe/Berlin'),
 ('string_purge', 7),
 ('audit_purge', 15),

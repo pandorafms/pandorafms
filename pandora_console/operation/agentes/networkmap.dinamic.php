@@ -131,24 +131,18 @@ if ($pure == 1) {
     }
 }
 
-ui_print_page_header(
-    io_safe_output($networkmap['name']),
-    'images/bricks.png',
-    false,
-    'network_map_enterprise_list',
-    false,
-    $buttons,
-    false,
-    '',
-    $config['item_title_size_text']
-);
-
-global $width;
-global $height;
-
-if (_id_ != '_id_') {
-    $width = [];
-    $height = [];
+if ($dashboard != 1) {
+    ui_print_page_header(
+        io_safe_output($networkmap['name']),
+        'images/bricks.png',
+        false,
+        'network_map_enterprise_list',
+        false,
+        $buttons,
+        false,
+        '',
+        $config['item_title_size_text']
+    );
 }
 
 if (empty($width)) {

@@ -3809,7 +3809,7 @@ div.div_groups_status {
   background-color: white;
   border: 1px solid #ececec;
   border-radius: 5px;
-  margin: 20px;
+  margin: 5px;
   float: left;
 }
 
@@ -6548,6 +6548,7 @@ table.table_modal_alternate tr td:first-child {
 .flot-text .flot-x-axis div {
   white-space: normal;
   word-break: break-all;
+  line-height: 1.3;
 }
 
 /*Font header feedback*/

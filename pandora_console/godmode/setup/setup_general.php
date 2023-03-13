@@ -292,11 +292,11 @@ $table->data[$i][1] = html_print_input_text_extended(
     true
 );
 $table->data[$i][1] .= '<a id="change_timezone">'.html_print_image(
-    'images/pencil.png',
+    'images/edit.svg',
     true,
     [
         'title' => __('Change timezone'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 $table->data[$i][1] .= '&nbsp;&nbsp;'.html_print_select(
@@ -423,9 +423,9 @@ $table_ichanges = '<table>
         <tr>
             <td>'.$select_out.'</td>
             <td>
-                <a href="javascript:">'.html_print_image('images/darrowright.png', true, ['id' => 'right_iblacklist', 'alt' => __('Push selected modules into blacklist'), 'title' => __('Push selected modules into blacklist'), 'class' => 'invert_filter']).'</a>
+                <a href="javascript:">'.html_print_image('images/arrow@svg.svg', true, ['style' => 'rotate: 180deg;', 'id' => 'right_iblacklist', 'alt' => __('Push selected modules into blacklist'), 'title' => __('Push selected modules into blacklist'), 'class' => 'main_menu_icon invert_filter']).'</a>
                 <br><br>
-                <a href="javascript:">'.html_print_image('images/darrowleft.png', true, ['id' => 'left_iblacklist', 'alt' => __('Pop selected modules out of blacklist'), 'title' => __('Pop selected modules out of blacklist'), 'class' => 'invert_filter']).'</a>
+                <a href="javascript:">'.html_print_image('images/arrow@svg.svg', true, ['style' => 'rotate: 0', 'id' => 'left_iblacklist', 'alt' => __('Pop selected modules out of blacklist'), 'title' => __('Pop selected modules out of blacklist'), 'class' => 'main_menu_icon invert_filter']).'</a>
             </td>
             <td>'.$select_in.'</td>
         </tr>

@@ -1070,13 +1070,57 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
     );
     echo '</form>';
 }
+
+$modalCreateModule = '<form name="create_module_form" method="post">';
+$input_type = html_print_input_hidden('edit_module', 1, true);
+$input_type .= html_print_select(
+    policies_type_modules_availables($sec2),
+    'moduletype',
+    '',
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    '',
+    false,
+    'max-width:300px;'
+);
+
+$modalCreateModule .= $input_type;
+$modalCreateModule .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Create'),
+            'create_module',
+            false,
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
+            true
+        ),
+    ],
+    true
+);
+$modalCreateModule .= '</form>';
+
+html_print_div(
+    [
+        'id'      => 'modal',
+        'style'   => 'display: none',
+        'content' => $modalCreateModule,
+    ]
+);
 ?>
 
 <script type="text/javascript">
 
     function create_module_dialog(){
-        $('#modal')
-        .dialog({
+        console.log('Entra');
+        $('#modal').dialog({
             title: '<?php echo __('Create Module'); ?>',
             resizable: true,
             draggable: true,

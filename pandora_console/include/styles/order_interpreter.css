@@ -11,6 +11,7 @@ div.show_result_interpreter {
   position: absolute;
   z-index: 1;
   width: 300px;
+  top: 45px;
 }
 
 .more_results {

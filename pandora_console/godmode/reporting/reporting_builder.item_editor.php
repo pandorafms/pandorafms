@@ -2639,7 +2639,8 @@ $class = 'databox filters';
                     'render_definition',
                     3,
                     25,
-                    $render_definition
+                    $render_definition,
+                    'style=width:100%'
                 );
                 ?>
             </td>
@@ -4271,7 +4272,7 @@ function print_SLA_list($width, $action, $idItem=null)
                         echo '</td>';
                         echo '<td class="sla_list_action_col center">';
                         echo '<a href="javascript: deleteSLARow('.$item['id'].');">';
-                        echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']);
+                        echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter']);
                         echo '</a>';
                         echo '</td>';
                         echo '</tr>';
@@ -4312,7 +4313,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                 <a class="delete_button" href="javascript: deleteSLARow(0);">
                                     <?php
                                     html_print_image(
-                                        'images/cross.png',
+                                        'images/delete.svg',
                                         false,
                                         ['class' => 'invert_filter']
                                     );
@@ -4738,7 +4739,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     <td>'.printSmallFont($nameAgentFailover).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModuleFailover).'</td>
                                     <td class="center">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
                                     </td>
                                 </tr>';
                             } else {
@@ -4746,7 +4747,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModule).'</td>
                                     <td class="center">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
                                     </td>
                                 </tr>';
                             }
@@ -4756,7 +4757,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 								<td>'.printSmallFont($nameModule).'</td>
 								<td>'.printSmallFont($operation[$item['operation']]).'</td>
 								<td class="center">
-									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>
+									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
 								</td>
 							</tr>';
                         }
@@ -4794,7 +4795,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                 <a class="delete_button" href="javascript: deleteGeneralRow(0);">
                                     <?php
                                     html_print_image(
-                                        'images/cross.png',
+                                        'images/delete.svg',
                                         false,
                                         ['class' => 'invert_filter']
                                     );

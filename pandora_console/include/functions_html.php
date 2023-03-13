@@ -495,7 +495,8 @@ function html_print_select_groups(
     $size=false,
     $simple_multiple_options=false,
     $required=false,
-    $inverse=''
+    $inverse='',
+    $form=''
 ) {
     $output = '';
 
@@ -609,7 +610,12 @@ function html_print_select_groups(
         '',
         false,
         $simple_multiple_options,
-        $required
+        $required,
+        false,
+        true,
+        false,
+        false,
+        $form
     );
 
     if ($required !== false) {
@@ -761,7 +767,8 @@ function html_print_select(
     $truncate_size=false,
     $select2_enable=true,
     $select2_multiple_enable=false,
-    $select2_multiple_enable_all=false
+    $select2_multiple_enable_all=false,
+    $form=''
 ) {
     $output = "\n";
 
@@ -800,6 +807,10 @@ function html_print_select(
 
     if (!empty($class)) {
         $attributes .= ' class="'.$class.'"';
+    }
+
+    if (!empty($form)) {
+        $attributes .= ' form="'.$form.'"';
     }
 
     if (!empty($disabled)) {
@@ -4555,6 +4566,12 @@ function html_print_image(
     // Dont use safe_input here or the performance will dead.
     $style = '';
 
+    if (empty($options) === false && isset($options['class']) === true) {
+        $options['class'] .= ' main_menu_icon';
+    } else {
+        $options['class'] = 'main_menu_icon invert_filter';
+    }
+
     if (!empty($options)) {
         // Deprecated or value-less attributes.
         if (isset($options['align'])) {
@@ -4773,6 +4790,10 @@ function html_print_input_file($name, $return=false, $options=false)
 
         if (isset($options['style']) === true) {
             $output .= ' style="'.$options['style'].'"';
+        }
+
+        if (isset($options['accept']) === true) {
+            $output .= ' accept="'.$options['accept'].'"';
         }
     }
 
@@ -5232,9 +5253,13 @@ function html_print_switch($attributes=[])
  *
  * @return string With HTML code.
  */
-function html_print_link_with_params($text, $params=[], $type='text', $style='')
+function html_print_link_with_params($text, $params=[], $type='text', $style='', $formStyle='')
 {
-    $html = '<form method=post>';
+    if (empty($formStyle) === false) {
+        $formStyle = ' style="'.$formStyle.'"';
+    }
+
+    $html = '<form method="POST"'.$formStyle.'>';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);
@@ -5242,7 +5267,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
 
         case 'text':
         default:
-            if (!empty($style)) {
+            if (empty($style) === false) {
                 $style = ' style="'.$style.'"';
             }
 
@@ -5250,7 +5275,10 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
                 $text,
                 $text,
                 false,
-                'class="button-as-link"'.$style,
+                [
+                    'mode'  => 'link',
+                    'style' => $style,
+                ],
                 true
             );
         break;
@@ -5584,7 +5612,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
 
         case 'submit':
-            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : 'width: 100%';
+            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : '';
             $output .= '<'.$wrapper.' class="action-buttons" style="'.$width.'">'.html_print_submit_button(
                 ((isset($data['label']) === true) ? $data['label'] : 'OK'),
                 ((isset($data['name']) === true) ? $data['name'] : ''),
@@ -6709,6 +6737,32 @@ function html_print_extended_select_for_downtime_cron(
         return $returnString;
     } else {
         echo $returnString;
+    }
+}
+
+
+/**
+ * Ellipse string to x characters.
+ *
+ * @param  string  $string     String to ellipsis.
+ * @param  integer $characters Characters size to show.
+ * @return string String ellipsed.
+ */
+function html_ellipsis_characters(
+    string $string,
+    int $characters,
+    bool $return=false
+) {
+    $out = $string;
+
+    if (strlen($string) > $characters) {
+        $out = substr($string, 0, $characters).'...';
+    }
+
+    if ($return === true) {
+        return $out;
+    } else {
+        echo $out;
     }
 }
 

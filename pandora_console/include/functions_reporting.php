@@ -2618,6 +2618,10 @@ function reporting_agents_inventory($report, $content)
         $es_agents_inventory_display_options = [];
     }
 
+    if ($es_agent_custom_fields === '') {
+        $es_agent_custom_fields = [];
+    }
+
     $custom_field_sql = '';
     $search_sql = '';
     $sql_order_by = 'ORDER BY tagente.id_agente ASC';
@@ -12165,24 +12169,11 @@ function reporting_get_stats_alerts($data, $links=false)
     $tdata[3] = html_print_div(
         [
             'title' => __('Fired alerts'),
-            'style' => 'background-color: '.COL_CRITICAL,
-            'class' => 'alert_background_state main_menu_icon invert_filter',
+            'style' => 'background-color: '.COL_ALERTFIRED,
+            'class' => 'alert_background_state main_menu_icon',
         ],
         true
     );
-    /*
-        html_print_image(
-        'images/bell_error.png',
-        true,
-        [
-            'title' => __('Fired alerts'),
-            'class' => 'invert_filter',
-        ],
-        false,
-        false,
-        false,
-        true
-    );*/
     $tdata[4] = $data['monitor_alerts_fired'] <= 0 ? '-' : $data['monitor_alerts_fired'];
     $tdata[4] = '<a style="color: '.COL_ALERTFIRED.';" class="big_data" href="'.$urls['monitor_alerts_fired'].'">'.$tdata[4].'</a>';
     $table_al->rowclass[] = '';

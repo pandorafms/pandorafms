@@ -290,7 +290,7 @@ $table_simple->rowclass['captions_module_n_type'] = 'field_half_width pdd_t_10px
 $table_simple->rowclass['module_n_type'] = 'field_half_width';
 $table_simple->data['captions_module_n_type'][0] = html_print_input_hidden('id_module_type_hidden', $id_module_type, true);
 $table_simple->data['captions_module_n_type'][0] .= __('Module group');
-$table_simple->data['captions_module_n_type'][1] = __('Type').ui_print_help_icon($help_type, true, '', 'images/help_green.png', '', 'module_type_help');
+$table_simple->data['captions_module_n_type'][1] = __('Type').ui_print_help_icon($help_type, true, '', '', '', 'module_type_help');
 // Module group and Type.
 $table_simple->rowclass['module_n_type'] = 'field_half_width';
 $table_simple->data['module_n_type'][0] .= html_print_select_from_sql(
@@ -1437,7 +1437,7 @@ if (isset($module_macros)) {
             $table_macros->data[$macro_count][2] = __('Value');
             $table_macros->data[$macro_count][3] = html_print_input_text('module_macro_values[]', $macro_value, '', 50, 60, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
             if (!$disabledBecauseInPolicy) {
-                $table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro('.$macro_count.');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
+                $table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro('.$macro_count.');">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
             }
 
             $macro_count++;
@@ -1446,7 +1446,7 @@ if (isset($module_macros)) {
 }
 
 if (!$disabledBecauseInPolicy) {
-    $table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png', true, ['class' => 'invert_filter']).'</a>';
+    $table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/fail@svg.svg', true, ['style' => 'rotate:45deg', 'class' => 'main_menu_icon invert_filter']).'</a>';
 
     $table_macros->colspan[$macro_count][0] = 5;
 }
@@ -1535,14 +1535,15 @@ $table_relations->data[-1][1] = '';
 $table_relations->data[-1][2] = '';
 $table_relations->data[-1][3] = '<a id="disable_updates_button" class="alpha50" href="">';
 $table_relations->data[-1][3] .= html_print_image(
-    'images/lock_mc.png',
-    true
+    'images/policy@svg.svg',
+    true,
+    ['class' => 'main_menu_icon invert_filter']
 ).'</a>';
 $table_relations->data[-1][4] = '<a id="delete_relation_button" href="">';
 $table_relations->data[-1][4] .= html_print_image(
-    'images/cross.png',
+    'images/delete.svg',
     true,
-    ['class' => 'invert_filter']
+    ['class' => 'main_menu_icon invert_filter']
 ).'</a>';
 
 
@@ -1598,15 +1599,15 @@ if ($id_agent_module) {
         $table_relations->data[$relations_count][2] = ($module_relation['type'] === 'direct') ? __('Direct') : __('Failover');
         // Lock relationship updates.
         $table_relations->data[$relations_count][3] = '<a id="disable_updates_button" class="'.$disabled_update_class.'"href="javascript: change_lock_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image(
-            'images/lock_mc.png',
+            'images/policy@svg.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'main_menu_icon invert_filter']
         ).'</a>';
         // Delete relationship.
         $table_relations->data[$relations_count][4] = '<a id="delete_relation_button" href="javascript: delete_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image(
-            'images/cross.png',
+            'images/delete.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'main_menu_icon invert_filter']
         ).'</a>';
         $relations_count++;
     }
@@ -2035,7 +2036,7 @@ function change_modules_autocomplete_input () {
     var id_agent = parseInt($("#hidden-autocomplete_id_agent").val());
     var module_autocomplete = $("#module_autocomplete");
     var load_icon = '<?php html_print_image('images/spinner.gif', false); ?>';
-    var error_icon = '<?php html_print_image('images/error_red.png', false); ?>';
+    var error_icon = '<?php html_print_image('images/error-red@svg.svg', false, ['class' => 'main_menu_icon invert_filter']); ?>';
     if (!module_autocomplete.hasClass('working')) {
         module_autocomplete.addClass('working');
         module_autocomplete.html(load_icon);
@@ -2086,8 +2087,8 @@ function add_new_relation () {
     var button = $("#button-add_relation");
     var iconPlaceholder = $("#add_relation_status");
     var load_icon = '<?php html_print_image('images/spinner.gif', false, ['style' => 'vertical-align:middle;']); ?>';
-    var suc_icon = '<?php html_print_image('images/ok.png', false, ['style' => 'vertical-align:middle;']); ?>';
-    var error_icon = '<?php html_print_image('images/error_red.png', false, ['style' => 'vertical-align:middle;']); ?>';
+    var suc_icon = '<?php html_print_image('images/validate.svg', false, ['class' => 'main_menu_icon invert_filter', 'style' => 'vertical-align:middle;']); ?>';
+    var error_icon = '<?php html_print_image('images/error-red@svg.svg', false, ['class' => 'main_menu_icon invert_filter', 'style' => 'vertical-align:middle;']); ?>';
 
     if (!button.hasClass('working')) {
         button.addClass('working');
@@ -2129,12 +2130,12 @@ function add_new_relation () {
                                     '<td id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
                                     '<td id="module_relations-' + relationsCount + '-3" class="w10p center">' +
                                         '<a id="disable_updates_button" class="alpha50" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
-                                            '<?php echo html_print_image('images/lock_mc.png', true, ['class' => 'invert_filter']); ?>' +
+                                            '<?php echo html_print_image('images/policy@svg.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
                                         '</a>' +
                                     '</td>' +
                                     '<td id="module_relations-' + relationsCount + '-4" class="w10p center">' +
                                         '<a id="delete_relation_button" href="javascript: delete_relation(' + relationsCount + ', ' + data +  ');">' +
-                                            '<?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?>' +
+                                            '<?php echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
                                         '</a>' +
                                     '</td>' +
                                 '</tr>';

@@ -34,7 +34,7 @@ if (!$agents || !$searchAgents) {
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';
-    $table->class = 'databox';
+    $table->class = 'info_table';
 
     $table->head = [];
 
@@ -136,6 +136,8 @@ if (!$agents || !$searchAgents) {
             ).'</a>';
         }
 
+        $table->cellclass[][9] = 'table_action_buttons';
+
         array_push(
             $table->data,
             [
@@ -154,15 +156,29 @@ if (!$agents || !$searchAgents) {
     }
 
     echo '<br />';
-    if (!$only_count) {
-        ui_pagination($totalAgents);
-    }
 
     html_print_table($table);
     unset($table);
     if (!$only_count) {
-        ui_pagination($totalAgents);
+        $tablePagination = ui_pagination(
+            $totalAgents,
+            false,
+            0,
+            0,
+            true,
+            'offset',
+            false
+        );
     }
+
+    html_print_action_buttons(
+        '',
+        [
+            'type'          => 'data_table',
+            'class'         => 'fixed_action_buttons',
+            'right_content' => $tablePagination,
+        ]
+    );
 }
 
 if ($only_count) {

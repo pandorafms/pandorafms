@@ -82,10 +82,12 @@ table.dataTable tbody td {
   padding: 8px 10px;
 }
 
+/*
 th:last-child {
   padding-top: 0px !important;
   padding-bottom: 0px !important;
 }
+*/
 
 table#table_events > tbody > tr > td {
   padding: 0px !important;
@@ -169,10 +171,6 @@ fieldset {
   width: 10px;
   min-width: 10px;
   max-width: 10px;
-}
-
-.fixed_filter_bar:has(div > div.filter-datatable-submain > form#events_form) {
-  margin-bottom: 0px;
 }
 
 .fixed_filter_bar > div.white_table_graph_header:has(div.filter_summary) {
@@ -521,4 +519,8 @@ table#load_filter_form {
 td#save_filter_form-0-0 > input[type="radio"],
 td#save_filter_form-0-1 > input[type="radio"] {
   height: 14px;
+}
+
+.module-search > input[type="text"] {
+  margin-bottom: 6px;
 }

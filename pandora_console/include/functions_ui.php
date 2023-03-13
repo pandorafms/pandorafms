@@ -708,7 +708,7 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
 
     if ($link === true) {
         if ($tactical_view === true) {
-            $output = '<a href="'.$config['homeurl'].'index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$id_group.'">';
+            $output = '<a href="'.$config['homeurl'].'index.php?sec=gagent&sec2=godmode/groups/tactical&id_group='.$id_group.'">';
         } else {
             $output = '<a href="'.$config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
         }
@@ -727,12 +727,14 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
                 }
             }
 
+            $icon = (str_contains($icon, '.svg') === true) ? $icon : $icon.'.svg';
+
             $output .= html_print_image(
                 'images/'.$icon,
                 true,
                 [
                     'style' => $style,
-                    'class' => $class,
+                    'class' => 'main_menu_icon '.$class,
                     'alt'   => groups_get_name($id_group, true),
                     'title' => groups_get_name($id_group, true),
                 ],
@@ -838,6 +840,10 @@ function ui_print_os_icon(
         $subfolder .= '/so_big_icons';
     }
 
+    if (isset($options['class']) === false) {
+        $options['class'] = 'main_menu_icon';
+    }
+
     $no_in_meta = (is_metaconsole() === false);
 
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
@@ -858,13 +864,29 @@ function ui_print_os_icon(
         }
     } else if ($apply_skin) {
         if ($only_src) {
-            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, true, $relative, $no_in_meta, true);
+            $output = html_print_image(
+                'images/'.$subfolder.'/'.$icon,
+                true,
+                $options,
+                true,
+                $relative,
+                $no_in_meta,
+                true
+            );
         } else {
             if (!isset($options['title'])) {
                 $options['title'] = $os_name;
             }
 
-            $output = html_print_image('images/'.$subfolder.'/'.$icon, true, $options, false, $relative, $no_in_meta, true);
+            $output = html_print_image(
+                'images/'.$subfolder.'/'.$icon,
+                true,
+                $options,
+                false,
+                $relative,
+                $no_in_meta,
+                true
+            );
         }
     } else {
         // $output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
@@ -3918,10 +3940,15 @@ function ui_print_datatable(array $parameters)
             ordering: '.$ordering.',
             initComplete: function(settings, json) {
                 // Move elements to table_action_buttons bar.
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_length"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dt-buttons"));
-                $(".action_buttons_right_content").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
+                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
             },
             columns: [';
 
@@ -4451,7 +4478,6 @@ function ui_toggle(
         $output .= "		    }\n";
         $output .= "		});\n";
         $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
-        $output .= "				console.log('#image_".$uniqid."');";
         $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
         $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
@@ -7325,7 +7351,7 @@ function ui_get_inventory_module_add_form(
     $row['hidden-input'] .= html_print_input_text('hidden-custom-field-input', '', '', 25, 40, true);
     $row['hidden-input'] .= '<span>&nbsp;</span>';
     $row['hidden-input'] .= html_print_image(
-        'images/cross.png',
+        'images/delete.svg',
         true,
         [
             'border' => '0',
@@ -7373,7 +7399,7 @@ function ui_get_inventory_module_add_form(
 
             $row['input'] .= '<span>&nbsp;</span>';
             $row['input'] .= html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 true,
                 [
                     'border' => '0',

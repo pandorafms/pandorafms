@@ -140,25 +140,26 @@ function quickShell()
             ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
             $wiz->printForm(
                 [
-                    'form'   => [
+                    'form' => [
                         'method' => 'POST',
                         'action' => '#',
-                    ],
-                    'inputs' => [
-                        [
-                            'class'     => 'w100p',
-                            'arguments' => [
-                                'name'       => 'submit',
-                                'label'      => __('Retry'),
-                                'type'       => 'submit',
-                                'attributes' => ['icon' => 'next'],
-                                'return'     => true,
-                            ],
-                        ],
+                        'id'     => 'retry_form',
                     ],
                 ]
             );
 
+            html_print_action_buttons(
+                html_print_submit_button(
+                    __('Retry'),
+                    'submit',
+                    false,
+                    [
+                        'icon' => 'next',
+                        'form' => 'retry_form',
+                    ],
+                    true
+                )
+            );
             return;
         }
 
@@ -168,6 +169,7 @@ function quickShell()
                     'action' => '#',
                     'class'  => 'wizard',
                     'method' => 'post',
+                    'id'     => 'connect_form',
                 ],
                 'inputs' => [
                     [
@@ -198,19 +200,24 @@ function quickShell()
                             'script' => "p=22; if(this.value == 'telnet') { p=23; } $('#text-port').val(p);",
                         ],
                     ],
-                    [
-                        'arguments' => [
-                            'type'       => 'submit',
-                            'label'      => __('Connect'),
-                            'attributes' => ['icon' => 'cog'],
-                        ],
-                    ],
                 ],
             ],
             false,
             true
         );
 
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Connect'),
+                'submit',
+                false,
+                [
+                    'icon' => 'cog',
+                    'form' => 'connect_form',
+                ],
+                true
+            )
+        );
         return;
     }
 

@@ -5044,6 +5044,8 @@ function ui_print_page_header(
     $breadcrumbs='',
     $hide_left_small=false
 ) {
+    global $config;
+
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {
         $icon = 'images/gm_setup.png';
@@ -5057,13 +5059,18 @@ function ui_print_page_header(
         $type = 'view';
         $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator';
+        $div_style = '';
     } else {
         $type = 'view';
         $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator_view';
+        $div_style = '';
+        if ($config['pure'] === true) {
+            $div_style = 'top:0px;';
+        }
     }
 
-    $buffer = '<div id="'.$type2.'"  >';
+    $buffer = '<div id="'.$type2.'" style="'.$div_style.'" >';
 
     if (!empty($breadcrumbs)) {
         $buffer .= '<div class="menu_tab_left_bc">';

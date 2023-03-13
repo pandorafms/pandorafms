@@ -11635,3 +11635,21 @@ ul.tag-editor {
   padding-left: 5px !important;
   font-size: 20px !important;
 }
+
+div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  font-size: 11pt;
+}
+
+div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget:hover {
+  background-color: #1d7873;
+  border-color: #1d7873;
+}
+
+div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget:active {
+  background-color: #0d312f;
+  border-color: #0d312f;
+}

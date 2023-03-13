@@ -181,113 +181,47 @@ class SnmpConsole extends HTML
 
         $default_refr = 300;
 
-        if (!isset($config['pure']) || $config['pure'] === false) {
-            $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'">'.html_print_image(
-                'images/logs@svg.svg',
-                true,
-                [
-                    'title' => __('Statistics'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-            $list['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0">'.html_print_image(
-                'images/SNMP-network-numeric-data@svg.svg',
-                true,
-                [
-                    'title' => __('List'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-            $list['active'] = true;
+        $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'">'.html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'title' => __('Statistics'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        ).'</a>';
+        $list['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0">'.html_print_image(
+            'images/SNMP-network-numeric-data@svg.svg',
+            true,
+            [
+                'title' => __('List'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        ).'</a>';
+        $list['active'] = true;
 
-            $screen['text'] = '<a href="#" onClick="javascript:fullscreen(1)">'.html_print_image(
-                'images/fullscreen@svg.svg',
-                true,
+        // Header.
+        ui_print_standard_header(
+            __('SNMP Console'),
+            'images/op_snmp.png',
+            false,
+            'snmp_console',
+            false,
+            [
+                $screen,
+                $list,
+                $statistics,
+            ],
+            [
                 [
-                    'title' => __('View in full screen'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-
-            // Header.
-            ui_print_standard_header(
-                __('SNMP Console'),
-                'images/op_snmp.png',
-                false,
-                'snmp_console',
-                false,
-                [
-                    $screen,
-                    $list,
-                    $statistics,
+                    'link'  => '',
+                    'label' => __('Monitoring'),
                 ],
                 [
-                    [
-                        'link'  => '',
-                        'label' => __('Monitoring'),
-                    ],
-                    [
-                        'link'  => '',
-                        'label' => __('SNMP'),
-                    ],
-                ]
-            );
-        } else {
-            echo '<div id="dashboard-controls">';
-
-            echo '<div id="menu_tab">';
-            echo '<ul class="mn">';
-            // Normal view button.
-            echo '<li class="nomn">';
-
-            echo '<a href="#" onClick="javascript:fullscreen(0)">';
-            echo html_print_image(
-                'images/exit_fullscreen@svg.svg',
-                true,
-                [
-                    'title' => __('Exit fullscreen'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            );
-            echo '</a>';
-            echo '</li>';
-
-            // Auto refresh control.
-            echo '<li class="nomn">';
-            echo '<div class="dashboard-refr mrgn_top_6px">';
-            echo '<div class="dashboard-countdown display_in"></div>';
-            $normal_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view';
-
-            echo '<form id="refr-form" method="get" action="'.$normal_url.'"  >';
-            echo __('Refresh every').':';
-            echo html_print_select(get_refresh_time_array(), 'refresh', $this->refr, '', '', 0, true, false, false);
-            echo '</form>';
-            echo '</li>';
-
-            html_print_input_hidden('sec', 'snmpconsole');
-            html_print_input_hidden('sec2', 'operation/snmpconsole/snmp_view');
-            html_print_input_hidden('pure', 1);
-            html_print_input_hidden('refresh', (($this->refr > 0) ? $this->refr : $default_refr));
-
-            // Dashboard name.
-            echo '<li class="nomn">';
-            echo '<div class="dashboard-title">'.__('SNMP Traps').'</div>';
-            echo '</li>';
-
-            echo '</ul>';
-            echo '</div>';
-
-            echo '</div>';
-
-            ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
-            ui_require_css_file('pandora_dashboard', ENTERPRISE_DIR.'/include/styles/');
-            ui_require_css_file('cluetip', 'include/styles/js/');
-
-            ui_require_jquery_file('countdown');
-            ui_require_javascript_file('pandora_dashboard', ENTERPRISE_DIR.'/include/javascript/');
-            ui_require_javascript_file('wz_jsgraphics');
-            ui_require_javascript_file('pandora_visual_console');
-        }
+                    'link'  => '',
+                    'label' => __('SNMP'),
+                ],
+            ]
+        );
 
         // Datatables list.
         try {

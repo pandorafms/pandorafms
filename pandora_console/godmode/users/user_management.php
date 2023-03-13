@@ -563,9 +563,10 @@ $userManagementTable->data['fields_lang_colorscheme'][0] = html_print_select_fro
     'default',
     true
 );
-
-$userManagementTable->data['captions_lang_colorscheme'][1] = __('User color scheme');
-$userManagementTable->data['fields_lang_colorscheme'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+if (function_exists('skins_print_select')) {
+    $userManagementTable->data['captions_lang_colorscheme'][1] = __('User color scheme');
+    $userManagementTable->data['fields_lang_colorscheme'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+}
 
 $userManagementTable->rowclass['captions_blocksize_eventfilter'] = 'field_half_width';
 $userManagementTable->rowclass['fields_blocksize_eventfilter'] = 'field_half_width';

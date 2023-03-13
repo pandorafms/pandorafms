@@ -1271,10 +1271,12 @@ if ($new_user) {
 
 if (is_metaconsole() === false) {
     // User only can change skins if has more than one group.
-    if (count($usr_groups) > 1) {
-        if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
-            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+    if (function_exists('skins_print_select')) {
+        if (count($usr_groups) > 1) {
+            if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+                $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
+                $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+            }
         }
     }
 }

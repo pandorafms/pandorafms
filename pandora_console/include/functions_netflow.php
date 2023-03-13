@@ -1055,7 +1055,6 @@ function netflow_get_command($options, $filter)
 
     // Filter options.
     $command .= ' '.netflow_get_filter_arguments($filter);
-    hd($command, true);
     return $command;
 }
 

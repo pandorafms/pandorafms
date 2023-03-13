@@ -101,7 +101,7 @@ $max_aggregates = (int) get_parameter('max_aggregates', 10);
 $update_date = (int) get_parameter('update_date', 0);
 $connection_name = get_parameter('connection_name', '');
 $interval_length = get_parameter('interval_length', NETFLOW_RES_MEDD);
-$address_resolution = (int) get_parameter('address_resolution', $config['netflow_get_ip_hostname']);
+$address_resolution = (int) get_parameter('address_resolution', ($config['netflow_get_ip_hostname'] ?? ''));
 $filter_selected = (int) get_parameter('filter_selected', 0);
 
 // Read time values.
@@ -127,13 +127,23 @@ $update = get_parameter('update_button', '');
 
 if (is_metaconsole() === false) {
     // Header.
-    ui_print_page_header(
+    ui_print_standard_header(
         __('Netflow live view'),
         'images/op_netflow.png',
         false,
         '',
         false,
-        []
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Network'),
+            ],
+        ]
     );
 
     $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
@@ -202,22 +212,9 @@ if (isset($config['netflow_disable_custom_lvfilters'])) {
     $netflow_disable_custom_lvfilters = $config['netflow_disable_custom_lvfilters'];
 }
 
-$class = 'databox filters';
-
-echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
-
-    echo "<table class='".$class."' width='100%'>";
-if (is_metaconsole()) {
-    echo '<thead>
-			<tr>
-				<th align=center colspan=6>
-					'.__('Draw live filter').'
-				</th>
-			</tr>
-		</thead>';
-
+// Add nodes list.
+if (is_metaconsole() === true) {
     $list_servers = [];
-
     $servers = db_get_all_rows_sql(
         'SELECT *
 			FROM tmetaconsole_setup'
@@ -244,62 +241,245 @@ if (is_metaconsole()) {
         metaconsole_restore_db();
     }
 
-    echo '<tr>';
-    echo '<td><b>'.__('Connection').'</b></td>';
-    echo '<td>'.html_print_select(
-        $list_servers,
-        'connection_name',
-        $connection_name,
+    $nodeListInput = html_print_label_input_block(
+        __('Connection'),
+        html_print_select(
+            $list_servers,
+            'connection_name',
+            $connection_name,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false
+        )
+    );
+} else {
+    $nodeListInput = '';
+}
+
+$class_not_period = ($is_period === true) ? 'nf_hidden' : 'nf_display';
+$class_period = ($is_period === true) ? 'nf_display' : 'nf_hidden';
+
+$max_values = [
+    '2'             => '2',
+    '5'             => '5',
+    '10'            => '10',
+    '15'            => '15',
+    '20'            => '20',
+    '25'            => '25',
+    '50'            => '50',
+    $max_aggregates => $max_aggregates,
+];
+
+$aggregate_list = [];
+$aggregate_list = [
+    'srcip'   => __('Src Ip Address'),
+    'dstip'   => __('Dst Ip Address'),
+    'srcport' => __('Src Port'),
+    'dstport' => __('Dst Port'),
+];
+
+$advanced_toggle = '<table style="width:100%">';
+$advanced_toggle .= '<tr>';
+if ($netflow_disable_custom_lvfilters) {
+    $advanced_toggle .= '<td></td>';
+    $advanced_toggle .= '<td></td>';
+} else {
+    $advanced_toggle .= '<td><b>'.__('Filter').'</b></td>';
+    $advanced_toggle .= '<td colspan="2">'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true).__('Custom').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true).'</td>';
+}
+
+$advanced_toggle .= '<td><b>'.__('Load filter').'</b></td>';
+$user_groups = users_get_groups($config['id_user'], 'AR', $own_info['is_admin'], true);
+$user_groups[0] = 0;
+// Add all groups.
+$sql = 'SELECT *
+    FROM tnetflow_filter
+    WHERE id_group IN ('.implode(',', array_keys($user_groups)).')';
+$advanced_toggle .= "<td colspan='3'>".html_print_select_from_sql($sql, 'filter_id', $filter_id, '', __('Select a filter'), 0, true);
+$advanced_toggle .= html_print_input_hidden('filter_selected', $filter_selected, false);
+$advanced_toggle .= '</td>';
+$advanced_toggle .= '</tr>';
+
+$advanced_toggle .= "<tr class='filter_normal'>";
+if ($netflow_disable_custom_lvfilters) {
+    $advanced_toggle .= '<td></td>';
+    $advanced_toggle .= '<td></td>';
+} else {
+    $advanced_toggle .= "<td style='font-weight:bold;'>".__('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
+    $advanced_toggle .= '<td colspan="2">'.html_print_input_text('ip_dst', $filter['ip_dst'], false, 40, 80, true).'</td>';
+}
+
+if ($netflow_disable_custom_lvfilters) {
+    $advanced_toggle .= '<td></td>';
+    $advanced_toggle .= '<td></td>';
+} else {
+    $advanced_toggle .= "<td style='font-weight:bold;'>".__('Src Ip').ui_print_help_tip(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
+    $advanced_toggle .= '<td colspan="2">'.html_print_input_text('ip_src', $filter['ip_src'], false, 40, 80, true).'</td>';
+}
+
+$advanced_toggle .= '</tr>';
+
+$advanced_toggle .= "<tr class='filter_normal'>";
+if ($netflow_disable_custom_lvfilters) {
+    $advanced_toggle .= '<td></td>';
+    $advanced_toggle .= '<td></td>';
+} else {
+    $advanced_toggle .= "<td style='font-weight:bold;'>".__('Dst Port').ui_print_help_tip(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
+    $advanced_toggle .= '<td colspan="2">'.html_print_input_text('dst_port', $filter['dst_port'], false, 40, 80, true).'</td>';
+}
+
+if ($netflow_disable_custom_lvfilters) {
+    $advanced_toggle .= '<td></td>';
+    $advanced_toggle .= '<td></td>';
+} else {
+    $advanced_toggle .= "<td style='font-weight:bold;'>".__('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
+    $advanced_toggle .= '<td colspan="2">'.html_print_input_text('src_port', $filter['src_port'], false, 40, 80, true).'</td>';
+}
+
+$advanced_toggle .= '</tr>';
+
+$advanced_toggle .= "<tr class='filter_advance' style='display: none;'>";
+if ($netflow_disable_custom_lvfilters) {
+    $advanced_toggle .= '<td></td>';
+    $advanced_toggle .= '<td></td>';
+} else {
+    $advanced_toggle .= '<td>'.ui_print_help_icon('pcap_filter', true).'</td>';
+    $advanced_toggle .= "<td colspan='5'>".html_print_textarea('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true).'</td>';
+}
+
+$advanced_toggle .= '</tr>';
+$advanced_toggle .= '<tr>';
+
+$onclick = "if (!confirm('".__('Warning').'. '.__('IP address resolution can take a lot of time')."')) return false;";
+$radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended(
+    'address_resolution',
+    1,
+    '',
+    $address_resolution,
+    false,
+    $onclick,
+    '',
+    true
+).'&nbsp;&nbsp;&nbsp;';
+$radio_buttons .= __('No').'&nbsp;&nbsp;'.html_print_radio_button(
+    'address_resolution',
+    0,
+    '',
+    $address_resolution,
+    true
+);
+$advanced_toggle .= '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
+$advanced_toggle .= '<td colspan="2">'.$radio_buttons.'</td>';
+
+$advanced_toggle .= '<td><b>'.__('Source ip').'</b></td>';
+$advanced_toggle .= '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
+
+$advanced_toggle .= '</tr>';
+
+$advanced_toggle .= '</table>';
+
+// Read filter type.
+if (empty($filter['advanced_filter']) === false) {
+    $filter_type = 1;
+} else {
+    $filter_type = 0;
+}
+
+$filterTable = new stdClass();
+$filterTable->id = '';
+$filterTable->class = 'filter-table-adv';
+$filterTable->size = [];
+$filterTable->size[0] = '33%';
+$filterTable->size[1] = '33%';
+$filterTable->size[2] = '33%';
+$filterTable->data = [];
+
+if (empty($nodeListInput) === false) {
+    $filterTable->data[-1][] = $nodeListInput;
+}
+
+$filterTable->data[0][0] = html_print_label_input_block(
+    __('Interval'),
+    html_print_extended_select_for_time(
+        'period',
+        $period,
         '',
         '',
         0,
-        true,
         false,
-        false
-    ).'</td>';
-    echo '</tr>';
-}
+        true
+    ),
+    [ 'div_id' => 'period_container' ]
+);
 
-    echo '<tr>';
-
-    $class_not_period = ($is_period) ? 'nf_hidden' : 'nf_display';
-    $class_period = ($is_period) ? 'nf_display' : 'nf_hidden';
-    echo '<td>';
-    echo '<b class="'.$class_period.'">'.__('Interval').'</b>';
-    echo '<b class="'.$class_not_period.'">'.__('Start date').'</b>';
-    echo '</td>';
-    echo '<td>';
-    echo html_print_extended_select_for_time('period', $period, '', '', 0, false, true, false, true, $class_period);
-    echo html_print_input_text('date_lower', $date_lower, false, 13, 10, true, false, false, '', $class_not_period);
-    echo html_print_image(
-        'images/calendar_view_day.png',
-        true,
+$filterTable->data[0][0] .= html_print_label_input_block(
+    __('Start date'),
+    html_print_div(
         [
-            'alt'   => 'calendar',
-            'class' => $class_not_period,
-        ]
-    ).html_print_input_text('time_lower', $time_lower, false, 10, 8, true, false, false, '', $class_not_period);
-    echo html_print_checkbox(
-        'is_period',
-        1,
-        ($is_period === true) ? 1 : 0,
-        true,
-        false,
-        'nf_view_click_period(event)'
-    );
-    echo ui_print_help_tip(__('Select this checkbox to write interval instead a date.'), true);
-    echo '</td>';
+            'class'   => '',
+            'content' => html_print_input_text(
+                'date_lower',
+                $date_lower,
+                false,
+                13,
+                10,
+                true
+            ).html_print_image(
+                'images/calendar_view_day.png',
+                true,
+                [
+                    'alt'   => 'calendar',
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            ).html_print_input_text(
+                'time_lower',
+                $time_lower,
+                false,
+                10,
+                8,
+                true
+            ),
+        ],
+        true
+    ),
+    [ 'div_id' => 'end_date_container' ]
+);
 
-    echo '<td><b>'.__('End date').'</b></td>';
-    echo '<td>'.html_print_input_text('date', $date, false, 13, 10, true).html_print_image(
-        'images/calendar_view_day.png',
-        true,
-        ['alt' => 'calendar']
-    ).html_print_input_text('time', $time, false, 10, 8, true);
-    echo '</td>';
+$filterTable->data[0][1] = html_print_label_input_block(
+    __('End date'),
+    html_print_div(
+        [
+            'class'   => '',
+            'content' => html_print_input_text(
+                'date',
+                $date,
+                false,
+                13,
+                10,
+                true
+            ).html_print_image(
+                'images/calendar_view_day.png',
+                true,
+                ['alt' => 'calendar']
+            ).html_print_input_text(
+                'time',
+                $time,
+                false,
+                10,
+                8,
+                true
+            ),
+        ],
+        true
+    )
+);
 
-    echo '<td><b>'.__('Resolution').ui_print_help_tip(__('The interval will be divided in chunks the length of the resolution.'), true).'</b></td>';
-    echo '<td>'.html_print_select(
+$filterTable->data[0][2] = html_print_label_input_block(
+    __('Resolution'),
+    html_print_select(
         netflow_resolution_select_params(),
         'interval_length',
         $interval_length,
@@ -309,13 +489,27 @@ if (is_metaconsole()) {
         true,
         false,
         false
-    ).'</td>';
+    ).ui_print_input_placeholder(
+        __('The interval will be divided in chunks the length of the resolution.'),
+        true
+    )
+);
 
-    echo '</tr>';
-    echo '<tr>';
+$filterTable->data[1][] = html_print_label_input_block(
+    __('Defined period'),
+    html_print_checkbox_switch(
+        'is_period',
+        1,
+        ($is_period === true) ? 1 : 0,
+        true,
+        false,
+        'nf_view_click_period(event)'
+    )
+);
 
-    echo '<td><b>'.__('Type').'</b></td>';
-    echo '<td>'.html_print_select(
+$filterTable->data[1][] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
         netflow_get_chart_types(),
         'chart_type',
         $chart_type,
@@ -323,224 +517,152 @@ if (is_metaconsole()) {
         '',
         0,
         true
-    ).'</td>';
+    )
+);
 
-    echo '<td><b>'.__('Max. values').'</b></td>';
-    $max_values = [
-        '2'             => '2',
-        '5'             => '5',
-        '10'            => '10',
-        '15'            => '15',
-        '20'            => '20',
-        '25'            => '25',
-        '50'            => '50',
-        $max_aggregates => $max_aggregates,
-    ];
-    echo '<td>'.html_print_select($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true).'<a id="max_values" href="#" onclick="javascript: edit_max_value();">'.html_print_image('images/edit.svg', true, ['id' => 'pencil', 'class' => 'main_menu_icon invert_filter']).'</a>';
-    echo '</td>';
-
-    echo '<td><b>'.__('Aggregate by').'</b></td>';
-    $aggregate_list = [];
-    $aggregate_list = [
-        'srcip'   => __('Src Ip Address'),
-        'dstip'   => __('Dst Ip Address'),
-        'srcport' => __('Src Port'),
-        'dstport' => __('Dst Port'),
-    ];
-    echo '<td>'.html_print_select($aggregate_list, 'aggregate', $filter['aggregate'], '', '', 0, true, false, true, '', false).'</td>';
-
-    echo '</tr>';
-
-    // Read filter type.
-    if ($filter['advanced_filter'] != '') {
-        $filter_type = 1;
-    } else {
-        $filter_type = 0;
-    }
-
-    echo "<tr class='filter_save' style='display: none;'>";
-
-    echo "<td colspan='6'>".ui_print_error_message('Define a name for the filter and click on Save as new filter again', '', true).'</td>';
-
-    echo '</tr>';
-    echo "<tr class='filter_save' style='display: none;'>";
-
-    echo '<td><span id="filter_name_color"><b>'.__('Name').'</b></span></td>';
-    echo "<td colspan='2'>".html_print_input_text(
-        'name',
-        $filter['id_name'],
-        false,
-        20,
-        80,
-        true
-    ).'</td>';
-    $own_info = get_user_info($config['id_user']);
-    echo '<td><span id="filter_group_color"><b>'.__('Group').'</b></span></td>';
-    echo "<td colspan='2'>".html_print_select_groups($config['id_user'], 'AR', $own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false).'</td>';
-    echo '</tr>';
-
-    $advanced_toggle = '<table style="width:100%">';
-
-    $advanced_toggle .= '<tr>';
-    if ($netflow_disable_custom_lvfilters) {
-        $advanced_toggle .= '<td></td>';
-        $advanced_toggle .= '<td></td>';
-    } else {
-        $advanced_toggle .= '<td><b>'.__('Filter').'</b></td>';
-        $advanced_toggle .= '<td colspan="2">'.__('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true).__('Custom').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true).'</td>';
-    }
-
-
-
-    $advanced_toggle .= '<td><b>'.__('Load filter').'</b></td>';
-    $user_groups = users_get_groups($config['id_user'], 'AR', $own_info['is_admin'], true);
-    $user_groups[0] = 0;
-    // Add all groups.
-    $sql = 'SELECT *
-		FROM tnetflow_filter
-		WHERE id_group IN ('.implode(',', array_keys($user_groups)).')';
-    $advanced_toggle .= "<td colspan='3'>".html_print_select_from_sql($sql, 'filter_id', $filter_id, '', __('Select a filter'), 0, true);
-    $advanced_toggle .= html_print_input_hidden('filter_selected', $filter_selected, false);
-    $advanced_toggle .= '</td>';
-    $advanced_toggle .= '</tr>';
-
-    $advanced_toggle .= "<tr class='filter_normal'>";
-    if ($netflow_disable_custom_lvfilters) {
-        $advanced_toggle .= '<td></td>';
-        $advanced_toggle .= '<td></td>';
-    } else {
-        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
-        $advanced_toggle .= '<td colspan="2">'.html_print_input_text('ip_dst', $filter['ip_dst'], false, 40, 80, true).'</td>';
-    }
-
-    if ($netflow_disable_custom_lvfilters) {
-        $advanced_toggle .= '<td></td>';
-        $advanced_toggle .= '<td></td>';
-    } else {
-        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Src Ip').ui_print_help_tip(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true).'</td>';
-        $advanced_toggle .= '<td colspan="2">'.html_print_input_text('ip_src', $filter['ip_src'], false, 40, 80, true).'</td>';
-    }
-
-    $advanced_toggle .= '</tr>';
-
-    $advanced_toggle .= "<tr class='filter_normal'>";
-    if ($netflow_disable_custom_lvfilters) {
-        $advanced_toggle .= '<td></td>';
-        $advanced_toggle .= '<td></td>';
-    } else {
-        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Dst Port').ui_print_help_tip(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
-        $advanced_toggle .= '<td colspan="2">'.html_print_input_text('dst_port', $filter['dst_port'], false, 40, 80, true).'</td>';
-    }
-
-    if ($netflow_disable_custom_lvfilters) {
-        $advanced_toggle .= '<td></td>';
-        $advanced_toggle .= '<td></td>';
-    } else {
-        $advanced_toggle .= "<td style='font-weight:bold;'>".__('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true).'</td>';
-        $advanced_toggle .= '<td colspan="2">'.html_print_input_text('src_port', $filter['src_port'], false, 40, 80, true).'</td>';
-    }
-
-    $advanced_toggle .= '</tr>';
-
-    $advanced_toggle .= "<tr class='filter_advance' style='display: none;'>";
-    if ($netflow_disable_custom_lvfilters) {
-        $advanced_toggle .= '<td></td>';
-        $advanced_toggle .= '<td></td>';
-    } else {
-        $advanced_toggle .= '<td>'.ui_print_help_icon('pcap_filter', true).'</td>';
-        $advanced_toggle .= "<td colspan='5'>".html_print_textarea('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true).'</td>';
-    }
-
-    $advanced_toggle .= '</tr>';
-    $advanced_toggle .= '<tr>';
-
-    $onclick = "if (!confirm('".__('Warning').'. '.__('IP address resolution can take a lot of time')."')) return false;";
-    $radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended(
-        'address_resolution',
-        1,
+$filterTable->data[1][] = html_print_label_input_block(
+    __('Aggregated by'),
+    html_print_select(
+        $aggregate_list,
+        'aggregate',
+        $filter['aggregate'],
         '',
-        $address_resolution,
-        false,
-        $onclick,
         '',
-        true
-    ).'&nbsp;&nbsp;&nbsp;';
-    $radio_buttons .= __('No').'&nbsp;&nbsp;'.html_print_radio_button(
-        'address_resolution',
         0,
+        true,
+        false,
+        true,
         '',
-        $address_resolution,
+        false
+    )
+);
+
+$filterTable->data[2][] = html_print_label_input_block(
+    __('Max values'),
+    html_print_div(
+        [
+            'class'   => '',
+            'content' => html_print_select(
+                $max_values,
+                'max_aggregates',
+                $max_aggregates,
+                '',
+                '',
+                0,
+                true
+            ).html_print_anchor(
+                [
+                    'id'      => 'max_values',
+                    'href'    => '#',
+                    'onClick' => 'edit_max_value()',
+                    'content' => html_print_image(
+                        'images/edit.svg',
+                        true,
+                        [
+                            'id'    => 'pencil',
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    ),
+                ],
+                true
+            ),
+        ],
         true
-    );
-    $advanced_toggle .= '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
-    $advanced_toggle .= '<td colspan="2">'.$radio_buttons.'</td>';
+    )
+);
 
-    $advanced_toggle .= '<td><b>'.__('Source ip').'</b></td>';
-    $advanced_toggle .= '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
-
-    $advanced_toggle .= '</tr>';
-
-    $advanced_toggle .= '</table>';
-
-    echo '<tr><td colspan="6">';
-    echo ui_toggle(
+$filterTable->colspan[3][0] = 3;
+$filterTable->data[3][0] = html_print_label_input_block(
+    '',
+    ui_toggle(
         $advanced_toggle,
         __('Advanced'),
         '',
         '',
         true,
         true,
-        'white_box white_box_opened',
-        'no-border flex-row'
-    );
-    echo '</td></tr>';
-    echo '</table>';
+        '',
+        'white-box-content',
+        'box-flat white_table_graph'
+    )
+);
 
-    echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
+$buttons = html_print_submit_button(
+    __('Draw'),
+    'draw_button',
+    false,
+    [
+        'icon' => 'cog',
+        'mode' => 'mini',
+    ],
+    true
+);
 
-    echo html_print_submit_button(__('Draw'), 'draw_button', false, 'class="sub upd"', true);
-
-    if (!$netflow_disable_custom_lvfilters) {
-        if (check_acl($config['id_user'], 0, 'AW')) {
-            html_print_submit_button(__('Save as new filter'), 'save_button', false, 'style="margin-left: 5px;" class="sub upd" onClick="return defineFilterName();"');
-            html_print_submit_button(__('Update current filter'), 'update_button', false, 'style="margin-left: 5px;" class="sub upd"');
-        }
+if (!$netflow_disable_custom_lvfilters) {
+    if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
+        $buttons .= html_print_submit_button(__('Save as new filter'), 'save_button', false, ['icon' => 'load', 'onClick' => 'return defineFilterName();', 'mode' => 'mini secondary'], true);
+        $buttons .= html_print_submit_button(__('Update current filter'), 'update_button', false, ['icon' => 'load', 'mode' => 'mini secondary'], true);
     }
+}
 
-    echo '</td></tr></table>';
+$filterInputTable = '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
+$filterInputTable .= html_print_table($filterTable, true);
+$filterInputTable .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $buttons,
+    ],
+    true
+);
+$filterInputTable .= '</form>';
 
-    echo '</form>';
+ui_toggle(
+    $filterInputTable,
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'search',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'box-flat white_table_graph fixed_filter_bar'
+);
 
-    if (empty($draw) === false) {
-        // Draw.
-        echo '<br/>';
+if (empty($draw) === false) {
+    // Draw.
+    echo '<br/>';
 
-        // No filter selected.
-        if ($netflow_disable_custom_lvfilters && $filter_selected == 0) {
-            ui_print_error_message(__('No filter selected'));
-        } else {
-            // Hidden input for handle properly the text colors.
-            html_print_input_hidden(
-                'selected_style_theme',
-                $config['style']
-            );
-            // Draw the netflow chart.
-            echo netflow_draw_item(
-                $start_date,
-                $end_date,
-                $interval_length,
-                $chart_type,
-                $filter,
-                $max_aggregates,
-                $connection_name,
-                'HTML',
-                $address_resolution
-            );
-        }
+    // No filter selected.
+    if ($netflow_disable_custom_lvfilters && $filter_selected == 0) {
+        ui_print_error_message(__('No filter selected'));
+    } else {
+        // Hidden input for handle properly the text colors.
+        html_print_input_hidden(
+            'selected_style_theme',
+            $config['style']
+        );
+        // Draw the netflow chart.
+        html_print_div(
+            [
+                'class'   => 'white_box',
+                'content' => netflow_draw_item(
+                    $start_date,
+                    $end_date,
+                    $interval_length,
+                    $chart_type,
+                    $filter,
+                    $max_aggregates,
+                    $connection_name,
+                    'HTML',
+                    $address_resolution
+                ),
+            ]
+        );
     }
+}
 
-    ui_include_time_picker();
-    ?>
+ui_include_time_picker();
+?>
 
 <script type="text/javascript">
     function edit_max_value () {
@@ -722,6 +844,8 @@ if (is_metaconsole()) {
     });
     
     $(document).ready( function() {
+        // Update visibility of controls.
+        nf_view_click_period();
         // Hide update filter button
         if ($("#filter_id").val() == 0) {
             $("#submit-update_button").hide();
@@ -758,13 +882,10 @@ if (is_metaconsole()) {
     
     $.datepicker.regional["<?php echo get_user_language(); ?>"];
 
-    function nf_view_click_period(event) {
-        $(".nf_display").toggle();
-        $(".nf_hidden").toggle(); 
+    function nf_view_click_period() {
+        var is_period = document.getElementById('checkbox-is_period').checked;
+
+        document.getElementById('period_container').style.display = !is_period ? 'none' : 'flex';
+        document.getElementById('end_date_container').style.display = is_period ? 'none' : 'flex';
     }
 </script>
-<style type="text/css">
-.nf_hidden {
-  display: none;
-}
-</style>

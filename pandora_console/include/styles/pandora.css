@@ -5843,6 +5843,7 @@ div.switch_radio_button label {
   margin-right: -1px;
   border: 1px solid #cbcbcb;
   transition: all 0.1s ease-in-out;
+  background: transparent;
 }
 
 div.switch_radio_button label:first-of-type {

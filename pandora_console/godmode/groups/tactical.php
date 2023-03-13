@@ -74,6 +74,12 @@ if (is_metaconsole() === false) {
                 'link'  => '',
                 'label' => __('Tactic group'),
             ],
+        ],
+        [
+            'id_element' => $id_group,
+            'url'        => 'gagent&sec2=godmode/groups/tactical&id_group='.$id_group,
+            'label'      => groups_get_name($id_group),
+            'section'    => 'Tactic_group',
         ]
     );
 }

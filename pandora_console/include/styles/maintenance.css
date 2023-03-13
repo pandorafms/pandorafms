@@ -58,7 +58,7 @@ body {
 }
 
 a {
-  color: #dc8100;
+  color: #dc8100 !important;
   text-decoration: none;
 }
 

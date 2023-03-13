@@ -287,22 +287,22 @@ if ($edit_graph === true) {
         'graph_list'   => [
             'active' => false,
             'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
-                'images/list.png',
+                'images/logs@svg.svg',
                 true,
                 [
                     'title' => __('Graph list'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>',
         ],
         'main'         => [
             'active' => false,
             'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image(
-                'images/chart.png',
+                'images/graph@svg.svg',
                 true,
                 [
                     'title' => __('Main data'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>',
         ],
@@ -313,18 +313,18 @@ if ($edit_graph === true) {
                 true,
                 [
                     'title' => __('Graph editor'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>',
         ],
         'view'         => [
             'active' => false,
             'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
-                'images/eye.png',
+                'images/enable.svg',
                 true,
                 [
                     'title' => __('View graph'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
 
                 ]
             ).'</a>',

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / donut-graph@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-donut-graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" fill="#3F3F3F" fill-rule="nonzero">
+            <path d="M8.99989907,0.049385264 L9.00024347,6.12595483 C7.27489272,6.56991294 6,8.13607289 6,10 C6,12.209139 7.790861,14 10,14 C11.8638701,14 13.4299912,12.7251853 13.8740044,10.9999149 L19.9506147,11.0001009 C19.4488436,16.0533752 15.1853136,20 10,20 C4.4771525,20 0,15.5228475 0,10 C0,4.81468642 3.94662476,0.551156443 8.99989907,0.049385264 Z M11.0010997,0.0494844903 C15.7249658,0.519023584 19.481539,4.27589662 19.9506147,8.99989907 L13.8737865,8.99923866 C13.51187,7.5942469 12.4057531,6.48813004 11.0007613,6.12621352 Z" id="Oval"></path>
+        </g>
+    </g>
+</svg>

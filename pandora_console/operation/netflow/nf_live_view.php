@@ -202,8 +202,6 @@ if (isset($config['netflow_disable_custom_lvfilters'])) {
     $netflow_disable_custom_lvfilters = $config['netflow_disable_custom_lvfilters'];
 }
 
-enterprise_hook('open_meta_frame');
-
 $class = 'databox filters';
 
 echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
@@ -338,7 +336,7 @@ if (is_metaconsole()) {
         '50'            => '50',
         $max_aggregates => $max_aggregates,
     ];
-    echo '<td>'.html_print_select($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true).'<a id="max_values" href="#" onclick="javascript: edit_max_value();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
+    echo '<td>'.html_print_select($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true).'<a id="max_values" href="#" onclick="javascript: edit_max_value();">'.html_print_image('images/edit.svg', true, ['id' => 'pencil', 'class' => 'main_menu_icon invert_filter']).'</a>';
     echo '</td>';
 
     echo '<td><b>'.__('Aggregate by').'</b></td>';
@@ -541,22 +539,20 @@ if (is_metaconsole()) {
         }
     }
 
-    enterprise_hook('close_meta_frame');
-
     ui_include_time_picker();
     ?>
 
 <script type="text/javascript">
     function edit_max_value () {
         if ($("#max_values img").attr("id") == "pencil") {
-            $("#max_values img").attr("src", "images/default_list.png");
+            $("#max_values img").attr("src", "images/logs@svg.svg");
             $("#max_values img").attr("id", "select");
             var value = $("#max_aggregates").val();
             $("#max_aggregates").replaceWith("<input id='max_aggregates' name='max_aggregates' type='text'>");
             $("#max_aggregates").val(value);
         }
         else {
-            $("#max_values img").attr("src", "images/pencil.png");
+            $("#max_values img").attr("src", "images/edit.svg");
             $("#max_values img").attr("id", "pencil");
             $("#max_aggregates").replaceWith("<select id='max_aggregates' name='max_aggregates'>");
             var o = new Option("2", 2);

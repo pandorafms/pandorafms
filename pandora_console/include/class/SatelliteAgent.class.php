@@ -157,11 +157,6 @@ class SatelliteAgent extends HTML
 
             $this->tableId = 'satellite_agents';
 
-            if (is_metaconsole() === true) {
-                // Only in case of Metaconsole, format the frame.
-                open_meta_frame();
-            }
-
             // Load datatables user interface.
             ui_print_datatable(
                 [
@@ -209,11 +204,6 @@ class SatelliteAgent extends HTML
             );
         } catch (Exception $e) {
             echo $e->getMessage();
-        }
-
-        if (is_metaconsole() === true) {
-            // Close the frame.
-            close_meta_frame();
         }
 
         // Auxiliar div.
@@ -411,7 +401,7 @@ class SatelliteAgent extends HTML
 
                         if ($disable === false) {
                             $tmp->actions .= html_print_image(
-                                ($delete === true) ? 'images/add.png' : 'images/cross.png',
+                                ($delete === true) ? 'images/add.png' : 'images/delete.svg',
                                 true,
                                 [
                                     'border'  => '0',
@@ -969,40 +959,27 @@ class SatelliteAgent extends HTML
      */
     private function ajaxMsg($type, $msg, $delete=false, $disable=false)
     {
-        $msg_err = 'Failed while saving: %s';
-        $msg_ok = 'Successfully saved agent ';
-
-        if ($delete === true) {
-            $msg_err = 'Failed while removing: %s';
-            $msg_ok = 'Successfully deleted ';
-        }
-
-        if ($disable === true) {
-            $msg_err = 'Failed while disabling: %s';
-            $msg_ok = 'Successfully disabled';
-        }
-
-        if ($type == 'error') {
-            echo json_encode(
-                [
-                    $type => ui_print_error_message(
-                        __($msg),
-                        '',
-                        true
-                    ),
-                ]
-            );
+        if ($type === 'error') {
+            if ($delete === true) {
+                $msg_title = 'Failed while removing';
+            } else if ($disable === true) {
+                $msg_title = 'Failed while disabling';
+            } else {
+                $msg_title = 'Failed while saving';
+            }
         } else {
-            echo json_encode(
-                [
-                    $type => ui_print_success_message(
-                        __($msg),
-                        '',
-                        true
-                    ),
-                ]
-            );
+            if ($delete === true) {
+                $msg_title = 'Successfully deleted';
+            } else if ($disable === true) {
+                $msg_title = 'Successfully disabled';
+            } else {
+                $msg_title = 'Successfully saved agent';
+            }
         }
+
+        echo json_encode(
+            [ $type => __($msg_title).':<br>'.$msg ]
+        );
 
         exit;
     }
@@ -1258,7 +1235,7 @@ class SatelliteAgent extends HTML
 
             $('body').append('<div id="dialog"></div>');
 
-            $("#submit-create").on('click', function() {
+            $("#button-create").on('click', function() {
                 show_form();
             });
 

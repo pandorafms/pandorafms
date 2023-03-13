@@ -215,7 +215,7 @@ $(document).ready(function() {
         }
       });
 
-      $("#submit-hide-license-error-msg").click(function() {
+      $("#ok_buttom").click(function() {
         $("#license_error_msg_dialog").dialog("close");
       });
     }

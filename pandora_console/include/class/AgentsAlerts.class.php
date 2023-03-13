@@ -230,14 +230,14 @@ class AgentsAlerts extends HTML
 
         $agent_modules = db_get_all_rows_sql($sql);
 
-        ui_pagination(
+        $tablePagination = ui_pagination(
             $count_agent_module[0]['COUNT(tagente_modulo.nombre)'],
             ui_get_url_refresh(),
             0,
             false,
-            false,
-            'offset',
             true,
+            'offset',
+            false,
             '',
             '',
             false,
@@ -254,8 +254,8 @@ class AgentsAlerts extends HTML
         $table->head[2]  = __('Actions');
 
         $table->style[0] = 'width: 25%;';
-        $table->style[1] = 'width: 33%;';
-        $table->style[2] = 'width: 33%;';
+        $table->style[1] = 'width: 70%;';
+        $table->style[2] = 'width: 5%;';
 
         foreach ($agent_modules as $agent_module) {
             // Let's build the table.
@@ -268,7 +268,11 @@ class AgentsAlerts extends HTML
                         'javascript:show_add_alerts(\'%s\')',
                         $uniqid
                     ),
-                    'content' => html_print_image('images/add_mc.png', true),
+                    'content' => html_print_image(
+                        'images/add_mc.png',
+                        true,
+                        ['class' => 'main_menu_icon invert_filter']
+                    ),
                 ],
                 true
             );
@@ -276,13 +280,13 @@ class AgentsAlerts extends HTML
             array_push($table->data, $data);
 
             $table2 = new stdClass();
-
             $table2->width  = '100%';
             $table2->id     = 'table_add_alert';
-            $table2->class  = 'databox filters';
+            $table2->class  = 'filter-table-adv';
+            $table2->size = [];
+            $table2->size[0] = '50%';
+            $table2->size[1] = '50%';
             $table2->data   = [];
-
-            $table2->data[0][0] = __('Actions');
 
             $groups_user = users_get_groups($this->idUser);
 
@@ -296,7 +300,7 @@ class AgentsAlerts extends HTML
                 $actions = db_get_all_rows_sql($sql);
             }
 
-            $table2->data[0][1] = html_print_select(
+            $input_actions = html_print_select(
                 index_array($actions, 'id', 'name'),
                 'action_select',
                 '',
@@ -308,24 +312,30 @@ class AgentsAlerts extends HTML
                 true,
                 '',
                 false,
-                'width: 250px;'
+                'width: 100%;'
             );
-            $table2->data[0][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
-            $table2->data[0][1] .= __('Number of alerts match from').' ';
-            $table2->data[0][1] .= html_print_input_text('fires_min', '', '', 4, 10, true);
-            $table2->data[0][1] .= ' '.__('to').' ';
-            $table2->data[0][1] .= html_print_input_text('fires_max', '', '', 4, 10, true);
-            $table2->data[0][1] .= ui_print_help_icon(
+
+            $input_actions .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
+            $input_actions .= __('Number of alerts match from').' ';
+            $input_actions .= html_print_input_text('fires_min', '', '', 4, 10, true);
+            $input_actions .= ' '.__('to').' ';
+            $input_actions .= html_print_input_text('fires_max', '', '', 4, 10, true);
+            $input_actions .= ui_print_help_icon(
                 'alert-matches',
                 true,
                 ui_get_full_url(false, false, false, false)
             );
 
-            $table2->data[0][1] .= '</span>';
+            $input_actions .= '</span>';
+
+            $table2->data[0][0] = html_print_label_input_block(
+                __('Actions'),
+                $input_actions
+            );
 
             // Check ACLs for LM users.
             if (check_acl($this->idUser, 0, 'LM')) {
-                $table2->data[0][1] .= html_print_anchor(
+                $table2->data[0][1] = html_print_anchor(
                     [
                         'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$this->pure,
                         'class'   => 'mrgn_lft_5px',
@@ -335,7 +345,6 @@ class AgentsAlerts extends HTML
                 );
             }
 
-            $table2->data[1][0] = __('Template');
             $own_info = get_user_info($this->idUser);
             if ($own_info['is_admin'] || check_acl($this->idUser, 0, 'PM')) {
                 $templates = alerts_get_alert_templates(false, ['id', 'name']);
@@ -346,22 +355,25 @@ class AgentsAlerts extends HTML
                 $templates = alerts_get_alert_templates(['id_group IN ('.$filter_groups.')'], ['id', 'name']);
             }
 
-            $table2->data[1][1] = html_print_select(
-                index_array($templates, 'id', 'name'),
-                'template',
-                '',
-                '',
-                __('Select'),
-                0,
-                true,
-                false,
-                true,
-                '',
-                false,
-                'width: 250px;'
+            $table2->data[1][0] = html_print_label_input_block(
+                __('Template'),
+                html_print_select(
+                    index_array($templates, 'id', 'name'),
+                    'template',
+                    '',
+                    '',
+                    __('Select'),
+                    0,
+                    true,
+                    false,
+                    true,
+                    '',
+                    false,
+                    'width: 100%;'
+                )
             );
 
-            $table2->data[1][1] .= html_print_anchor(
+            $table2->data[1][1] = html_print_anchor(
                 [
                     'href'    => '#',
                     'class'   => 'template_details invisible',
@@ -372,7 +384,7 @@ class AgentsAlerts extends HTML
 
             // Check ACLs for LM users.
             if (check_acl($this->idUser, 0, 'LM')) {
-                $table2->data[1][1] .= html_print_anchor(
+                $table2->data[1][1] = html_print_anchor(
                     [
                         'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$this->pure,
                         'style'   => 'margin-left:5px;',
@@ -382,18 +394,26 @@ class AgentsAlerts extends HTML
                 );
             }
 
-            $table2->data[2][0] = __('Threshold');
-            $table2->data[2][1] = html_print_input_text('module_action_threshold', '0', '', 5, 7, true);
-            $table2->data[2][1] .= ' '.__('seconds');
+            $table2->data[2][0] = html_print_label_input_block(
+                __('Threshold'),
+                html_print_input_text('module_action_threshold', '0', '', 5, 7, true)
+            );
 
             $content2 = '<form class="add_alert_form" method="post">';
-
             $content2 .= html_print_table($table2, true);
             $content2 .= html_print_div(
                 [
                     'class'   => 'action-buttons',
-                    'style'   => 'width: '.$table2->width,
-                    'content' => html_print_submit_button(__('Add alert'), 'add', false, 'class="sub wand"', true).html_print_input_hidden('create_alert', $uniqid, true),
+                    'content' => html_print_submit_button(
+                        __('Add alert'),
+                        'add',
+                        false,
+                        [
+                            'icon' => 'add',
+                            'mode' => 'mini',
+                        ],
+                        true
+                    ).html_print_input_hidden('create_alert', $uniqid, true),
                 ],
                 true
             );
@@ -419,6 +439,11 @@ class AgentsAlerts extends HTML
         }
 
         html_print_table($table);
+
+        html_print_action_buttons(
+            '',
+            ['right_content' => $tablePagination]
+        );
     }
 
 
@@ -520,14 +545,14 @@ class AgentsAlerts extends HTML
         }
 
         // Prepare pagination.
-        ui_pagination(
+        $tablePagination = ui_pagination(
             $nagents,
             false,
             0,
             $filter['limit'],
-            false,
-            'offset',
             true,
+            'offset',
+            false,
             '',
             '',
             [
@@ -697,21 +722,9 @@ class AgentsAlerts extends HTML
 
         echo '</table>';
 
-        ui_pagination(
-            $nagents,
-            false,
-            0,
-            0,
-            false,
-            'offset',
-            true,
-            'pagination-bottom',
+        html_print_action_buttons(
             '',
-            [
-                'count'  => '',
-                'offset' => 'offset_param',
-            ],
-            'alerts_agents'
+            ['right_content' => $tablePagination]
         );
     }
 
@@ -788,27 +801,28 @@ class AgentsAlerts extends HTML
             ],
         ];
 
-        if ($this->pure == 0) {
+        /*
+            if ($this->pure == 0) {
             $screenSwitchTitle  = __('Full screen mode');
             $screenSwitchClass  = 'pure_full';
             $screenSwitchPure   = 1;
             $refreshVisibility   = false;
-        } else {
+            } else {
             $screenSwitchTitle  = __('Back to normal mode');
             $screenSwitchClass  = 'pure_normal';
             $screenSwitchPure   = 0;
             $refreshVisibility   = true;
-        }
+            }
 
-        $refreshComboRates = [
+            $refreshComboRates = [
             '30'                       => __('30 seconds'),
             (string) SECONDS_1MINUTE   => __('1 minute'),
             (string) SECONDS_2MINUTES  => __('2 minutes'),
             (string) SECONDS_5MINUTES  => __('5 minutes'),
             (string) SECONDS_10MINUTES => __('10 minutes'),
-        ];
+            ];
 
-        $headerInputs[] = [
+            $headerInputs[] = [
             'id'        => 'pure',
             'arguments' => [
                 'name'   => 'pure',
@@ -816,9 +830,9 @@ class AgentsAlerts extends HTML
                 'value'  => $this->pure,
                 'return' => true,
             ],
-        ];
+            ];
 
-        $headerInputs[] = [
+            $headerInputs[] = [
             'label'          => __('Full screen'),
             'id'             => 'img-full-screen',
             'surround_start' => '<div id="full_screen_refresh_box">',
@@ -830,9 +844,9 @@ class AgentsAlerts extends HTML
                 'name'       => 'pure',
                 'attributes' => 'class="full_screen_button '.$screenSwitchClass.'" title="'.$screenSwitchTitle.'"',
             ],
-        ];
+            ];
 
-        $headerInputs[] = [
+            $headerInputs[] = [
             'label'        => __('Refresh'),
             'id'           => 'slc-refresh-rate',
             'class'        => ($refreshVisibility === true) ? '' : 'invisible',
@@ -847,7 +861,9 @@ class AgentsAlerts extends HTML
                 'script'      => 'this.form.submit()',
                 'sort'        => false,
             ],
-        ];
+            ];
+
+        */
 
         $filterForm = $this->printForm(
             [
@@ -858,13 +874,16 @@ class AgentsAlerts extends HTML
             true
         );
 
-        // Prints the header controls.
-        $header = html_print_div(
-            [
-                'class'   => 'white_box agents_alerts_header',
-                'content' => $filterForm,
-            ],
-            true
+        $header = ui_toggle(
+            $filterForm,
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
+            'filter_form',
+            '',
+            true,
+            true,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
         );
 
         echo $header;
@@ -1042,8 +1061,8 @@ class AgentsAlerts extends HTML
                     resizable: true,
                     draggable: true,
                     modal: true,
-                    height: 270,
-                    width: 600,
+                    height: 370,
+                    width: 450,
                     overlay: {
                         opacity: 0.5,
                         background: "black"

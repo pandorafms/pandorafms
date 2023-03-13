@@ -47,6 +47,7 @@ if (json_last_error() === JSON_ERROR_NONE) {
     $data = $data_decoded['data'];
     $session_id = $data_decoded['session_id'];
     $type_graph_pdf = $data_decoded['type_graph_pdf'];
+    $id_user = $data_decoded['id_user'];
 
     $data_combined = [];
     if (isset($data_decoded['data_combined']) === true) {
@@ -61,6 +62,10 @@ if (json_last_error() === JSON_ERROR_NONE) {
 
 // Initialize session.
 global $config;
+
+// Care whit this!!! check_login not working if you remove this.
+$config['id_user'] = $id_user;
+$_SESSION['id_usuario'] = $id_user;
 
 // Try to initialize session using existing php session id.
 $user = new PandoraFMS\User(['phpsessionid' => $session_id]);
@@ -82,6 +87,7 @@ if (check_login(false) === false) {
 </head>
 <body>
     <h1>Access is not granted</h1>
+    <div id="container-chart-generator-item" style="display:none; margin:0px;">
 </body>
 </html>
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / graph@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M1,0 C1.51283584,0 1.93550716,0.38604019 1.99327227,0.883378875 L2,1 L2,18 L19,18 C19.5128358,18 19.9355072,18.3860402 19.9932723,18.8833789 L20,19 C20,19.5128358 19.6139598,19.9355072 19.1166211,19.9932723 L19,20 L1,20 C0.487164161,20 0.0644928393,19.6139598 0.00672773133,19.1166211 L0,19 L0,1 C0,0.44771525 0.44771525,0 1,0 Z M18,4 L18,16 L4,16 L4,13.8181818 L8.30769231,8.35914612 L11.5435402,10.5454545 L18,4 Z" id="Path-6" fill="#3F3F3F"></path>
+    </g>
+</svg>

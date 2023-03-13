@@ -8,8 +8,8 @@
   text-align: center;
   font-size: 1.5em;
   font-weight: bolder;
-  color: #fff;
-  background: #282828;
+  color: #000;
+  background: var(--secondary-color);
   padding: 8px;
 }
 

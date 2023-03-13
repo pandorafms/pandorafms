@@ -1048,7 +1048,7 @@ function tags_has_user_acl_tags($id_user=false)
  * @param string Access flag where check what tags have the user
  * @param bool returns 0 if the user has all the tags
  *
- * @return string SQL condition for tagente_module
+ * @return array Returns the user's Tags
  */
 function tags_get_user_tags($id_user=false, $access='AR', $return_tag_any=false)
 {

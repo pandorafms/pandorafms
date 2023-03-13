@@ -195,129 +195,183 @@ function extension_api_checker()
         );
     }
 
-    ui_print_page_header(
-        __('API checker'),
+    // Header.
+    ui_print_standard_header(
+        __('Extensions'),
         'images/extensions.png',
         false,
         '',
         true,
-        ''
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Admin tools'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Extension manager'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('API checker'),
+            ],
+        ]
     );
 
     $table = new stdClass();
+    $table->width = '100%';
+    $table->class = 'databox filters filter-table-adv';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
     $table->data = [];
 
     $row = [];
-    $row[] = __('IP');
-    $row[] = html_print_input_text('ip', $ip, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('IP'),
+        html_print_input_text('ip', $ip, '', 50, 255, true)
+    );
+
+    $row[] = html_print_label_input_block(
+        __('%s Console URL', get_product_name()),
+        html_print_input_text('pandora_url', $pandora_url, '', 50, 255, true)
+    );
     $table->data[] = $row;
 
     $row = [];
-    $row[] = __('%s Console URL', get_product_name());
-    $row[] = html_print_input_text('pandora_url', $pandora_url, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('API Token').ui_print_help_tip(__('Use API Token instead API Pass, User and Password.'), true),
+        html_print_input_text('token', $token, '', 50, 255, true)
+    );
+
+    $row[] = html_print_label_input_block(
+        __('API Pass'),
+        html_print_input_password('apipass', $apipass, '', 50, 255, true)
+    );
     $table->data[] = $row;
 
     $row = [];
-    $row[] = __('API Token').ui_print_help_tip(__('Use API Token instead API Pass, User and Password.'), true);
-    $row[] = html_print_input_text('token', $token, '', 50, 255, true);
-    $table->data[] = $row;
+    $row[] = html_print_label_input_block(
+        __('User'),
+        html_print_input_text('user', $user, '', 50, 255, true)
+    );
 
-    $row = [];
-    $row[] = __('API Pass');
-    $row[] = html_print_input_password('apipass', $apipass, '', 50, 255, true);
-    $table->data[] = $row;
-
-    $row = [];
-    $row[] = __('User');
-    $row[] = html_print_input_text('user', $user, '', 50, 255, true);
-    $table->data[] = $row;
-
-    $row = [];
-    $row[] = __('Password');
-    $row[] = html_print_input_password('password', $password, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('Password'),
+        html_print_input_password('password', $password, '', 50, 255, true)
+    );
     $table->data[] = $row;
 
     $table2 = new stdClass();
+    $table2->width = '100%';
+    $table2->class = 'databox filters filter-table-adv';
+    $table2->size[0] = '50%';
+    $table2->size[1] = '50%';
     $table2->data = [];
 
     $row = [];
-    $row[] = __('Action (get or set)');
-    $row[] = html_print_input_text('op', $op, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('Action (get or set)'),
+        html_print_input_text('op', $op, '', 50, 255, true)
+    );
+
+    $row[] = html_print_label_input_block(
+        __('Operation'),
+        html_print_input_text('op2', $op2, '', 50, 255, true)
+    );
     $table2->data[] = $row;
 
     $row = [];
-    $row[] = __('Operation');
-    $row[] = html_print_input_text('op2', $op2, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('ID'),
+        html_print_input_text('id', $id, '', 50, 255, true)
+    );
+
+    $row[] = html_print_label_input_block(
+        __('ID 2'),
+        html_print_input_text('id2', $id2, '', 50, 255, true)
+    );
     $table2->data[] = $row;
 
     $row = [];
-    $row[] = __('ID');
-    $row[] = html_print_input_text('id', $id, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('Return Type'),
+        html_print_input_text('return_type', $return_type, '', 50, 255, true)
+    );
+
+    $row[] = html_print_label_input_block(
+        __('Other'),
+        html_print_input_text('other', $other, '', 50, 255, true)
+    );
     $table2->data[] = $row;
 
     $row = [];
-    $row[] = __('ID 2');
-    $row[] = html_print_input_text('id2', $id2, '', 50, 255, true);
-    $table2->data[] = $row;
-
-    $row = [];
-    $row[] = __('Return Type');
-    $row[] = html_print_input_text('return_type', $return_type, '', 50, 255, true);
-    $table2->data[] = $row;
-
-    $row = [];
-    $row[] = __('Other');
-    $row[] = html_print_input_text('other', $other, '', 50, 255, true);
-    $table2->data[] = $row;
-
-    $row = [];
-    $row[] = __('Other Mode');
-    $row[] = html_print_input_text('other_mode', $other_mode, '', 50, 255, true);
+    $row[] = html_print_label_input_block(
+        __('Other Mode'),
+        html_print_input_text('other_mode', $other_mode, '', 50, 255, true)
+    );
     $table2->data[] = $row;
 
     $table3 = new stdClass();
+    $table3->width = '100%';
+    $table3->class = 'databox filters filter-table-adv';
+    $table3->size[0] = '50%';
+    $table3->size[1] = '50%';
     $table3->data = [];
 
     $row = [];
-    $row[] = __('Raw URL');
-    $row[] = html_print_input_text('url', $url, '', 50, 2048, true);
+    $row[] = html_print_label_input_block(
+        __('Raw URL'),
+        html_print_input_text('url', $url, '', 50, 2048, true)
+    );
     $table3->data[] = $row;
 
-    echo "<form method='post'>";
-    echo '<fieldset>';
+    echo "<form method='post' class='max_floating_element_size'>";
+    echo '<fieldset class="mrgn_btn_10px">';
     echo '<legend>'.__('Credentials').'</legend>';
     html_print_table($table);
     echo '</fieldset>';
 
-    echo '<fieldset>';
+    echo '<fieldset class="mrgn_btn_10px">';
     echo '<legend>'.__('Call parameters').' '.ui_print_help_tip(__('Action: get Operation: module_last_value id: 63'), true).'</legend>';
     html_print_table($table2);
     echo '</fieldset>';
     echo "<div class='right'>";
     echo '</div>';
 
-    echo '<fieldset>';
+    echo '<fieldset class="mrgn_btn_10px">';
     echo '<legend>'.__('Custom URL').'</legend>';
     html_print_table($table3);
     echo '</fieldset>';
 
-    echo "<div class='right'>";
     html_print_input_hidden('api_execute', 1);
-    html_print_submit_button(__('Call'), 'submit', false, 'class="sub next"');
-    echo '</div>';
+
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Call'),
+            'submit',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        )
+    );
+
     echo '</form>';
 
     if ($api_execute === true) {
-        echo '<fieldset>';
+        echo '<fieldset class="mrgn_0px mrgn_btn_10px pdd_15px" style="max-width: 1122px;">';
         echo '<legend>'.__('Result').'</legend>';
-        echo __('URL').'<br />';
-        html_print_input_password('url', $return_call_api['url'], '', 150, 255, false, true);
-        echo "&nbsp;<a id='show_icon' title='".__('Show URL')."' href='javascript: show_url();'>";
-        html_print_image('images/input_zoom.png');
-        echo '</a>';
+        echo html_print_label_input_block(
+            __('URL'),
+            html_print_input_password('url', $return_call_api['url'], '', 150, 255, true, true, false, 'mrgn_top_10px'),
+            ['label_class' => 'font-title-font']
+        );
         echo '<br />';
-        echo __('Result').'<br />';
-        html_print_textarea('result', 30, 20, $return_call_api['result'], 'readonly="readonly"');
+        echo html_print_label_input_block(
+            __('Result'),
+            html_print_textarea('result', 30, 20, $return_call_api['result'], 'readonly="readonly"', true, 'w100p mrgn_top_10px'),
+            ['label_class' => 'font-title-font']
+        );
         echo '</fieldset>';
     }
     ?>

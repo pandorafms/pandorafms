@@ -43,6 +43,19 @@ li#li-time-from-to > label:not(:first-child) {
   margin-right: 15px;
 }
 
+div.rule-builder-actions {
+  width: 100%;
+  z-index: 0;
+}
+div.rule-builder-actions ul {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  align-content: center;
+}
+
 #rule-builder .rule-builder-actions li label {
   width: 0;
 }
@@ -340,4 +353,36 @@ div#rules.show {
 
 .note-special-day div a.tip > img {
   margin: 0px;
+}
+
+form#icalendar-special-days.calendar-upload-form {
+  border: 0px;
+  padding: 0px;
+}
+
+form#icalendar-special-days.calendar-upload-form > ul {
+  align-items: flex-start !important;
+}
+
+form#icalendar-special-days.calendar-upload-form > ul > li > label {
+  font-size: 13px;
+  line-height: 16px;
+  margin-bottom: 10px;
+}
+
+.special-days-thead > thead > tr > th:not(.header) {
+  border: 1px solid #e2e2e2;
+}
+
+.special-days-thead > thead > tr > th.header {
+  border: 0px;
+  border-bottom: 1px solid #878787;
+}
+
+.special-days-thead > thead > tr > th.c0 {
+  border-left: 1px solid #e2e2e2;
+}
+
+.special-days-thead > thead > tr > th.c6 {
+  border-right: 1px solid #e2e2e2;
 }

@@ -263,10 +263,10 @@ foreach ($result as $row) {
     $data[0] = html_print_checkbox_extended('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
     $data[1] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row['id_np'].'">'.io_safe_output($row['name']).'</a>';
     $data[2] = ui_print_truncate_text(io_safe_output($row['description']), 'description', true, true, true, '[&hellip;]');
-    $table->cellclass[][3] = 'action_buttons';
+    $table->cellclass[][3] = 'table_action_buttons';
     $data[3] = html_print_input_image(
         'delete_profile',
-        'images/cross.png',
+        'images/delete.svg',
         $row['id_np'],
         '',
         true,
@@ -286,7 +286,7 @@ foreach ($result as $row) {
             'class' => 'invert_filter',
         ]
     );
-    $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+    $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
     $data[3] .= '<a onclick="blockResubmit($(this))" href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
 
     array_push($table->data, $data);

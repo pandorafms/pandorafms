@@ -98,7 +98,7 @@ if (!empty($files)) {
         // Last modification
         // Public URL
         $data[4] = '';
-        $table->cellclass[][4] = 'action_buttons';
+        $table->cellclass[][4] = 'table_action_buttons';
         if (!empty($file['hash'])) {
             $public_url = ui_get_full_url(
                 EXTENSIONS_DIR.'/files_repo/files_repo_get_file.php?file='.$file['hash']
@@ -133,9 +133,12 @@ if (!empty($files)) {
             );
             $data[4] .= "<a href=\"$config_url\">";
             $data[4] .= html_print_image(
-                'images/config.png',
+                'images/edit.svg',
                 true,
-                ['title' => __('Edit')]
+                [
+                    'title' => __('Edit'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
             // Edit image
             $data[4] .= '</a>';
@@ -145,11 +148,11 @@ if (!empty($files)) {
             );
             $data[4] .= " <a href=\"$delete_url\" onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\">";
             $data[4] .= html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 true,
                 [
                     'title' => __('Delete'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             // Delete image

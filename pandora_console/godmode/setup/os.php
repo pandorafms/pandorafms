@@ -71,7 +71,7 @@ if ($is_management_allowed === true) {
         case 'edit':
             $actionHidden = 'update';
             $textButton = __('Update');
-            $classButton = 'class="sub upd"';
+            $classButton = ['icon' => 'wand'];
         break;
 
         case 'save':
@@ -93,7 +93,7 @@ if ($is_management_allowed === true) {
                 $tab = 'builder';
                 $actionHidden = 'save';
                 $textButton = __('Create');
-                $classButton = 'class="sub next"';
+                $classButton = ['icon' => 'wand'];
             } else {
                 $tab = 'list';
                 $message = 1;
@@ -140,7 +140,7 @@ if ($is_management_allowed === true) {
 
             $actionHidden = 'update';
             $textButton = __('Update');
-            $classButton = 'class="sub upd"';
+            $classButton = ['icon' => 'wand'];
             if (is_metaconsole() === true) {
                 header('Location:'.$config['homeurl'].'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2='.$tab.'&message='.$message);
             } else {
@@ -175,7 +175,7 @@ if ($is_management_allowed === true) {
         case 'new':
             $actionHidden = 'save';
             $textButton = __('Create');
-            $classButton = 'class="sub next"';
+            $classButton = ['icon' => 'next'];
         break;
     }
 }
@@ -184,11 +184,11 @@ $buttons = [];
 $buttons['list'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=list">'.html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
         [
             'title' => __('List OS'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
 ];
@@ -196,11 +196,11 @@ if ($is_management_allowed === true) {
     $buttons['builder'] = [
         'active' => false,
         'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=builder">'.html_print_image(
-            'images/builder.png',
+            'images/edit.svg',
             true,
             [
                 'title' => __('Builder OS'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>',
     ];

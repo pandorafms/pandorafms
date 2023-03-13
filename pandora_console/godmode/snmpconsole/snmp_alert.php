@@ -746,7 +746,8 @@ foreach ($user_groups as $id => $name) {
 // Alert form.
 if ($create_alert || $update_alert) {
     // The update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated.
-    echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
+    echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert" 
+    class="max_floating_element_size">';
 
     html_print_input_hidden('id_alert_snmp', $id_as);
 
@@ -759,36 +760,67 @@ if ($create_alert || $update_alert) {
     }
 
     // SNMP alert filters.
-    echo '<table cellpadding="0" cellspacing="0" width="100%" class="databox filter bolder">';
+    echo '<table cellpadding="0" cellspacing="0" width="100%" class="databox filter filter-table-adv">';
 
-    // Description.
+    // 1.
     echo '<tr>';
-    echo '<td class="datos" valign="top">'.__('Description').'</td>';
-    echo '<td class="datos">';
-    html_print_textarea('description', 3, 2, $description, 'class="w400px"');
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Description'),
+        html_print_textarea(
+            'description',
+            2,
+            2,
+            $description,
+            'class="w100p"',
+            true
+        )
+    );
+    echo '</td>';
+
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Custom Value/OID'),
+        html_print_textarea(
+            'custom_value',
+            2,
+            2,
+            $custom_value,
+            'class="w100p"',
+            true
+        )
+    );
     echo '</td>';
     echo '</tr>';
 
-    // OID.
-    echo '<tr id="tr-oid">';
-    echo '<td class="datos2">'.__('Enterprise String').ui_print_help_tip(__('Matches substrings. End the string with $ for exact matches.'), true).'</td>';
-    echo '<td class="datos2">';
-    html_print_input_text('oid', $oid, '', 50, 255);
+    // 2.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Enterprise String').ui_print_help_tip(__('Matches substrings. End the string with $ for exact matches.'), true),
+        html_print_input_text(
+            'oid',
+            $oid,
+            '',
+            50,
+            255,
+            true
+        )
+    );
     echo '</td>';
-    echo '</tr>';
 
-    // Custom.
-    echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom Value/OID');
-
-    echo '</td><td class="datos">';
-    html_print_textarea('custom_value', 2, 2, $custom_value, 'class="w400px"');
-
-    echo '</td>';
-    echo '</tr>';
-
-    // SNMP Agent.
-    echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
-    html_print_input_text('source_ip', $source_ip, '', 20);
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('SNMP Agent').' (IP)',
+        html_print_input_text(
+            'source_ip',
+            $source_ip,
+            '',
+            20,
+            255,
+            true
+        )
+    );
     echo '</td>';
     echo '</tr>';
 
@@ -798,242 +830,669 @@ if ($create_alert || $update_alert) {
         $return_all_group = true;
     }
 
-    // Group.
-    echo '<tr id="tr-group"><td class="datos2">'.__('Group').'</td><td class="datos2">';
-    echo '<div class="w250px">';
-    html_print_select_groups(
-        $config['id_user'],
-        'AR',
-        $return_all_group,
-        'group',
-        $group,
-        '',
-        '',
-        0,
-        false,
-        false,
-        false,
-        '',
-        false,
-        false,
-        false,
-        false,
-        'id_grupo',
-        false
+    // 3.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups(
+            $config['id_user'],
+            'AR',
+            $return_all_group,
+            'group',
+            $group,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            'id_grupo',
+            false
+        )
     );
-    echo '</div>';
+    echo '</td>';
+
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Trap type'),
+        html_print_select(
+            $trap_types,
+            'trap_type',
+            $trap_type,
+            '',
+            '',
+            '',
+            true,
+            false,
+            false,
+            'w100p'
+        )
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Trap type.
-    echo '<tr><td class="datos">'.__('Trap type').'</td><td class="datos">';
-    echo html_print_select($trap_types, 'trap_type', $trap_type, '', '', '', false, false, false);
+    // 4.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Single value'),
+        html_print_input_text(
+            'single_value',
+            $single_value,
+            '',
+            20,
+            255,
+            true
+        )
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
     echo '</td>';
     echo '</tr>';
 
-    // Single value.
-    echo '<tr><td class="datos">'.__('Single value').'</td><td class="datos">';
-    html_print_input_text('single_value', $single_value, '', 20);
+    // #1 #2.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_1',
+            $order_1,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_1',
+            $custom_oid_data_1,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_2',
+            $order_2,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_2',
+            $custom_oid_data_2,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #1.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_1', $order_1, '', 4);
-    html_print_input_text('custom_oid_data_1', $custom_oid_data_1, '', 60);
+    // #3 #4.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_3',
+            $order_3,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_3',
+            $custom_oid_data_3,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_4',
+            $order_4,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_4',
+            $custom_oid_data_4,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #2.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_2', $order_2, '', 4);
-    html_print_input_text('custom_oid_data_2', $custom_oid_data_2, '', 60);
+    // #5 #6.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_5',
+            $order_5,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_5',
+            $custom_oid_data_5,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_6',
+            $order_6,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_6',
+            $custom_oid_data_6,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #3.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_3', $order_3, '', 4);
-    html_print_input_text('custom_oid_data_3', $custom_oid_data_3, '', 60);
+    // #7 #8.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_7',
+            $order_7,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_7',
+            $custom_oid_data_7,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_8',
+            $order_8,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_8',
+            $custom_oid_data_8,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #4.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_4', $order_4, '', 4);
-    html_print_input_text('custom_oid_data_4', $custom_oid_data_4, '', 60);
+    // #9 #10.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_9',
+            $order_9,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_9',
+            $custom_oid_data_9,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_10',
+            $order_10,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_10',
+            $custom_oid_data_10,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #5.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_5', $order_5, '', 4);
-    html_print_input_text('custom_oid_data_5', $custom_oid_data_5, '', 60);
+    // #11 #12.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_11',
+            $order_11,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_11',
+            $custom_oid_data_11,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_12',
+            $order_12,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_12',
+            $custom_oid_data_12,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #6.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_6', $order_6, '', 4);
-    html_print_input_text('custom_oid_data_6', $custom_oid_data_6, '', 60);
+    // #13 #14.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_13',
+            $order_13,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_13',
+            $custom_oid_data_13,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_14',
+            $order_14,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_14',
+            $custom_oid_data_14,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #7.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_7', $order_7, '', 4);
-    html_print_input_text('custom_oid_data_7', $custom_oid_data_7, '', 60);
+    // #15 #16.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_15',
+            $order_15,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_15',
+            $custom_oid_data_15,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_16',
+            $order_16,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_16',
+            $custom_oid_data_16,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #8.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_8', $order_8, '', 4);
-    html_print_input_text('custom_oid_data_8', $custom_oid_data_8, '', 60);
+    // #17 #18.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_17',
+            $order_17,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_17',
+            $custom_oid_data_17,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_18',
+            $order_18,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_18',
+            $custom_oid_data_18,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
-    // Variable bindings/Data #9.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_9', $order_9, '', 4);
-    html_print_input_text('custom_oid_data_9', $custom_oid_data_9, '', 60);
+    // #19 #20.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_19',
+            $order_19,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_19',
+            $custom_oid_data_19,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #10.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_10', $order_10, '', 4);
-    html_print_input_text('custom_oid_data_10', $custom_oid_data_10, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #11.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_11', $order_11, '', 4);
-    html_print_input_text('custom_oid_data_11', $custom_oid_data_11, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #12.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_12', $order_12, '', 4);
-    html_print_input_text('custom_oid_data_12', $custom_oid_data_12, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #13.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_13', $order_13, '', 4);
-    html_print_input_text('custom_oid_data_13', $custom_oid_data_13, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #14.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_14', $order_14, '', 4);
-    html_print_input_text('custom_oid_data_14', $custom_oid_data_14, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #15.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_15', $order_15, '', 4);
-    html_print_input_text('custom_oid_data_15', $custom_oid_data_15, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #16.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_16', $order_16, '', 4);
-    html_print_input_text('custom_oid_data_16', $custom_oid_data_16, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #17.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_17', $order_17, '', 4);
-    html_print_input_text('custom_oid_data_17', $custom_oid_data_17, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #18.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_18', $order_18, '', 4);
-    html_print_input_text('custom_oid_data_18', $custom_oid_data_18, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #19.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_19', $order_19, '', 4);
-    html_print_input_text('custom_oid_data_19', $custom_oid_data_19, '', 60);
-    echo '</td>';
-    echo '</tr>';
-
-    // Variable bindings/Data #20.
-    echo '<tr id="tr-custom_value">';
-    echo '<td class="datos"  valign="top">'.__('Variable bindings/Data').'</td>';
-    echo '<td class="datos">';
-    echo '#';
-    html_print_input_text('order_20', $order_20, '', 4);
-    html_print_input_text('custom_oid_data_20', $custom_oid_data_20, '', 60);
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Variable bindings/Data'),
+        '<div class="flex-inline">#'.html_print_input_text(
+            'order_20',
+            $order_20,
+            '',
+            4,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w10p'
+        ).html_print_input_text(
+            'custom_oid_data_20',
+            $custom_oid_data_20,
+            '',
+            60,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w88p'
+        ).'</div>'
+    );
     echo '</td>';
     echo '</tr>';
 
@@ -1071,16 +1530,43 @@ if ($create_alert || $update_alert) {
         echo '</td></tr>';
     }
 
-    // Max / Min alerts.
-    echo '<tr><td class="datos2">'.__('Min. number of alerts').'</td><td class="datos2">';
-    html_print_input_text('min_alerts', $min_alerts, '', 3);
-
-    echo '</td></tr><tr><td class="datos">'.__('Max. number of alerts').'</td><td class="datos">';
-    html_print_input_text('max_alerts', $max_alerts, '', 3);
-    echo '</td></tr>';
-
-    // Time Threshold.
-    echo '<tr><td class="datos2">'.__('Time threshold').'</td><td class="datos2">';
+    // Max, Min.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Min. number of alerts'),
+        html_print_input_text(
+            'min_alerts',
+            $min_alerts,
+            '',
+            3,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        )
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Max. number of alerts'),
+        html_print_input_text(
+            'max_alerts',
+            $max_alerts,
+            '',
+            3,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        )
+    );
+    echo '</td>';
+    echo '</tr>';
 
     $fields = [];
     $fields[$time_threshold] = human_time_description_raw($time_threshold);
@@ -1096,54 +1582,144 @@ if ($create_alert || $update_alert) {
     $fields[SECONDS_1WEEK] = human_time_description_raw(SECONDS_1WEEK);
     $fields[-1] = __('Other value');
 
-    html_print_select($fields, 'time_threshold', $time_threshold, '', '', '0', false, false, false, '" class="mrgn_right_60px');
-    echo '<div id="div-time_other" class="invisible">';
-    html_print_input_text('time_other', 0, '', 6);
-    echo ' '.__('seconds').'</div></td></tr>';
-
-    // Priority.
-    echo '<tr><td class="datos">'.__('Priority').'</td><td class="datos">';
-    echo html_print_select(get_priorities(), 'priority', $priority, '', '', '0', false, false, false);
-    echo '</td></tr>';
-
-    // Alert type (e-mail, event etc.).
-    echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
-    html_print_select_from_sql(
-        'SELECT id, name
-        FROM talert_actions
-        ORDER BY name',
-        'alert_type',
-        $alert_type,
-        '',
-        '',
-        0,
-        false,
-        false,
-        false
+    // Time Threshold, Priority.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Time threshold'),
+        html_print_select(
+            $fields,
+            'time_threshold',
+            $time_threshold,
+            '',
+            '',
+            '0',
+            true,
+            false,
+            false,
+            '" class="mrgn_right_60px'
+        ).'<div id="div-time_other" class="invisible">'.html_print_input_text(
+            'time_other',
+            0,
+            '',
+            6,
+            255,
+            true
+        ).' '.__('seconds').'</div>'
     );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Priority'),
+        html_print_select(
+            get_priorities(),
+            'priority',
+            $priority,
+            '',
+            '',
+            '0',
+            true,
+            false,
+            false
+        )
+    );
+    echo '</td>';
+    echo '</tr>';
 
-    echo '</td></tr>';
-    echo '<tr><td class="datos">'.__('Position').'</td><td class="datos">';
+    // Alert type (e-mail, event etc.), Position.
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Alert action'),
+        html_print_select_from_sql(
+            'SELECT id, name
+            FROM talert_actions
+            ORDER BY name',
+            'alert_type',
+            $alert_type,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false
+        )
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Position'),
+        html_print_input_text(
+            'position',
+            $position,
+            '',
+            3,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        )
+    );
+    echo '</td>';
+    echo '</tr>';
 
-    html_print_input_text('position', $position, '', 3);
-    echo '</td></tr>';
-    echo '<tr><td class="datos">'.__('Disable event').'</td><td class="datos">';
-
-    html_print_checkbox('disable_event', 1, $disable_event, false);
-    echo '</td></tr>';
+    // Disable event, .
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Disable event'),
+        html_print_checkbox(
+            'disable_event',
+            1,
+            $disable_event,
+            true
+        )
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo '</td>';
+    echo '</tr>';
     echo '</table>';
 
-    echo "<table class='w100p'>";
-    echo '<tr><td></td><td align="right">';
-    html_print_button(__('Back'), 'button_back', false, '', 'class="sub cancel margin-right-05"');
+
+    $back_button = html_print_button(
+        __('Back'),
+        'button_back',
+        false,
+        '',
+        [
+            'class' => 'secondary',
+            'icon'  => 'back',
+        ],
+        true
+    );
     if ($id_as > 0) {
-        html_print_submit_button(__('Update'), 'submit', false, 'class="sub upd"');
+        $submit_button = html_print_submit_button(
+            __('Update'),
+            'submit',
+            false,
+            [
+                'class' => '',
+                'icon'  => 'wand',
+            ],
+            true
+        );
     } else {
-        html_print_submit_button(__('Create'), 'submit', false, 'class="sub wand"');
+        $submit_button = html_print_submit_button(
+            __('Create'),
+            'submit',
+            false,
+            [
+                'class' => '',
+                'icon'  => 'wand',
+            ],
+            true
+        );
     }
 
-    echo '</td></tr></table>';
-    echo '</table>';
+    html_print_action_buttons($submit_button.$back_button);
     echo '</form>';
 } else {
     include_once 'include/functions_alerts.php';
@@ -1156,28 +1732,91 @@ if ($create_alert || $update_alert) {
 
     $table_filter = new stdClass();
     $table_filter->width = '100%';
-    $table_filter->class = 'databox filters';
+    $table_filter->class = 'databox filters filter-table-adv';
     $table_filter->data = [];
-    $table_filter->data[0][0] = __('Free search').ui_print_help_tip(
-        __('Search by these fields description, OID, Custom Value, SNMP Agent (IP), Single value, each Variable bindings/Datas.'),
-        true
+    $table_filter->size[0] = '33%';
+    $table_filter->size[1] = '33%';
+    $table_filter->size[2] = '33%';
+
+    $table_filter->data[0][0] = html_print_label_input_block(
+        __('Free search').ui_print_help_tip(
+            __('Search by these fields description, OID, Custom Value, SNMP Agent (IP), Single value, each Variable bindings/Datas.'),
+            true
+        ),
+        html_print_input_text(
+            'free_search',
+            $free_search,
+            '',
+            30,
+            100,
+            true
+        )
     );
-    $table_filter->data[0][1] = html_print_input_text('free_search', $free_search, '', 30, 100, true);
-    $table_filter->data[0][2] = __('Trap type');
-    $table_filter->data[0][3] = html_print_select($trap_types, 'trap_type_filter', $trap_type_filter, '', '', '', true, false, false);
-    $table_filter->data[0][4] = __('Priority');
-    $table_filter->data[0][5] = html_print_select(get_priorities(), 'priority_filter', $priority_filter, '', __('None'), '-1', true, false, false);
-    ;
+
+    $table_filter->data[0][1] = html_print_label_input_block(
+        __('Trap type'),
+        html_print_select(
+            $trap_types,
+            'trap_type_filter',
+            $trap_type_filter,
+            '',
+            '',
+            '',
+            true,
+            false,
+            false,
+            'w100p',
+            false,
+            'width: 100%;'
+        )
+    );
+
+    $table_filter->data[0][2] = html_print_label_input_block(
+        __('Priority'),
+        html_print_select(
+            get_priorities(),
+            'priority_filter',
+            $priority_filter,
+            '',
+            __('None'),
+            '-1',
+            true,
+            false,
+            false,
+            'w100p',
+            false,
+            'width: 100%;'
+        )
+    );
 
     $form_filter = '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
     $form_filter .= html_print_input_hidden('filter', 1, true);
     $form_filter .= html_print_table($table_filter, true);
-    $form_filter .= '<div style="text-align: right; width: '.$table_filter->width.'">';
-    $form_filter .= html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
+    $form_filter .= '<div class="float-right mrgn_right_25px">';
+    $form_filter .= html_print_submit_button(
+        __('Filter'),
+        'filter_button',
+        false,
+        [
+            'class' => 'mini',
+            'icon'  => 'search',
+        ],
+        true
+    );
     $form_filter .= '</div>';
     $form_filter .= '</form>';
 
-    ui_toggle($form_filter, __('Alert SNMP control filter'), __('Toggle filter(s)'));
+    ui_toggle(
+        $form_filter,
+        '<span class="subsection_header_title">'.__('Alert SNMP control filter').'</span>',
+        __('Toggle filter(s)'),
+        'filter',
+        true,
+        false,
+        '',
+        'white-box-content no_border',
+        'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
+    );
 
     $filter = [];
     $offset = (int) get_parameter('offset');
@@ -1231,8 +1870,6 @@ if ($create_alert || $update_alert) {
         $result = [];
         ui_print_info_message(['no_close' => true, 'message' => __('There are no SNMP alerts') ]);
     } else {
-        ui_pagination($count, $url_pagination);
-
         $where_sql .= ' LIMIT '.$limit.' OFFSET '.$offset;
         $result = db_get_all_rows_sql(
             'SELECT *
@@ -1306,7 +1943,7 @@ if ($create_alert || $update_alert) {
                 $data[1] .= '<tr>';
                 $data[1] .= '<td>'.alerts_get_alert_action_name($action['alert_type']).'</td>';
                 $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
-                    'images/cross.png',
+                    'images/delete.svg',
                     true,
                     [
                         'border' => '0',
@@ -1341,11 +1978,12 @@ if ($create_alert || $update_alert) {
                             $row['id_as']
                         ),
                         'content' => html_print_image(
-                            'images/copy.png',
+                            'images/copy.svg',
                             true,
                             [
                                 'alt'   => __('Duplicate'),
                                 'title' => __('Duplicate'),
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],
@@ -1358,11 +1996,12 @@ if ($create_alert || $update_alert) {
                             $row['id_as']
                         ),
                         'content' => html_print_image(
-                            'images/config.png',
+                            'images/edit.svg',
                             true,
                             [
                                 'alt'    => __('Update'),
                                 'border' => 0,
+                                'class'  => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],
@@ -1388,7 +2027,7 @@ if ($create_alert || $update_alert) {
                     [
                         'href'    => 'javascript: ',
                         'content' => html_print_image(
-                            'images/cross.png',
+                            'images/delete.svg',
                             true,
                             [
                                 'title' => __('Delete action'),
@@ -1491,37 +2130,76 @@ if ($create_alert || $update_alert) {
 
                 echo '</table>';
                 html_print_input_hidden('add_alert', 1);
-                echo html_print_submit_button(__('Add'), 'addbutton', false, ['class' => 'sub next', 'style' => 'float:right'], true);
+                echo html_print_submit_button(
+                    __('Add'),
+                    'addbutton',
+                    false,
+                    [
+                        'class' => 'mini',
+                        'icon'  => 'wand',
+                        'style' => 'float:right',
+                    ],
+                    true
+                );
                 echo '</form>';
                 echo '</div>';
                 // END DIALOG ADD MORE ACTIONS.
-                if (empty($table->data) === false) {
-                    echo '<form id="delete_selected_form" name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
-                    html_print_table($table);
+                $pagination = '';
+                $deleteButton = '';
+    if (empty($table->data) === false) {
+        echo '<form id="delete_selected_form" name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
+        html_print_table($table);
 
-                    ui_pagination($count, $url_pagination);
+        $pagination = ui_pagination($count, $url_pagination, 0, 0, true, 'offset', false);
 
-                    echo '<div class="right mrgn_lft_10px;">';
-                    html_print_input_hidden('multiple_delete', 1);
-                    html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected_snmp_alerts()', 'class="sub delete mrgn_btn_10px"');
-                    echo '</div>';
-                    echo '</form>';
-                }
+        echo '<div class="right mrgn_lft_10px;">';
+        html_print_input_hidden('multiple_delete', 1);
+        $deleteButton = html_print_button(
+            __('Delete selected'),
+            'delete_button',
+            false,
+            'delete_selected_snmp_alerts()',
+            [
+                'class' => 'secondary',
+                'icon'  => 'delete',
+            ],
+            true
+        );
+        echo '</div>';
+        echo '</form>';
+    }
 
                 echo '<div class="right">';
                 echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
                 html_print_input_hidden('create_alert', 1);
-                html_print_submit_button(__('Create'), 'alert', false, 'class="sub next"');
+                $submitButton = html_print_submit_button(
+                    __('Create'),
+                    'alert',
+                    false,
+                    ['icon' => 'wand'],
+                    true
+                );
+                html_print_action_buttons($submitButton.$deleteButton, ['right_content' => $pagination]);
                 echo '</form></div>';
 
-                echo '<div class="snmp_legend">';
-                echo '<h3>'.__('Legend').'</h3>';
-                foreach (get_priorities() as $num => $name) {
-                    echo '<span class="'.get_priority_class($num).'">'.$name.'</span>';
-                    echo '<br />';
-                }
+                $legend = '<table id="legend_snmp_alerts"class="w100p"><td><div class="snmp_view_div w100p legend_white">';
+                $legend .= '<div class="display-flex"><div class="flex-50">';
+                $priorities = get_priorities();
+                $half = (count($priorities) / 2);
+                $count = 0;
+    foreach ($priorities as $num => $name) {
+        if ($count == $half) {
+            $legend .= '</div><div class="mrgn_lft_5px flex-50">';
+        }
 
-                echo '</div>';
+        $legend .= '<span class="'.get_priority_class($num).'">'.$name.'</span>';
+        $legend .= '<br />';
+        $count++;
+    }
+
+                $legend .= '</div></div></div></td>';
+
+                ui_toggle($legend, __('Legend'));
 
                 unset($table);
 }

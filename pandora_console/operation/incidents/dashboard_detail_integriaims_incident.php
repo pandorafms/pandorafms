@@ -195,7 +195,7 @@ foreach ($files as $key => $value) {
     $table_files->data[$i][4] = $value[13];
     $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
                                 onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-    $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+    $table_files->data[$i][5] .= html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
 
 
     $table_files->data[$i][5] .= '</a>';
@@ -375,9 +375,9 @@ $dates_box .= '</div>';
 
 // Show details, people and dates.
 echo '<div class="integria_details">';
-    ui_toggle($details_box, __('Details'), '', 'details_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-shadow white_table_graph');
-    ui_toggle($people_box, __('People'), '', 'people_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-shadow white_table_graph');
-    ui_toggle($dates_box, __('Dates'), '', 'dates_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-shadow white_table_graph');
+    ui_toggle($details_box, __('Details'), '', 'details_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-flat white_table_graph');
+    ui_toggle($people_box, __('People'), '', 'people_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-flat white_table_graph');
+    ui_toggle($dates_box, __('Dates'), '', 'dates_box', false, false, '', 'integria_details_content white-box-content', 'integria_details_shadow box-flat white_table_graph');
 echo '</div>';
 
  // Show description.

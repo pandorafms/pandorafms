@@ -16,7 +16,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
 $id_report = (int) get_parameter('id');
 
 if (! $id_report) {
@@ -117,7 +116,7 @@ $options['list_reports'] = [
         true,
         [
             'title' => __('Report list'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -137,25 +136,25 @@ if (check_acl_restricted_all($config['id_user'], $report_group, 'RW')) {
         true,
         [
             'title' => __('Main data'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
     $options['list_items']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
         [
             'title' => __('List items'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
     $options['item_editor']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
-        'images/pencil.png',
+        'images/edit.svg',
         true,
         [
             'title' => __('Item editor'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
@@ -171,7 +170,7 @@ $options['view'] = [
         true,
         [
             'title' => __('View report'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
 
         ]
     ).'</a>',
@@ -184,7 +183,7 @@ if (!defined('METACONSOLE')) {
             true,
             [
                 'title' => __('Full screen mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
     } else {
@@ -193,7 +192,7 @@ if (!defined('METACONSOLE')) {
             true,
             [
                 'title' => __('Back to normal mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
 
@@ -205,90 +204,53 @@ if (!defined('METACONSOLE')) {
     }
 }
 
-// Page header for metaconsole
-if (is_metaconsole()) {
-    // Bread crumbs
-    ui_meta_add_breadcrumb(['link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder', 'text' => __('Reporting')]);
-
-    ui_meta_print_page_header($nav_bar);
-
-    // Print header
-    ui_meta_print_header(__('Reporting'), '', $options);
-} else {
-    // Header.
-    ui_print_standard_header(
-        reporting_get_name($id_report),
-        'images/op_reporting.png',
-        false,
-        '',
-        false,
-        $options,
-        [
-            [
-                'link'  => '',
-                'label' => __('Reporting'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Custom reports'),
-            ],
-        ]
-    );
-}
-
-// ------------------- END HEADER ---------------------------------------
-// ------------------------ INIT FORM -----------------------------------
-$table = new stdClass();
-$table->id = 'controls_table';
-$table->width = '100%';
-$table->class = 'databox';
-if (defined('METACONSOLE')) {
-    $table->width = '100%';
-    $table->class = 'databox filters';
-
-    $table->head[0] = __('View Report');
-    $table->head_colspan[0] = 5;
-    $table->headstyle[0] = 'text-align: center';
-}
-
-$table->style = [];
-$table->style[0] = 'width: 60px;';
-$table->rowspan[0][0] = 2;
-
-// Set initial conditions for these controls, later will be modified by javascript
-if (!$enable_init_date) {
-    $table->style[1] = 'display: none';
-    $table->style[2] = 'display: flex;align-items: baseline;';
-    $display_to = 'none';
-    $display_item = '';
-} else {
-    $table->style[1] = 'display: "block"';
-    $table->style[2] = 'display: flex;align-items: baseline;';
-    $display_to = '';
-    $display_item = 'none';
-}
-
-$table->size = [];
-$table->size[0] = '60px';
-$table->colspan[0][1] = 2;
-$table->style[0] = 'text-align:center;';
-$table->data = [];
-$table->data[0][0] = html_print_image(
-    'images/reporting32.png',
-    true,
+// Header.
+ui_print_standard_header(
+    reporting_get_name($id_report),
+    'images/op_reporting.png',
+    false,
+    '',
+    false,
+    $options,
     [
-        'width'  => '32',
-        'height' => '32',
+        [
+            'link'  => '',
+            'label' => __('Reporting'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Custom reports'),
+        ],
     ]
 );
 
-if (reporting_get_description($id_report)) {
-    $table->data[0][1] = '<div class="float-left">'.reporting_get_description($id_report).'</div>';
-} else {
-    $table->data[0][1] = '<div class="float-left">'.reporting_get_name($id_report).'</div>';
+// ------------------- END HEADER ---------------------------------------
+// ------------------------ INIT FORM -----------------------------------
+$table2 = new stdClass();
+$table2->id = 'controls_table';
+$table2->size[2] = '50%';
+$table2->size[3] = '50%';
+$table2->style[0] = 'text-align:center';
+$table2->style[1] = 'text-align:center';
+$table2->styleTable = 'border:none';
+
+if (defined('METACONSOLE')) {
+    $table2->width = '100%';
+    $table2->class = 'databox filters';
+
+    $table2->head[0] = __('View Report');
+    $table2->head_colspan[0] = 5;
+    $table2->headstyle[0] = 'text-align: center';
 }
 
-$table->data[0][1] .= '<div class="flex-content-right">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true).'</br>';
+// Set initial conditions for these controls, later will be modified by javascript
+if (!$enable_init_date) {
+    $display_to = 'none';
+    $display_item = '';
+} else {
+    $display_to = '';
+    $display_item = 'none';
+}
 
 $html_menu_export = enterprise_hook('reporting_print_button_export');
 if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
@@ -296,24 +258,53 @@ if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
 }
 
 
-$table->data[0][1] .= '</div>';
-$table->data[0][1] .= $html_menu_export;
+$table2->data[0][2] = '<div><span class="font-title-font">'.__('Set initial date').'</span><br>'.html_print_checkbox_switch('enable_init_date', 1, $enable_init_date, true).'</div><br>';
+$table2->data[0][2] .= '<div style="display:'.$display_to.'" id="string_from"><div><span class="font-title-font">'.__('From').':</span></div>';
+$table2->data[0][2] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
+$table2->data[0][2] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
+$table2->data[0][2] .= '</div><div style="display:'.$display_item.'" id="string_items"><span class="font-title-font">'.__('Items period before').':</span></div>';
+$table2->data[0][2] .= '<div style="display:'.$display_to.'" id="string_to"><span class="font-title-font">'.__('to').':</span></div>';
+$table2->data[0][2] .= html_print_input_text('date', $date, '', 12, 10, true).' ';
+$table2->data[0][2] .= html_print_input_text('time', $time, '', 10, 7, true).' ';
+$table2->data[0][3] = $html_menu_export;
 
 
 
-$table->data[1][1] = '<div>'.__('From').': </div>';
-$table->data[1][1] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
-$table->data[1][1] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
-$table->data[1][2] = '<div style="display:'.$display_item.'" id="string_items">'.__('Items period before').':</div>';
-$table->data[1][2] .= '<div style="display:'.$display_to.'" id="string_to">'.__('to').':</div>';
-$table->data[1][2] .= html_print_input_text('date', $date, '', 12, 10, true).' ';
-$table->data[1][2] .= html_print_input_text('time', $time, '', 10, 7, true).' ';
-$table->data[1][2] .= html_print_submit_button(__('Update'), 'date_submit', false, 'class="sub next"', true);
+$searchForm = '<form method="post" action="'.$url.'&pure='.$config['pure'].'" class="mrgn_right_0px">';
+$searchForm .= html_print_table($table2, true);
+$searchForm .= html_print_input_hidden('id_report', $id_report, true);
 
-echo '<form method="post" action="'.$url.'&pure='.$config['pure'].'" class="mrgn_right_0px">';
-html_print_table($table);
-html_print_input_hidden('id_report', $id_report);
-echo '</form>';
+$Actionbuttons .= html_print_submit_button(
+    __('Update'),
+    'date_submit',
+    false,
+    [
+        'mode' => 'mini',
+        'icon' => 'next',
+    ],
+    true
+);
+
+$searchForm .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $Actionbuttons,
+    ],
+    true
+);
+$searchForm .= '</form>';
+
+ui_toggle(
+    $searchForm,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
 // ------------------------ END FORM ------------------------------------
 if ($enable_init_date) {
     if ($datetime_init > $datetime) {
@@ -337,10 +328,6 @@ for ($i = 0; $i < count($report['contents']); $i++) {
 
 reporting_html_print_report($report, false, $config['custom_report_info']);
 
-
-// ----------------------------------------------------------------------
-// The rowspan of the first row is only 2 in controls table. Why is used the same code here and in the items??
-$table->rowspan[0][0] = 1;
 
 echo '<div id="loading" class="center">';
 echo html_print_image('images/wait.gif', true, ['border' => '0']);
@@ -371,16 +358,15 @@ $(document).ready (function () {
             secondText: '<?php echo __('Second'); ?>',
             currentText: '<?php echo __('Now'); ?>',
             closeText: '<?php echo __('Close'); ?>'});
-    
+
     $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
-    
+
     $("#text-date").datepicker({
         dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
         changeMonth: true,
         changeYear: true,
         showAnim: "slideDown"});
-    
-    
+
     $('[id^=text-time_init]').timepicker({
         showSecond: true,
         timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -391,29 +377,23 @@ $(document).ready (function () {
         secondText: '<?php echo __('Second'); ?>',
         currentText: '<?php echo __('Now'); ?>',
         closeText: '<?php echo __('Close'); ?>'});
-    
+
     $('[id^=text-date_init]').datepicker ({
         dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
         changeMonth: true,
         changeYear: true,
         showAnim: "slideDown"});
-    
-    
-    $("*", "#controls_table-0").css("display", ""); //Re-show the first row of form.
-    
+
     /* Show/hide begin date reports controls */
     $("#checkbox-enable_init_date").click(function() {
         flag = $("#checkbox-enable_init_date").is(':checked');
         if (flag == true) {
-            $("#controls_table-1-1").css("display", "");
-            $("#controls_table-1-2").css("display", "");
             $("#string_to").show();
+            $('#string_from').show();
             $("#string_items").hide();
-        }
-        else {
-            $("#controls_table-1-1").css("display", "none");
-            $("#controls_table-1-2").css("display", "");
+        } else {
             $("#string_to").hide();
+            $('#string_from').hide();
             $("#string_items").show();
         }
     });
@@ -426,6 +406,4 @@ if ($datetime === false || $datetime == -1) {
     ui_print_error_message(__('Invalid date selected'));
     return;
 }
-
-enterprise_hook('close_meta_frame');
 

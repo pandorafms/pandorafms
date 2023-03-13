@@ -3283,12 +3283,19 @@ function reporting_html_alert_report_actions($table, $item, $pdf=0)
 function get_alert_table($data)
 {
     $table = new StdCLass();
-    $table->width = '100%';
+    $table->width = '99%';
     $table->data = [];
     $table->head = [];
     $table->headstyle = [];
     $table->cellstyle = [];
     $table->headstyle[0] = 'text-align:left;';
+    $table->size[0] = '25%';
+    $table->size[1] = '12%';
+    $table->size[2] = '12%';
+    $table->size[3] = '12%';
+    $table->size[4] = '12%';
+    $table->size[5] = '12%';
+    $table->size[6] = '12%';
 
     $head = reset($data);
     foreach (array_reverse(array_keys($head)) as $name) {
@@ -3527,7 +3534,7 @@ function reporting_html_alert_report($table, $item, $pdf=0)
 
     $table->data['alerts']['cell'] = html_print_table($table1, true);
     if ($pdf) {
-        $table1->class = 'pdf_alert_table';
+        $table1->class = 'info_table';
         return html_print_table($table1, true);
     }
 }
@@ -3691,7 +3698,7 @@ function reporting_html_agent_configuration(
 
     $row = [];
     $row['name'] = $item['data']['name'];
-    $row['group'] = $item['data']['group_icon'];
+    $row['group'] = groups_get_name($item['data']['group'], true);
     $row['address'] = $item['data']['os_icon'];
     $row['os'] = $item['data']['address'];
     $row['description'] = $item['data']['description'];
@@ -3732,36 +3739,21 @@ function reporting_html_agent_configuration(
         $table1->width = '99%';
         $table1->head = [];
         $table1->head['name'] = __('Name');
-        $table1->head['type'] = __('Type');
-        $table1->head['warning_critical'] = __('Warning<br/>Critical');
         $table1->head['threshold'] = __('Threshold');
-        $table1->head['group_icon'] = __('Group');
         $table1->head['description'] = __('Description');
         $table1->head['interval'] = __('Interval');
         $table1->head['unit'] = __('Unit');
         $table1->head['status'] = __('Status');
         $table1->head['tags'] = __('Tags');
         $table1->align = [];
-        $table1->align['name'] = 'left';
-        $table1->align['type'] = 'center';
-        $table1->align['warning_critical'] = 'right';
-        $table1->align['threshold'] = 'right';
-        $table1->align['group_icon'] = 'center';
-        $table1->align['description'] = 'left';
-        $table1->align['interval'] = 'right';
-        $table1->align['unit'] = 'left';
-        $table1->align['status'] = 'center';
-        $table1->align['tags'] = 'left';
+        $table1->align[] = 'left';
         $table1->data = [];
 
         foreach ($item['data']['modules'] as $module) {
             $row = [];
 
             $row['name'] = $module['name'];
-            $row['type'] = $module['type_icon'];
-            $row['warning_critical'] = $module['max_warning'].' / '.$module['min_warning'].'<br>'.$module['max_critical'].' / '.$module['min_critical'];
             $row['threshold'] = $module['threshold'];
-            $row['group_icon'] = ui_print_group_icon($item['data']['group'], true);
             $row['description'] = $module['description'];
             $row['interval'] = $module['interval'];
             $row['unit'] = $module['unit'];

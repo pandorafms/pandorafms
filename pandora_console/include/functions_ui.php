@@ -385,7 +385,12 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageCreated = html_print_table($messageTable, true);
     $autocloseTime = ((int) $config['notification_autoclose_time'] * 1000);
 
-    $classes[] = 'info_box_container';
+    if (empty($message['div_class']) === false) {
+        $classes[] = $message['div_class'];
+    } else {
+        $classes[] = 'info_box_container';
+    }
+
     $classes[] = (($autoclose === true) && ($autocloseTime > 0)) ? ' info_box_autoclose' : '';
 
     // This session var is defined in index.
@@ -3873,6 +3878,29 @@ function ui_print_datatable(array $parameters)
                 }';
     }
 
+    $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
+                $("div[id^=info_box_]").show();
+                $("div[id^=info_box_]").removeClass(\'invisible_important\');
+                $("table#'.$table_id.'").hide();
+                $("div.dataTables_paginate").hide();
+                $("div.dataTables_info").hide();
+                $("div.dataTables_length").hide();
+
+                if (dt_'.$table_id.'.page.info().pages > 1) {
+                    $(".dataTables_paginate.paging_simple_numbers").show()
+                }
+            } else {
+                $("div[id^=info_box_]").hide();
+                $("table#'.$table_id.'").show();
+                $("div.dataTables_paginate").show();
+                $("div.dataTables_info").show();
+                $("div.dataTables_length").show();
+
+                if (dt_'.$table_id.'.page.info().pages == 1) {
+                    $(".dataTables_paginate.paging_simple_numbers").hide()
+                }
+            }';
+
     if (isset($parameters['drawCallback'])) {
         $js .= $parameters['drawCallback'];
     }
@@ -3996,8 +4024,13 @@ function ui_print_datatable(array $parameters)
     $js .= '</script>';
 
     // Order.
+    $info_msg_arr = [];
+    $info_msg_arr['message'] = $emptyTable;
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important';
+
+    $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
     $err_msg = '<div id="error-'.$table_id.'"></div>';
-    $output = $err_msg.$filter.$extra.$table.$js;
+    $output = $info_msg.$err_msg.$filter.$extra.$table.$js;
     if (is_ajax() === false) {
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');
@@ -4327,7 +4360,10 @@ function ui_toggle(
         $image_a = html_print_image(
             $img_a,
             true,
-            [ 'style' => 'rotate: '.$rotateA ],
+            [
+                'class' => 'mrgn_right_10px',
+                'style' => 'rotate: '.$rotateA,
+            ],
             true
         );
     } else {
@@ -4338,7 +4374,10 @@ function ui_toggle(
         $image_b = html_print_image(
             $img_b,
             true,
-            [ 'style' => 'rotate: '.$rotateB ],
+            [
+                'class' => 'mrgn_right_10px',
+                'style' => 'margin-right:10px; rotate: '.$rotateB,
+            ],
             true
         );
     } else {
@@ -4401,7 +4440,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'float-left main_menu_icon',
+                    'class' => 'float-left main_menu_icon mrgn_right_10px',
                     'style' => 'object-fit: contain; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
@@ -4433,7 +4472,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'main_menu_icon',
+                    'class' => 'main_menu_icon mrgn_right_10px',
                     'style' => 'object-fit: contain; float:right; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
@@ -5044,6 +5083,8 @@ function ui_print_page_header(
     $breadcrumbs='',
     $hide_left_small=false
 ) {
+    global $config;
+
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {
         $icon = 'images/gm_setup.png';
@@ -5057,13 +5098,18 @@ function ui_print_page_header(
         $type = 'view';
         $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator';
+        $div_style = '';
     } else {
         $type = 'view';
         $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator_view';
+        $div_style = '';
+        if ($config['pure'] === true) {
+            $div_style = 'top:0px;';
+        }
     }
 
-    $buffer = '<div id="'.$type2.'"  >';
+    $buffer = '<div id="'.$type2.'" style="'.$div_style.'" >';
 
     if (!empty($breadcrumbs)) {
         $buffer .= '<div class="menu_tab_left_bc">';
@@ -7267,22 +7313,22 @@ function ui_get_inventory_module_add_form(
     $table = new stdClass();
     $table->id = 'inventory-module-form';
     $table->width = '100%';
-    $table->class = 'databox filters';
-    $table->style['module-title'] = 'font-weight: bold;';
-    $table->style['interval-title'] = 'font-weight: bold;';
-    $table->style['target-title'] = 'font-weight: bold;';
-    $table->style['chkbx-custom-fields-title'] = 'font-weight: bold;';
-    $table->style['username-title'] = 'font-weight: bold;';
-    $table->style['password-title'] = 'font-weight: bold;';
+    $table->class = 'databox filters filter-table-adv';
+    $table->size['module'] = '50%';
+    $table->size['interval'] = '50%';
+    $table->size['target'] = '50%';
+    $table->size['chkbx-custom-fields'] = '50%';
+    $table->size['username'] = '50%';
+    $table->size['password'] = '50%';
     $table->rowstyle = [];
     $table->rowstyle['hidden-custom-field-row'] = 'display: none;';
-    $table->colspan = [];
-    $table->colspan['custom-fields-row'] = [];
-    $table->colspan['custom-fields-row']['custom-fields-column'] = 4;
+    $table->rowstyle['custom-fields-button'] = 'display: none;';
+    // $table->colspan = [];
+    // $table->colspan['custom-fields-row'] = [];
+    // $table->colspan['custom-fields-row']['custom-fields-column'] = 2;
     $table->data = [];
 
     $row = [];
-    $row['module-title'] = __('Module');
     if (empty($inventory_module_id)) {
         if (empty($os_id)) {
             $sql = 'SELECT mi.id_module_inventory AS id, mi.name AS name, co.name AS os
@@ -7314,33 +7360,111 @@ function ui_get_inventory_module_add_form(
             }
         }
 
-        $row['module-input'] = html_print_select($inventory_modules, 'id_module_inventory', 0, '', __('Select inventory module'), 0, true, false, false);
+        $row['module'] = html_print_label_input_block(
+            __('Module'),
+            html_print_select(
+                $inventory_modules,
+                'id_module_inventory',
+                0,
+                '',
+                __('Select inventory module'),
+                0,
+                true,
+                false,
+                false,
+                'w100p',
+                false,
+                'width: 100%'
+            )
+        );
     } else {
-        $row['module-input'] = db_get_sql('SELECT name FROM tmodule_inventory WHERE id_module_inventory = '.$inventory_module_id);
+        $row['module'] = html_print_label_input_block(
+            __('Module'),
+            db_get_sql('SELECT name FROM tmodule_inventory WHERE id_module_inventory = '.$inventory_module_id)
+        );
     }
 
-    $row['interval-title'] = __('Interval');
-    $row['interval-input'] = html_print_extended_select_for_time('interval', $interval, '', '', '', false, true);
+    $row['interval'] = html_print_label_input_block(
+        __('Interval'),
+        html_print_extended_select_for_time(
+            'interval',
+            $interval,
+            '',
+            '',
+            '',
+            false,
+            true,
+            false,
+            true,
+            'w100p'
+        )
+    );
 
     $table->data['first-row'] = $row;
 
     $row = [];
 
     if ($target !== false) {
-        $row['target-title'] = __('Target');
-        $row['target-input'] = html_print_input_text('target', $target, '', 25, 40, true);
+        $row['target'] = html_print_label_input_block(
+            __('Target'),
+            html_print_input_text(
+                'target',
+                $target,
+                '',
+                25,
+                40,
+                true,
+                false,
+                false,
+                '',
+                'w100p'
+            )
+        );
     }
 
-    $row['chkbx-custom-fields-title'] = __('Use custom fields');
-    $row['chkbx-custom-fields-input'] = html_print_checkbox('custom_fields_enabled', 1, $custom_fields_enabled, true);
+    $row['chkbx-custom-fields'] = html_print_label_input_block(
+        __('Use custom fields'),
+        html_print_checkbox(
+            'custom_fields_enabled',
+            1,
+            $custom_fields_enabled,
+            true
+        )
+    );
 
     $table->data['second-row'] = $row;
 
     $row = [];
-    $row['username-title'] = __('Username');
-    $row['username-input'] = html_print_input_text('username', $username, '', 25, 40, true);
-    $row['password-title'] = __('Password');
-    $row['password-input'] = html_print_input_password('password', $password, '', 25, 40, true);
+    $row['username'] = html_print_label_input_block(
+        __('Username'),
+        html_print_input_text(
+            'username',
+            $username,
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        )
+    );
+
+    $row['password'] = html_print_label_input_block(
+        __('Password'),
+        html_print_input_password(
+            'password',
+            $password,
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            'w100p'
+        )
+    );
 
     $table->data['userpass-row'] = $row;
 
@@ -7348,8 +7472,18 @@ function ui_get_inventory_module_add_form(
     $row['hidden-title'] = '';
     $row['hidden-input'] = html_print_input_hidden('hidden-custom-field-name', '', true);
     $row['hidden-input'] .= html_print_input_hidden('hidden-custom-field-is-secure', 0, true);
-    $row['hidden-input'] .= html_print_input_text('hidden-custom-field-input', '', '', 25, 40, true);
-    $row['hidden-input'] .= '<span>&nbsp;</span>';
+    $row['hidden-input'] .= html_print_input_text(
+        'hidden-custom-field-input',
+        '',
+        '',
+        25,
+        40,
+        true,
+        false,
+        false,
+        '',
+        'w93p'
+    );
     $row['hidden-input'] .= html_print_image(
         'images/delete.svg',
         true,
@@ -7414,13 +7548,48 @@ function ui_get_inventory_module_add_form(
     }
 
     $row = [];
-    $row['custom-fields-column'] = '<b>'.__('Field name').'</b>'.'&nbsp;&nbsp;'.html_print_input_text('field-name', '', '', 25, 40, true).'&nbsp;&nbsp;&nbsp;'.html_print_checkbox('field-is-password', 1, false, true).__("It's a password").'&nbsp;&nbsp;&nbsp;'.html_print_button(__('Add field'), 'add-field', false, '', 'class="sub add"', true);
+    $row['custom-fields-column'] = html_print_label_input_block(
+        __('Field name'),
+        '<div class="flex">'.html_print_input_text(
+            'field-name',
+            '',
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            '',
+            'w60p mrgn_right_10px'
+        ).html_print_checkbox(
+            'field-is-password',
+            1,
+            false,
+            true
+        ).'&nbsp;'.__("It's a password").'</div>'
+    );
 
     $table->data['custom-fields-row'] = $row;
 
+    $row = [];
+    $row['custom-fields-button-title'] = '';
+    $row['custom-fields-button'] = html_print_button(
+        __('Add field'),
+        'add-field',
+        false,
+        '',
+        [
+            'class' => 'mini float-right',
+            'icon'  => 'plus',
+        ],
+        true
+    );
+
+    $table->data['custom-fields-button'] = $row;
+
     ob_start();
 
-    echo '<form name="modulo" method="post" action="'.$form_action.'">';
+    echo '<form name="modulo" method="post" action="'.$form_action.'" class="max_floating_element_size">';
     echo html_print_table($table);
     echo '<div class="action-buttons w100p">';
     echo $form_buttons;

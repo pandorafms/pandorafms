@@ -25,6 +25,8 @@ if ((bool) is_metaconsole() === true) {
 
 if ($networkmap) {
     $networkmap_id = get_parameter('networkmap_id', 0);
+    $dashboard = get_parameter('dashboard', 0);
+    $size = get_parameter('size', []);
     $x_offset = get_parameter('x_offset', 0);
     $y_offset = get_parameter('y_offset', 0);
     $zoom_dash = get_parameter('zoom_dash', 0.5);
@@ -62,6 +64,15 @@ if ($networkmap) {
         global $id_networkmap;
         $id_networkmap = $networkmap['id'];
         $tab = 'radial_dynamic';
+        if (empty($size) === false) {
+            if ($size['width'] > $size['height']) {
+                $width = $size['height'];
+                $height = ($size['height'] - 10);
+            } else {
+                $width = $size['width'];
+                $height = ($size['width'] + 50);
+            }
+        }
 
         include_once 'operation/agentes/networkmap.dinamic.php';
     } else {

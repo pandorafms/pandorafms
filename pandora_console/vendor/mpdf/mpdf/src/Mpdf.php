@@ -468,6 +468,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 	var $serif_fonts;
 	var $mono_fonts;
 	var $defaultSubsFont;
+	var $lato;
 
 	// List of ALL available CJK fonts (incl. styles) (Adobe add-ons)  hw removed
 	var $available_CJK_fonts;
@@ -1478,15 +1479,31 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 				$default_font = $this->defaultCSS['BODY']['FONT-FAMILY'];
 			}
 		}
+
+		if ($default_font) {
+			$this->SetDefaultFont($default_font);
+		}
+
 		if (!$default_font_size) {
 			$mmsize = $this->sizeConverter->convert($this->defaultCSS['BODY']['FONT-SIZE']);
 			$default_font_size = $mmsize * (Mpdf::SCALE);
 		}
 
-		if ($default_font) {
-			$this->SetDefaultFont($default_font);
-		}
-		if ($default_font_size) {
+		if ($_SESSION['font_size_report']) {
+			// DefaultCss.
+			$this->defaultCSS['BODY']['FONT-SIZE'] = $_SESSION['font_size_report'].'px';
+			$this->defaultCSS['TABLE']['FONT-SIZE'] = $_SESSION['font_size_report'].'pt';
+			$this->defaultCSS['THEAD']['FONT-SIZE'] = $_SESSION['font_size_report'].'pt';
+			$this->defaultCSS['TH']['FONT-SIZE'] = $_SESSION['font_size_report'].'pt';
+			$this->defaultCSS['TD']['FONT-SIZE'] = $_SESSION['font_size_report'].'pt';
+			// CssManager.
+			$this->cssManager->CSS['BODY']['FONT-SIZE'] = $_SESSION['font_size_report'].'px';
+			$this->cssManager->CSS['TABLE']['FONT-SIZE'] = $_SESSION['font_size_report'].'pt';
+			$this->cssManager->CSS['THEAD']['FONT-SIZE'] = $_SESSION['font_size_report'].'pt';
+			$this->cssManager->CSS['TH']['FONT-SIZE'] = $_SESSION['font_size_report'].'pt';
+			$this->cssManager->CSS['TD']['FONT-SIZE'] = $_SESSION['font_size_report'].'pt';
+
+		} elseif ($default_font_size) {
 			$this->SetDefaultFontSize($default_font_size);
 		}
 

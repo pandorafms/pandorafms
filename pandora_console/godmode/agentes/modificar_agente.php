@@ -302,92 +302,122 @@ foreach ($pre_fields as $key => $value) {
 
 // Filter table.
 $filterTable = new stdClass();
-$filterTable->class = 'fixed_filter_bar';
+$filterTable->class = 'filter-table-adv w100p';
+$filterTable->size[0] = '20%';
+$filterTable->size[1] = '20%';
+$filterTable->size[2] = '20%';
+$filterTable->size[3] = '20%';
+$filterTable->size[4] = '20%';
 $filterTable->data = [];
-$filterTable->cellstyle[0][0] = 'width:0';
-$filterTable->cellstyle[0][1] = 'width:0';
-$filterTable->cellstyle[0][2] = 'width:0';
-$filterTable->cellstyle[0][3] = 'width:0';
 
-$filterTable->data[0][0] = __('Group');
-$filterTable->data[1][0] = html_print_select_groups(
-    false,
-    'AR',
-    $return_all_group,
-    'ag_group',
-    $ag_group,
-    'this.form.submit();',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$filterTable->data[0][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'AR',
+        $return_all_group,
+        'ag_group',
+        $ag_group,
+        'this.form.submit();',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
 
-$filterTable->data[0][1] = __('Recursion');
-$filterTable->data[1][1] = html_print_checkbox_switch(
-    'recursion',
-    1,
-    $recursion,
-    true,
-    false,
-    'this.form.submit()'
+$filterTable->data[0][1] = html_print_label_input_block(
+    __('Recursion'),
+    '<div class="mrgn_top_10px">'.html_print_checkbox_switch(
+        'recursion',
+        1,
+        $recursion,
+        true,
+        false,
+        'this.form.submit()'
+    ).'</div>'
 );
 
-$filterTable->data[0][2] = __('Show agents');
-$filterTable->data[1][2] = html_print_select(
-    $showAgentFields,
-    'disabled',
-    $disabled,
-    'this.form.submit()',
-    '',
-    0,
-    true
+$filterTable->data[0][2] = html_print_label_input_block(
+    __('Show agents'),
+    html_print_select(
+        $showAgentFields,
+        'disabled',
+        $disabled,
+        'this.form.submit()',
+        '',
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
 );
 
-$filterTable->data[0][3] = __('Operating System');
-$filterTable->data[1][3] = html_print_select(
-    $fields,
-    'os',
-    $os,
-    'this.form.submit()',
-    'All',
-    0,
-    true
+$filterTable->data[0][3] = html_print_label_input_block(
+    __('Operating System'),
+    html_print_select(
+        $fields,
+        'os',
+        $os,
+        'this.form.submit()',
+        'All',
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
 );
 
-$filterTable->data[0][4] = __('Free search');
-$filterTable->data[0][4] .= ui_print_help_tip(
-    __('Search filter by alias, name, description, IP address or custom fields content'),
-    true
-);
-$filterTable->data[1][4] = html_print_input_text(
-    'search',
-    $search,
-    '',
-    12,
-    255,
-    true
+$filterTable->data[0][4] = html_print_label_input_block(
+    __('Free search').ui_print_help_tip(
+        __('Search filter by alias, name, description, IP address or custom fields content'),
+        true
+    ),
+    html_print_input_text(
+        'search',
+        $search,
+        '',
+        12,
+        255,
+        true
+    )
 );
 
-$filterTable->cellstyle[1][5] = 'vertical-align: bottom';
-$filterTable->data[1][5] = html_print_submit_button(
+$filterTable->colspan[1][0] = 5;
+$filterTable->data[1][0] = html_print_submit_button(
     __('Filter'),
     'srcbutton',
     false,
     [
         'icon'  => 'search',
-        'class' => 'float-right',
-        'mode'  => 'secondary mini',
+        'class' => 'float-right mrgn_right_10px',
+        'mode'  => 'mini',
     ],
     true
 );
 
 // Print filter table.
 echo '<form method=\'post\'	action=\'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\'>';
-html_print_table($filterTable);
+ui_toggle(
+    html_print_table($filterTable, true),
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'filter',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
+);
 echo '</form>';
 
 // Data table.

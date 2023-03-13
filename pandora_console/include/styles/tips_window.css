@@ -18,7 +18,7 @@
   border-radius: 5px;
 }
 .ui-dialog .tips_header.ui-dialog-titlebar {
-  display: flex;
+  display: flex !important;
   padding: 0px 20px;
   justify-content: space-between;
   height: fit-content;

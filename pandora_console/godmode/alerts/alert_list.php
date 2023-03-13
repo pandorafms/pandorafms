@@ -497,44 +497,46 @@ if (is_metaconsole() === false) {
         $buttons = '';
     }
 
-    if ($tab === 'list') {
-        ui_print_standard_header(
-            __('Alerts'),
-            'images/gm_alerts.png',
-            false,
-            '',
-            true,
-            $buttons,
-            [
+    if ($tab !== 'alert') {
+        if ($tab === 'list') {
+            ui_print_standard_header(
+                __('Alerts'),
+                'images/gm_alerts.png',
+                false,
+                '',
+                true,
+                $buttons,
                 [
-                    'link'  => '',
-                    'label' => __('Manage alerts'),
-                ],
+                    [
+                        'link'  => '',
+                        'label' => __('Manage alerts'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('List'),
+                    ],
+                ]
+            );
+        } else {
+            ui_print_standard_header(
+                __('Alerts'),
+                'images/gm_alerts.png',
+                false,
+                '',
+                true,
+                $buttons,
                 [
-                    'link'  => '',
-                    'label' => __('List'),
-                ],
-            ]
-        );
-    } else {
-        ui_print_standard_header(
-            __('Alerts'),
-            'images/gm_alerts.png',
-            false,
-            '',
-            true,
-            $buttons,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Manage alerts'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('Create'),
-                ],
-            ]
-        );
+                    [
+                        'link'  => '',
+                        'label' => __('Manage alerts'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('Create'),
+                    ],
+                ]
+            );
+        }
     }
 } else {
     alerts_meta_print_header();

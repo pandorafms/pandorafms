@@ -1826,12 +1826,16 @@ if (is_metaconsole() === true) {
             true
         );
     }
+
+    // User Profile definition table. (Only where user is not creating).
+    if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
+        profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
+    }
 } else {
     $access_or_pagination = $size_pagination;
     // WIP: Only for node.
     include_once 'user_management.php';
 }
-
 
 if ((bool) $config['admin_can_add_user'] === true) {
     html_print_csrf_hidden();

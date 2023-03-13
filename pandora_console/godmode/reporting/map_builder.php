@@ -194,6 +194,7 @@ if ($delete_layout || $copy_layout) {
             [
                 'id_element' => $id_layout,
                 'section'    => 'Visual_Console',
+                'id_user'    => $config['id_user'],
             ]
         );
 

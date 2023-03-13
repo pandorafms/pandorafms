@@ -575,6 +575,7 @@ class Manager implements PublicLogin
                 [
                     'id_element' => $this->dashboardId,
                     'section'    => 'Dashboard_',
+                    'id_user'    => $config['id_user'],
                 ]
             );
         }

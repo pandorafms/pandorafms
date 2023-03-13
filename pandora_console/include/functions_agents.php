@@ -2775,6 +2775,7 @@ function agents_delete_agent($id_agents, $disableACL=false)
             [
                 'id_element' => $id_agent,
                 'section'    => 'Agents',
+                'id_user'    => $config['id_user'],
             ]
         );
 

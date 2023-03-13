@@ -554,6 +554,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
             [
                 'id_element' => $id,
                 'section'    => 'Network_map',
+                'id_user'    => $config['id_user'],
             ]
         );
         $result_txt = ui_print_result_message(

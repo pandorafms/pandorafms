@@ -2044,6 +2044,14 @@ if (check_login()) {
         if ($monitor_filters === false) {
             echo 'error';
         } else {
+            db_process_sql_delete(
+                'tfavmenu_user',
+                [
+                    'id_element' => $id,
+                    'section'    => 'Modules',
+                    'id_user'    => $config['id_user'],
+                ]
+            );
             echo 'ok';
         }
     }

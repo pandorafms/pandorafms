@@ -239,6 +239,7 @@ function reports_delete_report($id_report)
         [
             'id_element' => $id_report,
             'section'    => 'Reporting',
+            'id_user'    => $config['id_user'],
         ]
     );
 

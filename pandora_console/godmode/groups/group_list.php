@@ -714,6 +714,14 @@ if ($is_management_allowed === true
             );
 
             if ($result && (!$usedGroup['return'])) {
+                db_process_sql_delete(
+                    'tfavmenu_user',
+                    [
+                        'id_element' => $id_group,
+                        'section'    => 'Tactic_group',
+                        'id_user'    => $config['id_user'],
+                    ]
+                );
                 ui_print_success_message(__('Group successfully deleted'));
             } else {
                 ui_print_error_message(

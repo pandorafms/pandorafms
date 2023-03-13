@@ -3250,6 +3250,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'onkeyup',
         'class',
         'form',
+        'disabled',
     ];
 
     foreach ($attrs as $attribute) {

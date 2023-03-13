@@ -484,7 +484,7 @@ if (is_metaconsole() === false) {
         $buttons = [
             'list'    => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/load@svg.svg', true, ['title' => __('List alerts'), 'class' => 'main_menu_icon invert_filter']).'</a>',
+                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('List alerts'), 'class' => 'main_menu_icon invert_filter']).'</a>',
             ],
             'builder' => [
                 'active' => false,

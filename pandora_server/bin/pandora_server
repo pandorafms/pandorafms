@@ -268,8 +268,8 @@ sub pandora_start_netflow_daemon () {
 	
 	# Check if netflow is enabled
 	if ($Config{'activate_netflow'} != 1) {
-		logger (\%Config, " [*] Netflow daemon disabled.", 1);
-		print_message (\%Config, " [*] Netflow daemon disabled.", 1);
+		logger (\%Config, " [*] NetFlow daemon disabled.", 1);
+		print_message (\%Config, " [*] NetFlow daemon disabled.", 1);
 		return;
 	}
 	
@@ -288,8 +288,8 @@ sub pandora_start_netflow_daemon () {
 		return;
 	}
 	
-	logger (\%Config, "[*] Netflow daemon started.", 1);
-	print_message (\%Config, "[*] Netflow daemon started.", 1);
+	logger (\%Config, "[*] NetFlow daemon started.", 1);
+	print_message (\%Config, "[*] NetFlow daemon started.", 1);
 }
 
 ########################################################################################
@@ -324,8 +324,8 @@ sub pandora_start_sflow_daemon () {
 	
 	# Check if sflow is enabled
 	if ($Config{'activate_sflow'} != 1) {
-		logger (\%Config, " [*] sflow daemon disabled.", 1);
-		print_message (\%Config, " [*] sflow daemon disabled.", 1);
+		logger (\%Config, " [*] sFlow daemon disabled.", 1);
+		print_message (\%Config, " [*] sFlow daemon disabled.", 1);
 		return;
 	}
 	
@@ -344,8 +344,8 @@ sub pandora_start_sflow_daemon () {
 		return;
 	}
 	
-	logger (\%Config, "[*] sflow daemon started.", 1);
-	print_message (\%Config, "[*] sflow daemon started.", 1);
+	logger (\%Config, "[*] sFlow daemon started.", 1);
+	print_message (\%Config, "[*] sFlow daemon started.", 1);
 }
 
 ########################################################################################

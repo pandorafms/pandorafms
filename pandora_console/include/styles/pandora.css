@@ -11264,6 +11264,10 @@ span.subsection_header_title {
   height: 18px;
 }
 
+.agent_details_header span.subsection_header_title {
+  font-weight: 700;
+  color: #000;
+}
 .subsection_header_title.secondary {
   font-size: 14px;
 }

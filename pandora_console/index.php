@@ -422,6 +422,7 @@ if (isset($config['id_user']) === false) {
             unset($_POST['auth_code'], $code);
 
             if (!$double_auth_success) {
+                $config['auth_error'] = __('Double auth error');
                 $login_failed = true;
                 include_once 'general/login_page.php';
                 db_pandora_audit(
@@ -447,6 +448,7 @@ if (isset($config['id_user']) === false) {
         } else if (($config['auth'] === 'saml') && ($login_button_saml)) {
             $saml_user_id = enterprise_hook('saml_process_user_login');
             if (!$saml_user_id) {
+                $config['auth_error'] = __('saml error');
                 $login_failed = true;
                 include_once 'general/login_page.php';
                 while (ob_get_length() > 0) {
@@ -709,6 +711,7 @@ if (isset($config['id_user']) === false) {
                     login_check_failed($nick);
                 }
 
+                $config['auth_error'] = __('User is blocked');
                 $login_failed = true;
             }
 

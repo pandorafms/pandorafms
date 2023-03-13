@@ -196,29 +196,52 @@ foreach ($nps as $row) {
 
 $filterTable = new stdClass();
 $filterTable->width = '100%';
-$filterTable->class = 'fixed_filter_bar';
+$filterTable->class = 'filter-table-adv';
+$filterTable->size[0] = '100%';
 $filterTable->data = [];
-$filterTable->data[0][0] = __('Module templates');
-$filterTable->data[1][0] = html_print_select($select, 'template_id', '', '', '', 0, true, false, true, '', false, 'max-width: 200px !important');
-$filterTable->data[1][1] = html_print_div(
+
+$filterTable->data[0][0] = html_print_label_input_block(
+    __('Module templates'),
+    html_print_select(
+        $select,
+        'template_id',
+        '',
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 250px '
+    )
+);
+
+$filterTable->data[1][0] = html_print_submit_button(
+    __('Assign'),
+    'crt',
+    false,
     [
-        'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            __('Assign'),
-            'crt',
-            false,
-            [
-                'icon' => 'wand',
-                'mode' => 'secondary mini',
-            ],
-            true
-        ),
+        'class' => 'float-right',
+        'icon'  => 'wand',
+        'mode'  => 'mini',
     ],
     true
 );
 
-$outputFilterTable = '<form style="border:0" class="fixed_filter_bar" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
-$outputFilterTable .= html_print_table($filterTable, true);
+$outputFilterTable = '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
+$outputFilterTable .= ui_toggle(
+    html_print_table($filterTable, true),
+    '<span class="subsection_header_title">'.__('Assign').'</span>',
+    __('Assign'),
+    'assign',
+    true,
+    true,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
+);
 $outputFilterTable .= '</form>';
 
 echo $outputFilterTable;

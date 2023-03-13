@@ -10532,6 +10532,11 @@ button div.preview {
   -webkit-mask: url(../../images/eye.png) no-repeat center / contain;
 }
 
+button div.plus {
+  mask: url(../../images/plus-black.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/plus-black.svg) no-repeat center / contain;
+}
+
 button div.cog.rotation {
   animation: rotation 4s infinite linear;
 }

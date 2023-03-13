@@ -25,13 +25,28 @@ function extension_uploader_extensions()
         return;
     }
 
-    ui_print_page_header(
-        __('Uploader extension'),
+    // Header.
+    ui_print_standard_header(
+        __('Extensions'),
         'images/extensions.png',
         false,
         '',
         true,
-        ''
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Admin tools'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Extension manager'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Uploader extension'),
+            ],
+        ]
     );
 
     $upload = (bool) get_parameter('upload', 0);
@@ -77,20 +92,52 @@ function extension_uploader_extensions()
     $table = new stdClass();
 
     $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'databox filters filter-table-adv';
+    $table->size[0] = '20%';
+    $table->size[1] = '20%';
+    $table->size[2] = '60%';
     $table->data = [];
-    $table->data[0][0] = __('Upload extension');
-    $table->data[0][1] = html_print_input_file('extension', true).ui_print_help_tip(__('Upload the extension as a zip file.'), true);
+
+    $table->data[0][0] = html_print_label_input_block(
+        __('Upload extension').ui_print_help_tip(__('Upload the extension as a zip file.'), true),
+        html_print_input_file(
+            'extension',
+            true,
+            [
+                'required' => true,
+                'accept'   => '.zip',
+            ]
+        )
+    );
+
     if (enterprise_installed()) {
-        $table->data[0][2] = __('Upload enterprise extension').'&nbsp;'.html_print_checkbox('upload_enterprise', 1, false, true);
+        $table->data[0][1] = html_print_label_input_block(
+            __('Upload enterprise extension'),
+            html_print_checkbox(
+                'upload_enterprise',
+                1,
+                false,
+                true
+            )
+        );
+    } else {
+        $table->data[0][1] = '';
     }
+
+    $table->data[0][2] = '';
 
     echo "<form method='post' enctype='multipart/form-data'>";
     html_print_table($table);
-    echo "<div class='right' style='width: ".$table->width."'>";
     html_print_input_hidden('upload', 1);
-    html_print_submit_button(__('Upload'), 'submit', false, 'class="sub add"');
-    echo '</div>';
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Upload'),
+            'submit',
+            false,
+            ['icon' => 'wand'],
+            true
+        )
+    );
     echo '</form>';
 }
 

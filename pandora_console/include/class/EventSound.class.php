@@ -182,22 +182,22 @@ class EventSound extends HTML
         $tabs = [
             'list'    => [
                 'text'   => '<a href="'.$base_url.'">'.html_print_image(
-                    'images/eye_show.png',
+                    'images/see-details@svg.svg',
                     true,
                     [
                         'title' => __('Sounds'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
                 'active' => (bool) ($tab != 'add'),
             ],
             'options' => [
                 'text'   => '<a href="'.$setup_url.'">'.html_print_image(
-                    'images/pen.png',
+                    'images/edit.svg',
                     true,
                     [
                         'title' => __('Create'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
                 'active' => (bool) ($tab == 'add'),
@@ -239,38 +239,53 @@ class EventSound extends HTML
         ui_require_css_file('discovery');
 
         if ($tab === 'add') {
-            echo '<form method="post"  enctype="multipart/form-data" action="index.php?sec=eventos&sec2=godmode/events/configuration_sounds&tab=add&action=create">';
+            echo '<form method="post"  enctype="multipart/form-data" action="index.php?sec=eventos&sec2=godmode/events/configuration_sounds&tab=add&action=create"
+            class="max_floating_element_size">';
             $table = new stdClass();
             $table->width = '100%';
 
-            $table->class = 'databox filters';
+            $table->class = 'databox filters filter-table-adv';
             $table->data = [];
-            $table->data[0][0] = __('Name:');
+            $table->size[0] = '50%';
+            $table->size[1] = '50%';
 
-            $table->data[0][1] = html_print_input_text(
-                'name',
-                '',
-                '',
-                80,
-                100,
-                true,
-                false,
-                true
+            $table->data[0][0] = html_print_label_input_block(
+                __('Name:'),
+                html_print_input_text(
+                    'name',
+                    '',
+                    '',
+                    80,
+                    100,
+                    true,
+                    false,
+                    true
+                )
             );
 
-            $table->data[1][0] = __('WAV Sound');
-            $table->data[1][1] = html_print_input_file('file', true, ['required' => true]);
+            $table->data[0][1] = html_print_label_input_block(
+                __('WAV Sound'),
+                html_print_input_file(
+                    'file',
+                    true,
+                    [
+                        'required' => true,
+                        'accept'   => 'audio/*',
+                    ]
+                )
+            );
 
             html_print_table($table);
 
-            echo '<div class="action-buttons" style="width: '.$table->width.'">';
-            html_print_submit_button(
-                __('Create'),
-                'save_sound',
-                false,
-                'class="sub wand"'
+            html_print_action_buttons(
+                html_print_submit_button(
+                    __('Create'),
+                    'save_sound',
+                    false,
+                    ['icon' => 'wand'],
+                    true
+                )
             );
-            echo '</div>';
             echo '</form>';
 
             // Load own javascript file.
@@ -305,7 +320,7 @@ class EventSound extends HTML
                     [
                         'id'                  => $this->tableId,
                         'class'               => 'info_table',
-                        'style'               => 'width: 100%',
+                        'style'               => 'width: 99%',
                         'columns'             => $columns,
                         'column_names'        => $column_names,
                         'ajax_url'            => $this->ajaxController,
@@ -321,7 +336,7 @@ class EventSound extends HTML
                                 [
                                     'label' => __('Free search').ui_print_help_tip(__('Search filter by Name or Sound fields content'), true),
                                     'type'  => 'text',
-                                    'class' => 'w200px',
+                                    'class' => 'w70p',
                                     'id'    => 'filter_text',
                                     'name'  => 'filter_text',
                                 ],
@@ -333,12 +348,13 @@ class EventSound extends HTML
                                         '0' => __('No'),
                                         '1' => __('Yes'),
                                     ],
-                                    'class'  => 'w100px',
+                                    'class'  => 'w100p',
                                     'id'     => 'active',
                                     'name'   => 'active',
                                 ],
                             ],
                         ],
+                        'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar ',
                     ]
                 );
             } catch (Exception $e) {
@@ -350,6 +366,7 @@ class EventSound extends HTML
                 close_meta_frame();
             }
 
+            html_print_action_buttons('');
             // Load own javascript file.
             echo $this->loadJS();
         }
@@ -428,7 +445,7 @@ class EventSound extends HTML
                 true,
                 [
                     'title' => $action,
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $options .= '</a>';

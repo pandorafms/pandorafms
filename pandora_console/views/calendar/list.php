@@ -28,7 +28,6 @@
 
 \ui_require_css_file('wizard');
 \enterprise_include_once('meta/include/functions_alerts_meta.php');
-\enterprise_hook('open_meta_frame');
 
 if (\is_metaconsole() === true) {
     \alerts_meta_print_header($tabs);
@@ -84,7 +83,7 @@ try {
         'description',
         [
             'text'  => 'options',
-            'class' => 'w150px action_buttons',
+            'class' => 'w150px table_action_buttons',
         ],
     ];
 
@@ -102,7 +101,7 @@ try {
         [
             'id'                  => $tableId,
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'ajax_url'            => $ajax_url,
@@ -118,12 +117,14 @@ try {
                     [
                         'label' => __('Free search'),
                         'type'  => 'text',
-                        'class' => 'mw250px',
+                        'class' => 'w25p',
                         'id'    => 'free_search',
                         'name'  => 'free_search',
                     ],
                 ],
             ],
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
+            'dom_elements'        => 'lftpB',
         ]
     );
 } catch (Exception $e) {
@@ -131,7 +132,7 @@ try {
 }
 
 if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
-    HTML::printForm(
+    $form_create = HTML::printForm(
         [
             'form'   => [
                 'action' => $url.'&op=edit',
@@ -143,12 +144,12 @@ if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
                         'name'       => 'button',
                         'label'      => __('Create'),
                         'type'       => 'submit',
-                        'attributes' => 'class="sub next"',
+                        'attributes' => ['icon' => 'wand'],
                     ],
                 ],
             ],
-        ]
+        ],
+        true
     );
+    html_print_action_buttons($form_create);
 }
-
-\enterprise_hook('close_meta_frame');

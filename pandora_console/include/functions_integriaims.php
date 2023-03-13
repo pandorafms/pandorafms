@@ -39,9 +39,9 @@ function integriaims_tabs($active_tab, $view=false)
 
     $url_tabs = ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/');
 
-    $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS'), 'class' => 'invert_filter']).'</a>';
-    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('Ticket list'), 'class' => 'invert_filter']).'</a>';
-    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New ticket'), 'class' => 'invert_filter']).'</a>';
+    $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/configuration@svg.svg', true, ['title' => __('Configure Integria IMS'), 'class' => 'main_menu_icon invert_filter']).'</a>';
+    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Ticket list'), 'class' => 'main_menu_icon invert_filter']).'</a>';
+    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/edit.svg', true, ['title' => __('New ticket'), 'class' => 'main_menu_icon invert_filter']).'</a>';
 
     switch ($active_tab) {
         case 'setup_tab':
@@ -70,8 +70,8 @@ function integriaims_tabs($active_tab, $view=false)
     }
 
     if ($view) {
-        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit ticket'), 'class' => 'invert_filter']).'</a>';
-        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/operation.png', true, ['title' => __('View ticket'), 'class' => 'invert_filter']).'</a>';
+        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/edit.svg', true, ['title' => __('Edit ticket'), 'class' => 'main_menu_icon invert_filter']).'</a>';
+        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/details.svg', true, ['title' => __('View ticket'), 'class' => 'main_menu_icon invert_filter']).'</a>';
         // When the current page is the View page.
         if (!$active_tab) {
             $view_tab['active'] = true;

@@ -10,11 +10,11 @@
 }
 
 .ui-dialog .ui-dialog-titlebar {
-  background-color: #82b92e;
+  background-color: transparent;
   border-radius: 0;
   margin: 0;
   display: inherit;
-  text-align: center;
+  text-align: left;
   padding: 0.4em 33px 0.4em 12px;
   height: 30px;
   position: relative;
@@ -36,13 +36,14 @@
   color: #111;
 }
 .ui-dialog .ui-dialog-title {
+  color: rgb(51, 51, 51);
   white-space: nowrap;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
   font-size: 11pt;
-  top: 5px;
+  top: 2px;
 }
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
@@ -73,7 +74,7 @@
   float: right;
 }
 .ui-dialog .ui-dialog-buttonpane button {
-  margin: 0.5em 1em 0.5em 0;
+  margin: 0.5em 0 0.5em 1em;
   cursor: pointer;
   background: white;
   background-color: white;
@@ -95,9 +96,8 @@
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
   margin-top: 3px;
-  border: 1px solid #d3d3d3;
   border-bottom: 0;
-  background: #e6e6e6;
+  background: transparent;
   font-weight: normal;
   color: #555555;
 }
@@ -137,14 +137,14 @@
   background-color: #3f3f3f;
 }
 .ui-dialog .ui-widget-header {
-  background-color: #82b92e;
-  margin: -1px -1px 0px -1px;
+  margin: 3px 3px 0px 3px;
 }
 .ui_tpicker_hour,
 .ui_tpicker_minute,
 .ui_tpicker_second,
 .ui-slider-handle {
   border: 1px solid #aaaaaa;
+  background-color: #dadada !important;
 }
 .ui-timepicker-div dd {
   margin: 0px 15px 0px 15px;
@@ -160,10 +160,15 @@
 }
 .ui-dialog .ui-widget-content {
   border: 0px;
+  border-radius: 16px;
 }
 .ui-dialog {
-  box-shadow: 5px 5px 19px #4e4e4e;
-  border: 0px;
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+  border-bottom-left-radius: 16px !important;
+  border-bottom-right-radius: 16px !important;
+  box-shadow: 0 10px 6px 0 rgb(0 0 0 / 13%);
+  border: 1px solid #e5e9ed;
   padding: 0;
 }
 .ui-dialog-titlebar {
@@ -182,17 +187,14 @@
 }
 .ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close,
 .ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close:hover {
-  background: url("../../../images/icono_cerrar.png") no-repeat center center;
+  background-color: rgb(51, 51, 51);
+  mask: url(../../../images/close@svg.svg) no-repeat right / contain;
+  -webkit-mask: url(../../../images/close@svg.svg) no-repeat right / contain;
 }
 
 .ui-dialog-title {
   color: #ffffff;
   font-size: 9pt;
-}
-.ui-widget input,
-.ui-widget select,
-.ui-widget textarea,
-.ui-widget button {
 }
 
 a.ui-button:active,
@@ -206,12 +208,33 @@ a.ui-button:active,
   border: none;
 }
 
-.ui-state-hover,
-.ui-widget-content .ui-state-hover,
-.ui-widget-header .ui-state-hover {
-  border: 1px solid #999999;
-  border-bottom: 0;
-  background: #dadada;
+.ui-state-hover:before,
+.ui-widget-content .ui-state-hover:before,
+.ui-widget-header .ui-state-hover:before {
+  content: "";
+  position: absolute;
+  left: 25%;
+  bottom: -10%;
+  height: 1px;
+  width: 50%;
+  border-bottom: 4px solid #82b92e;
+}
+
+.ui-priority-secondary:hover {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  width: 100%;
+  border-bottom: 5px solid #82b92e;
+}
+
+.ui-priority-primary:hover {
+  content: "";
+  position: absolute;
+  right: 5px;
+  bottom: -5px;
+  width: 100%;
+  border-bottom: 5px solid #82b92e;
 }
 
 .ui-state-active,

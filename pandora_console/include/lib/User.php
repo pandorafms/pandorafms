@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP script to manage Pandora FMS websockets.
  *
@@ -32,7 +33,7 @@ namespace PandoraFMS;
 /**
  * Object user.
  */
-class User implements PublicLogin
+class User extends Entity implements PublicLogin
 {
 
     /**
@@ -43,21 +44,105 @@ class User implements PublicLogin
     public $idUser;
 
     /**
-     * Current PHP session ids.
+     * User main table.
      *
-     * @var array
+     * @var string
      */
-    public $sessions = [];
+    protected $table;
 
 
     /**
      * Initializes a user object.
      *
+     * @param mixed $id_user User id.
+     * - Username
+     */
+    public function __construct($id_user)
+    {
+        $this->table = 'tusuario';
+
+        if (is_string($id_user) === true
+            && empty($id_user) === false
+        ) {
+            $filter = ['id_user' => $id_user];
+            parent::__construct(
+                $this->table,
+                $filter
+            );
+        } else {
+            // Create empty skel.
+            parent::__construct($this->table, null);
+        }
+    }
+
+
+    /**
+     * Saves current definition to database.
+     *
+     * @param boolean $alias_as_name Use alias as agent name.
+     *
+     * @return mixed Affected rows of false in case of error.
+     * @throws \Exception On error.
+     */
+    public function save()
+    {
+        if (empty($this->idUser) === false) {
+            if (is_user($this->idUser) === true) {
+                // User update.
+                $updates = $this->fields;
+
+                $rs = \db_process_sql_update(
+                    $this->table,
+                    $updates,
+                    ['id_user' => $this->fields['id_user']]
+                );
+
+                if ($rs === false) {
+                    global $config;
+                    throw new \Exception(
+                        __METHOD__.' error: '.$config['dbconnection']->error
+                    );
+                }
+            } else {
+                // User creation.
+                $userData = $this->fields;
+
+                // Clean null fields.
+                foreach ($userData as $k => $v) {
+                    if ($v === null) {
+                        unset($userData[$k]);
+                    }
+                }
+
+                $rs = create_user($userData['id_user'], $userData['password'], $userData);
+
+                if ($rs === false) {
+                    global $config;
+                    $error = $config['dbconnection']->error;
+
+                    throw new \Exception(
+                        __METHOD__.' error: '.$error
+                    );
+                }
+
+                $this->fields['id_user'] = $rs;
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Authentication.
+     *
      * @param array|null $data User information.
      * - Username
      * - PHP session ID.
+     *
+     * @return static
      */
-    public function __construct(?array $data)
+    public static function auth(?array $data)
     {
         global $config;
 
@@ -67,7 +152,6 @@ class User implements PublicLogin
 
         if (is_array($data) === true) {
             if (isset($data['phpsessionid']) === true) {
-                $this->sessions[$data['phpsessionid']] = 1;
                 $info = \db_get_row_filter(
                     'tsessions_php',
                     ['id_session' => io_safe_input($data['phpsessionid'])]
@@ -76,10 +160,10 @@ class User implements PublicLogin
                 if ($info !== false) {
                     // Process.
                     $session_data = session_decode($info['data']);
-                    $this->idUser = $_SESSION['id_usuario'];
+                    $user = new self($_SESSION['id_usuario']);
 
                     // Valid session.
-                    return $this;
+                    return $user;
                 }
 
                 return null;
@@ -105,15 +189,12 @@ class User implements PublicLogin
                     $_SESSION['id_usuario'] = $data['id_usuario'];
                     session_write_close();
 
-                    $this->idUser = $data['id_usuario'];
+                    $user = new self($data['id_usuario']);
                     // Valid session.
-                    return $this;
+                    return $user;
                 }
             }
         }
-
-        return null;
-
     }
 
 
@@ -126,7 +207,7 @@ class User implements PublicLogin
      */
     public static function login(?array $data)
     {
-        $user = new self($data);
+        $user = self::auth($data);
 
         if ($user->idUser === null) {
             return false;
@@ -144,7 +225,7 @@ class User implements PublicLogin
      *
      * @return string Returns a hash with the authenticaction.
      */
-    public static function generatePublicHash(?string $other_secret=''):string
+    public static function generatePublicHash(?string $other_secret=''): string
     {
         global $config;
 
@@ -166,7 +247,7 @@ class User implements PublicLogin
     public static function validatePublicHash(
         string $hash,
         string $other_secret=''
-    ):bool {
+    ): bool {
         global $config;
 
         if (isset($config['id_user']) === true) {

@@ -176,18 +176,18 @@ if ($view_graph) {
             'graph_list'   => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
-                    'images/list.png',
+                    'images/logs@svg.svg',
                     true,
                     [
                         'title' => __('Graph list'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ],
             'main'         => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image(
-                    'images/chart.png',
+                    'images/graph@svg.svg',
                     true,
                     [
                         'title' => __('Main data'),
@@ -202,7 +202,7 @@ if ($view_graph) {
                     true,
                     [
                         'title' => __('Graph editor'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ],
@@ -211,37 +211,37 @@ if ($view_graph) {
         $options = [
             'graph_list' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/list.png', true, ['title' => __('Graph list')]).'</a>',
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Graph list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
             ],
         ];
     }
 
     $options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
-        'images/eye.png',
+        'images/enable.svg',
         true,
         [
             'title' => __('View graph'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
     $options['view']['active'] = true;
 
     if ($config['pure'] == 0) {
         $options['screen']['text'] = "<a href='$url&pure=1'>".html_print_image(
-            'images/full_screen.png',
+            'images/fullscreen@svg.svg',
             true,
             [
                 'title' => __('Full screen mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
     } else {
         $options['screen']['text'] = "<a href='$url&pure=0'>".html_print_image(
-            'images/normal_screen.png',
+            'images/exit_fullscreen@svg.svg',
             true,
             [
                 'title' => __('Back to normal mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
 
@@ -312,31 +312,43 @@ if ($view_graph) {
     }
 
     $period_label = human_time_description_raw($period);
-    echo '<form method="POST" action="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph">';
-    echo "<table class='databox filters w100p' cellpadding='4' cellspacing='4'>";
-    echo '<tr>';
+    $searchForm = '<form method="POST" action="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">';
+    $searchForm .= "<table class='filter-table-adv w100p' cellpadding='4' cellspacing='4'>";
+    $searchForm .= '<tr>';
 
-    echo '<td>';
-    echo '<b>'.__('Date').'</b>';
-    echo '</td>';
-
-    echo '<td>';
-    echo html_print_input_text('date', $date, '', 12, 10, true).' ';
-    echo '</td>';
-
-    echo '<td>';
-    echo html_print_input_text('time', $time, '', 7, 7, true).' ';
-    echo '</td>';
-
-    echo "<td class='datos'>";
-    echo '<b>'.__('Time range').'</b>';
-    echo '</td>';
-
-    echo "<td class='datos'>";
-    echo html_print_extended_select_for_time('period', $period, '', '', '0', 10, true);
-    echo '</td>';
-
-    echo "<td class='datos'>";
+    $searchForm .= '<td class="w30p">';
+    $searchForm .= html_print_label_input_block(
+        __('Date'),
+        html_print_input_text(
+            'date',
+            $date,
+            '',
+            '',
+            10,
+            true
+        )
+    );
+    $searchForm .= '</td><td class="datos w30p">';
+    $searchForm .= html_print_label_input_block(
+        __('Time'),
+        html_print_input_text(
+            'time',
+            $time,
+            '',
+            '',
+            7,
+            true
+        )
+    );
+    $searchForm .= '</td>';
+    $searchForm .= "<td class='datos w30p'>";
+    $searchForm .= html_print_label_input_block(
+        __('Time range'),
+        html_print_extended_select_for_time('period', $period, '', '', '0', 10, true, 'width:100%')
+    );
+    $searchForm .= '</td>';
+    $searchForm .= '</tr><tr>';
+    $searchForm .= "<td class='datos w30p'>";
     $stackeds = [];
     $stackeds[0] = __('Graph defined');
     $stackeds[CUSTOM_GRAPH_AREA] = __('Area');
@@ -348,36 +360,70 @@ if ($view_graph) {
     $stackeds[CUSTOM_GRAPH_HBARS] = __('Horizontal Bars');
     $stackeds[CUSTOM_GRAPH_VBARS] = __('Vertical Bars');
     $stackeds[CUSTOM_GRAPH_PIE] = __('Pie');
-    html_print_select($stackeds, 'stacked', $stacked, '', '', -1, false, false);
-    echo '</td>';
+    $searchForm .= html_print_label_input_block(__('Type'), html_print_select($stackeds, 'stacked', $stacked, '', '', -1, true, false, true, '', false, 'width:100%'));
+    $searchForm .= '</td>';
+    $searchForm .= "<td class='datos w30p'>";
+    $searchForm .= html_print_label_input_block(
+        __('Equalize maxiddmum thresholds').ui_print_help_tip(
+            __('If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold'),
+            true
+        ),
+        html_print_checkbox(
+            'threshold',
+            CUSTOM_GRAPH_BULLET_CHART_THRESHOLD,
+            $check,
+            true,
+            false,
+            '',
+            false
+        )
+    );
+    $searchForm .= '</div>';
+    $searchForm .= '</td>';
 
-    echo "<td class='datos'>";
-    echo "<div class='float-left' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maxiddmum thresholds').'</b>'.ui_print_help_tip(__('If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold'), true);
-
-    html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, false, false, '', false);
-    echo '</div>';
-    echo '</td>';
-
-    echo "<td class='datos'>";
+    $searchForm .= "<td class='datos w30p'>";
     $zooms = [];
     $zooms[0] = __('Graph defined');
     $zooms[1] = __('Zoom x1');
     $zooms[2] = __('Zoom x2');
     $zooms[3] = __('Zoom x3');
-    html_print_select($zooms, 'zoom', $zoom, '', '', 0);
-    echo '</td>';
+    $searchForm .= html_print_label_input_block(__('Zoom'), html_print_select($zooms, 'zoom', $zoom, '', '', 0, true, false, true, '', false, 'width:100%'));
+    $searchForm .= '</td>';
 
-    echo "<td class='datos'>";
-    echo "<input id='submit-refresh' type=submit value='".__('Refresh')."' class='sub upd'>";
-    echo '</td>';
+    $searchForm .= '</tr>';
+    $searchForm .= '</table>';
+    $searchForm .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Filter'),
+                'submit-refresh',
+                false,
+                [
+                    'mode' => 'mini',
+                    'icon' => 'search',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+    $searchForm .= '</form>';
 
-    echo '</tr>';
-    echo '</table>';
-    echo '</form>';
+    ui_toggle(
+        $searchForm,
+        '<span class="subsection_header_title">'.__('Filters').'</span>',
+        'filter_form',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph fixed_filter_bar'
+    );
 
     if ($graph_return) {
-        echo "<table id='graph-container' class='databox filters' cellpadding='0' cellspacing='0' style='height:100%;width:100%;overflow:hidden;'>";
-        echo '<tr><td>';
+        echo '<div style="background-color: white;height: 700px;overflow-y: auto;padding-top:20px;">';
         if (!is_ajax()) {
             echo '<div id="spinner_loading" class="loading invisible" style="display:flex;flex-direction:column-reverse;justify-content:center;align-items:center">';
             echo html_print_image('images/spinner.gif', true, ['width' => '20px']);
@@ -395,7 +441,7 @@ if ($view_graph) {
 
         echo '</div>';
 
-        echo '</td></tr></table>';
+        echo '</div>';
     } else {
         ui_print_info_message([ 'no_close' => true, 'message' => __('No data.') ]);
     }

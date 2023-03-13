@@ -266,24 +266,68 @@ function mainModuleGroups()
         ]
     );
 
-    echo "<table cellpadding='4' cellspacing='4' class='databox filters bolder margin-bottom-10' width='100%'>
-		<tr>";
-    echo "<form method='post'
-		action='index.php?sec=view&sec2=extensions/module_groups'>";
+    $output = "<form method='post'
+    action='index.php?sec=view&sec2=extensions/module_groups'>";
 
-    echo '<td>';
-    echo __('Search by agent group').'&nbsp;';
-    html_print_input_text('agent_group_search', $agent_group_search);
+    $output .= "<table cellpadding='4' cellspacing='4' class='filter-table-adv margin-bottom-10' width='100%'><tr>";
+    $output .= '<td>';
+    $output .= html_print_label_input_block(
+        __('Search by agent group'),
+        html_print_input_text(
+            'agent_group_search',
+            $agent_group_search,
+            '',
+            50,
+            255,
+            true
+        )
+    );
 
-    echo '</td><td>';
-    echo __('Search by module group').'&nbsp;';
-    html_print_input_text('module_group_search', $module_group_search);
+    $output .= '</td><td>';
+    $output .= html_print_label_input_block(
+        __('Search by module group'),
+        html_print_input_text(
+            'module_group_search',
+            $module_group_search,
+            '',
+            50,
+            255,
+            true
+        )
+    );
+    $output .= '</td>';
+    $output .= '</tr></table>';
 
-    echo '</td><td>';
-    echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
-    echo '</form>';
-    echo '<td>';
-    echo '</tr></table>';
+    $output .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Filter'),
+                'srcbutton',
+                false,
+                [
+                    'icon' => 'search',
+                    'mode' => 'mini',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+
+    $output .= '</form>';
+
+    ui_toggle(
+        $output,
+        '<span class="subsection_header_title">'.__('Filters').'</span>',
+        'filter_form',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph fixed_filter_bar'
+    );
 
     $cell_style = '
         min-width: 60px;
@@ -299,26 +343,35 @@ function mainModuleGroups()
 
     if ($info && $array_module_group) {
         $table = new StdClass();
-        $table->style[0] = 'color: #ffffff; background-color: #373737; font-weight: bolder; min-width: 230px;';
+        $table->class = 'info_table';
+        $table->style[0] = 'font-weight: bolder; min-width: 230px;';
         $table->width = '100%';
-
-        if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-            $background_color = '#333';
-        } else {
-            $background_color = '#fff';
-        }
 
         $head[0] = __('Groups');
         $headstyle[0] = 'width: 20%;  font-weight: bolder;';
         foreach ($array_module_group as $key => $value) {
-            $headstyle[] = 'min-width: 60px;max-width: 5%;text-align:center; color: #ffffff; background-color: #373737; font-weight: bolder;';
-            $head[] = ui_print_truncate_text($value, GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF');
+            $headstyle[] = 'min-width: 60px;max-width: 5%;text-align:center; font-weight: bolder;';
+            $head[] = ui_print_truncate_text(
+                $value,
+                GENERIC_SIZE_TEXT,
+                true,
+                true,
+                true,
+                '&hellip;'
+            );
         }
 
         $i = 0;
         foreach ($array_for_defect as $key => $value) {
             $deep = groups_get_group_deep($key);
-            $data[$i][0] = $deep.ui_print_truncate_text($value['data']['name'], GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF');
+            $data[$i][0] = $deep.ui_print_truncate_text(
+                $value['data']['name'],
+                GENERIC_SIZE_TEXT,
+                true,
+                true,
+                true,
+                '&hellip;'
+            );
             $j = 1;
             if (isset($array_data[$key])) {
                 foreach ($value['gm'] as $k => $v) {
@@ -378,25 +431,37 @@ function mainModuleGroups()
         $table->headstyle = $headstyle;
         $table->data = $data;
 
-        ui_pagination($counter);
-
         echo "<div class='w100p' style='overflow-x:auto;'>";
             html_print_table($table);
         echo '</div>';
 
-        ui_pagination($counter);
+        $tablePagination = ui_pagination(
+            $counter,
+            false,
+            0,
+            0,
+            true,
+            'offset',
+            false
+        );
 
-        echo "<div class='legend_basic w99p'>";
-            echo '<table >';
-                echo "<tr><td colspan='2' class='pdd_b_10px'><b>".__('Legend').'</b></td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module group and agent have at least one alarm fired.').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module group and agent have at least one module in critical status and the others in any status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module group and agent have at least one in unknown status and the others in green status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module group and agent have all modules in OK status').'</td></tr>';
-                echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__('Blue cell when the module group and agent have all modules in not init status.').'</td></tr>';
-            echo '</table>';
-        echo '</div>';
+        html_print_action_buttons(
+            '',
+            [ 'right_content' => $tablePagination ]
+        );
+
+        $show_legend = '<div>';
+            $show_legend .= '<table>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module group and agent have at least one alarm fired.').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module group and agent have at least one module in critical status and the others in any status').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></td><td>".__('Grey cell when the module group and agent have at least one in unknown status and the others in green status').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></td><td>".__('Green cell when the module group and agent have all modules in OK status').'</td></tr>';
+                $show_legend .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></td><td>".__('Blue cell when the module group and agent have all modules in not init status.').'</td></tr>';
+            $show_legend .= '</table>';
+        $show_legend .= '</div>';
+
+        ui_toggle($show_legend, __('Legend'));
     } else {
         ui_print_info_message(['no_close' => true, 'message' => __('This table shows in columns the modules group and in rows agents group. The cell shows all modules') ]);
         ui_print_info_message(['no_close' => true, 'message' => __('There are no defined groups or module groups') ]);

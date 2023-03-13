@@ -24,8 +24,29 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     exit;
 }
 
-// Header
-ui_print_page_header(__('Extensions').' &raquo; '.__('Defined extensions'), 'images/extensions.png', false, '', true, '');
+// Header.
+ui_print_standard_header(
+    __('Extensions'),
+    'images/extensions.png',
+    false,
+    '',
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Admin tools'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Extension manager'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Defined extensions'),
+        ],
+    ]
+);
 
 if (count($config['extensions']) == 0) {
     $extensions = extensions_get_extension_info();
@@ -132,7 +153,7 @@ if ($disabled != '') {
 $extensions = extensions_get_extension_info();
 
 $table = new StdClass;
-$table->width = '98%';
+$table->width = '100%';
 
 $table->head = [];
 $table->head[] = __('File');
@@ -146,7 +167,7 @@ $table->head[] = __('Login Function');
 $table->head[] = __('Agent operation tab');
 $table->head[] = __('Agent godmode tab');
 $table->head[] = __('Operation');
-$table->width = '100%';
+
 $table->class = 'info_table';
 
 $table->align = [];
@@ -252,11 +273,42 @@ foreach ($extensions as $file => $extension) {
 
     // Avoid to delete or disabled update_manager
     if ($file != 'update_manager.php') {
-        $table->cellclass[][10] = 'action_buttons';
+        $table->cellclass[][10] = 'table_action_buttons';
         if (!$extension['enabled']) {
-            $data[] = '<a title="'.__('Delete').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file.'" class="mn">'.html_print_image('images/cross.disabled.png', true, ['class' => 'filter_none']).'</a>'.' <a title="'.__('Enable').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&enabled='.$file.'" class="mn">'.html_print_image('images/lightbulb_off.png', true, ['class' => 'filter_none']).'</a>';
+            $data[] = html_print_menu_button(
+                [
+                    'href'    => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file,
+                    'image'   => 'images/cross.disabled.png',
+                    'title'   => __('Delete'),
+                    'onClick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+                ],
+                true
+            ).html_print_menu_button(
+                [
+                    'href'  => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&enabled='.$file,
+                    'image' => 'images/lightbulb_off.png',
+                    'title' => __('Delete'),
+                ],
+                true
+            );
         } else {
-            $data[] = '<a title="'.__('Delete').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file.'" class="mn">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>'.' <a title="'.__('Disable').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&disabled='.$file.'" class="mn">'.html_print_image('images/lightbulb.png', true).'</a>';
+            $data[] = html_print_menu_button(
+                [
+                    'href'    => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file,
+                    'image'   => 'images/delete.svg',
+                    'class'   => 'main_menu_icon invert_filter',
+                    'title'   => __('Delete'),
+                    'onClick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+                ],
+                true
+            ).html_print_menu_button(
+                [
+                    'href'  => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&disabled='.$file,
+                    'image' => 'images/lightbulb.png',
+                    'title' => __('Delete'),
+                ],
+                true
+            );
         }
     } else {
         $data[] = '';

@@ -25,7 +25,20 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 }
 
 // Header
-ui_print_page_header(__('Link management'), 'images/extensions.png', false, '', true, '');
+ui_print_standard_header(
+    __('Admin tools'),
+    'images/extensions.png',
+    false,
+    '',
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Link management'),
+        ],
+    ]
+);
 
 
 if (isset($_POST['create'])) {
@@ -98,7 +111,7 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
         $link = '';
     }
 
-    echo '<table class="databox filters" cellpadding="4" cellspacing="4" width="100%">';
+    echo '<table class="databox filters filter-table-adv max_floating_element_size" cellpadding="4" cellspacing="4" width="100%">';
     echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
     if ($creation_mode == 1) {
         echo "<input type='hidden' name='create' value='1'>";
@@ -112,22 +125,59 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
     }
 
     echo "'>";
-    echo '<tr>
-	<td class="datos">'.__('Link name').'</td>
-	<td class="datos"><input type="text" class="text_input" name="name" size="50" value="'.$nombre.'"></td>';
-    echo '</tr><tr>
-	<td class="datos2">'.__('Link').'</td>
-	<td class="datos2">
-	<input type="text" class="text_input" name="link" size="50" value="'.$link.'"></td>';
-    echo '</tr>';
+    echo '<tr>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Link name'),
+        html_print_input_text(
+            'name',
+            $nombre,
+            '',
+            50,
+            255,
+            true,
+            false,
+            true,
+            '',
+            'text_input'
+        )
+    );
+    echo '</td>';
+    echo '<td class="w50p">';
+    echo html_print_label_input_block(
+        __('Link'),
+        html_print_input_text(
+            'link',
+            $link,
+            '',
+            50,
+            255,
+            true,
+            false,
+            true,
+            '',
+            'text_input'
+        )
+    );
+    echo '</td></tr>';
     echo '</table>';
-    echo "<table width='100%'>";
-    echo "<tr><td align='right'>";
-    if (isset($_GET['form_add'])) {
-        echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+    if (isset($_GET['form_add']) === true) {
+        $actionForPerform = __('Create');
+        $iconForPerform = 'wand';
     } else {
-        echo "<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+        $actionForPerform = __('Update');
+        $iconForPerform = 'update';
     }
+
+    html_print_action_buttons(
+        html_print_submit_button(
+            $actionForPerform,
+            'crtbutton',
+            false,
+            [ 'icon' => $iconForPerform ],
+            true
+        )
+    );
 
     echo '</form></td></tr></table>';
 } else {
@@ -157,8 +207,8 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
             }
 
             echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row['id_link']."'>".$row['name'].'</a></b></td>';
-            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row['id_link'].'&borrar='.$row['id_link'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                'images/cross.png',
+            echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row['id_link'].'&borrar='.$row['id_link'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                'images/delete.svg',
                 true,
                 ['class' => 'invert_filter']
             ).'</a></td></tr>';
@@ -170,6 +220,16 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
     echo "<table width='100%'>";
     echo "<tr><td align='right'>";
     echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
-    echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";
+
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Add'),
+            'form_add',
+            false,
+            [ 'icon' => 'wand' ],
+            true
+        )
+    );
+
     echo '</form></table>';
 }

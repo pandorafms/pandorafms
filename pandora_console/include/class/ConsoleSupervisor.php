@@ -2862,7 +2862,7 @@ class ConsoleSupervisor
             return;
         }
 
-        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
+        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer(true);
         $counts = $sync->getQueues(true);
 
         if (count($counts) === 0) {
@@ -2919,7 +2919,7 @@ class ConsoleSupervisor
             return;
         }
 
-        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
+        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer(true);
         $queues = $sync->getQueues();
         if (count($queues) === 0) {
             // Clean all.

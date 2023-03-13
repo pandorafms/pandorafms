@@ -29,7 +29,6 @@
 // Extras required.
 \ui_require_css_file('wizard');
 \enterprise_include_once('meta/include/functions_alerts_meta.php');
-\enterprise_hook('open_meta_frame');
 
 if (\is_metaconsole() === true) {
     \alerts_meta_print_header($tabs);
@@ -157,14 +156,18 @@ $inputs[] = [
 
 if ($is_management_allowed === true) {
     // Submit.
-    $inputs[] = [
-        'arguments' => [
-            'name'       => 'button',
-            'label'      => (($create === true) ? __('Create') : __('Update')),
-            'type'       => 'submit',
-            'attributes' => 'class="sub next"',
-        ],
-    ];
+    html_print_action_buttons(
+        html_print_submit_button(
+            (($create === true) ? __('Create') : __('Update')),
+            'button',
+            false,
+            [
+                'icon' => 'wand',
+                'form' => 'form-special-days',
+            ],
+            true
+        )
+    );
 }
 
 // Print form.
@@ -186,7 +189,6 @@ echo '<div id="modal-alert-templates" class="invisible"></div>';
 ui_require_javascript_file('calendar');
 ui_require_javascript_file('pandora_alerts');
 
-\enterprise_hook('close_meta_frame');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {

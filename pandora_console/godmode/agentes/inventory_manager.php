@@ -235,7 +235,7 @@ if (db_get_num_rows($sql) == 0) {
         if ($id_policy) {
             $policy = policies_get_policy($id_policy);
             $data[0] = '<a href="index.php?sec=gmodules&sec2='.ENTERPRISE_DIR.'/godmode/policies/policies&id='.$id_policy.'">';
-            $data[0] .= html_print_image('images/policies_mc.png', true, ['border' => '0', 'title' => $policy['name']]);
+            $data[0] .= html_print_image('images/policy@svg.svg', true, ['border' => '0', 'title' => $policy['name'], 'class' => 'main_menu_icon invert_filter']);
             $data[0] .= '</a>';
         } else {
             $data[0] = '';
@@ -247,15 +247,15 @@ if (db_get_num_rows($sql) == 0) {
         $data[4] = human_time_description_raw($row['interval']);
         // Delete module
         $data[5] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'&delete_inventory_module='.$row['id_agent_module_inventory'].'" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-        $data[5] .= html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete'), 'class' => 'invert_filter']);
+        $data[5] .= html_print_image('images/delete.svg', true, ['border' => '0', 'title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']);
         $data[5] .= '</b></a>&nbsp;&nbsp;';
         // Update module
         $data[5] .= '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'&load_inventory_module='.$row['id_module_inventory'].'">';
-        $data[5] .= html_print_image('images/config.png', true, ['border' => '0', 'title' => __('Update'), 'class' => 'invert_filter']);
+        $data[5] .= html_print_image('images/edit.svg', true, ['border' => '0', 'title' => __('Update'), 'class' => 'main_menu_icon invert_filter']);
         $data[5] .= '</b></a>&nbsp;&nbsp;';
         // Force refresh module
         $data[5] .= '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'&force_inventory_module='.$row['id_agent_module_inventory'].'">';
-        $data[5] .= html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force'), 'class' => 'invert_filter']).'</b></a>';
+        $data[5] .= html_print_image('images/change-active.svg', true, ['border' => '0', 'title' => __('Force'), 'class' => 'main_menu_icon invert_filter']).'</b></a>';
         array_push($table->data, $data);
     }
 

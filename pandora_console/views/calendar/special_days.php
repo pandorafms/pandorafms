@@ -30,25 +30,24 @@ global $config;
 
 \ui_require_css_file('wizard');
 \enterprise_include_once('meta/include/functions_alerts_meta.php');
-\enterprise_hook('open_meta_frame');
 
 if (\is_metaconsole() === true) {
     \alerts_meta_print_header($tabs);
 } else {
     // Header.
-    \ui_print_page_header(
-        // Title.
-        __('Special days'),
-        // Icon.
+    ui_print_standard_header(
+        __('Alerts'),
         'images/gm_alerts.png',
-        // Return.
         false,
-        // Help.
         'alert_special_days',
-        // Godmode.
         true,
-        // Options.
-        $tabs
+        $tabs,
+        [
+            [
+                'link'  => '',
+                'label' => __('Special days'),
+            ],
+        ]
     );
 }
 
@@ -86,6 +85,7 @@ $inputs[] = [
         'rows'    => 10,
         'options' => ['required' => 1],
     ],
+    'class'     => 'flex flex_column',
 ];
 
 $days = [];
@@ -105,6 +105,7 @@ $inputs[] = [
         'type'   => 'select',
         'fields' => $days,
     ],
+    'class'     => 'mrgn_right_20px',
 ];
 
 // Group.
@@ -115,6 +116,7 @@ $inputs[] = [
         'returnAllGroup' => true,
         'name'           => 'id_group',
     ],
+    'class'     => 'mrgn_right_20px',
 ];
 
 // Group.
@@ -129,6 +131,7 @@ $inputs[] = [
         'id'              => 'overwrite',
         'disabled_hidden' => true,
     ],
+    'class'     => 'flex flex_column',
 ];
 
 // Submit.
@@ -137,23 +140,39 @@ $inputs[] = [
         'name'       => 'button',
         'label'      => __('Upload'),
         'type'       => 'submit',
-        'attributes' => 'class="sub next"',
+        'attributes' => [
+            'icon'  => 'wand',
+            'class' => 'mini',
+        ],
     ],
 ];
 
 if ($is_management_allowed === true) {
     // Print form.
-    HTML::printForm(
+    $form_upload = HTML::printForm(
         [
             'form'   => [
                 'action'  => $url.'&op=upload_ical&id='.$id_calendar,
                 'method'  => 'POST',
                 'id'      => 'icalendar-special-days',
                 'enctype' => 'multipart/form-data',
+                'class'   => 'calendar-upload-form',
             ],
             'inputs' => $inputs,
         ],
-        false
+        true
+    );
+
+    ui_toggle(
+        $form_upload,
+        '<span class="subsection_header_title">'.__('Upload').'</span>',
+        __('Upload'),
+        'upload',
+        true,
+        false,
+        '',
+        'white-box-content no_border',
+        'filter-datatable-main box-flat white_table_graph fixed_filter_bar  '
     );
 }
 
@@ -217,7 +236,7 @@ for ($month = 1; $month <= 12; $month++) {
 
     $cal_table = new stdClass();
     $cal_table->width = '100%';
-    $cal_table->class = 'databox data';
+    $cal_table->class = 'databox data special-days-thead';
 
     $cal_table->data = [];
     $cal_table->head = [];
@@ -239,7 +258,7 @@ for ($month = 1; $month <= 12; $month++) {
     $cal_table->size[6] = '14%';
     $cal_table->align = [];
     $cal_table->border = '1';
-    $cal_table->titlestyle = 'text-align:center; font-weight: bold;';
+    $cal_table->titlestyle = 'text-align:center;';
     switch ($display_month) {
         case 1:
             $cal_table->title = __('January');
@@ -430,7 +449,7 @@ for ($month = 1; $month <= 12; $month++) {
                         $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&id='.$special_day['id'].'" title=';
                         $cal_table->data[$cal_line][$week] .= __('Edit');
                         $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
-                            'images/config.png',
+                            'images/edit.svg',
                             true,
                             ['class' => 'invert_filter']
                         ).'</a> &nbsp;';
@@ -442,7 +461,7 @@ for ($month = 1; $month <= 12; $month++) {
                         $cal_table->data[$cal_line][$week] .= __('Remove');
                         $cal_table->data[$cal_line][$week] .= '">';
                         $cal_table->data[$cal_line][$week] .= html_print_image(
-                            'images/cross.png',
+                            'images/delete.svg',
                             true,
                             ['class' => 'invert_filter']
                         ).'</a>';
@@ -468,7 +487,7 @@ for ($month = 1; $month <= 12; $month++) {
 }
 
 if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
-    HTML::printForm(
+    $form_create = HTML::printForm(
         [
             'form'   => [
                 'action' => $url.'&op=edit',
@@ -480,18 +499,19 @@ if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
                         'name'       => 'button',
                         'label'      => __('Create'),
                         'type'       => 'submit',
-                        'attributes' => 'class="sub next"',
+                        'attributes' => ['icon' => 'wand'],
                     ],
                 ],
             ],
-        ]
+        ],
+        true
     );
+    html_print_action_buttons($form_create);
 }
 
 echo '<div id="modal-alert-templates" class="invisible"></div>';
 ui_require_javascript_file('pandora_alerts');
 
-\enterprise_hook('close_meta_frame');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {

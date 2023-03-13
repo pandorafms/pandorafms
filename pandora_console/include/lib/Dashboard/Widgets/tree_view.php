@@ -134,7 +134,12 @@ class TreeViewWidget extends Widget
     ) {
         global $config;
 
-        ui_require_css_file('tree');
+        if (is_metaconsole() === true) {
+            ui_require_css_file('tree_meta');
+        } else {
+            ui_require_css_file('tree');
+        }
+
         ui_require_css_file('fixed-bottom-box');
 
         // WARNING: Do not edit. This chunk must be in the constructor.
@@ -554,7 +559,12 @@ class TreeViewWidget extends Widget
         $height = $size['height'];
 
         // Css Files.
-        \ui_require_css_file('tree', 'include/styles/', true);
+        if (is_metaconsole() === true) {
+            \ui_require_css_file('tree_meta', 'include/styles/', true);
+        } else {
+            \ui_require_css_file('tree', 'include/styles/', true);
+        }
+
         if ($config['style'] == 'pandora_black' && !is_metaconsole()) {
             \ui_require_css_file('pandora_black', 'include/styles/', true);
         }
@@ -566,11 +576,19 @@ class TreeViewWidget extends Widget
             'include/javascript/i18n/'
         );
 
-        \ui_require_javascript_file(
-            'TreeController',
-            'include/javascript/tree/',
-            true
-        );
+        if (is_metaconsole() === true) {
+            \ui_require_javascript_file(
+                'TreeControllerMeta',
+                'include/javascript/tree/',
+                true
+            );
+        } else {
+            \ui_require_javascript_file(
+                'TreeController',
+                'include/javascript/tree/',
+                true
+            );
+        }
 
         \ui_require_javascript_file(
             'fixed-bottom-box',
@@ -581,15 +599,33 @@ class TreeViewWidget extends Widget
         $base_url = \ui_get_full_url('/');
 
         // Spinner.
-        $output .= \html_print_image(
-            'images/spinner.gif',
-            true,
-            [
-                'class' => 'loading_tree',
-                'style' => 'display: none;',
-            ]
-        );
+        $output .= ui_print_spinner(__('Loading'), true);
+        ob_start();
+        ?>
+        <script type="text/javascript">
+            function treeViewControlModuleValues()
+            {
+                var $treeController = $("div[id^='tree-controller-recipient_']");
+                $treeController.each(function() {
+                    var $thisTree = $(this);
+                    if ($thisTree.width() < 600) {
+                        var $valuesForRemove = $('#'+$thisTree[0].id+' span.module-value');
+                        $valuesForRemove.each(function(){
+                            $(this).attr('style', 'display:none');
+                        });
 
+                        if ($thisTree.width() < 400) {
+                            var $titlesForReduce = $('#'+$thisTree[0].id+' .node-content .module-name');
+                            $titlesForReduce.each(function(){
+                                $(this).attr('style', 'width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;');
+                            });
+                       }
+                    }
+                });
+            }
+        </script>
+        <?php
+        $output .= ob_get_clean();
         // Container tree.
         $style = 'height:'.$height.'px; width:'.$width.'px;';
         $style .= 'text-align: left; padding:10px;';

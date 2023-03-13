@@ -189,13 +189,19 @@ $onheader = [
     'policies' => $policies_tab,
 ];
 
-ui_print_page_header(
+ui_print_standard_header(
     __('Search').': "'.$config['search_keywords'].'"',
     'images/zoom_mc.png',
     false,
     '',
     false,
-    $onheader
+    $onheader,
+    [
+        [
+            'link'  => '',
+            'label' => __('Search'),
+        ],
+    ]
 );
 
 $only_count = false;

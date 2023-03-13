@@ -99,17 +99,22 @@ if ($autosearch === true) {
         $result = agents_get_network_interfaces($selected_agents);
     }
 
-    if ($result === false) {
+    if ($result === false || empty($result) === true) {
         $result = [];
     } else {
-        ui_pagination(
+        $pagination = ui_pagination(
             count($selected_interfaces),
             false,
             $offset,
             0,
-            false,
+            true,
             'offset',
-            true
+            false
+        );
+
+        html_print_action_buttons(
+            '',
+            [ 'right_content' => $pagination ]
         );
     }
 }
@@ -137,6 +142,7 @@ $(document).ready(function() {
     if (sec === 'estado' && agent_id > 0) {
         load_agent_interfaces_selector([agent_id]);
     }
+    $("#selected_agents").filterByText($("#text-filter_agents"));
 });
 
 

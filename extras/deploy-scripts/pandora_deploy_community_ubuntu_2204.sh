@@ -4,6 +4,7 @@
 ##############################################################################################################
 ## Tested versions ##
 # Ubuntu 22.04.1
+# Ubuntu 22.04.2
 
 #avoid promps
 export DEBIAN_FRONTEND=noninteractive
@@ -16,7 +17,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='2022052501'
+S_VERSION='202302201'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 
@@ -34,6 +35,8 @@ rm -f $LOGFILE &> /dev/null # remove last log before start
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
 [ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 [ "$PANDORA_BETA" ] || PANDORA_BETA=0
+[ "$PANDORA_LTS" ]  || PANDORA_LTS=1
+
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -104,6 +107,21 @@ check_root_permissions () {
     fi
 }
 
+installing_docker () {
+    #Installing docker for debug
+    echo "Start installig docker" &>> "$LOGFILE"
+    mkdir -m 0755 -p /etc/apt/keyrings &>> "$LOGFILE"
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg &>> "$LOGFILE"
+    echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+        $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list &>> "$LOGFILE"
+    apt update -y &>> "$LOGFILE"
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin &>> "$LOGFILE"
+    systemctl disable docker --now &>> "$LOGFILE"
+    systemctl disable docker.socket --now &>> "$LOGFILE"
+    echo "End installig docker" &>> "$LOGFILE"
+}
+
 ## Main
 echo "Starting PandoraFMS Community deployment Ubuntu 22.04 ver. $S_VERSION"
 
@@ -134,7 +152,10 @@ check_root_permissions
 [ "$SKIP_PRECHECK" == 1 ] || check_pre_pandora
 
 #advicing BETA PROGRAM
-[ "$PANDORA_BETA" -ne '0' ] && echo -e "${red}BETA version enable using nightly PandoraFMS packages${reset}"
+INSTALLING_VER="${green}RRR version enable using RRR PandoraFMS packages${reset}"
+[ "$PANDORA_BETA" -ne '0' ] && INSTALLING_VER="${red}BETA version enable using nightly PandoraFMS packages${reset}"
+[ "$PANDORA_LTS" -ne '0' ] && INSTALLING_VER="${green}LTS version enable using LTS PandoraFMS packages${reset}"
+echo -e $INSTALLING_VER
 
 # Connectivity
 check_repo_connection
@@ -168,7 +189,7 @@ execute_cmd "cd $WORKDIR" "Moving to workdir:  $WORKDIR"
 
 ## Install utils
 execute_cmd "apt update" "Updating repos"
-execute_cmd "apt install -y net-tools vim curl wget software-properties-common apt-transport-https" "Installing utils"
+execute_cmd "apt install -y net-tools vim curl wget software-properties-common apt-transport-https ca-certificates gnupg lsb-release" "Installing utils"
 
 #Installing Apache and php-fpm
 [ -e "/etc/apt/sources.list.d/ondrej-ubuntu-php-jammy.list" ] || execute_cmd "add-apt-repository ppa:ondrej/php -y" "Enable ppa:ondrej/php repo"
@@ -216,7 +237,8 @@ systemctl restart php$PHPVER-fpm &>> "$LOGFILE"
 	php$PHPVER-xml \
 	php$PHPVER-yaml \
 	libnet-telnet-perl \
-    whois"
+    whois \
+    cron"
 execute_cmd "apt install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
 # Server dependencies
@@ -249,9 +271,12 @@ server_dependencies=" \
 	libnet-telnet-perl \
 	libjson-perl \
 	libencode-perl \
+    cron \
 	libgeo-ip-perl \
 	openjdk-8-jdk "
 execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
+
+execute_cmd "installing_docker" "Installing Docker for debug"
 
 # wmic and pandorawmic
 execute_cmd "curl -O https://firefly.artica.es/pandorafms/utils/bin/wmic" "Downloading wmic"
@@ -272,14 +297,19 @@ echo -en "${cyan}Installing phantomjs...${reset}"
     /usr/bin/phantomjs --version &>> "$LOGFILE" 
 check_cmd_status "Error Installing phanromjs"
 
+# create symlink for fping
+rm -f /usr/sbin/fping &>> "$LOGFILE"
+ln -s /usr/bin/fping /usr/sbin/fping &>> "$LOGFILE"
+
 # Chrome
+rm -f /usr/bin/chromium-browser &>> "$LOGFILE"
 execute_cmd "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" "Downloading google chrome"
 execute_cmd "apt install -y ./google-chrome-stable_current_amd64.deb" "Intalling google chrome"
 execute_cmd "ln -s /usr/bin/google-chrome /usr/bin/chromium-browser" "Creating /usr/bin/chromium-browser Symlink"
 
 # SDK VMware perl dependencies
-vmware_dependencies=" \
-	lib32z1  \
+vmware_dependencies="\
+    lib32z1  \
     lib32z1 \
     build-essential \
     uuid uuid-dev \
@@ -350,16 +380,22 @@ systemctl stop apparmor &>> "$LOGFILE"
 systemctl disable apparmor &>> "$LOGFILE"
 
 #install mysql
-debconf-set-selections <<< $(echo -n "mysql-server mysql-server/root_password password $DBROOTPASS") &>> "$LOGFILE"
-debconf-set-selections <<< $(echo -n "mysql-server mysql-server/root_password_again password $DBROOTPASS") &>> "$LOGFILE"
-echo -en "${cyan}Installing MySql Server...${reset}"
-    env DEBIAN_FRONTEND=noninteractive apt install -y mysql-server &>> "$LOGFILE"
+execute_cmd "curl -O https://repo.percona.com/apt/percona-release_latest.generic_all.deb" "Downloading Percona repository for MySQL8"
+execute_cmd "apt install -y gnupg2 lsb-release ./percona-release_latest.generic_all.deb" "Installing Percona repository for MySQL8"
+execute_cmd "percona-release setup ps80" "Configuring Percona repository for MySQL8"
+
+echo -en "${cyan}Installing Percona Server for MySQL8...${reset}"
+    env DEBIAN_FRONTEND=noninteractive apt install -y percona-server-server &>> "$LOGFILE"
 check_cmd_status "Error Installing MySql Server"
 
 
 #Configuring Database
 if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
     execute_cmd "systemctl start mysql" "Starting database engine"
+    
+    echo """
+    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DBROOTPASS';
+    """ | mysql -uroot &>> "$LOGFILE"
 
     export MYSQL_PWD=$DBROOTPASS
     echo -en "${cyan}Creating Pandora FMS database...${reset}"
@@ -377,7 +413,7 @@ cat > /etc/mysql/my.cnf << EOF_DB
 [mysqld]
 datadir=/var/lib/mysql
 user=mysql
-character-set-server=utf8
+character-set-server=utf8mb4
 skip-character-set-client-handshake
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
@@ -392,17 +428,18 @@ innodb_flush_log_at_trx_commit = 0
 innodb_flush_method = O_DIRECT
 innodb_log_file_size = 64M
 innodb_log_buffer_size = 16M
-innodb_io_capacity = 100
+innodb_io_capacity = 300
 thread_cache_size = 8
 thread_stack    = 256K
 max_connections = 100
 
 key_buffer_size=4M
 read_buffer_size=128K
-
 read_rnd_buffer_size=128K
 sort_buffer_size=128K
 join_buffer_size=4M
+
+skip-log-bin
 
 sql_mode=""
 
@@ -417,11 +454,17 @@ execute_cmd "systemctl restart mysql" "Configuring and restarting database engin
 
 
 #Define packages
-if [ "$PANDORA_BETA" -eq '0' ] ; then
+if [ "$PANDORA_LTS" -eq '1' ] ; then
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_server-7.0NG.tar.gz"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_console-7.0NG.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_agent_linux-7.0NG.tar.gz"
+elif [ "$PANDORA_LTS" -ne '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_server-7.0NG.tar.gz"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_console-7.0NG.tar.gz"
     [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
-elif [ "$PANDORA_BETA" -ne '0' ] ; then
+fi
+
+if [ "$PANDORA_BETA" -eq '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
     [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
@@ -454,7 +497,7 @@ check_cmd_status "Error installing PandoraFMS Agent"
 
 # Copy gotty utility
 cd $WORKDIR &>> "$LOGFILE"
-execute_cmd "wget https://pandorafms.com/library/wp-content/uploads/2019/11/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
+execute_cmd "wget https://firefly.pandorafms.com/pandorafms/utils/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
 tar xvzf gotty_linux_amd64.tar.gz &>> $LOGFILE
 execute_cmd "mv gotty /usr/bin/" 'Installing gotty util'
 
@@ -708,9 +751,14 @@ systemctl enable pandora_server &>> "$LOGFILE"
 execute_cmd "service tentacle_serverd start" "Starting Tentacle Server"
 systemctl enable tentacle_serverd &>> "$LOGFILE"
 
-# Enabling condole cron
-execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
-echo "* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
+# Enabling console cron
+execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
+echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
+
+# Enabling pandoradb cron
+execute_cmd "echo 'enabling pandoradb cron' >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS pandoradb cron"
+echo "@hourly         root    bash -c /etc/cron.hourly/pandora_db" >> /etc/crontab
+
 
 ## Enabling agent adn configuring Agente
 sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF &>> "$LOGFILE"
@@ -725,7 +773,7 @@ sed --follow-symlinks -i -e "s/^openssl_conf = openssl_init/#openssl_conf = open
 
 cat > /etc/issue.net << EOF_banner
 
-Welcome to Pandora FMS appliance on CentOS
+Welcome to Pandora FMS appliance on Ubuntu
 ------------------------------------------
 Go to Public http://$ipplublic/pandora_console$to to login web console
 $(ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v "172.17.0.1" | awk '{print $2}' | awk -F '/' '{print "Go to Local http://"$1"/pandora_console to login web console"}')

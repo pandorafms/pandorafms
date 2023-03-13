@@ -74,7 +74,9 @@ $readonly = false;
 ui_require_css_file('events');
 ui_require_css_file('tables');
 if (is_metaconsole() === true) {
-    ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
+    ui_require_css_file('tables');
+    // ui_require_css_file('meta_tables', ENTERPRISE_DIR.'/meta/styles/');
+    ui_require_css_file('meta_events', ENTERPRISE_DIR.'/meta/styles/');
 }
 
 // Load extra javascript.
@@ -239,6 +241,13 @@ $server_id = get_parameter(
     ($filter['server_id'] ?? '')
 );
 
+if (empty($id_agent) === true) {
+    $id_agent = get_parameter(
+        'id_agent',
+        ($filter['id_agent'] ?? '')
+    );
+}
+
 if (is_metaconsole() === true) {
     $servers = metaconsole_get_servers();
     if (is_array($servers) === true) {
@@ -350,7 +359,7 @@ if (is_ajax() === true) {
                 'te.warning_instructions',
                 'te.unknown_instructions',
                 'te.owner_user',
-                'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp',
+                'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp',
                 'te.custom_data',
                 'te.data',
                 'te.module_status',
@@ -380,7 +389,7 @@ if (is_ajax() === true) {
                             $order['field'] = 'agent_name';
                         break;
 
-                        case 'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp':
+                        case 'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp':
                             $order['field'] = 'ack_utimestamp';
                         break;
 
@@ -521,14 +530,14 @@ if (is_ajax() === true) {
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
 
-                        $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
+                        $tmp->ack_utimestamp_raw = $tmp->ack_utimestamp;
 
                         $tmp->ack_utimestamp = ui_print_timestamp(
-                            (int) $tmp->ack_utimestamp,
+                            (empty($tmp->ack_utimestamp) === true) ? 0 : $tmp->ack_utimestamp,
                             true
                         );
                         $tmp->timestamp = ui_print_timestamp(
-                            $tmp->timestamp,
+                            $tmp->utimestamp,
                             true
                         );
 
@@ -554,11 +563,11 @@ if (is_ajax() === true) {
                                 $tmp->user_comment .= $tmp->b64;
                                 $tmp->user_comment .= '\',\'comments\')>;';
                                 $tmp->user_comment .= html_print_image(
-                                    'images/operation.png',
+                                    'images/details.svg',
                                     true,
                                     [
                                         'title' => __('Show more'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->user_comment .= '</a>';
@@ -574,37 +583,37 @@ if (is_ajax() === true) {
 
                         // Event severity prepared.
                         switch ($tmp->criticity) {
-                            case EVENT_CRIT_CRITICAL;
+                            case EVENT_CRIT_CRITICAL:
                                 $text = __('CRITICAL');
                                 $color = COL_CRITICAL;
                             break;
 
-                            case EVENT_CRIT_MAINTENANCE;
+                            case EVENT_CRIT_MAINTENANCE:
                                 $text = __('MAINTENANCE');
                                 $color = COL_MAINTENANCE;
                             break;
 
-                            case EVENT_CRIT_INFORMATIONAL;
+                            case EVENT_CRIT_INFORMATIONAL:
                                 $text = __('INFORMATIONAL');
                                 $color = COL_INFORMATIONAL;
                             break;
 
-                            case EVENT_CRIT_MAJOR;
+                            case EVENT_CRIT_MAJOR:
                                 $text = __('MAJOR');
                                 $color = COL_MAJOR;
                             break;
 
-                            case EVENT_CRIT_MINOR;
+                            case EVENT_CRIT_MINOR:
                                 $text = __('MINOR');
                                 $color = COL_MINOR;
                             break;
 
-                            case EVENT_CRIT_NORMAL;
+                            case EVENT_CRIT_NORMAL:
                                 $text = __('NORMAL');
                                 $color = COL_NORMAL;
                             break;
 
-                            case EVENT_CRIT_WARNING;
+                            case EVENT_CRIT_WARNING:
                                 $text = __('WARNING');
                                 $color = COL_WARNING;
                             break;
@@ -626,8 +635,8 @@ if (is_ajax() === true) {
                         $tmp->mini_severity .= $output;
                         $tmp->mini_severity .= '</div>';
 
-                        $criticity = '<div class="criticity" style="background: ';
-                        $criticity .= $color.'">'.$text.'</div>';
+                        $criticity = '<div class="criticity forced_title" style="background: ';
+                        $criticity .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">'.$text.'</div>';
                         $tmp->criticity = $criticity;
 
                         // Add event severity to end of text.
@@ -652,79 +661,79 @@ if (is_ajax() === true) {
 
                         // Event type prepared.
                         switch ($tmp->event_type) {
-                            case EVENTS_ALERT_FIRED;
-                            case EVENTS_ALERT_RECOVERED;
-                            case EVENTS_ALERT_CEASED;
-                            case EVENTS_ALERT_MANUAL_VALIDATION;
+                            case EVENTS_ALERT_FIRED:
+                            case EVENTS_ALERT_RECOVERED:
+                            case EVENTS_ALERT_CEASED:
+                            case EVENTS_ALERT_MANUAL_VALIDATION:
                                 $text = __('ALERT');
                                 $color = COL_ALERTFIRED;
                             break;
 
-                            case EVENTS_RECON_HOST_DETECTED;
-                            case EVENTS_SYSTEM;
-                            case EVENTS_ERROR;
-                            case EVENTS_NEW_AGENT;
-                            case EVENTS_CONFIGURATION_CHANGE;
+                            case EVENTS_RECON_HOST_DETECTED:
+                            case EVENTS_SYSTEM:
+                            case EVENTS_ERROR:
+                            case EVENTS_NEW_AGENT:
+                            case EVENTS_CONFIGURATION_CHANGE:
                                 $text = __('SYSTEM');
                                 $color = COL_MAINTENANCE;
                             break;
 
-                            case EVENTS_GOING_UP_WARNING;
-                            case EVENTS_GOING_DOWN_WARNING;
+                            case EVENTS_GOING_UP_WARNING:
+                            case EVENTS_GOING_DOWN_WARNING:
                                 $text = __('WARNING');
                                 $color = COL_WARNING;
                             break;
 
-                            case EVENTS_GOING_DOWN_NORMAL;
-                            case EVENTS_GOING_UP_NORMAL;
+                            case EVENTS_GOING_DOWN_NORMAL:
+                            case EVENTS_GOING_UP_NORMAL:
                                 $text = __('NORMAL');
                                 $color = COL_NORMAL;
                             break;
 
-                            case EVENTS_GOING_DOWN_CRITICAL;
-                            case EVENTS_GOING_UP_CRITICAL;
+                            case EVENTS_GOING_DOWN_CRITICAL:
+                            case EVENTS_GOING_UP_CRITICAL:
                                 $text = __('CRITICAL');
                                 $color = COL_CRITICAL;
                             break;
 
-                            case EVENTS_UNKNOWN;
-                            case EVENTS_GOING_UNKNOWN;
+                            case EVENTS_UNKNOWN:
+                            case EVENTS_GOING_UNKNOWN:
                             default:
                                 $text = __('UNKNOWN');
                                 $color = COL_UNKNOWN;
                             break;
                         }
 
-                        $event_type = '<div class="criticity" style="background: ';
-                        $event_type .= $color.'">'.$text.'</div>';
+                        $event_type = '<div class="event_module_background_state forced_title" style="background: ';
+                        $event_type .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">&nbsp;</div>';
                         $tmp->event_type = $event_type;
 
                         // Module status.
                         // Event severity prepared.
                         switch ($tmp->module_status) {
-                            case AGENT_MODULE_STATUS_NORMAL;
+                            case AGENT_MODULE_STATUS_NORMAL:
                                 $text = __('NORMAL');
                                 $color = COL_NORMAL;
                             break;
 
-                            case AGENT_MODULE_STATUS_CRITICAL_BAD;
+                            case AGENT_MODULE_STATUS_CRITICAL_BAD:
                                 $text = __('CRITICAL');
                                 $color = COL_CRITICAL;
                             break;
 
-                            case AGENT_MODULE_STATUS_NO_DATA;
+                            case AGENT_MODULE_STATUS_NO_DATA:
                                 $text = __('NOT INIT');
                                 $color = COL_NOTINIT;
                             break;
 
-                            case AGENT_MODULE_STATUS_CRITICAL_ALERT;
-                            case AGENT_MODULE_STATUS_NORMAL_ALERT;
-                            case AGENT_MODULE_STATUS_WARNING_ALERT;
+                            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                            case AGENT_MODULE_STATUS_WARNING_ALERT:
                                 $text = __('ALERT');
                                 $color = COL_ALERTFIRED;
                             break;
 
-                            case AGENT_MODULE_STATUS_WARNING;
+                            case AGENT_MODULE_STATUS_WARNING:
                                 $text = __('WARNING');
                                 $color = COL_WARNING;
                             break;
@@ -735,19 +744,19 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $module_status = '<div class="criticity" style="background: ';
-                        $module_status .= $color.'">'.$text.'</div>';
+                        $module_status = '<div class="status_rounded_rectangles forced_title" style="background: ';
+                        $module_status .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">&nbsp;</div>';
                         $tmp->module_status = $module_status;
 
                         // Status.
                         switch ($tmp->estado) {
                             case EVENT_STATUS_NEW:
                                 $img = html_print_image(
-                                    'images/star.png',
+                                    'images/star@svg.svg',
                                     true,
                                     [
                                         'title' => __('New event'),
-                                        'class' => 'forced-title',
+                                        'class' => 'forced-title main_menu_icon',
                                     ]
                                 );
                                 $state = 0;
@@ -756,11 +765,11 @@ if (is_ajax() === true) {
                             case EVENT_STATUS_VALIDATED:
                                 $state = 1;
                                 $img = html_print_image(
-                                    'images/tick.png',
+                                    'images/validate.svg',
                                     true,
                                     [
                                         'title' => __('Event validated'),
-                                        'class' => 'forced-title invert_filter',
+                                        'class' => 'forced-title invert_filter main_menu_icon',
                                     ]
                                 );
                             break;
@@ -768,18 +777,18 @@ if (is_ajax() === true) {
                             case EVENT_STATUS_INPROCESS:
                                 $state = 2;
                                 $img = html_print_image(
-                                    'images/hourglass.png',
+                                    'images/clock.svg',
                                     true,
                                     [
                                         'title' => __('Event in process'),
-                                        'class' => 'forced-title invert_filter',
+                                        'class' => 'forced-title invert_filter height_20px',
                                     ]
                                 );
                             break;
 
                             default:
                                 $img = html_print_image(
-                                    'images/star.png',
+                                    'images/star@svg.svg',
                                     true,
                                     [
                                         'title' => __('Unknown'),
@@ -790,7 +799,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $draw_state = '<div>';
+                        $draw_state = '<div class="center">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';
@@ -819,7 +828,7 @@ if (is_ajax() === true) {
                         // Show more.
                         $tmp->options = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
                         $tmp->options .= html_print_image(
-                            'images/operation.png',
+                            'images/details.svg',
                             true,
                             [
                                 'title' => __('Show more'),
@@ -848,11 +857,11 @@ if (is_ajax() === true) {
                                     $tmp->options .= $tmp->event_rep.', this, '.$tmp->server_id.')"';
                                     $tmp->options .= ' id="val-'.$id_val.'">';
                                     $tmp->options .= html_print_image(
-                                        'images/tick.png',
+                                        'images/validate.svg',
                                         true,
                                         [
                                             'title' => __('Validate events'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                     $tmp->options .= '</a>';
@@ -865,11 +874,11 @@ if (is_ajax() === true) {
                                     $tmp->options .= $tmp->id_evento.', 0, this, ';
                                     $tmp->options .= $tmp->server_id.')" id="val-'.$id_val.'">';
                                     $tmp->options .= html_print_image(
-                                        'images/tick.png',
+                                        'images/validate.svg',
                                         true,
                                         [
                                             'title' => __('Validate event'),
-                                            'class' => 'invert_filter',
+                                            'class' => 'invert_filter main_menu_icon',
                                         ]
                                     );
                                     $tmp->options .= '</a>';
@@ -900,11 +909,11 @@ if (is_ajax() === true) {
                                 }
 
                                 $tmp->options .= html_print_image(
-                                    'images/hourglass.png',
+                                    'images/clock.svg',
                                     true,
                                     [
                                         'title' => __('Change to in progress status'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -925,11 +934,11 @@ if (is_ajax() === true) {
                                 $tmp->options .= $tmp->max_id_evento.', '.$tmp->event_rep;
                                 $tmp->options .= ', this, '.$tmp->server_id.')" id="del-'.$id_del.'">';
                                 $tmp->options .= html_print_image(
-                                    'images/cross.png',
+                                    'images/delete.svg',
                                     true,
                                     [
                                         'title' => __('Delete events'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -942,11 +951,11 @@ if (is_ajax() === true) {
                                 $tmp->options .= $tmp->id_evento.', 0, this, ';
                                 $tmp->options .= $tmp->server_id.')" id="del-'.$id_del.'">';
                                 $tmp->options .= html_print_image(
-                                    'images/cross.png',
+                                    'images/delete.svg',
                                     true,
                                     [
                                         'title' => __('Delete event'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -1366,7 +1375,7 @@ if ($pure) {
     echo '<li class="nomn">';
     echo '<a target="_top" href="'.$url.'&amp;pure=0">';
     echo html_print_image(
-        'images/normal_screen.png',
+        'images/exit_fullscreen@svg.svg',
         true,
         [
             'title' => __('Back to normal mode'),
@@ -1409,11 +1418,6 @@ if ($pure) {
     // Floating menu - End.
     ui_require_jquery_file('countdown');
 } else {
-    if (is_metaconsole() === true) {
-        // Load metaconsole frame.
-        enterprise_hook('open_meta_frame');
-    }
-
     // Header.
     $pss = get_user_info($config['id_user']);
     $hashup = md5($config['id_user'].$pss['password']);
@@ -1421,22 +1425,22 @@ if ($pure) {
     // Fullscreen.
     $fullscreen['active'] = false;
     $fullscreen['text'] = '<a class="events_link" href="'.$url.'&amp;pure=1&">'.html_print_image(
-        'images/full_screen.png',
+        'images/fullscreen@svg.svg',
         true,
         [
             'title' => __('Full screen'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
     // Event list.
     $list['active'] = false;
     $list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&">'.html_print_image(
-        'images/events_list.png',
+        'images/event.svg',
         true,
         [
             'title' => __('Event list'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
@@ -1447,40 +1451,57 @@ if ($pure) {
         true,
         [
             'title' => __('History event list'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
     // RSS.
     $rss['active'] = false;
     $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&">'.html_print_image(
-        'images/rss.png',
+        'images/rrs@svg.svg',
         true,
         [
             'title' => __('RSS Events'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
     // CSV.
     $csv['active'] = false;
     $csv['text'] = '<a class="events_link" onclick="blockResubmit($(this))" href="'.ui_get_full_url(false, false, false, false).'operation/events/export_csv.php?'.($filter_b64 ?? '').'">'.html_print_image(
-        'images/csv.png',
+        'images/file-csv.svg',
         true,
         [
             'title' => __('Export to CSV file'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
-    // Sound events.
+    // Accoustic console.
     $sound_event['active'] = false;
-    $sound_event['text'] = '<a href="javascript: openSoundEventWindow();">'.html_print_image(
-        'images/sound.png',
+
+    // Sound Events.
+    $data_sound = base64_encode(
+        json_encode(
+            [
+                'title'        => __('Sound Console'),
+                'start'        => __('Start'),
+                'stop'         => __('Stop'),
+                'noAlert'      => __('No alert'),
+                'silenceAlarm' => __('Silence alarm'),
+                'url'          => ui_get_full_url('ajax.php'),
+                'page'         => 'include/ajax/events',
+                'urlSound'     => 'include/sounds/',
+            ]
+        )
+    );
+
+    $sound_event['text'] = '<a href="javascript: openSoundEventModal(`'.$data_sound.'`);">'.html_print_image(
+        'images/sound_console@svg.svg',
         true,
         [
-            'title' => __('Sound events'),
-            'class' => 'invert_filter',
+            'title' => __('Accoustic console'),
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
 
@@ -1489,11 +1510,11 @@ if ($pure) {
         // Manage events.
         $manage_events['active'] = false;
         $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image(
-            'images/setup.png',
+            'images/configuration@svg.svg',
             true,
             [
                 'title' => __('Manage events'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>';
 
@@ -1529,7 +1550,7 @@ if ($pure) {
     switch ($section) {
         case 'sound_event':
             $onheader['sound_event']['active'] = true;
-            $section_string = __('Sound events');
+            $section_string = __('Accoustic console');
         break;
 
         case 'history':
@@ -1543,11 +1564,16 @@ if ($pure) {
         break;
     }
 
-    if (is_metaconsole() === false) {
+    if (is_metaconsole() === true) {
+        unset($onheader['rss']);
+        unset($onheader['sound_event']);
+        unset($onheader['fullscreen']);
+    }
+
         unset($onheader['history']);
         ui_print_standard_header(
             __('Events list'),
-            'images/lightning_go.png',
+            'images/event.svg',
             false,
             'eventview',
             false,
@@ -1559,33 +1585,6 @@ if ($pure) {
                 ],
             ]
         );
-    } else {
-        unset($onheader['rss']);
-        unset($onheader['sound_event']);
-        unset($onheader['fullscreen']);
-        ui_meta_print_header(__('Events'), $section_string, $onheader);
-    }
-
-    ?>
-    <script type="text/javascript">
-        function openSoundEventWindow() {
-            url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
-            // devicePixelRatio knows how much zoom browser applied.
-            var windowScale = parseFloat(window.devicePixelRatio);
-            var defaultWidth = 630;
-            var defaultHeight = 630;
-            // If the scale is 1, no zoom has been applied.
-            var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
-            var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
-
-            window.open(
-                url,
-                '<?php __('Sound Alerts'); ?>',
-                'width='+windowWidth+', height='+windowHeight+', resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'
-            );
-        }
-    </script>
-    <?php
 }
 
 if (enterprise_installed() === true) {
@@ -1652,11 +1651,57 @@ $data = html_print_input(
         'selected'       => $id_group,
         'nothing'        => false,
         'return'         => true,
-        'size'           => '80%',
+        'size'           => '100%',
     ]
 );
 $in = '<div class="filter_input"><label>'.__('Group').'</label>';
-$in .= $data.'</div>';
+$in .= $data;
+
+// Search recursive groups.
+$data = html_print_checkbox_switch(
+    'search_recursive_groups',
+    $search_recursive_groups,
+    $search_recursive_groups,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+
+$in_group = '<div class="display-initial">';
+$in_group .= $data;
+$in_group .= '<label class="vert-align-bottom pdd_r_20px">';
+$in_group .= __('Group recursion');
+$in_group .= ui_print_help_tip(
+    __('WARNING: This could cause a performace impact.'),
+    true
+);
+$in_group .= '</label>';
+$in .= $in_group;
+
+// Search secondary groups.
+$data = html_print_checkbox_switch(
+    'search_secondary_groups',
+    $search_secondary_groups,
+    $search_secondary_groups,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+
+$in_sec_group .= $data;
+$in_sec_group .= '<label class="vert-align-bottom">';
+$in_sec_group .= __('Search in secondary groups');
+$in_sec_group .= ui_print_help_tip(
+    __('WARNING: This could cause a performace impact.'),
+    true
+);
+$in_sec_group .= '</label>';
+$in_sec_group .= '</div>';
+$in .= $in_sec_group;
+
+$in .= '</div>';
 $inputs[] = $in;
 
 // Event type.
@@ -1723,11 +1768,9 @@ $inputs[] = $in;
 
 // Free search.
 $data = html_print_input_text('search', $search, '', '', 255, true);
+
 // Search recursive groups.
-$data .= ui_print_help_tip(
-    __('Search for elements NOT containing given text.'),
-    true
-);
+$data .= '<div class="display-initial">';
 $data .= html_print_checkbox_switch(
     'not_search',
     $not_search,
@@ -1737,6 +1780,13 @@ $data .= html_print_checkbox_switch(
     'checked_slide_events(this);',
     true
 );
+
+$data .= ui_print_help_tip(
+    __('Search for elements NOT containing given text.'),
+    true
+);
+$data .= '</div>';
+
 $in = '<div class="filter_input filter_input_not_search"><label>'.__('Free search').'</label>';
 $in .= $data;
 $in .= '</div>';
@@ -1771,68 +1821,26 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-// Search recursive groups.
-$data = html_print_checkbox_switch(
-    'search_recursive_groups',
-    $search_recursive_groups,
-    $search_recursive_groups,
-    true,
-    false,
-    'checked_slide_events(this);',
-    true
-);
-
-$in = '<div class="filter_input filter_input_switch"><label>';
-$in .= __('Group recursion');
-$in .= ui_print_help_tip(
-    __('WARNING: This could cause a performace impact.'),
-    true
-);
-$in .= '</label>';
-$in .= $data;
-$in .= '</div>';
-$inputs[] = $in;
-
-// Search secondary groups.
-$data = html_print_checkbox_switch(
-    'search_secondary_groups',
-    $search_secondary_groups,
-    $search_secondary_groups,
-    true,
-    false,
-    'checked_slide_events(this);',
-    true
-);
-
-$in = '<div class="filter_input filter_input_switch"><label>';
-$in .= __('Search in secondary groups');
-$in .= ui_print_help_tip(
-    __('WARNING: This could cause a performace impact.'),
-    true
-);
-$in .= '</label>';
-$in .= $data;
-$in .= '</div>';
-$inputs[] = $in;
-
 // Trick view in table.
-$inputs[] = '<div style="min-width:32%;"></div>';
+$inputs[] = '<div class="w100p pdd_t_15px"></div>';
 
 $buttons = [];
 
 $buttons[] = [
     'id'      => 'load-filter',
-    'class'   => 'float-left margin-right-2 sub config',
+    'class'   => 'float-left margin-right-2',
     'text'    => __('Load filter'),
     'onclick' => '',
+    'icon'    => 'load',
 ];
 
 if ($event_w === true || $event_m === true) {
     $buttons[] = [
         'id'      => 'save-filter',
-        'class'   => 'float-left margin-right-2 sub wand',
+        'class'   => 'margin-right-2',
         'text'    => __('Save filter'),
         'onclick' => '',
+        'icon'    => 'save',
     ];
 }
 
@@ -1905,8 +1913,9 @@ if ($id_agent !== null) {
 }
 
 $data = ui_print_agent_autocomplete_input($params);
-$in = '<div class="filter_input"><label>'.__('Agent search').'</label>';
-$in .= $data.'</div>';
+$in = '<div class="filter_input"><label>'.__('Agent search');
+
+$in .= '</label>'.$data.'</div>';
 $adv_inputs[] = $in;
 
 // Mixed. Metaconsole => server, Console => module.
@@ -1959,7 +1968,12 @@ $data = html_print_select(
     '',
     __('Any'),
     0,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 400px'
 );
 $in = '<div class="filter_input"><label>'.__('User ack.').'</label>';
 $in .= $data.'</div>';
@@ -1972,7 +1986,12 @@ $data = html_print_select(
     '',
     __('Any'),
     0,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 400px'
 );
 $in = '<div class="filter_input"><label>'.__('Owner').'</label>';
 $in .= $data.'</div>';
@@ -1989,7 +2008,12 @@ $data = html_print_select(
     '',
     __('All'),
     -1,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 400px'
 );
 
 $adv_inputs[] = html_print_div(
@@ -2076,7 +2100,7 @@ $adv_inputs[] = html_print_div(
     [
         'class'   => 'filter_input',
         'content' => sprintf(
-            '<label>%s</label>%s<span>:</span>%s',
+            '<label>%s</label><div class="datetime-adv-opt">%s<span>:</span>%s</div>',
             __('From (date:time)'),
             $inputDateFrom,
             $inputTimeFrom
@@ -2134,7 +2158,7 @@ $adv_inputs[] = html_print_div(
     [
         'class'   => 'filter_input',
         'content' => sprintf(
-            '<label>%s</label>%s<span>:</span>%s',
+            '<label>%s</label><div class="datetime-adv-opt">%s<span>:</span>%s</div>',
             __('To (date:time)'),
             $inputDateTo,
             $inputTimeTo
@@ -2154,7 +2178,12 @@ $custom_data_filter_type_input = html_print_select(
     '',
     false,
     -1,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 400px'
 );
 
 $adv_inputs[] = html_print_div(
@@ -2209,13 +2238,14 @@ $adv_filter = join('', $adv_inputs);
 $filter = join('', $inputs);
 $filter .= ui_toggle(
     $adv_filter,
-    __('Advanced options'),
+    '<span class="subsection_header_title">'.__('Advanced options').'</span>',
     '',
     '',
     true,
     true,
-    'white_box white_box_opened',
-    'no-border flex-row'
+    'white_box white_box_opened no_border',
+    'advanced-options-events no-border flex-row',
+    'box-flat white_table_graph w100p'
 );
 
 try {
@@ -2241,7 +2271,7 @@ try {
         'event_type',
         [
             'text'  => 'options',
-            'class' => 'action_buttons w120px',
+            'class' => 'table_action_buttons w120px',
         ],
         [
             'text'  => 'm',
@@ -2285,7 +2315,7 @@ try {
         [
             [
                 'text'  => 'options',
-                'class' => 'action_buttons mw120px',
+                'class' => 'table_action_buttons mw120px',
             ],
             [
                 'text'  => 'm',
@@ -2384,72 +2414,84 @@ try {
 
     // Close.
     $active_filters_div .= '</div>';
-    $active_filters_div .= '<div id="events_buffers_display"></div>';
-
+    // $active_filters_div .= '<div id="events_buffers_display"></div>';
     $table_id = 'table_events';
     $form_id = 'events_form';
 
+    $show_hide_filters = '';
+    if ((int) $_GET['pure'] === 1) {
+        $show_hide_filters = 'invisible';
+    }
+
     // Print datatable.
-    ui_print_datatable(
+    html_print_div(
         [
-            'id'                             => $table_id,
-            'class'                          => 'info_table events',
-            'style'                          => 'width: 100%;',
-            'ajax_url'                       => 'operation/events/events',
-            'ajax_data'                      => [
-                'get_events' => 1,
-                'history'    => (int) $history,
-                'table_id'   => $table_id,
-            ],
-            'form'                           => [
-                'id'            => $form_id,
-                'class'         => 'flex-row',
-                'html'          => $filter,
-                'inputs'        => [],
-                'extra_buttons' => $buttons,
-            ],
-            'extra_html'                     => $active_filters_div,
-            'pagination_options'             => [
+            'class'   => 'events_table_wrapper',
+            'style'   => 'margin-top: 0px; margin-bottom: 0px;',
+            'content' => ui_print_datatable(
                 [
-                    $config['block_size'],
-                    10,
-                    25,
-                    100,
-                    200,
-                    500,
-                    1000,
-                    -1,
+                    'id'                             => $table_id,
+                    'class'                          => 'info_table events',
+                    'style'                          => 'width: 99%;',
+                    'ajax_url'                       => 'operation/events/events',
+                    'ajax_data'                      => [
+                        'get_events' => 1,
+                        'history'    => (int) $history,
+                        'table_id'   => $table_id,
+                    ],
+                    'form'                           => [
+                        'id'            => $form_id,
+                        'class'         => 'flex-row',
+                        'html'          => $filter,
+                        'inputs'        => [],
+                        'extra_buttons' => $buttons,
+                    ],
+                    'extra_html'                     => $active_filters_div,
+                    'pagination_options'             => [
+                        [
+                            $config['block_size'],
+                            10,
+                            25,
+                            100,
+                            200,
+                            500,
+                        ],
+                        [
+                            $config['block_size'],
+                            10,
+                            25,
+                            100,
+                            200,
+                            500,
+                        ],
+                    ],
+                    'order'                          => [
+                        'field'     => 'timestamp',
+                        'direction' => 'desc',
+                    ],
+                    'column_names'                   => $column_names,
+                    'columns'                        => $fields,
+                    'no_sortable_columns'            => [
+                        -1,
+                        -2,
+                        'column-instructions',
+                    ],
+                    'ajax_return_operation'          => 'buffers',
+                    'ajax_return_operation_function' => 'process_buffers',
+                    'drawCallback'                   => 'process_datatables_callback(this, settings)',
+                    'print'                          => false,
+                    'csv'                            => 0,
+                    'filter_main_class'              => 'box-flat white_table_graph fixed_filter_bar '.$show_hide_filters,
                 ],
-                [
-                    $config['block_size'],
-                    10,
-                    25,
-                    100,
-                    200,
-                    500,
-                    1000,
-                    'All',
-                ],
-            ],
-            'order'                          => [
-                'field'     => 'timestamp',
-                'direction' => 'desc',
-            ],
-            'column_names'                   => $column_names,
-            'columns'                        => $fields,
-            'no_sortable_columns'            => [
-                -1,
-                -2,
-                'column-instructions',
-            ],
-            'ajax_return_operation'          => 'buffers',
-            'ajax_return_operation_function' => 'process_buffers',
-            'drawCallback'                   => 'process_datatables_callback(this, settings)',
+            ),
         ]
     );
 } catch (Exception $e) {
     ui_print_error_message($e->getMessage());
 }
+
+// Close.
+echo '<div id="events_buffers_display"></div>';
 
 // Event responses.
 if (is_user_admin($config['id_user'])) {
@@ -2489,25 +2531,33 @@ if (check_acl(
     echo '<div class="multi-response-buttons">';
     echo '<form method="post" id="form_event_response">';
     echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
-    html_print_select(
+
+    $elements = html_print_button(
+        __('Execute event response'),
+        'submit_event_response',
+        false,
+        'execute_event_response(true);',
+        [ 'icon' => 'cog' ],
+        true
+    );
+
+    $elements .= html_print_select(
         $array_events_actions,
         'response_id',
         '',
         '',
         '',
         0,
-        false,
+        true,
         false,
         false
     );
-    echo '&nbsp&nbsp';
-    html_print_button(
-        __('Execute event response'),
-        'submit_event_response',
-        false,
-        'execute_event_response(true);',
-        'class="sub next"'
+
+    html_print_action_buttons(
+        $elements,
+        [ 'type' => 'data_table' ]
     );
+
     echo "<span id='response_loading_dialog' class='invisible'>".html_print_image(
         'images/spinner.gif',
         true
@@ -2524,9 +2574,6 @@ if (check_acl(
     ).'</span>';
     echo '</div>';
 }
-
-// Close viewer.
-enterprise_hook('close_meta_frame');
 
 // Datepicker requirements.
 ui_require_css_file('datepicker');
@@ -2646,7 +2693,7 @@ function process_datatables_callback(table, settings) {
 
         function countdown_repeat() {
             var until_time = new Date();
-            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo($config['refr'] * 1000); ?>));
             return until_time;
         }
 
@@ -2963,7 +3010,7 @@ $(document).ready( function() {
     /* Summary updates end. */
 
     /* Filter management */
-    $('#load-filter').click(function (){
+    $('#button-load-filter').click(function (){
         if($('#load-filter-select').length) {
             $('#load-filter-select').dialog();
         } else {
@@ -2987,7 +3034,7 @@ $(document).ready( function() {
         }
     });
 
-    $('#save-filter').click(function (){
+    $('#button-save-filter').click(function (){
         if($('#save-filter-select').length) {
             $('#save-filter-select').dialog();
         } else {
@@ -3064,7 +3111,7 @@ $(document).ready( function() {
     //Autorefresh in fullscreen
     var pure = '<?php echo $pure; ?>';
     if(pure == 1){
-        var refresh_interval = parseInt('<?php echo ($config['refr'] * 1000); ?>');
+        var refresh_interval = parseInt('<?php echo($config['refr'] * 1000); ?>');
         var until_time='';
 
         // If autorefresh is disabled, don't show the countdown   
@@ -3075,7 +3122,7 @@ $(document).ready( function() {
 
         function events_refresh() {
             until_time = new Date();
-            until_time.setTime (until_time.getTime () + parseInt(<?php echo ($config['refr'] * 1000); ?>));
+            until_time.setTime (until_time.getTime () + parseInt(<?php echo($config['refr'] * 1000); ?>));
 
             $("#refrcounter").countdown ({
                 until: until_time,
@@ -3156,4 +3203,15 @@ function show_instructions(id){
     });
 }
 
+$(document).ready(function () {
+    let agentLabel = $('#text-text_agent').prev();
+    let agentTip = $('#text-text_agent').next();
+    agentLabel.append(agentTip);
+
+    let moduleLabel = $('#text-module_search').prev();
+    let moduleTip = $('#text-module_search').next().next();
+    moduleLabel.append(moduleTip);
+
+    $('.white_table_graph_header').first().append($('.filter_summary'));
+});
 </script>

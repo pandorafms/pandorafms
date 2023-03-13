@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.768 Build 230119";
+my $version = "7.0NG.769 Build 230313";
 
 # save program name for logging
 my $progname = basename($0);
@@ -3504,6 +3504,8 @@ sub cli_agent_update() {
 	} else {
 		pandora_update_table_from_hash ($conf, $update, 'id_agente', safe_input($id_agent), 'tagente', $dbh);
 	}
+
+	enterprise_hook('update_agent_cache', [$conf, $dbh, $id_agent]) if ($conf->{'node_metaconsole'} == 1);
 }
 
 ##############################################################################

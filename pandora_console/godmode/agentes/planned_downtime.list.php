@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -89,7 +89,7 @@ if (is_ajax() === true) {
             [
                 'id'                  => 'agent_modules_affected_planned_downtime',
                 'class'               => 'info_table',
-                'style'               => 'width: 100%',
+                'style'               => 'width: 99%',
                 'columns'             => $columns,
                 'column_names'        => $column_names,
                 'ajax_url'            => 'godmode/agentes/planned_downtime.list',
@@ -103,6 +103,7 @@ if (is_ajax() === true) {
                 ],
                 'search_button_class' => 'sub filter float-right',
                 'form'                => [
+                    'class'  => 'filter-table-adv',
                     'inputs' => [
                         [
                             'label' => __('Agents'),
@@ -207,13 +208,23 @@ if ($migrate_malformed === true) {
 }
 
 // Header.
-ui_print_page_header(
+ui_print_standard_header(
     __('Scheduled Downtime'),
     'images/gm_monitoring.png',
     false,
     '',
     true,
-    ''
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Tools'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Scheduled Downtime'),
+        ],
+    ],
 );
 
 $id_downtime = (int) get_parameter('id_downtime', 0);
@@ -290,7 +301,7 @@ $search_text = (string) get_parameter('search_text');
 $date_from = (string) get_parameter('date_from');
 $date_to = (string) get_parameter('date_to');
 $execution_type = (string) get_parameter('execution_type');
-$show_archived = (bool) get_parameter('archived');
+$show_archived = (bool) get_parameter_switch('archived', false);
 $agent_id = (int) get_parameter('agent_id');
 $agent_name = (string) ((empty($agent_id) === false) ? get_parameter('agent_name') : '');
 $module_id = (int) get_parameter('module_name_hidden');
@@ -308,26 +319,8 @@ $filter_params['module_name'] = $module_name;
 
 $filter_params_str = http_build_query($filter_params);
 
-// Table filter.
-$table_form = new StdClass();
-$table_form->class = 'databox filters';
-$table_form->width = '100%';
-$table_form->rowstyle = [];
-$table_form->data = [];
-
-$row = [];
-
-// Search text.
-$row[] = __('Search').'&nbsp;'.html_print_input_text(
-    'search_text',
-    $search_text,
-    '',
-    50,
-    250,
-    true
-);
-// Dates.
-$date_inputs = __('From').'&nbsp;'.html_print_input_text(
+// From/To inputs.
+$date_inputs = html_print_input_text(
     'date_from',
     $date_from,
     '',
@@ -335,8 +328,8 @@ $date_inputs = __('From').'&nbsp;'.html_print_input_text(
     10,
     true
 );
-$date_inputs .= '&nbsp;&nbsp;';
-$date_inputs .= __('To').'&nbsp;'.html_print_input_text(
+$date_inputs .= '&nbsp;'.__('To').'&nbsp;';
+$date_inputs .= html_print_input_text(
     'date_to',
     $date_to,
     '',
@@ -344,11 +337,6 @@ $date_inputs .= __('To').'&nbsp;'.html_print_input_text(
     10,
     true
 );
-$row[] = $date_inputs;
-
-$table_form->data[] = $row;
-
-$row = [];
 
 // Execution type.
 $execution_type_fields = [
@@ -356,28 +344,6 @@ $execution_type_fields = [
     'periodically' => __('Periodically'),
     'cron'         => __('Cron'),
 ];
-$row[] = __('Execution type').'&nbsp;'.html_print_select(
-    $execution_type_fields,
-    'execution_type',
-    $execution_type,
-    '',
-    __('Any'),
-    '',
-    true,
-    false,
-    false
-);
-// Show past downtimes.
-$row[] = __('Show past downtimes').'&nbsp;'.html_print_checkbox(
-    'archived',
-    1,
-    $show_archived,
-    true
-);
-
-$table_form->data[] = $row;
-
-$row = [];
 
 // Agent.
 $params = [];
@@ -388,29 +354,89 @@ $params['return'] = true;
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_name'] = 'agent_id';
 $params['hidden_input_idagent_value'] = $agent_id;
-$agent_input = __('Agent').'&nbsp;'.ui_print_agent_autocomplete_input($params);
-$row[] = $agent_input;
 
-// Module.
-$row[] = __('Module').'&nbsp;'.html_print_autocomplete_modules(
-    'module_name',
-    $module_name,
-    false,
-    true,
-    '',
-    [],
-    true
-);
-
-$row[] = html_print_submit_button(
+// Table filter.
+$table_form = new stdClass();
+$table_form->class = 'filter-table-adv';
+$table_form->id = 'filter_scheduled_downtime';
+$table_form->width = '100%';
+$table_form->rowstyle = [];
+$table_form->cellstyle[0] = ['width: 100px;'];
+$table_form->cellstyle[1] = ['width: 100px;'];
+$table_form->cellstyle[1][2] = 'display: flex; align-items: center;';
+$table_form->cellstyle[2] = ['width: 100px;'];
+$table_form->cellstyle[3] = ['text-align: right;'];
+$table_form->data = [];
+// Search text.
+$table_form->data[0][] = html_print_label_input_block(
     __('Search'),
-    'search',
-    false,
-    'class="sub search"',
-    true
+    html_print_input_text(
+        'search_text',
+        $search_text,
+        '',
+        50,
+        250,
+        true
+    )
+);
+// From / To.
+$table_form->data[0][] = html_print_label_input_block(
+    __('Between dates'),
+    html_print_div(
+        [
+            'class'   => 'flex-content-left',
+            'content' => $date_inputs,
+        ],
+        true
+    )
+);
+// Show past downtimes.
+$table_form->data[0][] = html_print_label_input_block(
+    __('Show past downtimes'),
+    html_print_switch(
+        [
+            'name'  => 'archived',
+            'value' => $show_archived,
+        ]
+    )
+);
+// Execution type.
+$table_form->data[1][] = html_print_label_input_block(
+    __('Execution type'),
+    html_print_select(
+        $execution_type_fields,
+        'execution_type',
+        $execution_type,
+        '',
+        __('Any'),
+        '',
+        true,
+        false,
+        false
+    )
 );
 
-$table_form->data[] = $row;
+$table_form->data[1][] = html_print_label_input_block(
+    __('Agent'),
+    ui_print_agent_autocomplete_input($params)
+);
+
+$table_form->data[1][] = html_print_label_input_block(
+    __('Module'),
+    html_print_autocomplete_modules(
+        'module_name',
+        $module_name,
+        false,
+        true,
+        '',
+        [],
+        true,
+        0,
+        30,
+        true
+    )
+);
+
 // End of table filter.
 // Useful to know if the user has done a form filtering.
 $filter_performed = false;
@@ -613,34 +639,85 @@ if ($downtimes === false && $filter_performed === false) {
     // No downtimes cause the user performed a search.
     // Filter form.
     echo '<form method="post" action="'.$url_list.'">';
-        html_print_table($table_form);
+        $outputTable = html_print_table($table_form, true);
+        $outputTable .= html_print_div(
+            [
+                'class'   => 'action-buttons-right-forced',
+                'content' => html_print_submit_button(
+                    __('Filter'),
+                    'search',
+                    false,
+                    [
+                        'icon' => 'search',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
+        ui_toggle(
+            $outputTable,
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
+            __('Filters'),
+            '',
+            true,
+            false,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
+        );
     echo '</form>';
 
     // Info message.
-    echo '<div class="nf">'.__('No scheduled downtime').'</div>';
-
-    echo '<div class="action-buttons w100p" >';
+    ui_print_info_message(__('No scheduled downtime'));
 
     // Create button.
     if ($write_permisson === true) {
-        echo '&nbsp;';
         echo '<form method="post" class="display_in" action="'.$url_editor.'">';
-        html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Create'),
+                'create',
+                false,
+                ['icon' => 'next'],
+                true
+            )
+        );
         echo '</form>';
     }
-
-    echo '</div>';
 } else {
     // Has downtimes.
     echo '<form method="post" action="'.$url_list.'">';
-        html_print_table($table_form);
+        $outputTable = html_print_table($table_form, true);
+        $outputTable .= html_print_div(
+            [
+                'class'   => 'action-buttons-right-forced',
+                'content' => html_print_submit_button(
+                    __('Search'),
+                    'search',
+                    false,
+                    [
+                        'icon' => 'search',
+                        'mode' => 'mini',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
+        ui_toggle(
+            $outputTable,
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
+            __('Filters'),
+            '',
+            true,
+            false,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
+        );
     echo '</form>';
-
-    ui_pagination(
-        $downtimes_number,
-        $url_list.'&'.$filter_params_str,
-        $offset
-    );
 
     // User groups with AR, AD or AW permission.
     $groupsAD = users_get_groups($config['id_user'], $access);
@@ -740,17 +817,17 @@ if ($downtimes === false && $filter_performed === false) {
         $settings = [
             'url'         => ui_get_full_url('ajax.php', false, false, false),
             'loadingText' => __('Loading, this operation might take several minutes...'),
-            'title'       => __('Agents / Modules affected'),
+            'title'       => __('Elements affected'),
             'id'          => $downtime['id'],
         ];
 
         $data['agents_modules'] = '<a href="#" onclick=\'dialogAgentModulesAffected('.json_encode($settings).')\'>';
         $data['agents_modules'] .= html_print_image(
-            'images/search_big.png',
+            'images/details.svg',
             true,
             [
                 'title' => __('Agents and modules affected'),
-                'style' => 'width:22px; height: 22px;',
+                'class' => 'main_menu_icon invert_filter',
             ]
         );
         $data['agents_modules'] .= '</a>';
@@ -767,15 +844,21 @@ if ($downtimes === false && $filter_performed === false) {
                     $url_list_params = $url_list.'&stop_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str;
                     $data['stop'] = '<a href="'.$url_list_params.'">';
                     $data['stop'] .= html_print_image(
-                        'images/cancel.png',
+                        'images/fail@svg.svg',
                         true,
-                        ['title' => __('Stop downtime')]
+                        [
+                            'title' => __('Stop downtime'),
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
                     );
                 } else {
                     $data['stop'] = html_print_image(
-                        'images/cancel.png',
+                        'images/fail@svg.svg',
                         true,
-                        ['title' => __('Stop downtime')]
+                        [
+                            'title' => __('Stop downtime'),
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
                     );
                 }
             } else {
@@ -790,11 +873,11 @@ if ($downtimes === false && $filter_performed === false) {
                     // Copy.
                     $data['copy'] = '<a href="'.$url_editor.'&downtime_copy=1&id_downtime='.$downtime['id'].'">';
                     $data['copy'] .= html_print_image(
-                        'images/copy.png',
+                        'images/copy.svg',
                         true,
                         [
                             'title' => __('Copy'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data['copy'] .= '</a>';
@@ -802,11 +885,11 @@ if ($downtimes === false && $filter_performed === false) {
                     // Edit.
                     $data['edit'] = '<a href="'.$url_editor.'&edit_downtime=1&id_downtime='.$downtime['id'].'">';
                     $data['edit'] .= html_print_image(
-                        'images/config.png',
+                        'images/configuration@svg.svg',
                         true,
                         [
                             'title' => __('Update'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data['edit'] .= '</a>';
@@ -815,11 +898,11 @@ if ($downtimes === false && $filter_performed === false) {
                     $url_delete = $url_list.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str;
                     $data['delete'] = '<a id="delete_downtime" href="'.$url_delete.'">';
                     $data['delete'] .= html_print_image(
-                        'images/cross.png',
+                        'images/delete.svg',
                         true,
                         [
                             'title' => __('Delete'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data['delete'] .= '</a>';
@@ -836,22 +919,22 @@ if ($downtimes === false && $filter_performed === false) {
                     // Copy.
                     $data['copy'] = '<a href="'.$url_editor.'&downtime_copy=1&id_downtime='.$downtime['id'].'">';
                     $data['copy'] .= html_print_image(
-                        'images/copy.png',
+                        'images/copy.svg',
                         true,
                         [
                             'title' => __('Copy'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data['copy'] .= '</a>';
                     // Edit.
                     $data['edit'] = '<a href="'.$url_editor.'&edit_downtime=1&id_downtime='.$downtime['id'].'">';
                     $data['edit'] .= html_print_image(
-                        'images/config.png',
+                        'images/configuration@svg.svg',
                         true,
                         [
                             'title' => __('Update'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data['edit'] .= '</a>';
@@ -888,44 +971,47 @@ if ($downtimes === false && $filter_performed === false) {
     }
 
     html_print_table($table);
-    ui_pagination(
+    $tablePagination = ui_pagination(
         $downtimes_number,
         $url_list.'&'.$filter_params_str,
         $offset,
         0,
-        false,
-        'offset',
         true,
-        'pagination-bottom'
+        'offset',
+        false
     );
 
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-
-    // CSV export button.
-    echo '<div class="display_in">';
-        html_print_button(
-            __('Export to CSV'),
-            'csv_export',
-            false,
-            'blockResubmit($(this)); location.href=\'godmode/agentes/planned_downtime.export_csv.php?'.$filter_params_str.'\'',
-            'class="sub next"'
-        );
-    echo '</div>';
-
+    $actionsButtons = '';
     // Create button.
     if ($write_permisson === true) {
-        echo '&nbsp;';
-        echo '<form method="post" action="'.$url_editor.'" class="display_in" >';
-        html_print_submit_button(
+        $actionsButtons .= '<form method="post" action="'.$url_editor.'" class="display_in" >';
+        $actionsButtons .= html_print_submit_button(
             __('Create'),
             'create',
             false,
-            'class="sub next"'
+            ['icon' => 'next'],
+            true
         );
-        echo '</form>';
+        $actionsButtons .= '</form>';
     }
 
-    echo '</div>';
+    // CSV export button.
+    $actionsButtons .= html_print_button(
+        __('Export to CSV'),
+        'csv_export',
+        false,
+        'blockResubmit($(this)); location.href="godmode/agentes/planned_downtime.export_csv.php?'.$filter_params_str.'"',
+        [
+            'icon' => 'load',
+            'mode' => 'secondary',
+        ],
+        true
+    );
+
+    html_print_action_buttons(
+        $actionsButtons,
+        [ 'right_content' => $tablePagination ]
+    );
 }
 
 ui_require_jquery_file(

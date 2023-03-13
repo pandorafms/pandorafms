@@ -55,10 +55,30 @@ function draw_minimap() {
   var relation_min_nodes = minimap_relation;
   var relation_minimap_w = 2;
   var relation_minimap_h = 2;
-  if (graph.nodes.length > 100) {
+  if (graph.nodes.length > 100 && graph.nodes.length < 500) {
     relation_min_nodes = 0.01;
     relation_minimap_w = (graph.nodes.length / 100) * 2.5;
     relation_minimap_h = 1.5;
+  } else if (graph.nodes.length >= 500 && graph.nodes.length < 1000) {
+    if (typeof method != "undefined" && method == 4) {
+      relation_min_nodes = 0.002;
+      relation_minimap_w = (graph.nodes.length / 500) * 2.5;
+      relation_minimap_h = 3;
+    } else {
+      relation_min_nodes = 0.008;
+      relation_minimap_w = (graph.nodes.length / 500) * 2.5;
+      relation_minimap_h = 3;
+    }
+  } else if (graph.nodes.length >= 1000) {
+    if (typeof method != "undefined" && method == 4) {
+      relation_min_nodes = 0.001;
+      relation_minimap_w = (graph.nodes.length / 1000) * 4.5;
+      relation_minimap_h = 4;
+    } else {
+      relation_min_nodes = 0.0015;
+      relation_minimap_w = (graph.nodes.length / 1000) * 3.5;
+      relation_minimap_h = 3.5;
+    }
   }
 
   //Draw the items and lines
@@ -819,6 +839,10 @@ function edit_node(data_node, dblClick) {
       "onclick",
       "update_fictional_node(" + node_selected.id_db + ");"
     );
+    $("#button-upd_fictional_node").attr(
+      "onclick",
+      "update_fictional_node(" + node_selected.id_db + ");"
+    );
 
     $("#node_options-node_name-2 input").attr(
       "onclick",
@@ -826,9 +850,9 @@ function edit_node(data_node, dblClick) {
     );
 
     if (node_selected.type === "3") {
-      $("#node_details-0-0").html("<strong>Link to map</strong>");
+      $("#node_details-0-0").html("Link to map");
       if (node_selected.networkmap_id > 0) {
-        $("#node_details-0-1").html(
+        $("#node_details-0-1 div").html(
           '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=' +
             node_selected.networkmap_id +
             '">' +
@@ -838,7 +862,7 @@ function edit_node(data_node, dblClick) {
             "</a>"
         );
       } else {
-        $("#node_details-0-1").html(
+        $("#node_details-0-1 div").html(
           $(
             `#edit_networkmap_to_link option[value='${node_selected.networkmap_id}']`
           ).text()
@@ -849,7 +873,7 @@ function edit_node(data_node, dblClick) {
       $("#node_details-2").hide();
       $("#node_details-3").hide();
     } else {
-      $("#node_details-0-0").html("<strong>Agent</strong>");
+      //$("#node_details-0-0").html("Agent");
       $("#node_details-1").show();
       $("#node_details-2").show();
       $("#node_details-3").show();
@@ -865,7 +889,7 @@ function edit_node(data_node, dblClick) {
         type: "POST",
         url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
-          $("#node_details-0-1").html(
+          $("#content_node_details-0-1").html(
             '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' +
               node_selected["id_agent"] +
               '">' +
@@ -883,9 +907,9 @@ function edit_node(data_node, dblClick) {
               addresses += address + "<br>";
             }
           }
-          $("#node_details-1-1").html(addresses);
-          $("#node_details-2-1").html(data["os"]);
-          $("#node_details-3-1").html(data["group"]);
+          $("#content_node_details-1-1").html(addresses);
+          $("#content_node_details-2-1").html(data["os"]);
+          $("#content_node_details-3-1").html(data["group"]);
 
           $("[aria-describedby=dialog_node_edit]").css({ top: "200px" });
           $("#foot").css({
@@ -914,18 +938,22 @@ function edit_node(data_node, dblClick) {
       //Fictional node
       $("#node_options-fictional_node_name").css("display", "");
       $("input[name='edit_name_fictional_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
-      $("#node_options-fictional_node_networkmap_link").css("display", "");
+      $("#node_options-fictional_node_networkmap_link-0").css("display", "");
       $("#edit_networkmap_to_link").val(node_selected.networkmap_id);
       $("#edit_networkmap_to_link").trigger("change");
-      $("#node_options-fictional_node_update_button").css("display", "");
+      $("#button-upd_fictional_node").css("display", "");
       $("#node_options-node_name").css("display", "none");
-      $("#node_options-node_update_button").css("display", "none");
+      $("#button-upd_only_node").css("display", "none");
     } else {
       $("input[name='edit_name_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
       $("#node_options-fictional_node_name").css("display", "none");
-      $("#node_options-fictional_node_networkmap_link").css("display", "none");
-      $("#node_options-fictional_node_update_button").css("display", "none");
+      $("#node_options-fictional_node_networkmap_link-0").css(
+        "display",
+        "none"
+      );
       $("#node_options-node_name").css("display", "");
+      $("#button-upd_fictional_node").css("display", "none");
+      $("#button-upd_only_node").css("display", "");
     }
 
     //Clean
@@ -1164,9 +1192,15 @@ function load_interfaces(selected_links) {
     $("#relations_table")
       .parent()
       .append(
-        `<div class='action-buttons w100p'>
-          <input id='update_relations_button' class='sub upd' type='button' value='update relations'>
-        </div>`
+        `
+        <div class='action-buttons w100p'>
+        <button id="update_relations_button" type="button" class="buttonButton" value="Update relations">
+          <span id="span-button-unnamed" class="font_11">
+            Update relations
+          </span>
+          <div style="" class="subIcon next "></div>
+        </button>
+        `
       );
 
     $("#update_relations_button").click(function() {
@@ -1321,7 +1355,7 @@ function hide_labels_function() {
   $("#hide_labels_" + networkmap_id + " > a").attr("title", "Show Labels");
   $("#hide_labels_" + networkmap_id + " > a > img").attr(
     "src",
-    window.location.origin + "/pandora_console/images/icono_pintar.png"
+    window.location.origin + "/pandora_console/images/enable.svg"
   );
 
   d3.selectAll(".node_text").style("display", "none");
@@ -1334,7 +1368,7 @@ function show_labels_function() {
   $("#hide_labels_" + networkmap_id + " > a").attr("title", "Hide Labels");
   $("#hide_labels_" + networkmap_id + " > a > img").attr(
     "src",
-    window.location.origin + "/pandora_console/images//icono_borrar.png"
+    window.location.origin + "/pandora_console/images/disable.svg"
   );
 
   d3.selectAll(".node_text").style("display", "");
@@ -1792,10 +1826,30 @@ function init_minimap() {
   var relation_minimap_w = 2;
   var relation_minimap_h = 2;
 
-  if (graph.nodes.length > 100) {
+  if (graph.nodes.length > 100 && graph.nodes.length < 500) {
     relation_min_nodes = 0.01;
     relation_minimap_w = (graph.nodes.length / 100) * 2.5;
     relation_minimap_h = 1.5;
+  } else if (graph.nodes.length >= 500 && graph.nodes.length < 1000) {
+    if (typeof method != "undefined" && method == 4) {
+      relation_min_nodes = 0.002;
+      relation_minimap_w = (graph.nodes.length / 500) * 2.5;
+      relation_minimap_h = 3;
+    } else {
+      relation_min_nodes = 0.008;
+      relation_minimap_w = (graph.nodes.length / 500) * 2.5;
+      relation_minimap_h = 3;
+    }
+  } else if (graph.nodes.length >= 1000) {
+    if (typeof method != "undefined" && method == 4) {
+      relation_min_nodes = 0.001;
+      relation_minimap_w = (graph.nodes.length / 1000) * 4.5;
+      relation_minimap_h = 4;
+    } else {
+      relation_min_nodes = 0.0015;
+      relation_minimap_w = (graph.nodes.length / 1000) * 3.5;
+      relation_minimap_h = 3.5;
+    }
   }
 
   $("#minimap_" + networkmap_id).bind("mousemove", function(event) {
@@ -3090,6 +3144,10 @@ function init_graph(parameter_object) {
 
   if (typeof parameter_object.refresh_time != "undefined") {
     window.refresh_time = parameter_object.refresh_time;
+  }
+
+  if (typeof parameter_object.method != "undefined") {
+    window.method = parameter_object.method;
   }
 
   var rect_center_x = graph.nodes[0].x;

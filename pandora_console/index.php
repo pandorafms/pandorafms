@@ -42,6 +42,11 @@ if (__PAN_XHPROF__ === 1) {
     }
 }
 
+// Needed for InfoBox count.
+if (isset($_SESSION['info_box_count']) === true) {
+    $_SESSION['info_box_count'] = 0;
+}
+
 // Set character encoding to UTF-8
 // fixes a lot of multibyte character issues.
 if (function_exists('mb_internal_encoding') === true) {
@@ -242,6 +247,8 @@ echo '</head>'."\n";
 
 require_once 'include/functions_themes.php';
 ob_start('ui_process_page_body');
+
+ui_require_javascript_file('pandora');
 
 $config['remote_addr'] = $_SERVER['REMOTE_ADDR'];
 
@@ -1052,6 +1059,7 @@ if (isset($_GET['bye'])) {
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
 
+    generate_csrf_code();
     // Process logout.
     include 'general/logoff.php';
 
@@ -1164,6 +1172,10 @@ if ($config['pure'] == 0) {
     $menuTypeClass = ($menuCollapsed === true) ? 'collapsed' : 'classic';
     // Container.
     echo '<div id="container">';
+
+    // Notifications content wrapper
+    echo '<div id="notification-content" class="invisible"/></div>';
+
     // Header.
     echo '<div id="head">';
     include 'general/header.php';
@@ -1173,8 +1185,7 @@ if ($config['pure'] == 0) {
     echo '<div id="menu">';
 
     include 'general/main_menu.php';
-    echo '</div>';
-    echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
+    echo html_print_go_top();
 } else {
     echo '<div id="main_pure">';
     // Require menu only to build structure to use it in ACLs.
@@ -1443,11 +1454,21 @@ if ($searchPage) {
     }
 }
 
+if (__PAN_XHPROF__ === 1) {
+    echo "<span style='font-size: 0.8em;'>";
+    echo __('Page generated at').' ';
+    echo date('D F d, Y H:i:s', $time).'</span>';
+    echo ' - ( ';
+    pandora_xhprof_display_result('node_index');
+    echo ' )';
+    echo '</center>';
+}
+
 if ($config['pure'] == 0) {
-    echo '<div id="both"></div>';
+    // echo '<div id="both"></div>';
     echo '</div>';
     // Main.
-    echo '<div id="both">&nbsp;</div>';
+    // echo '<div id="both">&nbsp;</div>';
     echo '</div>';
     // Page (id = page).
 } else {
@@ -1476,7 +1497,7 @@ if ($config['pure'] == 0) {
     echo '</div>';
     // Container div.
     echo '</div>';
-    echo '<div id="both"></div>';
+    // echo '<div id="both"></div>';
     echo '</div>';
 }
 
@@ -1499,6 +1520,8 @@ require 'include/php_to_js_values.php';
 ?>
 
 <script type="text/javascript" language="javascript">
+    // Handle the scroll.
+    $(document).ready(scrollFunction());
     // When there are less than 5 rows, all rows must be white
     var theme = "<?php echo $config['style']; ?>";
     if (theme === 'pandora') {
@@ -1513,32 +1536,9 @@ require 'include/php_to_js_values.php';
         scrollFunction()
     };
 
-    function scrollFunction() {
-        if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
-            if (document.getElementById("top_btn")) {
-                document.getElementById("top_btn").style.display = "block";
-            }
-        } else {
-            if (document.getElementById("top_btn")) {
-                document.getElementById("top_btn").style.display = "none";
-            }
-        }
-    }
-
-    // When the user clicks on the button, scroll to the top of the document.
-    function topFunction() {
-
-        /*
-         * Safari.
-         * document.body.scrollTop = 0;
-         * For Chrome, Firefox, IE and Opera.
-         * document.documentElement.scrollTop = 0; 
-         */
-
-        $("HTML, BODY").animate({
-            scrollTop: 0
-        }, 500);
-    }
+    window.onresize = function() {
+        scrollFunction()
+    };
 
     function first_time_identification() {
         jQuery.post("ajax.php", {
@@ -1625,8 +1625,22 @@ require 'include/php_to_js_values.php';
             "html"
         );
     }
+
+    // Info messages action.
+    $(document).ready(function() {
+        var $autocloseTime = <?php echo ((int) $config['notification_autoclose_time'] * 1000); ?>;
+        var $listOfMessages = document.querySelectorAll('.info_box_autoclose');
+        $listOfMessages.forEach(
+            function(item) {
+                autoclose_info_box(item.id, $autocloseTime)
+            }
+        );
+    });
+
+    // Cog animations.
+    $(document).ready(function() {
+        $(".submitButton").click(function(){
+            $("#"+this.id+" > .subIcon.cog").addClass("rotation");
+        });
+    });
 </script>
-<?php
-if (__PAN_XHPROF__ === 1) {
-    pandora_xhprof_display_result('node_index');
-}

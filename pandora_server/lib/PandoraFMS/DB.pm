@@ -594,36 +594,42 @@ sub get_agent_status ($$$) {
 	#  2 -> AGENT_MODULE_STATUS_WARNING
 	#  0 -> AGENT_MODULE_STATUS_NORMAL
 	
-	my $module_status = 3;
+	my $module_status = 4;
 	my $modules_async = 0;
 	foreach my $module (@modules) {
 		my $m_status = get_agentmodule_status($pa_config, $dbh,
 			$module->{'id_agente_modulo'});
 		
 		#This is the order to check
-		# AGENT_MODULE_STATUS_CRITICAL_ALERT
 		# AGENT_MODULE_STATUS_CRITICAL_BAD
 		# AGENT_MODULE_STATUS_WARNING
 		# AGENT_MODULE_STATUS_UNKNOWN
 		# AGENT_MODULE_STATUS_NORMAL
-		if ($m_status == 4) {
-			$module_status = 4;
+
+		if ($m_status == MODULE_CRITICAL) {
+			$module_status = MODULE_CRITICAL;
 		}
-		elsif ($module_status != 4) {
-			if ($m_status == 1) {
-				$module_status = 1;
+		elsif ($module_status != MODULE_CRITICAL) {
+			if ($m_status == MODULE_WARNING)  {
+				$module_status = MODULE_WARNING;
 			}
-			elsif ($module_status != 1) {
-				if ($m_status == 2) {
-					$module_status = 2;
+			elsif ($module_status != MODULE_WARNING) {
+				if ($m_status == MODULE_UNKNOWN) {
+					$module_status = MODULE_UNKNOWN;
 				}
-				elsif ($module_status != 2) {
-					if ($m_status == 0) {
-						$module_status = 0;
+				elsif ($module_status != MODULE_UNKNOWN) {
+					if ($m_status == MODULE_NORMAL) {
+						$module_status = MODULE_NORMAL;
+					}
+					elsif ($module_status != MODULE_NORMAL) {
+						if($m_status == MODULE_NOTINIT) {
+							$module_status = MODULE_NOTINIT;
+						}
 					}
 				}
 			}
 		}
+		
 		
 		my $module_type = get_db_value($dbh, 'SELECT id_tipo_modulo
 			FROM tagente_modulo
@@ -647,7 +653,7 @@ sub get_agent_status ($$$) {
 			return 3;
 		}
 	}
-	
+
 	return $module_status;
 }
 

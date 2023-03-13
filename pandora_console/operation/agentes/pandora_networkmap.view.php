@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -124,7 +124,7 @@ if (is_ajax() === true) {
 
         $table = new StdClass();
         $table->id = 'form_editor';
-        $table->width = '98%';
+        $table->width = '100%';
         $table->class = 'databox_color';
         $table->head = [];
         $table->size = [];
@@ -171,7 +171,23 @@ if (is_ajax() === true) {
         $table->data[6][1] = html_print_input_text('scale_z', $map_filter['z_dash'], '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
 
         $table->data['source'][0] = __('Source');
-        $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true).html_print_radio_button('source', 'recon_task', __('Discovery task'), $source, true).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true);
+        $table->data['source'][1] = html_print_select(
+            [
+                'group'      => __('Group'),
+                'recon_task' => __('Discovery task'),
+                'ip_mask'    => __('CIDR IP mask'),
+            ],
+            'source',
+            $source,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            $disabled_source
+        );
 
         if (! check_acl($config['id_user'], 0, 'PM')) {
             $sql = sprintf(
@@ -221,7 +237,16 @@ if (is_ajax() === true) {
         );
 
         $table->data['source_data_ip_mask'][0] = __('Source from CIDR IP mask');
-        $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $map_info['source_data'], '', 20, 255, true);
+        $table->data['source_data_ip_mask'][1] = html_print_textarea(
+            'ip_mask',
+            3,
+            5,
+            $map_info['source_data'],
+            '',
+            true,
+            '',
+            $disabled_source
+        );
 
         $dont_show_subgroups = 0;
         if (isset($map_filter['dont_show_subgroups'])) {
@@ -296,9 +321,9 @@ if (is_ajax() === true) {
         $map_form .= html_print_table($table, true);
 
         $map_form .= '<script>
-						$("input[name=\'source\']").on(\'change\', function() {
-							var source = $("input[name=\'source\']:checked").val();
-							
+                        $("#source").change(function() {
+							const source = $(this).val();
+
 							if (source == \'recon_task\') {
 								$("#form_editor-source_data_ip_mask")
 									.css(\'display\', \'none\');
@@ -388,8 +413,8 @@ if (is_ajax() === true) {
 								.css(\'display\', \'\');
 						}
 					});
-					
-					$("input[name=\'source\']").trigger("change");
+
+					$("#source").trigger("change");
 					$("#method").trigger("change");
 			</script>';
 
@@ -1239,7 +1264,7 @@ if (is_ajax() === true) {
         $id_group = agents_get_agent_group($id_agent);
         $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
         $id_os = agents_get_os($id_agent);
-        $return['os'] = ui_print_os_icon($id_os, true, true);
+        $return['os'] = html_print_div([ 'class' => 'flex main_menu_icon invert_filter', 'content' => ui_print_os_icon($id_os, true, true)], true);
 
         echo json_encode($return);
 
@@ -1265,16 +1290,24 @@ if (is_ajax() === true) {
                 $permission = check_acl($config['id_user'], $agent['id_grupo'], 'RR');
 
                 if ($permission) {
-                    $params = [
-                        'interface_name'     => $interface_name,
-                        'agent_id'           => $id_agent,
-                        'traffic_module_in'  => $interface['traffic']['in'],
-                        'traffic_module_out' => $interface['traffic']['out'],
-                    ];
-                    $params_json = json_encode($params);
-                    $params_encoded = base64_encode($params_json);
-                    $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-                    $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle', 800, 480)\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
+                    if ($interface['traffic']['in'] > 0 && $interface['traffic']['out'] > 0) {
+                        $params = [
+                            'interface_name'     => $interface_name,
+                            'agent_id'           => $id_agent,
+                            'traffic_module_in'  => $interface['traffic']['in'],
+                            'traffic_module_out' => $interface['traffic']['out'],
+                        ];
+                        $params_json = json_encode($params);
+                        $params_encoded = base64_encode($params_json);
+                        $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+                        $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle', 800, 480)\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
+                    } else {
+                        $graph_link = html_print_image(
+                            'images/chart_curve.disabled.png',
+                            true,
+                            ['title' => __('inOctets and outOctets must be enabled.')]
+                        );
+                    }
                 } else {
                     $graph_link = '';
                 }
@@ -1493,7 +1526,7 @@ if (is_ajax() === true) {
         $id_group = agents_get_agent_group($id_agent);
         $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
         $id_os = agents_get_os($id_agent);
-        $return['os'] = ui_print_os_icon($id_os, true, true);
+        $return['os'] = html_print_div([ 'class' => 'flex main_menu_icon invert_filter', 'content' => ui_print_os_icon($id_os, true, true)], true);
 
         echo json_encode($return);
 
@@ -2308,11 +2341,11 @@ if ($networkmap === false) {
         $buttons['screen'] = [
             'active' => false,
             'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
-                'images/normal_screen.png',
+                'images/exit_fullscreen@svg.svg',
                 true,
                 [
                     'title' => __('Normal screen'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>',
         ];
@@ -2325,33 +2358,33 @@ if ($networkmap === false) {
             $buttons['screen'] = [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;pure=1&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
-                    'images/full_screen.png',
+                    'images/fullscreen@svg.svg',
                     true,
                     [
                         'title' => __('Full screen'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ];
             $buttons['list'] = [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap">'.html_print_image(
-                    'images/list.png',
+                    'images/file-collection@svg.svg',
                     true,
                     [
                         'title' => __('List of networkmap'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ];
             $buttons['option'] = [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=edit&edit_networkmap=1&id_networkmap='.$id.'">'.html_print_image(
-                    'images/setup.png',
+                    'images/edit.svg',
                     true,
                     [
                         'title' => __('Options'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ];
@@ -2363,16 +2396,23 @@ if ($networkmap === false) {
     }
 
     if (!$dash_mode) {
-        ui_print_page_header(
+        ui_print_standard_header(
             $networkmap['name'],
             'images/bricks.png',
             false,
             'network_map_enterprise_view',
             false,
             $buttons,
-            false,
-            '',
-            $config['item_title_size_text']
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Topology maps'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Network maps'),
+                ],
+            ]
         );
     }
 

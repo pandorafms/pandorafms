@@ -159,6 +159,8 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.SERVER.STATUS',
             'NOTIF.SERVER.QUEUE',
             'NOTIF.SERVER.MASTER',
+            'NOTIF.ACCESSSTASTICS.PERFORMANCE',
+            'NOTIF.VARIABLES.PERFORMANCE',
         ],
     ];
 
@@ -861,18 +863,22 @@ function notifications_print_source_select_box($info_selec, $id, $source_id)
             true
         ),
         html_print_image(
-            'images/input_add.png',
+            'images/fail@svg.svg',
             true,
             [
+                'style'   => 'width: 14px;rotate: 45deg',
                 'title'   => $add_title,
+                'class'   => 'main_menu_icon invert_filter',
                 'onclick' => sprintf("add_source_dialog('%s', '%s')", $id, $source_id),
             ]
         ),
         html_print_image(
-            'images/input_delete.png',
+            'images/delete.svg',
             true,
             [
+                'style'   => 'width: 14px',
                 'title'   => $delete_title,
+                'class'   => 'main_menu_icon invert_filter',
                 'onclick' => sprintf(
                     "remove_source_elements('%s', '%s')",
                     $id,
@@ -921,29 +927,31 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
             ''
         ),
         html_print_image(
-            'images/darrowright.png',
+            'images/arrow@svg.svg',
             true,
             [
                 'title'   => __('Add elements'),
+                'style'   => 'rotate: 90deg',
                 'onclick' => sprintf(
                     "notifications_modify_two_ways_element('%s', '%s', 'add')",
                     $users,
                     $source_id
                 ),
-                'class'   => 'invert_filter',
+                'class'   => 'main_menu_icon invert_filter',
             ]
         ),
         html_print_image(
-            'images/darrowleft.png',
+            'images/arrow@svg.svg',
             true,
             [
                 'title'   => __('Remove elements'),
+                'style'   => 'rotate: 0',
                 'onclick' => sprintf(
                     "notifications_modify_two_ways_element('%s', '%s', 'remove')",
                     $users,
                     $source_id
                 ),
-                'class'   => 'invert_filter',
+                'class'   => 'main_menu_icon invert_filter',
             ]
         ),
         html_print_select(

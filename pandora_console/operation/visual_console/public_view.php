@@ -111,16 +111,16 @@ echo '<ul class="mn white-box-content box-shadow flex-row">';
 
 // QR code.
 echo '<li class="nomn">';
-echo '<a href="javascript: show_dialog_qrcode();">';
+echo '<a style="padding-top: 0;" href="javascript: show_dialog_qrcode();">';
 echo '<img class="vc-qr" src="../../images/qrcode_icon_2.jpg"/>';
 echo '</a>';
 echo '</li>';
 
 // Countdown.
-echo '<li class="nomn">';
+echo '<li class="nomn" style="display: flex; align-items: center">';
 echo '<div class="vc-refr">';
-echo '<div id="vc-refr-form">';
-echo __('Refresh').':';
+echo '<div id="vc-refr-form" style="display: flex; align-items: center">';
+echo '<span class="margin-right-1">'.__('Refresh').'</span>';
 echo html_print_select(
     get_refresh_time_array(),
     'vc-refr',
@@ -282,9 +282,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     );
 
     if(props.maintenanceMode != null) {
-        if(props.maintenanceMode.user !== '<?php echo $config['id_user']; ?>') {
-            visualConsoleManager.visualConsole.enableMaintenanceMode();
-        }
+        visualConsoleManager.visualConsole.enableMaintenanceMode();
     }
 
     var controls = document.getElementById('vc-controls');

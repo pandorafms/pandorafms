@@ -151,7 +151,7 @@ function quickShell()
                                 'name'       => 'submit',
                                 'label'      => __('Retry'),
                                 'type'       => 'submit',
-                                'attributes' => 'class="sub next"',
+                                'attributes' => ['icon' => 'next'],
                                 'return'     => true,
                             ],
                         ],
@@ -202,7 +202,7 @@ function quickShell()
                         'arguments' => [
                             'type'       => 'submit',
                             'label'      => __('Connect'),
-                            'attributes' => 'class="sub next"',
+                            'attributes' => ['icon' => 'cog'],
                         ],
                     ],
                 ],
@@ -544,7 +544,7 @@ if (empty($agent_id) === false
             // TabName.
             __('QuickShell'),
             // TabIcon.
-            'images/ehorus/terminal.png',
+            'images/quick-shell@svg.svg',
             // TabFunction.
             'quickShell',
             // Version.

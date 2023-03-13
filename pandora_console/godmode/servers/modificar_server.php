@@ -1,17 +1,32 @@
 <?php
+/**
+ * Server list view.
+ *
+ * @category   Server
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 require_once 'include/functions_servers.php';
@@ -28,10 +43,28 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
     exit;
 }
 
-if (isset($_GET['server'])) {
+if (isset($_GET['server']) === true) {
     $id_server = get_parameter_get('server');
     // Headers.
-    ui_print_page_header(__('Update Server'), 'images/gm_servers.png', false, 'servers', true);
+    ui_print_standard_header(
+        __('Update Server'),
+        'images/gm_servers.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Servers'),
+            ],
+            [
+                'link'  => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server',
+                'label' => __('%s servers', get_product_name()),
+            ],
+        ]
+    );
+
     $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy, port FROM tserver WHERE id_server = %d', $id_server);
     $row = db_get_row_sql($sql);
     echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
@@ -51,8 +84,8 @@ if (isset($_GET['server'])) {
 
     $table->cellpadding = 4;
     $table->cellspacing = 4;
-    $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'databox';
+    $table->id = 'server_update_form';
 
     $table->data[] = [
         __('Name'),
@@ -67,7 +100,7 @@ if (isset($_GET['server'])) {
         html_print_input_text('description', $row['description'], '', 50, 0, true),
     ];
 
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         $table->data[] = [
             __('Type'),
             $server_type,
@@ -96,17 +129,37 @@ if (isset($_GET['server'])) {
 
     html_print_table($table);
 
-    echo '<div class="action-buttons w100p">';
-    echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
-    echo '</div>';
+    $actionButtons = [];
+    $actionButtons[] = html_print_submit_button(
+        __('Update'),
+        '',
+        false,
+        [ 'icon' => 'update' ],
+        true
+    );
+
+    $actionButtons[] = html_print_go_back_button(
+        'index.php?sec=gservers&sec2=godmode/servers/modificar_server',
+        ['button_class' => ''],
+        true
+    );
+
+    html_print_action_buttons(
+        implode('', $actionButtons),
+        ['type' => 'form_action'],
+    );
+
     echo '</form>';
 
-    if ($row['server_type'] == 13) {
-        echo '<div style="margin-top: 20px;">';
-        ui_toggle($content, __('Credential boxes'), '', 'toggle_credential', false);
-        echo '</div>';
+    if ((int) $row['server_type'] === 13) {
+        html_print_div(
+            [
+                'class'   => 'mrgn_top_20px',
+                'content' => ui_toggle($content, __('Credential boxes'), '', 'toggle_credential', false, true),
+            ],
+        );
     }
-} else if (isset($_GET['server_remote'])) {
+} else if (isset($_GET['server_remote']) === true) {
     // Headers.
     $id_server = get_parameter_get('server_remote');
     $ext = get_parameter('ext', '');
@@ -141,16 +194,35 @@ if (isset($_GET['server'])) {
 
         ];
 
-        $buttons['collections'] = [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=collections&pure='.$pure.'">'.html_print_image('images/collection.png', true, ['title' => __('Collections')]).'</a>',
+        if ((int) $config['license_nms'] !== 1) {
+            $buttons['collections'] = [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=collections&pure='.$pure.'">'.html_print_image('images/collection.png', true, ['title' => __('Collections')]).'</a>',
 
-        ];
+            ];
+        }
     }
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true, $buttons);
+    ui_print_standard_header(
+        __('Remote Configuration'),
+        'images/gm_servers.png',
+        false,
+        'servers',
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Servers'),
+            ],
+            [
+                'link'  => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server',
+                'label' => __('%s servers', get_product_name()),
+            ],
+        ]
+    );
 
     if ($tab === 'standard_editor') {
         $advanced_editor = false;
@@ -173,10 +245,27 @@ if (isset($_GET['server'])) {
     enterprise_include('godmode/servers/server_disk_conf_editor.php');
 } else {
     // Header.
-    ui_print_page_header(__('%s servers', get_product_name()), 'images/gm_servers.png', false, '', true);
+    ui_print_standard_header(
+        __('%s servers', get_product_name()),
+        'images/gm_servers.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Servers'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage Servers'),
+            ],
+        ]
+    );
 
     // Move SNMP modules back to the enterprise server.
-    if (isset($_GET['server_reset_snmp_enterprise'])) {
+    if (isset($_GET['server_reset_snmp_enterprise']) === true) {
         $result = db_process_sql('UPDATE tagente_estado SET last_error=0');
 
         if ($result === false) {

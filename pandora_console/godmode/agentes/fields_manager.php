@@ -1,22 +1,37 @@
 <?php
+/**
+ * Fields manager.
+ *
+ * @category   Resources.
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
 
-if (!check_acl($config['id_user'], 0, 'PM')) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Group Management'
@@ -27,7 +42,24 @@ if (!check_acl($config['id_user'], 0, 'PM')) {
 }
 
 // Header.
-ui_print_page_header(__('Agents custom fields manager'), 'images/custom_field.png', false, '', true, '');
+ui_print_standard_header(
+    __('Agents custom fields manager'),
+    'images/custom_field.png',
+    false,
+    '',
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Resources'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Custom fields'),
+        ],
+    ]
+);
 
 $create_field = (bool) get_parameter('create_field');
 $update_field = (bool) get_parameter('update_field');
@@ -114,7 +146,6 @@ $fields = db_get_all_rows_filter(
 );
 
 $table = new stdClass();
-$table->width = '100%';
 $table->class = 'info_table';
 if ($fields) {
     $table->head = [];
@@ -140,34 +171,66 @@ if ($fields === false) {
 
 foreach ($fields as $field) {
     $data[0] = $field['id_field'];
+    $data[1] = $field['name'];
 
-    $data[1] = '<b>'.$field['name'].'</b>';
+    $data[2] = html_print_image(
+        ((bool) $field['display_on_front'] === true) ? 'images/validate.svg' : 'images/fail@svg.svg',
+        true,
+        ['class' => 'main_menu_icon invert_filter']
+    );
 
-    if ($field['display_on_front']) {
-        $data[2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
-    } else {
-        $data[2] = html_print_image(
-            'images/icono_stop.png',
-            true,
-            ['style' => 'width:21px;height:21px;']
-        );
-    }
+    $table->cellclass[][3] = 'table_action_buttons';
+    $tableActionButtons = [];
+    $tableActionButtons[] = html_print_anchor(
+        [
+            'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'],
+            'content' => html_print_image(
+                'images/edit.svg',
+                true,
+                [
+                    'title' => __('Edit'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            ),
+        ],
+        true
+    );
 
-    $table->cellclass[][3] = 'action_buttons';
-    $data[3] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">'.html_print_image('images/config.png', true, ['alt' => __('Edit'), 'title' => __('Edit'), 'border' => '0', 'class' => 'invert_filter']).'</a>';
-    $data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'border' => '0', 'class' => 'invert_filter']).'</a>';
+    $tableActionButtons[] = html_print_anchor(
+        [
+            'href'    => 'index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'],
+            'content' => html_print_image(
+                'images/delete.svg',
+                true,
+                [
+                    'title' => __('Delete'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            ),
+            'onClick' => 'if (!confirm(\' '.__('Are you sure?').'\')) return false;',
+        ],
+        true
+    );
+
+    $data[3] = implode('', $tableActionButtons);
 
     array_push($table->data, $data);
 }
 
 if ($fields) {
-    ui_pagination($count_fields, false, $offset);
     html_print_table($table);
-    ui_pagination($count_fields, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination($count_fields, false, $offset, 0, true, 'offset', false);
 }
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(__('Create field'), 'crt', false, 'class="sub next"');
-echo '</div>';
+echo '<form method="POST" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Create field'),
+        'crt',
+        false,
+        [ 'icon' => 'next' ],
+        true
+    ),
+    ['type' => 'form_action']
+);
 echo '</form>';

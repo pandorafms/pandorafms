@@ -3489,8 +3489,9 @@ function graph_custom_sql_graph(
         $data_result = [];
     }
 
-    $data = [];
-    $labels = [];
+    $data_bar = [];
+    $labels_pie = [];
+    $data_pie = [];
     $count = 0;
     $other = 0;
     foreach ($data_result as $data_item) {
@@ -5337,4 +5338,200 @@ function get_baseline_data(
     $result['module_name'] = $array_data[0]['sum0']['module_name'];
     $result['agent_alias'] = $array_data[0]['sum0']['agent_alias'];
     return ['sum0' => $result];
+}
+
+
+/**
+ * Draw graph SO agents by group.
+ *
+ * @param  [type]  $id_group
+ * @param  integer $width
+ * @param  integer $height
+ * @param  boolean $recursive
+ * @param  boolean $noWaterMark
+ * @return string Graph
+ */
+function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, $noWaterMark=true)
+{
+    global $config;
+
+    $id_groups = [$id_group];
+
+    if ($recursive == true) {
+        $groups = groups_get_children($id_group);
+        if (count($groups) > 0) {
+            $id_groups = [];
+            foreach ($groups as $key => $value) {
+                $id_groups[] = $value['id_grupo'];
+            }
+        }
+    }
+
+    $sql = sprintf(
+        'SELECT COUNT(id_agente) AS count,
+        os.name
+        FROM tagente a
+        LEFT JOIN tconfig_os os ON a.id_os = os.id_os
+        WHERE a.id_grupo IN (%s)
+        GROUP BY os.id_os',
+        implode(',', $id_groups)
+    );
+
+    $result = db_get_all_rows_sql($sql, false, false);
+    if ($result === false) {
+        $result = [];
+    }
+
+    $labels = [];
+    $data = [];
+    foreach ($result as $key => $row) {
+        $labels[] = $row['name'];
+        $data[] = $row['count'];
+    }
+
+    if ($noWaterMark === true) {
+        $water_mark = [
+            'file' => $config['homedir'].'/images/logo_vertical_water.png',
+            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+        ];
+    } else {
+        $water_mark = [];
+    }
+
+    $options = [
+        'width'     => $width,
+        'height'    => $height,
+        'waterMark' => $water_mark,
+        'legend'    => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+        'labels'    => $labels,
+    ];
+
+    return pie_graph(
+        $data,
+        $options
+    );
+
+}
+
+
+/**
+ * Draw graph events by group
+ *
+ * @param  [type]  $id_group
+ * @param  integer $width
+ * @param  integer $height
+ * @param  boolean $noWaterMark
+ * @param  boolean $time_limit
+ * @param  boolean $recursive
+ * @return string Graph
+ */
+function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWaterMark=true, $time_limit=false, $recursive=true)
+{
+    global $config;
+
+    $data = [];
+    $labels = [];
+    $loop = 0;
+    define('NUM_PIECES_PIE_2', 6);
+
+    // Add tags condition to filter.
+    $tags_condition = '';
+    if ($time_limit && $config['event_view_hr']) {
+        $tags_condition .= ' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+    }
+
+    $id_groups = [$id_group];
+    if ($recursive === true) {
+        $groups = groups_get_children($id_group);
+        if (count($groups) > 0) {
+            $id_groups = [];
+            foreach ($groups as $key => $value) {
+                $id_groups[] = $value['id_grupo'];
+            }
+        }
+    }
+
+    $filter_groups = ' AND te.id_grupo IN ('.implode(',', $id_groups).') ';
+
+    // This will give the distinct id_agente, give the id_grupo that goes
+    // with it and then the number of times it occured. GROUP BY statement
+    // is required if both DISTINCT() and COUNT() are in the statement.
+    $sql = sprintf(
+        'SELECT DISTINCT(id_agente) AS id_agente,
+                COUNT(id_agente) AS count
+            FROM tevento te
+            WHERE 1=1  AND estado = 0
+            %s %s
+            GROUP BY id_agente
+            ORDER BY count DESC LIMIT 8',
+        $tags_condition,
+        $filter_groups
+    );
+    $result = db_get_all_rows_sql($sql, false, false);
+    if ($result === false) {
+        $result = [];
+    }
+
+    $system_events = 0;
+    $other_events = 0;
+
+    foreach ($result as $row) {
+        $row['id_grupo'] = agents_get_agent_group($row['id_agente']);
+        if (!check_acl($config['id_user'], $row['id_grupo'], 'ER') == 1) {
+            continue;
+        }
+
+        if ($loop >= NUM_PIECES_PIE_2) {
+            $other_events += $row['count'];
+        } else {
+            if ($row['id_agente'] == 0) {
+                $system_events += $row['count'];
+            } else {
+                $alias = agents_get_alias($row['id_agente']);
+                $name = mb_substr($alias, 0, 25).' #'.$row['id_agente'].' ('.$row['count'].')';
+                $labels[] = io_safe_output($name);
+                $data[] = $row['count'];
+            }
+        }
+
+        $loop++;
+    }
+
+    if ($system_events > 0) {
+        $name = __('SYSTEM').' ('.$system_events.')';
+        $labels[] = io_safe_output($name);
+        $data[] = $system_events;
+    }
+
+    // Sort the data.
+    arsort($data);
+    if ($noWaterMark === true) {
+        $water_mark = [
+            'file' => $config['homedir'].'/images/logo_vertical_water.png',
+            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+        ];
+    } else {
+        $water_mark = [];
+    }
+
+    $options = [
+        'width'     => $width,
+        'height'    => $height,
+        'waterMark' => $water_mark,
+        'legend'    => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+        'labels'    => $labels,
+    ];
+
+    return pie_graph(
+        $data,
+        $options
+    );
 }

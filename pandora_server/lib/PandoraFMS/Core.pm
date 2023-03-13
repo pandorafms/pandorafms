@@ -118,7 +118,7 @@ use Tie::File;
 use Time::Local;
 use Time::HiRes qw(time);
 eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
-use POSIX qw(strftime);
+use POSIX qw(strftime mktime);
 use threads;
 use threads::shared;
 use JSON qw(decode_json encode_json);
@@ -1547,11 +1547,11 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
-				$params->{"other"} = $period . '%7C1%7C0%7C225%7C""%7C14';
+				$params->{"other"} = $period . '%7C1%7C0%7C225%7C%7C14';
 				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
-				$params->{"other"} = $period . '%7C1%7C1%7C225%7C""%7C14';
+				$params->{"other"} = $period . '%7C1%7C1%7C225%7C%7C14';
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
@@ -3173,16 +3173,20 @@ sub pandora_update_server ($$$$$$;$$$$) {
 	$version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'} unless defined($version);
 	
 	my $master = ($server_type == SATELLITESERVER) ? 0 : $pa_config->{'pandora_master'};
-	
+
+	my ($year, $month, $day, $hour, $minute, $second) = split /[- :]/, $timestamp;
+
+	my $keepalive_utimestamp = mktime($second, $minute, $hour, $day, $month-1, $year-1900);
+
 	# First run
 	if ($server_id == 0) { 
 		
 		# Create an entry in tserver if needed
 		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE BINARY name = ? AND server_type = ?', $server_name, $server_type);
 		if (! defined ($server)) {
-			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive)
-						VALUES (?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
-						'Autocreated at startup', $version, $num_threads, $queue_size, $keepalive);
+			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive, server_keepalive_utimestamp)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
+						'Autocreated at startup', $version, $num_threads, $queue_size, $keepalive, $keepalive_utimestamp);
 		
 			$server = get_db_single_row ($dbh, 'SELECT status FROM tserver WHERE id_server = ?', $server_id);
 			if (! defined ($server)) {
@@ -3193,14 +3197,14 @@ sub pandora_update_server ($$$$$$;$$$$) {
 			$server_id = $server->{'id_server'};
 		}
 
-		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?
+		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?, server_keepalive_utimestamp = ?
 				WHERE id_server = ?',
-				1, $timestamp, $master, $timestamp, $version, $num_threads, $queue_size, $keepalive, $server_id);
+				1, $timestamp, $master, $timestamp, $version, $num_threads, $queue_size, $keepalive, $keepalive_utimestamp, $server_id);
 		return;
 	}
-	
-	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?
-			WHERE id_server = ?', $status, $timestamp, $master, $version, $num_threads, $queue_size, $keepalive, $server_id);
+
+	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?, server_keepalive_utimestamp = ?
+			WHERE id_server = ?', $status, $timestamp, $master, $version, $num_threads, $queue_size, $keepalive, $keepalive_utimestamp, $server_id);
 }
 
 ##########################################################################
@@ -3886,7 +3890,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	$agent_mode = 1 unless defined($agent_mode);
 	$alias = $agent_name unless defined($alias);
 
-	$description = "Created by $server_name" unless (defined($description) && $description ne '');	
+	$description = '' unless (defined($description));
 	my ($columns, $values) = db_insert_get_values ({ 'nombre' => safe_input($agent_name),
 	                                                 'direccion' => $address,
 	                                                 'comentarios' => $description,
@@ -5624,16 +5628,26 @@ sub pandora_server_statistics ($$) {
 			# Non-dataserver LAG calculation:
 			if ($server->{"server_type"} != DATASERVER){
 				
-				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
-					FROM tagente_estado, tagente_modulo
-					WHERE utimestamp > 0
-					AND tagente_modulo.disabled = 0
-					AND tagente_modulo.id_tipo_modulo < 5 
-					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-					AND current_interval > 0
-					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-					AND running_by = ?
-					AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)", $server->{"id_server"});
+				$lag_row = get_db_single_row ($dbh, 
+				"SELECT COUNT(tam.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
+					FROM (
+  					SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+  						FROM tagente_estado
+								WHERE tagente_estado.current_interval > 0
+								AND tagente_estado.last_execution_try > 0
+								AND tagente_estado.running_by = ?
+    			) tae
+    			JOIN (
+						SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag
+							FROM tagente_modulo LEFT JOIN tagente
+							ON tagente_modulo.id_agente = tagente.id_agente
+								WHERE tagente.disabled = 0
+								AND tagente_modulo.disabled = 0
+								AND tagente_modulo.id_tipo_modulo < 5 
+				) tam
+				ON tae.id_agente_modulo = tam.id_agente_modulo
+					WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)
+					AND (tam.flag = 1 OR (UNIX_TIMESTAMP() - tae.last_execution_try) > tae.current_interval)", $server->{"id_server"});
 			}
 			# Dataserver LAG calculation:
 			else {
@@ -6005,10 +6019,6 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $start_performance = time;
-	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
-	my $read_speed = int((time - $start_performance) * 1e6);
-
 	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
 
 	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
@@ -6054,13 +6064,6 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_disk_spool</data>";
 		$xml_output .=" </module>";
 	}
-
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Execution_Time</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <unit>us</unit>";
-	$xml_output .=" <data>$read_speed</data>";
-	$xml_output .=" </module>";
 
 	$xml_output .= "</agent_data>";
 
@@ -6210,7 +6213,7 @@ sub pandora_module_unknown ($$) {
 				')
 			)
 			AND tagente_estado.utimestamp != 0
-			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP()', $pa_config->{'unknown_interval'});
+			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP() LIMIT ?', $pa_config->{'unknown_interval'}, $pa_config->{'unknown_block_size'});
 	
 	foreach my $module (@modules) {
 		

@@ -1,22 +1,38 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Login check
+/**
+ * Visual console Builder Elements.
+ *
+ * @category   Legacy.
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 check_login();
 
-// Visual console required
-if (empty($visualConsole)) {
+// Visual console required.
+if (empty($visualConsole) === true) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access report builder'
@@ -97,7 +113,7 @@ foreach ($all_images as $image_file) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox data';
+$table->class = 'databox filter-table-adv';
 
 $table->head = [];
 $table->head['icon'] = '';
@@ -177,18 +193,18 @@ foreach ($layoutDatas as $layoutData) {
     switch ($layoutData['type']) {
         case STATIC_GRAPH:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/camera_mc.png',
+                'images/static-graph.svg',
                 true,
                 [
                     'title' => __('Static Image'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case PERCENTILE_BAR:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/chart_bar.png',
+                'images/percentil.svg',
                 true,
                 [
                     'title' => __('Percentile Bar'),
@@ -199,173 +215,200 @@ foreach ($layoutDatas as $layoutData) {
 
         case PERCENTILE_BUBBLE:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/dot_red.png',
+                'images/percentil.svg',
                 true,
-                ['title' => __('Percentile Bubble')]
+                [
+                    'title' => __('Percentile Bubble'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
         case CIRCULAR_INTERIOR_PROGRESS_BAR:
         case CIRCULAR_PROGRESS_BAR:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/percentile_item.png',
+                'images/percentil.svg',
                 true,
-                ['title' => __('Percentile')]
+                [
+                    'title' => __('Percentile'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
         case MODULE_GRAPH:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/chart_curve.png',
+                'images/module-graph.svg',
                 true,
                 [
                     'title' => __('Module Graph'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case AUTO_SLA_GRAPH:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/auto_sla_graph.png',
+                'images/event-history.svg',
                 true,
-                ['title' => __('Event history graph')]
+                [
+                    'title' => __('Event history graph'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case SIMPLE_VALUE:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/binary.png',
+                'images/simple-value.svg',
                 true,
                 [
                     'title' => __('Simple Value'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case SIMPLE_VALUE_MAX:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/binary.png',
+                'images/simple-value.svg',
                 true,
                 [
                     'title' => __('Simple Value (Process Max)'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case SIMPLE_VALUE_MIN:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/binary.png',
+                'images/simple-value.svg',
                 true,
                 [
                     'title' => __('Simple Value (Process Min)'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case SIMPLE_VALUE_AVG:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/binary.png',
+                'images/simple-value.svg',
                 true,
                 [
                     'title' => __('Simple Value (Process Avg)'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case LABEL:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/tag_red.png',
+                'images/item-label.svg',
                 true,
-                ['title' => __('Label')]
+                [
+                    'title' => __('Label'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case ICON:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/photo.png',
+                'images/item-icon.svg',
                 true,
                 [
                     'title' => __('Icon'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case BOX_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/box_item.png',
+                'images/item-box.svg',
                 true,
                 [
                     'title' => __('Box'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case GROUP_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/group_green.png',
+                'images/item-group.svg',
                 true,
-                ['title' => __('Group')]
+                [
+                    'title' => __('Group'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case NETWORK_LINK:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/network_link_item.png',
+                'images/network-line.svg',
                 true,
                 [
                     'title' => __('Network link'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case LINE_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/line_item.png',
+                'images/item-line.svg',
                 true,
                 [
                     'title' => __('Line'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
         break;
 
         case COLOR_CLOUD:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/color_cloud_item.png',
+                'images/color-cloud.svg',
                 true,
-                ['title' => __('Color cloud')]
+                [
+                    'title' => __('Color cloud'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case BASIC_CHART:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/basic_chart.png',
+                'images/SNMP@svg.svg',
                 true,
-                ['title' => __('Basic chart')]
+                [
+                    'title' => __('Basic chart'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case ODOMETER:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/odometer.png',
+                'images/odometro.svg',
                 true,
-                ['title' => __('Odometer')]
+                [
+                    'title' => __('Odometer'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
         case CLOCK:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/clock-tab.png',
+                'images/clock.svg',
                 true,
-                ['title' => __('Clock')]
+                [
+                    'title' => __('Clock'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
             );
         break;
 
@@ -494,7 +537,7 @@ foreach ($layoutDatas as $layoutData) {
 
     $table->data[($i + 1)][5] = '';
     $table->data[($i + 1)][5] .= html_print_checkbox('multiple_delete_items', $idLayoutData, false, true);
-    $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'" '.'onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
+    $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'" '.'onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
 
     // Second row
     $table->data[($i + 2)]['icon'] = '';
@@ -739,51 +782,65 @@ foreach ($layoutDatas as $layoutData) {
 
 $pure = get_parameter('pure', 0);
 
-if (!defined('METACONSOLE')) {
-    echo '<form class="vc_elem_form" method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
-} else {
-    echo "<form class='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
-}
-
-if (!defined('METACONSOLE')) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'; margin-bottom:15px;">';
-}
-
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
+    echo '<form id="vc_elem_form" method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
     html_print_input_hidden('action', 'update');
 } else {
+    echo "<form id='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
     html_print_input_hidden('action2', 'update');
 }
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(__('Update'), 'go', false, 'class="sub next"');
-echo '&nbsp;';
-html_print_button(__('Delete'), 'delete', false, 'submit_delete_multiple_items();', 'class="sub delete"');
-echo '</div>';
-echo '</form>';
-
-// Form for multiple delete
-if (!defined('METACONSOLE')) {
-    $url_multiple_delete = 'index.php?'.'sec=network&'.'sec2=godmode/reporting/visual_console_builder&'.'tab='.$activeTab.'&'.'id_visual_console='.$visualConsole['id'];
-
-    echo '<form id="form_multiple_delete" method="post" action="'.$url_multiple_delete.'">';
+// Form for multiple delete.
+if (is_metaconsole() === false) {
+    $url_multiple_delete = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'];
 } else {
-    $url_multiple_delete = 'index.php?'.'operation=edit_visualmap&'.'sec=screen&'.'sec2=screens/screens&'.'action=visualmap&'.'pure=0&'.'tab=list_elements&'.'id_visual_console='.$idVisualConsole;
-
-    echo "<form id='form_multiple_delete' method='post' action=".$url_multiple_delete.'>';
+    $url_multiple_delete = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'];
 }
 
-if (!defined('METACONSOLE')) {
-    html_print_input_hidden('action', 'multiple_delete');
+echo '</form>';
+
+$buttons = html_print_submit_button(
+    __('Update'),
+    'go',
+    false,
+    [
+        'icon' => 'next',
+        'form' => 'vc_elem_form',
+    ],
+    true
+);
+
+$buttons .= "<form id='form_multiple_delete' method='post' action=".$url_multiple_delete.'>';
+
+if (is_metaconsole() === false) {
+    $buttons .= html_print_input_hidden('action', 'multiple_delete', true);
 } else {
-    html_print_input_hidden('action2', 'multiple_delete');
+    $buttons .= html_print_input_hidden('action2', 'multiple_delete', true);
 }
 
-html_print_input_hidden('id_visual_console', $visualConsole['id']);
-html_print_input_hidden('id_item_json', '');
-echo '</form>';
+$buttons .= html_print_input_hidden('id_visual_console', $visualConsole['id'], true);
+$buttons .= html_print_input_hidden('id_item_json', '', true);
+
+
+$buttons .= html_print_button(
+    __('Delete'),
+    'delete',
+    false,
+    'submit_delete_multiple_items();',
+    [
+        'icon' => 'delete',
+        'mode' => 'secondary',
+    ],
+    true
+);
+
+$buttons .= '</form>';
+
+html_print_action_buttons(
+    $buttons
+);
 
 
 // Trick for it have a traduct text for javascript.
@@ -865,6 +922,11 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
                     var id_layout_data = $("#active_id_layout_data").val();
                     var label = tinyMCE.activeEditor.getContent();
                     $("#hidden-label_" + id_layout_data).val(label);
+                },
+                buttons: {
+                    Save: function() {
+                        $(this).dialog("close");
+                    }
                 }
             });
 

@@ -76,10 +76,6 @@ function dbmgr_extension_main()
 
     global $config;
 
-    if (is_metaconsole() === true) {
-        open_meta_frame();
-    }
-
     if (!is_user_admin($config['id_user'])) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
@@ -92,7 +88,21 @@ function dbmgr_extension_main()
     $sql = (string) get_parameter('sql');
     $node_id = (int) get_parameter('node_id', -1);
 
-    ui_print_page_header(__('Database interface'), 'images/gm_db.png', false, false, true);
+    // Header.
+    ui_print_standard_header(
+        __('Database interface'),
+        'images/gm_db.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Extensions'),
+            ],
+        ]
+    );
 
     if (is_metaconsole() === true) {
         $img = '../../images/warning_modern.png';
@@ -122,47 +132,37 @@ function dbmgr_extension_main()
         echo $warning_message;
     }
 
+    ui_print_warning_message(
+        __(
+            "This is an advanced extension to interface with %s database directly from WEB console
+            using native SQL sentences. Please note that <b>you can damage</b> your %s installation
+            if you don't know </b>exactly</b> what are you are doing,
+            this means that you can severily damage your setup using this extension.
+            This extension is intended to be used <b>only by experienced users</b>
+            with a depth knowledge of %s internals.",
+            get_product_name(),
+            get_product_name(),
+            get_product_name()
+        )
+    );
+
     echo "<form method='post' action=''>";
 
     $table = new stdClass();
     $table->id = 'db_interface';
-    $table->class = 'databox';
+    $table->class = 'databox no_border filter-table-adv';
     $table->width = '100%';
     $table->data = [];
-    $table->head = [];
     $table->colspan = [];
-    $table->rowstyle = [];
+    $table->style[0] = 'width: 30%;';
+    $table->style[1] = 'width: 70%;';
 
-    $table->colspan[0][0] = 2;
     $table->colspan[1][0] = 2;
-    $table->rowspan[2][0] = 3;
 
-    $table->rowclass[0] = 'notify';
-    $table->rowclass[3] = 'pdd_5px';
-    $table->rowclass[3] = 'flex-content-right';
-    $table->rowclass[4] = 'flex-content-right';
-
-    $data[0][0] = __(
-        "This is an advanced extension to interface with %s database directly from WEB console
-		using native SQL sentences. Please note that <b>you can damage</b> your %s installation
-		if you don't know </b>exactly</b> what are you are doing,
-		this means that you can severily damage your setup using this extension.
-		This extension is intended to be used <b>only by experienced users</b>
-		with a depth knowledge of %s internals.",
-        get_product_name(),
-        get_product_name(),
-        get_product_name()
-    );
-
-    $data[1][0] = "Some samples of usage: <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
-
-    $data[2][0] = html_print_textarea(
-        'sql',
-        5,
-        50,
-        html_entity_decode($sql, ENT_QUOTES),
-        '',
-        true
+    $data[0][0] = "<b>Some samples of usage:</b> <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
+    $data[0][0] = html_print_label_input_block(
+        __('Some samples of usage:'),
+        "<blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>"
     );
 
     if (is_metaconsole() === true) {
@@ -181,42 +181,63 @@ function dbmgr_extension_main()
             $servers = [];
         }
 
-        $data[3][2] = html_print_input(
-            [
-                'name'          => 'node_id',
-                'type'          => 'select',
-                'fields'        => $servers,
-                'selected'      => $node_id,
-                'nothing'       => __('This metaconsole'),
-                'nothing_value' => -1,
-                'return'        => true,
-                'label'         => _('Select query target'),
-            ]
+        $data[0][1] = html_print_label_input_block(
+            __('Select query target'),
+            html_print_select(
+                $servers,
+                'node_id',
+                $node_id,
+                '',
+                __('This metaconsole'),
+                -1,
+                true,
+                false,
+                false,
+                'w40p',
+                false,
+                'width: 40%;'
+            )
         );
     }
 
-    $data[4][2] = '<div class="action-buttons w100p">';
-    $data[4][2] .= html_print_submit_button(
+    $data[1][0] = html_print_textarea(
+        'sql',
+        3,
+        50,
+        html_entity_decode($sql, ENT_QUOTES),
+        'placeholder="'.__('Type your query here...').'"',
+        true,
+        'w100p'
+    );
+
+    $execute_button = html_print_submit_button(
         __('Execute SQL'),
         '',
         false,
-        'class="sub next"',
+        [ 'icon' => 'cog' ],
         true
     );
-    $data[4][2] .= '</div>';
 
     $table->data = $data;
-    html_print_table($table);
+    // html_print_table($table);
+    html_print_action_buttons($execute_button);
+    ui_toggle(
+        html_print_table($table, true),
+        '<span class="subsection_header_title">'.__('SQL query').'</span>',
+        __('SQL query'),
+        'query',
+        false,
+        false,
+        '',
+        'white-box-content no_border',
+        'box-flat white_table_graph fixed_filter_bar'
+    );
     echo '</form>';
 
     // Processing SQL Code.
     if ($sql == '') {
         return;
     }
-
-    echo '<br />';
-    echo '<hr />';
-    echo '<br />';
 
     try {
         if (\is_metaconsole() === true && $node_id !== -1) {
@@ -227,7 +248,7 @@ function dbmgr_extension_main()
                         'dbport' => $node->dbport(),
                         'dbname' => $node->dbname(),
                         'dbuser' => $node->dbuser(),
-                        'dbpass' => $node->dbpass(),
+                        'dbpass' => io_output_password($node->dbpass()),
                     ]
                 );
                 $error = '';
@@ -282,22 +303,17 @@ function dbmgr_extension_main()
     html_print_table($table);
     echo '</div>';
 
-    if (is_metaconsole()) {
-        close_meta_frame();
-    }
-
 }
 
 
 if (is_metaconsole() === true) {
     // This adds a option in the operation menu.
     extensions_add_meta_menu_option(
-        'DB interface',
+        __('DB interface'),
         'PM',
         'gextensions',
         'database.png',
-        'v1r1',
-        'gdbman'
+        'v1r1'
     );
 
     extensions_add_meta_function('dbmgr_extension_main');

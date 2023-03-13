@@ -15,8 +15,6 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -26,9 +24,26 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     return;
 }
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     // Header
-    ui_print_page_header(__('Module group management'), 'images/module_group.png', false, '', true, '');
+    ui_print_standard_header(
+        __('Module group management'),
+        'images/module_group.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Module groups'),
+            ],
+        ]
+    );
 }
 
 // Init vars
@@ -40,6 +55,7 @@ $custom_id = '';
 
 $create_group = (bool) get_parameter('create_group');
 $id_group = (int) get_parameter('id_group');
+$offset = (int) get_parameter('offset', 0);
 
 if ($id_group) {
     $group = db_get_row('tmodule_group', 'id_mg', $id_group);
@@ -52,7 +68,7 @@ if ($id_group) {
         echo '<div id="both">&nbsp;</div>';
         echo '</div>';
         echo '<div id="foot">';
-        include 'general/footer.php';
+        // include 'general/footer.php';
         echo '</div>';
         echo '</div>';
         exit;
@@ -60,33 +76,52 @@ if ($id_group) {
 }
 
 $table = new stdClass();
-$table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox';
 $table->style[0] = 'font-weight: bold';
 $table->data = [];
 $table->data[0][0] = __('Name');
-$table->data[0][1] = html_print_input_text('name', $name, '', 35, 100, true);
+$table->data[1][0] = html_print_input_text('name', $name, '', 35, 100, true);
 
 
 echo '</span>';
-if (is_metaconsole()) {
-    echo '<form name="grupo" method="post" action="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group">';
+if (is_metaconsole() === true) {
+    $formUrl = 'index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&offset='.$offset;
 } else {
-    echo '<form name="grupo" method="post" action="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list">';
+    $formUrl = 'index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&offset='.$offset;
 }
 
+echo '<form name="grupo" method="POST" action="'.$formUrl.'">';
 html_print_table($table);
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+
 if ($id_group) {
     html_print_input_hidden('update_group', 1);
     html_print_input_hidden('id_group', $id_group);
-    html_print_submit_button(__('Update'), 'updbutton', false, 'class="sub upd"');
+    $actionButtonTitle = __('Update');
+    $actionButtonName = 'updbutton';
 } else {
+    $actionButtonTitle = __('Create');
+    $actionButtonName = 'crtbutton';
     html_print_input_hidden('create_group', 1);
-    html_print_submit_button(__('Create'), 'crtbutton', false, 'class="sub wand"');
 }
 
-echo '</div>';
-echo '</form>';
+$actionButtons = [];
 
-enterprise_hook('close_meta_frame');
+$actionButtons[] = html_print_submit_button(
+    $actionButtonTitle,
+    $actionButtonName,
+    false,
+    ['icon' => 'wand'],
+    true
+);
+
+$actionButtons[] = html_print_go_back_button(
+    ui_get_full_url('index.php?sec=gmodules&sec2=godmode/groups/modu_group_list'),
+    ['button_class' => ''],
+    true
+);
+
+html_print_action_buttons(
+    implode('', $actionButtons),
+    ['type' => 'form_action']
+);
+echo '</form>';

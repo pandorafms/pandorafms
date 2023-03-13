@@ -336,7 +336,7 @@ class MapsStatusWidget extends Widget
                 $url = $config['homeurl'];
                 if (\is_metaconsole() === true) {
                     $url .= sprintf(
-                        'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&refr=%s&id_visualmap=%s',
+                        'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&refr=%s&id=%s',
                         $config['vc_refr'],
                         $id_layout
                     );

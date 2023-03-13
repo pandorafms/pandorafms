@@ -550,7 +550,22 @@ $table->data['form_agents_3'][3] = html_print_select(
 
 
 $table->data['edit0'][0] = __('Dynamic Interval');
-$table->data['edit0'][1] = html_print_extended_select_for_time('dynamic_interval', '', '', 'None', '0', 10, true, 'width:150px', false);
+$table->data['edit0'][1] = html_print_extended_select_for_time(
+    'dynamic_interval',
+    -2,
+    '',
+    'None',
+    '0',
+    10,
+    true,
+    'width:150px',
+    false,
+    '',
+    false,
+    false,
+    '',
+    true
+);
 $table->data['edit0'][2] = '<table width="100%"><tr><td><em>'.__('Dynamic Min.').'</em></td>';
 $table->data['edit0'][2] .= '<td align="right">'.html_print_input_text('dynamic_min', '', '', 10, 255, true).'</td></tr>';
 $table->data['edit0'][2] .= '<tr><td><em>'.__('Dynamic Max.').'</em></td>';
@@ -2079,51 +2094,32 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         switch ($field) {
             case 'id_plugin':
                 if ($value != 0) {
-                    $value_field_1 = get_parameter('_field1_', '');
-                    $value_field_1_desc = get_parameter('desc_field1_', '');
-
-                    $value_field_2 = get_parameter('_field2_', '');
-                    $value_field_2_desc = get_parameter('desc_field2_', '');
-
-                    $value_field_3 = get_parameter('_field3_', '');
-                    $value_field_3_desc = get_parameter('desc_field3_', '');
-
-                    $value_field_4 = get_parameter('_field4_', '');
-                    $value_field_4_desc = get_parameter('desc_field4_', '');
-
-                    $value_field_5 = get_parameter('_field5_', '');
-                    $value_field_5_desc = get_parameter('desc_field5_', '');
-
-                    $values['macros'] = '{"1":{"macro":"_field1_","desc":"'.io_safe_input($value_field_1_desc).'","help":"'.io_safe_input($value_field_1_desc).'","value":"'.$value_field_1.'"}';
-
-                    if ($value_field_2_desc != '') {
-                        $values['macros'] .= ',"2":{"macro":"_field2_","desc":"'.io_safe_input($value_field_2_desc).'","help":"'.io_safe_input($value_field_2_desc).'","value":"'.$value_field_2.'"}';
-
-                        if ($value_field_3_desc != '') {
-                            $values['macros'] .= ',"3":{"macro":"_field3_","desc":"'.io_safe_input($value_field_3_desc).'","help":"'.io_safe_input($value_field_3_desc).'","value":"'.$value_field_3.'"}';
-
-                            if ($value_field_4_desc != '') {
-                                $values['macros'] .= ',"4":{"macro":"_field4_","desc":"'.io_safe_input($value_field_4_desc).'","help":"'.io_safe_input($value_field_4_desc).'","value":"'.$value_field_4.'"}';
-
-                                if ($value_field_5_desc != '') {
-                                    $values['macros'] .= ',"5":{"macro":"_field5_","desc":"'.io_safe_input($value_field_5_desc).'","help":"'.io_safe_input($value_field_5_desc).'","value":"'.$value_field_5.'"}';
-                                } else {
-                                    $values['macros'] .= '}';
-                                }
-                            } else {
-                                $values['macros'] .= '}';
-                            }
-                        } else {
-                            $values['macros'] .= '}';
+                    for ($i = 0; $i <= 15; $i++) {
+                        $value_field = get_parameter('_field'.$i.'_', '');
+                        $value_field_desc = get_parameter('desc_field'.$i.'_', '');
+                        if ($value_field_desc != '') {
+                            $values['macros'][$i] = [
+                                'macro' => '_field'.$i.'_',
+                                'desc'  => io_safe_input($value_field_desc),
+                                'help'  => io_safe_input($value_field_desc),
+                                'value' => $value_field,
+                            ];
                         }
-                    } else {
-                        $values['macros'] .= '}';
                     }
+
+                    $values['macros'] = json_encode($values['macros']);
+                    $values[$field] = $value;
                 }
             break;
 
             case 'module_interval':
                 if ($value != 0) {
+                    $values[$field] = $value;
+                }
+            break;
+
+            case 'dynamic_interval':
+                if ($value !== '-2') {
                     $values[$field] = $value;
                 }
             break;
@@ -2239,7 +2235,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         // Apply at All agents (within valid groups).
         $modules = db_get_all_rows_sql(
             sprintf(
-                'SELECT tam.id_agente_modulo, tam.id_tipo_modulo
+                'SELECT tam.id_agente_modulo, tam.id_tipo_modulo,tam.macros, tam.id_plugin
                 FROM tagente_modulo tam INNER JOIN tagente ta
                 ON ta.id_agente = tam.id_agente
                 WHERE ta.id_grupo IN (%s) %s;',
@@ -2256,6 +2252,8 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
                 [
                     'id_agente_modulo',
                     'id_tipo_modulo',
+                    'macros',
+                    'id_plugin',
                 ]
             );
         } else {
@@ -2268,6 +2266,8 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
                 [
                     'id_agente_modulo',
                     'id_tipo_modulo',
+                    'macros',
+                    'id_plugin',
                 ]
             );
         }
@@ -2323,6 +2323,23 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             } else {
                 unset($values['tcp_send']);
             }
+        }
+
+        if ($module['macros'] && $module['id_plugin'] == $values['id_plugin']) {
+            $module_macros = json_decode($module['macros'], true);
+            $values_macros = json_decode($values['macros'], true);
+
+            foreach ($values_macros as $k => $value_macro) {
+                foreach ($module_macros as $s => $module_macro) {
+                    if ($value_macro['macro'] == $module_macro['macro'] && $value_macro['value'] !== '') {
+                        $module_macros[$s]['value'] = $value_macro['value'];
+                        $module_macros[$s]['desc'] = $value_macro['desc'];
+                        $module_macros[$s]['help'] = $value_macro['help'];
+                    }
+                }
+            }
+
+            $values['macros'] = json_encode($module_macros);
         }
 
         $result = modules_update_agent_module(

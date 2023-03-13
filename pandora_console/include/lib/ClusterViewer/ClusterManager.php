@@ -595,11 +595,11 @@ class ClusterManager
                         );
                         $tmp->options .= '">';
                         $tmp->options .= html_print_image(
-                            'images/operation.png',
+                            'images/details.svg',
                             true,
                             [
                                 'title' => __('View'),
-                                'class' => 'invert_filter',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         );
                         $tmp->options .= '</a>';
@@ -612,11 +612,11 @@ class ClusterManager
                             );
                             $tmp->options .= '">';
                             $tmp->options .= html_print_image(
-                                'images/config.png',
+                                'images/edit.svg',
                                 true,
                                 [
                                     'title' => __('Edit'),
-                                    'class' => 'invert_filter',
+                                    'class' => 'main_menu_icon invert_filter',
                                 ]
                             );
                             $tmp->options .= '</a>';
@@ -628,11 +628,11 @@ class ClusterManager
                             );
                             $tmp->options .= '">';
                             $tmp->options .= html_print_image(
-                                'images/cross.png',
+                                'images/delete.svg',
                                 true,
                                 [
                                     'title' => __('Delete'),
-                                    'class' => 'invert_filter',
+                                    'class' => 'main_menu_icon invert_filter',
                                 ]
                             );
                             $tmp->options .= '</a>';
@@ -751,7 +751,10 @@ class ClusterManager
                     'name'       => 'submit',
                     'label'      => __('Go back'),
                     'type'       => 'submit',
-                    'attributes' => 'class="sub cancel"',
+                    'attributes' => [
+                        'icon' => 'back',
+                        'mode' => 'secondary',
+                    ],
                     'return'     => true,
                 ],
             ],

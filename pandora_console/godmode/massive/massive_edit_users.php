@@ -61,7 +61,6 @@ if (is_management_allowed() === false) {
 
 if (is_metaconsole() === true) {
     include_once $config['homedir'].'/include/functions_visual_map.php';
-    open_meta_frame();
 }
 
 $edit_users = (int) get_parameter('edit_users');
@@ -589,8 +588,6 @@ if (is_metaconsole() === false) {
         });
     </script>
     <?php
-} else {
-    close_meta_frame();
 }
 
 ?>

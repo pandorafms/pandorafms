@@ -326,10 +326,7 @@
                   id_group: id_group
                 },
                 function(data) {
-                  var img = $("<img />").attr(
-                    "src",
-                    "images/groups_small/" + data["icon"] + ".png"
-                  );
+                  var img = $("<img />").attr("src", "images/" + data["icon"]);
                   $(config.spanPreview)
                     .append(img)
                     .fadeIn("fast");

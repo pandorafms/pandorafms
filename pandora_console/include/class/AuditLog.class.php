@@ -96,7 +96,10 @@ class AuditLog extends HTML
         // Datatables list.
         try {
             $columns = [
-                'id_usuario',
+                [
+                    'text'  => 'id_usuario',
+                    'class' => 'w50px',
+                ],
                 'accion',
                 'fecha',
                 'ip_origen',
@@ -116,11 +119,11 @@ class AuditLog extends HTML
                     $columns,
                     [
                         'text'  => 'security',
-                        'class' => 'w80px action_buttons show_security_info',
+                        'class' => 'w80px table_action_buttons show_security_info',
                     ],
                     [
                         'text'  => 'action',
-                        'class' => 'w80px action_buttons show_extended_info',
+                        'class' => 'w80px table_action_buttons show_extended_info',
                     ]
                 );
 
@@ -129,39 +132,53 @@ class AuditLog extends HTML
 
             $this->tableId = 'audit_logs';
 
-            // Header (only in Node).
-            if (is_metaconsole() === false) {
-                ui_print_standard_header(
-                    __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
-                    'images/gm_log.png',
-                    false,
-                    '',
-                    false,
-                    [],
+            ui_print_standard_header(
+                __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
+                'images/gm_log.png',
+                false,
+                '',
+                false,
+                [],
+                [
                     [
-                        [
-                            'link'  => '',
-                            'label' => __('Admin Tools'),
-                        ],
-                        [
-                            'link'  => '',
-                            'label' => __('System Audit log'),
-                        ],
-                    ]
-                );
-            }
+                        'link'  => '',
+                        'label' => __('Admin Tools'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('System Audit log'),
+                    ],
+                ]
+            );
 
-            if (is_metaconsole() === true) {
-                // Only in case of Metaconsole, format the frame.
-                open_meta_frame();
-            }
+            $buttons = [];
+
+            $buttons[] = [
+                'id'      => 'load-filter',
+                'class'   => 'float-left margin-right-2 margin-left-2 sub config',
+                'text'    => __('Load filter'),
+                'icon'    => 'load',
+                'onclick' => '',
+            ];
+
+            $buttons[] = [
+                'id'      => 'save-filter',
+                'class'   => 'float-left margin-right-2 sub wand',
+                'text'    => __('Save filter'),
+                'icon'    => 'save',
+                'onclick' => '',
+            ];
+
+            // Modal for save/load filters.
+            echo '<div id="save-modal-filter" style="display:none"></div>';
+            echo '<div id="load-modal-filter" style="display:none"></div>';
 
             // Load datatables user interface.
             ui_print_datatable(
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -174,25 +191,38 @@ class AuditLog extends HTML
                     ],
                     'search_button_class' => 'sub filter float-right',
                     'form'                => [
-                        'inputs' => [
+                        'extra_buttons' => $buttons,
+                        'inputs'        => [
                             [
-                                'label' => __('Search'),
+                                'label' => __('Free search').ui_print_help_tip(__('Search filter by User, Action, Date, Source IP or Comments fields content'), true),
                                 'type'  => 'text',
-                                'class' => 'w200px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_text',
                                 'name'  => 'filter_text',
                             ],
                             [
-                                'label' => __('Max. hours old'),
-                                'type'  => 'text',
-                                'class' => 'w100px',
-                                'id'    => 'filter_period',
-                                'name'  => 'filter_period',
+                                'label'          => __('Max. hours old'),
+                                'type'           => 'select',
+                                'class'          => 'w20px',
+                                'select2_enable' => true,
+                                'sort'           => false,
+                                'selected'       => 168,
+                                'fields'         => [
+                                    24   => __('1 day'),
+                                    168  => __('7 days'),
+                                    360  => __('15 days'),
+                                    744  => __('1 month'),
+                                    2160 => __('3 months'),
+                                    4320 => __('6 months'),
+                                    8760 => __('1 Year'),
+                                ],
+                                'id'             => 'filter_period',
+                                'name'           => 'filter_period',
                             ],
                             [
                                 'label' => __('IP'),
                                 'type'  => 'text',
-                                'class' => 'w100px',
+                                'class' => 'w100p',
                                 'id'    => 'filter_ip',
                                 'name'  => 'filter_ip',
                             ],
@@ -202,7 +232,7 @@ class AuditLog extends HTML
                                 'nothing'       => __('All'),
                                 'nothing_value' => '-1',
                                 'sql'           => 'SELECT DISTINCT(accion), accion AS text FROM tsesion',
-                                'class'         => 'mw250px',
+                                'class'         => 'mw200px',
                                 'id'            => 'filter_type',
                                 'name'          => 'filter_type',
                             ],
@@ -211,26 +241,26 @@ class AuditLog extends HTML
                                 'type'          => 'select_from_sql',
                                 'nothing'       => __('All'),
                                 'nothing_value' => '-1',
-                                'sql'           => 'SELECT id_user, id_user AS text FROM tusuario',
-                                'class'         => 'mw250px',
+                                'sql'           => 'SELECT id_user, id_user AS text FROM tusuario UNION SELECT "SYSTEM"
+                                                    AS id_user, "SYSTEM" AS text UNION SELECT "N/A"
+                                                    AS id_user, "N/A" AS text',
+                                'class'         => 'mw200px',
                                 'id'            => 'filter_user',
                                 'name'          => 'filter_user',
                             ],
                         ],
                     ],
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                 ]
             );
         } catch (Exception $e) {
             echo $e->getMessage();
         }
 
-        if (is_metaconsole() === true) {
-            // Close the frame.
-            close_meta_frame();
-        }
-
         // Load own javascript file.
         echo $this->loadJS();
+
+        html_print_action_buttons([], ['type' => 'form_action']);
     }
 
 
@@ -269,7 +299,10 @@ class AuditLog extends HTML
 
         if (empty($this->filterText) === false) {
             $filter .= sprintf(
-                " AND (accion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%')",
+                " AND (accion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR id_usuario LIKE '%%%s%%' OR fecha LIKE '%%%s%%' OR ip_origen LIKE '%%%s%%')",
+                $this->filterText,
+                $this->filterText,
+                $this->filterText,
                 $this->filterText,
                 $this->filterText
             );
@@ -320,9 +353,12 @@ class AuditLog extends HTML
                     ).ui_print_timestamp($tmp->utimestamp, true);
 
                     if (enterprise_installed() === true) {
-                        $tmp->security     = enterprise_hook('cell1EntepriseAudit', [$tmp->id_sesion]);
-                        $tmp->action       = enterprise_hook('cell2EntepriseAudit', []);
-                        $tmp->extendedInfo = enterprise_hook('rowEnterpriseAudit', [$tmp->id_sesion]);
+                        $extendedInfo = enterprise_hook('rowEnterpriseAudit', [$tmp->id_sesion]);
+                        if (empty($extendedInfo) === false) {
+                            $tmp->security     = enterprise_hook('cell1EntepriseAudit', [$tmp->id_sesion]);
+                            $tmp->action       = enterprise_hook('cell2EntepriseAudit', []);
+                            $tmp->extendedInfo = $extendedInfo;
+                        }
                     }
 
                     $carry[] = $tmp;
@@ -366,38 +402,149 @@ class AuditLog extends HTML
 
         // Javascript content.
         ?>
-    <script type="text/javascript">
-        function format(d) {
-            var output = '';
+        <script type="text/javascript">
+            var loading = 0;
 
-            if (d.extendedInfo === '') {
-                output = "<?php echo __('There is no additional information to display'); ?>";
-            } else {
-                output = d.extendedInfo;
+            function format(d) {
+                var output = '';
+
+                if (d.extendedInfo === '') {
+                    output = "<?php echo __('There is no additional information to display'); ?>";
+                } else {
+                    output = d.extendedInfo;
+                }
+
+                return output;
             }
 
-            return output;
-        }
+            $(document).ready(function() {
+                // Add event listener for opening and closing details
+                $('#audit_logs tbody').on('click', 'td.show_extended_info', function() {
+                    var tr = $(this).closest('tr');
+                    var table = $("#<?php echo $this->tableId; ?>").DataTable();
+                    var row = table.row(tr);
 
-        $(document).ready(function() {
-            // Add event listener for opening and closing details
-            $('#audit_logs tbody').on('click', 'td.show_extended_info', function() {
-                var tr = $(this).closest('tr');
-                var table = $("#<?php echo $this->tableId; ?>").DataTable();
-                var row = table.row(tr);
-
-                if (row.child.isShown()) {
+                    if (row.child.isShown()) {
                     // This row is already open - close it
-                    row.child.hide();
-                    tr.removeClass('shown');
-                } else {
-                    // Open this row
-                    row.child(format(row.data())).show();
-                    tr.addClass('shown');
-                }
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    } else {
+                        // Open this row
+                        row.child(format(row.data())).show();
+                        tr.addClass('shown');
+                    }
+                    $('#audit_logs').css('table-layout','fixed');
+                    $('#audit_logs').css('width','95% !important');
+                });
+
+                $('#button-save-filter').click(function() {
+                    if ($('#save-filter-select').length) {
+                        $('#save-filter-select').dialog({
+                            width: "20%",
+                            maxWidth: "25%",
+                            title: "<?php echo __('Save filter'); ?>"
+                        });
+                        $('#info_box').html("");
+                        $('#text-id_name').val("");
+                        $.ajax({
+                            method: 'POST',
+                            url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                            dataType: 'json',
+                            data: {
+                                page: 'include/ajax/audit_log',
+                                recover_aduit_log_select: 1
+                            },
+                            success: function(data) {
+                                var options = "";
+                                $.each(data,function(key,value){
+                                    options += "<option value='"+key+"'>"+value+"</option>";
+                                });
+                                $('#overwrite_filter').html(options);
+                                $('#overwrite_filter').select2();
+                            }
+                        });
+                    } else {
+                        if (loading == 0) {
+                            loading = 1
+                            $.ajax({
+                                method: 'POST',
+                                url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                                data: {
+                                    page: 'include/ajax/audit_log',
+                                    save_filter_modal: 1,
+                                    current_filter: $('#latest_filter_id').val()
+                                },
+                                success: function(data) {
+                                    $('#save-modal-filter')
+                                        .empty()
+                                        .html(data);
+                                    loading = 0;
+                                    $('#save-filter-select').dialog({
+                                        width: "20%",
+                                        maxWidth: "25%",
+                                        title: "<?php echo __('Save filter'); ?>"
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
+
+                $('#save_filter_form-0-1, #radiobtn0002').click(function(){
+                    $('#overwrite_filter').select2();
+                });
+
+                /* Filter management */
+                $('#button-load-filter').click(function (){
+                    if($('#load-filter-select').length) {
+                        $('#load-filter-select').dialog({width: "20%",
+                            maxWidth: "25%",
+                            title: "<?php echo __('Load filter'); ?>"
+                        });
+                        $.ajax({
+                            method: 'POST',
+                            url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                            dataType: 'json',
+                            data: {
+                                page: 'include/ajax/audit_log',
+                                recover_aduit_log_select: 1
+                            },
+                            success: function(data) {
+                                var options = "";
+                                $.each(data,function(key,value){
+                                    options += "<option value='"+key+"'>"+value+"</option>";
+                                });
+                                $('#filter_id').html(options);
+                                $('#filter_id').select2();
+                            }
+                        });
+                    } else {
+                        if (loading == 0) {
+                            loading = 1
+                            $.ajax({
+                                method: 'POST',
+                                url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                                data: {
+                                    page: 'include/ajax/audit_log',
+                                    load_filter_modal: 1
+                                },
+                                success: function (data){
+                                    $('#load-modal-filter')
+                                    .empty()
+                                    .html(data);
+                                    loading = 0;
+                                    $('#load-filter-select').dialog({
+                                        width: "20%",
+                                        maxWidth: "25%",
+                                        title: "<?php echo __('Load filter'); ?>"
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
             });
-        });
-    </script>
+        </script>
         <?php
         // EOF Javascript content.
         return ob_get_clean();

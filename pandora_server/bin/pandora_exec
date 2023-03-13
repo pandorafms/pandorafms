@@ -1,15 +1,8 @@
 #!/usr/bin/perl
-##########################################################################
-# pandora_exec
+################################################################################
+# pandora_exec - Execute a command with a time limit.
 #
-# Executes the given command and prints its output to stdout. If the
-# execution times out or the command does not exist nothing is printed
-# to stdout. This is part of Pandora FMS Plugin server, do not delete!.
-#
-# Usage: pandora_exec <timeout in seconds> <command>
-##########################################################################
-# Copyright (c) 2008 Ramon Novoa, rnovoa@gmail.com
-#           (c) 2008 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2008-2023 Artica PFMS S.L.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,41 +15,41 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##########################################################################
-
+################################################################################
 use strict;
 use warnings;
+use POSIX qw(WEXITSTATUS WIFEXITED);
 
-# Check command line parameters 
+# Check command line arguments. 
 if ($#ARGV < 1) {
+	print("Usage: $0 <timeout in seconds> <command>\n");
 	exit 1;	
 }
 
 my @opts = @ARGV;
 my $timeout = shift(@opts);
-my $command;
-foreach my $arg (@opts) {
-	$command .= $^O ne 'MSWin32' ? quotemeta ($arg) . ' ' : '"' . $arg . '" ';
+my $command = ($0 =~ m/_agent_exec$/) ? # For backward compatibility with pandora_agent.
+              join(' ', @opts) :
+              join(' ', map { quotemeta($_) } @opts);
+
+# Fork:
+# * The child will run the command.
+# * The parent will timeout if needed
+#   and exit with the appropriate exit status.
+my $pid = fork();
+if ($pid == 0) {
+	setpgrp();
+	exec($command);
+} else {
+	eval {
+		local $SIG{ALRM} = sub { kill(9, -$pid); exit 1; };
+		alarm $timeout;
+		waitpid($pid, 0);
+		alarm 0;
+		if (WIFEXITED(${^CHILD_ERROR_NATIVE})) {
+			exit WEXITSTATUS(${^CHILD_ERROR_NATIVE});
+		}
+	};
 }
-chomp ($command);
-my $output = '';
-my $ReturnCode = 0;
 
-# Execute the command
-eval {
-	local $SIG{ALRM} = sub { die "alarm\n" };
-	alarm $timeout;
-
-	$output = `$command`;
-	$ReturnCode = ($? >> 8) & 0xff;
-	alarm 0;
-};
-
-# Timeout
-if ($@ eq "alarm\n") {
-	exit 3;
-}
-
-print $output;
-
-exit $ReturnCode;
+exit 1;

@@ -45,18 +45,18 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
 if (check_acl($config['id_user'], 0, 'PM') && enterprise_installed()) {
     $buttons['setup'] = [
         'active' => false,
-        'text'   => '<a href="index.php?sec=general&sec2=godmode/setup/setup&amp;section=module_library">'.html_print_image('images/gm_setup.png', true, ['title' => __('Setup'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="index.php?sec=general&sec2=godmode/setup/setup&amp;section=module_library">'.html_print_image('images/configuration@svg.svg', true, ['title' => __('Setup'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ];
 }
 
 $buttons['categories'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories">'.html_print_image('images/list.png', true, ['title' => __('Categories'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Categories'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view">'.html_print_image('images/eye_show.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view">'.html_print_image('images/see-details@svg.svg', true, ['title' => __('View'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 
 

@@ -24,17 +24,12 @@ div#error_buttons a {
 
 #login_body {
   /* Set rules to fill background */
+  /* background-color:#000 !important; */
   min-height: 100%;
   min-width: 1200px;
   width: 100%;
   position: absolute;
-  background: linear-gradient(74deg, #02020255 36%, transparent 36%),
-    url("../../images/backgrounds/background_pandora_console_keys.jpg");
   background-repeat: repeat;
-}
-
-.login_body_trident {
-  background: url("../../images/backgrounds/background_pandora_console_keys.jpg");
 }
 
 p.log_in {
@@ -72,14 +67,12 @@ div#login_f {
 }
 
 #ver_num {
-  margin: 0px auto;
   width: 100%;
-  position: absolute;
-  bottom: 10px;
   color: #878787;
   text-align: center;
-  font-weight: 700;
-  font-size: 8.5pt;
+  font-weight: 350;
+  font-size: 10px;
+  margin-bottom: 12px;
 }
 
 /*
@@ -90,14 +83,18 @@ div#login_f {
 
 /* --- Login page - header --- */
 div#header_login {
-  width: 100%;
-  height: 65px;
+  background-color: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  height: 30px;
+  margin-top: 1.04%;
+  margin-left: 1.04%;
+  border-radius: 8px;
 }
 
 div#list_icon_docs_support {
   float: left;
-  margin-top: 25px;
-  margin-left: 5%;
+  margin-top: 0px;
+  margin-left: 0px;
 }
 
 div#list_icon_docs_support ul {
@@ -114,35 +111,62 @@ div#list_icon_docs_support ul li {
 }
 
 div#list_icon_docs_support ul li a {
-  color: #979797;
-  font-size: 10pt;
+  color: #95a3bf;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
 }
 
-li#li_margin_left {
-  margin-left: 30px;
+div#list_icon_docs_support ul li a img {
+  margin-left: 20%;
+}
+
+li#li_margin_doc_img {
+  margin-left: 5px;
+}
+
+li#li_margin_doc {
+  margin-left: 5px;
+}
+
+li#li_margin_support_img {
+  margin-left: 10px;
+}
+
+li#li_margin_support {
+  margin-left: 5px;
+  padding-right: 5px;
 }
 
 /* --- Login page - form --- */
 div.container_login {
-  margin-top: 10%;
-  margin-left: 5%;
-  margin-right: 5%;
+  margin-top: 13.89vw;
+  /* margin-left: 19.95vw; */
 }
 
 div.login_page {
-  width: 35%;
-  min-height: 600px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  width: 363px;
+  height: auto;
   float: left;
+  margin-left: 19.95vw;
+}
+
+@media only screen and (max-width: 1280px) {
+  div.login_page {
+    margin-left: 9.95vw;
+  }
 }
 
 div.login_logo_icon {
-  margin-bottom: 40px;
+  margin: 4.18% 5.51% 40px;
   text-align: center;
 }
 
 div.login_logo_icon img {
   margin: 0 auto;
-  max-width: 70%;
+  max-width: 100%;
 }
 
 div.login_double_auth_code,
@@ -151,7 +175,7 @@ div.login_pass {
   margin: 0 auto;
   width: 70%;
   height: 40px;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   min-width: 260px;
   background-color: #fff;
   opacity: 0.77;
@@ -159,32 +183,62 @@ div.login_pass {
   border-radius: 3px;
 }
 
-div.login_nick input {
-  background-image: url("../../images/usuario_login.png");
-}
-
-div.login_pass input {
-  background-image: url("../../images/candado_login.png");
-}
-
 div.login_nick input,
 div.login_pass input {
+  background-color: #f6f7fb;
   border: 0px;
   color: #343434;
   border-radius: 3px;
   width: 100%;
   height: 40px;
   font-size: 10pt;
-  padding: 0px 0px 0px 35px;
+  padding: 0px 0px 0px 8%;
   background-repeat: no-repeat;
   background-size: 27px;
-  background-position: left center;
+  background-position: right 10px bottom 50%;
   box-sizing: border-box;
+}
+
+div.login_button button {
+  width: 100%;
+  height: 40px;
+  box-shadow: none;
+}
+
+div.login_button button {
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+}
+
+div.login_button button span {
+  margin-top: 0px;
+}
+
+div.login_pass input {
+  padding-right: 40px;
 }
 
 div.login_nick input:focus,
 div.login_pass input:focus {
   outline: none;
+}
+
+div.login_pass {
+  position: relative;
+}
+
+#show-hide-pass {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  border: 0;
+  outline: none;
+  margin: 0;
+  z-index: 2;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
 }
 
 div.login_nick input:-webkit-autofill,
@@ -216,18 +270,6 @@ div.login_button_saml {
   margin-bottom: 20px;
 }
 
-div.login_button input {
-  width: 100%;
-  background-color: #82b92e;
-  text-align: center;
-  height: 40px;
-  padding: 0px;
-  font-size: 11pt;
-  color: #fff;
-  border: 1px solid #82b92e;
-  border-radius: 3px;
-}
-
 div.login_button_saml input {
   border: 1px solid #fff;
   background-color: #fff;
@@ -237,7 +279,8 @@ div.login_button_saml input {
   background-position: right 5% center;
 }
 
-div.login_button input:hover {
+div.login_button input:hover,
+#button-login_button:hover {
   background-color: #fff;
   color: #000;
   border: 1px solid #fff;
@@ -260,6 +303,10 @@ div.login_button_saml input:hover {
   background-image: url("../../images/user_login_hover.png");
 }
 
+.login_back {
+  margin-top: 60px !important;
+}
+
 .login_back input {
   background-image: url("../../images/back_login.png");
   background-position: left 5% center;
@@ -271,9 +318,13 @@ div.login_button_saml input:hover {
 }
 
 div.login_data {
-  width: 65%;
-  min-height: 600px;
+  max-width: 40.21vw;
+  max-height: 21.82%;
   float: left;
+  margin-left: 100px;
+  margin-right: 0px;
+  margin-top: 30px;
+  padding-right: 0px;
 }
 
 div.text_banner_login {
@@ -288,21 +339,22 @@ div.text_banner_login span {
 }
 
 span.span1 {
-  font-size: 30pt;
-  font-weight: 100;
+  font-size: 38px;
+  letter-spacing: -0.38px;
+  font-weight: bold;
   color: white;
   line-height: 49pt;
 }
 
 span.span2 {
-  font-size: 30pt;
-  font-weight: 300;
-  color: white;
+  font-size: 20px;
+  letter-spacing: -0.26px;
+  font-weight: 350;
+  color: #c1ccdc;
   line-height: 32pt;
 }
 
 div.img_banner_login {
-  width: 100%;
   text-align: center;
 }
 
@@ -323,16 +375,25 @@ div.img_banner_login img {
 }
 
 .reset_password a {
-  color: #ddd;
-  font-size: 8.5pt;
+  color: #ffffff;
+  font-size: 9pt;
+  font-weight: bold;
 }
 
 @media all and (max-width: 1200px) {
   span.span1 {
-    font-size: 30pt;
+    font-size: 38px;
+    letter-spacing: -0.38px;
+    font-weight: bold;
+    color: white;
+    line-height: 49pt;
   }
   span.span2 {
-    font-size: 30pt;
+    font-size: 20px;
+    letter-spacing: -0.26px;
+    font-weight: 350;
+    color: #c1ccdc;
+    line-height: 32pt;
   }
 }
 
@@ -430,4 +491,263 @@ div.button_message_alert_form input {
   font-weight: bold;
   font-size: 10pt;
   margin-right: 25px;
+}
+
+/* ==== Animated splash ==== */
+
+.loginimg-container {
+  background-image: url("../../images/animated_login/static.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  width: 508px;
+  height: 246px;
+  margin-left: 1vw;
+}
+
+/* Horizontal lines */
+
+.lineone,
+.linetwo,
+.linethree {
+  background-repeat: no-repeat;
+  background-size: auto;
+  width: 115px;
+  height: 4px;
+  animation-duration: 8s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.lineone {
+  background-image: url("../../images/animated_login/line-1.svg");
+  animation-name: barone;
+}
+.linetwo {
+  background-image: url("../../images/animated_login/line-2.svg");
+  animation-name: bartwo;
+  height: 5px;
+}
+.linethree {
+  background-image: url("../../images/animated_login/line-3.svg");
+  animation-name: barthree;
+}
+@keyframes barone {
+  0% {
+    transform: translateX(312px) translateY(30px);
+  }
+  50% {
+    transform: translateX(197px) translateY(30px);
+  }
+  100% {
+    transform: translateX(312px) translateY(30px);
+  }
+}
+@keyframes bartwo {
+  0% {
+    transform: translateX(255px) translateY(45px);
+  }
+  33% {
+    transform: translateX(312px) translateY(45px);
+  }
+  66% {
+    transform: translateX(197px) translateY(45px);
+  }
+  100% {
+    transform: translateX(255px) translateY(45px);
+  }
+}
+@keyframes barthree {
+  0% {
+    transform: translateX(197px) translateY(60px);
+  }
+  50% {
+    transform: translateX(312px) translateY(60px);
+  }
+  100% {
+    transform: translateX(197px) translateY(60px);
+  }
+}
+/* Vertical lines */
+.towerone,
+.towertwo,
+.towerthree,
+.towerfour {
+  background-color: #56ea82;
+  width: 20px;
+  height: 68px;
+  border-radius: 4px;
+  margin: 0px 5px;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  transform-origin: bottom center;
+}
+.towerone {
+  animation-name: graphone;
+}
+.towertwo {
+  animation-name: graphtwo;
+}
+.towerthree {
+  animation-name: graphthree;
+}
+.towerfour {
+  animation-name: graphfour;
+}
+@keyframes graphone {
+  0% {
+    transform: translateX(37px) translateY(105px) scale(1, 1);
+  }
+  50% {
+    transform: translateX(37px) translateY(105px) scale(1, 0.33);
+    background-color: #f5a623;
+  }
+  100% {
+    transform: translateX(37px) translateY(105px) scale(1, 1);
+  }
+}
+@keyframes graphtwo {
+  0% {
+    transform: translateX(37px) translateY(105px) scale(1, 0.7);
+    background-color: #009d9e;
+  }
+  75% {
+    transform: translateX(37px) translateY(105px) scale(1, 1);
+    background-color: #56ea82;
+  }
+  100% {
+    transform: translateX(37px) translateY(105px) scale(1, 0.7);
+    background-color: #009d9e;
+  }
+}
+@keyframes graphthree {
+  0% {
+    transform: translateX(37px) translateY(105px) scale(1, 1);
+  }
+  25% {
+    transform: translateX(37px) translateY(105px) scale(1, 0.55);
+    background-color: #009d9e;
+  }
+  100% {
+    transform: translateX(37px) translateY(105px) scale(1, 1);
+  }
+}
+@keyframes graphfour {
+  0% {
+    transform: translateX(37px) translateY(105px) scale(1, 0.4);
+    background-color: #009d9e;
+  }
+  66% {
+    transform: translateX(37px) translateY(105px) scale(1, 0.1);
+    background-color: #ed474a;
+  }
+  100% {
+    transform: translateX(37px) translateY(105px) scale(1, 0.4);
+    background-color: #009d9e;
+  }
+}
+
+/* ==== Spinner login ==== */
+.loader {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  background: linear-gradient(#82b92e, #c1ccdc);
+  animation: animate 1.2s linear infinite;
+  margin: auto;
+  margin-bottom: 40px;
+}
+.loader span {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: linear-gradient(#82b92e, #c1ccdc);
+}
+.loader span:nth-child(1) {
+  filter: blur(4px);
+}
+.loader span:nth-child(2) {
+  filter: blur(8px);
+}
+.loader span:nth-child(3) {
+  filter: blur(12px);
+}
+.loader span:nth-child(4) {
+  filter: blur(16px);
+}
+.loader:after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  /* background: transparent; */
+  background: #f1f1f1;
+  border: solid white 10px;
+  border-radius: 50%;
+}
+
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==== Autocomplete user/password Google Chrome  ==== */
+div.login_nick input:-webkit-autofill,
+div.login_nick input:-webkit-autofill:hover,
+div.login_nick input:-webkit-autofill:focus,
+div.login_nick input:-webkit-autofill:active,
+div.login_pass input:-webkit-autofill,
+div.login_pass input:-webkit-autofill:hover,
+div.login_pass input:-webkit-autofill:focus,
+div.login_pass input:-webkit-autofill:active {
+  background-color: #f6f7fb;
+  border: 0px;
+  border-radius: 3px;
+  width: 100%;
+  height: 40px;
+  font-size: 10pt;
+  padding: 0px 0px 0px 8%;
+  background-repeat: no-repeat;
+  background-size: 27px;
+  background-position: right 10px bottom 50%;
+  box-sizing: border-box;
+}
+
+div.login_pass input:-webkit-autofill,
+div.login_pass input:-webkit-autofill:hover,
+div.login_pass input:-webkit-autofill:focus,
+div.login_pass input:-webkit-autofill:active {
+  background-image: url("../../images/eye-closed-input.png");
+}
+
+button.submitButton {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  min-width: 110px;
+  height: 42px;
+  font-size: 14px;
+  font-family: "Pandora-Regular";
+  align-items: center;
+  line-height: 24px;
+  box-shadow: 0px 3px 6px #c7c7c7;
+  color: #fff;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 0 10px;
+  cursor: pointer;
+  z-index: 100;
+  font-weight: bold;
+}
+
+.content_alert {
+  margin: 0 !important;
 }

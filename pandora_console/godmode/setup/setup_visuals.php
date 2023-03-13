@@ -53,6 +53,8 @@ $row = 0;
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden('update_config', 1);
 
+$performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
 // ----------------------------------------------------------------------
 // BEHAVIOUR CONFIGURATION
 // ----------------------------------------------------------------------
@@ -64,7 +66,18 @@ $table_behaviour->size[0] = '50%';
 $table_behaviour->data = [];
 
 $table_behaviour->data[$row][0] = __('Block size for pagination');
-$table_behaviour->data[$row][1] = html_print_input_text('block_size', $config['global_block_size'], '', 5, 5, true);
+$table_behaviour->data[$row][1] = html_print_input(
+    [
+        'type'   => 'number',
+        'size'   => 5,
+        'max'    => $performance_variables_control['block_size']->max,
+        'name'   => 'block_size',
+        'value'  => $config['global_block_size'],
+        'return' => true,
+        'min'    => $performance_variables_control['block_size']->min,
+        'style'  => 'width:50px',
+    ]
+);
 $row++;
 
 $values = [];
@@ -102,7 +115,6 @@ $table_behaviour->data[$row][0] = __('Display text when proc modules have state 
 $table_behaviour->data[$row][1] = html_print_input_text('render_proc_fail', $config['render_proc_fail'], '', 25, 25, true);
 $row++;
 
-// Daniel maya 02/06/2016 Display menu with click --INI
 $table_behaviour->data[$row][0] = __('Click to display lateral menus');
 $table_behaviour->data[$row][1] = html_print_checkbox_switch(
     'click_display',
@@ -111,8 +123,8 @@ $table_behaviour->data[$row][1] = html_print_checkbox_switch(
     true
 );
 $row++;
-// Daniel maya 02/06/2016 Display menu with click --END
-if (enterprise_installed()) {
+
+if (enterprise_installed() === true) {
     $table_behaviour->data[$row][0] = __('Service label font size');
     $table_behaviour->data[$row][1] = html_print_input_text('service_label_font_size', $config['service_label_font_size'], '', 5, 5, true);
     $row++;
@@ -130,6 +142,7 @@ $table_styles = new stdClass();
 $table_styles->width = '100%';
 $table_styles->class = 'databox filters';
 $table_styles->style[0] = 'font-weight: bold;';
+$table_styles->style[1] = 'display: flex; align-items: center;';
 $table_styles->size[0] = '50%';
 $table_styles->data = [];
 
@@ -146,7 +159,6 @@ $table_styles->data[$row][1] = html_print_select(
 );
 $row++;
 
-
 $table_styles->data[$row][0] = __('Status icon set');
 $iconsets['default'] = __('Colors');
 $iconsets['faces'] = __('Faces');
@@ -160,7 +172,18 @@ $table_styles->data[$row][1] = html_print_select(
     '',
     true
 );
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'status_set_preview', false, '', 'class="sub camera logo_preview"', true);
+$table_styles->data[$row][1] .= html_print_button(
+    __('View'),
+    'status_set_preview',
+    false,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true
+);
 $row++;
 
 // Divs to show icon status Colours (Default).
@@ -225,7 +248,18 @@ $table_styles->data[$row][1] = html_print_select(
     false,
     'width:240px'
 );
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'login_background_preview', false, '', 'class="sub camera logo_preview"', true);
+$table_styles->data[$row][1] .= html_print_button(
+    __('View'),
+    'login_background_preview',
+    false,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true
+);
 $row++;
 
 
@@ -279,16 +313,44 @@ function logo_custom_enterprise($name, $logo)
 
 $table_styles->data[$row][0] = __('Custom logo (menu)');
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo', $config['custom_logo']);
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'custom_logo_preview',
+    $open,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true,
+    false,
+    $open,
+    'visualmodal'
+);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo collapsed (menu)');
 $table_styles->data[$row][1] = logo_custom_enterprise('custom_logo_collapsed', $config['custom_logo_collapsed']);
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_collapsed_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'custom_logo_collapsed_preview',
+    $open,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true,
+    false,
+    $open,
+    'visualmodal'
+);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (header white background)');
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $ent_files = list_files('enterprise/images/custom_logo', 'png', 1, 0);
     $open_files = list_files('images/custom_logo', 'png', 1, 0);
 
@@ -323,7 +385,21 @@ if (enterprise_installed()) {
     );
 }
 
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_white_bg_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'custom_logo_white_bg_preview',
+    $open,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true,
+    false,
+    $open,
+    'visualmodal'
+);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (login)');
@@ -360,11 +436,25 @@ if (enterprise_installed()) {
     );
 }
 
-$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_logo_login_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+$table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'custom_logo_login_preview',
+    $open,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true,
+    false,
+    $open,
+    'visualmodal'
+);
 $row++;
 
-// Splash login
-if (enterprise_installed()) {
+// Splash login.
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Custom Splash (login)');
 
     $table_styles->data[$row][1] = html_print_select(
@@ -372,8 +462,8 @@ if (enterprise_installed()) {
         'custom_splash_login',
         $config['custom_splash_login'],
         '',
-        '',
-        '',
+        __('Default'),
+        'default',
         true,
         false,
         true,
@@ -382,11 +472,25 @@ if (enterprise_installed()) {
         'width:240px'
     );
 
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_splash_login_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_splash_login_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     // Get all the custom logos.
     $files = list_files('enterprise/images/custom_general_logos', 'png', 1, 0);
 
@@ -407,7 +511,21 @@ if (enterprise_installed()) {
         false,
         'width:240px'
     );
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_docs_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_docs_logo_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 
     // Custom support icon.
@@ -426,7 +544,21 @@ if (enterprise_installed()) {
         false,
         'width:240px'
     );
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_support_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_support_logo_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 
     // Custom center networkmap icon.
@@ -445,7 +577,21 @@ if (enterprise_installed()) {
         false,
         'width:240px'
     );
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_network_center_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_network_center_logo_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 
     // Custom center mobile console icon.
@@ -464,7 +610,21 @@ if (enterprise_installed()) {
         false,
         'width:240px'
     );
-    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'custom_mobile_console_logo_preview', $open, '', 'class="sub camera logo_preview"', true, false, $open, 'visualmodal');
+    $table_styles->data[$row][1] .= '&nbsp;'.html_print_button(
+        __('View'),
+        'custom_mobile_console_logo_preview',
+        $open,
+        '',
+        [
+            'icon'  => 'camera',
+            'mode'  => 'link',
+            'class' => 'logo_preview',
+        ],
+        true,
+        false,
+        $open,
+        'visualmodal'
+    );
     $row++;
 }
 
@@ -478,45 +638,51 @@ $table_styles->data[$row][0] = __('Subtitle (header)');
 $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
 $row++;
 
-// login title1
-if (enterprise_installed()) {
+// Login title1.
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Title 1 (login)');
     $table_styles->data[$row][1] = html_print_input_text('custom_title1_login', $config['custom_title1_login'], '', 50, 50, true);
     $row++;
 }
 
-// login text2
-if (enterprise_installed()) {
+// Login text2.
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Title 2 (login)');
     $table_styles->data[$row][1] = html_print_input_text('custom_title2_login', $config['custom_title2_login'], '', 50, 50, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Docs URL (login)');
     $table_styles->data[$row][1] = html_print_input_text('custom_docs_url', $config['custom_docs_url'], '', 50, 50, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Support URL (login)');
     $table_styles->data[$row][1] = html_print_input_text('custom_support_url', $config['custom_support_url'], '', 50, 50, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Product name');
     $table_styles->data[$row][1] = html_print_input_text('rb_product_name', get_product_name(), '', 30, 255, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Copyright notice');
     $table_styles->data[$row][1] = html_print_input_text('rb_copyright_notice', get_copyright_notice(), '', 30, 255, true);
     $row++;
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() === true) {
+    $table_styles->data[$row][0] = __('Background opacity % (login)');
+    $table_styles->data[$row][1] = "<input type='number' value=".$config['background_opacity']." size='5' name='background_opacity' min='0' max='99'>";
+    $row++;
+}
+
+if (enterprise_installed() === true) {
     $table_styles->data[$row][0] = __('Disable logo in graphs');
     $table_styles->data[$row][1] = html_print_checkbox_switch(
         'fixed_graph',
@@ -552,7 +718,7 @@ $table_styles->data[$row][1] = html_print_checkbox_switch(
 $row++;
 
 
-// For 5.1 Autohidden menu feature
+// For 5.1 Autohidden menu feature.
 $table_styles->data['autohidden'][0] = __('Automatically hide submenu');
 $table_styles->data['autohidden'][1] = html_print_checkbox_switch(
     'autohidden_menu',
@@ -568,6 +734,16 @@ $table_styles->data[$row][1] = html_print_checkbox_switch(
     $config['visual_animation'],
     true
 );
+$row++;
+
+$table_styles->data[$row][0] = __('Random background (login)');
+$table_styles->data[$row][1] = html_print_checkbox_switch(
+    'random_background',
+    1,
+    $config['random_background'],
+    true
+);
+$row++;
 
 
 // ----------------------------------------------------------------------
@@ -578,6 +754,7 @@ $table_gis = new stdClass();
 $table_gis->width = '100%';
 $table_gis->class = 'databox filters';
 $table_gis->style[0] = 'font-weight: bold;';
+$table_gis->style[1] = 'display: flex; align-items: center;';
 $table_gis->size[0] = '50%';
 $table_gis->data = [];
 
@@ -606,7 +783,18 @@ $table_gis->data[$row][1] = html_print_select(
     '',
     true
 );
-$table_gis->data[$row][1] .= '&nbsp;'.html_print_button(__('View'), 'gis_icon_preview', false, '', 'class="sub camera logo_preview"', true);
+$table_gis->data[$row][1] .= '&nbsp;'.html_print_button(
+    __('View'),
+    'gis_icon_preview',
+    false,
+    '',
+    [
+        'icon'  => 'camera',
+        'mode'  => 'link',
+        'class' => 'logo_preview',
+    ],
+    true
+);
 $row++;
 
 // ----------------------------------------------------------------------
@@ -693,118 +881,24 @@ $table_chars = new stdClass();
 $table_chars->width = '100%';
 $table_chars->class = 'databox filters';
 $table_chars->style[0] = 'font-weight: bold;';
+$table_chars->style[1] = 'display: flex;';
 $table_chars->size[0] = '50%';
 $table_chars->data = [];
 
-$table_chars->data[$row][0] = __('Graph color #1');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color1',
-    $config['graph_color1'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
+$graphColorAmount = 10;
 
-$table_chars->data[$row][0] = __('Graph color #2');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color2',
-    $config['graph_color2'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #3');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color3',
-    $config['graph_color3'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #4');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color4',
-    $config['graph_color4'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #5');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color5',
-    $config['graph_color5'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #6');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color6',
-    $config['graph_color6'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #7');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color7',
-    $config['graph_color7'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #8');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color8',
-    $config['graph_color8'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #9');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color9',
-    $config['graph_color9'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
-
-$table_chars->data[$row][0] = __('Graph color #10');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_color10',
-    $config['graph_color10'],
-    '',
-    8,
-    8,
-    true
-);
-$row++;
+for ($i = 1; $i <= $graphColorAmount; $i++) {
+    $table_chars->data[$row][0] = __('Graph color #'.$i);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color'.$i,
+        $config['graph_color'.$i],
+        '',
+        10,
+        8,
+        true
+    );
+    $row++;
+}
 
 $table_chars->data[$row][0] = __('Value to interface graphics');
 $table_chars->data[$row][1] = html_print_input_text(
@@ -823,16 +917,19 @@ if (enterprise_installed() === false) {
 }
 
 $table_chars->data[$row][0] = __('Data precision');
-$table_chars->data[$row][1] = html_print_input_text(
-    'graph_precision',
-    $config['graph_precision'],
-    '',
-    5,
-    5,
-    true,
-    $disabled_graph_precision,
-    false,
-    'onChange="change_precision()"'
+$table_chars->data[$row][1] = html_print_input(
+    [
+        'type'                                        => 'number',
+        'size'                                        => 5,
+        'max'                                         => $performance_variables_control['graph_precision']->max,
+        'name'                                        => 'graph_precision',
+        'value'                                       => $config['graph_precision'],
+        'return'                                      => true,
+        'min'                                         => $performance_variables_control['graph_precision']->min,
+        'style'                                       => 'width:50px',
+        ($disabled_graph_precision) ? 'readonly' : '' => 'readonly',
+        'onchange'                                    => 'change_precision()',
+    ]
 );
 $row++;
 
@@ -841,17 +938,21 @@ if (isset($config['short_module_graph_data']) === false) {
 }
 
 $table_chars->data[$row][0] = __('Data precision in graphs');
-$table_chars->data[$row][1] = html_print_input_text(
-    'short_module_graph_data',
-    $config['short_module_graph_data'],
-    '',
-    5,
-    5,
-    true,
-    $disabled_graph_precision,
-    false,
-    'onChange="change_precision()"'
+$table_chars->data[$row][1] = html_print_input(
+    [
+        'type'                                        => 'number',
+        'size'                                        => 5,
+        'max'                                         => $performance_variables_control['short_module_graph_data']->max,
+        'name'                                        => 'short_module_graph_data',
+        'value'                                       => $config['short_module_graph_data'],
+        'return'                                      => true,
+        'min'                                         => $performance_variables_control['short_module_graph_data']->min,
+        'style'                                       => 'width:50px',
+        ($disabled_graph_precision) ? 'readonly' : '' => 'readonly',
+        'onchange'                                    => 'change_precision()',
+    ]
 );
+
 $row++;
 
 $table_chars->data[$row][0] = __(
@@ -1082,7 +1183,7 @@ $table_vc->data[$row][1] = html_print_select(
 $row++;
 
 $table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu');
-$table_vc->data[$row][1] = "<input type ='number' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
+$table_vc->data[$row][1] = "<input ' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>";
 $row++;
 
 $table_vc->data[$row][0] = __('Default line thickness for the Visual Console');
@@ -1116,7 +1217,7 @@ $table_ser->size[0] = '50%';
 $table_ser->data = [];
 
 $table_ser->data['number'][0] = __('Number of favorite services to show in the menu');
-$table_ser->data['number'][1] = "<input type ='number' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
+$table_ser->data['number'][1] = "<input ' value=".$config['ser_menu_items']." size='5' name='ser_menu_items' min='0' max='25'>";
 
 // ----------------------------------------------------------------------
 // Reports
@@ -1149,12 +1250,12 @@ $table_report->data[$row][1] = html_print_checkbox_switch(
 $row++;
 
 $table_report->data[$row][0] = __('PDF font size (px)');
-$table_report->data[$row][1] = "<input type ='number' value=".$config['global_font_size_report']." name='global_font_size_report' min='1' max='50' step='1'>";
+$table_report->data[$row][1] = "<input ' value=".$config['global_font_size_report']." name='global_font_size_report' min='1' max='50' step='1'>";
 
 $row++;
 
 $table_report->data[$row][0] = __('HTML font size for SLA (em)');
-$table_report->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." name='font_size_item_report' min='1' max='9' step='0.1'>";
+$table_report->data[$row][1] = "<input ' value=".$config['font_size_item_report']." name='font_size_item_report' min='1' max='9' step='0.1'>";
 
 $row++;
 
@@ -1330,18 +1431,21 @@ $table_other->data[$row][1] = html_print_select(
     false
 );
 
-
 $row++;
 
-if ($config['prominent_time'] == 'comparation') {
+$table_other->data[$row][0] = __('Visible time of successful notifiations');
+$table_other->data[$row][1] .= html_print_input_text('notification_autoclose_time', $config['notification_autoclose_time'], '', 10, 10, true);
+$row++;
+
+if ($config['prominent_time'] === 'comparation') {
     $timestamp = false;
     $comparation = true;
     $compact = false;
-} else if ($config['prominent_time'] == 'timestamp') {
+} else if ($config['prominent_time'] === 'timestamp') {
     $timestamp = true;
     $comparation = false;
     $compact = false;
-} else if ($config['prominent_time'] == 'compact') {
+} else if ($config['prominent_time'] === 'compact') {
     $timestamp = false;
     $comparation = false;
     $compact = true;
@@ -1373,7 +1477,10 @@ $table_other->data[$row][3] = html_print_button(
     'custom_value_add_btn',
     false,
     '',
-    'class="sub next"',
+    [
+        'icon' => 'next',
+        'mode' => 'link',
+    ],
     true
 );
 
@@ -1396,10 +1503,13 @@ $table_other->data[$row][3] = html_print_button(
     'custom_values_del_btn',
     empty($count_custom_postprocess),
     '',
-    'class="sub cancel"',
+    [
+        'icon' => 'delete',
+        'mode' => 'link',
+    ],
     true
 );
-// This hidden field will be filled from jQuery before submit
+// This hidden field will be filled from jQuery before submit.
 $table_other->data[$row][1] .= html_print_input_hidden(
     'custom_value_to_delete',
     '',
@@ -1424,17 +1534,37 @@ $units = [
 $table_other->data[$row][1] = __('Value').': ';
 $table_other->data[$row][1] .= html_print_input_text('interval_value', '', '', 5, 5, true);
 $table_other->data[$row][2] = html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false);
-$table_other->data[$row][3] = html_print_button(__('Add'), 'interval_add_btn', false, '', 'class="sub next"', true);
+$table_other->data[$row][3] = html_print_button(
+    __('Add'),
+    'interval_add_btn',
+    false,
+    '',
+    [
+        'icon' => 'next',
+        'mode' => 'link',
+    ],
+    true
+);
 
 $row++;
 
 $table_other->data[$row][0] = '';
 $table_other->data[$row][1] = __('Delete interval').': ';
 $table_other->data[$row][2] = html_print_select(get_periods(false, false), 'intervals', '', '', '', '', true);
-$table_other->data[$row][3] = html_print_button(__('Delete'), 'interval_del_btn', empty($config['interval_values']), '', 'class="sub cancel"', true);
+$table_other->data[$row][3] = html_print_button(
+    __('Delete'),
+    'interval_del_btn',
+    empty($config['interval_values']),
+    '',
+    [
+        'icon' => 'delete',
+        'mode' => 'link',
+    ],
+    true
+);
 
 $table_other->data[$row][1] .= html_print_input_hidden('interval_values', $config['interval_values'], true);
-// This hidden field will be filled from jQuery before submit
+// This hidden field will be filled from jQuery before submit.
 $table_other->data[$row][1] .= html_print_input_hidden('interval_to_delete', '', true);
 $table_other->data[$row][3] .= '<br><br>';
 // ----------------------------------------------------------------------
@@ -1444,7 +1574,17 @@ $table_other->data[$row][0] = __('Module units');
 $table_other->data[$row][1] = __('Value').': ';
 $table_other->data[$row][1] .= html_print_input_text('custom_module_unit', '', '', 15, 50, true);
 $table_other->data[$row][2] = '';
-$table_other->data[$row][3] = html_print_button(__('Add'), 'module_unit_add_btn', false, '', 'class="sub next"', true);
+$table_other->data[$row][3] = html_print_button(
+    __('Add'),
+    'module_unit_add_btn',
+    false,
+    '',
+    [
+        'icon' => 'next',
+        'mode' => 'link',
+    ],
+    true
+);
 
 $row++;
 $table_other->data[$row][0] = '';
@@ -1455,7 +1595,10 @@ $table_other->data[$row][3] = html_print_button(
     'custom_module_unit_del_btn',
     empty($count_custom_postprocess),
     '',
-    'class="sub cancel"',
+    [
+        'icon' => 'delete',
+        'mode' => 'link',
+    ],
     true
 );
 
@@ -1483,11 +1626,11 @@ if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['c
         true
     );
     $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
         [
             'id'    => 'select',
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 } else {
@@ -1503,11 +1646,11 @@ if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['c
         false
     );
     $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
-        'images/pencil.png',
+        'images/edit.svg',
         true,
         [
             'id'    => 'pencil',
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 }
@@ -1600,9 +1743,19 @@ echo '<legend>'.__('Other configuration').' '.ui_print_help_icon('other_conf_tab
 html_print_table($table_other);
 echo '</fieldset>';
 
-echo '<div class="action-buttons" style="width: '.$table_other->width.'">';
-html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-echo '</div>';
+html_print_div(
+    [
+        'class'   => 'action-buttons w100p',
+        'content' => html_print_submit_button(
+            __('Update'),
+            'update_button',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+    ]
+);
+
 echo '</form>';
 
 
@@ -1624,7 +1777,7 @@ function edit_csv_divider () {
         $("#text-csv_divider").val(value);
     }
     else {
-        $("#csv_divider_custom img").attr("src", "images/pencil.png");
+        $("#csv_divider_custom img").attr("src", "images/edit.svg");
         $("#csv_divider_custom img").attr("id", "pencil");
         $("#text-csv_divider").replaceWith("<select id='csv_divider' name='csv_divider'>");
         var o = new Option(";", ";");
@@ -1829,9 +1982,9 @@ $(".logo_preview").click (function(e) {
 
     var homeUrl = "<?php echo $config['homeurl']; ?>";
     var homeUrlEnt = homeUrl + "<?php echo enterprise_installed() ? 'enterprise/' : ''; ?>";
-
+    var elementToCheck = $('#'+e.target.id).parent().attr('id');
     // Fill it seing the target has been clicked
-    switch (e.target.id) {
+    switch (elementToCheck) {
         case 'button-custom_logo_preview':
             icon_name = $("select#custom_logo option:selected").val();
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
@@ -1841,7 +1994,7 @@ $(".logo_preview").click (function(e) {
             icon_name = $("select#custom_logo_collapsed option:selected").val();
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;
             options.grayed = true;
-            break;            
+            break;
         case 'button-custom_logo_white_bg_preview':
             icon_name = $("select#custom_logo_white_bg option:selected").val();
             icon_path = homeUrlEnt + "images/custom_logo/" + icon_name;

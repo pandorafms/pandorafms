@@ -348,7 +348,10 @@ class ClusterWizard extends \HTML
                     'name'       => 'submit',
                     'label'      => __('Go back'),
                     'type'       => 'submit',
-                    'attributes' => 'class="sub cancel"',
+                    'attributes' => [
+                        'icon' => 'back',
+                        'mode' => 'secondary',
+                    ],
                     'return'     => true,
                 ],
             ],
@@ -1027,6 +1030,7 @@ class ClusterWizard extends \HTML
             foreach ($aa_modules as $module) {
                 $inputs[] = [
                     'block_id'      => 'from-to-threshold',
+                    'label'         => '<b>'.$module->name().'</b>',
                     'class'         => 'flex-row line w100p',
                     'direct'        => 1,
                     'block_content' => [

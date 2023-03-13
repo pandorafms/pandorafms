@@ -834,7 +834,10 @@ class AgentWizard extends HTML
                 'label'      => $this->actionLabel,
                 'name'       => 'sub-protocol',
                 'type'       => 'submit',
-                'attributes' => 'class="sub next" onclick="$(\'#form-main-wizard\').submit();"',
+                'attributes' => [
+                    'icon'    => 'cog',
+                    'onclick' => '$(\'#form-main-wizard\').submit();',
+                ],
                 'return'     => true,
             ],
         ];
@@ -843,6 +846,7 @@ class AgentWizard extends HTML
         html_print_div(
             [
                 'class'   => 'white_box',
+                'style'   => 'padding: 20px',
                 'content' => $this->printForm(
                     [
                         'form'      => $form,
@@ -2723,7 +2727,7 @@ class AgentWizard extends HTML
             'action' => $this->sectionUrl,
             'id'     => 'form-filter-interfaces',
             'method' => 'POST',
-            'class'  => 'modal flex flex-row searchbox',
+            'class'  => 'modal searchbox',
             'extra'  => '',
         ];
 
@@ -3763,7 +3767,7 @@ class AgentWizard extends HTML
                 'label'      => __('Create modules'),
                 'name'       => 'create-modules-action',
                 'type'       => 'button',
-                'attributes' => 'class="sub cog float-right"',
+                'attributes' => [ 'icon' => 'next' ],
                 'script'     => 'processListModules();',
                 'return'     => true,
             ],
@@ -5476,6 +5480,19 @@ class AgentWizard extends HTML
      */
     private function getInterfacesModulesx64(array $data=[])
     {
+        $equivalencies_x86 = [
+            'ifHCInOctets'      => 'ifInOctets',
+            'ifHCOutOctets'     => 'ifOutOctets',
+            'ifHCInUcastPkts'   => 'ifInUcastPkts',
+            'ifHCOutUcastPkts'  => 'ifOutUcastPkts',
+            'ifHCInNUcastPkts'  => 'ifInNUcastPkts',
+            'ifHCOutNUcastPkts' => 'ifOutNUcastPkts',
+        ];
+
+        foreach ($equivalencies_x86 as $key => $equivalencie) {
+            $this->defaultSNMPValues[$key] = $this->defaultSNMPValues[$equivalencie];
+        }
+
         $moduleDescription  = '';
         $name               = '';
         $value              = '1';

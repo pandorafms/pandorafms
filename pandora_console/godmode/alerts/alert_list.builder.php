@@ -32,29 +32,16 @@ $pure = get_parameter('pure', 0);
 
 $table = new stdClass();
 $table->id = 'add_alert_table';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
 $table->width = '100%';
 $table->head = [];
 $table->data = [];
 $table->size = [];
-$table->size = [];
-$table->style[0] = 'font-weight: bold;';
-$table->style[1] = 'font-weight: bold;display: flex;align-items: baseline;';
-$table->style[2] = 'font-weight: bold;';
-$table->style[3] = 'font-weight: bold;';
-
-// This is because if this view is reused after list alert view then
-// styles in the previous view can affect this table.
-$table->rowstyle[0] = '';
-$table->rowstyle[1] = '';
-$table->rowstyle[2] = '';
-$table->rowstyle[3] = '';
-
+$table->style[0] = 'width: 50%';
+$table->style[1] = 'width: 50%';
 
 // Add an agent selector
 if (! $id_agente) {
-    $table->data['agent'][0] = __('Agent');
-
     $params = [];
     $params['return'] = true;
     $params['show_helptip'] = true;
@@ -64,36 +51,37 @@ if (! $id_agente) {
     $params['metaconsole_enabled'] = false;
     $params['use_hidden_input_idagent'] = true;
     $params['print_hidden_input_idagent'] = true;
-    $table->data['agent'][1] = ui_print_agent_autocomplete_input($params);
+    $table->data[0][0] = html_print_label_input_block(
+        __('Agent'),
+        ui_print_agent_autocomplete_input($params)
+    );
 }
 
-$table->data[0][0] = __('Module');
 $modules = [];
 
 if ($id_agente) {
     $modules = agents_get_modules($id_agente, false, ['delete_pending' => 0]);
 }
 
-$table->data[0][1] = html_print_select(
-    $modules,
-    'id_agent_module',
-    0,
-    true,
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    ($id_agente == 0),
-    'min-width: 250px;margin-right: 0.5em;'
+$table->data[0][1] = html_print_label_input_block(
+    __('Module'),
+    html_print_select(
+        $modules,
+        'id_agent_module',
+        0,
+        true,
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        ($id_agente == 0),
+        'width: 100%;'
+    ).'<span id="latest_value" class="invisible">'.__('Latest value').': 
+    <span id="value">&nbsp;</span></span>
+    <span id="module_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</span>'
 );
-$table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest value').': ';
-$table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
-$table->data[0][1] .= ' <span id="module_loading" class="invisible">';
-$table->data[0][1] .= html_print_image('images/spinner.gif', true).'</span>';
-
-$table->data[1][0] = __('Actions');
 
 $groups_user = users_get_groups($config['id_user']);
 if (!empty($groups_user)) {
@@ -109,36 +97,36 @@ if (!empty($groups_user)) {
     $actions = db_get_all_rows_sql($sql);
 }
 
-$table->data[1][1] = html_print_select(
-    index_array($actions, 'id', 'name'),
-    'action_select',
-    '',
-    '',
-    __('Default action'),
-    '0',
-    true,
-    '',
-    true,
-    '',
-    false,
-    'min-width: 250px;'
-);
-$table->data[1][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
-$table->data[1][1] .= __('Number of alerts match from').' ';
-$table->data[1][1] .= html_print_input_text('fires_min', '', '', 4, 10, true);
-$table->data[1][1] .= ' '.__('to').' ';
-$table->data[1][1] .= html_print_input_text('fires_max', '', '', 4, 10, true);
-
-$table->data[1][1] .= '</span>';
-if (check_acl($config['id_user'], 0, 'LM')) {
-    $table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
-    $table->data[1][1] .= html_print_image('images/add.png', true, ['class' => 'invert_filter']);
-    $table->data[1][1] .= '<span class="mrgn_lft_05em">'.__('Create Action').'</span>';
-    $table->data[1][1] .= '</a>';
+if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
+    $create_action = html_print_button(
+        __('Create Action'),
+        '',
+        false,
+        'window.location.assign("index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'")',
+        [ 'mode' => 'link' ],
+        true
+    );
 }
 
-    $table->data[2][0] = __('Template');
-    $own_info = get_user_info($config['id_user']);
+$table->data[1][0] = html_print_label_input_block(
+    __('Actions'),
+    html_print_select(
+        index_array($actions, 'id', 'name'),
+        'action_select',
+        '',
+        '',
+        __('Default action'),
+        '0',
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%;'
+    ).'<span id="advanced_action" class="advanced_actions invisible"><br>'.__('Number of alerts match from').' '.html_print_input_text('fires_min', '', '', 4, 10, true).' '.__('to').' '.html_print_input_text('fires_max', '', '', 4, 10, true).'</span>'.$create_action
+);
+
+$own_info = get_user_info($config['id_user']);
 if ($own_info['is_admin']) {
     $templates = alerts_get_alert_templates(false, ['id', 'name']);
 } else {
@@ -148,7 +136,20 @@ if ($own_info['is_admin']) {
     $templates = alerts_get_alert_templates(['id_group IN ('.$filter_groups.')'], ['id', 'name']);
 }
 
-    $table->data[2][1] = html_print_select(
+if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
+    $create_template = html_print_button(
+        __('Create Template'),
+        '',
+        false,
+        'window.location.assign("index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'")',
+        [ 'mode' => 'link' ],
+        true
+    );
+}
+
+$table->data[1][1] = html_print_label_input_block(
+    __('Template'),
+    html_print_select(
         index_array($templates, 'id', 'name'),
         'template',
         '',
@@ -158,20 +159,15 @@ if ($own_info['is_admin']) {
         true,
         false,
         true,
-        '',
+        'w100p',
         false,
-        'width: 250px;'
-    );
-    $table->data[2][1] .= ' <a class="template_details invisible" href="#">'.html_print_image('images/zoom.png', true, ['class' => 'img_help']).'</a>';
-    if (check_acl($config['id_user'], 0, 'LM')) {
-        $table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
-        $table->data[2][1] .= html_print_image('images/add.png', true, ['class' => 'invert_filter']);
-        $table->data[2][1] .= '<span class=""mrgn_lft_05em>'.__('Create Template').'</span>';
-        $table->data[2][1] .= '</a>';
-    }
+        'width: 100%;'
+    ).' <a class="template_details invisible" href="#">'.html_print_image('images/zoom.png', true, ['class' => 'img_help']).'</a>'.$create_template
+);
 
-    $table->data[3][0] = __('Threshold');
-    $table->data[3][1] = html_print_extended_select_for_time(
+$table->data[2][0] = html_print_label_input_block(
+    __('Threshold'),
+    html_print_extended_select_for_time(
         'module_action_threshold',
         0,
         '',
@@ -181,38 +177,58 @@ if ($own_info['is_admin']) {
         true,
         false,
         true,
-        '',
+        'w100p',
         false,
         false,
         '',
         false,
         true
+    )
+);
+
+if (isset($step) === false) {
+    echo '<form class="add_alert_form max_floating_element_size" method="post">';
+    html_print_table($table);
+}
+
+if (isset($step) === false) {
+    $output = '';
+
+    if ($id_cluster) {
+        $actionButtons .= html_print_button(
+            __('Finish and view cluster'),
+            'store',
+            false,
+            'window.location.replace(\"index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id=".$id_cluster."\");',
+            [
+                'icon' => 'update',
+                'mode' => 'secondary',
+            ],
+            true
+        );
+    }
+
+    $actionButtons .= html_print_submit_button(
+        __('Add alert'),
+        'add',
+        false,
+        [ 'icon' => 'wand' ],
+        true
     );
 
-    if (!isset($step)) {
-        echo '<form class="add_alert_form" method="post">';
-        html_print_table($table);
-    }
+    html_print_action_buttons($actionButtons, ['right_content' => $pagination]);
 
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    html_print_input_hidden('create_alert', 1);
+    echo '</form>';
+}
 
-    if (!isset($step)) {
-        if ($id_cluster) {
-            echo "<input onclick='window.location.replace(\"index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id=".$id_cluster."\");' type=button name='store' class='sub upd right mrgn_lft_20px' value='".__('Finish and view cluster')."'>";
-        }
+ui_require_css_file('cluetip', 'include/styles/js/');
+ui_require_jquery_file('validate');
+ui_require_jquery_file('cluetip');
+ui_require_jquery_file('pandora.controls');
+ui_require_jquery_file('bgiframe');
 
-        html_print_submit_button(__('Add alert'), 'add', false, 'class="sub wand"');
-        html_print_input_hidden('create_alert', 1);
-        echo '</div></form>';
-    }
-
-    ui_require_css_file('cluetip', 'include/styles/js/');
-    ui_require_jquery_file('validate');
-    ui_require_jquery_file('cluetip');
-    ui_require_jquery_file('pandora.controls');
-    ui_require_jquery_file('bgiframe');
-
-    ?>
+?>
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {

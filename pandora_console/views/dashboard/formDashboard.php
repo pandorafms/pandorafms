@@ -60,7 +60,7 @@ $form = [
     'id'       => 'form-update-dashboard',
     'action'   => $url,
     'onsubmit' => 'return false;',
-    'class'    => 'modal-dashboard',
+    'class'    => 'filter-list-adv',
     'enctype'  => 'multipart/form-data',
     'method'   => 'POST',
 ];
@@ -84,22 +84,6 @@ $inputs = [
         ],
     ],
     [
-        'block_id'      => 'private',
-        'direct'        => 1,
-        'block_content' => [
-            [
-                'label'     => __('Private'),
-                'arguments' => [
-                    'name'    => 'private',
-                    'id'      => 'private',
-                    'type'    => 'switch',
-                    'value'   => $private,
-                    'onclick' => 'showGroup()',
-                ],
-            ],
-        ],
-    ],
-    [
         'block_id'      => 'group',
         'direct'        => 1,
         'hidden'        => $private,
@@ -114,6 +98,22 @@ $inputs = [
                     'selected'       => $arrayDashboard['id_group'],
                     'return'         => true,
                     'required'       => true,
+                ],
+            ],
+        ],
+    ],
+    [
+        'block_id'      => 'private',
+        'direct'        => 1,
+        'block_content' => [
+            [
+                'label'     => __('Private'),
+                'arguments' => [
+                    'name'    => 'private',
+                    'id'      => 'private',
+                    'type'    => 'switch',
+                    'value'   => $private,
+                    'onclick' => 'showGroup()',
                 ],
             ],
         ],

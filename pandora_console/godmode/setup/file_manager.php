@@ -80,12 +80,26 @@ if (empty($directory) === true) {
 
 $real_directory = realpath($config['homedir'].'/'.$directory);
 
-echo '<h4>'.__('Index of %s', io_safe_input($directory)).'</h4>';
+echo '<h4 class="mrgn_0px">'.__('Index of %s', io_safe_input($directory)).'</h4>';
 
 $upload_file = (bool) get_parameter('upload_file');
 $create_text_file = (bool) get_parameter('create_text_file');
 
 $default_real_directory = realpath($config['homedir'].'/');
+
+// Remove double dot in filename path.
+$file_name = $_FILES['file']['name'];
+$path_parts = explode('/', $file_name);
+
+$stripped_parts = array_filter(
+    $path_parts,
+    function ($value) {
+        return $value !== '..';
+    }
+);
+
+$stripped_path = implode('/', $stripped_parts);
+$_FILES['file']['name'] = $stripped_path;
 
 if ($upload_file === true) {
     upload_file(

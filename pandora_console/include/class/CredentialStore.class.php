@@ -103,41 +103,15 @@ class CredentialStore extends Wizard
      */
     private function ajaxMsg($type, $msg, $delete=false)
     {
-        $msg_err = 'Failed while saving: %s';
-        $msg_ok = 'Successfully saved into keystore ';
-
-        if ($delete) {
-            $msg_err = 'Failed while removing: %s';
-            $msg_ok = 'Successfully deleted ';
-        }
-
-        if ($type == 'error') {
-            echo json_encode(
-                [
-                    $type => ui_print_error_message(
-                        __(
-                            $msg_err,
-                            $msg
-                        ),
-                        '',
-                        true
-                    ),
-                ]
-            );
+        if ($type === 'error') {
+            $msg_title = ($delete === true) ? 'Failed while removing' : 'Failed while saving';
         } else {
-            echo json_encode(
-                [
-                    $type => ui_print_success_message(
-                        __(
-                            $msg_ok,
-                            $msg
-                        ),
-                        '',
-                        true
-                    ),
-                ]
-            );
+            $msg_title = ($delete === true) ? 'Successfully deleted' : 'Successfully saved into keystore';
         }
+
+        echo json_encode(
+            [ $type => __($msg_title).':<br>'.$msg ]
+        );
 
         exit;
     }
@@ -843,7 +817,7 @@ class CredentialStore extends Wizard
                 __('User'),
                 [
                     'text'  => __('Options'),
-                    'class' => 'action_buttons',
+                    'class' => 'table_action_buttons',
                 ],
             ];
 
@@ -853,7 +827,7 @@ class CredentialStore extends Wizard
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -865,6 +839,7 @@ class CredentialStore extends Wizard
                         'direction' => 'asc',
                     ],
                     'search_button_class' => 'sub filter float-right',
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                     'form'                => [
                         'inputs' => [
                             [
@@ -902,14 +877,15 @@ class CredentialStore extends Wizard
         echo $modal.$msg.$aux;
 
         // Create button.
-        echo '<div class="w100p flex-content-right">';
-        html_print_submit_button(
-            __('Add key'),
-            'create',
-            false,
-            'class="sub next"'
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Add key'),
+                'create',
+                false,
+                ['icon' => 'next'],
+                true
+            )
         );
-        echo '</div>';
 
         echo $this->loadJS();
 
@@ -1281,13 +1257,15 @@ class CredentialStore extends Wizard
             idrow += '\')" >'+item.identifier+'</a></b>';
             item.identifier = idrow;
 
-            item.options = '<a href="javascript:" onclick="show_form(\'';
+            item.options = '<div class="table_action_buttons">';
+            item.options += '<a href="javascript:" onclick="show_form(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/operation.png', true, ['title' => __('Show'), 'class' => 'invert_filter']); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/edit.svg', true, ['title' => __('Edit'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
 
             item.options += '<a href="javascript:" onclick="delete_key(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
+            item.options += '</div>';
         }
 
         /**
@@ -1752,8 +1730,7 @@ class CredentialStore extends Wizard
         }
 
         $(document).ready(function(){
-
-            $("#submit-create").on('click', function(){
+            $("#button-create").on('click', function(){
                 show_form();
             });
         });

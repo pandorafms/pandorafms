@@ -2318,10 +2318,9 @@ function pandoraFlotArea(
       );
     }
 
-    $("#menu_cancelzoom_" + graph_id).attr(
-      "src",
-      homeurl + "images/zoom_cross_grey.png"
-    );
+    $("#menu_cancelzoom_" + graph_id)
+      .attr("src", homeurl + "images/disable.svg")
+      .removeClass("alpha50");
 
     max_draw["max"] = ranges.yaxis.to;
     max_draw["min"] = ranges.yaxis.from;
@@ -2813,11 +2812,8 @@ function pandoraFlotArea(
           legend: { show: true }
         })
       );
-      $("#menu_cancelzoom_" + graph_id).attr(
-        "src",
-        homeurl + "images/zoom_cross.disabled.png"
-      );
-      $("#menu_cancelzoom_" + graph_id).attr("class", "invert_filter");
+      $("#menu_cancelzoom_" + graph_id).addClass("alpha50");
+      //$("#menu_cancelzoom_" + graph_id).attr("class", "invert_filter");
       overview.clearSelection();
       thresholded = false;
       max_draw = [];

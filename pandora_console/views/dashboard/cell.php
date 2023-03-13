@@ -49,7 +49,7 @@ if ($manageDashboards !== 0 || $writeDashboards !== 0) {
     if ((int) $cellData['id_widget'] !== 0) {
         $output .= '<a id="configure-widget-'.$cellData['id'].'" class="">';
         $output .= html_print_image(
-            'images/input_cog_white.png',
+            'images/configuration@svg.svg',
             true,
             [
                 'width' => '16px',
@@ -61,7 +61,7 @@ if ($manageDashboards !== 0 || $writeDashboards !== 0) {
 
     $output .= '<a id="delete-widget-'.$cellData['id'].'" class="">';
     $output .= html_print_image(
-        'images/input_delete_white.png',
+        'images/delete.svg',
         true,
         [
             'width' => '16px',

@@ -2411,6 +2411,11 @@ switch ($action) {
                                 $es['agent_server_filter'] = get_parameter('agent_server_filter');
                                 $es['module_group'] = get_parameter('module_group');
                                 $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['search_module_name'] = get_parameter('search_module_name');
+                                $es['tags'] = get_parameter('tags');
+                                $es['alias'] = get_parameter('alias', '');
+                                $es['description_switch'] = get_parameter('description_switch', '');
+                                $es['last_status_change'] = get_parameter('last_status_change', '');
 
                                 $values['external_source'] = json_encode($es);
                             break;
@@ -3199,6 +3204,11 @@ switch ($action) {
                                 $es['agent_server_filter'] = get_parameter('agent_server_filter');
                                 $es['module_group'] = get_parameter('module_group');
                                 $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['search_module_name'] = get_parameter('search_module_name');
+                                $es['tags'] = get_parameter('tags');
+                                $es['alias'] = get_parameter('alias', '');
+                                $es['description_switch'] = get_parameter('description_switch', '');
+                                $es['last_status_change'] = get_parameter('last_status_change', '');
 
                                 $values['external_source'] = json_encode($es);
                             break;
@@ -3670,21 +3680,21 @@ $buttons = [
             true,
             [
                 'title' => __('Reports list'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
     ],
     'main'         => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ],
     'list_items'   => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List items'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('List items'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ],
     'item_editor'  => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Item editor'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/edit.svg', true, ['title' => __('Item editor'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ],
 ];
 
@@ -3698,11 +3708,11 @@ if ($enterpriseEnable) {
 $buttons['view'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image(
-        'images/eye.png',
+        'images/see-details@svg.svg',
         true,
         [
             'title' => __('View report'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -3717,7 +3727,7 @@ if ($idReport != 0) {
     $buttons = [
         'main' => [
             'active' => true,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'invert_filter']).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
         ],
     ];
     $textReportName = __('Create Custom Report');

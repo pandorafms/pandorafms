@@ -437,7 +437,7 @@ class AuditLog extends HTML
                     $('#audit_logs').css('width','95% !important');
                 });
 
-                $('#save-filter').click(function() {
+                $('#button-save-filter').click(function() {
                     if ($('#save-filter-select').length) {
                         $('#save-filter-select').dialog({
                             width: "20%",
@@ -495,7 +495,7 @@ class AuditLog extends HTML
                 });
 
                 /* Filter management */
-                $('#load-filter').click(function (){
+                $('#button-load-filter').click(function (){
                     if($('#load-filter-select').length) {
                         $('#load-filter-select').dialog({width: "20%",
                             maxWidth: "25%",

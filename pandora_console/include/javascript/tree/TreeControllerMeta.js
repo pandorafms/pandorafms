@@ -666,7 +666,7 @@ var TreeController = {
                 var $updateicon = $(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/config.png" class="invert_filter" style="width:18px; vertical-align: middle;"/>'
+                    'images/edit.svg" class="invert_filter" style="width:18px; vertical-align: middle;"/>'
                 );
                 var $updatebtn = $('<a href = "' + url_edit + '"></a>').append(
                   $updateicon
@@ -682,7 +682,7 @@ var TreeController = {
                 var $deleteBtn = $(
                   '<a><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/cross.png" class="invert_filter" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
+                    'images/delete.svg" class="invert_filter" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
                 );
                 $deleteBtn.click(function(event) {
                   var ok_function = function() {

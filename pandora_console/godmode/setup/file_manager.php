@@ -80,7 +80,7 @@ if (empty($directory) === true) {
 
 $real_directory = realpath($config['homedir'].'/'.$directory);
 
-echo '<h4>'.__('Index of %s', io_safe_input($directory)).'</h4>';
+echo '<h4 class="mrgn_0px">'.__('Index of %s', io_safe_input($directory)).'</h4>';
 
 $upload_file = (bool) get_parameter('upload_file');
 $create_text_file = (bool) get_parameter('create_text_file');

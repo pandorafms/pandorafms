@@ -495,7 +495,8 @@ function html_print_select_groups(
     $size=false,
     $simple_multiple_options=false,
     $required=false,
-    $inverse=''
+    $inverse='',
+    $form=''
 ) {
     $output = '';
 
@@ -609,7 +610,12 @@ function html_print_select_groups(
         '',
         false,
         $simple_multiple_options,
-        $required
+        $required,
+        false,
+        true,
+        false,
+        false,
+        $form
     );
 
     if ($required !== false) {
@@ -761,7 +767,8 @@ function html_print_select(
     $truncate_size=false,
     $select2_enable=true,
     $select2_multiple_enable=false,
-    $select2_multiple_enable_all=false
+    $select2_multiple_enable_all=false,
+    $form=''
 ) {
     $output = "\n";
 
@@ -800,6 +807,10 @@ function html_print_select(
 
     if (!empty($class)) {
         $attributes .= ' class="'.$class.'"';
+    }
+
+    if (!empty($form)) {
+        $attributes .= ' form="'.$form.'"';
     }
 
     if (!empty($disabled)) {
@@ -2330,84 +2341,114 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
             $adv_mode_name = '_'.$adv_mode_name;
         }
 
-        $table->data[0][0] = html_print_extended_select_for_downtime_cron(
-            'cron_hour'.$adv_mode_name,
-            $hours,
-            $hour,
-            '',
-            __('Any'),
-            '*',
-            false,
-            true,
-            false,
-            false,
-            false,
-            0,
-            'Valid values: [0-23], [0-23]-[0-23], *, or step value (example: */3, 10/5)'
+        $table->data[1][0] = html_print_div(
+            [
+                'class'   => '',
+                'content' => html_print_extended_select_for_downtime_cron(
+                    'cron_hour'.$adv_mode_name,
+                    $hours,
+                    $hour,
+                    '',
+                    __('Any'),
+                    '*',
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    0,
+                    'Valid values: [0-23], [0-23]-[0-23], *, or step value (example: */3, 10/5)'
+                ),
+            ],
+            true
         );
 
-        $table->data[1][1] = html_print_extended_select_for_downtime_cron(
-            'cron_minute'.$adv_mode_name,
-            $minutes,
-            $minute,
-            '',
-            __('Any'),
-            '*',
-            false,
-            true,
-            false,
-            false,
-            false,
-            0,
-            'Valid values: [0-59], [0-59]-[0-59], *, or step value (example: */5, 10/1)'
+        $table->data[1][1] = html_print_div(
+            [
+                'class'   => '',
+                'content' => html_print_extended_select_for_downtime_cron(
+                    'cron_minute'.$adv_mode_name,
+                    $minutes,
+                    $minute,
+                    '',
+                    __('Any'),
+                    '*',
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    0,
+                    'Valid values: [0-59], [0-59]-[0-59], *, or step value (example: */5, 10/1)'
+                ),
+            ],
+            true
         );
 
-        $table->data[1][2] = html_print_extended_select_for_downtime_cron(
-            'cron_mday'.$adv_mode_name,
-            $mdays,
-            $mday,
-            '',
-            __('Any'),
-            '*',
-            false,
-            true,
-            false,
-            false,
-            false,
-            0,
-            'Valid values: [1-31], [1-31]-[1-31], *, or step value (example: */5, 7/2)'
+        $table->data[1][2] = html_print_div(
+            [
+                'class'   => '',
+                'content' => html_print_extended_select_for_downtime_cron(
+                    'cron_mday'.$adv_mode_name,
+                    $mdays,
+                    $mday,
+                    '',
+                    __('Any'),
+                    '*',
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    0,
+                    'Valid values: [1-31], [1-31]-[1-31], *, or step value (example: */5, 7/2)'
+                ),
+            ],
+            true
         );
 
-        $table->data[1][3] = html_print_extended_select_for_downtime_cron(
-            'cron_month'.$adv_mode_name,
-            $months,
-            $month,
-            '',
-            __('Any'),
-            '*',
-            false,
-            true,
-            false,
-            false,
-            false,
-            0,
-            'Valid values: [1-12], [1-12]-[1-12], *, or step value (example: */3, 9/1)'
+        $table->data[1][3] = html_print_div(
+            [
+                'class'   => '',
+                'content' => html_print_extended_select_for_downtime_cron(
+                    'cron_month'.$adv_mode_name,
+                    $months,
+                    $month,
+                    '',
+                    __('Any'),
+                    '*',
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    0,
+                    'Valid values: [1-12], [1-12]-[1-12], *, or step value (example: */3, 9/1)'
+                ),
+            ],
+            true
         );
 
-        $table->data[1][4] = html_print_extended_select_for_downtime_cron(
-            'cron_wday'.$adv_mode_name,
-            $wdays,
-            $wday,
-            '',
-            __('Any'),
-            '*',
-            false,
-            true,
-            false,
-            false,
-            false,
-            0,
-            'Valid values: [0-6], [0-6]-[0-6], *, or step value (example: */2, 3/1)'
+        $table->data[1][4] = html_print_div(
+            [
+                'class'   => '',
+                'content' => html_print_extended_select_for_downtime_cron(
+                    'cron_wday'.$adv_mode_name,
+                    $wdays,
+                    $wday,
+                    '',
+                    __('Any'),
+                    '*',
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    0,
+                    'Valid values: [0-6], [0-6]-[0-6], *, or step value (example: */2, 3/1)'
+                ),
+            ],
+            true
         );
     }
 
@@ -3447,7 +3488,7 @@ function html_print_action_buttons(mixed $content, array $parameters=[], bool $r
             'id'      => ($parameters['id'] ?? 'principal_action_buttons'),
             'class'   => 'action-buttons '.$typeClass.' '.($parameters['class'] ?? ''),
             'content' => $content,
-            'style'   => 'z-index: 1',
+            'style'   => 'z-index: 6',
         ],
         $return
     );
@@ -4186,7 +4227,7 @@ function html_print_switch_radio_button(array $switches, array $attributes=[], b
  * @param string  $checked          Set the button to be marked (optional, unmarked by default).
  * @param boolean $disabled         Disable the button  (optional, button enabled by default).
  * @param string  $script           Script to execute when onClick event is triggered (optional).
- * @param string  $attributes       Optional HTML attributes. It's a free string which will be inserted into the HTML tag, use it carefully (optional).
+ * @param mixed   $attributes       Optional HTML attributes. It's a free string which will be inserted into the HTML tag, use it carefully (optional).
  * @param boolean $return           Whether to return an output string or echo now (optional, echo by default).
  * @param string  $id               Custom id.
  * @param string  $customAttributes Custom Attribute for customized checkbox.
@@ -4217,6 +4258,7 @@ function html_print_checkbox_extended(
 
     $inputClass = 'custom_checkbox_input';
     $labelClass = 'custom_checkbox';
+    $labelStyle = ' ';
 
     if (is_array($attributes) === true) {
         $tmpAttributes = [];
@@ -4230,6 +4272,10 @@ function html_print_checkbox_extended(
                     $labelClass .= ' '.$value;
                 break;
 
+                case 'label_style':
+                    $labelStyle .= 'style="'.$value.'"';
+                break;
+
                 default:
                     $tmpAttributes[] = $key.'="'.$value.'"';
                 break;
@@ -4241,7 +4287,7 @@ function html_print_checkbox_extended(
 
     $id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
 
-    $output = '<label class="'.$labelClass.'">';
+    $output = '<label class="'.$labelClass.'"'.$labelStyle.'>';
     $output .= '<input class="'.$inputClass.'" name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     $output .= (empty($id) === true) ? ' id="checkbox-'.$id_aux.'"' : ' id="'.$id.'"';
     $output .= (empty($script) === false) ? ' onclick="'.$script.'"' : '';
@@ -4519,6 +4565,12 @@ function html_print_image(
     // Dont use safe_input here or the performance will dead.
     $style = '';
 
+    if (empty($options) === false && isset($options['class']) === true) {
+        $options['class'] .= ' main_menu_icon';
+    } else {
+        $options['class'] = 'main_menu_icon invert_filter';
+    }
+
     if (!empty($options)) {
         // Deprecated or value-less attributes.
         if (isset($options['align'])) {
@@ -4737,6 +4789,10 @@ function html_print_input_file($name, $return=false, $options=false)
 
         if (isset($options['style']) === true) {
             $output .= ' style="'.$options['style'].'"';
+        }
+
+        if (isset($options['accept']) === true) {
+            $output .= ' accept="'.$options['accept'].'"';
         }
     }
 
@@ -5196,9 +5252,13 @@ function html_print_switch($attributes=[])
  *
  * @return string With HTML code.
  */
-function html_print_link_with_params($text, $params=[], $type='text', $style='')
+function html_print_link_with_params($text, $params=[], $type='text', $style='', $formStyle='')
 {
-    $html = '<form method=post>';
+    if (empty($formStyle) === false) {
+        $formStyle = ' style="'.$formStyle.'"';
+    }
+
+    $html = '<form method="POST"'.$formStyle.'>';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);
@@ -5206,7 +5266,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
 
         case 'text':
         default:
-            if (!empty($style)) {
+            if (empty($style) === false) {
                 $style = ' style="'.$style.'"';
             }
 
@@ -5214,7 +5274,10 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
                 $text,
                 $text,
                 false,
-                'class="button-as-link"'.$style,
+                [
+                    'mode'  => 'link',
+                    'style' => $style,
+                ],
                 true
             );
         break;
@@ -5548,7 +5611,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
 
         case 'submit':
-            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : 'width: 100%';
+            $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : '';
             $output .= '<'.$wrapper.' class="action-buttons" style="'.$width.'">'.html_print_submit_button(
                 ((isset($data['label']) === true) ? $data['label'] : 'OK'),
                 ((isset($data['name']) === true) ? $data['name'] : ''),
@@ -6629,34 +6692,32 @@ function html_print_extended_select_for_downtime_cron(
             $disabled,
             'font-size: xx-small;'.$select_style
         );
-        echo ' <a href="javascript:">'.html_print_image(
+        echo ' <a style="margin: 7px" href="javascript:">'.html_print_image(
             'images/edit.svg',
             true,
             [
                 'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
-                'style' => 'width: 18px;',
+                // 'style' => 'margin: 7px;',
             ]
         ).'</a>';
     echo '</div>';
 
-    $help_tooltip = ($text_help !== '') ? ui_print_help_tip(__($text_help), true) : '';
-
     echo '<div id="'.$uniq_name.'_manual" class="w100p inline_line">';
-        html_print_input_text($uniq_name.'_text', $selected, '', 20);
-
+        html_print_input_text($uniq_name.'_text', $selected, '', 20, 20, false, false, false, '', 'w100p');
         html_print_input_hidden($name, $selected, false, $uniq_name);
-        echo ' <a href="javascript:">'.$help_tooltip.'&nbsp'.html_print_image(
+        echo ' <a href="javascript:">'.html_print_image(
             'images/logs@svg.svg',
             true,
             [
                 'class' => $uniq_name.'_toggler main_menu_icon invert_filter',
                 'alt'   => __('List'),
                 'title' => __('List'),
-                'style' => 'width: 18px;',
+                'style' => 'margin: 7px;',
             ]
         ).'</a>';
+        echo ($text_help !== '') ? ui_print_help_tip(__($text_help), true, '', false, 'margin: 13px 0 0 5px;') : '';
     echo '</div>';
 
     $select_init_func = (is_numeric($selected) === true || $selected === '*') ? 'post_process_select_init' : 'post_process_select_init_inv';
@@ -6666,7 +6727,7 @@ function html_print_extended_select_for_downtime_cron(
 			".$select_init_func."('$uniq_name','$selected');
 			post_process_select_events_unit('$uniq_name','$selected');
 		});
-		
+
 	</script>";
 
     $returnString = ob_get_clean();

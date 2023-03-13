@@ -116,7 +116,7 @@ $options['list_reports'] = [
         true,
         [
             'title' => __('Report list'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -136,25 +136,25 @@ if (check_acl_restricted_all($config['id_user'], $report_group, 'RW')) {
         true,
         [
             'title' => __('Main data'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
     $options['list_items']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
         [
             'title' => __('List items'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
     $options['item_editor']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
-        'images/pencil.png',
+        'images/edit.svg',
         true,
         [
             'title' => __('Item editor'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
 
@@ -170,7 +170,7 @@ $options['view'] = [
         true,
         [
             'title' => __('View report'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
 
         ]
     ).'</a>',
@@ -183,7 +183,7 @@ if (!defined('METACONSOLE')) {
             true,
             [
                 'title' => __('Full screen mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
     } else {
@@ -192,7 +192,7 @@ if (!defined('METACONSOLE')) {
             true,
             [
                 'title' => __('Back to normal mode'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>';
 

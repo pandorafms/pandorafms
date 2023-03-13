@@ -637,7 +637,7 @@ var TreeController = {
           var $content = $("<div></div>");
 
           // Leaf icon
-          $leafIcon.addClass("leaf-icon invert_filter");
+          $leafIcon.addClass("leaf-icon");
 
           // Content
           $content.addClass("node-content");
@@ -657,7 +657,7 @@ var TreeController = {
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
                     "images/" +
                     element.icon +
-                    '" /></div></div>'
+                    '" class="invert_filter"/></div></div>'
                 );
               } else if (
                 typeof element.iconHTML != "undefined" &&
@@ -759,7 +759,7 @@ var TreeController = {
                         : "") +
                       'images/event.svg" /> '
                   );
-                  $eventImage.addClass("agent-alerts-fired");
+                  $eventImage.addClass("agent-alerts-fired invert_filter");
                   $eventImage
                     .click(function(e) {
                       e.preventDefault();
@@ -875,7 +875,7 @@ var TreeController = {
                 $content.append($statusImage);
               }
               var image_tooltip =
-                '<span><img class="invert_filter forced_title" data-title="' +
+                '<span class="reinvert_filter"><img class="invert_filter forced_title" data-title="' +
                 (element.title ? element.title : element.name) +
                 '" data-use_title_for_force_title="1" src="' +
                 (controller.baseURL.length > 0 ? controller.baseURL : "") +

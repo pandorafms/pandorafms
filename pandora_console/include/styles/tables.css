@@ -138,7 +138,7 @@
 .info_table > thead > tr > th,
 .info_table > thead > tr > th * {
   /*border-bottom: 1px solid #e2e2e2;*/
-  font-family: "lato-bolder";
+  font-family: "lato-bold";
   font-style: normal;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -309,11 +309,6 @@ table.dataTable.info_table.no-footer {
   border-bottom: none;
 }
 
-/* Datatables pagination */
-.dataTables_paginate.paging_simple_numbers {
-  margin: 2em 0;
-}
-
 a.pandora_pagination {
   background-color: #f6f7fb;
   padding: 11px;
@@ -358,23 +353,40 @@ a.pandora_pagination.current:hover {
 
 /* CSV button datatables */
 .dt-button.buttons-csv.buttons-html5 {
-  background-image: url(../../images/file-csv.svg);
-  background-position: center center;
+  background-image: url(../../images/file-csv-primary-color.svg);
+  background-size: 22px;
+  background-position: 48px center;
   background-repeat: no-repeat;
-  color: #000;
-  border: none;
-  cursor: pointer;
-  display: inline;
-  padding: 7pt;
-  margin-left: 10px;
   background-color: transparent;
-}
-.dt-button.buttons-csv.buttons-html5 span {
-  font-size: 0;
+  color: var(--primary-color);
+  font-size: 20px;
+  height: 42px;
+  /* height: 32px; */
+  width: 80px;
+  margin-left: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 0px 3px 6px #c7c7c7;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 0 10px;
+  cursor: pointer;
 }
 
-.dt-buttons {
-  margin-top: 3pt;
+.dt-button.buttons-csv.buttons-html5:hover {
+  color: #1d7873 !important;
+  border: 2px solid #1d7873 !important;
+}
+
+.dt-button.buttons-csv.buttons-html5:before {
+  content: "csv";
+}
+
+.dt-button.buttons-csv.buttons-html5 span {
+  font-size: 0;
 }
 
 .dt-button.buttons-csv.buttons-html5:active,
@@ -530,6 +542,7 @@ table.filter-table-adv td {
   vertical-align: top;
 }
 
+div.filter-table-adv-manual > div,
 table.filter-table-adv td > div {
   display: flex;
   flex-direction: column;
@@ -537,6 +550,7 @@ table.filter-table-adv td > div {
   align-items: normal;
 }
 
+div.filter-table-adv-manual > div label,
 table.filter-table-adv td > div label {
   color: #161628;
   font-size: 13px;
@@ -648,10 +662,6 @@ td#save_filter_form-1-0 > b {
   line-height: 16px;
 }
 
-tr#save_filter_row1 {
-  display: flex !important;
-}
-
 td#save_filter_form-0-0,
 td#save_filter_form-0-1,
 td#save_filter_form-1-0 > input#text-id_name,
@@ -695,7 +705,7 @@ table.events-filters-create
   > div
   > div
   > .ui-autocomplete-input {
-  width: 94%;
+  width: 100%;
 }
 
 table.events-filters-create > tbody > tr > td > div.flex-row > div {

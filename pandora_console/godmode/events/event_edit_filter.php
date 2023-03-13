@@ -778,7 +778,7 @@ $table->data[12][0] = html_print_label_input_block(
 if (!is_metaconsole()) {
     $table->data[12][1] = html_print_label_input_block(
         __('Module search'),
-        '<div class="w100p">'.html_print_autocomplete_modules(
+        '<div class="w100p module-search">'.html_print_autocomplete_modules(
             'module_search',
             $text_module,
             false,

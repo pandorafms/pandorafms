@@ -450,7 +450,7 @@ foreach ($templates as $template) {
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);
         $data[4] .= html_print_input_image(
             'dup',
-            'images/copy.png',
+            'images/copy.svg',
             1,
             '',
             true,

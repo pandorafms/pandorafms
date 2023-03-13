@@ -193,7 +193,7 @@ $filterTable->data[0][2] = html_print_label_input_block(
         ($is_period === true) ? 1 : 0,
         true,
         false,
-        'nf_view_click_period(event)'
+        'nf_view_click_period()'
     )
 );
 
@@ -280,6 +280,7 @@ if ($has_data === true) {
     .networkconsole {
         min-height: calc(100vh - 280px) !important;
     }
+</style>
 <script>
 
     $(document).ready(function(){

@@ -798,3 +798,7 @@ div[id^="auto-os-"] > img {
   width: 20px;
   height: 20px;
 }
+
+.dataTables_paginate {
+  margin-right: 10px;
+}

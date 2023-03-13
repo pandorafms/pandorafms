@@ -385,7 +385,12 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageCreated = html_print_table($messageTable, true);
     $autocloseTime = ((int) $config['notification_autoclose_time'] * 1000);
 
-    $classes[] = 'info_box_container';
+    if (empty($message['div_class']) === false) {
+        $classes[] = $message['div_class'];
+    } else {
+        $classes[] = 'info_box_container';
+    }
+
     $classes[] = (($autoclose === true) && ($autocloseTime > 0)) ? ' info_box_autoclose' : '';
 
     // This session var is defined in index.
@@ -3873,6 +3878,29 @@ function ui_print_datatable(array $parameters)
                 }';
     }
 
+    $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
+                $("div[id^=info_box_]").show();
+                $("div[id^=info_box_]").removeClass(\'invisible_important\');
+                $("table#'.$table_id.'").hide();
+                $("div.dataTables_paginate").hide();
+                $("div.dataTables_info").hide();
+                $("div.dataTables_length").hide();
+
+                if (dt_'.$table_id.'.page.info().pages > 1) {
+                    $(".dataTables_paginate.paging_simple_numbers").show()
+                }
+            } else {
+                $("div[id^=info_box_]").hide();
+                $("table#'.$table_id.'").show();
+                $("div.dataTables_paginate").show();
+                $("div.dataTables_info").show();
+                $("div.dataTables_length").show();
+
+                if (dt_'.$table_id.'.page.info().pages == 1) {
+                    $(".dataTables_paginate.paging_simple_numbers").hide()
+                }
+            }';
+
     if (isset($parameters['drawCallback'])) {
         $js .= $parameters['drawCallback'];
     }
@@ -3996,8 +4024,13 @@ function ui_print_datatable(array $parameters)
     $js .= '</script>';
 
     // Order.
+    $info_msg_arr = [];
+    $info_msg_arr['message'] = $emptyTable;
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important';
+
+    $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
     $err_msg = '<div id="error-'.$table_id.'"></div>';
-    $output = $err_msg.$filter.$extra.$table.$js;
+    $output = $info_msg.$err_msg.$filter.$extra.$table.$js;
     if (is_ajax() === false) {
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');

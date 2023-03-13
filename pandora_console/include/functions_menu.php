@@ -842,7 +842,7 @@ if (is_ajax()) {
         $fragmentation_status = '';
         if ($db_fragmentation->data->tablesFragmentationStatus->status === 1) {
             $fragmentation_status = html_print_image(
-                'images/exito.png',
+                'images/validate.svg',
                 true,
                 [
                     'title' => __('Successfully'),
@@ -851,7 +851,7 @@ if (is_ajax()) {
             );
         } else {
             $fragmentation_status = html_print_image(
-                'images/error_1.png',
+                'images/fail@svg.svg',
                 true,
                 [
                     'title' => __('Error'),

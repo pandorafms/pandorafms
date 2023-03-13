@@ -653,6 +653,7 @@ if ($update_user) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+    $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
     $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($values['id_user']);
@@ -1887,7 +1888,7 @@ echo '</div>';
 // This is an image generated for JS.
 $delete_image = html_print_input_image(
     'del',
-    'images/cross.png',
+    'images/delete.svg',
     1,
     '',
     true,

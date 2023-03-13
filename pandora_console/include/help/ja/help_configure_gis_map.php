@@ -57,7 +57,7 @@ GIS マップを設定するためには、少なくとも一つ選択されて�
 <p>
 レイヤは、<strong>表示</strong>、<strong>非表示</strong>の設定ができ、<strong>グループ</strong>を選択や<strong>エージェント</strong>の追加ができます。
 一度レイヤが定義されると、左側の定義済レイヤに移ります。(定義は、マップ全体が保存されるまでは保存されません。)
-ここでは、再度、<strong>順番の変更</strong> (<?php html_print_image('images/up.png', false, ['alt' => 'move up icon']); ?>、<?php html_print_image('images/down.png', false, ['alt' => 'move down icon']); ?>)、<strong>削除</strong> (<?php html_print_image('images/cross.png', false, ['alt' => 'delete icon']); ?>)、<strong>編集</strong> (<?php html_print_image('images/config.png', false, ['alt' => 'edit icon']); ?>) ができます。
+ここでは、再度、<strong>順番の変更</strong> (<?php html_print_image('images/up.png', false, ['alt' => 'move up icon']); ?>、<?php html_print_image('images/down.png', false, ['alt' => 'move down icon']); ?>)、<strong>削除</strong> (<?php html_print_image('images/delete.svg', false, ['alt' => 'delete icon']); ?>)、<strong>編集</strong> (<?php html_print_image('images/edit.svg', false, ['alt' => 'edit icon']); ?>) ができます。
 </p>
 <hr/>
 <sup><span class="font_75p">1</span></sup> <span class="font_85p">デフォルトマップでは、エージェント名で一つのレイヤしか表示しない場合は、レイヤを持たない設定も可能です。</span>

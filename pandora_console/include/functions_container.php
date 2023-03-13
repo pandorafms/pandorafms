@@ -180,7 +180,7 @@ function folder_table($graphs)
 
         if (($report_w || $report_m) && users_can_manage_group_all($access)) {
             $data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.$graph['id_graph'].'">'.html_print_image(
-                'images/config.png',
+                'images/edit.svg',
                 true,
                 ['class' => 'invert_filter']
             ).'</a>';
@@ -188,7 +188,7 @@ function folder_table($graphs)
             $data[4] .= '&nbsp;';
 
             $data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter']).'</a>'.html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete mrgn_lft_2px"', true);
+					return false;">'.html_print_image('images/delete.svg', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter']).'</a>'.html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete mrgn_lft_2px"', true);
         }
 
         array_push($table->data, $data);

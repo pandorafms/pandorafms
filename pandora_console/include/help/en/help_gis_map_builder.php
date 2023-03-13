@@ -22,7 +22,7 @@ Options:
 <dd>Click on the view icon to <strong>view</strong> the map.</dd>
 <dt>Default radio button</dt>
 <dd>Click on the <strong>radio button</strong> corresponding to the map you want to make the default to set the <strong>default map</strong> </dd>
-<dt><?php html_print_image('images/cross.png', false, ['alt' => 'Delete']); ?> Delete</dt>
+<dt><?php html_print_image('images/delete.svg', false, ['alt' => 'Delete']); ?> Delete</dt>
 <dd>Click on the delete icon to <strong>delete</strong> the map.</dd>
 <dt>Create Button</dt>
 <dd>Click on Create button to <strong>create</strong> a new map.</dd>

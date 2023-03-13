@@ -26,7 +26,7 @@ if (!$modules || !$searchModules) {
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '98%';
-    $table->class = 'databox';
+    $table->class = 'info_table';
 
     $table->head = [];
     $table->head[0] = __('Module').' <a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleNameUp]).'</a><a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleNameDown]).'</a>';
@@ -72,6 +72,7 @@ if (!$modules || !$searchModules) {
         'web_content_string'
     );
 
+    $i = 0;
     foreach ($modules as $module) {
         $module['datos'] = modules_get_last_value($module['id_agente_modulo']);
         $module['module_name'] = $module['nombre'];
@@ -162,6 +163,7 @@ if (!$modules || !$searchModules) {
         }
 
         $graphCell = '';
+        $table->cellclass[$i][5] = 'table_action_buttons';
         if ($module['history_data'] == 1) {
             $graph_type = return_graphtype($module['id_tipo_modulo']);
 
@@ -204,12 +206,13 @@ if (!$modules || !$searchModules) {
 
         $group_agent = agents_get_agent_group($module['id_agente']);
 
+        $table->cellclass[$i][8] = 'table_action_buttons';
         if (check_acl($config['id_user'], $group_agent, 'AW')) {
             $edit_module = 'aaa';
 
             $url_edit = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&id_agent_module='.$module['id_agente_modulo'].'&edit_module=1';
 
-            $edit_module = '<a href="'.$url_edit.'">'.html_print_image('images/config.png', true).'</a>';
+            $edit_module = '<a href="'.$url_edit.'">'.html_print_image('images/edit.svg', true).'</a>';
         } else {
             $edit_module = '';
         }
@@ -229,11 +232,29 @@ if (!$modules || !$searchModules) {
                 $edit_module,
             ]
         );
+
+        $i++;
     }
 
     echo '<br />';
-    ui_pagination($totalModules);
     html_print_table($table);
     unset($table);
-    ui_pagination($totalModules);
+    $tablePagination = ui_pagination(
+        $totalModules,
+        false,
+        0,
+        0,
+        true,
+        'offset',
+        false
+    );
+
+    html_print_action_buttons(
+        '',
+        [
+            'type'          => 'data_table',
+            'class'         => 'fixed_action_buttons',
+            'right_content' => $tablePagination,
+        ]
+    );
 }

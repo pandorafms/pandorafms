@@ -224,6 +224,11 @@ $buttons['external_tools'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=external_tools').'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools'), 'class' => 'invert_filter']).'</a>',
 ];
 
+$buttons['welcome_tips'] = [
+    'active' => false,
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips').'">'.html_print_image('images/inventory.png', true, ['title' => __('Welcome tips'), 'class' => 'invert_filter']).'</a>',
+];
+
 if ($config['activate_gis']) {
     $buttons['gis'] = [
         'active' => false,
@@ -309,6 +314,20 @@ switch ($section) {
     case 'external_tools':
         $buttons['external_tools']['active'] = true;
         $subpage = ' &raquo '.__('External Tools');
+        $help_header = '';
+    break;
+
+    case 'welcome_tips':
+        $view = get_parameter('view', '');
+        $title = __('Welcome tips');
+        if ($view === 'create') {
+            $title = __('Create tip');
+        } else if ($view === 'edit') {
+            $title = __('Edit tip');
+        }
+
+        $buttons['welcome_tips']['active'] = true;
+        $subpage = ' &raquo '.$title;
         $help_header = '';
     break;
 
@@ -407,6 +426,10 @@ switch ($section) {
 
     case 'external_tools':
         include_once $config['homedir'].'/godmode/setup/setup_external_tools.php';
+    break;
+
+    case 'welcome_tips':
+        include_once $config['homedir'].'/godmode/setup/welcome_tips.php';
     break;
 
     default:

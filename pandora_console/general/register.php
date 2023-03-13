@@ -31,6 +31,7 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_register.php';
 require_once $config['homedir'].'/include/class/WelcomeWindow.class.php';
+require_once $config['homedir'].'/include/class/TipsWindow.class.php';
 
 
 if ((bool) is_ajax() === true) {
@@ -107,6 +108,16 @@ try {
     }
 } catch (Exception $e) {
     $welcome = false;
+}
+
+try {
+    if (isset($_SESSION['showed_tips_window']) === false) {
+        $tips_window = new TipsWindow();
+        if ($tips_window !== null) {
+              $tips_window->run();
+        }
+    }
+} catch (Exception $e) {
 }
 
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);

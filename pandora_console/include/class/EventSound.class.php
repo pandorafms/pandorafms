@@ -182,22 +182,22 @@ class EventSound extends HTML
         $tabs = [
             'list'    => [
                 'text'   => '<a href="'.$base_url.'">'.html_print_image(
-                    'images/eye_show.png',
+                    'images/see-details@svg.svg',
                     true,
                     [
                         'title' => __('Sounds'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
                 'active' => (bool) ($tab != 'add'),
             ],
             'options' => [
                 'text'   => '<a href="'.$setup_url.'">'.html_print_image(
-                    'images/pen.png',
+                    'images/edit.svg',
                     true,
                     [
                         'title' => __('Create'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
                 'active' => (bool) ($tab == 'add'),
@@ -445,7 +445,7 @@ class EventSound extends HTML
                 true,
                 [
                     'title' => $action,
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $options .= '</a>';

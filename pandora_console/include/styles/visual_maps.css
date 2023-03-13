@@ -142,7 +142,7 @@ div#edit-controls input.sub[disabled] {
 
 input.delete_min,
 button.delete_min {
-  background: url(../../images/cross.png) no-repeat center;
+  background: url(../../images/delete.svg) no-repeat center;
 }
 input.delete_min[disabled],
 button.delete_min[disabled] {
@@ -154,7 +154,7 @@ button.delete_min_white {
 }
 input.delete_min_white[disabled],
 button.delete_min_white[disabled] {
-  background: url(../../images/cross.png) no-repeat center;
+  background: url(../../images/delete.svg) no-repeat center;
 }
 
 input.graph_min,
@@ -297,7 +297,7 @@ button.camera_min_white[disabled] {
 
 input.config_min,
 button.config_min {
-  background: url(../../images/config.png) no-repeat center;
+  background: url(../../images/edit.svg) no-repeat center;
 }
 input.config_min[disabled],
 button.config_min[disabled] {
@@ -309,7 +309,7 @@ button.config_min_white {
 }
 input.config_min_white[disabled],
 button.config_min_white[disabled] {
-  background: url(../../images/config.png) no-repeat center;
+  background: url(../../images/edit.svg) no-repeat center;
 }
 
 input.label_min,

@@ -4565,6 +4565,12 @@ function html_print_image(
     // Dont use safe_input here or the performance will dead.
     $style = '';
 
+    if (empty($options) === false && isset($options['class']) === true) {
+        $options['class'] .= ' main_menu_icon';
+    } else {
+        $options['class'] = 'main_menu_icon invert_filter';
+    }
+
     if (!empty($options)) {
         // Deprecated or value-less attributes.
         if (isset($options['align'])) {

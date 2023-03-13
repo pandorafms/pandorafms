@@ -1019,7 +1019,7 @@ function modules_format_delete($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -1040,7 +1040,7 @@ function modules_format_delete_string($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -1061,7 +1061,7 @@ function modules_format_delete_log4x($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;

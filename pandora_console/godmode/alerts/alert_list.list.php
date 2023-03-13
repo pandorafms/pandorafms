@@ -766,7 +766,7 @@ foreach ($simple_alerts as $alert) {
             $data[3] .= '</form>';
             $data[3] .= html_print_input_image(
                 'update_action',
-                'images/config.png',
+                'images/edit.svg',
                 1,
                 'padding:0px;',
                 true,
@@ -1053,7 +1053,7 @@ foreach ($simple_alerts as $alert) {
         $data[4] .= '<form class="view_alert_form display_in" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_view">';
         $data[4] .= html_print_input_image(
             'view_alert',
-            'images/operation.png',
+            'images/details.svg',
             1,
             '',
             true,

@@ -68,6 +68,11 @@ if (check_login()) {
         0
     );
 
+    $get_data_ModulesByStatus = (bool) get_parameter(
+        'get_data_ModulesByStatus',
+        0
+    );
+
     $load_filter_modal = get_parameter('load_filter_modal', 0);
     $save_filter_modal = get_parameter('save_filter_modal', 0);
     $get_monitor_filters = get_parameter('get_monitor_filters', 0);
@@ -1663,6 +1668,259 @@ if (check_login()) {
         }
 
         return;
+    }
+
+    if ($get_data_ModulesByStatus === true) {
+        global $config;
+        $data = [];
+
+        $table_id = get_parameter('table_id', '');
+        $search = get_parameter('search', '');
+        $status = get_parameter('status', '');
+        $start = get_parameter('start', 0);
+        $length = get_parameter('length', $config['block_size']);
+        // There is a limit of (2^32)^2 (18446744073709551615) rows in a MyISAM table, show for show all use max nrows.
+        $length = ($length != '-1') ? $length : '18446744073709551615';
+        $order = get_datatable_order(true);
+        $nodes = get_parameter('nodes', 0);
+
+        $where = '';
+        $recordsTotal = 0;
+
+
+        if (empty($search) === false) {
+            $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
+        }
+
+        $where .= sprintf(
+            'tagente_estado.estado IN (%s)
+            AND tagente_modulo.delete_pending = 0',
+            $status
+        );
+
+        if (is_metaconsole() === false) {
+            $order_by = '';
+            switch ($order['field']) {
+                case 'nombre':
+                    $order_by = 'tagente_modulo.'.$order['field'].' '.$order['direction'];
+                break;
+
+                case 'alias':
+                    $order_by = 'tagente.'.$order['field'].' '.$order['direction'];
+                break;
+
+                case 'last_status_change':
+                    $order_by = 'tagente_estado.'.$order['field'].' '.$order['direction'];
+                break;
+
+                case 'estado':
+                    $order_by = 'tagente_estado.'.$order['field'].' '.$order['direction'];
+                break;
+
+                default:
+                    $order_by = 'tagente_estado.last_status_change desc';
+                break;
+            }
+
+            $sql = sprintf(
+                'SELECT
+                tagente_modulo.nombre,
+                tagente.alias,
+                tagente.id_agente,
+                tagente_estado.last_status_change,
+                tagente_estado.estado
+                FROM tagente_modulo
+                INNER JOIN tagente
+                    ON tagente_modulo.id_agente = tagente.id_agente 
+                INNER JOIN tagente_estado
+                    ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                WHERE %s
+                ORDER BY %s
+                LIMIT %d, %d',
+                $where,
+                $order_by,
+                $start,
+                $length
+            );
+            $data = db_get_all_rows_sql($sql);
+
+            $sql_count = sprintf(
+                'SELECT COUNT(*) AS "total"
+                FROM tagente_modulo
+                INNER JOIN tagente
+                    ON tagente_modulo.id_agente = tagente.id_agente 
+                INNER JOIN tagente_estado
+                    ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo'
+            );
+            $recordsTotal = db_get_value_sql($sql_count);
+
+            // Metaconsole.
+        } else {
+            // $servers_ids = array_column(metaconsole_get_servers(), 'id');
+            $servers_ids = explode(',', $nodes);
+
+            foreach ($servers_ids as $server_id) {
+                try {
+                    $node = new Node((int) $server_id);
+                    $node->connect();
+
+                    $sql = sprintf(
+                        'SELECT
+                        tagente_modulo.nombre,
+                        tagente.alias,
+                        tagente.id_agente,
+                        tagente_estado.last_status_change,
+                        tagente_estado.estado
+                        FROM tagente_modulo
+                        INNER JOIN tagente
+                            ON tagente_modulo.id_agente = tagente.id_agente 
+                        INNER JOIN tagente_estado
+                            ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                        WHERE %s',
+                        $where
+                    );
+
+                    $res_sql = db_get_all_rows_sql($sql);
+
+                    foreach ($res_sql as $row_sql) {
+                        $row_sql['server_name'] = $node->server_name();
+                        $row_sql['server_url'] = $node->server_url();
+                        array_push($data, $row_sql);
+                    }
+
+                    $node->disconnect();
+                } catch (\Exception $e) {
+                    // Unexistent modules.
+                    $node->disconnect();
+                }
+            }
+
+            // Drop temporary table if exist.
+            db_process_sql('DROP TEMPORARY TABLE IF EXISTS temp_modules_status;');
+
+            $table_temporary = 'CREATE TEMPORARY TABLE IF NOT EXISTS temp_modules_status (
+                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                nombre VARCHAR(600),
+                alias VARCHAR(600),
+                id_agente INT,
+                last_status_change INT,
+                estado INT,
+                server_name VARCHAR(100),
+                server_url VARCHAR(200),
+                PRIMARY KEY (`id`),
+                KEY `nombre` (`nombre`(600))
+            )';
+            db_process_sql($table_temporary);
+
+            $result = db_process_sql_insert_multiple('temp_modules_status', $data);
+
+            if (empty($result) === false) {
+                $data = [];
+                $sql = '';
+                $where = '';
+
+                if (empty($search) === false) {
+                    $where = 'nombre LIKE "%%'.$search.'%%" AND ';
+                }
+
+                $where .= sprintf(
+                    'estado IN (%s)',
+                    $status
+                );
+
+                $order_by = $order['field'].' '.$order['direction'];
+
+                $sql = sprintf(
+                    'SELECT
+                        nombre,
+                        alias,
+                        id_agente,
+                        last_status_change,
+                        estado,
+                        server_name,
+                        server_url
+                    FROM temp_modules_status
+                    WHERE %s
+                    ORDER BY %s
+                    LIMIT %d, %d',
+                    $where,
+                    $order_by,
+                    $start,
+                    $length
+                );
+                $data = db_get_all_rows_sql($sql);
+
+                $sql_count = sprintf(
+                    'SELECT COUNT(*) AS "total"
+                    FROM temp_modules_status'
+                );
+
+                $recordsTotal = db_get_value_sql($sql_count);
+            }
+        }
+
+        if ($data === false) {
+            $data = [];
+        }
+
+        foreach ($data as $key => $row) {
+            $data[$key]['nombre'] = html_ellipsis_characters($row['nombre'], 35, true);
+
+            if (is_metaconsole() === false) {
+                $name_link = '<a href="index.php?sec=estado&sec2=';
+            } else {
+                $name_link = '<a href="'.$row['server_url'].'index.php?sec=estado&sec2=';
+            }
+
+            $name_link .= 'operation/agentes/ver_agente&id_agente='.$row['id_agente'];
+            $name_link .= '"><b>';
+            $name_link .= '<span class="ellipsis-35ch">'.html_ellipsis_characters($row['alias'], 35, true).'</span>';
+            $name_link .= '</b></a>';
+
+            $data[$key]['alias'] = $name_link;
+
+            $data[$key]['last_status_change'] = ui_print_timestamp(
+                $row['last_status_change'],
+                true
+            );
+
+            switch ((int) $row['estado']) {
+                case 0:
+                    $status_img = ui_print_status_image(STATUS_MODULE_OK, __('Normal'), true);
+                break;
+
+                case 1:
+                case 6:
+                    $status_img = ui_print_status_image(STATUS_MODULE_CRITICAL, __('Critical'), true);
+                break;
+
+                case 2:
+                    $status_img = ui_print_status_image(STATUS_MODULE_WARNING, __('Warning'), true);
+                break;
+
+                case 3:
+                    $status_img = ui_print_status_image(STATUS_MODULE_UNKNOWN, __('Unknown'), true);
+                break;
+
+                case 5:
+                    $status_img = ui_print_status_image(STATUS_MODULE_NO_DATA, __('Not init'), true);
+                break;
+
+                default:
+                    $status_img = '';
+                break;
+            }
+
+            $data[$key]['estado'] = $status_img;
+        }
+
+        echo json_encode(
+            [
+                'data'            => $data,
+                'recordsTotal'    => $recordsTotal,
+                'recordsFiltered' => $recordsTotal,
+            ]
+        );
     }
 
     if ($get_children_modules === true) {

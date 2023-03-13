@@ -4327,7 +4327,10 @@ function ui_toggle(
         $image_a = html_print_image(
             $img_a,
             true,
-            [ 'style' => 'rotate: '.$rotateA ],
+            [
+                'class' => 'mrgn_right_10px',
+                'style' => 'rotate: '.$rotateA,
+            ],
             true
         );
     } else {
@@ -4338,7 +4341,10 @@ function ui_toggle(
         $image_b = html_print_image(
             $img_b,
             true,
-            [ 'style' => 'rotate: '.$rotateB ],
+            [
+                'class' => 'mrgn_right_10px',
+                'style' => 'margin-right:10px; rotate: '.$rotateB,
+            ],
             true
         );
     } else {
@@ -4401,7 +4407,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'float-left main_menu_icon',
+                    'class' => 'float-left main_menu_icon mrgn_right_10px',
                     'style' => 'object-fit: contain; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
@@ -4433,7 +4439,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'main_menu_icon',
+                    'class' => 'main_menu_icon mrgn_right_10px',
                     'style' => 'object-fit: contain; float:right; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,

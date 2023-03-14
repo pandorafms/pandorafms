@@ -407,7 +407,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
 
         // User.
-        // $headerUserImage = (is_user_admin($config['id_user']) === true) ? 'images/header_user_admin_green.png' : 'images/header_user_green.png';
         $headerUser = [];
         $headerUser[] = html_print_image(
             'images/edit_user@header.svg',

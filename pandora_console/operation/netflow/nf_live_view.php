@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -129,48 +129,31 @@ $draw = get_parameter('draw_button', '');
 $save = get_parameter('save_button', '');
 $update = get_parameter('update_button', '');
 
-if (is_metaconsole() === false) {
-    // Header.
-    ui_print_standard_header(
-        __('Netflow live view'),
-        'images/op_netflow.png',
-        false,
-        '',
-        false,
-        [],
+// Header.
+ui_print_standard_header(
+    __('Netflow live view'),
+    'images/op_netflow.png',
+    false,
+    '',
+    false,
+    [],
+    [
         [
-            [
-                'link'  => '',
-                'label' => __('Monitoring'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Network'),
-            ],
-        ]
-    );
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Network'),
+        ],
+    ]
+);
 
-    $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
-    if ($is_windows) {
-        ui_print_error_message(__('Not supported in Windows systems'));
-    } else {
-        netflow_print_check_version_error();
-    }
+$is_windows = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+if ($is_windows === true) {
+    ui_print_error_message(__('Not supported in Windows systems'));
 } else {
-    $nav_bar = [
-        [
-            'link' => 'index.php?sec=main',
-            'text' => __('Main'),
-        ],
-        [
-            'link' => 'index.php?sec=netf&sec2=operation/netflow/nf_live_view',
-            'text' => __('Netflow live view'),
-        ],
-    ];
-
-    ui_meta_print_page_header($nav_bar);
-
-    ui_meta_print_header(__('Netflow live view'));
+    netflow_print_check_version_error();
 }
 
 // Save user defined filter.
@@ -443,6 +426,7 @@ if (empty($filter['advanced_filter']) === false) {
 
 $filterTable = new stdClass();
 $filterTable->id = '';
+$filterTable->width = '100%';
 $filterTable->class = 'filter-table-adv';
 $filterTable->size = [];
 $filterTable->size[0] = '33%';

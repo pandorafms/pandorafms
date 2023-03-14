@@ -406,9 +406,9 @@ $filterTable->data[1][0] = html_print_submit_button(
 );
 
 // Print filter table.
-echo '<form method=\'post\'	action=\'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\'>';
+$form = '<form method=\'post\'	action=\'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\'>';
 ui_toggle(
-    html_print_table($filterTable, true),
+    $form.html_print_table($filterTable, true).'</form>',
     '<span class="subsection_header_title">'.__('Filter').'</span>',
     __('Filter'),
     'filter',
@@ -418,7 +418,6 @@ ui_toggle(
     'white-box-content no_border',
     'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
 );
-echo '</form>';
 
 // Data table.
 $selected = true;

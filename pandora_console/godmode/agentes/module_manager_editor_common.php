@@ -1906,21 +1906,9 @@ $(document).ready (function () {
     });
 
     $('.switch_radio_button label').on('click', function(){
-        console.log('primero');
         var thisLabel = $(this).attr('for');
-        console.log(thisLabel);
         $('#'+thisLabel).prop('checked', true);
         $('#'+thisLabel).siblings().prop('checked', false);
-
-        console.log('++++++++++Los warning++++++++++++++');
-        console.log('normal_warning: '+$('#radius-normal_warning').prop('checked'));
-        console.log('warning_inverse: '+$('#radius-warning_inverse').prop('checked'));
-        console.log('percentage_warning: '+$('#radius-percentage_warning').prop('checked'));
-        
-        console.log('++++++++++Los critical++++++++++++++');
-        console.log('normal_critical: '+$('#radius-normal_critical').prop('checked'));
-        console.log('critical_inverse: '+$('#radius-critical_inverse').prop('checked'));
-        console.log('percentage_critical: '+$('#radius-percentage_critical').prop('checked'));
         
         if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true) {
             $("#svg_dinamic").hide();

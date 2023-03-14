@@ -2668,7 +2668,7 @@ function events_print_type_img(
 
     switch ($type) {
         case 'alert_recovered':
-            $icon = 'images/alert@svg.svg';
+            $style .= ' alert_module_background_state icon_background_normal ';
         break;
 
         case 'alert_manual_validation':

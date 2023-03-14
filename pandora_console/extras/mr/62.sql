@@ -155,4 +155,6 @@ INSERT INTO `twelcome_tip_file` (`twelcome_tip_file`, `filename`, `path`) VALUES
 (20, 'zoom_en_graficas.png', 'images/tips/'),
 (22, 'politica_de_pass.png', 'images/tips/');
 
+ALTER TABLE `tusuario` ADD COLUMN `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1;
+
 COMMIT;

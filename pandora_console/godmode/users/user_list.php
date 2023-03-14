@@ -395,8 +395,6 @@ if ($delete_user === true) {
                         __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
                     );
                 }
-
-                header('Refresh:1');
             }
         } else {
             ui_print_error_message(__('There was a problem deleting the user'));

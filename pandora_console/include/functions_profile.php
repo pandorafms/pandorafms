@@ -191,15 +191,9 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     $table->id = 'table_profiles';
     $table->width = '100%';
     $table->class = 'info_table';
-    if (is_metaconsole() === true) {
-        $table->head_colspan[0] = 0;
-        $table->width = '100%';
-        $table->class = 'databox_tactical data';
-        $table->title = $title;
-    } else {
-        echo '<div id="edit_user_profiles" class="floating_form white_box">';
-        echo '<p class="subsection_header_title padding-lft-10">'.$title.'</p>';
-    }
+
+    echo '<div id="edit_user_profiles" class="floating_form white_box">';
+    echo '<p class="subsection_header_title padding-lft-10">'.$title.'</p>';
 
     $table->data = [];
     $table->head = [];
@@ -405,9 +399,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     array_push($table->data, $data);
     html_print_table($table, $return);
 
-    if (is_metaconsole() === false) {
-        echo '</div>';
-    }
+    echo '</div>';
 
     unset($table);
 }

@@ -2178,7 +2178,7 @@ function reporting_html_agent_module($table, $item)
                 if ($module === null) {
                     $table_data .= '<td></td>';
                 } else {
-                    $table_data .= "<td class='center'>";
+                    $table_data .= '<td style="text-align: left;">';
                     if (isset($row['show_type']) === true && $row['show_type'] === '1') {
                         $table_data .= $module;
                     } else {

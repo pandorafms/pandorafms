@@ -192,6 +192,26 @@ class HeatmapWidget extends Widget
         // Retrieve global - common inputs.
         $values = parent::decoders($decoder);
 
+        if (isset($decoder['search']) === true) {
+            $values['search'] = $decoder['search'];
+        }
+
+        if (isset($decoder['type']) === true) {
+            $values['type'] = $decoder['type'];
+        }
+
+        if (isset($decoder['groups']) === true) {
+            $values['groups'] = $decoder['groups'];
+        }
+
+        if (isset($decoder['tags']) === true) {
+            $values['tags'] = $decoder['tags'];
+        }
+
+        if (isset($decoder['module_groups']) === true) {
+            $values['module_groups'] = $decoder['module_groups'];
+        }
+
         return $values;
     }
 
@@ -205,8 +225,116 @@ class HeatmapWidget extends Widget
      */
     public function getFormInputs(): array
     {
+        global $config;
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
+
+        $values = $this->values;
+
+        // Search.
+        $inputs[] = [
+            'label'     => \__('Search'),
+            'arguments' => [
+                'name'   => 'search',
+                'type'   => 'text',
+                'class'  => 'event-widget-input',
+                'value'  => $values['search'],
+                'return' => true,
+                'size'   => 30,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Type'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => [
+                    0 => __('Group agents'),
+                    1 => __('Group modules by tag'),
+                    2 => __('Group modules by module group'),
+                    3 => __('Group modules by agents'),
+                ],
+                'name'     => 'type',
+                'selected' => $values['type'],
+                'script'   => 'type_change()',
+                'return'   => true,
+            ],
+        ];
+
+        // Filters.
+        $inputs[] = [
+            'label'     => __('Groups'),
+            'style'     => ($values['type'] === '0') ? '' : 'display:none',
+            'id'        => 'li_groups',
+            'arguments' => [
+                'type'           => 'select_groups',
+                'name'           => 'groups[]',
+                'returnAllGroup' => true,
+                'privilege'      => 'AR',
+                'selected'       => explode(',', $values['groups'][0]),
+                'return'         => true,
+                'multiple'       => true,
+            ],
+        ];
+
+        if (tags_has_user_acl_tags($config['id_user']) === false) {
+            $tags = db_get_all_rows_sql(
+                'SELECT id_tag, name FROM ttag WHERE id_tag ORDER BY name'
+            );
+        } else {
+            $user_tags = tags_get_user_tags($config['id_user'], 'AR');
+            if (empty($user_tags) === false) {
+                $id_user_tags = array_keys($user_tags);
+                $tags = db_get_all_rows_sql(
+                    'SELECT id_tag, name FROM ttag
+                    WHERE id_tag IN ('.implode(',', $id_user_tags).')
+                    ORDER BY name'
+                );
+            } else {
+                $tags = db_get_all_rows_sql(
+                    'SELECT id_tag, name FROM ttag WHERE id_tag ORDER BY name'
+                );
+            }
+        }
+
+        $inputs[] = [
+            'label'     => __('Tag'),
+            'style'     => ($values['type'] === '1') ? '' : 'display:none',
+            'id'        => 'li_tags',
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $tags,
+                'name'     => 'tags[]',
+                'selected' => explode(',', $values['tags'][0]),
+                'return'   => true,
+                'multiple' => true,
+            ],
+        ];
+
+        $module_groups_aux = db_get_all_rows_sql(
+            'SELECT id_mg, name FROM tmodule_group ORDER BY name'
+        );
+
+        $module_groups = [];
+        foreach ($module_groups_aux as $key => $module_group) {
+            $module_groups[$module_group['id_mg']] = $module_group['name'];
+        }
+
+        $inputs[] = [
+            'label'     => __('Module group'),
+            'style'     => ($values['type'] === '2') ? '' : 'display:none',
+            'id'        => 'li_module_groups',
+            'arguments' => [
+                'type'          => 'select',
+                'fields'        => $module_groups,
+                'name'          => 'module_groups[]',
+                'selected'      => explode(',', $values['module_groups'][0]),
+                'return'        => true,
+                'multiple'      => true,
+                'nothing'       => __('Not assigned'),
+                'nothing_value' => 0,
+            ],
+        ];
 
         return $inputs;
     }
@@ -221,6 +349,27 @@ class HeatmapWidget extends Widget
     {
         // Retrieve global - common inputs.
         $values = parent::getPost();
+
+        $values['search'] = \get_parameter('search', '');
+        $values['type'] = \get_parameter('type', 0);
+
+        switch ((int) $values['type']) {
+            case 2:
+                $values['module_groups'] = \get_parameter('module_groups', 0);
+            break;
+
+            case 1:
+                $values['tags'] = \get_parameter('tags', 0);
+            break;
+
+            case 0:
+                $values['groups'] = \get_parameter('groups', 0);
+            break;
+
+            default:
+                // Do nothing.
+            break;
+        }
 
         return $values;
     }
@@ -256,8 +405,8 @@ class HeatmapWidget extends Widget
     public function getSizeModalConfiguration(): array
     {
         $size = [
-            'width'  => 400,
-            'height' => 205,
+            'width'  => 500,
+            'height' => 300,
         ];
 
         return $size;
@@ -276,10 +425,23 @@ class HeatmapWidget extends Widget
         \ui_require_css_file('heatmap', 'include/styles/', true);
 
         $values = $this->values;
-        hd($values, true);
+        $search = (empty($values['search']) === false) ? $values['search'] : '';
+        $type = (empty($values['type']) === false) ? $values['type'] : 0;
+        $filter = [];
+        if (isset($values['groups'])) {
+            $filter = explode(',', $values['groups'][0]);
+        }
+
+        if (isset($values['tags'])) {
+            $filter = explode(',', $values['tags'][0]);
+        }
+
+        if (isset($values['module_groups'])) {
+            $filter = explode(',', $values['module_groups'][0]);
+        }
 
         // Control call flow.
-        $heatmap = new Heatmap(0, [], null, 300, 400, 200, 0, 1);
+        $heatmap = new Heatmap($type, $filter, null, 300, 400, 200, $search, 0, true);
         // AJAX controller.
         if (is_ajax() === true) {
             $method = get_parameter('method');

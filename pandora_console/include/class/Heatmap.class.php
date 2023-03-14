@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -160,26 +160,39 @@ class Heatmap
                 false
             ),
             'data'     => [
-                'page'     => 'operation/heatmap',
-                'method'   => 'showHeatmap',
-                'randomId' => $this->randomId,
-                'type'     => $this->type,
-                'filter'   => $this->filter,
-                'refresh'  => $this->refresh,
-                'search'   => $this->search,
-                'group'    => $this->group,
+                'page'      => 'operation/heatmap',
+                'method'    => 'showHeatmap',
+                'randomId'  => $this->randomId,
+                'type'      => $this->type,
+                'filter'    => $this->filter,
+                'refresh'   => $this->refresh,
+                'search'    => $this->search,
+                'group'     => $this->group,
+                'dashboard' => (int) $this->dashboard,
             ],
         ];
 
-        echo '<div id="div_'.$this->randomId.'" class="mainDiv" style="width: 100%;height: 100%">';
+        $style_dashboard = '';
+        if ($this->dashboard === true) {
+            $style_dashboard = 'min-height: 0px';
+        }
+
+        echo '<div id="div_'.$this->randomId.'" class="mainDiv" style="width: 100%;height: 100%;'.$style_dashboard.'">';
         ?>
             <script type="text/javascript">
                 $(document).ready(function() {
                     const randomId = '<?php echo $this->randomId; ?>';
                     const refresh = '<?php echo $this->refresh; ?>';
+                    const dashboard = '<?php echo $this->dashboard; ?>';
+
                     let setting = <?php echo json_encode($settings); ?>;
                     setting['data']['height'] = $(`#div_${randomId}`).height() + 10;
                     setting['data']['width'] = $(`#div_${randomId}`).width();
+
+                    if (dashboard === '1') {
+                        setting['data']['width'] -= 10;
+                        setting['data']['height'] -= 10;
+                    }
 
                     var totalModules = 0;
 
@@ -209,11 +222,13 @@ class Heatmap
                         let target = $(`#${randomId}_${randomPoint}`);
                         setTimeout(function() {
                             let class_name = target.attr('class');
-                            class_name = class_name.split(' ')[0];
-                            const newClassName = class_name.split('_')[0];
-                            target.removeClass(`${class_name} hover`);
-                            target.addClass(`${newClassName}_${solid} hover`);
-                            oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                            if (typeof class_name !== 'undefined') {
+                                class_name = class_name.split(' ')[0];
+                                const newClassName = class_name.split('_')[0];
+                                target.removeClass(`${class_name} hover`);
+                                target.addClass(`${newClassName}_${solid} hover`);
+                                oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                            }
                         }, time);
                     }
 
@@ -348,11 +363,21 @@ class Heatmap
      */
     protected function getAllAgents()
     {
+        global $config;
+
         $filter['disabled'] = 0;
 
         $alias = '';
         if (empty($this->search) === false) {
             $alias = ' AND alias LIKE "%'.$this->search.'%"';
+        }
+
+        $id_user_groups = '';
+        if (users_is_admin() === false) {
+            $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
+            if (empty($user_groups) === false) {
+                $id_user_groups = ' AND id_grupo IN ('.implode(',', $user_groups).')';
+            }
         }
 
         $id_grupo = '';
@@ -366,8 +391,9 @@ class Heatmap
             unknown_count,notinit_count,total_count,fired_count,
             (SELECT last_status_change FROM tagente_estado WHERE id_agente = tagente.id_agente
             ORDER BY last_status_change DESC LIMIT 1) AS last_status_change
-            FROM tagente WHERE `disabled` = 0 %s %s ORDER BY id_grupo,id_agente ASC',
+            FROM tagente WHERE `disabled` = 0 %s %s %s ORDER BY id_grupo,id_agente ASC',
             $alias,
+            $id_user_groups,
             $id_grupo
         );
 
@@ -429,6 +455,8 @@ class Heatmap
      */
     protected function getAllModulesByGroup()
     {
+        global $config;
+
         $filter_group = '';
         if (empty($this->filter) === false && current($this->filter) != -1) {
             $filter_group = 'AND am.id_module_group IN ('.implode(',', $this->filter).')';
@@ -439,12 +467,26 @@ class Heatmap
             $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
         }
 
+        $id_user_groups = '';
+        if (users_is_admin() === false) {
+            $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
+            if (empty($user_groups) === false) {
+                $id_user_groups = sprintf(
+                    'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                    AND a.id_grupo IN (%s)',
+                    implode(',', $user_groups)
+                );
+            }
+        }
+
         // All modules.
         $sql = sprintf(
             'SELECT am.id_agente_modulo AS id, ae.estado AS `status`, am.id_module_group AS id_grupo,
             ae.last_status_change FROM tagente_modulo am
             INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo
+            %s
             WHERE am.disabled = 0 %s %s GROUP BY am.id_module_group, am.id_agente_modulo',
+            $id_user_groups,
             $filter_group,
             $filter_name
         );
@@ -527,6 +569,8 @@ class Heatmap
      */
     protected function getAllModulesByTag()
     {
+        global $config;
+
         $filter_tag = '';
         if (empty($this->filter) === false && $this->filter[0] !== '0') {
             $tags = implode(',', $this->filter);
@@ -538,12 +582,26 @@ class Heatmap
             $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
         }
 
+        $id_user_groups = '';
+        if (users_is_admin() === false) {
+            $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
+            if (empty($user_groups) === false) {
+                $id_user_groups = sprintf(
+                    'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                    AND a.id_grupo IN (%s)',
+                    implode(',', $user_groups)
+                );
+            }
+        }
+
         // All modules.
         $sql = sprintf(
             'SELECT ae.id_agente_modulo AS id, ae.estado AS `status`, tm.id_tag AS id_grupo,
             ae.last_status_change FROM tagente_estado ae
+            %s
             INNER JOIN ttag_module tm ON tm.id_agente_modulo = ae.id_agente_modulo
             WHERE 1=1 %s %s GROUP BY tm.id_tag, ae.id_agente_modulo',
+            $id_user_groups,
             $filter_tag,
             $filter_name
         );
@@ -626,9 +684,23 @@ class Heatmap
      */
     protected function getAllModulesByAgents()
     {
+        global $config;
+
         $filter_name = '';
         if (empty($this->search) === false) {
             $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
+        }
+
+        $id_user_groups = '';
+        if (users_is_admin() === false) {
+            $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
+            if (empty($user_groups) === false) {
+                $id_user_groups = sprintf(
+                    'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                    AND a.id_grupo IN (%s)',
+                    implode(',', $user_groups)
+                );
+            }
         }
 
         // All modules.
@@ -636,7 +708,9 @@ class Heatmap
             'SELECT am.id_agente_modulo AS id, ae.estado AS `status`, am.id_agente AS id_grupo,
             ae.last_status_change FROM tagente_modulo am
             INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo
+            %s
             WHERE am.disabled = 0 %s GROUP BY ae.id_agente_modulo ORDER BY id_grupo',
+            $id_user_groups,
             $filter_name
         );
 
@@ -912,7 +986,7 @@ class Heatmap
                 });
             </script>
         <?php
-        if (count($groups) > 1 && $this->group === 1) {
+        if (count($groups) > 1 && $this->group === 1 && $this->dashboard === false) {
             $x_back = 0;
             $y_back = 0;
 
@@ -1111,7 +1185,7 @@ class Heatmap
         echo '</svg>';
 
         // Dialog.
-        echo '<div id="info_dialog" style="padding:15px" class="invisible"></div>';
+        echo '<div id="info_dialog"></div>';
     }
 
 

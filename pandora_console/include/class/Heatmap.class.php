@@ -381,7 +381,7 @@ class Heatmap
         }
 
         $id_grupo = '';
-        if (empty($this->filter) === false && current($this->filter) != 0) {
+        if (empty($this->filter) === false && empty(current($this->filter)) === false) {
             $id_grupo = ' AND id_grupo IN ('.implode(',', $this->filter).')';
         }
 

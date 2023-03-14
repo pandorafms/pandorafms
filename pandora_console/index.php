@@ -1487,6 +1487,7 @@ echo html_print_div(
 );
 
 // Connection lost alert.
+set_js_value('check_conexion_interval', $config['check_conexion_interval']);
 ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');

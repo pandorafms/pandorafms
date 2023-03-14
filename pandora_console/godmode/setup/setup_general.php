@@ -595,6 +595,14 @@ $table->data[$i++][1] = html_print_checkbox_switch(
     true
 );
 
+$table->data[$i][0] = __('Check conexion interval');
+$table->data[$i++][1] = html_print_input_number(
+    [
+        'name'  => 'check_conexion_interval',
+        'min'   => 90,
+        'value' => $config['check_conexion_interval'],
+    ]
+);
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo '<fieldset>';

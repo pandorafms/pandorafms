@@ -7073,20 +7073,6 @@ function ui_query_result_editor($name='default')
         true
     );
 
-    $editorSubContainer .= html_print_div(
-        [
-            'class'   => 'action-buttons edit-button',
-            'content' => html_print_submit_button(
-                __('Execute query'),
-                'execute_query',
-                false,
-                ['icon' => 'next'],
-                true
-            ),
-        ],
-        true
-    );
-
     $editorContainer = html_print_div(
         [
             'id'      => $name.'_editor_container',
@@ -7143,6 +7129,11 @@ function ui_query_result_editor($name='default')
             'hidden'  => true,
             'content' => ui_get_full_url(false, false, false, false),
         ]
+    );
+
+    $buttons = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
+    html_print_action_buttons(
+        $buttons
     );
 }
 

@@ -731,7 +731,7 @@ class DiscoveryTaskList extends HTML
                     case DISCOVERY_CLOUD_AZURE_COMPUTE:
                         // Discovery Applications MySQL.
                         $data[6] = html_print_image(
-                            'images/plugin@svg.svg',
+                            'images/plugins@svg.svg',
                             true,
                             [
                                 'title' => __('Discovery Cloud Azure Compute'),
@@ -744,7 +744,7 @@ class DiscoveryTaskList extends HTML
                     case DISCOVERY_CLOUD_AWS_EC2:
                         // Discovery Applications MySQL.
                         $data[6] = html_print_image(
-                            'images/plugin@svg.svg',
+                            'images/plugins@svg.svg',
                             true,
                             [
                                 'title' => __('Discovery Cloud AWS EC2'),
@@ -856,7 +856,7 @@ class DiscoveryTaskList extends HTML
                         } else {
                             // APP or external script recon task.
                             $data[6] = html_print_image(
-                                'images/plugin@svg.svg',
+                                'images/plugins@svg.svg',
                                 true,
                                 ['class' => 'main_menu_icon invert_filter']
                             ).'&nbsp;&nbsp;';

@@ -834,3 +834,55 @@ function unblockSubmit(button) {
   expireCookie("downloadReady");
   attempts = 30;
 }
+
+function favMenuAction(e) {
+  var data = JSON.parse(atob(e.value));
+  if (data.label === "" && $(e).hasClass("active") === false) {
+    $("#dialog-fav-menu").dialog({
+      title: "Please choose a title",
+      width: 330,
+      buttons: [
+        {
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next",
+          text: "Confirm",
+          click: function() {
+            data.label = $("#text-label_fav_menu").val();
+            if (data.label.length > 18) {
+              data.label = data.label.slice(0, 18) + "...";
+            }
+
+            $(e).val(btoa(JSON.stringify(data)));
+            favMenuAction(e);
+            $(this).dialog("close");
+            $("input[name='label_fav_menu']").val("");
+          }
+        }
+      ]
+    });
+    return;
+  }
+  $.ajax({
+    method: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: {
+      page: "include/ajax/fav_menu.ajax",
+      id_element: data["id_element"],
+      url: data["url"],
+      label: data["label"],
+      section: data["section"]
+    },
+    success: function(res) {
+      if (res.success) {
+        if (res.action === "create") {
+          $("#image-fav-menu-action1").attr("src", "images/star_fav_menu.png");
+          $("#image-fav-menu-action1").addClass("active");
+        } else {
+          $("#image-fav-menu-action1").attr("src", "images/star_dark.png");
+          $("#image-fav-menu-action1").removeClass("active");
+        }
+      }
+    }
+  });
+}

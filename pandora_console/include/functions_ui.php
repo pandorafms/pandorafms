@@ -4998,7 +4998,8 @@ function ui_print_standard_header(
     string $help='',
     bool $godmode=false,
     array $options=[],
-    array $breadcrumbs=[]
+    array $breadcrumbs=[],
+    array $fav_menu_config=[]
 ) {
     // For standard breadcrumbs.
     ui_require_css_file('discovery');
@@ -5042,7 +5043,9 @@ function ui_print_standard_header(
             '',
             GENERIC_SIZE_TEXT,
             '',
-            $headerInformation->printHeader(true)
+            $headerInformation->printHeader(true),
+            false,
+            $fav_menu_config
         );
     // }
     if ($return !== true) {
@@ -5083,7 +5086,8 @@ function ui_print_page_header(
     $numChars=GENERIC_SIZE_TEXT,
     $alias='',
     $breadcrumbs='',
-    $hide_left_small=false
+    $hide_left_small=false,
+    $fav_menu_config=[]
 ) {
     global $config;
 
@@ -5144,6 +5148,17 @@ function ui_print_page_header(
     if (is_metaconsole() === false) {
         if ($help != '') {
             $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', '', false, '', true).'</div>';
+        }
+    }
+
+    if (is_array($fav_menu_config) === true && is_metaconsole() === false) {
+        if (count($fav_menu_config) > 0) {
+            $buffer .= ui_print_fav_menu(
+                $fav_menu_config['id_element'],
+                $fav_menu_config['url'],
+                $fav_menu_config['label'],
+                $fav_menu_config['section']
+            );
         }
     }
 
@@ -7779,4 +7794,48 @@ function ui_print_status_div($status)
     }
 
     return $return;
+}
+
+
+function ui_print_fav_menu($id_element, $url, $label, $section)
+{
+    global $config;
+    $label = io_safe_output($label);
+    if (strlen($label) > 18) {
+        $label = io_safe_input(substr($label, 0, 18).'...');
+    }
+
+    $fav = db_get_row_filter(
+        'tfavmenu_user',
+        [
+            'url'     => $url,
+            'id_user' => $config['id_user'],
+        ],
+        ['*']
+    );
+    $config_fav_menu = [
+        'id_element' => $id_element,
+        'url'        => $url,
+        'label'      => $label,
+        'section'    => $section,
+    ];
+
+    $output = '<span class="fav-menu">';
+    $output .= html_print_input_image(
+        'fav-menu-action',
+        (($fav !== false) ? 'images/star_fav_menu.png' : 'images/star_dark.png'),
+        base64_encode(json_encode($config_fav_menu)),
+        '',
+        true,
+        [
+            'onclick' => 'favMenuAction(this)',
+            'class'   => (($fav !== false) ? 'active' : ''),
+        ]
+    );
+    $output .= '</span>';
+    $output .= '<div id="dialog-fav-menu">';
+    $output .= '<p><b>'.__('Title').'</b></p>';
+    $output .= html_print_input_text('label_fav_menu', '', '', 25, 255, true, false, true);
+    $output .= '</div>';
+    return $output;
 }

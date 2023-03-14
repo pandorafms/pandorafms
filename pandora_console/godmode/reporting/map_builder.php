@@ -189,6 +189,14 @@ if ($delete_layout || $copy_layout) {
             'tlayout',
             ['id' => $id_layout]
         );
+        db_process_sql_delete(
+            'tfavmenu_user',
+            [
+                'id_element' => $id_layout,
+                'section'    => 'Visual_Console',
+                'id_user'    => $config['id_user'],
+            ]
+        );
 
         $auditMessage = ((bool) $result === true) ? 'Delete visual console' : 'Fail try to delete visual console';
         db_pandora_audit(

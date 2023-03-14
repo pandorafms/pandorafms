@@ -3885,6 +3885,7 @@ function ui_print_datatable(array $parameters)
                 $("div.dataTables_paginate").hide();
                 $("div.dataTables_info").hide();
                 $("div.dataTables_length").hide();
+                $("div.dt-buttons").hide();
 
                 if (dt_'.$table_id.'.page.info().pages > 1) {
                     $(".dataTables_paginate.paging_simple_numbers").show()
@@ -3895,6 +3896,7 @@ function ui_print_datatable(array $parameters)
                 $("div.dataTables_paginate").show();
                 $("div.dataTables_info").show();
                 $("div.dataTables_length").show();
+                $("div.dt-buttons").show();
 
                 if (dt_'.$table_id.'.page.info().pages == 1) {
                     $(".dataTables_paginate.paging_simple_numbers").hide()

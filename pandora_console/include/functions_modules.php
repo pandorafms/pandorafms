@@ -1153,6 +1153,27 @@ function modules_get_raw_data($id_agent_module, $date_init, $date_end)
 }
 
 
+function module_get_min_max_tagente_datos($id_agent_module, $date_init, $date_end)
+{
+    $table = modules_get_table_data($id_agent_module, null);
+
+    $datelimit = ($date_init - $date_end);
+    $search_in_history_db = db_search_in_history_db($datelimit);
+
+    $data = db_get_all_rows_sql(
+        '
+		SELECT max(datos) as max, min(datos) as min
+		FROM '.$table.'
+		WHERE id_agente_modulo = '.$id_agent_module.'
+			AND utimestamp >= '.$date_init.'
+			AND utimestamp <= '.$date_end,
+        $search_in_history_db
+    );
+
+    return $data;
+}
+
+
 function modules_get_agent_groups($id_agent_module)
 {
     $return = false;

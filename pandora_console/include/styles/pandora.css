@@ -11664,3 +11664,7 @@ div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget:active {
   background-color: #0d312f;
   border-color: #0d312f;
 }
+
+div#menu_full > div#menu_tabs > ul.tabs_ul {
+  margin-bottom: 0px;
+}

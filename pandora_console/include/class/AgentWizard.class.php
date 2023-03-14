@@ -601,6 +601,7 @@ class AgentWizard extends HTML
             'action' => $this->sectionUrl,
             'id'     => 'form-main-wizard',
             'method' => 'POST',
+            'class'  => 'white_box pdd_20px filter-list-adv',
         ];
 
         // Inputs.
@@ -829,24 +830,22 @@ class AgentWizard extends HTML
             ];
         }
 
-        $inputs[] = [
-            'arguments' => [
-                'label'      => $this->actionLabel,
-                'name'       => 'sub-protocol',
-                'type'       => 'submit',
-                'attributes' => [
+        html_print_action_buttons(
+            html_print_submit_button(
+                $this->actionLabel,
+                'sub-protocol',
+                false,
+                [
                     'icon'    => 'cog',
-                    'onclick' => '$(\'#form-main-wizard\').submit();',
+                    'onclick' => '$("#form-main-wizard").submit();',
                 ],
-                'return'     => true,
-            ],
-        ];
+                true
+            )
+        );
 
         // Prints main form.
         html_print_div(
             [
-                'class'   => 'white_box',
-                'style'   => 'padding: 20px',
                 'content' => $this->printForm(
                     [
                         'form'      => $form,
@@ -5980,7 +5979,7 @@ class AgentWizard extends HTML
                 });
 
                 // Loading.
-                $('#submit-sub-protocol').click(function() {
+                $('#button-sub-protocol').click(function() {
                     $('.wizard-result').remove();
                     $('#form-create-modules').remove();
                     $('.textodialogo').remove();

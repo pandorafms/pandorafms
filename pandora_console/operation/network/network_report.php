@@ -1,23 +1,32 @@
 <?php
 /**
- * Network explorer
+ * Netflow Report
  *
- * @package    Operations.
- * @subpackage Network explorer view.
+ * @category   Netflow
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
  *
- * Pandora FMS - http://pandorafms.com
- * ==================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; version 2
+ * as published by the Free Software Foundation for version 2.
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ * ============================================================================
  */
 
+// Begin.
 check_login();
 
 // ACL Check.
@@ -257,6 +266,7 @@ unset($table);
 $table = new stdClass();
 $table->id = '';
 $table->width = '100%';
+$table->class = 'info_table';
 // Print the header.
 $table->head = [];
 $table->head['main'] = __('IP');
@@ -385,20 +395,31 @@ if (empty($data)) {
         'height' => 230,
         'legend' => [
             'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
+            'position' => 'top',
+            'align'    => 'left',
         ],
         'labels' => $labels,
     ];
+    // Results table.
+    $resultsTable = html_print_div(
+        [
+            'class'   => '',
+            'style'   => 'flex: 75;margin-right: 5px;',
+            'content' => html_print_table($table, true),
+        ],
+        true
+    );
     // Pie graph.
-    html_print_div(
+    $pieGraph = html_print_div(
         [
             'class'   => 'databox netflow-pie-graph-container padding-2 white_box',
+            'style'   => 'flex: 25;margin-left: 5px;',
             'content' => pie_graph(
                 $chart_data,
                 $options
             ),
-        ]
+        ],
+        true
     );
     // Print the filter remove link.
     if (empty($main_value) === false) {
@@ -418,7 +439,13 @@ if (empty($data)) {
     }
 
     // Print results.
-    html_print_table($table);
+    html_print_div(
+        [
+            'style'   => 'max-width: -webkit-fill-available; display: flex',
+            'class'   => '',
+            'content' => $resultsTable.$pieGraph,
+        ]
+    );
 }
 
 ?>

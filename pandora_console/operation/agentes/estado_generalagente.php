@@ -164,8 +164,8 @@ $table_status->width = '100%';
 $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;
 $table_status->class = 'floating_form';
-$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter';
+$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
 
 $agentStatusGraph = html_print_div(
     [
@@ -386,8 +386,8 @@ $table_contact->width = '100%';
 $table_contact->cellspacing = 0;
 $table_contact->cellpadding = 0;
 $table_contact->class = 'floating_form';
-$table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter';
+$table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
 
 $agentContactCaption = html_print_div(
     [

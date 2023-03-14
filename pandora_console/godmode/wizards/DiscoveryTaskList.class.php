@@ -873,7 +873,7 @@ class DiscoveryTaskList extends HTML
                         '100%',
                         1.9,
                         // Color.
-                        '#82b92e',
+                        '#ececec',
                         // Return.
                         true,
                         // Text.
@@ -1218,12 +1218,12 @@ class DiscoveryTaskList extends HTML
         $result .= progress_circular_bar(
             $task['id_rt'],
             ($task['status'] < 0) ? 100 : $task['status'],
-            200,
-            200,
-            '#7eb641',
+            150,
+            150,
+            '#3A3A3A',
             '%',
             '',
-            '#3A3A3A',
+            '#ececec',
             0
         );
 
@@ -1288,12 +1288,12 @@ class DiscoveryTaskList extends HTML
             $result .= progress_circular_bar(
                 $task['id_rt'].'_detail',
                 $task['stats']['c_network_percent'],
-                200,
-                200,
-                '#7eb641',
+                150,
+                150,
+                '#3A3A3A',
                 '%',
                 '',
-                '#3A3A3A',
+                '#ececec',
                 0
             );
             $result .= '</div></div>';

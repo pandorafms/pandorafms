@@ -1573,7 +1573,7 @@ if (check_login()) {
                             $value['thresholds']
                         );
 
-                        $resultData = '<span style="color:'.$status['color'].'">';
+                        $resultData = '<span class="widget-module-tabs-data" style="color:'.$status['color'].'">';
                         if ($vdata !== null && $vdata !== '' && $vdata !== false) {
                             if (isset($formatData) === true
                                 && (bool) $formatData === true

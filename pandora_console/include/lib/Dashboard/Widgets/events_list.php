@@ -663,7 +663,7 @@ class EventsListWidget extends Widget
             [
                 'id'                             => $table_id,
                 'class'                          => 'info_table events',
-                'style'                          => 'width: 100%;',
+                'style'                          => 'width: 99%;',
                 'ajax_url'                       => 'operation/events/events',
                 'ajax_data'                      => [
                     'get_events'     => 1,
@@ -697,6 +697,7 @@ class EventsListWidget extends Widget
                 'ajax_return_operation_function' => 'process_buffers',
                 'return'                         => true,
                 'csv'                            => 0,
+                'dom_elements'                   => 'frtilp',
             ]
         );
 

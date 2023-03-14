@@ -3809,7 +3809,7 @@ div.div_groups_status {
   background-color: white;
   border: 1px solid #ececec;
   border-radius: 5px;
-  margin: 20px;
+  margin: 5px;
   float: left;
 }
 
@@ -5843,6 +5843,7 @@ div.switch_radio_button label {
   margin-right: -1px;
   border: 1px solid #cbcbcb;
   transition: all 0.1s ease-in-out;
+  background: transparent;
 }
 
 div.switch_radio_button label:first-of-type {
@@ -6547,6 +6548,7 @@ table.table_modal_alternate tr td:first-child {
 .flot-text .flot-x-axis div {
   white-space: normal;
   word-break: break-all;
+  line-height: 1.3;
 }
 
 /*Font header feedback*/
@@ -10531,6 +10533,11 @@ button div.preview {
   -webkit-mask: url(../../images/eye.png) no-repeat center / contain;
 }
 
+button div.plus {
+  mask: url(../../images/plus-black.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/plus-black.svg) no-repeat center / contain;
+}
+
 button div.cog.rotation {
   animation: rotation 4s infinite linear;
 }
@@ -11239,8 +11246,8 @@ input.main_menu_icon[src$=".svg"] {
 }
 
 .header_help_icon {
-  width: 16px;
-  height: 16px;
+  width: 16px !important;
+  height: 16px !important;
 }
 .main_menu_icon.arrow_up {
   transform: rotate(90deg);
@@ -11263,12 +11270,17 @@ span.subsection_header_title {
   height: 18px;
 }
 
+.agent_details_header span.subsection_header_title {
+  font-weight: 700;
+  color: #000;
+}
 .subsection_header_title.secondary {
   font-size: 14px;
 }
 
 span.subsection_header_title.secondary {
   height: 14px;
+  line-height: 14px;
 }
 
 .regular_font {
@@ -11633,4 +11645,22 @@ ul.tag-editor {
   height: 20px;
   padding-left: 5px !important;
   font-size: 20px !important;
+}
+
+div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  font-size: 11pt;
+}
+
+div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget:hover {
+  background-color: #1d7873;
+  border-color: #1d7873;
+}
+
+div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget:active {
+  background-color: #0d312f;
+  border-color: #0d312f;
 }

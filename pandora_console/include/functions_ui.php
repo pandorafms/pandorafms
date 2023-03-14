@@ -3885,6 +3885,7 @@ function ui_print_datatable(array $parameters)
                 $("div.dataTables_paginate").hide();
                 $("div.dataTables_info").hide();
                 $("div.dataTables_length").hide();
+                $("div.dt-buttons").hide();
 
                 if (dt_'.$table_id.'.page.info().pages > 1) {
                     $(".dataTables_paginate.paging_simple_numbers").show()
@@ -3895,6 +3896,7 @@ function ui_print_datatable(array $parameters)
                 $("div.dataTables_paginate").show();
                 $("div.dataTables_info").show();
                 $("div.dataTables_length").show();
+                $("div.dt-buttons").show();
 
                 if (dt_'.$table_id.'.page.info().pages == 1) {
                     $(".dataTables_paginate.paging_simple_numbers").hide()
@@ -7071,20 +7073,6 @@ function ui_query_result_editor($name='default')
         true
     );
 
-    $editorSubContainer .= html_print_div(
-        [
-            'class'   => 'action-buttons edit-button',
-            'content' => html_print_submit_button(
-                __('Execute query'),
-                'execute_query',
-                false,
-                ['icon' => 'next'],
-                true
-            ),
-        ],
-        true
-    );
-
     $editorContainer = html_print_div(
         [
             'id'      => $name.'_editor_container',
@@ -7141,6 +7129,11 @@ function ui_query_result_editor($name='default')
             'hidden'  => true,
             'content' => ui_get_full_url(false, false, false, false),
         ]
+    );
+
+    $buttons = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
+    html_print_action_buttons(
+        $buttons
     );
 }
 

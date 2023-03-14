@@ -289,6 +289,10 @@ class SLAPercentWidget extends Widget
             $values['period'] = $decoder['period'];
         }
 
+        if (isset($decoder['layout']) === true) {
+            $values['layout'] = $decoder['layout'];
+        }
+
         return $values;
     }
 
@@ -404,6 +408,18 @@ class SLAPercentWidget extends Widget
             ],
         ];
 
+        // Layout.
+        $inputs[] = [
+            'label'     => __('Layout').ui_print_help_tip(__('Off: vertical. On: horizontal'), true),
+            'arguments' => [
+                'wrapper' => 'div',
+                'name'    => 'layout',
+                'type'    => 'switch',
+                'value'   => $values['layout'],
+                'return'  => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -425,6 +441,7 @@ class SLAPercentWidget extends Widget
         $values['period'] = \get_parameter('period', 0);
         $values['sizeValue'] = \get_parameter('sizeValue', '');
         $values['sizeLabel'] = \get_parameter('sizeLabel', '');
+        $values['layout'] = \get_parameter_switch('layout');
 
         return $values;
     }
@@ -494,21 +511,42 @@ class SLAPercentWidget extends Widget
         $sizeLabel = (isset($this->values['sizeLabel']) === true) ? $this->values['sizeLabel'] : 30;
         $sizeValue = (isset($this->values['sizeValue']) === true) ? $this->values['sizeValue'] : 30;
 
-        $output .= '<div class="container-center">';
+        $uuid = uniqid();
+
+        $output .= '<div class="container-center" id="container-'.$uuid.'">';
+
+        $orientation = '';
+        if ((int) $this->values['layout'] === 1) {
+            $orientation = 'flex';
+        } else {
+            $orientation = 'grid';
+        }
+
         // General div.
-        $output .= '<div class="container-icon">';
+        $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
         // Div value.
-        $output .= '<div style="flex: 0 1 '.$sizeValue.'px; font-size:'.$sizeValue.'px;">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_20px" style="flex: 0 1 '.$sizeValue.'px; font-size:'.$sizeValue.'px;">';
         $output .= $sla_array['sla_fixed'].'%';
         $output .= '</div>';
 
         if (empty($label) === false) {
             // Div Label.
-            $output .= '<div style="flex: 1 1; font-size:'.$sizeLabel.'px; text-align: left;">'.$label.'</div>';
+            $output .= '<div class="pdd_l_15px pdd_r_15px" style="flex: 1 1; font-size:'.$sizeLabel.'px; text-align: left;">'.$label.'</div>';
         }
 
         $output .= '</div>';
         $output .= '</div>';
+
+        $output .= '<script>
+        var containerWidth = document.querySelector("#container-'.$uuid.'").offsetWidth;
+        var generalWidth = document.querySelector("#general-'.$uuid.'").offsetWidth;
+
+        if (generalWidth >= containerWidth) {
+            $("#container-'.$uuid.'").css("align-items", "flex-start");
+        } else {
+            $("#container-'.$uuid.'").css("align-items", "center");
+        }
+        </script>';
         return $output;
     }
 

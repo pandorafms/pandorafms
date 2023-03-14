@@ -835,3 +835,11 @@ form.modal-dashboard
   border: 0px;
   width: 90%;
 }
+
+div.widget-mrgn-0px > div.parent_graph {
+  margin: 0px;
+}
+
+div.widget-mrgn-0px > div.parent_graph > div[id^="graph_"] {
+  width: calc(100% + 14px) !important;
+}

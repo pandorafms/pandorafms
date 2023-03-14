@@ -4356,7 +4356,7 @@ function events_page_details($event, $server_id=0)
 
             $graph_params_str = http_build_query($graph_params);
 
-            $link = "winopeng_var('".$url.'?'.$graph_params_str."','".$win_handle."', 800, 480)";
+            $link = 'winopeng_var("'.$url.'?'.$graph_params_str.'","'.$win_handle.'", 800, 480)';
             $data[1] = html_print_button(__('View graph'), 'view_graph_button', false, $link, ['mode' => 'link'], true);
             $table_details->data[] = $data;
         }

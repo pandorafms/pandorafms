@@ -93,27 +93,6 @@ if (is_metaconsole() === false) {
     }
 }
 
-// Header.
-ui_print_standard_header(
-    __('Monitor detail').$subpage,
-    'images/agent.png',
-    false,
-    '',
-    true,
-    $buttons,
-    [
-        [
-            'link'  => '',
-            'label' => __('Monitoring'),
-        ],
-        [
-            'link'  => '',
-            'label' => __('Views'),
-        ],
-    ]
-);
-
-
 if (is_metaconsole() === false) {
     if ($section == 'fields') {
         include_once $config['homedir'].'/godmode/agentes/status_monitor_custom_fields.php';
@@ -285,7 +264,78 @@ if ($loaded_filter['id_filter'] > 0) {
             $ag_custom_fields = json_decode(io_safe_output($ag_custom_fields), true);
         }
     }
+
+    // Fav menu.
+    $fav_menu = [
+        'id_element' => $loaded_filter['id_filter'],
+        'url'        => 'operation/agentes/status_monitor&pure=&load_filter=1&filter_id='.$loaded_filter['id_filter'],
+        'label'      => $loaded_filter['id_name'],
+        'section'    => 'Modules',
+    ];
 }
+
+if (is_metaconsole() === false) {
+    $section = (string) get_parameter('section', 'view');
+
+    $buttons['fields'] = [
+        'active'    => false,
+        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields">'.html_print_image(
+            'images/edit_columns@svg.svg',
+            true,
+            [
+                'title' => __('Custom fields'),
+                'class' => 'invert_filter main_menu_icon',
+            ]
+        ).'</a>',
+        'operation' => true,
+    ];
+
+    $buttons['view'] = [
+        'active'    => false,
+        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor">'.html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'title' => __('View'),
+                'class' => 'invert_filter main_menu_icon',
+            ]
+        ).'</a>',
+        'operation' => true,
+    ];
+
+    switch ($section) {
+        case 'fields':
+            $buttons['fields']['active'] = true;
+            $subpage = ' &raquo; '.__('Custom fields');
+        break;
+
+        default:
+            $buttons['view']['active'] = true;
+        break;
+    }
+}
+
+// Header.
+ui_print_standard_header(
+    __('Monitor detail').$subpage,
+    'images/agent.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Views'),
+        ],
+    ],
+    (empty($fav_menu) === true) ? [] : $fav_menu
+);
+
 
 $all_groups = [];
 

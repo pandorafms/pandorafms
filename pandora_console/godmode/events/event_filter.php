@@ -59,6 +59,14 @@ if ($delete) {
     }
 
     if ($result !== false) {
+        db_process_sql_delete(
+            'tfavmenu_user',
+            [
+                'id_element' => $id_filter,
+                'section'    => 'Events',
+                'id_user'    => $config['id_user'],
+            ]
+        );
         $result = true;
     } else {
         $result = false;

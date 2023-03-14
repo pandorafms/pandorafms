@@ -1071,27 +1071,50 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
     echo '</form>';
 }
 
-$modalCreateModule = '<form name="create_module_form" method="post">';
-$input_type = html_print_input_hidden('edit_module', 1, true);
-$input_type .= html_print_select(
-    policies_type_modules_availables($sec2),
-    'moduletype',
-    '',
-    '',
-    '',
-    '',
-    true,
-    false,
-    false,
-    '',
-    false,
-    'max-width:300px;'
+// Form table for Module creation.
+$createModuleTable = new stdClass();
+$createModuleTable->id = 'module_creation_modal';
+$createModuleTable->class = 'filter-table-adv';
+$createModuleTable->data = [];
+
+$createModuleTable->data[0][] = html_print_label_input_block(
+    __('Select module type'),
+    html_print_select(
+        policies_type_modules_availables($sec2),
+        'moduletype',
+        '',
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        '',
+        false,
+        'max-width:300px;'
+    )
 );
 
-$modalCreateModule .= $input_type;
+$createModuleTable->data[1][] = html_print_label_input_block(
+    '',
+    html_print_anchor(
+        [
+            'href'    => 'https://pandorafms.com/Library/Library/',
+            'class'   => 'color-black-grey invert_filter',
+            'content' => __('Get more modules on Monitoring Library'),
+        ],
+        true
+    )
+);
+
+$createModuleFormTable = html_print_input_hidden('edit_module', 1, true);
+$createModuleFormTable .= html_print_table($createModuleTable, true);
+// Form definition.
+$modalCreateModule = '<form name="create_module_form" method="post">';
+$modalCreateModule .= $createModuleFormTable;
 $modalCreateModule .= html_print_div(
     [
-        'class'   => 'action-buttons',
+        'class'   => 'action-buttons-right-forced',
         'content' => html_print_submit_button(
             __('Create'),
             'create_module',

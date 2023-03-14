@@ -5149,7 +5149,7 @@ function ui_print_page_header(
         }
     }
 
-    if (is_array($fav_menu_config) === true) {
+    if (is_array($fav_menu_config) === true && is_metaconsole() === false) {
         if (count($fav_menu_config) > 0) {
             $buffer .= ui_print_fav_menu(
                 $fav_menu_config['id_element'],

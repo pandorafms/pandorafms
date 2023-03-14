@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
 PRIMARY KEY (`id`));
 
 ALTER TABLE `tnetflow_filter` ADD COLUMN `netflow_monitoring` TINYINT UNSIGNED NOT NULL default 0;
-ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_max` float(20,2) NOT NULL default 0;
+ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_max` INTEGER NOT NULL default 0;
 ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_critical` float(20,2) NOT NULL default 0;
 ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_warning` float(20,2) NOT NULL default 0;
 

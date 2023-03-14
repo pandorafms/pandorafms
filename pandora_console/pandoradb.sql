@@ -2186,9 +2186,9 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
   `filter_args` TEXT,
   `aggregate` VARCHAR(60),
   `netflow_monitoring` TINYINT UNSIGNED NOT NULL default 0,
-  `traffic_max` FLOAT(20,3) NOT NULL default 0,
+  `traffic_max` INTEGER NOT NULL default 0,
   `traffic_critical` FLOAT(20,2) NOT NULL default 0,
-  `traffic_warning` FLOAT(20,2) NOT NULL default 0,
+  `traffic_warning` FLOAT(20,2) NOT NULL default 0,git s
   PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

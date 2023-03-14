@@ -1741,7 +1741,8 @@ if (is_metaconsole() === false) {
                 imodule_name = $(value).html();
                 if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
                     id_imodule = $(value).attr('value');
-                    $("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
+                    $("select[name='autorefresh_list[]'] option").each(function() { $(this).attr("selected", true) });
+                    $("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>').attr("selected", true));
                     $("#autorefresh_list_out").find("option[value='" + id_imodule + "']").remove();
                     $("#autorefresh_list").find("option[value='']").remove();
                     $("#autorefresh_list").find("option[value='0']").remove();

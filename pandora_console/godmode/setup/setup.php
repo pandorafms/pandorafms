@@ -159,7 +159,7 @@ if (check_acl($config['id_user'], 0, 'AW')) {
         $buttons['sflow'] = [
             'active' => false,
             'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=sflow').'">'.html_print_image(
-                'images/op_netflow.png',
+                'images/op_recon.png',
                 true,
                 [
                     'title' => __('Sflow'),

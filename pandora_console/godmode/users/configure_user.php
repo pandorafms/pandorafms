@@ -60,7 +60,7 @@ if ($enterprise_include === true) {
 $id = get_parameter('id', get_parameter('id_user', ''));
 // Check if we are the same user for edit or we have a proper profile for edit users.
 if ($id !== $config['id_user']) {
-    if ((is_centralized() === true) || (bool) check_acl($config['id_user'], 0, 'UM') === false) {
+    if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access User Management'
@@ -1011,13 +1011,13 @@ if (!$new_user) {
     $user_id .= html_print_input_hidden('id_user', $id, true);
     $user_id .= '</div>';
 
-    $apiTokenContentElements[] = '<span style="height: 15px;font-size: 14px;">'.__('API Token').'</span>';
+    $apiTokenContentElements[] = '<span style="line-height: 15px; height: 15px;font-size: 14px;">'.__('API Token').'</span>';
     $apiTokenContentElements[] = html_print_button(
         __('Renew'),
         'renew_api_token',
         false,
         sprintf(
-            'javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')',
+            'javascript:renewAPIToken("%s", "%s", "%s")',
             __('Warning'),
             __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
             'user_profile_form',
@@ -1033,7 +1033,7 @@ if (!$new_user) {
         'show_api_token',
         false,
         sprintf(
-            'javascript:showAPIToken(\'%s\', \'%s\')',
+            'javascript:showAPIToken("%s", "%s")',
             __('API Token'),
             base64_encode(__('Your API Token is:').'&nbsp;<br><span class="font_12pt bolder">'.users_get_API_token($id).'</span><br>&nbsp;'.__('Please, avoid share this string with others.')),
         ),
@@ -1826,12 +1826,16 @@ if (is_metaconsole() === true) {
             true
         );
     }
+
+    // User Profile definition table. (Only where user is not creating).
+    if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
+        profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
+    }
 } else {
     $access_or_pagination = $size_pagination;
     // WIP: Only for node.
     include_once 'user_management.php';
 }
-
 
 if ((bool) $config['admin_can_add_user'] === true) {
     html_print_csrf_hidden();

@@ -672,7 +672,7 @@ foreach ($simple_alerts as $alert) {
         '[&hellip;]',
         ''
     );
-    $data[2] .= ' <a class="template_details patatas"
+    $data[2] .= ' <a class="template_details"
 		href="'.ui_get_full_url(false, false, false, false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">';
         $data[2] .= html_print_image(
             'images/details.svg',

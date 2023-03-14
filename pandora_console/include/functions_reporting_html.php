@@ -1053,17 +1053,17 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         $table1->head = [];
         if ($item['show_summary_group']) {
             $table1->head[0] = __('Status');
-            $table1->head[1] = __('Count');
-            $table1->head[2] = __('Name');
-            $table1->head[3] = __('Type');
+            $table1->head[1] = __('Type');
+            $table1->head[2] = __('Count');
+            $table1->head[3] = __('Name');
             $table1->head[4] = __('Agent');
             $table1->head[5] = __('Severity');
             $table1->head[6] = __('Val. by');
             $table1->head[7] = __('Timestamp');
         } else {
             $table1->head[0] = __('Status');
-            $table1->head[1] = __('Name');
-            $table1->head[2] = __('Type');
+            $table1->head[1] = __('Type');
+            $table1->head[2] = __('Name');
             $table1->head[3] = __('Agent');
             $table1->head[4] = __('Severity');
             $table1->head[5] = __('Val. by');
@@ -1077,15 +1077,15 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         foreach ($item['data'] as $k => $event) {
             // First pass along the class of this row.
             if ($item['show_summary_group']) {
-                $table1->cellclass[$k][1] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][2] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][3] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][4] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][5] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][6] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][8] = get_priority_class($event['criticity']);
             } else {
-                $table1->cellclass[$k][1] = get_priority_class($event['criticity']);
+                $table1->cellclass[$k][2] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][3] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][4] = get_priority_class($event['criticity']);
                 $table1->cellclass[$k][5] = get_priority_class($event['criticity']);
@@ -1125,6 +1125,8 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
                 ]
             );
 
+            $data[] = events_print_type_img($event['event_type'], true);
+
             if ($item['show_summary_group']) {
                 $data[] = $event['event_rep'];
             }
@@ -1135,8 +1137,6 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
                 false,
                 true
             );
-
-            $data[] = events_print_type_img($event['event_type'], true);
 
             if (empty($event['alias']) === false) {
                 $alias = $event['alias'];
@@ -1313,20 +1313,20 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                 $table1->class = 'info_table';
                 $table1->data = [];
                 $table1->head = [];
-                $table1->align = [];
-                $table1->align[2] = 'center';
+                $table1->align = 'left';
+
                 if ($show_summary_group) {
                     $table1->head[0]  = __('Status');
-                    $table1->head[1]  = __('Event name');
-                    $table1->head[2]  = __('Type');
+                    $table1->head[1]  = __('Type');
+                    $table1->head[2]  = __('Event name');
                     $table1->head[3]  = __('Severity');
                     $table1->head[4]  = __('Count');
                     $table1->head[5]  = __('Timestamp');
                     $table1->style[0] = 'text-align: center;';
                 } else {
                     $table1->head[0]  = __('Status');
-                    $table1->head[1]  = __('Event name');
-                    $table1->head[2]  = __('Type');
+                    $table1->head[1]  = __('Type');
+                    $table1->head[2]  = __('Event name');
                     $table1->head[3]  = __('Severity');
                     $table1->head[4]  = __('Timestamp');
                     $table1->style[0] = 'text-align: center;';
@@ -1344,14 +1344,13 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                     foreach ($item_data as $i => $event) {
                         $data = [];
                         if ($show_summary_group) {
-                            $table1->cellclass[$i][1] = get_priority_class($event['criticity']);
                             $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
                             $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
                             $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
                             $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
                             $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
                         } else {
-                            $table1->cellclass[$i][1] = get_priority_class($event['criticity']);
+                            $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
                             $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
                             $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
                             $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
@@ -1386,8 +1385,9 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                                 'id'    => 'status_img_'.$event['id_evento'],
                             ]
                         );
-                        $data[1] = io_safe_output($event['evento']);
-                        $data[2] = events_print_type_img($event['event_type'], true);
+
+                        $data[1] = events_print_type_img($event['event_type'], true);
+                        $data[2] = io_safe_output($event['evento']);
                         $data[3] = get_priority_name($event['criticity']);
                         if ($show_summary_group) {
                             $data[4] = $event['event_rep'];
@@ -2178,7 +2178,7 @@ function reporting_html_agent_module($table, $item)
                 if ($module === null) {
                     $table_data .= '<td></td>';
                 } else {
-                    $table_data .= "<td class='center'>";
+                    $table_data .= '<td style="text-align: left;">';
                     if (isset($row['show_type']) === true && $row['show_type'] === '1') {
                         $table_data .= $module;
                     } else {
@@ -2657,12 +2657,12 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
 
         $table1->head = [];
         $table1->head[0] = __('Status');
+        $table1->head[3] = __('Type');
         if ($item['show_summary_group']) {
             $table1->head[1] = __('Count');
         }
 
         $table1->head[2] = __('Name');
-        $table1->head[3] = __('Type');
         $table1->head[4] = __('Severity');
         $table1->head[5] = __('Val. by');
         $table1->head[6] = __('Timestamp');
@@ -2672,14 +2672,14 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
 
         foreach ($item['data'] as $i => $event) {
             if ($item['show_summary_group']) {
-                $table1->cellclass[$i][1] = get_priority_class($event['criticity']);
                 $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
                 $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
                 $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
                 $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
                 $table1->cellclass[$i][7] = get_priority_class($event['criticity']);
             } else {
-                $table1->cellclass[$i][1] = get_priority_class($event['criticity']);
+                $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
                 $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
                 $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
                 $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
@@ -2716,6 +2716,8 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
                 ]
             );
 
+            $data[] = events_print_type_img($event['type'], true);
+
             if ($item['show_summary_group']) {
                 $data[] = $event['count'];
             }
@@ -2726,8 +2728,6 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
                 false,
                 true
             );
-
-            $data[] = events_print_type_img($event['type'], true);
 
             $data[] = get_priority_name($event['criticity']);
             if (empty($event['validated_by']) && $event['status'] == EVENT_VALIDATE) {
@@ -3919,6 +3919,8 @@ function reporting_html_value(
         if ($item['visual_format'] != 2) {
             $table1 = new stdClass();
             $table1->width = '100%';
+            $table1->headstyle[0] = 'text-align:left';
+            $table1->headstyle[1] = 'text-align:left';
             switch ($item['type']) {
                 case 'max_value':
                     $table1->head = [

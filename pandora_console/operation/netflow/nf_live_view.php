@@ -93,7 +93,11 @@ $filter['ip_src'] = get_parameter('ip_src', '');
 $filter['dst_port'] = get_parameter('dst_port', '');
 $filter['src_port'] = get_parameter('src_port', '');
 $filter['advanced_filter'] = get_parameter('advanced_filter', '');
-$filter['router_ip'] = get_parameter('router_ip');
+$filter['netflow_monitoring'] = (bool) get_parameter('netflow_monitoring');
+$filter['traffic_max'] = get_parameter('traffic_max', 0);
+$filter['traffic_critical'] = get_parameter('traffic_critical', 0);
+$filter['traffic_warning'] = get_parameter('traffic_warning', 0);
+
 
 // Read chart configuration.
 $chart_type = get_parameter('chart_type', 'netflow_area');
@@ -376,6 +380,55 @@ $advanced_toggle .= '<td colspan="2">'.$radio_buttons.'</td>';
 
 $advanced_toggle .= '<td><b>'.__('Source ip').'</b></td>';
 $advanced_toggle .= '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
+
+$advanced_toggle .= '</tr>';
+
+// Netflow server options.
+$advanced_toggle .= '<tr>';
+
+$advanced_toggle .= "<td style='font-weight:bold;'>".__('Enable Netflow monitoring').ui_print_help_tip(__('Allows you to create an agent that monitors the traffic volume of this filter. It also creates a module that measures if the traffic of any IP of this filter exceeds a certain threshold. A text type module will be created with the traffic rate for each IP within this filter every five minutes (the 10 IP\'s with the most traffic). Only available for Enterprise version.'), true).'</td>';
+$advanced_toggle .= '<td colspan="2">'.html_print_checkbox_switch(
+    'netflow_monitoring',
+    1,
+    (bool) $netflow_monitoring,
+    true,
+    false,
+).'</td>';
+
+$advanced_toggle .= "<td style='font-weight:bold;'>".__('Maximum traffic value of the filter').ui_print_help_tip(__('Specifies the maximum rate (in bytes/sec) of traffic in the filter. It is then used to calculate the % of maximum traffic per IP.'), true).'</td>';
+$advanced_toggle .= '<td colspan="2">'.html_print_input_number(
+    [
+        'step'  => 1,
+        'name'  => 'traffic_max',
+        'id'    => 'traffic_max',
+        'value' => $filter['traffic_max'],
+    ]
+).'</td>';
+
+
+$advanced_toggle .= '</tr>';
+$advanced_toggle .= '<tr>';
+
+$advanced_toggle .= "<td style='font-weight:bold;'>".__('CRITICAL threshold for the maximum % of traffic for an IP.').ui_print_help_tip(__('If this % is exceeded by any IP within the filter, a CRITICAL status will be generated.'), true).'</td>';
+$advanced_toggle .= '<td colspan="2">'.html_print_input_number(
+    [
+        'step'  => 1,
+        'name'  => 'traffic_critical',
+        'id'    => 'traffic_critical',
+        'value' => $filter['traffic_critical'],
+    ]
+).'</td>';
+
+$advanced_toggle .= "<td style='font-weight:bold;'>".__('WARNING threshold for the maximum % of traffic of an IP.').ui_print_help_tip(__('If this % is exceeded by any IP within the filter, a WARNING status will be generated.'), true).'</td>';
+$advanced_toggle .= '<td colspan="2">'.html_print_input_number(
+    [
+        'step'  => 1,
+        'name'  => 'traffic_warning',
+        'id'    => 'traffic_warning',
+        'value' => $filter['traffic_warning'],
+    ]
+).'</td>';
+
 
 $advanced_toggle .= '</tr>';
 
@@ -768,6 +821,11 @@ ui_include_time_picker();
             $("#text-router_ip").val('');
             $("#textarea_advanced_filter").val('');
             $("#aggregate").val('');
+            $("#traffic_max").val('');
+            $("#traffic_critical").val('');
+            $("#traffic_warning").val('');
+            $('#checkbox-netflow_monitoring').prop('checked', false);
+            
             
             // Hide update filter button
             $("#submit-update_button").hide();
@@ -837,6 +895,15 @@ ui_include_time_picker();
                             $("#textarea_advanced_filter").val(val);
                         if (i == 'aggregate')
                             $("#aggregate").val(val);
+                        if (i == 'netflow_monitoring')
+                            $("#checkbox-netflow_monitoring").prop('checked', val == "0" ? false : true);
+                        if (i == 'traffic_max')
+                            $("#traffic_max").val(val);
+                        if (i == 'traffic_critical')
+                            $("#traffic_critical").val(val);
+                        if (i == 'traffic_warning')
+                            $("#traffic_warning").val(val);
+                            
                     });
                 }
 <?php echo ', "json");'; ?>

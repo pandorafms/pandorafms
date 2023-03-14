@@ -91,6 +91,10 @@ if ($id) {
     $src_port = $filter['src_port'];
     $aggregate = $filter['aggregate'];
     $advanced_filter = $filter['advanced_filter'];
+    $netflow_monitoring = $filter['netflow_monitoring'];
+    $traffic_max = $filter['traffic_max'];
+    $traffic_critical = $filter['traffic_critical'];
+    $traffic_warning = $filter['traffic_warning'];
 } else {
     $name = '';
     $assign_group = '';
@@ -100,6 +104,10 @@ if ($id) {
     $src_port = '';
     $aggregate = 'dstip';
     $advanced_filter = '';
+    $netflow_monitoring = 0;
+    $traffic_max = 0;
+    $traffic_critical = 0;
+    $traffic_warning = 0;
 }
 
 if ($update) {
@@ -111,20 +119,28 @@ if ($update) {
     $dst_port = get_parameter('dst_port', '');
     $src_port = get_parameter('src_port', '');
     $advanced_filter = get_parameter('advanced_filter', '');
+    $netflow_monitoring = (bool) get_parameter('netflow_monitoring', false);
+    $traffic_max = get_parameter('traffic_max', 0);
+    $traffic_critical = get_parameter('traffic_critical', 0);
+    $traffic_warning = get_parameter('traffic_warning', 0);
 
     if ($name == '') {
         ui_print_error_message(__('Not updated. Blank name'));
     } else {
         $values = [
-            'id_sg'           => $id,
-            'id_name'         => $name,
-            'id_group'        => $assign_group,
-            'aggregate'       => $aggregate,
-            'ip_dst'          => $ip_dst,
-            'ip_src'          => $ip_src,
-            'dst_port'        => $dst_port,
-            'src_port'        => $src_port,
-            'advanced_filter' => $advanced_filter,
+            'id_sg'              => $id,
+            'id_name'            => $name,
+            'id_group'           => $assign_group,
+            'aggregate'          => $aggregate,
+            'ip_dst'             => $ip_dst,
+            'ip_src'             => $ip_src,
+            'dst_port'           => $dst_port,
+            'src_port'           => $src_port,
+            'advanced_filter'    => $advanced_filter,
+            'netflow_monitoring' => $netflow_monitoring,
+            'traffic_max'        => $traffic_max,
+            'traffic_critical'   => $traffic_critical,
+            'traffic_warning'    => $traffic_warning,
         ];
 
         // Save filter args
@@ -149,16 +165,24 @@ if ($create) {
     $dst_port = get_parameter('dst_port', '');
     $src_port = get_parameter('src_port', '');
     $advanced_filter = (string) get_parameter('advanced_filter', '');
+    $netflow_monitoring = (bool) get_parameter('netflow_monitoring', false);
+    $traffic_max = get_parameter('traffic_max', 0);
+    $traffic_critical = get_parameter('traffic_critical', 0);
+    $traffic_warning = get_parameter('traffic_warning', 0);
 
     $values = [
-        'id_name'         => $name,
-        'id_group'        => $assign_group,
-        'ip_dst'          => $ip_dst,
-        'ip_src'          => $ip_src,
-        'dst_port'        => $dst_port,
-        'src_port'        => $src_port,
-        'aggregate'       => $aggregate,
-        'advanced_filter' => $advanced_filter,
+        'id_name'            => $name,
+        'id_group'           => $assign_group,
+        'ip_dst'             => $ip_dst,
+        'ip_src'             => $ip_src,
+        'dst_port'           => $dst_port,
+        'src_port'           => $src_port,
+        'aggregate'          => $aggregate,
+        'advanced_filter'    => $advanced_filter,
+        'netflow_monitoring' => $netflow_monitoring,
+        'traffic_max'        => $traffic_max,
+        'traffic_critical'   => $traffic_critical,
+        'traffic_warning'    => $traffic_warning,
     ];
 
     // Save filter args
@@ -258,16 +282,73 @@ $aggregate_list = [
 
 $table->data[8][1] = html_print_select($aggregate_list, 'aggregate', $aggregate, '', '', 0, true, false, true, '', false);
 
+// Netflow server options.
+$table->data[9][0] = __('Enable Netflow monitoring').ui_print_help_tip(__('Allows you to create an agent that monitors the traffic volume of this filter. It also creates a module that measures if the traffic of any IP of this filter exceeds a certain threshold. A text type module will be created with the traffic rate for each IP within this filter every five minutes (the 10 IP\'s with the most traffic). Only available for Enterprise version.'), true);
+$table->data[9][1] = html_print_checkbox_switch(
+    'netflow_monitoring',
+    1,
+    (bool) $netflow_monitoring,
+    true,
+    false,
+);
+
+$table->data[10][0] = __('Maximum traffic value of the filter').ui_print_help_tip(__('Specifies the maximum rate (in bytes/sec) of traffic in the filter. It is then used to calculate the % of maximum traffic per IP.'), true);
+$table->data[10][1] = html_print_input_number(
+    [
+        'step'  => 1,
+        'name'  => 'traffic_max',
+        'id'    => 'traffic_max',
+        'value' => $traffic_max,
+    ]
+);
+
+$table->data[11][0] = __('CRITICAL threshold for the maximum % of traffic for an IP.').ui_print_help_tip(__('If this % is exceeded by any IP within the filter, a CRITICAL status will be generated.'), true);
+$table->data[11][1] = html_print_input_number(
+    [
+        'step'  => 1,
+        'name'  => 'traffic_critical',
+        'id'    => 'traffic_critical',
+        'value' => $traffic_critical,
+    ]
+);
+
+$table->data[12][0] = __('WARNING threshold for the maximum % of traffic of an IP.').ui_print_help_tip(__('If this % is exceeded by any IP within the filter, a WARNING status will be generated.'), true);
+$table->data[12][1] = html_print_input_number(
+    [
+        'step'  => 1,
+        'name'  => 'traffic_warning',
+        'id'    => 'traffic_warning',
+        'value' => $traffic_warning,
+    ]
+);
+
+
 echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
 html_print_table($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
     html_print_input_hidden('update', 1);
     html_print_input_hidden('id', $id);
-    html_print_submit_button(__('Update'), 'crt', false, 'class="sub upd"');
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Update'),
+            'crt',
+            false,
+            ['icon' => 'update'],
+            true
+        )
+    );
 } else {
     html_print_input_hidden('create', 1);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub wand"');
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create'),
+            'crt',
+            false,
+            ['icon' => 'update'],
+            true
+        )
+    );
 }
 
 echo '</div>';

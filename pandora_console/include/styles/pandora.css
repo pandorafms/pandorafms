@@ -9306,7 +9306,7 @@ div.stat-win-spinner img {
   color: #fff !important;
   font-size: 1.2em;
   margin-right: 5px !important;
-  margin-top: -4px;
+  margin-top: 1px;
 }
 
 .select2-results

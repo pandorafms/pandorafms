@@ -30,6 +30,7 @@
 :root {
   --primary-color: #14524f;
   --secondary-color: #ffffff;
+  --input-border: #c0ccdc;
 }
 
 /*
@@ -5822,7 +5823,7 @@ div.label_select_child_left > span {
   width: 100%;
   display: flex;
   overflow: hidden;
-  height: 42px;
+  height: 48px;
 }
 
 .switch_radio_button input {
@@ -5834,26 +5835,25 @@ div.label_select_child_left > span {
   overflow: hidden;
 }
 
-div.switch_radio_button label {
-  background-color: #fff;
+div.switch_radio_button > label {
+  background-color: var(--secondary-color);
   color: rgba(0, 0, 0, 0.6);
-  line-height: 6px !important;
-  text-align: center;
-  padding: 14px 10px;
-  margin-right: -1px;
-  border: 1px solid #cbcbcb;
+  text-align: center !important;
+  padding: 8px 10px;
+  margin-right: -2px;
+  border: 2px solid var(--input-border);
   transition: all 0.1s ease-in-out;
   background: transparent;
 }
 
 div.switch_radio_button label:first-of-type {
-  border-top-left-radius: 4px !important;
-  border-bottom-left-radius: 4px !important;
+  border-top-left-radius: 6px !important;
+  border-bottom-left-radius: 6px !important;
 }
 
 div.switch_radio_button label:last-of-type {
-  border-top-right-radius: 4px !important;
-  border-bottom-right-radius: 4px !important;
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
   margin-right: 0px;
 }
 
@@ -5863,9 +5863,9 @@ div.switch_radio_button label:last-of-type {
 
 .switch_radio_button input:checked + label,
 .switch_radio_button input:checked:has(.custom_checkbox) {
-  background-color: #1d7873;
+  background-color: var(--primary-color);
   box-shadow: none;
-  color: #fff !important;
+  color: var(--secondary-color) !important;
 }
 
 /*
@@ -11667,4 +11667,12 @@ div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget:active {
 
 div#menu_full > div#menu_tabs > ul.tabs_ul {
   margin-bottom: 0px;
+}
+
+.filter-adapted-table-adv {
+}
+
+.filter-adapted-table-adv tr {
+  display: flex;
+  flex-direction: column;
 }

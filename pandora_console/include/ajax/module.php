@@ -1750,7 +1750,9 @@ if (check_login()) {
                 INNER JOIN tagente
                     ON tagente_modulo.id_agente = tagente.id_agente 
                 INNER JOIN tagente_estado
-                    ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo'
+                    ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                WHERE %s',
+                $where
             );
             $recordsTotal = db_get_value_sql($sql_count);
 
@@ -1792,6 +1794,32 @@ if (check_login()) {
                 } catch (\Exception $e) {
                     // Unexistent modules.
                     $node->disconnect();
+                }
+            }
+
+            if (in_array(0, $servers_ids) === true) {
+                $sql = sprintf(
+                    'SELECT
+                    tagente_modulo.nombre,
+                    tagente.alias,
+                    tagente.id_agente,
+                    tagente_estado.last_status_change,
+                    tagente_estado.estado
+                    FROM tagente_modulo
+                    INNER JOIN tagente
+                        ON tagente_modulo.id_agente = tagente.id_agente 
+                    INNER JOIN tagente_estado
+                        ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                    WHERE %s',
+                    $where
+                );
+
+                $res_sql = db_get_all_rows_sql($sql);
+
+                foreach ($res_sql as $row_sql) {
+                    $row_sql['server_name'] = __('Metaconsole');
+                    $row_sql['server_url'] = $config['homeurl'];
+                    array_push($data, $row_sql);
                 }
             }
 
@@ -1852,7 +1880,9 @@ if (check_login()) {
 
                 $sql_count = sprintf(
                     'SELECT COUNT(*) AS "total"
-                    FROM temp_modules_status'
+                    FROM temp_modules_status
+                    WHERE %s',
+                    $where
                 );
 
                 $recordsTotal = db_get_value_sql($sql_count);

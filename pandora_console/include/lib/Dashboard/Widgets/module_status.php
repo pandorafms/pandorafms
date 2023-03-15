@@ -300,8 +300,8 @@ class ModuleStatusWidget extends Widget
             $values['imageSrc'] = $decoder['imageSrc'];
         }
 
-        if (isset($decoder['layout']) === true) {
-            $values['layout'] = $decoder['layout'];
+        if (isset($decoder['horizontal']) === true) {
+            $values['horizontal'] = $decoder['horizontal'];
         }
 
         return $values;
@@ -465,14 +465,14 @@ class ModuleStatusWidget extends Widget
             ],
         ];
 
-        // Layout.
+        // Horizontal.
         $inputs[] = [
-            'label'     => __('Layout').ui_print_help_tip(__('Off: vertical. On: horizontal'), true),
+            'label'     => __('Horizontal').ui_print_help_tip(__('If not, layout is vertical'), true),
             'arguments' => [
                 'wrapper' => 'div',
-                'name'    => 'layout',
+                'name'    => 'horizontal',
                 'type'    => 'switch',
-                'value'   => $values['layout'],
+                'value'   => $values['horizontal'],
                 'return'  => true,
             ],
         ];
@@ -499,7 +499,7 @@ class ModuleStatusWidget extends Widget
         $values['sizeValue'] = \get_parameter('sizeValue', 0);
         $values['sizeLabel'] = \get_parameter_switch('sizeLabel');
         $values['sizeIcon'] = \get_parameter_switch('sizeIcon');
-        $values['layout'] = \get_parameter_switch('layout');
+        $values['horizontal'] = \get_parameter_switch('horizontal');
 
         return $values;
     }
@@ -560,7 +560,7 @@ class ModuleStatusWidget extends Widget
         $output .= '<div class="container-center" id="container-'.$uuid.'">';
 
         $orientation = '';
-        if ((int) $this->values['layout'] === 1) {
+        if ((int) $this->values['horizontal'] === 1) {
             $orientation = 'flex aligni_center';
         } else {
             $orientation = 'grid';
@@ -570,7 +570,7 @@ class ModuleStatusWidget extends Widget
         $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
 
         // Div image.
-        $output .= '<div class="pdd_l_15px pdd_r_15px" style="flex: 0 1 '.$sizeIcon.'px;">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_25px" style="flex: 0 1 '.$sizeIcon.'px; height: '.$sizeIcon.'px;">';
         $output .= html_print_image(
             'images/console/icons/'.$icon,
             true,
@@ -580,7 +580,7 @@ class ModuleStatusWidget extends Widget
 
         if (empty($label) === false) {
             // Div Label.
-            $output .= '<div class="pdd_l_15px pdd_r_15px" style="flex: 1 1 '.$sizeLabel.'px; font-size:'.$sizeLabel.'px;">'.$label.'</div>';
+            $output .= '<div class="pdd_l_15px pdd_r_15px" style="flex: 1 1 '.$sizeLabel.'px; line-height: '.$sizeLabel.'px; font-size:'.$sizeLabel.'px;">'.$label.'</div>';
         }
 
         $output .= '</div>';

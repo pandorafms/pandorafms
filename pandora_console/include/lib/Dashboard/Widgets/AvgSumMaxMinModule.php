@@ -316,8 +316,8 @@ class AvgSumMaxMinModule extends Widget
             $values['unit'] = $decoder['unit'];
         }
 
-        if (isset($decoder['layout']) === true) {
-            $values['layout'] = $decoder['layout'];
+        if (isset($decoder['horizontal']) === true) {
+            $values['horizontal'] = $decoder['horizontal'];
         }
 
         return $values;
@@ -505,14 +505,14 @@ class AvgSumMaxMinModule extends Widget
             ],
         ];
 
-        // Layout.
+        // Horizontal.
         $inputs[] = [
-            'label'     => __('Layout').ui_print_help_tip(__('Off: vertical. On: horizontal'), true),
+            'label'     => __('Horizontal').ui_print_help_tip(__('If not, layout is vertical'), true),
             'arguments' => [
                 'wrapper' => 'div',
-                'name'    => 'layout',
+                'name'    => 'horizontal',
                 'type'    => 'switch',
-                'value'   => $values['layout'],
+                'value'   => $values['horizontal'],
                 'return'  => true,
             ],
         ];
@@ -541,7 +541,7 @@ class AvgSumMaxMinModule extends Widget
         $values['sizeLabel'] = \get_parameter_switch('sizeLabel');
         $values['text_color'] = \get_parameter('text_color', 0);
         $values['unit'] = \get_parameter_switch('unit');
-        $values['layout'] = \get_parameter_switch('layout');
+        $values['horizontal'] = \get_parameter_switch('horizontal');
 
         return $values;
     }
@@ -643,8 +643,8 @@ class AvgSumMaxMinModule extends Widget
         $output .= '<div class="container-center" id="container-'.$uuid.'">';
 
         $orientation = '';
-        if ((int) $this->values['layout'] === 1) {
-            $orientation = 'flex';
+        if ((int) $this->values['horizontal'] === 1) {
+            $orientation = 'flex aligni_center';
         } else {
             $orientation = 'grid';
         }
@@ -653,7 +653,7 @@ class AvgSumMaxMinModule extends Widget
         $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
 
         // Div value.
-        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_20px" style="font-size:'.$sizeValue.'px;'.$text_color.'">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_20px" style="line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px;'.$text_color.'">';
 
         if (is_numeric($data) === true) {
             $dataDatos = remove_right_zeros(
@@ -679,7 +679,7 @@ class AvgSumMaxMinModule extends Widget
 
         if (empty($label) === false) {
             // Div Label.
-            $output .= '<div class="pdd_l_15px pdd_r_15px" style="font-size:'.$sizeLabel.'px;'.$text_color.'">'.$label.'</div>';
+            $output .= '<div class="pdd_l_15px pdd_r_15px" style="line-height: '.$sizeLabel.'px; font-size:'.$sizeLabel.'px;'.$text_color.'">'.$label.'</div>';
         }
 
         $output .= '</div>';

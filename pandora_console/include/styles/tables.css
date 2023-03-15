@@ -806,3 +806,7 @@ div[id^="auto-os-"] > img {
 .dataTables_paginate.paging_simple_numbers {
   margin-right: 0;
 }
+
+.w22px {
+  width: 22px;
+}

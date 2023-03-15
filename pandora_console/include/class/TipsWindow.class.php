@@ -157,11 +157,12 @@ class TipsWindow
         View::render(
             'dashboard/tipsWindow',
             [
-                'title' => $initialTip['title'],
-                'text'  => $initialTip['text'],
-                'url'   => $initialTip['url'],
-                'files' => $initialTip['files'],
-                'id'    => $initialTip['id'],
+                'title'     => $initialTip['title'],
+                'text'      => $initialTip['text'],
+                'url'       => $initialTip['url'],
+                'files'     => $initialTip['files'],
+                'id'        => $initialTip['id'],
+                'totalTips' => $this->getTotalTipsShowUser(),
             ]
         );
     }

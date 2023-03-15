@@ -12,7 +12,7 @@
   padding: 0px;
 }
 .window {
-  background-image: linear-gradient(180deg, #fffce8 0%, #ffffff 100%);
+  background-image: white;
   width: 640px;
   width: 100%;
   border-radius: 5px;
@@ -145,9 +145,6 @@
   color: #14524f;
   font-weight: 600;
 }
-#url_tip .arrow_tips {
-  font-size: 20px;
-}
 span.count-round-tip {
   width: 6px !important;
   height: 6px !important;
@@ -210,4 +207,8 @@ span.disable {
 }
 .buttons_actions input {
   width: 32px;
+}
+.hide-button {
+  opacity: 0;
+  pointer-events: none;
 }

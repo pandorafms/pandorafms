@@ -358,17 +358,13 @@ $map_manager = new NetworkMap(
  *
  */
 
-$table_events = '<div class="white_table_graph" id="table_events">';
-$table_events .= '<div class="white_table_graph_header">';
-$table_events .= html_print_image(
-    'images/arrow_down_green.png',
-    true
-);
-$table_events .= '<span>';
+$table_events = '<div class="white_table_graph" id="table_events" style="width:100%">';
+$table_events .= '<div class="agent_details_header">';
+$table_events .= '<b><span style="font-size: medium;font-weight:bold">';
 $table_events .= __('Events (Last 24h)');
-$table_events .= '</span>';
+$table_events .= '</span></b>';
 $table_events .= '</div>';
-$table_events .= '<div class="white_table_graph_content white-table-graph-content">';
+$table_events .= '<div class="white-table-graph-content">';
 $table_events .= graph_graphic_agentevents(
     $cluster->agent()->id_agente(),
     95,
@@ -384,38 +380,39 @@ $table_events .= '</div>';
 
 ?>
 <div id="agent_details_first_row" class="w100p cluster-agent-data">
-    <div class="box-flat agent_details_col agent_details_col_left">
-        <div class="agent_details_header">
-            <?php echo $table_agent_header; ?>
-        </div>
-        <div class="agent_details_content">
-            <div class="agent_details_graph">
-                <?php echo $table_agent_graph; ?>
-                <div class="agent_details_bullets">
-                    <?php echo $table_agent_count_modules; ?>
+    <div class="flex">
+        <div class="box-flat agent_details_col agent_details_col_left" style="width:50%">
+            <div class="agent_details_header">
+                <?php echo $table_agent_header; ?>
+            </div>
+            <div class="agent_details_content">
+                <div class="agent_details_graph">
+                    <?php echo $table_agent_graph; ?>
+                    <div class="agent_details_bullets">
+                        <?php echo $table_agent_count_modules; ?>
+                    </div>
+                </div>
+                <div class="agent_details_info">
+                    <?php
+                    echo $alive_animation;
+                    echo $table_agent_os;
+                    echo $table_agent_ip;
+                    echo $table_agent_version;
+                    echo $table_agent_description;
+                    ?>
                 </div>
             </div>
-            <div class="agent_details_info">
-                <?php
-                echo $alive_animation;
-                echo $table_agent_os;
-                echo $table_agent_ip;
-                echo $table_agent_version;
-                echo $table_agent_description;
-                ?>
-            </div>
+        </div>
+
+        <div class="box-flat agent_details_col" style="width:50%">
+            <?php echo $table_events; ?>
         </div>
     </div>
-
     <div class="box-flat agent_details_col agent_details_col_right">
         <div class="cluster-map">
             <?php $map_manager->printMap(); ?>
         </div>
     </div>
-</div>
-
-<div class="w100p cluster-events-graph">
-    <?php echo $table_events; ?>
 </div>
 
 <div id='cluster-modules' class="w100p modules">
@@ -427,28 +424,22 @@ require_once $config['homedir'].'/operation/agentes/estado_monitores.php';
 
 
 <?php
-HTML::printForm(
+$buttons[] = html_print_submit_button(
+    __('Reload'),
+    'submit',
+    false,
     [
-        'form'   => [
-            'action' => $model->url.'&op=view&id='.$cluster->id(),
-            'method' => 'POST',
-        ],
-        'inputs' => [
-            [
-                'arguments' => [
-                    'name'       => 'submit',
-                    'label'      => __('Reload'),
-                    'type'       => 'submit',
-                    'attributes' => 'class="sub cancel"',
-                    'return'     => true,
-                ],
-            ],
-        ],
+        'class' => 'sub ok',
+        'icon'  => 'next',
     ],
-    false
+    true
 );
-
-echo '<br/>';
+echo '<form action="'.$model->url.'&op=view&id='.$cluster->id().'" method="POST">';
+html_print_action_buttons(
+    implode('', $buttons),
+    ['type' => 'form_action']
+);
+echo '</form>';
 
 // Print always go back button.
 HTML::printForm($model->getGoBackForm(), false);

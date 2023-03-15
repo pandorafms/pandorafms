@@ -623,7 +623,9 @@ class Manager
                 if ($server_update === false) {
                     $return['files'] = Client::checkOUMContent($file_path);
                 } else {
-                    $return['files'] = Client::checkTGZContent($file_path);
+                    // Commented line for memory limit problems.
+                    // $return['files'] = Client::checkTGZContent($file_path);
+                    $return['files'] = null;
                 }
 
                 if (session_status() !== PHP_SESSION_ACTIVE) {

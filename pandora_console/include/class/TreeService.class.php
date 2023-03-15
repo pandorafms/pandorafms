@@ -222,22 +222,30 @@ class TreeService extends Tree
 
             switch ($status) {
                 case SERVICE_STATUS_NORMAL:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_ok_ball.png').'" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                    $serviceStatusLine = COL_NORMAL;
                 break;
 
                 case SERVICE_STATUS_CRITICAL:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_critical_ball.png').'" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                    $serviceStatusLine = COL_CRITICAL;
                 break;
 
                 case SERVICE_STATUS_WARNING:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_warning_ball.png').'" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                    $serviceStatusLine = COL_WARNING;
                 break;
 
                 case SERVICE_STATUS_UNKNOWN:
                 default:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_no_data_ball.png').'" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                    $serviceStatusLine = COL_UNKNOWN;
                 break;
             }
+
+            $processed_items[$row['id']]['statusImageHTML'] = html_print_div(
+                [
+                    'class' => 'node-service-status',
+                    'style' => 'background-color: '.$serviceStatusLine,
+                ],
+                true
+            );
         }
 
         $this->tree = $processed_items;
@@ -416,21 +424,21 @@ class TreeService extends Tree
 
                     switch ($item->agent()->lastStatus()) {
                         case AGENT_STATUS_NORMAL:
-                            $tmp['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_ok_ball.png').'" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                            $tmp['statusImageHTML'] = html_print_div(['class' => 'tree-service-status', 'style' => 'background-color: #82b92e', 'title' => __('Normal status') ], true);
                         break;
 
                         case AGENT_STATUS_CRITICAL:
                         case AGENT_STATUS_ALERT_FIRED:
-                            $tmp['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_critical_ball.png').'" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                            $tmp['statusImageHTML'] = html_print_div(['class' => 'tree-service-status', 'style' => 'background-color: #e63c52', 'title' => __('Critical status') ], true);
                         break;
 
                         case AGENT_STATUS_WARNING:
-                            $tmp['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_warning_ball.png').'" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                            $tmp['statusImageHTML'] = html_print_div(['class' => 'tree-service-status', 'style' => 'background-color: #f3b200', 'title' => __('Warning status') ], true);
                         break;
 
                         case AGENT_STATUS_UNKNOWN:
                         default:
-                            $tmp['statusImageHTML'] = '<img src="'.ui_get_full_url('images/status_sets/default/agent_no_data_ball.png').'" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                            $tmp['statusImageHTML'] = html_print_div(['class' => 'tree-service-status', 'style' => 'background-color: #B2B2B2', 'title' => __('Unknown status') ], true);
                         break;
                     }
 
@@ -510,14 +518,11 @@ class TreeService extends Tree
                     $tmp['eventAgent'] = $item->module()->id_agente();
                     $tmp['disabled'] = $item->module()->disabled();
 
-                    $html = '<img src="';
-                    $html .= ui_get_full_url(
-                        '/images/status_sets/default/'.$item->module()->lastStatusImage()
+                    $html = html_print_div(
+                        [ 'style' => 'width:7px;background-color: '.$item->module()->lastStatusColor() ],
+                        true
                     );
-                    $html .= '" data-title="'.$title;
-                    $html .= '" data-use_title_for_force_title="1" ';
-                    $html .= 'class="forced_title" alt="';
-                    $html .= $item->module()->lastStatusTitle().'" />';
+
                     $tmp['statusImageHTML'] = $html;
                     $tmp = array_merge(
                         $tmp,
@@ -629,36 +634,20 @@ class TreeService extends Tree
                     $tmp['rootID'] = $this->rootID;
                     switch ($item->service()->lastStatus()) {
                         case SERVICE_STATUS_NORMAL:
-                            $tmp['statusImageHTML'] = '<img src="';
-                            $tmp['statusImageHTML'] .= ui_get_full_url(
-                                'images/status_sets/default/agent_ok_ball.png'
-                            );
-                            $tmp['statusImageHTML'] .= '" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                            $tmp['statusImageHTML'] = html_print_div(['class' => 'tree-service-status', 'style' => 'background-color: #82b92e', 'title' => __('Normal status') ], true);
                         break;
 
                         case SERVICE_STATUS_CRITICAL:
-                            $tmp['statusImageHTML'] = '<img src="';
-                            $tmp['statusImageHTML'] .= ui_get_full_url(
-                                'images/status_sets/default/agent_critical_ball.png'
-                            );
-                            $tmp['statusImageHTML'] .= '" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                            $tmp['statusImageHTML'] = html_print_div(['class' => 'tree-service-status', 'style' => 'background-color: #e63c52', 'title' => __('Critical status') ], true);
                         break;
 
                         case SERVICE_STATUS_WARNING:
-                            $tmp['statusImageHTML'] = '<img src="';
-                            $tmp['statusImageHTML'] .= ui_get_full_url(
-                                'images/status_sets/default/agent_warning_ball.png'
-                            );
-                            $tmp['statusImageHTML'] .= '" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                            $tmp['statusImageHTML'] = html_print_div(['class' => 'tree-service-status', 'style' => 'background-color: #f3b200', 'title' => __('Warning status') ], true);
                         break;
 
                         case SERVICE_STATUS_UNKNOWN:
                         default:
-                            $tmp['statusImageHTML'] = '<img src="';
-                            $tmp['statusImageHTML'] .= ui_get_full_url(
-                                'images/status_sets/default/agent_no_data_ball.png'
-                            );
-                            $tmp['statusImageHTML'] .= '" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                            $tmp['statusImageHTML'] = html_print_div(['class' => 'tree-service-status', 'style' => 'background-color: #B2B2B2', 'title' => __('Unknown status') ], true);
                         break;
                     }
                 break;

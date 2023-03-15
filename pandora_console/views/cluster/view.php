@@ -55,22 +55,22 @@ $html->prepareBreadcrum($bc);
 // Header.
 $main_page = '<a href="'.$model->url.'">';
 $main_page .= html_print_image(
-    'images/list.png',
+    'images/logs@svg.svg',
     true,
     [
         'title' => __('Cluster list'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $main_page .= '</a>';
 
 $edit = '<a href="'.$model->url.'&op=update&id='.$cluster->id().'">';
 $edit .= html_print_image(
-    'images/setup.png',
+    'images/configuration@svg.svg',
     true,
     [
         'title' => __('Edit this cluster'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $edit .= '</a>';
@@ -184,7 +184,7 @@ if ($in_planned_downtime && !$cluster->agent()->disabled() && !$cluster->agent()
     $agent_name .= '&nbsp;'.ui_print_help_tip(
         __('Agent in scheduled downtime'),
         true,
-        'images/minireloj-16.png'
+        'images/clock.svg'
     ).'</em>';
 }
 
@@ -216,12 +216,12 @@ $table_agent_header .= '<div class="icono_right">'.$status_img.'</div>';
 $table_agent_header .= '&nbsp;&nbsp;';
 $table_agent_header .= '<a href="'.$model->url.'&op=force&id='.$cluster->id();
 $table_agent_header .= '">'.html_print_image(
-    'images/target.png',
+    'images/change-active.svg',
     true,
     [
         'title' => __('Force cluster status calculation'),
         'alt'   => '',
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
 
     ]
 ).'</a>';
@@ -266,11 +266,11 @@ foreach ($addresses as $k => $add) {
 
 if (empty($address) === false) {
     $table_agent_ip = '<p>'.html_print_image(
-        'images/world.png',
+        'images/web@groups.svg',
         true,
         [
             'title' => __('IP address'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     );
     $table_agent_ip .= '<span class="align-top inline">';
@@ -279,11 +279,11 @@ if (empty($address) === false) {
 }
 
 $table_agent_description = '<p>'.html_print_image(
-    'images/list.png',
+    'images/logs@svg.svg',
     true,
     [
         'title' => __('Description'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $table_agent_description .= '<span class="align-top inline">';
@@ -384,7 +384,7 @@ $table_events .= '</div>';
 
 ?>
 <div id="agent_details_first_row" class="w100p cluster-agent-data">
-    <div class="box-shadow agent_details_col agent_details_col_left">
+    <div class="box-flat agent_details_col agent_details_col_left">
         <div class="agent_details_header">
             <?php echo $table_agent_header; ?>
         </div>
@@ -407,7 +407,7 @@ $table_events .= '</div>';
         </div>
     </div>
 
-    <div class="box-shadow agent_details_col agent_details_col_right">
+    <div class="box-flat agent_details_col agent_details_col_right">
         <div class="cluster-map">
             <?php $map_manager->printMap(); ?>
         </div>

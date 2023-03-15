@@ -545,14 +545,14 @@ foreach ($incidents_paginated as $key => $value) {
     $table->data[$i][6] = $array_get_incidents[$key][10];
     $table->data[$i][7] = $array_get_incidents[$key][5];
     $table->data[$i][8] = '';
-    $table->cellclass[$i][8] = 'action_buttons';
+    $table->cellclass[$i][8] = 'table_action_buttons';
     $table->data[$i][8] .= '<a href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident&incident_id='.$array_get_incidents[$key][0]).'">';
-    $table->data[$i][8] .= html_print_image('images/config.png', true, ['title' => __('Edit')]);
+    $table->data[$i][8] .= html_print_image('images/edit.svg', true, ['title' => __('Edit')]);
     $table->data[$i][8] .= '</a>';
 
     $table->data[$i][8] .= '<a id="link_delete_incident" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&delete_incident='.$array_get_incidents[$key][0]).'"        
     onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-    $table->data[$i][8] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+    $table->data[$i][8] .= html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
     $table->data[$i][8] .= '</a>';
 
     $i++;

@@ -61,11 +61,13 @@ if ($id_agente) {
 // Table for filter controls.
 $form_filter = '<form method="post" action="index.php?sec='.$sec.'&amp;sec2='.$sec2.'&amp;refr='.((int) get_parameter('refr', 0)).'&amp;pure='.$config['pure'].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />";
-$form_filter .= '<table  cellpadding="0" cellspacing="0" class="databox filters w100p">';
+$form_filter .= '<table  cellpadding="0" cellspacing="0" class="databox filters w100p filter-table-adv">';
 $form_filter .= '<tr>';
-$form_filter .= "<td class='bolder''>".__('Template name').'</td><td>';
-$form_filter .= html_print_input_text('template_name', $templateName, '', 12, 255, true);
-$form_filter .= '</td>';
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Template name'),
+    html_print_input_text('template_name', $templateName, '', 12, 255, true)
+).'</td>';
+
 $temp = agents_get_agents();
 $arrayAgents = [];
 
@@ -75,8 +77,6 @@ if ($temp !== false) {
         $arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
     }
 }
-
-$form_filter .= "<td class='bolder''>".__('Agents').'</td><td>';
 
 $params = [];
 $params['return'] = true;
@@ -91,14 +91,19 @@ $params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
 $params['hidden_input_idagent_name'] = 'agent_id';
 $params['hidden_input_idagent_value'] = $agent_id;
 
-$form_filter .= ui_print_agent_autocomplete_input($params);
+
 
 
 $form_filter .= '</td>';
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Agents'),
+    ui_print_agent_autocomplete_input($params)
+).'</td>';
 
-$form_filter .= "<td class='bolder''>".__('Module name').'</td><td>';
-$form_filter .= html_print_input_text('module_name', $moduleName, '', 12, 255, true);
-$form_filter .= '</td>';
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Module name'),
+    html_print_input_text('module_name', $moduleName, '', 12, 255, true)
+).'</td>';
 $form_filter .= '</tr>';
 
 $all_groups = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
@@ -127,19 +132,37 @@ if (is_array($temp) === true) {
     }
 }
 
-$form_filter .= "<td class='bolder''>".__('Actions').'</td><td>';
-$form_filter .= html_print_select($arrayActions, 'action_id', $actionID, '', __('All'), -1, true, false, true, '', false, 'width:95%');
-$form_filter .= '</td>';
-$form_filter .= "<td class='bolder''>".__('Field content').'</td><td>';
-$form_filter .= html_print_input_text('field_content', $fieldContent, '', 12, 255, true);
-$form_filter .= '</td>';
-$form_filter .= "<td class='bolder''>".__('Priority').'</td><td>';
-$form_filter .= html_print_select(get_priorities(), 'priority', $priority, '', __('All'), -1, true);
-$form_filter .= "</td class='bolder''>";
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Actions'),
+    html_print_select($arrayActions, 'action_id', $actionID, '', __('All'), -1, true, false, true, '', false, 'width:95%')
+).'</td>';
+
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Field content'),
+    html_print_input_text('field_content', $fieldContent, '', 12, 255, true)
+).'</td>';
+
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        get_priorities(),
+        'priority',
+        $priority,
+        '',
+        __('All'),
+        -1,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%;'
+    )
+).'</td>';
+
 $form_filter .= '</tr>';
 
 $form_filter .= '<tr>';
-$form_filter .= "<td class='bolder'>".__('Status').'</td><td>';
 $ed_list = [];
 $alert_status_filter = [];
 $alert_status_filter['all_enabled'] = __('All (Enabled)');
@@ -147,14 +170,45 @@ $alert_status_filter['all'] = __('All');
 $alert_status_filter['fired'] = __('Fired');
 $alert_status_filter['notfired'] = __('Not fired');
 $alert_status_filter['disabled'] = __('Disabled');
-$form_filter .= html_print_select($alert_status_filter, 'status_alert', $status_alert, '', '', '', true);
-$form_filter .= "</td><td class='bolder'>".__('Standby').'</td><td>';
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $alert_status_filter,
+        'status_alert',
+        $status_alert,
+        '',
+        '',
+        '',
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%;'
+    )
+).'</td>';
+
 $sb_list = [];
 $sb_list[1] = __('Standby on');
 $sb_list[0] = __('Standby off');
-$form_filter .= html_print_select($sb_list, 'standby', $standby, '', __('All'), -1, true);
-$form_filter .= '</td>';
-$form_filter .= "</td><td class='bolder''>".__('Group').'</td><td>';
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Standby'),
+    html_print_select(
+        $sb_list,
+        'standby',
+        $standby,
+        '',
+        __('All'),
+        -1,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%;'
+    )
+).'</td>';
+
 $own_info = get_user_info($config['id_user']);
 if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_acl($config['id_user'], 0, 'AW')) {
     $return_all_group = false;
@@ -162,20 +216,35 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_
     $return_all_group = true;
 }
 
-$form_filter .= html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, '', '', 0, true, false, true, '', false);
-$form_filter .= '</td></tr>';
+$form_filter .= '<td class="w33p">'.html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, '', '', 0, true, false, true, '', false)
+).'</td>';
+
+$form_filter .= '</tr>';
+
+$updateButton = html_print_submit_button(
+    __('Update'),
+    '',
+    false,
+    [
+        'icon' => 'update',
+        'mode' => 'mini',
+    ],
+    true
+);
 
 if (is_metaconsole() === true) {
     $form_filter .= '<tr>';
     $form_filter .= "<td colspan='6' align='right'>";
-    $form_filter .= html_print_submit_button(__('Update'), '', false, 'class="sub upd"', true);
+    $form_filter .= $updateButton;
     $form_filter .= '</td>';
     $form_filter .= '</tr>';
     $form_filter .= '</table>';
 } else {
     $form_filter .= '</table>';
     $form_filter .= "<div class='right height_100p'>";
-    $form_filter .= html_print_submit_button(__('Update'), '', false, 'class="sub upd"', true);
+    $form_filter .= $updateButton;
     $form_filter .= '</div>';
 }
 
@@ -185,7 +254,17 @@ if (is_metaconsole() === true) {
 }
 
 if (!$id_cluster) {
-    ui_toggle($form_filter, __('Alert control filter'), __('Toggle filter(s)'));
+    ui_toggle(
+        $form_filter,
+        '<span class="subsection_header_title">'.__('Alert control filter').'</span>',
+        __('Toggle filter(s)'),
+        'update',
+        true,
+        false,
+        '',
+        'white-box-content no_border',
+        'filter-datatable-main box-flat white_table_graph fixed_filter_bar  '
+    );
 } else {
     unset($form_filter);
 }
@@ -427,12 +506,6 @@ switch ($sortField) {
 $form_params = '&template_name='.$templateName.'&agent_name='.$agentName.'&module_name='.$moduleName.'&action_id='.$actionID.'&field_content='.$fieldContent.'&priority='.$priority.'&enabledisable='.$enabledisable.'&standby='.$standby.'&ag_group='.$ag_group.'&status_alert='.$status_alert;
 $sort_params = '&sort_field='.$sortField.'&sort='.$sort;
 
-if ($id_agente) {
-    ui_pagination($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.$form_params.$sort_params);
-} else {
-    ui_pagination($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list'.$form_params.$sort_params);
-}
-
 $offset = (int) get_parameter('offset');
 $simple_alerts = agents_get_alerts_simple(
     (empty($agent_id) === false) ? ['0' => $agent_id] : $id_agents,
@@ -514,8 +587,7 @@ $table_alert_list->cellstyle = [];
 
 $table_alert_list->data = [];
 
-$url .= $sort_params;
-
+// $url .= $sort_params;
 $rowPair = true;
 $iterator = 0;
 
@@ -580,7 +652,7 @@ foreach ($simple_alerts as $alert) {
     }
 
     $module_name = modules_get_agentmodule_name($alert['id_agent_module']);
-    $data[0] .= ui_print_truncate_text($module_name, 'module_medium', false, true, true, '[&hellip;]', 'display:block;font-weight:normal;').'<br>';
+    $data[0] .= ui_print_truncate_text($module_name, 'module_medium', false, true, true, '[&hellip;]', 'display:block;font-weight:normal;');
 
     $data[1] = ui_print_status_image($status, $title, true);
 
@@ -603,7 +675,7 @@ foreach ($simple_alerts as $alert) {
     $data[2] .= ' <a class="template_details"
 		href="'.ui_get_full_url(false, false, false, false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">';
         $data[2] .= html_print_image(
-            'images/zoom.png',
+            'images/details.svg',
             true,
             [
                 'id'    => 'template-details-'.$alert['id_alert_template'],
@@ -679,9 +751,9 @@ foreach ($simple_alerts as $alert) {
             $data[3] .= '<form method="post" action="'.$url.'" class="delete_link display_in">';
             $data[3] .= html_print_input_image(
                 'delete',
-                'images/cross.png',
+                'images/delete.svg',
                 1,
-                'padding:0px; margin-left:5px; margin-right:5px;',
+                'padding:0px; margin-left:5px; margin-right:5px; width: 22px;',
                 true,
                 [
                     'title' => __('Delete action'),
@@ -694,7 +766,7 @@ foreach ($simple_alerts as $alert) {
             $data[3] .= '</form>';
             $data[3] .= html_print_input_image(
                 'update_action',
-                'images/config.png',
+                'images/edit.svg',
                 1,
                 'padding:0px;',
                 true,
@@ -731,67 +803,73 @@ foreach ($simple_alerts as $alert) {
 
         $data[3] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible">';
             $data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post" style="height:85%;">';
-                $data[3] .= '<table class="w100p bg_color222">';
+                $data[3] .= '<table class="w100p bg_color222 filter-table-adv">';
                     $data[3] .= html_print_input_hidden('add_action', 1, true);
                     $data[3] .= html_print_input_hidden('id_alert_module', $alert['id'], true);
 
         if (! $id_agente) {
             $data[3] .= '<tr class="datos2">';
-                $data[3] .= '<td class="datos2 bolder pdd_6px font_10pt">';
-                $data[3] .= __('Agent');
-                $data[3] .= '</td>';
-                $data[3] .= '<td class="datos">';
-                $data[3] .= ui_print_truncate_text($alias, 'agent_small', false, true, true, '[&hellip;]');
-                $data[3] .= '</td>';
+                $data[3] .= '<td class="w50p">'.html_print_label_input_block(
+                    __('Agent'),
+                    ui_print_truncate_text($alias, 'agent_small', false, true, true, '[&hellip;]')
+                ).'</td>';
+                $data[3] .= '<td class="w50p">'.html_print_label_input_block(
+                    __('Module'),
+                    ui_print_truncate_text($module_name, 'module_small', false, true, true, '[&hellip;]')
+                ).'</td>';
             $data[3] .= '</tr>';
         }
 
-                    $data[3] .= '<tr class="datos">';
-                        $data[3] .= '<td class="datos bolder pdd_6px font_10pt">';
-                        $data[3] .= __('Module');
-                        $data[3] .= '</td>';
-                        $data[3] .= '<td class="datos">';
-                        $data[3] .= ui_print_truncate_text($module_name, 'module_small', false, true, true, '[&hellip;]');
-                        $data[3] .= '</td>';
-                    $data[3] .= '</tr>';
                     $data[3] .= '<tr class="datos2">';
-                        $data[3] .= '<td class="datos2 bolder pdd_6px font_10pt">';
-                            $data[3] .= __('Action');
-                        $data[3] .= '</td>';
-                        $data[3] .= '<td class="datos2">';
-                            $data[3] .= html_print_select($actions, 'action_select', '', '', __('None'), 0, true, false, true, '', false, 'width:95%');
-                        $data[3] .= '</td>';
-                    $data[3] .= '</tr>';
-                    $data[3] .= '<tr class="datos">';
-                        $data[3] .= '<td class="datos bolder pdd_6px font_10pt">';
-                            $data[3] .= __('Number of alerts match from');
-                        $data[3] .= '</td>';
-                        $data[3] .= '<td class="datos">';
-                            $data[3] .= html_print_input_text(
+                        $data[3] .= '<td class="w50p">'.html_print_label_input_block(
+                            __('Action'),
+                            html_print_select(
+                                $actions,
+                                'action_select',
+                                '',
+                                '',
+                                __('None'),
+                                0,
+                                true,
+                                false,
+                                true,
+                                '',
+                                false,
+                                'width:100%'
+                            )
+                        ).'</td>';
+
+                        $data[3] .= '<td class="w50p">'.html_print_label_input_block(
+                            __('Number of alerts match from'),
+                            '<div class="inline">'.html_print_input_text(
                                 'fires_min',
                                 0,
                                 '',
                                 4,
                                 10,
-                                true
-                            );
-                            $data[3] .= ' '.__('to').' ';
-                            $data[3] .= html_print_input_text(
+                                true,
+                                false,
+                                false,
+                                '',
+                                'w40p'
+                            ).' '.__('to').' '.html_print_input_text(
                                 'fires_max',
                                 0,
                                 '',
                                 4,
                                 10,
-                                true
-                            );
-                        $data[3] .= '</td>';
+                                true,
+                                false,
+                                false,
+                                '',
+                                'w40p'
+                            ).'</div>'
+                        ).'</td>';
                     $data[3] .= '</tr>';
                     $data[3] .= '<tr class="datos2">';
-                        $data[3] .= '<td class="datos2 bolder pdd_6px font_10pt">';
-                            $data[3] .= __('Threshold');
-                        $data[3] .= '</td>';
-                        $data[3] .= '<td class="datos2">';
-                            $data[3] .= html_print_extended_select_for_time(
+                        $data[3] .= '<td class="w50p">'.html_print_label_input_block(
+                            __('Threshold'),
+                            html_print_extended_select_for_time(
                                 'module_action_threshold',
                                 0,
                                 '',
@@ -807,15 +885,18 @@ foreach ($simple_alerts as $alert) {
                                 '',
                                 false,
                                 true
-                            );
-                        $data[3] .= '</td>';
+                            )
+                        ).'</td>';
                     $data[3] .= '</tr>';
                 $data[3] .= '</table>';
                 $data[3] .= html_print_submit_button(
                     __('Add'),
                     'addbutton',
                     false,
-                    ['class' => 'sub next right'],
+                    [
+                        'icon'  => 'next',
+                        'class' => 'mini float-right',
+                    ],
                     true
                 );
             $data[3] .= '</form>';
@@ -823,8 +904,8 @@ foreach ($simple_alerts as $alert) {
     }
 
     $table_alert_list->cellclass[] = [
-        1 => 'action_buttons',
-        4 => 'action_buttons',
+        1 => 'table_action_buttons',
+        4 => 'table_action_buttons',
     ];
     $data[4] = '<form class="disable_alert_form display_in" action="'.$url.'" method="post" >';
     if ($alert['disabled']) {
@@ -832,9 +913,9 @@ foreach ($simple_alerts as $alert) {
             'enable',
             'images/lightbulb_off.png',
             1,
-            'padding:0px',
+            'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'filter_none']
+            ['class' => 'filter_none main_menu_icon']
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -842,8 +923,9 @@ foreach ($simple_alerts as $alert) {
             'disable',
             'images/lightbulb.png',
             1,
-            'padding:0px;',
-            true
+            'padding:0px; width: 22px; height: 22px;',
+            true,
+            ['class' => 'main_menu_icon']
         );
         $data[4] .= html_print_input_hidden('disable_alert', 1, true);
     }
@@ -859,9 +941,9 @@ foreach ($simple_alerts as $alert) {
                 'standby_off',
                 'images/bell.png',
                 1,
-                'padding:0px;',
+                'padding:0px; width: 22px; height: 22px;',
                 true,
-                ['class' => 'invert_filter']
+                ['class' => 'invert_filter main_menu_icon']
             );
             $data[4] .= html_print_input_hidden('standbyon_alert', 1, true);
         } else {
@@ -869,9 +951,9 @@ foreach ($simple_alerts as $alert) {
                 'standby_on',
                 'images/bell_pause.png',
                 1,
-                'padding:0px;',
+                'padding:0px; width: 22px; height: 22px;',
                 true,
-                ['class' => 'invert_filter']
+                ['class' => 'invert_filter main_menu_icon']
             );
             $data[4] .= html_print_input_hidden('standbyoff_alert', 1, true);
         }
@@ -911,19 +993,37 @@ foreach ($simple_alerts as $alert) {
                     true,
                     [
                         'title' => __('Add action'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 );
             } else {
                 if ((int) $alert['id_policy_alerts'] === 0 || $module_linked === '0') {
                     $data[4] .= '<a href="javascript:show_add_action(\''.$alert['id'].'\');">';
-                    $data[4] .= html_print_image('images/add.png', true, ['title' => __('Add action'), 'class' => 'invert_filter']);
+                    $data[4] .= html_print_image(
+                        'images/plus-black.svg',
+                        true,
+                        [
+                            'title' => __('Add action'),
+                            'class' => 'invert_filter main_menu_icon',
+                            'style' => 'margin-bottom: 12px;',
+                        ]
+                    );
                     $data[4] .= '</a>';
                 }
             }
         }
 
-        $data[4] .= html_print_input_image('delete', 'images/cross.png', 1, '', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+        $data[4] .= html_print_input_image(
+            'delete',
+            'images/delete.svg',
+            1,
+            '',
+            true,
+            [
+                'title' => __('Delete'),
+                'class' => 'invert_filter main_menu_icon',
+            ]
+        );
         $data[4] .= html_print_input_hidden('delete_alert', 1, true);
         $data[4] .= html_print_input_hidden('id_alert', $alert['id'], true);
         $data[4] .= '</form>';
@@ -931,7 +1031,17 @@ foreach ($simple_alerts as $alert) {
         if ($is_cluster) {
             $data[4] .= '<form class="view_alert_form display_in" method="post">';
 
-            $data[4] .= html_print_input_image('update', 'images/builder.png', 1, '', true, ['title' => __('Update'), 'class' => 'invert_filter']);
+            $data[4] .= html_print_input_image(
+                'update',
+                'images/builder.png',
+                1,
+                '',
+                true,
+                [
+                    'title' => __('Update'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            );
             $data[4] .= html_print_input_hidden('upd_alert', 1, true);
             $data[4] .= html_print_input_hidden('id_alert', $alert['id'], true);
 
@@ -941,7 +1051,17 @@ foreach ($simple_alerts as $alert) {
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
         $data[4] .= '<form class="view_alert_form display_in" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_view">';
-        $data[4] .= html_print_input_image('view_alert', 'images/operation.png', 1, '', true, ['title' => __('View alert advanced details'), 'class' => 'invert_filter']);
+        $data[4] .= html_print_input_image(
+            'view_alert',
+            'images/details.svg',
+            1,
+            '',
+            true,
+            [
+                'title' => __('View alert advanced details'),
+                'class' => 'invert_filter main_menu_icon',
+            ]
+        );
         $data[4] .= html_print_input_hidden('id_alert', $alert['id'], true);
         $data[4] .= '</form>';
     }
@@ -949,12 +1069,13 @@ foreach ($simple_alerts as $alert) {
     array_push($table_alert_list->data, $data);
 }
 
+$pagination = '';
 if (isset($data)) {
     html_print_table($table_alert_list);
     if ($id_agente) {
-        ui_pagination($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.$form_params.$sort_params, 0, 0, false, 'offset', true, 'pagination-bottom');
+        $pagination .= ui_pagination($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.$form_params.$sort_params, 0, 0, true, 'offset', false, '');
     } else {
-        ui_pagination($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list'.$form_params.$sort_params, 0, 0, false, 'offset', true, 'pagination-bottom');
+        $pagination .= ui_pagination($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list'.$form_params.$sort_params, 0, 0, true, 'offset', false, '');
     }
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('No alerts defined') ]);
@@ -970,11 +1091,16 @@ if (isset($dont_display_alert_create_bttn)) {
 }
 
 if ($display_create && (check_acl($config['id_user'], 0, 'LW') || check_acl($config['id_user'], $template_group, 'LM')) && !$id_cluster) {
-    echo '<div class="action-buttons" style="width: '.$table_alert_list->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
-    html_print_submit_button(__('Create'), 'crtbtn', false, 'class="sub next"');
+    $actionButtons = html_print_submit_button(
+        __('Create'),
+        'crtbtn',
+        false,
+        ['icon' => 'next'],
+        true
+    );
+    html_print_action_buttons($actionButtons, ['right_content' => $pagination]);
     echo '</form>';
-    echo '</div>';
 }
 
 ui_require_css_file('cluetip', 'include/styles/js/');
@@ -1154,7 +1280,7 @@ function show_add_action(id_alert) {
                     dropdownParent: $("#add_action-div-" + id_alert)
                 });
             },
-            width: 600,
+            width: 665,
             height: 300
         })
         .show ();

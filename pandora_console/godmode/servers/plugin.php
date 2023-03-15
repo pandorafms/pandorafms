@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -71,15 +71,13 @@ if (is_ajax()) {
         $table = new stdClass();
         $table->width = '100%';
         $table->head[0] = __('Network Components');
-        $table->data = [];
+        // $table->data = [];
         foreach ($network_components as $net_comp) {
             $table->data[] = [$net_comp['name']];
         }
 
-        if (!empty($table->data)) {
+        if (empty($table->data) === false) {
             html_print_table($table);
-
-            echo '<br />';
         }
 
         $table = new stdClass();
@@ -236,22 +234,22 @@ if ($filemanager) {
         $tabs = [
             'list'    => [
                 'text'   => '<a href="'.$base_url.'">'.html_print_image(
-                    'images/eye_show.png',
+                    'images/see-details@svg.svg',
                     true,
                     [
                         'title' => __('Plugins'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
                 'active' => (bool) ($tab != 'Attachments'),
             ],
             'options' => [
                 'text'   => '<a href="'.$setup_url.'">'.html_print_image(
-                    'images/collection.png',
+                    'images/file-collection@svg.svg',
                     true,
                     [
                         'title' => __('Attachments'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
                 'active' => (bool) ($tab == 'Attachments'),
@@ -333,35 +331,35 @@ if ($filemanager) {
 // =====================================================================
 $sec = 'gservers';
 
-if (($create != '') || ($view != '')) {
-    enterprise_hook('open_meta_frame');
-
+if (empty($create) === false || empty($view) === false) {
     $management_allowed = is_management_allowed();
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         components_meta_print_header();
         $sec = 'advanced';
         if ($management_allowed === false) {
             ui_print_warning_message(__('To manage plugin you must activate centralized management'));
         }
     } else {
-        if ($create != '') {
-            ui_print_page_header(
-                __('Plugin registration'),
-                'images/gm_servers.png',
-                false,
-                '',
-                true
-            );
-        } else {
-            ui_print_page_header(
-                __('Plugin update'),
-                'images/gm_servers.png',
-                false,
-                '',
-                true
-            );
-        }
+        // Header.
+        ui_print_standard_header(
+            (empty($create) === false) ? __('Plugin registration') : __('Plugin update'),
+            'images/gm_servers.png',
+            false,
+            '',
+            true,
+            [],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => 'index.php?sec=gservers&sec2=godmode/servers/plugin',
+                    'label' => __('Plugins'),
+                ],
+            ]
+        );
 
         if ($management_allowed === false) {
             ui_print_warning_message(
@@ -373,66 +371,7 @@ if (($create != '') || ($view != '')) {
         }
     }
 
-
-    if ($create == '') {
-        $plugin_id = get_parameter('view', '');
-        echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&update_plugin=$plugin_id&pure=".$config['pure']."'>";
-    } else {
-        echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create_plugin=1&pure=".$config['pure']."'>";
-    }
-
-    $table = new stdClass();
-    $table->width = '100%';
-    $table->id = 'table-form';
-    $table->class = 'databox filters';
-    $table->style = [];
-    $table->style[0] = 'font-weight: bold';
-    $table->style[2] = 'font-weight: bold';
-    $table->data = [];
-
-    $data = [];
-    $data[0] = __('Name');
-    $data[1] = '<input type="text" class="text_input" name="form_name" size=100 value="'.$form_name.'">';
-    $table->colspan['plugin_name'][1] = 3;
-    $table->data['plugin_name'] = $data;
-
-    $data = [];
-    $data[0] = __('Plugin type');
-    $fields[0] = __('Standard');
-    $fields[1] = __('Nagios');
-    $data[1] = html_print_select($fields, 'form_plugin_type', $form_plugin_type, '', '', 0, true);
-    $table->data['plugin_type'] = $data;
-    $table->colspan['plugin_type'][1] = 3;
-
-    $data[0] = __('Max. timeout').ui_print_help_tip(__('This value only will be applied if is minor than the server general configuration plugin timeout').'. <br><br>'.__('If you set a 0 seconds timeout, the server plugin timeout will be used'), true);
-    $data[1] = html_print_extended_select_for_time('form_max_timeout', $form_max_timeout, '', '', '0', false, true);
-
-    $table->data['plugin_timeout'] = $data;
-
-    $data = [];
-    $data[0] = __('Description');
-    $data[1] = '<textarea name="form_description" cols="50" rows="4">'.$form_description.'</textarea>';
-    $table->colspan['plugin_desc'][1] = 3;
-    $table->data['plugin_desc'] = $data;
-
-    $table->width = '100%';
-    $table->class = 'databox filters';
-
-    if (defined('METACONSOLE')) {
-        $table->head[0] = __('General');
-        $table->head_colspan[0] = 4;
-        $table->headstyle[0] = 'text-align: center';
-        html_print_table($table);
-    } else {
-        echo '<fieldset><legend>'.__('General').'</legend>';
-        html_print_table($table);
-        echo '</fieldset>';
-    }
-
-    $table->data = [];
-
-    $plugin_id = get_parameter('view', 0);
-
+    $plugin_id = (int) get_parameter('view');
     $locked = true;
 
     // If we have plugin id (update mode) and this plugin used by any module or component
@@ -447,46 +386,140 @@ if (($create != '') || ($view != '')) {
         $locked = false;
     }
 
-    $disabled = '';
-    if ($locked) {
-        $disabled = 'readonly="readonly"';
-    }
+    $disabled = ($locked === true) ? 'readonly="readonly"' : '';
 
-    $data = [];
-    $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
-    $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf text_input" size=100 value="'.$form_execute.'" >';
-
-    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&tab=Attachments&id_plugin='.$form_id.'" class="bot">';
-    $data[1] .= html_print_image('images/file.png', true, ['class' => 'invert_filter'], false, true);
-    $data[1] .= '</a>';
-    $table->data['plugin_command'] = $data;
-
-    $data = [];
-    $data[0] = __('Plug-in parameters');
-    $data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf text_input" size=100 value="'.$parameters.'" >';
-    $table->data['plugin_parameters'] = $data;
-
-    $data = [];
-    $data[0] = __('Command preview');
-    $data[1] = '<div id="command_preview" class="italic"></div>';
-    $table->data['plugin_preview'] = $data;
-
-    $table->width = '100%';
-    $table->class = 'databox filters';
-    if (defined('METACONSOLE')) {
-        $table->head[0] = __('Command');
-        $table->head_colspan[0] = 4;
-        $table->headstyle[0] = 'text-align: center';
-        html_print_table($table);
+    if (empty($create) === true) {
+        $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&update_plugin='.$plugin_id.'&pure='.$config['pure'];
     } else {
-        echo '<fieldset><legend>'.__('Command').'</legend>';
-        html_print_table($table);
-        echo '</fieldset>';
+        $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create_plugin=1&pure='.$config['pure'];
     }
 
-    $data = [];
+    $formPluginType = [
+        0 => __('Standard'),
+        1 => __('Nagios'),
+    ];
+
+    echo '<form class="max_floating_element_size" name="plugin" method="post" action="'.$formAction.'">';
+
+    $table = new stdClass();
+    $table->id = 'table-form';
+    $table->class = 'filter-table-adv';
+    $table->style = [];
+    $table->data['plugin_name_captions'] = $data;
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
 
     $table->data = [];
+    // General title.
+    $data[0] = html_print_div([ 'class' => 'section_table_title', 'content' => __('General')], true);
+    $table->data['general_title'] = $data;
+
+    $data = [];
+    $data[0] = html_print_label_input_block(
+        __('Name'),
+        html_print_input_text('form_name', $form_name, '', 100, 255, true, false, false, '')
+    );
+    $table->data['plugin_name_captions'] = $data;
+
+    $data = [];
+
+    $data[0] = html_print_label_input_block(
+        __('Plugin type'),
+        html_print_select($formPluginType, 'form_plugin_type', $form_plugin_type, '', '', 0, true, false, true, '', false, 'width: 100%')
+    );
+
+    $timeoutContent = [];
+    $timeoutContent[] = '<div>'.html_print_extended_select_for_time('form_max_timeout', $form_max_timeout, '', '', '0', false, true).'</div>';
+    $timeoutContent[] = ui_print_input_placeholder(__('This value only will be applied if is minor than the server general configuration plugin timeout').'<br>'.__('If you set a 0 seconds timeout, the server plugin timeout will be used'), true);
+    $data[1] = html_print_label_input_block(
+        __('Max. timeout'),
+        html_print_div(
+            [
+                'class'   => 'flex flex_column',
+                'content' => implode('', $timeoutContent),
+            ],
+            true
+        )
+    );
+
+    $table->data['plugin_type_timeout'] = $data;
+
+    $data = [];
+    $data[0] = html_print_label_input_block(
+        __('Description'),
+        html_print_textarea('form_description', 4, 50, $form_description, '', true)
+    );
+
+    $table->colspan['plugin_desc_inputs'][0] = 2;
+    $table->data['plugin_desc_inputs'] = $data;
+
+
+    // Command title.
+    $data = [];
+    $data[0] = html_print_div([ 'class' => 'section_table_title', 'content' => __('Command')], true);
+    $table->data['command_title'] = $data;
+
+    $data = [];
+    $formExecuteContent = [];
+    $formExecuteContent[] = html_print_input_text('form_execute', $form_execute, '', 50, 255, true, false, false, '', 'command_component command_advanced_conf w100p');
+    $formExecuteContent[] = html_print_anchor(
+        [
+            'title'   => __('Save changes'),
+            'href'    => 'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&tab=Attachments&id_plugin='.$form_id,
+            'class'   => 'mrgn_lft_5px',
+            'content' => html_print_image('images/validate.svg', true, ['class' => 'invert_filter main_menu_icon'], false, true),
+        ],
+        true
+    );
+
+    $data[0] = html_print_label_input_block(
+        __('Plugin command'),
+        html_print_div(['class' => 'flex-row-center', 'content' => implode('', $formExecuteContent)], true).ui_print_input_placeholder(
+            __('Specify interpreter and plugin path. The server needs permissions to run it.'),
+            true
+        )
+    );
+
+    // $data[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $formExecuteContent)], true);
+    $table->data['plugin_command_inputs'] = $data;
+    $table->colspan['plugin_command_inputs'][0] = 2;
+
+    $data = [];
+    $data[0] = html_print_label_input_block(
+        __('Plug-in parameters'),
+        html_print_input_text(
+            'form_parameters',
+            $parameters,
+            '',
+            100,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'command_component command_advanced_conf text_input'
+        )
+    );
+
+    $table->data['plugin_parameters_inputs'] = $data;
+    $table->colspan['plugin_parameters_inputs'][0] = 2;
+
+    $data = [];
+    // $data[0] = __('Command preview');
+    // $table->data['plugin_preview_captions'] = $data;
+    // $data = [];
+    // $data[0] = html_print_div(['id' => 'command_preview', 'class' => 'mono'], true);
+    $data[0] = html_print_label_input_block(
+        __('Command preview'),
+        html_print_div(['id' => 'command_preview', 'class' => 'mono'], true)
+    );
+    $table->data['plugin_preview_inputs'] = $data;
+    $table->colspan['plugin_preview_inputs'][0] = 2;
+
+    // Parameters macros title.
+    $data = [];
+    $data[0] = html_print_div([ 'class' => 'section_table_title', 'content' => __('Parameters macros')], true);
+    $table->data['parameters_macros_title'] = $data;
 
     $macros = json_decode($macros, true);
 
@@ -494,8 +527,8 @@ if (($create != '') || ($view != '')) {
     $next_name_number = 9;
     $i = 1;
     while (1) {
-        // Always print at least one macro
-        if ((!isset($macros[$i]) || $macros[$i]['desc'] == '') && $i > 1) {
+        // Always print at least one macro.
+        if ((isset($macros[$i]) === false || $macros[$i]['desc'] == '') && $i > 1) {
             break;
         }
 
@@ -530,53 +563,59 @@ if (($create != '') || ($view != '')) {
         }
 
         $datam = [];
-        $datam[0] = __('Description')."<span class='normal_weight'> ($macro_name)</span>";
+        $datam[0] = html_print_label_input_block(
+            __('Description').'<span class="normal_weight">('.$macro_name.')</span>',
+            html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, false, '', "class='command_macro text_input'", true)
+        );
         $datam[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
-        $datam[1] = html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, false, '', "class='command_macro text_input'", true);
 
-        $datam[2] = __('Default value')."<span class='normal_weight'> ($macro_name)</span>";
-        $datam[3] = html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component command_macro text_input'", true);
+        $datam[1] = html_print_label_input_block(
+            __('Default value').'<span class="normal_weight">('.$macro_name.')</span>',
+            html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component command_macro text_input'", true)
+        );
 
         $table->data['plugin_'.$next_name_number] = $datam;
 
         $next_name_number++;
 
-        $table->colspan['plugin_'.$next_name_number][1] = 3;
+        $table->colspan['plugin_'.$next_name_number][1] = 2;
 
         $datam = [];
-        $datam[0] = __('Hide value').ui_print_help_tip(
-            __('This field will show up as dots like a password'),
-            true
-        );
-        $datam[1] = html_print_checkbox_extended(
-            $macro_hide_value_name,
-            1,
-            $macro_hide_value_value,
-            0,
-            '',
-            ['class' => 'command_macro'],
-            true,
-            'checkbox-'.$macro_hide_value_name
+        $datam = html_print_label_input_block(
+            __('Hide value'),
+            html_print_checkbox_switch(
+                $macro_hide_value_name,
+                1,
+                $macro_hide_value_value,
+                0,
+                '',
+                ['class' => 'command_macro'],
+                true,
+                'checkbox-'.$macro_hide_value_name
+            ).ui_print_input_placeholder(
+                __('This field will show up as dots like a password'),
+                true
+            )
         );
 
         $table->data['plugin_'.$next_name_number] = $datam;
         $next_name_number++;
 
-        $table->colspan['plugin_'.$next_name_number][1] = 3;
-
+        // $table->colspan['plugin_'.$next_name_number][1] = 3;
         $datam = [];
-        $datam[0] = __('Help')."<span class='normal_weight'> ($macro_name)</span><br><br><br>";
-        $datam[1] = html_print_textarea(
-            $macro_help_name,
-            6,
-            100,
-            $macro_help_value,
-            'class="command_macro" class="w97p"',
-            true
+        $datam[0] = html_print_label_input_block(
+            __('Help').'<span class="normal_weight"> ('.$macro_name.')</span>',
+            html_print_textarea(
+                $macro_help_name,
+                6,
+                100,
+                $macro_help_value,
+                'class="command_macro" class="w97p"',
+                true
+            )
         );
 
-        $datam[1] .= '<br><br><br>';
-
+        $table->colspan['plugin_'.$next_name_number][0] = 2;
         $table->data['plugin_'.$next_name_number] = $datam;
         $next_name_number++;
         $i++;
@@ -584,7 +623,7 @@ if (($create != '') || ($view != '')) {
 
     // Add/Delete buttons
     $datam = [];
-
+    $buttons = '';
     if (!$locked) {
         $datam[0] = '<a id="add_macro_btn" href="javascript:;">'.'<span class="bolder">'.__('Add macro').'</span>'.'&nbsp;'.html_print_image(
             'images/add.png',
@@ -594,20 +633,55 @@ if (($create != '') || ($view != '')) {
         $datam[0] .= '<div id="next_macro" class="invisible">'.$i.'</div>';
         $datam[0] .= '<div id="next_row" class="invisible">'.$next_name_number.'</div>';
 
+        $buttons = html_print_anchor(
+            [
+                'id'      => 'add_macro_btn',
+                'href'    => 'javascript:;',
+                'content' => html_print_image(
+                    'images/plus@svg.svg',
+                    true,
+                    ['class' => 'invert_filter']
+                ),
+            ],
+            true
+        );
+
+        $buttons .= html_print_div(['id' => 'next_macro', 'class' => 'invisible', 'content' => $i], true);
+        $buttons .= html_print_div(['id' => 'next_row', 'class' => 'invisible', 'content' => $next_name_number], true);
+
         $delete_macro_style = '';
         if ($i <= 2) {
             $delete_macro_style = 'display:none;';
         }
 
-        $datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.'<a href="javascript:;">'.'<span class="bolder">'.__('Delete macro').'</span>'.'&nbsp;'.html_print_image('images/delete.png', true, ['class' => 'invert_filter']).'</a>'.'</div>';
+        // $datam[1] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.'<a href="javascript:;">'.'<span class="bolder">'.__('Delete macro').'</span>'.'&nbsp;'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>'.'</div>';
+        $buttons .= html_print_anchor(
+            [
+                'id'      => 'delete_macro_button',
+                'style'   => $delete_macro_style,
+                'href'    => 'javascript:;',
+                'content' => html_print_image(
+                    'images/delete.svg',
+                    true,
+                    ['class' => 'main_menu_icon invert_filter']
+                ),
+            ],
+            true
+        );
 
+        $datam[0] = html_print_div(
+            [
+                'style'   => 'flex-direction: row-reverse;justify-content: flex-start;',
+                'content' => $buttons,
+            ],
+            true
+        );
         $table->colspan['plugin_action'][0] = 2;
-        $table->colspan['plugin_action'][2] = 2;
     } else {
-        $table->colspan['plugin_action'][0] = 4;
+        // $table->colspan['plugin_action'][0] = 4;
     }
 
-    $table->rowstyle['plugin_action'] = 'text-align:center';
+    // $table->rowstyle['plugin_action'] = 'text-align:center';
     $table->data['plugin_action'] = $datam;
 
 
@@ -617,31 +691,57 @@ if (($create != '') || ($view != '')) {
         $table->headstyle[0] = 'text-align: center';
         html_print_table($table);
     } else {
-        echo '<fieldset>'.'<legend>'.__('Parameters macros').'</legend>';
-        html_print_table($table);
-        echo '</fieldset>';
+        // echo '<fieldset>'.'<legend>'.__('Parameters macros').'</legend>';
+        html_print_div(
+            [
+                'class'   => 'info_table',
+                'content' => html_print_table($table, true),
+            ]
+        );
+
+        // echo '</fieldset>';
     }
 
     echo '<table width="100%">';
 
     echo '<tr><td align="right">';
 
-    if ($create != '') {
-        echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+    $buttons = '';
+
+    if (empty($create) === false) {
+        $buttons .= html_print_submit_button(
+            __('Create'),
+            'crtbutton',
+            false,
+            [ 'icon' => 'wand' ],
+            true
+        );
     } else {
-        echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+        $buttons .= html_print_submit_button(
+            __('Update'),
+            'uptbutton',
+            false,
+            [ 'icon' => 'upd' ],
+            true
+        );
     }
+
+    $buttons .= html_print_go_back_button(
+        'index.php?sec=gservers&sec2=godmode/servers/plugin',
+        ['button_class' => ''],
+        true
+    );
+
+    html_print_action_buttons(
+        $buttons
+    );
 
     echo '</form></table>';
 
     if (defined('METACONSOLE')) {
         echo '</td></tr>';
     }
-
-    enterprise_hook('close_meta_frame');
 } else {
-    enterprise_hook('open_meta_frame');
-
     if (defined('METACONSOLE')) {
         components_meta_print_header();
         $sec = 'advanced';
@@ -658,22 +758,22 @@ if (($create != '') || ($view != '')) {
         $tabs = [
             'list'    => [
                 'text'   => '<a href="'.$base_url.'">'.html_print_image(
-                    'images/eye_show.png',
+                    'images/see-details@svg.svg',
                     true,
                     [
                         'title' => __('Plugins'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
                 'active' => (bool) ($tab != 'Attachments'),
             ],
             'options' => [
                 'text'   => '<a href="'.$setup_url.'">'.html_print_image(
-                    'images/collection.png',
+                    'images/file-collection@svg.svg',
                     true,
                     [
                         'title' => __('Attachments'),
-                        'class' => 'invert_filter',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 ).'</a>',
                 'active' => (bool) ($tab == 'Attachments'),
@@ -884,55 +984,32 @@ if (($create != '') || ($view != '')) {
     $rows = db_get_all_rows_sql('SELECT * FROM tplugin ORDER BY name');
 
     if ($rows !== false) {
-        if (defined('METACONSOLE')) {
-            echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
-        } else {
-            echo '<table width="100%" cellspacing="4" cellpadding="4" class="info_table">';
+        $pluginTable = new stdClass();
+        $pluginTable->id = 'plugin_table';
+        $pluginTable->class = (is_metaconsole() === true) ? 'databox data' : 'info_table';
+
+        $pluginTable->head = [];
+        $pluginTable->head[0] = __('Name');
+        $pluginTable->head[1] = __('Type');
+        $pluginTable->head[2] = __('Command');
+        if ($management_allowed === true) {
+            $pluginTable->head[3] = '<span title="'.__('Operations').'">'.__('Op.').'</span>';
         }
 
-        echo '<thead><tr>';
-        echo '<th>'.__('Name').'</th>';
-        echo '<th>'.__('Type').'</th>';
-        echo '<th>'.__('Command').'</th>';
-        if ($management_allowed) {
-            echo "<th class='w120px'>".'<span title="Operations">'.__('Op.').'</span>'.'</th>';
-        }
+        $pluginTable->data = [];
 
-        echo '</tr></thead>';
+        foreach ($rows as $k => $row) {
+            if ($management_allowed === true) {
+                $tableActionButtons = [];
+                $pluginNameContent = html_print_anchor(
+                    [
+                        'href'    => 'index.php?sec=$sec&sec2=godmode/servers/plugin&view='.$row['id'].'&tab=plugins&pure='.$config['pure'],
+                        'content' => $row['name'],
+                    ],
+                    true
+                );
 
-        $color = 0;
-
-        foreach ($rows as $row) {
-            if ($color == 1) {
-                $tdcolor = 'datos';
-                $color = 0;
-            } else {
-                $tdcolor = 'datos2';
-                $color = 1;
-            }
-
-            echo '<tr>';
-            echo "<td class=$tdcolor>";
-            if ($management_allowed) {
-                echo "<b><a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>";
-            }
-
-            echo $row['name'];
-            echo '</a></b></td>';
-            echo "<td class=$tdcolor>";
-            if ($row['plugin_type'] == 0) {
-                echo __('Standard');
-            } else {
-                echo __('Nagios');
-            }
-
-            echo "</td><td class=$tdcolor>";
-            echo $row['execute'];
-            echo '</td>';
-            if ($management_allowed) {
-                echo "<td class='$tdcolor' align='center'>";
-
-                // Show it is locket
+                // Show it is locket.
                 $modules_using_plugin = db_get_value_filter(
                     'count(*)',
                     'tagente_modulo',
@@ -947,56 +1024,98 @@ if (($create != '') || ($view != '')) {
                     ['id_plugin' => $row['id']]
                 );
                 if (($components_using_plugin + $modules_using_plugin) > 0) {
-                    echo '<a href="javascript: show_locked_dialog('.$row['id'].', \''.$row['name'].'\');">';
-                    html_print_image('images/lock_mc.png', false, ['class' => 'invert_filter']);
-                    echo '</a>';
-                }
-
-                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image(
-                    'images/config.png',
-                    true,
-                    [
-                        'title' => __('Edit'),
-                        'class' => 'invert_filter',
-                    ]
-                ).'</a>&nbsp;&nbsp;';
-                if ((bool) $row['no_delete'] === false) {
-                    echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image(
-                        'images/cross.png',
-                        true,
+                    $tableActionButtons[] = html_print_anchor(
                         [
-                            'border' => '0',
-                            'class'  => 'invert_filter',
-                        ]
-                    ).'</a>';
+                            'href'    => 'javascript: show_locked_dialog('.$row['id'].', \''.$row['name'].'\');',
+                            'content' => html_print_image(
+                                'images/policy@svg.svg',
+                                true,
+                                [
+                                    'title' => __('Lock'),
+                                    'class' => 'invert_filter main_menu_icon',
+                                ]
+                            ),
+                        ],
+                        true
+                    );
                 }
 
-                echo '</td>';
+                $tableActionButtons[] = html_print_anchor(
+                    [
+                        'href'    => 'index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&view='.$row['id'].'&tab=plugins&pure='.$config['pure'],
+                        'content' => html_print_image(
+                            'images/edit.svg',
+                            true,
+                            [
+                                'title' => __('Edit'),
+                                'class' => 'invert_filter main_menu_icon ',
+                            ]
+                        ),
+                    ],
+                    true
+                );
+
+                if ((bool) $row['no_delete'] === false) {
+                    $tableActionButtons[] = html_print_anchor(
+                        [
+                            'href'    => 'index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin='.$row['id'].'&tab=plugins&pure='.$config['pure'],
+                            'onClick' => 'javascript: if (!confirm(\''.__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?').'\')) return false;',
+                            'content' => html_print_image(
+                                'images/delete.svg',
+                                true,
+                                [
+                                    'title' => __('Delete'),
+                                    'class' => 'invert_filter main_menu_icon',
+                                ]
+                            ),
+                        ],
+                        true
+                    );
+                }
+            } else {
+                $pluginNameContent = $row['name'];
             }
 
-            echo '</tr>';
+            $pluginTable->data[$k][0] = $pluginNameContent;
+            $pluginTable->data[$k][1] = ((int) $row['plugin_type'] === 0) ? __('Standard') : __('Nagios');
+            $pluginTable->data[$k][2] = $row['execute'];
+
+            if ($management_allowed === true) {
+                $pluginTable->data[$k][3] = html_print_div(
+                    [
+                        'class'   => 'table_action_buttons',
+                        'content' => implode('', $tableActionButtons),
+                    ],
+                    true
+                );
+            }
         }
 
-        echo '</table>';
+        html_print_table($pluginTable);
     } else {
         ui_print_info_message(['no_close' => true, 'message' => __('There are no plugins in the system') ]);
     }
 
-    if ($management_allowed) {
-        echo "<table width='100%'>";
+    if ($management_allowed === true) {
+        echo '<form name="plugin" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure='.$config['pure'].'">';
 
-        echo '<tr><td align=right>';
-        echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=".$config['pure']."'>";
-        echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
-        echo '</td></tr></table>';
-        echo '<div id="deploy_messages" class="invisible">';
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Add plugin'),
+                'crtbutton',
+                false,
+                [ 'icon' => 'wand' ],
+                true
+            ),
+            ['type' => 'form_action']
+        );
+
+        echo '</form>';
     }
 
     // The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'.
     echo "<div id='dialog_locked' title='".__('List of modules and components created by "%s" ')."' class='invisible left'>";
     echo '</div>';
-
-    enterprise_hook('close_meta_frame');
 }
 
 ui_require_javascript_file('pandora_modules');
@@ -1007,9 +1126,8 @@ ui_require_javascript_file('pandora_modules');
     var locked = <?php echo (int) json_encode((int) $locked); ?>;
 
     function update_preview() {
-        var command = $('#form_execute').val();
-        var parameters = $('#form_parameters').val();
-
+        var command = $('#text-form_execute').val();
+        var parameters = $('#text-form_parameters').val();
         var i = 1;
 
         while (1) {

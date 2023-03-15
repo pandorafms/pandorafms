@@ -37,11 +37,12 @@ $queryFull = [
 $urlFull = $url.'&'.http_build_query($queryFull);
 $fullscreen['text'] = '<a id="full_screen_link" href="'.$urlFull.'">';
 $fullscreen['text'] .= html_print_image(
-    'images/full_screen.png',
+    'images/fullscreen@svg.svg',
     true,
     [
         'title' => __('Full screen mode'),
-        'class' => 'invert_filter',
+        'style' => 'margin-top: 5px',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $fullscreen['text'] .= '</a>';
@@ -51,11 +52,11 @@ $queryNormal = ['dashboardId' => $dashboardId];
 $urlNormal = $url.'&'.http_build_query($queryNormal);
 $normalscreen['text'] = '<a href="'.$urlNormal.'">';
 $normalscreen['text'] .= html_print_image(
-    'images/normal_screen.png',
+    'images/exit_fullscreen@svg.svg',
     true,
     [
         'title' => __('Back to normal mode'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $normalscreen['text'] .= '</a>';
@@ -74,11 +75,12 @@ $options['text'] .= 'show_option_dialog('.json_encode(
 );
 $options['text'] .= ')\'>';
 $options['text'] .= html_print_image(
-    'images/setup.png',
+    'images/configuration@svg.svg',
     true,
     [
         'title' => __('Options'),
-        'class' => 'invert_filter',
+        'style' => 'margin-top: 5px',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $options['text'] .= '</a>';
@@ -86,11 +88,12 @@ $options['text'] .= '</a>';
 // Button for back to list dashboards.
 $back_to_dashboard_list['text'] = '<a href="'.$url.'">';
 $back_to_dashboard_list['text'] .= html_print_image(
-    'images/list.png',
+    'images/logs@svg.svg',
     true,
     [
         'title' => __('Back to dashboards list'),
-        'class' => 'invert_filter',
+        'style' => 'margin-top: 5px',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $back_to_dashboard_list['text'] .= '</a>';
@@ -113,7 +116,8 @@ $slides['text'] .= html_print_image(
     true,
     [
         'title' => __('Slides mode'),
-        'class' => 'invert_filter',
+        'style' => 'margin-top: 5px',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $slides['text'] .= '</a>';
@@ -130,11 +134,12 @@ $publicUrl = ui_get_full_url(
 );
 $publiclink['text'] = '<a id="public_link" href="'.$publicUrl.'" target="_blank">';
 $publiclink['text'] .= html_print_image(
-    'images/camera_mc.png',
+    'images/item-icon.svg',
     true,
     [
         'title' => __('Show link to public dashboard'),
-        'class' => 'invert_filter',
+        'style' => 'margin-top: 5px',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $publiclink['text'] .= '</a>';
@@ -195,10 +200,16 @@ $combo_dashboard['text'] .= html_print_select(
 $combo_dashboard['text'] .= '</form>';
 
 // Edit mode.
-$enable_disable['text'] = html_print_checkbox_switch(
-    'edit-mode',
-    1,
-    false,
+$enable_disable['text'] = html_print_div(
+    [
+        'style'   => 'margin-top: 10px;',
+        'content' => html_print_checkbox_switch(
+            'edit-mode',
+            1,
+            false,
+            true
+        ),
+    ],
     true
 );
 
@@ -273,22 +284,26 @@ if (isset($config['public_dashboard']) === true
 }
 
 if ($publicLink === false) {
-    if ((bool) is_metaconsole() === true) {
-        ui_meta_print_header(
-            __('Dashboards').' » '.__('List'),
-            false,
-            $buttons
-        );
-    } else {
-        ui_print_page_header(
-            $dashboardName,
-            '',
-            false,
-            '',
-            false,
-            $buttons
-        );
-    }
+    ui_print_standard_header(
+        $dashboardName,
+        '',
+        false,
+        '',
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Dashboard'),
+            ],
+        ],
+        [
+            'id_element' => $dashboardId,
+            'url'        => 'operation/dashboard/dashboard&dashboardId='.$dashboardId,
+            'label'      => $dashboardName,
+            'section'    => 'Dashboard_',
+        ]
+    );
 } else {
     $output = '<div id="dashboard-controls">';
     foreach ($buttons as $key => $value) {

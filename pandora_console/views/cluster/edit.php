@@ -62,11 +62,11 @@ $buttons = [];
 
 $main_page = '<a href="'.$wizard->parentUrl.'">';
 $main_page .= html_print_image(
-    'images/list.png',
+    'images/logs@svg.svg',
     true,
     [
         'title' => __('Cluster list'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $main_page .= '</a>';
@@ -82,11 +82,11 @@ if ($cluster !== null) {
     if ($cluster->id() !== null) {
         $view = '<a href="'.$wizard->parentUrl.'&op=view&id='.$cluster->id().'">';
         $view .= html_print_image(
-            'images/operation.png',
+            'images/details.svg',
             true,
             [
                 'title' => __('View this cluster'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         );
         $view .= '</a>';

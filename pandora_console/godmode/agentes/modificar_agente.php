@@ -36,10 +36,10 @@ $ag_group = get_parameter('ag_group_refresh', -1);
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $recursion = (bool) get_parameter('recursion', false);
-$disabled = get_parameter('disabled', 0);
-$os = get_parameter('os', 0);
+$disabled = (int) get_parameter('disabled');
+$os = (int) get_parameter('os');
 
-if ($ag_group == -1) {
+if ($ag_group === -1) {
     $ag_group = (int) get_parameter('ag_group', -1);
 }
 
@@ -68,15 +68,16 @@ if (! check_acl(
 enterprise_include_once('include/functions_policies.php');
 require_once 'include/functions_agents.php';
 require_once 'include/functions_users.php';
+enterprise_include_once('include/functions_config_agents.php');
 
-$search = get_parameter('search', '');
+$search = get_parameter('search');
 
 // Prepare the tab system to the future.
 $tab = 'view';
 
 // Setup tab.
 $viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">'.html_print_image(
-    'images/eye_show.png',
+    'images/see-details@svg.svg',
     true,
     [
         'title' => __('View'),
@@ -132,20 +133,19 @@ $agent_to_delete = (int) get_parameter('borrar_agente');
 $enable_agent = (int) get_parameter('enable_agent');
 $disable_agent = (int) get_parameter('disable_agent');
 
-if ($disable_agent != 0) {
+if ($disable_agent !== 0) {
     $server_name = db_get_row_sql(
         'select server_name from tagente where id_agente = '.$disable_agent
     );
-} else if ($enable_agent != 0) {
+} else if ($enable_agent !== 0) {
     $server_name = db_get_row_sql(
         'select server_name from tagente where id_agente = '.$enable_agent
     );
 }
 
-
 $result = null;
 
-if ($agent_to_delete) {
+if ($agent_to_delete > 0) {
     $id_agente = $agent_to_delete;
     if (check_acl_one_of_groups(
         $config['id_user'],
@@ -171,17 +171,10 @@ if ($agent_to_delete) {
         __('Could not be deleted.')
     );
 
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         // Check if the remote config file still exist.
-        if (isset($config['remote_config'])) {
-            enterprise_include_once(
-                'include/functions_config_agents.php'
-            );
-            if (enterprise_hook(
-                'config_agents_has_remote_configuration',
-                [$id_agente]
-            )
-            ) {
+        if (isset($config['remote_config']) === true) {
+            if ((bool) enterprise_hook('config_agents_has_remote_configuration', [$id_agente]) === true) {
                 ui_print_error_message(
                     __('Maybe the files conf or md5 could not be deleted')
                 );
@@ -190,7 +183,7 @@ if ($agent_to_delete) {
     }
 }
 
-if ($enable_agent) {
+if ($enable_agent > 0) {
     $result = db_process_sql_update(
         'tagente',
         ['disabled' => 0],
@@ -198,7 +191,7 @@ if ($enable_agent) {
     );
     $alias = io_safe_output(agents_get_alias($enable_agent));
 
-    if ($result) {
+    if ((bool) $result !== false) {
         // Update the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 0];
@@ -236,7 +229,7 @@ if ($enable_agent) {
     );
 }
 
-if ($disable_agent) {
+if ($disable_agent > 0) {
     $result = db_process_sql_update('tagente', ['disabled' => 1], ['id_agente' => $disable_agent]);
     $alias = io_safe_output(agents_get_alias($disable_agent));
 
@@ -279,101 +272,154 @@ if ($disable_agent) {
     );
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox filters font_bold margin-bottom-10' width='100%'>
-	<tr>";
-echo "<form method='post'
-	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
-
-echo '<td>';
-
-echo __('Group').'&nbsp;';
 $own_info = get_user_info($config['id_user']);
-if (!$own_info['is_admin'] && !check_acl(
+if ((bool) $own_info['is_admin'] === false && (bool) check_acl(
     $config['id_user'],
     0,
     'AR'
-) && !check_acl($config['id_user'], 0, 'AW')
+) === false && (bool) check_acl($config['id_user'], 0, 'AW') === false
 ) {
     $return_all_group = false;
 } else {
     $return_all_group = true;
 }
 
-echo '<div class="w250px inline">';
-html_print_select_groups(
-    false,
-    'AR',
-    $return_all_group,
-    'ag_group',
-    $ag_group,
-    'this.form.submit();',
-    '',
-    0,
-    false,
-    false,
-    true,
-    '',
-    false
-);
-echo '</div></td>';
-
-// Recursion checkbox.
-echo '<td>';
-echo __('Recursion').'&nbsp;';
-html_print_checkbox(
-    'recursion',
-    1,
-    $recursion,
-    false,
-    false,
-    'this.form.submit()'
-);
-echo '</td>';
-echo '<td>';
-echo __('Show Agents').'&nbsp;';
-$fields = [
+$showAgentFields = [
     2 => __('Everyone'),
     1 => __('Only disabled'),
     0 => __('Only enabled'),
 ];
-html_print_select(
-    $fields,
-    'disabled',
-    $disabled,
-    'this.form.submit()'
-);
-
-echo '</td>';
-
-echo '<td>';
-echo __('Operative System').'&nbsp;';
 
 $pre_fields = db_get_all_rows_sql(
     'select distinct(tagente.id_os),tconfig_os.name from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os'
 );
+
 $fields = [];
 
 foreach ($pre_fields as $key => $value) {
         $fields[$value['id_os']] = $value['name'];
 }
 
-html_print_select($fields, 'os', $os, 'this.form.submit()', 'All', 0);
+// Filter table.
+$filterTable = new stdClass();
+$filterTable->class = 'filter-table-adv w100p';
+$filterTable->size[0] = '20%';
+$filterTable->size[1] = '20%';
+$filterTable->size[2] = '20%';
+$filterTable->size[3] = '20%';
+$filterTable->size[4] = '20%';
+$filterTable->data = [];
 
-echo '</td><td>';
-echo __('Search').'&nbsp;';
-html_print_input_text('search', $search, '', 12);
+$filterTable->data[0][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'AR',
+        $return_all_group,
+        'ag_group',
+        $ag_group,
+        'this.form.submit();',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
+);
 
-echo ui_print_help_tip(
-    __('Search filter by alias, name, description, IP address or custom fields content'),
+$filterTable->data[0][1] = html_print_label_input_block(
+    __('Recursion'),
+    '<div class="mrgn_top_10px">'.html_print_checkbox_switch(
+        'recursion',
+        1,
+        $recursion,
+        true,
+        false,
+        'this.form.submit()'
+    ).'</div>'
+);
+
+$filterTable->data[0][2] = html_print_label_input_block(
+    __('Show agents'),
+    html_print_select(
+        $showAgentFields,
+        'disabled',
+        $disabled,
+        'this.form.submit()',
+        '',
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
+);
+
+$filterTable->data[0][3] = html_print_label_input_block(
+    __('Operating System'),
+    html_print_select(
+        $fields,
+        'os',
+        $os,
+        'this.form.submit()',
+        'All',
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
+);
+
+$filterTable->data[0][4] = html_print_label_input_block(
+    __('Free search').ui_print_help_tip(
+        __('Search filter by alias, name, description, IP address or custom fields content'),
+        true
+    ),
+    html_print_input_text(
+        'search',
+        $search,
+        '',
+        12,
+        255,
+        true
+    )
+);
+
+$filterTable->colspan[1][0] = 5;
+$filterTable->data[1][0] = html_print_submit_button(
+    __('Filter'),
+    'srcbutton',
+    false,
+    [
+        'icon'  => 'search',
+        'class' => 'float-right mrgn_right_10px',
+        'mode'  => 'mini',
+    ],
     true
 );
 
-echo '</td><td>';
-echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
-echo '</form>';
-echo '<td>';
-echo '</tr></table>';
+// Print filter table.
+$form = '<form method=\'post\'	action=\'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\'>';
+ui_toggle(
+    $form.html_print_table($filterTable, true).'</form>',
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'filter',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
+);
 
+// Data table.
 $selected = true;
 $selectNameUp = false;
 $selectNameDown = false;
@@ -381,6 +427,8 @@ $selectOsUp = false;
 $selectOsDown = false;
 $selectGroupUp = false;
 $selectGroupDown = false;
+$selectRemoteUp = false;
+$selectRemoteDown = false;
 switch ($sortField) {
     case 'remote':
         switch ($sort) {
@@ -553,7 +601,7 @@ if ($disabled == 1) {
     }
 }
 
-if ($os != 0) {
+if ($os !== 0) {
     $search_sql .= ' AND id_os = '.$os;
 }
 
@@ -562,7 +610,7 @@ $user_groups_to_sql = '';
 if ($ag_group > 0) {
     $ag_groups = [];
     $ag_groups = (array) $ag_group;
-    if ($recursion) {
+    if ($recursion === true) {
         $ag_groups = groups_get_children_ids($ag_group, true);
     }
 
@@ -610,23 +658,15 @@ $sql = sprintf(
 );
 
 $agents = db_get_all_rows_sql($sql);
-
-// Delete rnum row generated by oracle_recode_query() function.
-if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
-    for ($i = 0; $i < count($agents); $i++) {
-        unset($agents[$i]['rnum']);
-    }
-}
-
+$custom_font_size = '';
 // Prepare pagination.
-ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
-
+// ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
 if ($agents !== false) {
     // Urls to sort the table.
-    if ($config['language'] == 'ja'
-        || $config['language'] == 'zh_CN'
-        || $own_info['language'] == 'ja'
-        || $own_info['language'] == 'zh_CN'
+    if ($config['language'] === 'ja'
+        || $config['language'] === 'zh_CN'
+        || $own_info['language'] === 'ja'
+        || $own_info['language'] === 'zh_CN'
     ) {
         // Adds a custom font size for Japanese and Chinese language.
         $custom_font_size = 'custom_font_size';
@@ -641,38 +681,33 @@ if ($agents !== false) {
     $url_up_group = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=group&sort=up&disabled=$disabled';
     $url_down_group = 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search.'&os='.$os.'&offset='.$offset.'&sort_field=group&sort=down&disabled=$disabled';
 
+    $tableAgents = new stdClass();
+    $tableAgents->id = 'agent_list';
+    $tableAgents->class = 'info_table tactical_table';
+    $tableAgents->head = [];
+    $tableAgents->data = [];
+    // Header.
+    $tableAgents->head[0] = '<span>'.__('Agent name').'</span>';
+    $tableAgents->head[0] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
+    $tableAgents->head[1] = '<span title=\''.__('Remote agent configuration').'\'>'.__('R').'</span>';
+    $tableAgents->head[1] .= ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);
+    $tableAgents->head[2] = '<span>'.__('OS').'</span>';
+    $tableAgents->head[2] .= ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
+    $tableAgents->head[3] = '<span>'.__('Type').'</span>';
+    $tableAgents->head[4] = '<span>'.__('Group').'</span>';
+    $tableAgents->head[4] .= ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
+    $tableAgents->head[5] = '<span>'.__('Description').'</span>';
+    $tableAgents->head[6] = '<span>'.__('Actions').'</span>';
+    // Body.
+    foreach ($agents as $key => $agent) {
+        // Begin Update tagente.remote with 0/1 values.
+        $resultHasRemoteConfig = ((int) enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']]) > 0);
+        db_process_sql_update(
+            'tagente',
+            ['remote' => ((int) $resultHasRemoteConfig) ],
+            'id_agente = '.$agent['id_agente'].''
+        );
 
-    echo "<table cellpadding='0' id='agent_list' cellspacing='0' width='100%' class='info_table'>";
-    echo '<thead><tr>';
-    echo '<th>'.__('Agent name').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown).'</th>';
-    echo "<th title='".__('Remote agent configuration')."'>".__('R').ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown).'</th>';
-    echo '<th>'.__('OS').ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown).'</th>';
-    echo '<th>'.__('Type').'</th>';
-    echo '<th>'.__('Group').ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown).'</th>';
-    echo '<th>'.__('Description').'</th>';
-    echo "<th class='context_help_body'>".__('Actions').'</th>';
-    echo '</tr></thead>';
-    $color = 1;
-
-    $rowPair = true;
-    $iterator = 0;
-    foreach ($agents as $agent) {
-        // Begin Update tagente.remote 0/1 with remote agent function return.
-        if (enterprise_hook(
-            'config_agents_has_remote_configuration',
-            [$agent['id_agente']]
-        )
-        ) {
-            db_process_sql_update(
-                'tagente',
-                ['remote' => 1],
-                'id_agente = '.$agent['id_agente'].''
-            );
-        } else {
-            db_process_sql_update('tagente', ['remote' => 0], 'id_agente = '.$agent['id_agente'].'');
-        }
-
-            // End Update tagente.remote 0/1 with remote agent function return.
         $all_groups = agents_get_all_groups_agent(
             $agent['id_agente'],
             $agent['id_grupo']
@@ -688,87 +723,66 @@ if ($agents !== false) {
             'AD'
         );
 
-        $cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
+        $cluster = db_get_row_sql(
+            'select id from tcluster where id_agent = '.$agent['id_agente']
+        );
 
-        // Do not show the agent if there is not enough permissions.
-        if (!$check_aw && !$check_ad) {
+        if ($check_aw === false && $check_ad === false) {
             continue;
         }
 
-        if ($color == 1) {
-            $tdcolor = 'datos';
-            $color = 0;
+        if ((int) $agent['id_os'] === CLUSTER_OS_ID) {
+            $cluster = PandoraFMS\Cluster::loadFromAgentId($agent['id_agente']);
+            $agentNameUrl = sprintf(
+                'index.php?sec=reporting&sec2=operation/cluster/cluster&op=update&id=%s',
+                $cluster->id()
+            );
+            $agentViewUrl = sprintf(
+                'index.php?sec=reporting&sec2=operation/cluster/cluster&op=view&id=%s',
+                $cluster->id()
+            );
         } else {
-            $tdcolor = 'datos2';
-            $color = 1;
+            $main_tab = ($check_aw === true) ? 'main' : 'module';
+            $agentNameUrl = sprintf(
+                'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=%s&id_agente=%s',
+                $main_tab,
+                $agent['id_agente']
+            );
+            $agentViewUrl = sprintf(
+                'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=%s',
+                $agent['id_agente']
+            );
         }
 
-
-        if ($rowPair) {
-            $rowclass = 'rowPair';
-        } else {
-            $rowclass = 'rowOdd';
-        }
-
-        $rowPair = !$rowPair;
-        $iterator++;
-        // Agent name.
-        echo "<tr class='$rowclass'><td class='$tdcolor' width='40%'>";
-        if ($agent['disabled']) {
-            echo '<em>';
-        }
-
-        echo '<span class="left">';
-        echo '<strong>';
-
-        if ($check_aw) {
-            $main_tab = 'main';
-        } else {
-            $main_tab = 'module';
-        }
-
-        if ($agent['alias'] == '') {
+        if (empty($agent['alias']) === true) {
             $agent['alias'] = $agent['nombre'];
         }
 
-        if ($agent['id_os'] == CLUSTER_OS_ID) {
-            $cluster = PandoraFMS\Cluster::loadFromAgentId(
-                $agent['id_agente']
-            );
-            $url = 'index.php?sec=reporting&sec2=';
-            $url .= 'operation/cluster/cluster';
-            $url = ui_get_full_url(
-                $url.'&op=update&id='.$cluster->id()
-            );
-            echo '<a href="'.$url.'">'.ui_print_truncate_text($agent['alias'], 'agent_medium').'</a>';
-        } else {
-            echo '<a alt ='.$agent['nombre']." href='index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&tab=$main_tab&
-			id_agente=".$agent['id_agente']."'>".'<span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.ui_print_truncate_text($agent['alias'], 'agent_medium').'</span>'.'</a>';
-        }
+        $additionalDataAgentName = [];
 
-        echo '</strong>';
-
-        $in_planned_downtime = db_get_sql(
+        $inPlannedDowntime = db_get_sql(
             'SELECT executed FROM tplanned_downtime 
 			INNER JOIN tplanned_downtime_agents ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
 			WHERE tplanned_downtime_agents.id_agent = '.$agent['id_agente'].' AND tplanned_downtime.executed = 1 
             AND tplanned_downtime.type_downtime <> "disable_agent_modules"'
         );
 
-        if ($agent['disabled']) {
-            ui_print_help_tip(__('Disabled'));
-
-            if (!$in_planned_downtime) {
-                echo '</em>';
-            }
+        if ($inPlannedDowntime !== false) {
+            $additionalDataAgentName[] = ui_print_help_tip(
+                __('Module in scheduled downtime'),
+                true,
+                'images/clock.svg'
+            );
         }
 
-        if ($agent['quiet']) {
-            echo '&nbsp;';
-            html_print_image(
+        if ((bool) $agent['disabled'] === true) {
+            $additionalDataAgentName[] = ui_print_help_tip(__('Disabled'));
+        }
+
+        if ((bool) $agent['quiet'] === true) {
+            $additionalDataAgentName[] = html_print_image(
                 'images/dot_blue.png',
-                false,
+                true,
                 [
                     'border' => '0',
                     'title'  => __('Quiet'),
@@ -777,183 +791,254 @@ if ($agents !== false) {
             );
         }
 
-        if ($in_planned_downtime) {
-            ui_print_help_tip(
-                __('Agent in scheduled downtime'),
-                false,
-                'images/minireloj-16.png'
-            );
+        // Agent name column (1). Agent name.
+        $agentNameColumn = html_print_anchor(
+            [
+                'href'    => ui_get_full_url($agentNameUrl),
+                'title'   => $agent['nombre'],
+                'content' => ui_print_truncate_text($agent['alias'], 'agent_medium').implode('', $additionalDataAgentName),
+            ],
+            true
+        );
 
-            echo '</em>';
+        $additionalOptionsAgentName = [];
+        // Additional options generation.
+        if ($check_aw === true) {
+            $additionalOptionsAgentName[] = html_print_anchor(
+                [
+                    'href'    => ui_get_full_url($agentNameUrl),
+                    'content' => __('Edit'),
+                ],
+                true
+            );
         }
 
-        echo '</span><div class="left actions clear_left" style=" visibility: hidden">';
-        if ($check_aw) {
-            if ($agent['id_os'] == CLUSTER_OS_ID) {
-                $cluster = PandoraFMS\Cluster::loadFromAgentId(
-                    $agent['id_agente']
-                );
-                $url = 'index.php?sec=reporting&sec2=';
-                $url .= 'operation/cluster/cluster';
-                $url = ui_get_full_url(
-                    $url.'&op=update&id='.$cluster->id()
-                );
-                echo '<a href="'.$url.'">'.__('Edit').'</a>';
-                echo ' | ';
-            } else {
-                echo '<a href="index.php?sec=gagente&
-				sec2=godmode/agentes/configurar_agente&tab=main&
-				id_agente='.$agent['id_agente'].'">'.__('Edit').'</a>';
-                echo ' | ';
-            }
+        if ((int) $agent['id_os'] !== 100) {
+            $additionalOptionsAgentName[] = html_print_anchor(
+                [
+                    'href'    => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$agent['id_agente']),
+                    'content' => __('Modules'),
+                ],
+                true
+            );
         }
 
-        if ($agent['id_os'] != 100) {
-            echo '<a href="index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&tab=module&
-			id_agente='.$agent['id_agente'].'">'.__('Modules').'</a>';
-            echo ' | ';
-        }
+        $additionalOptionsAgentName[] = html_print_anchor(
+            [
+                'href'    => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$agent['id_agente']),
+                'content' => __('Alerts'),
+            ],
+            true
+        );
 
-        echo '<a href="index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&tab=alert&
-			id_agente='.$agent['id_agente'].'">'.__('Alerts').'</a>';
-        echo ' | ';
+        $additionalOptionsAgentName[] = html_print_anchor(
+            [
+                'href'    => ui_get_full_url($agentViewUrl),
+                'content' => __('View'),
+            ],
+            true
+        );
 
-        if ($agent['id_os'] == CLUSTER_OS_ID) {
-            $cluster = PandoraFMS\Cluster::loadFromAgentId(
-                $agent['id_agente']
+        // Agent name column (2). Available options.
+        $agentAvailableActionsColumn = html_print_div(
+            [
+                'class'   => 'left actions clear_left w100p',
+                'style'   => 'visibility: hidden',
+                'content' => implode(' | ', $additionalOptionsAgentName),
+            ],
+            true
+        );
+
+        // Remote Configuration column.
+        if ($resultHasRemoteConfig === true) {
+            $remoteConfigurationColumn = html_print_menu_button(
+                [
+                    'href'  => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1'),
+                    'image' => 'images/remote-configuration@svg.svg',
+                    'title' => __('Edit remote config'),
+                ],
+                true
             );
-            $url = 'index.php?sec=reporting&sec2=';
-            $url .= 'operation/cluster/cluster';
-            $url = ui_get_full_url(
-                $url.'&op=view&id='.$cluster->id()
-            );
-            echo '<a href="'.$url.'">'.__('View').'</a>';
         } else {
-            echo '<a href="index.php?sec=estado
-			&sec2=operation/agentes/ver_agente
-			&id_agente='.$agent['id_agente'].'">'.__('View').'</a>';
+            $remoteConfigurationColumn = '';
         }
 
-        echo '</div>';
-        echo '</td>';
+        // Operating System icon column.
+        $osIconColumn = html_print_div(
+            [
+                'class'   => 'main_menu_icon invert_filter',
+                'content' => ui_print_os_icon($agent['id_os'], false, true),
+            ],
+            true
+        );
 
-        echo "<td align='left' class='$tdcolor'>";
-        // Has remote configuration ?
-        if (enterprise_installed()) {
-            enterprise_include_once('include/functions_config_agents.php');
-            if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
-                echo "<a href='index.php?".'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'tab=remote_configuration&'.'id_agente='.$agent['id_agente']."&disk_conf=1'>";
-                echo html_print_image(
-                    'images/application_edit.png',
-                    true,
-                    [
-                        'align' => 'middle',
-                        'title' => __('Edit remote config'),
-                        'class' => 'invert_filter',
-                    ]
-                );
-                echo '</a>';
-            }
-        }
-
-        echo '</td>';
-
-        // Operating System icon.
-        echo "<td class='$tdcolor' align='left' valign='middle'>";
-        ui_print_os_icon($agent['id_os'], false);
-        echo '</td>';
-
-        // Type agent (Networt, Software or Satellite).
-        echo "<td class='$tdcolor' align='left' valign='middle'>";
-        echo ui_print_type_agent_icon(
+        // Agent type column.
+        $agentTypeIconColumn = ui_print_type_agent_icon(
             $agent['id_os'],
             $agent['ultimo_contacto_remoto'],
             $agent['ultimo_contacto'],
+            true,
             $agent['remote'],
             $agent['agent_version']
         );
-        echo '</td>';
 
+        // Group icon and name column.
+        $agentGroupIconColumn = html_print_div(
+            [
+                'class'   => 'main_menu_icon invert_filter',
+                'content' => ui_print_group_icon($agent['id_grupo'], true),
+            ],
+            true
+        );
 
-        // Group icon and name.
-        echo "<td class='$tdcolor' align='left' valign='middle'>".ui_print_group_icon($agent['id_grupo'], true).'</td>';
+        // Description column.
+        $descriptionColumn = ui_print_truncate_text(
+            $agent['comentarios'],
+            'description',
+            true,
+            true,
+            true,
+            '[&hellip;]'
+        );
 
-        // Description.
-        echo "<td class='".$tdcolor."f9'><span class='".$custom_font_size."'>".ui_print_truncate_text($agent['comentarios'], 'description', true, true, true, '[&hellip;]').'</span></td>';
+        $agentActionButtons = [];
 
-        // Action
-        // When there is only one element in page it's necesary go back page.
-        if ((count($agents) == 1) && ($offset >= $config['block_size'])) {
-            $offsetArg = ($offset - $config['block_size']);
+        if ((bool) $agent['disabled'] === true) {
+            $agentDisableEnableTitle = __('Enable agent');
+            $agentDisableEnableAction = 'enable_agent';
+            $agentDisableEnableCaption = __('You are going to enable a cluster agent. Are you sure?');
+            $agentDisableEnableIcon = 'change-pause.svg';
         } else {
-            $offsetArg = $offset;
+            $agentDisableEnableTitle = __('Disable agent');
+            $agentDisableEnableAction = 'disable_agent';
+            $agentDisableEnableCaption = __('You are going to disable a cluster agent. Are you sure?');
+            $agentDisableEnableIcon = 'change-active.svg';
         }
 
-        echo "<td class='$tdcolor action_buttons' align='left' width=7% valign='middle'>";
+        $agentActionButtons[] = html_print_menu_button(
+            [
+                'href'    => ui_get_full_url(
+                    sprintf(
+                        'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&%s_agent=%s&group_id=%s&recursion=%s&search=%s&offset=%s&sort_field=%s&sort=%s&disabled=%s',
+                        $agentDisableEnableAction,
+                        $agent['id_agente'],
+                        $ag_group,
+                        $recursion,
+                        $search,
+                        '',
+                        $sortField,
+                        $sort,
+                        $disabled
+                    )
+                ),
+                'onClick' => ($agent['id_os'] === CLUSTER_OS_ID) ? sprintf('if (!confirm(\'%s\')) return false', $agentDisableEnableCaption) : 'return true;',
+                'image'   => sprintf('images/%s', $agentDisableEnableIcon),
+                'title'   => $agentDisableEnableTitle,
+            ],
+            true
+        );
 
-        if ($agent['disabled']) {
-            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			enable_agent=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
-
-            if ($agent['id_os'] != 100) {
-                echo '>';
+        if ($check_aw === true && is_management_allowed() === true) {
+            if ($agent['id_os'] !== CLUSTER_OS_ID) {
+                $onClickActionDeleteAgent = 'if (!confirm(\' '.__('Are you sure?').'\')) return false;';
             } else {
-                echo ' onClick="if (!confirm(\' '.__('You are going to enable a cluster agent. Are you sure?').'\')) return false;">';
+                $onClickActionDeleteAgent = 'if (!confirm(\' '.__('WARNING! - You are going to delete a cluster agent. Are you sure?').'\')) return false;';
             }
 
-            echo html_print_image('images/lightbulb_off.png', true, ['alt' => __('Enable agent'), 'title' => __('Enable agent'), 'class' => 'filter_none']).'</a>';
-        } else {
-            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			disable_agent=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
-            if ($agent['id_os'] != 100) {
-                echo '>';
-            } else {
-                echo ' onClick="if (!confirm(\' '.__('You are going to disable a cluster agent. Are you sure?').'\')) return false;">';
-            }
-
-            echo html_print_image('images/lightbulb.png', true, ['alt' => __('Disable agent'), 'title' => __('Disable agent'), 'class' => 'invert_filter']).'</a>';
+            $agentActionButtons[] = html_print_menu_button(
+                [
+                    'href'    => ui_get_full_url(
+                        sprintf(
+                            'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=%s&%s_agent=%s&group_id=%s&recursion=%s&search=%s&offset=%s&sort_field=%s&sort=%s&disabled=%s',
+                            $agent['id_agente'],
+                            $agentDisableEnableAction,
+                            $agent['id_agente'],
+                            $ag_group,
+                            $recursion,
+                            $search,
+                            '',
+                            $sortField,
+                            $sort,
+                            $disabled
+                        )
+                    ),
+                    'onClick' => $onClickActionDeleteAgent,
+                    'image'   => sprintf('images/delete.svg'),
+                    'title'   => __('Delete agent'),
+                ],
+                true
+            );
         }
 
-        if ($check_aw && is_management_allowed() === true) {
-            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			borrar_agente=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
-
-            if ($agent['id_os'] != 100) {
-                echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-            } else {
-                echo ' onClick="if (!confirm(\' '.__('WARNING! - You are going to delete a cluster agent. Are you sure?').'\')) return false;">';
-            }
-
-            echo html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
-        }
-
-        echo '</td>';
+        // Action buttons column.
+        $actionButtonsColumn = implode('', $agentActionButtons);
+        // Defined class for action buttons.
+        $tableAgents->cellclass[$key][6] = 'table_action_buttons';
+        // Row data.
+        $tableAgents->data[$key][0] = $agentNameColumn;
+        $tableAgents->data[$key][0] .= $agentAvailableActionsColumn;
+        $tableAgents->data[$key][1] = $remoteConfigurationColumn;
+        $tableAgents->data[$key][2] = $osIconColumn;
+        $tableAgents->data[$key][3] = $agentTypeIconColumn;
+        $tableAgents->data[$key][4] = $agentGroupIconColumn;
+        $tableAgents->data[$key][5] = $descriptionColumn;
+        $tableAgents->data[$key][6] = $actionButtonsColumn;
     }
 
-    echo '</table>';
-    ui_pagination($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os", $offset);
-    echo "<table width='100%'><tr><td align='right'>";
+    html_print_table($tableAgents);
+
+    $tablePagination = ui_pagination(
+        $total_agents,
+        ui_get_url_refresh(
+            [
+                'group_id'   => $group_id,
+                'search'     => $search,
+                'sort_field' => $sortField,
+                'sort'       => $sort,
+                'status'     => $status,
+            ]
+        ),
+        0,
+        0,
+        true,
+        'offset',
+        false,
+        'dataTables_paginate paging_simple_numbers'
+    );
+
+    /*
+        ui_pagination(
+        $total_agents,
+        "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled&os=$os",
+        $offset
+        );
+    */
 } else {
+    $tablePagination = '';
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined agents') ]);
 }
 
-if (check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Create agent button.
-    echo '<div class="action-buttons">';
     echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-    html_print_submit_button(
-        __('Create agent'),
-        'crt-2',
-        false,
-        'class="sub next"'
+
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create agent'),
+            'crt-2',
+            false,
+            [ 'icon' => 'next' ],
+            true
+        ),
+        [
+            'type'          => 'data_table',
+            'class'         => 'fixed_action_buttons',
+            'right_content' => $tablePagination,
+        ]
     );
     echo '</form>';
-    echo '</div>';
 }
 
-echo '</td></tr></table>';
 ?>
 
 <script type="text/javascript">

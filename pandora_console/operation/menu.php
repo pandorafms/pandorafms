@@ -1,16 +1,32 @@
 <?php
+/**
+ * Operation menu.
+ *
+ * @category   Menu
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// Begin.
 if (! isset($config['id_user'])) {
     return;
 }
@@ -19,11 +35,121 @@ use PandoraFMS\Dashboard\Manager;
 
 require_once 'include/functions_menu.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
+require_once 'include/class/MenuItem.class.php';
 
 enterprise_include('operation/menu.php');
 
 $menu_operation = [];
 $menu_operation['class'] = 'operation';
+/*
+    $menuOperation = [];
+
+    $subMenuMonitoring = [];
+
+
+    $subMenuMonitoringViews = [];
+
+    // L0. Monitoring.
+    $menuOperation['monitoring'] = new MenuItem(__('Monitoring'));
+    $menuOperation['monitoring']->setIcon('icon');
+    $menuOperation['monitoring']->setClass('menu');
+    $menuOperation['monitoring']->setACL(['AR']);
+    $monitoringItems = [];
+
+    // L1. Views.
+    $monitoringItems['views'] = new MenuItem(__('Views'));
+    $monitoringItems['views']->setIcon('icono');
+    $monitoringItems['views']->setClass('submenu');
+    $monitoringViewsItems = [];
+
+    // L2. Tactical view.
+    $monitoringViewsItems['tacticalView'] = new MenuItem(__('Tactical view'));
+    $monitoringViewsItems['tacticalView']->setSec('view');
+    $monitoringViewsItems['tacticalView']->setSec2('operation/agentes/tactical');
+    $monitoringViewsItems['tacticalView']->setClass('submenu');
+
+    // L2. Group View.
+    $monitoringViewsItems['groupView'] = new MenuItem(__('Group view'));
+    $monitoringViewsItems['groupView']->setSec('view');
+    $monitoringViewsItems['groupView']->setSec2('operation/agentes/group_view');
+    $monitoringViewsItems['groupView']->setClass('submenu');
+
+    // L2. Tree View.
+    $monitoringViewsItems['treeView'] = new MenuItem(__('Tree view'));
+    $monitoringViewsItems['treeView']->setSec('view');
+    $monitoringViewsItems['treeView']->setSec2('operation/tree');
+    $monitoringViewsItems['treeView']->setClass('submenu');
+
+    // L2. Monitor detail.
+    $monitoringViewsItems['monitorDetail'] = new MenuItem(__('Monitor detail'));
+    $monitoringViewsItems['monitorDetail']->setSec('view');
+    $monitoringViewsItems['monitorDetail']->setSec2('operation/agentes/status_monitor');
+    $monitoringViewsItems['monitorDetail']->setClass('submenu');
+
+    // L2. Interface view.
+    $monitoringViewsItems['interfaceView'] = new MenuItem(__('Interface View'));
+    $monitoringViewsItems['interfaceView']->setSec('view');
+    $monitoringViewsItems['interfaceView']->setSec2('operation/agentes/interface_view');
+    $monitoringViewsItems['interfaceView']->setClass('submenu');
+
+    // L2. Enterprise Tag view.
+    $idTagView = 'tagView';
+    $monitoringViewsItems[$idTagView] = enterprise_hook('tag_view_submenu', $idTagView);
+
+    // L2. Alert detail view.
+    $monitoringViewsItems['alertDetail'] = new MenuItem(__('Alert Detail'));
+    $monitoringViewsItems['alertDetail']->setSec('view');
+    $monitoringViewsItems['alertDetail']->setSec2('operation/agentes/alerts_status');
+    $monitoringViewsItems['alertDetail']->setClass('submenu');
+
+    // L2. Heatmap view.
+    $monitoringViewsItems['heatmapView'] = new MenuItem(__('Heatmap view'));
+    $monitoringViewsItems['heatmapView']->setSec('view');
+    $monitoringViewsItems['heatmapView']->setSec2('operation/heatmap');
+    $monitoringViewsItems['heatmapView']->setClass('submenu');
+
+    $monitoringItems['views']->setSubmenu($monitoringViewsItems);
+
+    // L1. Inventory.
+    $monitoringItems['inventory'] = new MenuItem(__('Inventory'));
+    $monitoringItems['inventory']->setSec('estado');
+    $monitoringItems['inventory']->setSec2('enterprise/operation/inventory/inventory');
+    $monitoringItems['inventory']->setClass('submenu');
+
+    // L1. Network.
+    $monitoringItems['network'] = new MenuItem();
+    $monitoringItems['network']->setDisplay((bool) $config['activate_netflow'] === true);
+    $monitoringItems['network']->setText(__('Network'));
+
+    // L2. Netflow explorer.
+    $monitoringNetworkItems['netflowExplorer'] = new MenuItem();
+    $monitoringNetworkItems['netflowExplorer']->setText(__('Netflow Explorer'));
+    $monitoringNetworkItems['netflowExplorer']->setSec('network_traffic');
+    $monitoringNetworkItems['netflowExplorer']->setSec2('operation/netflow/netflow_explorer');
+
+    // L2. Netflow Live view.
+    $monitoringNetworkItems['netflowLiveView'] = new MenuItem();
+    $monitoringNetworkItems['netflowLiveView']->setText(__('Netflow Live View'));
+    $monitoringNetworkItems['netflowLiveView']->setSec('network_traffic');
+    $monitoringNetworkItems['netflowLiveView']->setSec2('operation/netflow/nf_live_view');
+
+    // L2. Network usage map.
+    $monitoringNetworkItems['networkUsageMap'] = new MenuItem();
+    $monitoringNetworkItems['networkUsageMap']->setText(__('Network usage map'));
+    $monitoringNetworkItems['networkUsageMap']->setSec('network_traffic');
+    $monitoringNetworkItems['networkUsageMap']->setSec2('operation/network/network_usage_map');
+
+    $monitoringItems['network']->setSubmenu($monitoringNetworkItems);
+
+    $menuOperation['monitoring']->setSubmenu($monitoringItems);
+
+    // L0. Topology Maps.
+    $menuOperation['topologyMaps'] = new MenuItem(__('Topology Maps'));
+    $menuOperation['topologyMaps']->setIcon('icon');
+    $menuOperation['topologyMaps']->setClass('menu');
+
+    $menuOperation['topologyMaps']->setSubmenu($topologyMapsItems);
+*/
 
 $access_console_node = !is_reporting_console_node();
 if ($access_console_node === true) {
@@ -173,7 +299,7 @@ if ($access_console_node === true) {
     if (check_acl($config['id_user'], 0, 'MR') || check_acl($config['id_user'], 0, 'MW') || check_acl($config['id_user'], 0, 'MM')) {
         // Network enterprise.
         $sub['operation/agentes/pandora_networkmap']['text'] = __('Network map');
-        $sub['operation/agentes/pandora_networkmap']['id'] = 'Network map';
+        $sub['operation/agentes/pandora_networkmap']['id'] = 'Network_map';
         $sub['operation/agentes/pandora_networkmap']['refr'] = 0;
     }
 
@@ -181,14 +307,21 @@ if ($access_console_node === true) {
 
 
     if (check_acl($config['id_user'], 0, 'VR') || check_acl($config['id_user'], 0, 'VW') || check_acl($config['id_user'], 0, 'VM')) {
+        $url_visual_console = '';
         if (!isset($config['vc_favourite_view']) || $config['vc_favourite_view'] == 0) {
             // Visual console.
             $sub['godmode/reporting/map_builder']['text'] = __('Visual console');
-            $sub['godmode/reporting/map_builder']['id'] = 'Visual console';
+            $sub['godmode/reporting/map_builder']['id'] = 'Visual_console';
+            $sub['godmode/reporting/map_builder']['type'] = 'direct';
+            $sub['godmode/reporting/map_builder']['subtype'] = 'nolink';
+            $url_visual_console = 'godmode/reporting/map_builder';
         } else {
             // Visual console favorite.
             $sub['godmode/reporting/visual_console_favorite']['text'] = __('Visual console');
-            $sub['godmode/reporting/visual_console_favorite']['id'] = 'Visual console';
+            $sub['godmode/reporting/visual_console_favorite']['id'] = 'Visual_console';
+            $sub['godmode/reporting/visual_console_favorite']['type'] = 'direct';
+            $sub['godmode/reporting/visual_console_favorite']['subtype'] = 'nolink';
+            $url_visual_console = 'godmode/reporting/visual_console_favorite';
         }
 
         if ($config['vc_menu_items'] != 0) {
@@ -215,6 +348,12 @@ if ($access_console_node === true) {
             $layouts = visual_map_get_user_layouts($config['id_user'], false, false, $returnAllGroups, true);
             $sub2 = [];
 
+            $sub2[$url_visual_console] = [
+                'text'  => __('Visual console list'),
+                'title' => __('Visual console list'),
+                'refr'  => 0,
+            ];
+
             if ($layouts === false) {
                 $layouts = [];
             } else {
@@ -238,15 +377,15 @@ if ($access_console_node === true) {
 
                     $name = io_safe_output($layout['name']);
 
-                    $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['text'] = ui_print_truncate_text($name, MENU_SIZE_TEXT, false, true, false);
-                    $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['id'] = mb_substr($name, 0, 19);
-                    $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['title'] = $name;
+                    $sub2['operation/visual_console/render_view&id='.$layout['id']]['text'] = ui_print_truncate_text($name, MENU_SIZE_TEXT, false, true, false);
+                    $sub2['operation/visual_console/render_view&id='.$layout['id']]['id'] = mb_substr($name, 0, 19);
+                    $sub2['operation/visual_console/render_view&id='.$layout['id']]['title'] = $name;
                     if (!empty($config['vc_refr'])) {
-                        $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['refr'] = $config['vc_refr'];
+                        $sub2['operation/visual_console/render_view&id='.$layout['id']]['refr'] = $config['vc_refr'];
                     } else if (((int) get_parameter('refr', 0)) > 0) {
-                        $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['refr'] = (int) get_parameter('refr', 0);
+                        $sub2['operation/visual_console/render_view&id='.$layout['id']]['refr'] = (int) get_parameter('refr', 0);
                     } else {
-                        $sub2['operation/visual_console/render_view&amp;id='.$layout['id']]['refr'] = 0;
+                        $sub2['operation/visual_console/render_view&id='.$layout['id']]['refr'] = 0;
                     }
                 }
 
@@ -298,10 +437,10 @@ if ($access_console_node === true) {
                     continue;
                 }
 
-                $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['text'] = ui_print_truncate_text(io_safe_output($gisMap['map_name']), MENU_SIZE_TEXT, false, true, false);
-                $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['id'] = mb_substr(io_safe_output($gisMap['map_name']), 0, 15);
-                $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['title'] = io_safe_output($gisMap['map_name']);
-                $sub2['operation/gis_maps/render_view&amp;map_id='.$gisMap['id_tgis_map']]['refr'] = 0;
+                $sub2['operation/gis_maps/render_view&map_id='.$gisMap['id_tgis_map']]['text'] = ui_print_truncate_text(io_safe_output($gisMap['map_name']), MENU_SIZE_TEXT, false, true, false);
+                $sub2['operation/gis_maps/render_view&map_id='.$gisMap['id_tgis_map']]['id'] = mb_substr(io_safe_output($gisMap['map_name']), 0, 15);
+                $sub2['operation/gis_maps/render_view&map_id='.$gisMap['id_tgis_map']]['title'] = io_safe_output($gisMap['map_name']);
+                $sub2['operation/gis_maps/render_view&map_id='.$gisMap['id_tgis_map']]['refr'] = 0;
             }
 
             $sub['gismaps']['sub2'] = $sub2;
@@ -330,7 +469,7 @@ if ($access_console_node === true) {
         $sub = [];
 
         $sub['godmode/reporting/reporting_builder']['text'] = __('Custom reporting');
-        $sub['godmode/reporting/reporting_builder']['id'] = 'Custom reporting';
+        $sub['godmode/reporting/reporting_builder']['id'] = 'Custom_reporting';
         // Set godomode path.
         $sub['godmode/reporting/reporting_builder']['subsecs'] = [
             'godmode/reporting/reporting_builder',
@@ -339,7 +478,7 @@ if ($access_console_node === true) {
 
 
         $sub['godmode/reporting/graphs']['text'] = __('Custom graphs');
-        $sub['godmode/reporting/graphs']['id'] = 'Custom graphs';
+        $sub['godmode/reporting/graphs']['id'] = 'Custom_graphs';
         // Set godomode path.
         $sub['godmode/reporting/graphs']['subsecs'] = [
             'operation/reporting/graph_viewer',
@@ -354,10 +493,16 @@ if ($access_console_node === true) {
             $sub['operation/dashboard/dashboard']['id'] = 'Dashboard';
             $sub['operation/dashboard/dashboard']['refr'] = 0;
             $sub['operation/dashboard/dashboard']['subsecs'] = ['operation/dashboard/dashboard'];
+            $sub['operation/dashboard/dashboard']['type'] = 'direct';
+            $sub['operation/dashboard/dashboard']['subtype'] = 'nolink';
 
             $dashboards = Manager::getDashboards(-1, -1, true);
 
             $sub2 = [];
+            $sub2['operation/dashboard/dashboard'] = [
+                'text'  => __('Dashboard list'),
+                'title' => __('Dashboard list'),
+            ];
             foreach ($dashboards as $dashboard) {
                 $name = io_safe_output($dashboard['name']);
 
@@ -391,7 +536,7 @@ if ($access_console_node === true) {
 
         $sub = [];
         $sub['operation/events/events']['text'] = __('View events');
-        $sub['operation/events/events']['id'] = 'View events';
+        $sub['operation/events/events']['id'] = 'View_events';
         $sub['operation/events/events']['pages'] = ['godmode/events/events'];
 
         // If ip doesn't is in list of allowed IP, isn't show this options.
@@ -461,6 +606,44 @@ if ($access_console_node === true) {
     }
 }
 
+$favorite_menu = db_get_all_rows_sql(
+    sprintf(
+        'SELECT id_element, url, label, section
+        FROM tfavmenu_user
+        WHERE id_user = "%s"
+        ORDER BY section DESC',
+        $config['id_user']
+    )
+);
+// Favorite.
+if ($favorite_menu !== false) {
+    $menu_operation['favorite']['text'] = __('Favorite');
+    $menu_operation['favorite']['id'] = 'fav-menu';
+
+    $section = '';
+    $sub = [];
+    $sub2 = [];
+    foreach ($favorite_menu as $key => $row) {
+        if ($row['section'] !== $section) {
+            $section = $row['section'];
+            $sub2 = [];
+        }
+
+        $sub[$section]['text'] = __(str_replace('_', ' ', $section));
+        $sub[$section]['type'] = 'direct';
+        $sub[$section]['subtype'] = 'nolink';
+        $sub[$section]['id'] = $row['section'];
+
+        $sub2[$row['url']]['text'] = io_safe_output($row['label']);
+        $sub[$section]['sub2'] = $sub2;
+    }
+
+    $menu_operation['favorite']['sub'] = $sub;
+}
+
+
+
+
 // Workspace.
 $menu_operation['workspace']['text'] = __('Workspace');
 $menu_operation['workspace']['sec2'] = 'operation/users/user_edit';
@@ -468,14 +651,16 @@ $menu_operation['workspace']['id'] = 'oper-users';
 
 // ANY user can view him/herself !
 // Users.
+$query_paramameters_user = '&edit_user=1&pure=0&id_user='.$config['id_user'];
+
 $sub = [];
-$sub['operation/users/user_edit']['text'] = __('Edit my user');
-$sub['operation/users/user_edit']['id'] = 'Edit my user';
-$sub['operation/users/user_edit']['refr'] = 0;
+$sub['godmode/users/configure_user'.$query_paramameters_user]['text'] = __('Edit my user');
+$sub['godmode/users/configure_user'.$query_paramameters_user]['id'] = 'Edit_my_user';
+$sub['godmode/users/configure_user'.$query_paramameters_user]['refr'] = 0;
 
 // Users.
 $sub['operation/users/user_edit_notifications']['text'] = __('Configure user notifications');
-$sub['operation/users/user_edit_notifications']['id'] = 'Configure user notifications';
+$sub['operation/users/user_edit_notifications']['id'] = 'Configure_user_notifications';
 $sub['operation/users/user_edit_notifications']['refr'] = 0;
 
 if ($access_console_node === true) {
@@ -509,7 +694,7 @@ if ($access_console_node === true) {
     $sub['message_list']['subtype'] = 'nolink';
     $sub2 = [];
     $sub2['operation/messages/message_list']['text'] = __('Messages List');
-    $sub2['operation/messages/message_edit&amp;new_msg=1']['text'] = __('New message');
+    $sub2['operation/messages/message_edit&new_msg=1']['text'] = __('New message');
 
     $sub['message_list']['sub2'] = $sub2;
 }
@@ -526,13 +711,13 @@ if ($access_console_node === true) {
 
         if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
             $sub['operation/agentes/exportdata']['text'] = __('Export data');
-            $sub['operation/agentes/exportdata']['id'] = 'Export data';
+            $sub['operation/agentes/exportdata']['id'] = 'Export_data';
             $sub['operation/agentes/exportdata']['subsecs'] = ['operation/agentes/exportdata'];
         }
 
         if (check_acl($config['id_user'], 0, 'AR') || check_acl($config['id_user'], 0, 'AD') || check_acl($config['id_user'], 0, 'AW')) {
             $sub['godmode/agentes/planned_downtime.list']['text'] = __('Scheduled downtime');
-            $sub['godmode/agentes/planned_downtime.list']['id'] = 'Scheduled downtime';
+            $sub['godmode/agentes/planned_downtime.list']['id'] = 'Scheduled_downtime';
         }
 
         foreach ($config['extensions'] as $extension) {
@@ -562,7 +747,7 @@ if ($access_console_node === true) {
                 }
 
                 $sub[$extension_menu['sec2']]['text'] = $extension_menu['name'];
-                $sub[$extension_menu['sec2']]['id'] = $extension_menu['name'];
+                $sub[$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
                 $sub[$extension_menu['sec2']]['refr'] = 0;
             } else {
                 if (array_key_exists('fatherId', $extension_menu)) {
@@ -571,7 +756,7 @@ if ($access_console_node === true) {
                         if (array_key_exists('subfatherId', $extension_menu) && empty($extension_menu['subfatherId']) === false) {
                             if ((strlen($extension_menu['subfatherId']) > 0)) {
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = $extension_menu['name'];
+                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['refr'] = 0;
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['sec'] = 'extensions';
@@ -580,7 +765,7 @@ if ($access_console_node === true) {
                                 $menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
                             } else {
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = $extension_menu['name'];
+                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['refr'] = 0;
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
                                 $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['sec'] = 'extensions';
@@ -590,7 +775,7 @@ if ($access_console_node === true) {
                             }
                         } else {
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
-                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = $extension_menu['name'];
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['refr'] = 0;
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['sec'] = 'extensions';

@@ -34,7 +34,6 @@ $url = sprintf(
     $url_id_agente
 );
 
-enterprise_include('godmode/agentes/module_manager.php');
 $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -44,199 +43,16 @@ $search_string = get_parameter('search_string');
 
 global $policy_page;
 
-if (!isset($policy_page)) {
+if (isset($policy_page) === false) {
     $policy_page = false;
 }
 
+$checked = (bool) get_parameter('checked');
+$sec2 = (string) get_parameter('sec2');
 
-echo '<form id="create_module_type" method="post" action="'.$url.'">';
-
-echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
-echo "<tr><td class='datos bolder w12p'><span class='mrgn_right_7px'>";
-echo __('Search').'</span>'.html_print_input_text(
-    'search_string',
-    $search_string,
-    '',
-    5,
-    5,
-    true
-);
-html_print_input_hidden('search', 1);
-// Search string filter form.
-if (($policy_page !== false) || (isset($agent) === true)) {
-    echo '<form id="" method="post" action="">';
-} else {
-    echo '<form id="create_module_type" method="post" action="'.$url.'">';
-}
-
-echo '</td>';
-echo "<td class='datos w10p'>";
-html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"');
-echo '</td>';
-echo '</form>';
-// Check if there is at least one server of each type available to assign that
-// kind of modules. If not, do not show server type in combo.
-$network_available = db_get_sql(
-    'SELECT count(*)
-	FROM tserver
-	WHERE server_type = '.SERVER_TYPE_NETWORK
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-$wmi_available = db_get_sql(
-    'SELECT count(*)
-	FROM tserver
-	WHERE server_type = '.SERVER_TYPE_WMI
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-$plugin_available = db_get_sql(
-    'SELECT count(*)
-	FROM tserver
-	WHERE server_type = '.SERVER_TYPE_PLUGIN
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-$prediction_available = db_get_sql(
-    'SELECT count(*)
-	FROM tserver
-	WHERE server_type = '.SERVER_TYPE_PREDICTION
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-$web_available = db_get_sql(
-    'SELECT count(*)
-FROM tserver
-WHERE server_type = '.SERVER_TYPE_WEB
-);
-// POSTGRESQL AND ORACLE COMPATIBLE.
-// Development mode to use all servers.
-if ($develop_bypass || is_metaconsole()) {
-    $network_available = 1;
-    $wmi_available = 1;
-    $plugin_available = 1;
-    // FIXME when prediction predictions server modules can be configured.
-    // on metaconsole.
-    $prediction_available = is_metaconsole() ? 0 : 1;
-}
-
-$modules = [];
-$modules['dataserver'] = __('Create a new data server module');
-if ($network_available) {
-    $modules['networkserver'] = __('Create a new network server module');
-}
-
-if ($plugin_available) {
-    $modules['pluginserver'] = __('Create a new plugin server module');
-}
-
-if ($wmi_available) {
-    $modules['wmiserver'] = __('Create a new WMI server module');
-}
-
-if ($prediction_available) {
-    $modules['predictionserver'] = __('Create a new prediction server module');
-}
-
-if (is_metaconsole() === true || $web_available >= '1') {
-    $modules['webserver'] = __('Create a new web Server module');
-}
-
-if (enterprise_installed()) {
-    set_enterprise_module_types($modules);
-}
-
-$sec2 = get_parameter('sec2', '');
-if (strstr($sec2, 'enterprise/godmode/policies/policies') !== false) {
-    // It is unset because the policies haven't a table tmodule_synth and the
-    // some part of code to apply this kind of modules in policy agents.
-    // But in the future maybe will be good to make this feature, but remember
-    // the modules to show in syntetic module policy form must be the policy
-    // modules from the same policy.
-    unset($modules['predictionserver']);
-    if (enterprise_installed()) {
-        unset($modules['webux']);
-    }
-}
-
-$show_creation = false;
-$checked = get_parameter('checked');
-
-if (($policy_page) || (isset($agent))) {
-    if ($policy_page) {
-        $show_creation = is_management_allowed();
-    } else {
-        if (isset($all_groups) === false) {
-            $all_groups = agents_get_all_groups_agent(
-                $agent['id_agente'],
-                $agent['id_grupo']
-            );
-        }
-
-        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-            $show_creation = true;
-        }
-    }
-
-    if ($show_creation === true) {
-        // Create module/type combo.
-        echo '<form id="create_module_type" method="post" action="'.$url.'">';
-        if (!$policy_page) {
-            echo '<td class="datos w15p bolder">';
-            echo __('Show in hierachy mode');
-            if ($checked == 'true') {
-                $checked = true;
-            } else {
-                $checked = false;
-            }
-
-            html_print_checkbox(
-                'status_hierachy_mode',
-                '',
-                $checked,
-                false,
-                false,
-                'onChange=change_mod_filter();'
-            );
-            echo '</td>';
-        }
-
-        echo '<td class="datos w20p bolder lign_right"><span class="mrgn_right_7px">';
-        echo __('Type').'</span>';
-        html_print_select(
-            $modules,
-            'moduletype',
-            '',
-            '',
-            '',
-            '',
-            false,
-            false,
-            false,
-            '',
-            false,
-            'max-width:300px;'
-        );
-        html_print_input_hidden('edit_module', 1);
-        echo '</td>';
-        echo '<td class="datos w5p">';
-        echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
-        echo '</td>';
-        echo '</tr>';
-        echo '</form>';
-    }
-}
-
-echo '</table>';
-
-if (!$config['disable_help']) {
-    echo '<div class="disable_help">';
-    echo '<strong>';
-    echo "<a class='color-black-grey invert_filter' target='_blank' href='https://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
-    echo '</strong>';
-    echo '</div>';
-}
-
-if (! isset($id_agente)) {
+if (isset($id_agente) === false) {
     return;
 }
-
 
 $module_action = (string) get_parameter('module_action');
 
@@ -321,46 +137,20 @@ if ($module_action === 'delete') {
             }
         }
 
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-            default:
-                $result = db_process_sql_delete(
-                    'tagente_estado',
-                    ['id_agente_modulo' => $id_agent_module_del]
-                );
-                if ($result === false) {
-                    $error++;
-                }
+        $result = db_process_sql_delete(
+            'tagente_estado',
+            ['id_agente_modulo' => $id_agent_module_del]
+        );
+        if ($result === false) {
+            $error++;
+        }
 
-                $result = db_process_sql_delete(
-                    'tagente_datos_inc',
-                    ['id_agente_modulo' => $id_agent_module_del]
-                );
-                if ($result === false) {
-                    $error++;
-                }
-            break;
-
-            case 'oracle':
-                $result = db_process_delete_temp(
-                    'tagente_estado',
-                    'id_agente_modulo',
-                    $id_agent_module_del
-                );
-                if ($result === false) {
-                    $error++;
-                }
-
-                $result = db_process_delete_temp(
-                    'tagente_datos_inc',
-                    'id_agente_modulo',
-                    $id_agent_module_del
-                );
-                if ($result === false) {
-                    $error++;
-                }
-            break;
+        $result = db_process_sql_delete(
+            'tagente_datos_inc',
+            ['id_agente_modulo' => $id_agent_module_del]
+        );
+        if ($result === false) {
+            $error++;
         }
 
         // Trick to detect if we are deleting a synthetic module (avg or arithmetic).
@@ -370,7 +160,7 @@ if ($module_action === 'delete') {
             [$id_agent_module_del]
         );
         $result_ops_synthetic = json_decode($ops_json);
-        if (!empty($result_ops_synthetic)) {
+        if (empty($result_ops_synthetic) === false) {
             $result = enterprise_hook(
                 'modules_delete_synthetic_operations',
                 [$id_agent_module_del]
@@ -384,13 +174,13 @@ if ($module_action === 'delete') {
                 [$id_agent_module_del]
             );
             $count_components = 1;
-            if (!empty($result_components)) {
+            if (empty($result_components) === false) {
                 // Get number of components pending to delete to know when it's needed to update orders.
                 $num_components = count($result_components);
                 $last_target_module = 0;
                 foreach ($result_components as $id_target_module) {
                     // Detects change of component or last component to update orders.
-                    if (($count_components == $num_components) || ($last_target_module != $id_target_module)
+                    if (($count_components === $num_components) || ($last_target_module !== $id_target_module)
                     ) {
                         $update_orders = true;
                     } else {
@@ -416,14 +206,14 @@ if ($module_action === 'delete') {
         }
 
         // Check for errors.
-        if ((int) $error == 0) {
+        if ((int) $error === 0) {
             $count_correct_delete_modules++;
         }
     }
 
     if ($print_result_msg === true) {
         $count_modules_to_delete = count($id_agent_modules_delete);
-        if ($count_correct_delete_modules == 0) {
+        if ($count_correct_delete_modules === 0) {
             ui_print_error_message(
                 sprintf(
                     __('There was a problem completing the operation. Applied to 0/%d modules.'),
@@ -431,7 +221,7 @@ if ($module_action === 'delete') {
                 )
             );
         } else {
-            if ($count_correct_delete_modules == $count_modules_to_delete) {
+            if ($count_correct_delete_modules === $count_modules_to_delete) {
                 ui_print_success_message(__('Operation finished successfully.'));
             } else {
                 ui_print_error_message(
@@ -477,7 +267,7 @@ if ($module_action === 'delete') {
             )
         );
     } else {
-        if ($updated_count == $count_modules_to_disable) {
+        if ($updated_count === $count_modules_to_disable) {
             ui_print_success_message(__('Operation finished successfully.'));
         } else {
             ui_print_error_message(
@@ -563,49 +353,20 @@ switch ($sortField) {
     case 'name':
         switch ($sort) {
             case 'up':
+            default:
                 $selectNameUp = $selected;
-                switch ($config['dbtype']) {
-                    case 'mysql':
-                    case 'postgresql':
-                    default:
-                        $order[] = [
-                            'field' => 'tagente_modulo.nombre',
-                            'order' => 'ASC',
-                        ];
-                    break;
-
-                    case 'oracle':
-                        $order[] = [
-                            'field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)',
-                            'order' => 'ASC',
-                        ];
-                    break;
-                }
+                $order[] = [
+                    'field' => 'tagente_modulo.nombre',
+                    'order' => 'ASC',
+                ];
             break;
 
             case 'down':
                 $selectNameDown = $selected;
-                switch ($config['dbtype']) {
-                    case 'mysql':
-                    case 'postgresql':
-                    default:
-                        $order[] = [
-                            'field' => 'tagente_modulo.nombre',
-                            'order' => 'DESC',
-                        ];
-                    break;
-
-                    case 'oracle':
-                        $order[] = [
-                            'field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)',
-                            'order' => 'DESC',
-                        ];
-                    break;
-                }
-            break;
-
-            default:
-                // Do none.
+                $order[] = [
+                    'field' => 'tagente_modulo.nombre',
+                    'order' => 'DESC',
+                ];
             break;
         }
     break;
@@ -613,6 +374,7 @@ switch ($sortField) {
     case 'server':
         switch ($sort) {
             case 'up':
+            default:
                 $selectServerUp = $selected;
                 $order[] = [
                     'field' => 'id_modulo',
@@ -627,16 +389,13 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
-
-            default:
-                // Do none.
-            break;
         }
     break;
 
     case 'type':
         switch ($sort) {
             case 'up':
+            default:
                 $selectTypeUp = $selected;
                 $order[] = [
                     'field' => 'id_tipo_modulo',
@@ -651,16 +410,13 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
-
-            default:
-                // Do none.
-            break;
         }
     break;
 
     case 'interval':
         switch ($sort) {
             case 'up':
+            default:
                 $selectIntervalUp = $selected;
                 $order[] = [
                     'field' => 'module_interval',
@@ -675,10 +431,6 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
-
-            default:
-                // Do none.
-            break;
         }
     break;
 
@@ -691,29 +443,16 @@ switch ($sortField) {
         $selectTypeDown = false;
         $selectIntervalUp = false;
         $selectIntervalDown = false;
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-            default:
-                $order[] = [
-                    'field' => 'nombre',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'oracle':
-                $order[] = [
-                    'field' => 'dbms_lob.substr(nombre,4000,1)',
-                    'order' => 'ASC',
-                ];
-            break;
-        }
+        $order[] = [
+            'field' => 'nombre',
+            'order' => 'ASC',
+        ];
     break;
 }
 
 
 // Build the order sql.
-if (!empty($order)) {
+if (empty($order) === false) {
     $order_sql = ' ORDER BY ';
 }
 
@@ -783,12 +522,12 @@ if ($agent_tags !== true) {
 }
 
 $paginate_module = false;
-if (isset($config['paginate_module'])) {
-    $paginate_module = $config['paginate_module'];
+if (isset($config['paginate_module']) === true) {
+    $paginate_module = (bool) $config['paginate_module'];
 }
 
-if ($paginate_module) {
-    if (!isset($limit_sql)) {
+if ($paginate_module === true) {
+    if (isset($limit_sql) === false) {
         $limit_sql = sprintf(
             'LIMIT %s, %s',
             $offset,
@@ -831,555 +570,611 @@ $sql_total_modules = sprintf(
 
 $total_modules = db_get_value_sql($sql_total_modules);
 
-$total_modules = isset($total_modules) ? $total_modules : 0;
+$total_modules = (isset($total_modules) === true) ? $total_modules : 0;
 
-if ($modules === false) {
-    ui_print_empty_data(__('No available data to show'));
-    return;
-}
+if ($modules !== false) {
+    // Prepare pagination.
+    $url = sprintf(
+        '?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=%s&sort_field=%s&sort=%s&search_string=%s',
+        $id_agente,
+        $sortField,
+        $sort,
+        urlencode($search_string)
+    );
 
-// Prepare pagination.
-$url = sprintf(
-    '?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=%s&sort_field=%s&sort=%s&search_string=%s',
-    $id_agente,
-    $sortField,
-    $sort,
-    urlencode($search_string)
-);
-
-if ($paginate_module) {
-    ui_pagination($total_modules, $url);
-}
-
-$url_name = $url.'&sort_field=name&sort=';
-$url_server = $url.'&sort_field=server&sort=';
-$url_type = $url.'&sort_field=type&sort=';
-$url_interval = $url.'&sort_field=interval&sort=';
-
-$table = new stdClass();
-$table->width = '100%';
-$table->class = 'info_table';
-$table->head = [];
-$table->head['checkbox'] = html_print_checkbox(
-    'all_delete',
-    0,
-    false,
-    true,
-    false
-);
-$table->head[0] = __('Name').ui_get_sorting_arrows(
-    $url_name.'up',
-    $url_name.'down',
-    $selectNameUp,
-    $selectNameDown
-);
-
-// The access to the policy is granted only with AW permission.
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && check_acl(
-    $config['id_user'],
-    $agent['id_grupo'],
-    'AW'
-)
-) {
-    $table->head[1] = "<span title='".__('Policy')."'>".__('P.').'</span>';
-}
-
-$table->head[2] = "<span title='".__('Server')."'>".__('S.').'</span>'.ui_get_sorting_arrows(
-    $url_server.'up',
-    $url_server.'down',
-    $selectServerUp,
-    $selectServerDown
-);
-$table->head[3] = __('Type').ui_get_sorting_arrows(
-    $url_type.'up',
-    $url_type.'down',
-    $selectTypeUp,
-    $selectTypeDown
-);
-$table->head[4] = __('Interval').ui_get_sorting_arrows(
-    $url_interval.'up',
-    $url_interval.'down',
-    $selectIntervalUp,
-    $selectIntervalDown
-);
-$table->head[5] = __('Description');
-$table->head[6] = __('Status');
-$table->head[7] = __('Warn');
-
-
-$table->head[8] = __('Action');
-$table->head[9] = '<span title="'.__('Delete').'">'.__('Del.').'</span>';
-
-$table->rowstyle = [];
-$table->style = [];
-$table->style[0] = 'font-weight: bold';
-$table->size = [];
-$table->size['checkbox'] = '20px';
-$table->size[2] = '70px';
-$table->align = [];
-$table->align[2] = 'left';
-$table->align[8] = 'left';
-$table->align[9] = 'left';
-$table->data = [];
-
-$agent_interval = agents_get_interval($id_agente);
-$last_modulegroup = '0';
-
-// Extract the ids only numeric modules for after show the normalize link.
-$tempRows = db_get_all_rows_sql(
-    "SELECT *
-	FROM ttipo_modulo
-	WHERE nombre NOT LIKE '%string%' AND nombre NOT LIKE '%proc%'"
-);
-$numericModules = [];
-foreach ($tempRows as $row) {
-    $numericModules[$row['id_tipo']] = true;
-}
-
-if ($checked) {
-    $modules_hierachy = [];
-    $modules_hierachy = get_hierachy_modules_tree($modules);
-
-    $modules_dt = get_dt_from_modules_tree($modules_hierachy);
-
-    $modules = $modules_dt;
-}
-
-foreach ($modules as $module) {
-    if (! check_acl_one_of_groups(
-        $config['id_user'],
-        $all_groups,
-        'AW'
-    ) && ! check_acl_one_of_groups(
-        $config['id_user'],
-        $all_groups,
-        'AD'
-    )
-    ) {
-        continue;
+    if ($paginate_module === true) {
+        ui_pagination($total_modules, $url);
     }
 
-    $type = $module['id_tipo_modulo'];
-    $id_module = $module['id_modulo'];
-    $nombre_modulo = $module['nombre'];
-    $descripcion = $module['descripcion'];
-    $module_max = $module['max'];
-    $module_min = $module['min'];
-    $module_interval2 = $module['module_interval'];
-    $module_group2 = $module['id_module_group'];
+    $url_name = $url.'&sort_field=name&sort=';
+    $url_server = $url.'&sort_field=server&sort=';
+    $url_type = $url.'&sort_field=type&sort=';
+    $url_interval = $url.'&sort_field=interval&sort=';
 
-    if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
-        $nombre_modulo = utf8_decode($module['nombre']);
-    }
-
-    $data = [];
-
-    if (!$checked) {
-        if ($module['id_module_group'] != $last_modulegroup) {
-            $last_modulegroup = $module['id_module_group'];
-            $data[0] = '<strong>'.modules_get_modulegroup_name(
-                $last_modulegroup
-            ).'</strong>';
-            $i = array_push($table->data, $data);
-            $table->rowstyle[($i - 1)] = 'text-align: center';
-            $table->rowclass[($i - 1)] = 'datos3';
-            if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-                    $table->colspan[($i - 1)][0] = 11;
-            } else {
-                $table->colspan[($i - 1)][0] = 10;
-            }
-
-            $data = [];
-        }
-    }
-
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-        $data['checkbox'] = html_print_checkbox(
-            'id_delete[]',
-            $module['id_agente_modulo'],
-            false,
-            true,
-            false,
-            '',
-            true
-        );
-    }
-
-    $data[0] = '';
-
-    if (isset($module['deep']) && ($module['deep'] != 0)) {
-        $data[0] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
-        $data[0] .= html_print_image(
-            'images/icono_escuadra.png',
-            true,
-            [
-                'style' => 'padding-bottom: inherit;',
-                'class' => 'invert_filter',
-            ]
-        ).'&nbsp;&nbsp;';
-    }
-
-    if ($module['quiet']) {
-        $data[0] .= html_print_image(
-            'images/dot_blue.png',
-            true,
-            [
-                'border' => '0',
-                'title'  => __('Quiet'),
-                'alt'    => '',
-            ]
-        ).'&nbsp;';
-    }
-
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-        $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
-    }
-
-    if ($module['disabled']) {
-        $dt_disabled_icon = '';
-
-        $in_planned_downtime = db_get_sql(
-            'SELECT executed FROM tplanned_downtime 
-			INNER JOIN tplanned_downtime_modules ON tplanned_downtime.id = tplanned_downtime_modules.id_downtime
-			WHERE tplanned_downtime.executed = 1 
-            AND tplanned_downtime.type_downtime = "disable_agent_modules"
-            AND tplanned_downtime_modules.id_agent_module = '.$module['id_agente_modulo']
-        );
-
-        if ($in_planned_downtime !== false) {
-            $dt_disabled_icon = ui_print_help_tip(
-                __('Module in scheduled downtime'),
-                true,
-                'images/minireloj-16.png'
-            );
-        }
-
-        $data[0] .= '<em class="disabled_module">'.ui_print_truncate_text(
-            $module['nombre'],
-            'module_medium',
-            false,
-            true,
-            true,
-            '[&hellip;]',
-            'font-size: 7.2pt'
-        ).$dt_disabled_icon.'</em>';
-    } else {
-        $data[0] .= ui_print_truncate_text(
-            $module['nombre'],
-            'module_medium',
-            false,
-            true,
-            true,
-            '[&hellip;]',
-            'font-size: 7.2pt'
-        );
-    }
-
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-        $data[0] .= '</a>';
-    }
+    $table = new stdClass();
+    $table->width = '100%';
+    $table->class = 'tactical_table info_table';
+    $table->head = [];
+    $table->head['checkbox'] = html_print_checkbox(
+        'all_delete',
+        0,
+        false,
+        true,
+        false
+    );
+    $table->head[0] = '<span>'.__('Name').'</span>'.ui_get_sorting_arrows(
+        $url_name.'up',
+        $url_name.'down',
+        $selectNameUp,
+        $selectNameDown
+    );
 
     // The access to the policy is granted only with AW permission.
-    if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && check_acl(
+    if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && (bool) check_acl(
         $config['id_user'],
         $agent['id_grupo'],
         'AW'
-    )
+    ) === true
     ) {
-        $policyInfo = policies_info_module_policy($module['id_agente_modulo']);
-        if ($policyInfo === false) {
-            $data[1] = '';
-        } else {
-            $linked = policies_is_module_linked($module['id_agente_modulo']);
+        $table->head[1] = "<span title='".__('Policy')."'>".__('P').'</span>';
+        $table->headstyle[1] = 'width: 4%';
+    }
 
-            $adopt = false;
-            if (policies_is_module_adopt($module['id_agente_modulo'])) {
-                $adopt = true;
-            }
+    $table->head[2] = '<span title=\''.__('Server').'\'>'.__('S').'</span>'.ui_get_sorting_arrows(
+        $url_server.'up',
+        $url_server.'down',
+        $selectServerUp,
+        $selectServerDown
+    );
+    $table->headstyle[2] = 'width: 8%';
+    $table->head[3] = '<span>'.__('Type').'</span>'.ui_get_sorting_arrows(
+        $url_type.'up',
+        $url_type.'down',
+        $selectTypeUp,
+        $selectTypeDown
+    );
+    $table->headstyle[3] = 'width: 10%';
+    $table->head[4] = '<span>'.__('Interval').'</span>'.ui_get_sorting_arrows(
+        $url_interval.'up',
+        $url_interval.'down',
+        $selectIntervalUp,
+        $selectIntervalDown
+    );
+    $table->headstyle[4] = 'width: 100px';
+    $table->head[5] = '<span>'.__('Description').'</span>';
+    $table->head[6] = '<span>'.__('Status').'</span>';
+    $table->head[7] = '<span>'.__('Warn').'</span>';
+    $table->head[8] = '<span>'.__('Action').'</span>';
+    $table->headstyle[8] = 'width: 15%';
 
-            if ($linked) {
-                if ($adopt) {
-                    $img = 'images/policies_brick.png';
-                    $title = '('.__('Adopted').') '.$policyInfo['name_policy'];
-                } else {
-                    $img = 'images/policies_mc.png';
-                    $title = $policyInfo['name_policy'];
-                }
-            } else {
-                if ($adopt) {
-                    $img = 'images/policies_not_brick.png';
-                    $title = '('.__('Unlinked').') ('.__('Adopted').') '.$policyInfo['name_policy'];
-                } else {
-                    $img = 'images/unlinkpolicy.png';
-                    $title = '('.__('Unlinked').') '.$policyInfo['name_policy'];
-                }
-            }
+    $table->rowstyle = [];
+    $table->style = [];
+    $table->style[0] = 'font-weight: bold';
+    $table->size = [];
+    $table->size['checkbox'] = '20px';
+    $table->size[2] = '70px';
+    $table->align = [];
+    $table->align[2] = 'left';
+    $table->align[8] = 'left';
+    $table->align[9] = 'left';
+    $table->data = [];
 
-            $data[1] = '<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&id='.$policyInfo['id_policy'].'">'.html_print_image($img, true, ['title' => $title]).'</a>';
+    $agent_interval = agents_get_interval($id_agente);
+    $last_modulegroup = '0';
+
+    // Extract the ids only numeric modules for after show the normalize link.
+    $tempRows = db_get_all_rows_sql(
+        "SELECT *
+        FROM ttipo_modulo
+        WHERE nombre NOT LIKE '%string%' AND nombre NOT LIKE '%proc%'"
+    );
+    $numericModules = [];
+    foreach ($tempRows as $row) {
+        $numericModules[$row['id_tipo']] = true;
+    }
+
+    if ($checked === true) {
+        $modules_hierachy = [];
+        $modules_hierachy = get_hierachy_modules_tree($modules);
+
+        $modules_dt = get_dt_from_modules_tree($modules_hierachy);
+
+        $modules = $modules_dt;
+    }
+
+    foreach ($modules as $module) {
+        if (! check_acl_one_of_groups(
+            $config['id_user'],
+            $all_groups,
+            'AW'
+        ) && ! check_acl_one_of_groups(
+            $config['id_user'],
+            $all_groups,
+            'AD'
+        )
+        ) {
+            continue;
         }
-    }
 
-    // Module type (by server type ).
-    $data[2] = '';
-    if ($module['id_modulo'] > 0) {
-        $data[2] = servers_show_type($module['id_modulo']);
-    }
+        $type = $module['id_tipo_modulo'];
+        $id_module = $module['id_modulo'];
+        $nombre_modulo = $module['nombre'];
+        $descripcion = $module['descripcion'];
+        $module_max = $module['max'];
+        $module_min = $module['min'];
+        $module_interval2 = $module['module_interval'];
+        $module_group2 = $module['id_module_group'];
 
-    $module_status = db_get_row(
-        'tagente_estado',
-        'id_agente_modulo',
-        $module['id_agente_modulo']
-    );
+        if ((int) $module['id_modulo'] === MODULE_DATA && (int) $module['id_policy_module'] !== 0) {
+            $nombre_modulo = utf8_decode($module['nombre']);
+        }
 
-    modules_get_status(
-        $module['id_agente_modulo'],
-        $module_status['estado'],
-        $module_status['datos'],
-        $status,
-        $title
-    );
+        $data = [];
 
-    // This module is initialized ? (has real data).
-    if ($status == STATUS_MODULE_NO_DATA) {
-        $data[2] .= html_print_image(
-            'images/error.png',
-            true,
-            ['title' => __('Non initialized module')]
+        if ($checked === false) {
+            if ($module['id_module_group'] != $last_modulegroup) {
+                $last_modulegroup = $module['id_module_group'];
+                $data[0] = '<strong>'.modules_get_modulegroup_name(
+                    $last_modulegroup
+                ).'</strong>';
+                $i = array_push($table->data, $data);
+                $table->rowstyle[($i - 1)] = 'text-align: center';
+                $table->rowclass[($i - 1)] = 'datos3';
+                if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+                        $table->colspan[($i - 1)][0] = 11;
+                } else {
+                    $table->colspan[($i - 1)][0] = 10;
+                }
+
+                $data = [];
+            }
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+            $data['checkbox'] = html_print_checkbox(
+                'id_delete[]',
+                $module['id_agente_modulo'],
+                false,
+                true,
+                false,
+                '',
+                true
+            );
+        }
+
+        $data[0] = '';
+
+        if (isset($module['deep']) === true && ((int) $module['deep'] !== 0)) {
+            $data[0] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
+            $data[0] .= html_print_image(
+                'images/icono_escuadra.png',
+                true,
+                [
+                    'style' => 'padding-bottom: inherit;',
+                    'class' => 'invert_filter',
+                ]
+            ).'&nbsp;&nbsp;';
+        }
+
+        if ((bool) $module['quiet'] === true) {
+            $data[0] .= html_print_image(
+                'images/dot_blue.png',
+                true,
+                [
+                    'border' => '0',
+                    'title'  => __('Quiet'),
+                    'alt'    => '',
+                ]
+            ).'&nbsp;';
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+            $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+        }
+
+        if ((bool) $module['disabled'] === true) {
+            $dt_disabled_icon = '';
+
+            $in_planned_downtime = db_get_sql(
+                'SELECT executed FROM tplanned_downtime 
+                INNER JOIN tplanned_downtime_modules ON tplanned_downtime.id = tplanned_downtime_modules.id_downtime
+                WHERE tplanned_downtime.executed = 1 
+                AND tplanned_downtime.type_downtime = "disable_agent_modules"
+                AND tplanned_downtime_modules.id_agent_module = '.$module['id_agente_modulo']
+            );
+
+            if ($in_planned_downtime !== false) {
+                $dt_disabled_icon = ui_print_help_tip(
+                    __('Module in scheduled downtime'),
+                    true,
+                    'images/minireloj-16.png'
+                );
+            }
+
+            $data[0] .= '<em class="disabled_module">'.ui_print_truncate_text(
+                $module['nombre'],
+                'module_medium',
+                false,
+                true,
+                true,
+                '[&hellip;]',
+                ''
+            ).$dt_disabled_icon.'</em>';
+        } else {
+            $data[0] .= ui_print_truncate_text(
+                $module['nombre'],
+                'module_medium',
+                false,
+                true,
+                true,
+                '[&hellip;]',
+                ''
+            );
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+            $data[0] .= '</a>';
+        }
+
+        // The access to the policy is granted only with AW permission.
+        if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && (bool) check_acl(
+            $config['id_user'],
+            $agent['id_grupo'],
+            'AW'
+        ) === true
+        ) {
+            $policyInfo = policies_info_module_policy($module['id_agente_modulo']);
+            if ($policyInfo === false) {
+                $data[1] = '';
+            } else {
+                $linked = policies_is_module_linked($module['id_agente_modulo']);
+                $adopt = policies_is_module_adopt($module['id_agente_modulo']);
+
+                if ($linked !== false) {
+                    if ($adopt === true) {
+                        $img = 'images/policies_brick.png';
+                        $title = '('.__('Adopted').') '.$policyInfo['name_policy'];
+                    } else {
+                        $img = 'images/policies_mc.png';
+                        $title = $policyInfo['name_policy'];
+                    }
+                } else {
+                    if ($adopt === true) {
+                        $img = 'images/policies_not_brick.png';
+                        $title = '('.__('Unlinked').') ('.__('Adopted').') '.$policyInfo['name_policy'];
+                    } else {
+                        $img = 'images/unlinkpolicy.png';
+                        $title = '('.__('Unlinked').') '.$policyInfo['name_policy'];
+                    }
+                }
+
+                $data[1] = '<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&id='.$policyInfo['id_policy'].'">'.html_print_image($img, true, ['title' => $title]).'</a>';
+            }
+        }
+
+        // Module type (by server type ).
+        $data[2] = '';
+        if ($module['id_modulo'] > 0) {
+            $data[2] = ui_print_servertype_icon((int) $module['id_modulo']);
+        }
+
+        $module_status = db_get_row(
+            'tagente_estado',
+            'id_agente_modulo',
+            $module['id_agente_modulo']
         );
-    }
 
-    // Module type (by data type).
-    $data[3] = '';
-    if ($type) {
-        $data[3] = ui_print_moduletype_icon($type, true);
-    }
+        modules_get_status(
+            $module['id_agente_modulo'],
+            $module_status['estado'],
+            $module_status['datos'],
+            $status,
+            $title
+        );
 
-    // Module interval.
-    if ($module['module_interval']) {
-        $data[4] = human_time_description_raw($module['module_interval']);
-    } else {
-        $data[4] = human_time_description_raw($agent_interval);
-    }
+        // This module is initialized ? (has real data).
+        if ($status === STATUS_MODULE_NO_DATA) {
+            $data[2] .= html_print_image(
+                'images/alert-yellow@svg.svg',
+                true,
+                [
+                    'title' => __('Non initialized module'),
+                    'class' => 'main_menu_icon',
+                ]
+            );
+        }
 
-    if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
-        $data[4] .= ui_print_help_tip(
-            __('The policy modules of data type will only update their intervals when policy is applied.'),
+        // Module type (by data type).
+        $data[3] = '';
+        if ($type) {
+            $data[3] = ui_print_moduletype_icon($type, true);
+        }
+
+        // Module interval.
+        if ($module['module_interval']) {
+            $data[4] = human_time_description_raw($module['module_interval']);
+        } else {
+            $data[4] = human_time_description_raw($agent_interval);
+        }
+
+        if ((int) $module['id_modulo'] === MODULE_DATA && (int) $module['id_policy_module'] !== 0) {
+            $data[4] .= ui_print_help_tip(
+                __('The policy modules of data type will only update their intervals when policy is applied.'),
+                true
+            );
+        }
+
+        $data[5] = ui_print_truncate_text(
+            $module['descripcion'],
+            'description',
+            false
+        );
+
+        $data[6] = ui_print_status_image(
+            $status,
+            htmlspecialchars($title),
             true
         );
+
+        // MAX / MIN values.
+        if ($module['id_tipo_modulo'] != 25) {
+            $data[7] = ui_print_module_warn_value(
+                $module['max_warning'],
+                $module['min_warning'],
+                $module['str_warning'],
+                $module['max_critical'],
+                $module['min_critical'],
+                $module['str_critical'],
+                $module['warning_inverse'],
+                $module['critical_inverse']
+            );
+        } else {
+            $data[7] = '';
+        }
+
+        if ((bool) $module['disabled'] === true) {
+            $data[8] = html_print_menu_button(
+                [
+                    'href'  => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&enable_module='.$module['id_agente_modulo'],
+                    'image' => 'images/change-active.svg',
+                    'title' => __('Enable module'),
+                ],
+                true
+            );
+        } else {
+            $data[8] = html_print_menu_button(
+                [
+                    'href'  => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&disable_module='.$module['id_agente_modulo'],
+                    'image' => 'images/change-pause.svg',
+                    'title' => __('Disable module'),
+                ],
+                true
+            );
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true && $module['id_tipo_modulo'] !== 25) {
+            $data[8] .= html_print_menu_button(
+                [
+                    'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'],
+                    'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'image'   => 'images/copy.svg',
+                    'title'   => __('Duplicate'),
+                ],
+                true
+            );
+
+            // Make a data normalization.
+            $data[8] .= html_print_menu_button(
+                [
+                    'href'           => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'],
+                    'onClick'        => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'image'          => 'images/module-graph.svg',
+                    'title'          => __('Normalize'),
+                    'disabled'       => (isset($numericModules[$type]) === false || $numericModules[$type] === false),
+                    'disabled_title' => ' ('.__('Disabled').')',
+                ],
+                true
+            );
+
+            // Create network component action.
+            $data[8] .= html_print_menu_button(
+                [
+                    'href'           => 'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'],
+                    'onClick'        => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'image'          => 'images/cluster@os.svg',
+                    'title'          => __('Create network component'),
+                    'disabled'       => ((is_user_admin($config['id_user']) === true) && (int) $module['id_modulo'] === MODULE_NETWORK) === false,
+                    'disabled_title' => ' ('.__('Disabled').')',
+                ],
+                true
+            );
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+            // Delete module.
+            $data[8] .= html_print_menu_button(
+                [
+                    'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'],
+                    'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'image'   => 'images/delete.svg',
+                    'title'   => __('Delete'),
+                ],
+                true
+            );
+        }
+
+        // TODO. REVIEW THIS ANNOYING BEHAVIOR.
+        $table->cellclass[] = [8 => 'table_action_buttons'];
+        array_push($table->data, $data);
+        $table->cellclass[] = [8 => 'table_action_buttons'];
     }
 
-    $data[5] = ui_print_truncate_text(
-        $module['descripcion'],
-        'description',
-        false
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+        echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
+            onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
+    }
+
+    // Print module table.
+    html_print_table($table);
+} else {
+    ui_print_empty_data(__('No available data to show'));
+}
+
+if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+    html_print_input_hidden('submit_modules_action', 1);
+
+    $actionButtons = html_print_button(
+        __('Create module'),
+        'create_module',
+        false,
+        'create_module_dialog()',
+        [ 'icon' => 'wand' ],
+        true
     );
 
-    $data[6] = ui_print_status_image(
-        $status,
-        htmlspecialchars($title),
+    if ($modules !== false) {
+        $actionButtons .= html_print_submit_button(
+            __('Execute action'),
+            'submit_modules_action',
+            false,
+            [
+                'icon' => 'next',
+                'mode' => 'link',
+            ],
+            true
+        );
+
+        $actionButtons .= html_print_select(
+            [
+                'disable' => 'Disable selected modules',
+                'enable'  => 'Enable selected modules',
+                'delete'  => 'Delete selected modules',
+            ],
+            'module_action',
+            '',
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            'width: 260px;',
+        );
+    }
+
+    html_print_action_buttons(
+        $actionButtons,
+        [ 'type' => 'data_table' ]
+    );
+    echo '</form>';
+}
+
+// Form table for Module creation.
+$createModuleTable = new stdClass();
+$createModuleTable->id = 'module_creation_modal';
+$createModuleTable->class = 'filter-table-adv';
+$createModuleTable->data = [];
+
+$createModuleTable->data[0][] = html_print_label_input_block(
+    __('Select module type'),
+    html_print_select(
+        policies_type_modules_availables($sec2),
+        'moduletype',
+        '',
+        '',
+        '',
+        '',
         true,
         false,
         false,
+        '',
         false,
-        ($module['ip_target']) ? 'IP: '.$module['ip_target'] : false
-    );
+        'max-width:300px;'
+    )
+);
 
-    // MAX / MIN values.
-    if ($module['id_tipo_modulo'] != 25) {
-        $data[7] = ui_print_module_warn_value(
-            $module['max_warning'],
-            $module['min_warning'],
-            $module['str_warning'],
-            $module['max_critical'],
-            $module['min_critical'],
-            $module['str_critical'],
-            $module['warning_inverse'],
-            $module['critical_inverse']
-        );
-    } else {
-        $data[7] = '';
-    }
-
-    if ($module['disabled']) {
-        $data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente.'&enable_module='.$module['id_agente_modulo']."'>".html_print_image(
-            'images/lightbulb_off.png',
-            true,
-            [
-                'alt'   => __('Enable module'),
-                'title' => __('Enable module'),
-                'class' => 'filter_none',
-            ]
-        ).'</a>';
-    } else {
-        $data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente.'&disable_module='.$module['id_agente_modulo']."'>".html_print_image(
-            'images/lightbulb.png',
-            true,
-            [
-                'alt'   => __('Disable module'),
-                'title' => __('Disable module'),
-            ]
-        ).'</a>';
-    }
-
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') && $module['id_tipo_modulo'] != 25) {
-        $data[8] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-        $data[8] .= html_print_image(
-            'images/copy.png',
-            true,
-            [
-                'title' => __('Duplicate'),
-                'class' => 'invert_filter',
-            ]
-        );
-        $data[8] .= '</a> ';
-
-        // Make a data normalization.
-        if (isset($numericModules[$type])) {
-            if ($numericModules[$type] === true) {
-                $data[8] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-                $data[8] .= html_print_image(
-                    'images/chart.png',
-                    true,
-                    [
-                        'title' => __('Normalize'),
-                        'class' => 'invert_filter',
-                    ]
-                );
-                $data[8] .= '</a>';
-            }
-        } else {
-            $data[8] .= html_print_image(
-                'images/chart_curve.disabled.png',
-                true,
-                ['title' => __('Normalize (Disabled)')]
-            );
-            $data[8] .= '&nbsp;&nbsp;';
-        }
-
-        // Create network component action.
-        if ((is_user_admin($config['id_user']))
-            && ($module['id_modulo'] == MODULE_NETWORK)
-        ) {
-            $data[8] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
-				onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-            $data[8] .= html_print_image(
-                'images/op_network.png',
-                true,
-                [
-                    'title' => __('Create network component'),
-                    'class' => 'invert_filter',
-                ]
-            );
-            $data[8] .= '</a> ';
-        } else {
-            $data[8] .= html_print_image(
-                'images/network.disabled.png',
-                true,
-                ['title' => __('Create network component (Disabled)')]
-            );
-            $data[8] .= '&nbsp;&nbsp;';
-        }
-    }
-
-    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-        // Check module relatonships to show warning message.
-        $url = htmlentities('index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo']);
-
-        // Delete module.
-        $data[9] = '<a href="#"
-			onClick="get_children_modules(false, \''.$module['id_agente_modulo'].'\', \''.$url.'\')">';
-
-        $data[9] .= html_print_image(
-            'images/cross.png',
-            true,
-            [
-                'title' => __('Delete'),
-                'class' => 'invert_filter',
-            ]
-        );
-        $data[9] .= '</a> ';
-    }
-
-    $table->cellclass[] = [
-        8 => 'action_buttons',
-        9 => 'action_buttons',
-    ];
-    array_push($table->data, $data);
-    $table->cellclass[] = [
-        8 => 'action_buttons',
-        9 => 'action_buttons',
-    ];
-}
-
-if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module" id="form_multiple_delete">';
-}
-
-html_print_table($table);
-
-if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
-
-    html_print_input_hidden('submit_modules_action', 1);
-
-    html_print_select(
+$createModuleTable->data[1][] = html_print_label_input_block(
+    '',
+    html_print_anchor(
         [
-            'disable' => 'Disable selected modules',
-            'enable'  => 'Enable selected modules',
-            'delete'  => 'Delete selected modules',
+            'href'    => 'https://pandorafms.com/Library/Library/',
+            'class'   => 'color-black-grey invert_filter',
+            'content' => __('Get more modules on Monitoring Library'),
         ],
-        'module_action',
-        '',
-        '',
-        '',
-        0,
-        false,
-        false,
-        false
-    );
+        true
+    )
+);
 
-    echo '&nbsp&nbsp&nbsp&nbsp';
+$createModuleFormTable = html_print_input_hidden('edit_module', 1, true);
+$createModuleFormTable .= html_print_table($createModuleTable, true);
+// Form definition.
+$modalCreateModule = '<form name="create_module_form" method="post">';
+$modalCreateModule .= $createModuleFormTable;
+$modalCreateModule .= html_print_div(
+    [
+        'class'   => 'action-buttons-right-forced',
+        'content' => html_print_submit_button(
+            __('Create'),
+            'create_module',
+            false,
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
+            true
+        ),
+    ],
+    true
+);
+$modalCreateModule .= '</form>';
 
-    html_print_submit_button(
-        __('Execute action'),
-        'submit_modules_action',
-        false,
-        'class="sub next"'
-    );
-
-
-    echo '</div>';
-    echo '</form>';
-}
+html_print_div(
+    [
+        'id'      => 'modal',
+        'style'   => 'display: none',
+        'content' => $modalCreateModule,
+    ]
+);
 ?>
 
 <script type="text/javascript">
 
+    function create_module_dialog(){
+        console.log('Entra');
+        $('#modal').dialog({
+            title: '<?php echo __('Create Module'); ?>',
+            resizable: true,
+            draggable: true,
+            modal: true,
+            close: false,
+            height: 222,
+            width: 480,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            }
+        })
+        .show();
+    }
+
     $(document).ready (function () {
-
-        $("input[name=submit_modules_action]").click(function (event) {
-            event.preventDefault();
-            var module_action = $('#module_action').val();
-                if(module_action !== 'delete') {
-                    $("#form_multiple_delete").submit();
-                } else {
-                    get_children_modules(true);
-                }
+        $('#button-create_module_dialog').click(function(){
+            $('#modal').dialog("close");
         });
-
 
         $('[id^=checkbox-id_delete]').change(function(){
             if($(this).parent().parent().hasClass('checkselected')){
                 $(this).parent().parent().removeClass('checkselected');
             }
             else{
-                $(this).parent().parent().addClass('checkselected');                            
+                $(this).parent().parent().addClass('checkselected');
             }
-        });        
+        });
 
 
-        $('[id^=checkbox-all_delete]').change(function(){    
+        $('[id^=checkbox-all_delete]').change(function(){
             if ($("#checkbox-all_delete").prop("checked")) {
                 $('[id^=checkbox-id_delete]').parent().parent().addClass('checkselected');
                 $("[name^=id_delete").prop("checked", true);
@@ -1387,7 +1182,7 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
             else{
                 $('[id^=checkbox-id_delete]').parent().parent().removeClass('checkselected');
                 $("[name^=id_delete").prop("checked", false);
-            }    
+            }
         });
 
 

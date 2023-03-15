@@ -2769,6 +2769,16 @@ function agents_delete_agent($id_agents, $disableACL=false)
         enterprise_include_once('include/functions_agents.php');
         enterprise_hook('agent_delete_from_cache', [$id_agent]);
 
+        // Delete agent from fav menu.
+        db_process_sql_delete(
+            'tfavmenu_user',
+            [
+                'id_element' => $id_agent,
+                'section'    => 'Agents',
+                'id_user'    => $config['id_user'],
+            ]
+        );
+
         // Break the loop on error.
         if ((bool) $error === true) {
             break;
@@ -3050,7 +3060,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_NO_MONITORS_BALL,
             __('No Monitors'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3062,7 +3075,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_ALERT_FIRED_BALL,
             __('Alert fired on agent'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3074,7 +3090,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_CRITICAL_BALL,
             __('At least one module in CRITICAL status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3084,7 +3103,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_WARNING_BALL,
             __('At least one module in WARNING status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3094,7 +3116,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_DOWN_BALL,
             __('At least one module is in UKNOWN status'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -3104,7 +3129,10 @@ function agents_tree_view_status_img_ball($critical, $warning, $unknown, $total,
             STATUS_AGENT_OK_BALL,
             __('All Monitors OK'),
             true,
-            false,
+            [
+                'is_tree_view',
+                true,
+            ],
             false,
             // Use CSS shape instead of image.
             true
@@ -4378,6 +4406,14 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 
     $total_modules = count($all_modules);
 
+    if ($width !== 0 && $height !== 0) {
+        $measuresProvided = false;
+        $width = 200;
+        $height = 50;
+    } else {
+        $measuresProvided = true;
+    }
+
     // Best square.
     $high = (float) max($width, $height);
     $low = 0.0;
@@ -4394,6 +4430,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 
     $square_length = min(($width / floor($width / $low)), ($height / floor($height / $low)));
 
+    // $measureSymbol = ($measuresProvided === true) ? '' : '%';
     // Print starmap.
     $html = sprintf(
         '<svg id="svg_%s" style="width: %spx; height: %spx;">',
@@ -4444,6 +4481,7 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
             $y,
             $row,
             $column,
+            // $square_length.$measureSymbol,
             $square_length,
             $square_length,
             $status,
@@ -4501,4 +4539,18 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
     $html .= '</svg>';
 
     return $html;
+}
+
+
+/**
+ * Defines a hash for agent name.
+ *
+ * @param string $alias         Alias.
+ * @param string $nombre_agente Agent name.
+ *
+ * @return string.
+ */
+function hash_agent_name(string $alias, string $nombre_agente)
+{
+    return hash('sha256', $alias.'|'.$nombre_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
 }

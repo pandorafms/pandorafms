@@ -42,6 +42,11 @@ if (__PAN_XHPROF__ === 1) {
     }
 }
 
+// Needed for InfoBox count.
+if (isset($_SESSION['info_box_count']) === true) {
+    $_SESSION['info_box_count'] = 0;
+}
+
 // Set character encoding to UTF-8
 // fixes a lot of multibyte character issues.
 if (function_exists('mb_internal_encoding') === true) {
@@ -243,6 +248,8 @@ echo '</head>'."\n";
 require_once 'include/functions_themes.php';
 ob_start('ui_process_page_body');
 
+ui_require_javascript_file('pandora');
+
 $config['remote_addr'] = $_SERVER['REMOTE_ADDR'];
 
 $sec2 = get_parameter_get('sec2');
@@ -415,6 +422,7 @@ if (isset($config['id_user']) === false) {
             unset($_POST['auth_code'], $code);
 
             if (!$double_auth_success) {
+                $config['auth_error'] = __('Double auth error');
                 $login_failed = true;
                 include_once 'general/login_page.php';
                 db_pandora_audit(
@@ -440,6 +448,7 @@ if (isset($config['id_user']) === false) {
         } else if (($config['auth'] === 'saml') && ($login_button_saml)) {
             $saml_user_id = enterprise_hook('saml_process_user_login');
             if (!$saml_user_id) {
+                $config['auth_error'] = __('saml error');
                 $login_failed = true;
                 include_once 'general/login_page.php';
                 while (ob_get_length() > 0) {
@@ -702,6 +711,7 @@ if (isset($config['id_user']) === false) {
                     login_check_failed($nick);
                 }
 
+                $config['auth_error'] = __('User is blocked');
                 $login_failed = true;
             }
 
@@ -1162,6 +1172,10 @@ if ($config['pure'] == 0) {
     $menuTypeClass = ($menuCollapsed === true) ? 'collapsed' : 'classic';
     // Container.
     echo '<div id="container">';
+
+    // Notifications content wrapper
+    echo '<div id="notification-content" class="invisible"/></div>';
+
     // Header.
     echo '<div id="head">';
     include 'general/header.php';
@@ -1171,8 +1185,7 @@ if ($config['pure'] == 0) {
     echo '<div id="menu">';
 
     include 'general/main_menu.php';
-    echo '</div>';
-    echo '<button onclick="topFunction()" id="top_btn" title="Go to top"></button>';
+    echo html_print_go_top();
 } else {
     echo '<div id="main_pure">';
     // Require menu only to build structure to use it in ACLs.
@@ -1452,10 +1465,10 @@ if (__PAN_XHPROF__ === 1) {
 }
 
 if ($config['pure'] == 0) {
-    echo '<div id="both"></div>';
+    // echo '<div id="both"></div>';
     echo '</div>';
     // Main.
-    echo '<div id="both">&nbsp;</div>';
+    // echo '<div id="both">&nbsp;</div>';
     echo '</div>';
     // Page (id = page).
 } else {
@@ -1478,13 +1491,13 @@ ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 if ($config['pure'] == 0) {
     echo '</div>';
     // Container div.
     echo '</div>';
-    echo '<div id="both"></div>';
+    // echo '<div id="both"></div>';
     echo '</div>';
 }
 
@@ -1507,6 +1520,8 @@ require 'include/php_to_js_values.php';
 ?>
 
 <script type="text/javascript" language="javascript">
+    // Handle the scroll.
+    $(document).ready(scrollFunction());
     // When there are less than 5 rows, all rows must be white
     var theme = "<?php echo $config['style']; ?>";
     if (theme === 'pandora') {
@@ -1521,32 +1536,9 @@ require 'include/php_to_js_values.php';
         scrollFunction()
     };
 
-    function scrollFunction() {
-        if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
-            if (document.getElementById("top_btn")) {
-                document.getElementById("top_btn").style.display = "block";
-            }
-        } else {
-            if (document.getElementById("top_btn")) {
-                document.getElementById("top_btn").style.display = "none";
-            }
-        }
-    }
-
-    // When the user clicks on the button, scroll to the top of the document.
-    function topFunction() {
-
-        /*
-         * Safari.
-         * document.body.scrollTop = 0;
-         * For Chrome, Firefox, IE and Opera.
-         * document.documentElement.scrollTop = 0; 
-         */
-
-        $("HTML, BODY").animate({
-            scrollTop: 0
-        }, 500);
-    }
+    window.onresize = function() {
+        scrollFunction()
+    };
 
     function first_time_identification() {
         jQuery.post("ajax.php", {
@@ -1633,4 +1625,22 @@ require 'include/php_to_js_values.php';
             "html"
         );
     }
+
+    // Info messages action.
+    $(document).ready(function() {
+        var $autocloseTime = <?php echo ((int) $config['notification_autoclose_time'] * 1000); ?>;
+        var $listOfMessages = document.querySelectorAll('.info_box_autoclose');
+        $listOfMessages.forEach(
+            function(item) {
+                autoclose_info_box(item.id, $autocloseTime)
+            }
+        );
+    });
+
+    // Cog animations.
+    $(document).ready(function() {
+        $(".submitButton").click(function(){
+            $("#"+this.id+" > .subIcon.cog").addClass("rotation");
+        });
+    });
 </script>

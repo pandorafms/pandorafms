@@ -176,7 +176,7 @@ function groupview_get_groups_list($id_user=false, $access='AR', $is_not_paginat
         []
     );
 
-    $total_counters = [];
+    $list = [];
 
     foreach ($agents_counters as $id_group => $agent_counter) {
         $list[$id_group]['_name_'] = $agent_counter['name'];

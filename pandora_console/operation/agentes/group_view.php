@@ -175,14 +175,17 @@ if ($total_agentes > 0) {
     $total_not_init = format_numeric((($agents_notinit * 100) / $total_agentes), 2);
 }
 
-echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="databox">';
+echo '<table width="100%" class="info_table">';
+    echo '<thead>';
     echo '<tr>';
         echo "<th colspan=2 class='center'>".__('Summary of the status groups').'</th>';
     echo '</tr>';
     echo '<tr>';
-        echo "<th width=50% class='center'>".__('Agents').'</th>';
-        echo "<th width=50% class='center'>".__('Modules').'</th>';
+        echo "<th class='center'>".__('Agents').'</th>';
+        echo "<th class='center'>".__('Modules').'</th>';
     echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
     echo "<tr height=70px'>";
         echo "<td align='center'>";
             echo "<span id='sumary' class='red_background'>".$total_agent_critical.'%</span>';
@@ -199,6 +202,7 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
             echo "<span id='sumary' class='bg_4a83f3'>".$total_monitor_not_init.'%</span>';
         echo '</td>';
     echo '</tr>';
+    echo '</tbody>';
 echo '</table>';
 
 if ($count == 1) {
@@ -207,14 +211,28 @@ if ($count == 1) {
     }
 }
 
-ui_pagination($count);
-
 if (empty($result_groups) === false) {
-    echo '<table cellpadding="0" cellspacing="0" class="databox data mrgn_top_10px" border="0" width="100%">';
+    $pagination = ui_pagination(
+        $count,
+        false,
+        $offset,
+        0,
+        true,
+        'offset',
+        false
+    );
+
+    html_print_action_buttons(
+        '',
+        [ 'right_content' => $pagination ]
+    );
+
+    echo '<table class="info_table mrgn_top_10px" border="0" width="100%">';
+        echo '<thead>';
         echo '<tr>';
             echo '<th colspan=2 ></th>';
-            echo "<th colspan=6 class='difference center'>".__('Agents').'</th>';
-            echo "<th colspan=6 class='center'>".__('Modules').'</th>';
+            echo '<th colspan=6>'.__('Agents').'</th>';
+            echo '<th colspan=6>'.__('Modules').'</th>';
         echo '</tr>';
 
         echo '<tr>';
@@ -233,6 +251,7 @@ if (empty($result_groups) === false) {
             echo "<th width='10%' class='mw60px center'>".__('Critical').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Alert fired').'</th>';
         echo '</tr>';
+        echo '</thead>';
 
     foreach ($result_groups as $data) {
         if ((bool) $config['show_empty_groups'] === false
@@ -276,12 +295,12 @@ if (empty($result_groups) === false) {
         echo "<td class='group_view_data center vertical_middle'>";
         if (!isset($data['_is_tag_']) && check_acl($config['id_user'], $data['_id_'], 'AW')) {
             echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$data['_id_'].'">'.html_print_image(
-                'images/target.png',
+                'images/change-active.svg',
                 true,
                 [
                     'border' => '0',
                     'title'  => __('Force'),
-                    'class'  => 'invert_filter',
+                    'class'  => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
         }

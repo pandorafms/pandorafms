@@ -204,22 +204,84 @@ $urlFilter = '&agent_filter='.$agentFilter.'&module_filter='.$moduleFilter.'&typ
 if (!defined('METACONSOLE')) {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox filters';
-    $table->data[0][0] = __('Agents');
-    $table->data[0][0] .= html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
-    $table->data[0][1] = __('Modules');
-    $table->data[0][1] .= html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
-    $table->data[0][2] = __('Type');
-    $table->data[0][2] .= html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
+    $table->class = 'filter-table-adv';
+    $table->size[0] = '33%';
+    $table->size[1] = '33%';
+    $table->size[1] = '33%';
+    $table->data[0][0] = html_print_label_input_block(
+        __('Agents'),
+        html_print_select(
+            $agents,
+            'agent_filter',
+            $agentFilter,
+            '',
+            __('All'),
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width:100%'
+        )
+    );
+    $table->data[0][1] = html_print_label_input_block(
+        __('Modules'),
+        html_print_select(
+            $modules,
+            'module_filter',
+            $moduleFilter,
+            '',
+            __('All'),
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width:100%'
+        )
+    );
+    $table->data[0][2] = html_print_label_input_block(
+        __('Type'),
+        html_print_select(
+            $types,
+            'type_filter',
+            $typeFilter,
+            '',
+            __('All'),
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width:100%'
+        )
+    );
     $form = '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report='.$idReport.'">';
     $form .= html_print_table($table, true);
-    $form .= '<div class="action-buttons" style="width: '.$table->width.'">';
-    $form .= html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"', true);
+    $form .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Filter'),
+                'filter',
+                false,
+                [
+                    'class' => 'mini',
+                    'icon'  => 'search',
+                    'mode'  => 'secondary',
+                ],
+                true
+            ),
+        ],
+        true
+    );
     $form .= html_print_input_hidden('action', 'filter', true);
-    $form .= '</div>';
     $form .= '</form>';
 
-    ui_toggle($form, __('Filters'));
+    ui_toggle($form, __('Filters'), '', '', false);
 } else {
     $table = new stdClass();
     $table->width = '96%';
@@ -349,7 +411,7 @@ $table->style[0] = 'text-align: right;';
 
 
 if ($items) {
-    $table->width = '98%';
+    $table->width = '100%';
     if (defined('METACONSOLE')) {
         $table->width = '100%';
         $table->class = 'databox data';
@@ -616,17 +678,19 @@ foreach ($items as $item) {
     $row[6] = '';
 
     if (check_acl($config['id_user'], $item['id_group'], 'RM')) {
-        $table->cellclass[][6] = 'action_buttons';
+        $table->cellclass[][6] = 'table_action_buttons';
         $row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report='.$idReport.'&id_item='.$item['id_rc'].'">'.html_print_image(
-            'images/config.png',
+            'images/edit.svg',
             true,
             [
-                'title' => __('Edit'),
-                'class' => 'invert_filter',
+                'title'      => __('Edit'),
+                'class'      => 'invert_filter main_menu_icon',
+                'form'       => 'form_delete',
+                'data-value' => $item['id_rc'],
             ]
         ).'</a>';
         $row[6] .= '&nbsp;';
-        $row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report='.$idReport.'&id_item='.$item['id_rc'].$urlFilter.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+        $row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report='.$idReport.'&id_item='.$item['id_rc'].$urlFilter.'">'.html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
         $row[6] .= '&nbsp;';
         $row[6] .= html_print_checkbox_extended(
             'delete_multiple[]',
@@ -682,128 +746,260 @@ if (defined('METACONSOLE')) {
             'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report='.$idReport.$urlFilter
         );
 
-        echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=".$idReport."'
-			method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
-            echo "<div class='pdd_b_20px right; w100p'>";
+        echo "<form id='form_delete' action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=".$idReport."'
+        method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
 
-            html_print_input_hidden('ids_items_to_delete', '');
-            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete right mrgn_btn_15px"');
-            echo '</div>';
+        echo '<div  class="action-buttons w100p">';
+        html_print_input_hidden('ids_items_to_delete', '');
+        $ActionButtons[] = html_print_submit_button(
+            __('Delete'),
+            'delete_btn',
+            false,
+            [
+                'class' => 'sub ok',
+                'icon'  => 'next',
+            ],
+            true
+        );
+        html_print_action_buttons(
+            implode('', $ActionButtons),
+            ['type' => 'form_action']
+        );
+        echo '</div>';
         echo '</form>';
     }
 }
 
 $table = new stdClass();
 $table->width = '100%';
-$table->colspan[0][0] = 3;
-$table->size = [];
-$table->size[0] = '25%';
-$table->size[1] = '25%';
-$table->size[2] = '25%';
-$table->size[3] = '25%';
+
+
 if (defined('METACONSOLE')) {
+    $table->colspan[0][0] = 3;
+    $table->size = [];
+    $table->size[0] = '25%';
+    $table->size[1] = '25%';
+    $table->size[2] = '25%';
+    $table->size[3] = '25%';
     $table->class = 'databox data';
     $table->head[0] = __('Sort items');
     $table->head_colspan[0] = 4;
     $table->headstyle[0] = 'text-align: center';
+
+    $table->data[1][0] = __('Sort selected items from position: ');
+    $table->data[1][1] = html_print_select_style(
+        [
+            'before' => __('Move before to'),
+            'after'  => __('Move after to'),
+        ],
+        'move_to',
+        '',
+        '',
+        '',
+        '',
+        0,
+        true
+    );
+    $table->data[1][2] = html_print_input_text_extended(
+        'position_to_sort',
+        1,
+        'text-position_to_sort',
+        '',
+        3,
+        10,
+        false,
+        "only_numbers('position_to_sort');",
+        '',
+        true
+    );
+    $table->data[1][2] .= html_print_input_hidden('ids_items_to_sort', '', true);
+    $table->data[1][3] = html_print_submit_button(__('Sort'), 'sort_submit', false, 'class="sub upd"', true);
+
+    echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=sort_items&id_report=".$idReport."'
+        method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
+    html_print_table($table);
+    echo '</form>';
 } else {
-    $table->data[0][0] = '<b>'.__('Sort items').'</b>';
+    $table->class = 'filter-table-adv';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
+
+    $table->data[1][0] = html_print_label_input_block(
+        __('Sort selected items from position: '),
+        html_print_select_style(
+            [
+                'before' => __('Move before to'),
+                'after'  => __('Move after to'),
+            ],
+            'move_to',
+            '',
+            'width:100%',
+            '',
+            '',
+            0,
+            true,
+        )
+    );
+    $table->data[1][2] = html_print_label_input_block(
+        __('Position'),
+        html_print_input_text_extended(
+            'position_to_sort',
+            1,
+            'text-position_to_sort',
+            '',
+            3,
+            10,
+            false,
+            "only_numbers('position_to_sort');",
+            '',
+            true
+        ).html_print_input_hidden('ids_items_to_sort', '', true)
+    );
+
+    $form = "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=sort_items&id_report=".$idReport."' method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
+    $form .= html_print_table($table, true);
+    $form .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Sort'),
+                'sort_submit',
+                false,
+                [
+                    'class' => 'mini',
+                    'icon'  => 'search',
+                    'mode'  => 'secondary',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+    $form .= html_print_input_hidden('action', 'sort_items', true);
+    $form .= '</form>';
+
+    ui_toggle($form, __('Sort items'), '', '', false);
 }
-
-$table->data[1][0] = __('Sort selected items from position: ');
-$table->data[1][1] = html_print_select_style(
-    [
-        'before' => __('Move before to'),
-        'after'  => __('Move after to'),
-    ],
-    'move_to',
-    '',
-    '',
-    '',
-    '',
-    0,
-    true
-);
-$table->data[1][2] = html_print_input_text_extended(
-    'position_to_sort',
-    1,
-    'text-position_to_sort',
-    '',
-    3,
-    10,
-    false,
-    "only_numbers('position_to_sort');",
-    '',
-    true
-);
-$table->data[1][2] .= html_print_input_hidden('ids_items_to_sort', '', true);
-$table->data[1][3] = html_print_submit_button(__('Sort'), 'sort_submit', false, 'class="sub upd"', true);
-
-echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=sort_items&id_report=".$idReport."'
-	method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
-html_print_table($table);
-echo '</form>';
 
 $table = new stdClass();
 $table->width = '100%';
-$table->colspan[0][0] = 3;
-$table->size = [];
-$table->size[0] = '25%';
-$table->size[1] = '25%';
-$table->size[2] = '25%';
-$table->size[3] = '25%';
+
 if (defined('METACONSOLE')) {
+    $table->colspan[0][0] = 3;
+    $table->size = [];
+    $table->size[0] = '25%';
+    $table->size[1] = '25%';
+    $table->size[2] = '25%';
+    $table->size[3] = '25%';
     $table->class = 'databox data';
     $table->head[0] = __('Delete items');
     $table->head_colspan[0] = 4;
     $table->headstyle[0] = 'text-align: center';
+
+    $table->data[1][0] = __('Delete selected items from position: ');
+    $table->data[1][1] = html_print_select_style(
+        [
+            'above' => __('Delete above to'),
+            'below' => __('Delete below to'),
+        ],
+        'delete_m',
+        '',
+        '',
+        '',
+        '',
+        0,
+        true
+    );
+    $table->data[1][2] = html_print_input_text_extended(
+        'position_to_delete',
+        1,
+        'text-position_to_delete',
+        '',
+        3,
+        10,
+        false,
+        "only_numbers('position_to_delete');",
+        '',
+        true
+    );
+    $table->data[1][2] .= html_print_input_hidden('ids_items_to_delete', '', true);
+    $table->data[1][3] = html_print_submit_button(__('Delete'), 'delete_submit', false, 'class="sub upd"', true);
+
+    echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items_pos&id_report=".$idReport."'
+        method='post'>";
+    html_print_table($table);
+    echo '</form>';
 } else {
-    $table->data[0][0] = '<b>'.__('Delete items').'</b>';
+    $table->class = 'filter-table-adv';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
+
+    $table->data[0][0] = html_print_label_input_block(
+        __('Delete selected items from position: '),
+        html_print_select_style(
+            [
+                'above' => __('Delete above to'),
+                'below' => __('Delete below to'),
+            ],
+            'delete_m',
+            '',
+            '',
+            '',
+            '',
+            0,
+            true
+        )
+    );
+    $table->data[0][1] = html_print_label_input_block(
+        __('Poisition'),
+        html_print_input_text_extended(
+            'position_to_delete',
+            1,
+            'text-position_to_delete',
+            '',
+            3,
+            10,
+            false,
+            "only_numbers('position_to_delete');",
+            '',
+            true
+        )
+    );
+
+    $form = "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items_pos&id_report=".$idReport."'
+    method='post'>";
+    $form .= html_print_input_hidden('ids_items_to_delete', '', true);
+    $form .= html_print_table($table, true);
+    $form .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Delete'),
+                'delete_submit',
+                false,
+                [
+                    'class' => 'mini',
+                    'icon'  => 'delete',
+                    'mode'  => 'secondary',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+    $form .= '</form>';
+    ui_toggle($form, __('Delete items'), '', '', false);
 }
-
-$table->data[1][0] = __('Delete selected items from position: ');
-$table->data[1][1] = html_print_select_style(
-    [
-        'above' => __('Delete above to'),
-        'below' => __('Delete below to'),
-    ],
-    'delete_m',
-    '',
-    '',
-    '',
-    '',
-    0,
-    true
-);
-$table->data[1][2] = html_print_input_text_extended(
-    'position_to_delete',
-    1,
-    'text-position_to_delete',
-    '',
-    3,
-    10,
-    false,
-    "only_numbers('position_to_delete');",
-    '',
-    true
-);
-$table->data[1][2] .= html_print_input_hidden('ids_items_to_delete', '', true);
-$table->data[1][3] = html_print_submit_button(__('Delete'), 'delete_submit', false, 'class="sub upd"', true);
-
-echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items_pos&id_report=".$idReport."'
-	method='post'>";
-html_print_table($table);
-echo '</form>';
 
 ?>
 <script type="text/javascript">
 
 function check_all_checkboxes() {
     if ($("input[name=all_delete]").prop("checked")) {
-        $(".check_delete").prop("checked", true);
+        $("[name^='delete_multiple']").prop("checked", true);
     }
     else {
-        $(".check_delete").prop("checked", false);
+        $("[name^='delete_multiple']").prop("checked", false);
     }
 }
 
@@ -830,12 +1026,14 @@ function added_ids_sorted_items_to_hidden_input() {
     var ids = '';
     var first = true;
     
-    $("input.selected_check:checked").each(function(i, val) {
-        if (!first)
-            ids = ids + '|';
-        first = false;
-        
-        ids = ids + $(val).val();
+    $("[name^='sorted_items']").each(function(i, val) {
+        if($(this).prop('checked')){
+            if (!first)
+                ids = ids + '|';
+            first = false;
+
+            ids = ids + $(val).val();
+        }
     });
     
     $("input[name='ids_items_to_sort']").val(ids);
@@ -877,29 +1075,29 @@ function message_check_delete_items() {
 }
 
 function added_ids_deleted_items_to_hidden_input() {
-   var success = message_check_delete_items();
+    var success = message_check_delete_items();
 
-   if(success === false){
-    $(".check_delete").prop("checked", false);
-       return false;
-   }
-    
+    if(success === false){
+        $(".check_delete").prop("checked", false);
+        return false;
+    }
+
     var ids = '';
     var first = true;
-    
-    $("input.check_delete:checked").each(function(i, val) {
-        if (!first)
-            ids = ids + ',';
-        first = false;
-        
-        ids = ids + $(val).val();
+
+    $("[name^='delete_multiple']").each(function(i, val) {
+        if($(this).prop('checked')){
+            if (!first)
+                ids = ids + ',';
+            first = false;
+            ids = ids + $(val).val();
+        }
     });
 
-    $("input[name='ids_items_to_delete']").val(ids);
-    
+    $("#hidden-ids_items_to_delete").val(ids);
+
     if (ids == '') {
         alert("<?php echo __('Please select any item to delete'); ?>");
-        
         return false;
     }
     else {

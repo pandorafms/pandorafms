@@ -37,7 +37,7 @@ ui_require_javascript_file('connection_check', 'include/javascript/', true);
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
@@ -111,16 +111,16 @@ echo '<ul class="mn white-box-content box-shadow flex-row">';
 
 // QR code.
 echo '<li class="nomn">';
-echo '<a href="javascript: show_dialog_qrcode();">';
+echo '<a style="padding-top: 0;" href="javascript: show_dialog_qrcode();">';
 echo '<img class="vc-qr" src="../../images/qrcode_icon_2.jpg"/>';
 echo '</a>';
 echo '</li>';
 
 // Countdown.
-echo '<li class="nomn">';
+echo '<li class="nomn" style="display: flex; align-items: center">';
 echo '<div class="vc-refr">';
-echo '<div id="vc-refr-form">';
-echo __('Refresh').':';
+echo '<div id="vc-refr-form" style="display: flex; align-items: center">';
+echo '<span class="margin-right-1">'.__('Refresh').'</span>';
 echo html_print_select(
     get_refresh_time_array(),
     'vc-refr',

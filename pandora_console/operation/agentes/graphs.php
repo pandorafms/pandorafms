@@ -1,24 +1,39 @@
 <?php
+/**
+ * Agents Graphs.
+ *
+ * @category   Graphs.
+ * @package    Pandora FMS
+ * @subpackage Agent Configuration
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 require_once 'include/functions_agents.php';
 require_once 'include/functions_custom_graphs.php';
 ui_require_javascript_file('calendar');
 
-if (!check_acl($config['id_user'], $id_grupo, 'AR') && !check_acl($config['id_user'], 0, 'AW')) {
+if ((bool) check_acl($config['id_user'], $id_grupo, 'AR') === false && (bool) check_acl($config['id_user'], 0, 'AW') === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access (read) to agent '.agents_get_name($id_agente)
@@ -250,20 +265,40 @@ $table->data[7][3] = html_print_select($graph_option_type, 'option_type', $optio
 $htmlForm = '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'" >';
 $htmlForm .= html_print_table($table, true);
 $htmlForm .= html_print_input_hidden('filter', 1, true);
-$htmlForm .= '<div class="action-buttons" style="width: '.$table->width.'">';
-if (check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
-    $htmlForm .= html_print_button(
+
+$outputButtons = html_print_submit_button(
+    __('Filter'),
+    'filter_button',
+    false,
+    [
+        'icon' => 'update',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
+
+if ((bool) check_acl($config['id_user'], 0, 'RW') === true || (bool) check_acl($config['id_user'], 0, 'RM') === true) {
+    $outputButtons .= html_print_button(
         __('Save as custom graph'),
         'save_custom_graph',
         false,
         '',
-        'class="sub add"  ',
+        [
+            'icon' => 'add',
+            'mode' => 'secondary mini',
+        ],
         true
     );
 }
 
-$htmlForm .= '&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub upd"  ', true);
-$htmlForm .= '</div>';
+$htmlForm .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $outputButtons,
+    ],
+    true
+);
+
 $htmlForm .= '</form>';
 
 ui_toggle($htmlForm, __('Filter graphs'), __('Toggle filter(s)'), '', false);
@@ -279,7 +314,7 @@ if ($start_date != $current) {
 
 if ($combined) {
     // Pass the $modules before the ajax call.
-    echo '<div class="combined-graph-container center w100p"'.'data-period="'.$period.'"'.'data-stacked="'.CUSTOM_GRAPH_LINE.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
+    echo '<div class="combined-graph-container center w100p white_box"'.'data-period="'.$period.'"'.'data-stacked="'.CUSTOM_GRAPH_LINE.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
 } else {
     foreach ($modules as $id_module) {
         $title = modules_get_agentmodule_name($id_module);

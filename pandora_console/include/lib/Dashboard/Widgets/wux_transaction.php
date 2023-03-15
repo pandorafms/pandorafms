@@ -364,21 +364,6 @@ class WuxWidget extends Widget
                 }
 
                 $output .= '<div>';
-                $output .= '<div>';
-                $output .= "<p class='font_20px'>";
-                if ($have_errors === true) {
-                    $output .= __('Global status').': ';
-                    $output .= "<span class='color: #e63c52; font_20px'>";
-                    $output .= __('Failed');
-                    $output .= '</span>';
-                } else {
-                    $output .= __('Global status').': ';
-                    $output .= "<span class='color_82b92e font_20px'>";
-                    $output .= __('Ok');
-                    $output .= '</span>';
-                }
-
-                $output .= '</div>';
 
                 $output .= '<div>';
                 $output .= \ux_console_phases_donut(

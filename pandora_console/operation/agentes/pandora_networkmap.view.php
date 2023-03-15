@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -124,7 +124,7 @@ if (is_ajax() === true) {
 
         $table = new StdClass();
         $table->id = 'form_editor';
-        $table->width = '98%';
+        $table->width = '100%';
         $table->class = 'databox_color';
         $table->head = [];
         $table->size = [];
@@ -1264,7 +1264,7 @@ if (is_ajax() === true) {
         $id_group = agents_get_agent_group($id_agent);
         $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
         $id_os = agents_get_os($id_agent);
-        $return['os'] = ui_print_os_icon($id_os, true, true);
+        $return['os'] = html_print_div([ 'class' => 'flex main_menu_icon invert_filter', 'content' => ui_print_os_icon($id_os, true, true)], true);
 
         echo json_encode($return);
 
@@ -1526,7 +1526,7 @@ if (is_ajax() === true) {
         $id_group = agents_get_agent_group($id_agent);
         $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
         $id_os = agents_get_os($id_agent);
-        $return['os'] = ui_print_os_icon($id_os, true, true);
+        $return['os'] = html_print_div([ 'class' => 'flex main_menu_icon invert_filter', 'content' => ui_print_os_icon($id_os, true, true)], true);
 
         echo json_encode($return);
 
@@ -2341,11 +2341,11 @@ if ($networkmap === false) {
         $buttons['screen'] = [
             'active' => false,
             'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
-                'images/normal_screen.png',
+                'images/exit_fullscreen@svg.svg',
                 true,
                 [
                     'title' => __('Normal screen'),
-                    'class' => 'invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             ).'</a>',
         ];
@@ -2358,33 +2358,33 @@ if ($networkmap === false) {
             $buttons['screen'] = [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;pure=1&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
-                    'images/full_screen.png',
+                    'images/fullscreen@svg.svg',
                     true,
                     [
                         'title' => __('Full screen'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ];
             $buttons['list'] = [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap">'.html_print_image(
-                    'images/list.png',
+                    'images/file-collection@svg.svg',
                     true,
                     [
                         'title' => __('List of networkmap'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ];
             $buttons['option'] = [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=edit&edit_networkmap=1&id_networkmap='.$id.'">'.html_print_image(
-                    'images/setup.png',
+                    'images/edit.svg',
                     true,
                     [
                         'title' => __('Options'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
             ];
@@ -2396,16 +2396,29 @@ if ($networkmap === false) {
     }
 
     if (!$dash_mode) {
-        ui_print_page_header(
+        ui_print_standard_header(
             $networkmap['name'],
             'images/bricks.png',
             false,
             'network_map_enterprise_view',
             false,
             $buttons,
-            false,
-            '',
-            $config['item_title_size_text']
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Topology maps'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Network maps'),
+                ],
+            ],
+            [
+                'id_element' => $networkmap['id'],
+                'url'        => 'operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$networkmap['id'],
+                'label'      => $networkmap['name'],
+                'section'    => 'Network_map',
+            ]
         );
     }
 

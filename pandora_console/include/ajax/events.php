@@ -569,22 +569,19 @@ if ($load_filter_modal) {
     $table->width = '100%';
     $table->cellspacing = 4;
     $table->cellpadding = 4;
+    $table->styleTable = 'font-weight: bold; color: #555; text-align:left; border: 0px !important;';
     $table->class = 'databox';
-    if (is_metaconsole()) {
+    $filter_id_width = '300px';
+    if (is_metaconsole() === true) {
         $table->cellspacing = 0;
         $table->cellpadding = 0;
         $table->class = 'databox filters';
-    }
-
-    $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-    $filter_id_width = '200px';
-    if (is_metaconsole()) {
         $filter_id_width = '150px';
     }
 
     $data = [];
     $table->rowid[3] = 'update_filter_row1';
-    $data[0] = __('Load filter').$jump;
+    $data[0] = '<b>'.__('Load filter').'</b>'.$jump;
     $data[0] .= html_print_select(
         $filters,
         'filter_id',
@@ -599,29 +596,39 @@ if ($load_filter_modal) {
         false,
         'margin-left:5px; width:'.$filter_id_width.';'
     );
-    $data[1] = html_print_submit_button(
-        __('Load filter'),
-        'load_filter',
-        false,
-        'class="sub upd"',
-        true
-    );
-    $data[1] .= html_print_input_hidden('load_filter', 1, true);
+
     $table->data[] = $data;
     $table->rowclass[] = '';
 
     html_print_table($table);
+
+    html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Load filter'),
+                'load_filter',
+                false,
+                [
+                    'icon' => 'update',
+                    'mode' => 'secondary mini',
+                ],
+                true
+            ).html_print_input_hidden('load_filter', 1, true),
+        ]
+    );
     echo '</form>';
     echo '</div>';
     ?>
 <script type="text/javascript">
 function show_filter() {
     $("#load-filter-select").dialog({
+        title: 'Load filter',
         resizable: true,
         draggable: true,
         modal: false,
         closeOnEscape: true,
-        width: 450
+        width: 340
     });
 }
 
@@ -748,15 +755,15 @@ if ($save_filter_modal) {
         $table->cellspacing = 4;
         $table->cellpadding = 4;
         $table->class = 'databox';
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             $table->class = 'databox filters';
             $table->cellspacing = 0;
             $table->cellpadding = 0;
         }
 
-        $table->styleTable = 'font-weight: bold; text-align:left;';
-        if (!is_metaconsole()) {
-            $table->style[0] = 'width: 50%; width:50%;';
+        $table->styleTable = 'font-weight: bold; text-align:left; border: 0px !important;';
+        if (is_metaconsole() === false) {
+            $table->style[0] = '';
         }
 
         $data = [];
@@ -764,30 +771,36 @@ if ($save_filter_modal) {
         $data[0] = html_print_radio_button(
             'filter_mode',
             'new',
-            '',
+            __('New filter'),
             true,
             true
-        ).__('New filter').'';
+        );
 
         $data[1] = html_print_radio_button(
             'filter_mode',
             'update',
-            '',
+            __('Update filter'),
             false,
             true
-        ).__('Update filter').'';
+        );
 
         $table->data[] = $data;
         $table->rowclass[] = '';
 
         $data = [];
         $table->rowid[1] = 'save_filter_row1';
-        $data[0] = __('Filter name').$jump;
+        $table->size[0] = '50%';
+        $table->size[1] = '50%';
+        $table->rowclass[1] = 'flex';
+        $table->rowclass[2] = 'flex';
+        $table->rowclass[3] = 'flex';
+        $table->rowclass[4] = 'flex';
+        $data[0] = '<b>'.__('Filter name').'</b>'.$jump;
         $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
         if (is_metaconsole()) {
             $data[1] = __('Save in Group').$jump;
         } else {
-            $data[1] = __('Filter group').$jump;
+            $data[1] = '<b>'.__('Filter group').'</b>'.$jump;
         }
 
         $user_groups_array = users_get_groups_for_select(
@@ -832,33 +845,55 @@ if ($save_filter_modal) {
             '',
             '',
             0,
-            true
-        );
-        $data[1] = html_print_submit_button(
-            __('Update filter'),
-            'update_filter',
+            true,
             false,
-            'class="sub upd" onclick="save_update_filter();"',
-            true
+            true,
+            'w130'
         );
 
         $table->data[] = $data;
         $table->rowclass[] = '';
 
         html_print_table($table);
-        echo '<div>';
-            echo html_print_submit_button(
-                __('Save filter'),
-                'save_filter',
-                false,
-                'class="sub upd float-right" onclick="save_new_filter();"',
-                true
-            );
-        echo '</div>';
+
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Save filter'),
+                    'save_filter',
+                    false,
+                    [
+                        'icon'    => 'update',
+                        'mode'    => 'secondary mini',
+                        'onClick' => 'save_new_filter();',
+                    ],
+                    true
+                ),
+            ]
+        );
+
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Update filter'),
+                    'update_filter',
+                    false,
+                    [
+                        'icon'    => 'update',
+                        'mode'    => 'secondary mini',
+                        'onClick' => 'save_update_filter();',
+                    ],
+                    true
+                ),
+            ]
+        );
     } else {
         include 'general/noaccess.php';
     }
 
+    $modal_title = __('Save/Update filters');
     echo '</div>';
     ?>
 <script type="text/javascript">
@@ -866,26 +901,31 @@ function show_save_filter() {
     $('#save_filter_row1').show();
     $('#save_filter_row2').show();
     $('#update_filter_row1').hide();
+    $('#button-update_filter').hide();
     // Filter save mode selector
     $("[name='filter_mode']").click(function() {
         if ($(this).val() == 'new') {
             $('#save_filter_row1').show();
             $('#save_filter_row2').show();
-            $('#submit-save_filter').show();
+            $('#button-save_filter').show();
             $('#update_filter_row1').hide();
+            $('#button-update_filter').hide();
         }
         else {
             $('#save_filter_row1').hide();
             $('#save_filter_row2').hide();
             $('#update_filter_row1').show();
-            $('#submit-save_filter').hide();
+            $('#button-update_filter').show();
+            $('#button-save_filter').hide();
         }
     });
     $("#save-filter-select").dialog({
+        title: '<?php echo $modal_title; ?>',
         resizable: true,
         draggable: true,
         modal: false,
-        closeOnEscape: true
+        closeOnEscape: true,
+        width: 700
     });
 }
 
@@ -1693,32 +1733,32 @@ if ($get_extended_event) {
     // Tabs.
     $tabs = "<ul class='event_detail_tab_menu'>";
     $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image(
-        'images/lightning_go.png',
+        'images/event.svg',
         true,
-        ['class' => 'invert_filter']
+        ['class' => 'invert_filter main_menu_icon']
     ).'<span>'.__('General').'</span></a></li>';
     if (events_has_extended_info($event['id_evento']) === true) {
         $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image(
-            'images/zoom.png',
+            'images/details.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'invert_filter main_menu_icon']
         ).'<span>'.__('Related').'</span></a></li>';
     }
 
     $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image(
-        'images/zoom.png',
+        'images/details.svg',
         true,
-        ['class' => 'invert_filter']
+        ['class' => 'invert_filter main_menu_icon']
     ).'<span>'.__('Details').'</span></a></li>';
     $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image(
-        'images/custom_field_col.png',
+        'images/agent-fields.svg',
         true,
-        ['class' => 'invert_filter']
+        ['class' => 'invert_filter main_menu_icon']
     ).'<span>'.__('Agent fields').'</span></a></li>';
     $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image(
-        'images/pencil.png',
+        'images/edit.svg',
         true,
-        ['class' => 'invert_filter']
+        ['class' => 'invert_filter main_menu_icon']
     ).'<span>'.__('Comments').'</span></a></li>';
 
     if (!$readonly
@@ -1743,17 +1783,17 @@ if ($get_extended_event) {
         )))
     ) {
         $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image(
-            'images/event_responses.png',
+            'images/responses.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'invert_filter main_menu_icon']
         ).'<span>'.__('Responses').'</span></a></li>';
     }
 
     if (empty($event['custom_data']) === false) {
         $tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image(
-            'images/custom_field_col.png',
+            'images/custom-input@svg.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'invert_filter main_menu_icon']
         ).'<span>'.__('Custom data').'</span></a></li>';
     }
 
@@ -2005,8 +2045,8 @@ if ($table_events) {
     include_once 'include/functions_events.php';
     include_once 'include/functions_graph.php';
 
-    $id_agente = (int) get_parameter('id_agente', 0);
-    $all_events_24h = (int) get_parameter('all_events_24h', 0);
+    $id_agente = (int) get_parameter('id_agente');
+    $all_events_24h = (int) get_parameter('all_events_24h');
 
     // Fix: for tag functionality groups have to be all user_groups
     // (propagate ACL funct!).
@@ -2019,19 +2059,31 @@ if ($table_events) {
         'event_condition',
         'AND'
     );
-    echo '<div class="flex" id="div_all_events_24h">';
-        echo '<label class="mrgn_1_2em"><b>'.__('Show all Events 24h').'</b></label>';
-        echo html_print_switch(
-            [
-                'name'  => 'all_events_24h',
-                'value' => $all_events_24h,
-                'id'    => 'checkbox-all_events_24h',
-            ]
-        );
-    echo '</div>';
+
+    $tableEvents24h = new stdClass();
+    $tableEvents24h->class = 'filter_table';
+    $tableEvents24h->styleTable = 'border: 0;padding: 0;margin: 0 0 10px;';
+    $tableEvents24h->width = '100%';
+    $tableEvents24h->data = [];
+
+    $tableEvents24h->data[0] = html_print_div(
+        [
+            'class'   => 'flex-row-center',
+            'content' => '<span class="font_14px mrgn_right_10px">'.__('Show all Events 24h').'</span>'.html_print_switch(
+                [
+                    'name'  => 'all_events_24h',
+                    'value' => $all_events_24h,
+                    'id'    => 'checkbox-all_events_24h',
+                ]
+            ),
+        ]
+    );
+
+    html_print_table($tableEvents24h);
+
     $date_subtract_day = (time() - (24 * 60 * 60));
 
-    if ($all_events_24h) {
+    if ($all_events_24h !== 0) {
         events_print_event_table(
             'utimestamp > '.$date_subtract_day,
             200,
@@ -2231,7 +2283,7 @@ if ($process_buffers === true) {
         '',
         true,
         true,
-        'white_box white_box_opened',
+        'white_box white_box_opened no_border',
         'no-border flex-row'
     );
 
@@ -2377,7 +2429,7 @@ if ($drawConsoleSound === true) {
                             'type'       => 'button',
                             'name'       => 'melody_sound',
                             'label'      => __('Test sound'),
-                            'attributes' => 'class="sub upd"',
+                            'attributes' => ['icon' => 'sound'],
                             'return'     => true,
                         ],
                     ],
@@ -2440,7 +2492,7 @@ if ($drawConsoleSound === true) {
                     'label'      => __('Start'),
                     'type'       => 'button',
                     'name'       => 'start-search',
-                    'attributes' => 'class="sub play"',
+                    'attributes' => [ 'class' => 'play' ],
                     'return'     => true,
                 ],
                 'div',
@@ -2453,7 +2505,7 @@ if ($drawConsoleSound === true) {
                     'type'       => 'button',
                     'name'       => 'no-alerts',
                     'label'      => __('No alerts'),
-                    'attributes' => 'class="sub alerts"',
+                    'attributes' => ['class' => 'secondary alerts'],
                     'return'     => true,
                 ],
                 'div',

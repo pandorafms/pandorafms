@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -204,15 +204,15 @@ if ($edit_networkmap) {
 }
 
 $button = [];
-if ($edit_networkmap) {
+if ($edit_networkmap === true) {
     $button['map'] = [
         'active' => false,
         'text'   => '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$id.'">'.html_print_image(
-            'images/op_network.png',
+            'images/network@svg.svg',
             true,
             [
                 'title' => __('View map'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
     ];
@@ -275,7 +275,7 @@ if ($not_found) {
 } else {
     if ($disabled_source === false) {
         echo '<div id="map_loading" style="width: 98%;height: 1000px; background-color: rgba(245, 245, 245, .3);position: absolute;display: flex;justify-content: center;align-items: center;flex-direction: column-reverse;">';
-        echo html_print_image('images/spinner.gif', true, 'width: 50px;height: 50px;');
+        echo html_print_image('images/spinner.gif', true, ['width' => '50px', 'height' => '50px']);
         echo '<div>'.__('Creating map...').'</div>';
         echo '</div>';
         $info1 = __('To create a network map that visually recreates link-level (L2) relationships, you must first discover these relationships with Discovery Server.  Network maps only reflect relationships that have already been discovered.');
@@ -292,177 +292,6 @@ if ($not_found) {
         );
     }
 
-    $table = new stdClass();
-    $table->id = 'form_editor';
-
-    $table->width = '98%';
-    $table->class = 'databox_color';
-
-    $table->head = [];
-
-    $table->size = [];
-    $table->size[0] = '30%';
-
-    $table->style = [];
-    $table->style[0] = 'font-weight: bold; width: 150px;';
-    $table->data = [];
-
-    $table->data[0][0] = __('Name');
-    $table->data[0][1] = html_print_input_text(
-        'name',
-        $name,
-        '',
-        30,
-        100,
-        true
-    );
-
-    $return_all_group = false;
-
-    if (users_can_manage_group_all('AR') === true) {
-        $return_all_group = true;
-    }
-
-    $table->data[1][0] = __('Group');
-    $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
-        // Id_user.
-        $config['id_user'],
-        // Privilege.
-        'AR',
-        // ReturnAllGroup.
-        $return_all_group,
-        // Name.
-        'id_group_map',
-        // Selected.
-        $id_group_map,
-        // Script.
-        '',
-        // Nothing.
-        '',
-        // Nothing_value.
-        '',
-        // Return.
-        true
-    ).'</div>';
-
-    $table->data[2][0] = __('Node radius');
-    $table->data[2][1] = html_print_input_text(
-        'node_radius',
-        $node_radius,
-        '',
-        2,
-        10,
-        true
-    );
-
-    $table->data[3][0] = __('Description');
-    $table->data[3][1] = html_print_input_text(
-        'description',
-        $description,
-        '',
-        100,
-        100,
-        true
-    );
-
-    $table->data[4][0] = __('Position X');
-    $table->data[4][1] = html_print_input_text('pos_x', $offset_x, '', 2, 10, true);
-    $table->data[5][0] = __('Position Y');
-    $table->data[5][1] = html_print_input_text('pos_y', $offset_y, '', 2, 10, true);
-
-    $table->data[6][0] = __('Zoom scale');
-    if ($scale_z == '') {
-        $scale_z = 0.5;
-    }
-
-    $table->data[6][1] = html_print_input_text('scale_z', $scale_z, '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
-
-    $table->data['source'][0] = __('Source');
-    $table->data['source'][1] = html_print_select(
-        [
-            'group'      => __('Group'),
-            'recon_task' => __('Discovery task'),
-            'ip_mask'    => __('CIDR IP mask'),
-        ],
-        'source',
-        $source,
-        '',
-        '',
-        0,
-        true,
-        false,
-        false,
-        '',
-        $disabled_source
-    );
-
-    $table->data['source_data_recon_task'][0] = __('Source from recon task');
-    $table->data['source_data_recon_task'][0] .= ui_print_help_tip(
-        __('It is setted any recon task, the nodes get from the recontask IP mask instead from the group.'),
-        true
-    );
-    $table->data['source_data_recon_task'][1] = html_print_select(
-        $list_recon_tasks,
-        'recon_task_id',
-        $recon_task_id,
-        '',
-        __('None'),
-        0,
-        true,
-        false,
-        true,
-        '',
-        $disabled_source
-    );
-    $table->data['source_data_recon_task'][1] .= ui_print_help_tip(
-        __('Show only the task with the recon script "SNMP L2 Recon".'),
-        true
-    );
-
-    $table->data['source_data_ip_mask'][0] = __('Source from CIDR IP mask');
-    $table->data['source_data_ip_mask'][1] = html_print_textarea(
-        'ip_mask',
-        3,
-        5,
-        $ip_mask,
-        'style="width: 238px"',
-        true,
-        '',
-        $disabled_source
-    );
-
-    $table->data['source_data_group'][0] = __('Source group');
-    $table->data['source_data_group'][1] = '<div class="w250px">'.html_print_select_groups(
-        $config['id_user'],
-        'AR',
-        true,
-        'id_group[]',
-        explode(',', $id_group),
-        '',
-        '',
-        '',
-        true,
-        true
-    ).'</div>';
-    $table->data['source_data_group'][1] .= html_print_image(
-        'images/error.png',
-        true,
-        [
-            'id'    => 'group_change_warning',
-            'title' => __('Source id group changed. All elements in networkmap will be lost.'),
-            'style' => 'display : none',
-        ]
-    );
-
-    $table->data['source_data_dont_show_subgroups'][0] = __('Don\'t show subgroups:');
-    $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox(
-        'dont_show_subgroups',
-        '1',
-        $dont_show_subgroups,
-        true,
-        $disabled_source
-    );
-
     $methods = [
         'twopi'          => 'radial',
         'dot'            => 'flat',
@@ -472,79 +301,312 @@ if ($not_found) {
         'radial_dinamic' => 'radial dynamic',
     ];
 
-    $table->data[7][0] = __('Method generation networkmap');
-    $table->data[7][1] = html_print_select(
-        $methods,
-        'method',
-        $method,
-        '',
-        '',
-        'neato',
-        true,
-        false,
-        true,
-        '',
-        $disabled_generation_method_select
-    );
-
     $itemClass = '';
-    if ($disabled_source) {
+    if ($disabled_source === true) {
         $itemClass = 'disabled';
     }
 
-    $table->data['nodesep'][0] = __('Node separation');
-    $table->data['nodesep'][1] = html_print_input_text('node_sep', $node_sep, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_help_tip(__('Separation between nodes. By default 0.25'), true);
+    $return_all_group = false;
 
-    $table->data['ranksep'][0] = __('Rank separation');
-    $table->data['ranksep'][1] = html_print_input_text('rank_sep', $rank_sep, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_help_tip(__('Only flat and radial. Separation between arrows. By default 0.5 in flat and 1.0 in radial'), true);
+    if (users_can_manage_group_all('AR') === true) {
+        $return_all_group = true;
+    }
 
-    $table->data['mindist'][0] = __('Min nodes dist');
-    $table->data['mindist'][1] = html_print_input_text('mindist', $mindist, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_help_tip(__('Only circular. Minimum separation between all nodes. By default 1.0'), true);
+    if (empty($scale_z) === true) {
+        $scale_z = 0.5;
+    }
 
-    $table->data['kval'][0] = __('Default ideal node separation');
-    $table->data['kval'][1] = html_print_input_text('kval', $kval, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_help_tip(__('Only fdp. Default ideal node separation in the layout. By default 0.3'), true);
+    $table = new stdClass();
+    $table->id = 'form_editor';
+    $table->width = '100%';
+    $table->class = 'databox filter-table-adv max_floating_element_size';
+    $table->head = [];
+    $table->size = [];
+    $table->style = [];
+    $table->style[0] = 'width: 50%';
+    $table->style[1] = 'width: 50%';
+    $table->colspan[1][0] = 2;
+    $table->data = [];
 
-    $table->data['refresh'][0] = __('Refresh');
-    $table->data['refresh'][1] = html_print_extended_select_for_time(
-        'refresh_time',
-        $refresh_time,
-        '',
-        '',
-        '0',
-        false,
-        true,
-        false,
-        false
+    $table->data[0][] = html_print_label_input_block(
+        __('Name'),
+        html_print_input_text(
+            'name',
+            $name,
+            '',
+            30,
+            100,
+            true
+        )
+    );
+
+    $table->data[0][] = html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups(
+            // Id_user.
+            $config['id_user'],
+            // Privilege.
+            'AR',
+            // ReturnAllGroup.
+            $return_all_group,
+            // Name.
+            'id_group_map',
+            // Selected.
+            $id_group_map,
+            // Script.
+            '',
+            // Nothing.
+            '',
+            // Nothing_value.
+            '',
+            // Return.
+            true
+        )
+    );
+
+    $table->data[1][] = html_print_label_input_block(
+        __('Description'),
+        html_print_input_text(
+            'description',
+            $description,
+            '',
+            100,
+            100,
+            true
+        )
+    );
+
+    $divLittleFields = [];
+    $divLittleFields[] = html_print_label_input_block(
+        __('Position X'),
+        html_print_input_text('pos_x', $offset_x, '', 10, 10, true, false, false, '', 'w50p'),
+        [ 'div_class' => 'div-4-col' ]
+    );
+
+    $divLittleFields[] = html_print_label_input_block(
+        __('Position Y'),
+        html_print_input_text('pos_y', $offset_y, '', 10, 10, true, false, false, '', 'w50p'),
+        [ 'div_class' => 'div-4-col' ]
+    );
+
+    $divLittleFields[] = html_print_label_input_block(
+        __('Zoom scale'),
+        html_print_input_text('scale_z', $scale_z, '', 10, 10, true, false, false, '', 'w50p').ui_print_input_placeholder(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true),
+        [ 'div_class' => 'div-4-col' ]
+    );
+
+    $divLittleFields[] = html_print_label_input_block(
+        __('Node radius'),
+        html_print_input_text(
+            'node_radius',
+            $node_radius,
+            '',
+            10,
+            10,
+            true,
+            false,
+            false,
+            '',
+            'w50p'
+        ),
+        [ 'div_class' => 'div-4-col' ]
+    );
+
+    $table->colspan[2][0] = 2;
+    $table->data[2][0] = html_print_div(
+        [
+            'style'   => 'flex-direction: row;',
+            'content' => implode('', $divLittleFields),
+        ],
+        true
+    );
+
+    $table->data['source'][] = html_print_label_input_block(
+        __('Source'),
+        html_print_select(
+            [
+                'group'      => __('Group'),
+                'recon_task' => __('Discovery task'),
+                'ip_mask'    => __('CIDR IP mask'),
+            ],
+            'source',
+            $source,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            $disabled_source
+        )
+    );
+
+    $table->data['source_data_group'][] = html_print_label_input_block(
+        __('Source group'),
+        html_print_select_groups(
+            $config['id_user'],
+            'AR',
+            true,
+            'id_group[]',
+            explode(',', $id_group),
+            '',
+            '',
+            '',
+            true,
+            true
+        ).ui_print_input_placeholder(
+            __('Source id group changed. All elements in networkmap will be lost.'),
+            true,
+            [
+                'class' => 'input_sub_placeholder input_sub_placeholder_warning',
+                'style' => 'display: none',
+                'id'    => 'group_change_warning',
+            ]
+        )
+    );
+
+    $table->data['source_data_group'][] = html_print_label_input_block(
+        __('Don\'t show subgroups:'),
+        html_print_checkbox(
+            'dont_show_subgroups',
+            '1',
+            $dont_show_subgroups,
+            true,
+            $disabled_source
+        )
+    );
+
+
+    $table->data['source_data_recon_task'][] = html_print_label_input_block(
+        __('Source from recon task'),
+        html_print_select(
+            $list_recon_tasks,
+            'recon_task_id',
+            $recon_task_id,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            true,
+            '',
+            $disabled_source
+        ).ui_print_input_placeholder(
+            __('It is setted any recon task, the nodes get from the recontask IP mask instead from the group.'),
+            true
+        )
+    );
+
+    $table->data['source_data_ip_mask'][] = html_print_label_input_block(
+        __('Source from CIDR IP mask'),
+        html_print_textarea(
+            'ip_mask',
+            3,
+            5,
+            $ip_mask,
+            'style="width: 100%"',
+            true,
+            '',
+            $disabled_source
+        )
+    );
+
+    $table->data[7][] = html_print_label_input_block(
+        __('Method generation networkmap'),
+        html_print_select(
+            $methods,
+            'method',
+            $method,
+            '',
+            '',
+            'neato',
+            true,
+            false,
+            true,
+            '',
+            $disabled_generation_method_select
+        )
+    );
+
+    $table->data['nodesep'][] = html_print_label_input_block(
+        __('Node separation'),
+        html_print_input_text('node_sep', $node_sep, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_input_placeholder(__('Separation between nodes. By default 0.25'), true)
+    );
+
+    $table->data['ranksep'][] = html_print_label_input_block(
+        __('Rank separation'),
+        html_print_input_text('rank_sep', $rank_sep, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_input_placeholder(__('Only flat and radial. Separation between arrows. By default 0.5 in flat and 1.0 in radial'), true)
+    );
+
+    $table->data['mindist'][] = html_print_label_input_block(
+        __('Min nodes dist'),
+        html_print_input_text('mindist', $mindist, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_input_placeholder(__('Only circular. Minimum separation between all nodes. By default 1.0'), true)
+    );
+
+    $table->data['kval'][] = html_print_label_input_block(
+        __('Default ideal node separation'),
+        html_print_input_text('kval', $kval, '', 5, 10, true, $disabled_source, false, $itemClass).ui_print_input_placeholder(__('Only fdp. Default ideal node separation in the layout. By default 0.3'), true)
+    );
+
+    $table->data['refresh'][] = html_print_label_input_block(
+        __('Refresh'),
+        html_print_extended_select_for_time(
+            'refresh_time',
+            $refresh_time,
+            '',
+            '',
+            '0',
+            false,
+            true,
+            false,
+            false
+        )
     );
 
     echo '<form id="networkmap_options_form" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 
     html_print_table($table);
 
-    echo "<div style='width: ".$table->width."; text-align: right; margin-top:20px;'>";
-    if ($new_networkmap) {
+    $actionButtons = [];
+
+    if ($new_networkmap === true) {
         html_print_input_hidden('save_networkmap', 1);
-        html_print_submit_button(
+        $actionButtons[] = html_print_submit_button(
             __('Save networkmap'),
             'crt',
             false,
-            'class="sub next" onclick="if (typeof(sent) == \'undefined\') {sent = 1; return true;} else {return false;}"'
+            [
+                'onClick' => 'if (typeof(sent) == \'undefined\') {sent = 1; return true;} else {return false;}',
+                'icon'    => 'next',
+            ],
+            true
         );
     }
 
-    if ($edit_networkmap) {
+    if ($edit_networkmap === true) {
         html_print_input_hidden('id_networkmap', $id);
         html_print_input_hidden('update_networkmap', 1);
-        html_print_submit_button(
+        $actionButtons[] = html_print_submit_button(
             __('Update networkmap'),
             'crt',
             false,
-            'class="sub upd"'
+            [ 'icon' => 'update'],
+            true
         );
     }
 
+    $actionButtons[] = html_print_go_back_button(
+        'index.php?sec=networkmapconsole&sec2=operation/agentes/pandora_networkmap',
+        ['button_class' => ''],
+        true
+    );
+
+    html_print_action_buttons(
+        $actionButtons
+    );
+
     echo '</form>';
-    echo '</div>';
 }
 ?>
 <script type="text/javascript">

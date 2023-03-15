@@ -77,70 +77,73 @@ if ($generate_trap) {
 }
 
 $table = new stdClass();
-$traps_generator = '<form method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
+$traps_generator = '<form class="max_floating_element_size" method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'filter-table-adv databox';
 $table->size = [];
 $table->data = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->size[2] = '50%';
 
-$table->data[0][0] = __('Host address');
-$table->data[0][1] = html_print_input_text(
-    'snmp_host_address',
-    $snmp_host_address,
-    '',
-    50,
-    255,
-    true
+$table->data[0][0] = html_print_label_input_block(
+    __('Host address'),
+    html_print_input_text(
+        'snmp_host_address',
+        $snmp_host_address,
+        '',
+        50,
+        255,
+        true
+    )
 );
 
-$table->data[0][2] = __('Community');
-$table->data[0][3] = html_print_input_text(
-    'snmp_community',
-    $snmp_community,
-    '',
-    50,
-    255,
-    true
+$table->data[0][1] = html_print_label_input_block(
+    __('Community'),
+    html_print_input_text(
+        'snmp_community',
+        $snmp_community,
+        '',
+        50,
+        255,
+        true
+    )
 );
 
-$table->data[2][0] = __('Enterprise String');
-$table->data[2][1] = html_print_input_text(
-    'snmp_oid',
-    $snmp_oid,
-    '',
-    50,
-    255,
-    true
+$table->data[1][0] = html_print_label_input_block(
+    __('Enterprise String'),
+    html_print_input_text(
+        'snmp_oid',
+        $snmp_oid,
+        '',
+        50,
+        255,
+        true
+    )
 );
 
-$table->data[2][2] = __('Value');
-$table->data[2][3] = html_print_input_text(
-    'snmp_value',
-    $snmp_value,
-    '',
-    50,
-    255,
-    true
+$table->data[1][2] = html_print_label_input_block(
+    __('Value'),
+    html_print_input_text(
+        'snmp_value',
+        $snmp_value,
+        '',
+        50,
+        255,
+        true
+    )
 );
 
-$table->data[3][0] = __('SNMP Agent');
-$table->data[3][1] = html_print_input_text(
-    'snmp_agent',
-    $snmp_agent,
-    '',
-    50,
-    255,
-    true
-);
-
-$table->data[3][2] = __('SNMP Type');
-$table->data[3][3] = html_print_input_text(
-    'snmp_type',
-    $snmp_type,
-    '',
-    50,
-    255,
-    true
+$table->data[2][0] = html_print_label_input_block(
+    __('SNMP Agent'),
+    html_print_input_text(
+        'snmp_agent',
+        $snmp_agent,
+        '',
+        50,
+        255,
+        true
+    )
 );
 
 $types = [
@@ -152,21 +155,36 @@ $types = [
     5 => 'EGP neighbor loss (5)',
     6 => 'Enterprise (6)',
 ];
-$table->data[3][3] = html_print_select(
-    $types,
-    'snmp_type',
-    $snmp_type,
-    '',
-    __('Select'),
-    -1,
-    true,
-    false,
-    false
+$table->data[2][1] = html_print_label_input_block(
+    __('SNMP Type'),
+    html_print_select(
+        $types,
+        'snmp_type',
+        $snmp_type,
+        '',
+        __('Select'),
+        -1,
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width: 100%'
+    )
 );
 
-
 $traps_generator .= html_print_table($table, true);
-$traps_generator .= '<div style="width:'.$table->width.'; text-align: right;">'.html_print_submit_button(__('Generate trap'), 'btn_generate_trap', false, 'class="sub cog"', true).'</div>';
+$buttons[] = html_print_submit_button(
+    __('Generate trap'),
+    'btn_generate_trap',
+    false,
+    [
+        'class' => 'sub ok submitButton',
+        'icon'  => 'next',
+    ],
+    true
+);
+$traps_generator .= '<div class="action-buttons">'.html_print_action_buttons(implode('', $buttons), ['type' => 'form_action'], true).'</div>';
 $traps_generator .= html_print_input_hidden('generate_trap', 1, true);
 
 unset($table);

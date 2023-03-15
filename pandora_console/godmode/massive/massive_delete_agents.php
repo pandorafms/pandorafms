@@ -148,7 +148,11 @@ $delete = (bool) get_parameter_post('delete');
 if ($delete === true) {
     $result = process_manage_delete($id_agents);
 
-    $info = '{"Agent":"'.implode(',', $id_agents).'"}';
+    if (empty($id_agents) === true) {
+        $info = '{"Agent":"empty"}';
+    } else {
+        $info = '{"Agent":"'.implode(',', $id_agents).'"}';
+    }
 
     if ($result === true) {
         db_pandora_audit(

@@ -1940,6 +1940,12 @@ if ((bool) $config['pure'] === false) {
                 'link'  => '',
                 'label' => $tab_name,
             ],
+        ],
+        [
+            'id_element' => $id_agente,
+            'url'        => 'operation/agentes/ver_agente&id_agente='.$id_agente,
+            'label'      => agents_get_alias($id_agente),
+            'section'    => 'Agents',
         ]
     );
 }

@@ -487,21 +487,18 @@ if (isset($groups[$grupo]) === true || $new_agent === true) {
     $tableAgent->data['primary_group'][0] .= html_print_input_hidden('grupo', $grupo, true);
 }
 
-$tableAgent->data['primary_group'][0] .= html_print_div(
-    [
-        'content' => ui_print_group_icon(
-            $grupo,
-            true,
-            '',
-            ($id_agente === 0) ? 'display: none;' : '',
-            true,
-            false,
-            false,
-            'after_input_icon'
-        ),
-    ],
-    true
+$tableAgent->data['primary_group'][0] .= '<span id="group_preview">';
+$tableAgent->data['primary_group'][0] .= ui_print_group_icon(
+    $grupo,
+    true,
+    '',
+    ($id_agente === 0) ? 'display: none;' : '',
+    true,
+    false,
+    false,
+    'after_input_icon'
 );
+$tableAgent->data['primary_group'][0] .= '</span>';
 
 $tableAgent->data['caption_interval'][0] = __('Interval');
 // $tableAgent->rowstyle['interval'] = 'width: 260px';

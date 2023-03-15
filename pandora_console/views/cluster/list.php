@@ -50,7 +50,7 @@ try {
         'known_status',
         [
             'text'  => 'options',
-            'class' => 'action_buttons',
+            'class' => 'table_action_buttons',
         ],
     ];
 
@@ -102,6 +102,7 @@ try {
                     ],
                 ],
             ],
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
         ]
     );
 } catch (Exception $e) {
@@ -109,24 +110,20 @@ try {
 }
 
 if (check_acl($config['id_user'], 0, 'AW')) {
-    HTML::printForm(
+    $buttons[] = html_print_submit_button(
+        __('New cluster'),
+        'submit',
+        false,
         [
-            'form'   => [
-                'method' => 'POST',
-                'action' => ui_get_full_url($model->url.'&op=new'),
-            ],
-            'inputs' => [
-                [
-                    'class'     => 'w100p',
-                    'arguments' => [
-                        'name'       => 'submit',
-                        'label'      => __('New cluster'),
-                        'type'       => 'submit',
-                        'attributes' => 'class="sub next"',
-                        'return'     => true,
-                    ],
-                ],
-            ],
-        ]
+            'class' => 'sub ok',
+            'icon'  => 'next',
+        ],
+        true
     );
+    echo '<form action="'.ui_get_full_url($model->url.'&op=new').'" method="POST">';
+    html_print_action_buttons(
+        implode('', $buttons),
+        ['type' => 'form_action']
+    );
+    echo '</form>';
 }

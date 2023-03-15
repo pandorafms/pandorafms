@@ -9306,7 +9306,7 @@ div.stat-win-spinner img {
   color: #fff !important;
   font-size: 1.2em;
   margin-right: 5px !important;
-  margin-top: -4px;
+  margin-top: 1px;
 }
 
 .select2-results
@@ -11665,6 +11665,9 @@ div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget:active {
   border-color: #0d312f;
 }
 
+div#menu_full > div#menu_tabs > ul.tabs_ul {
+  margin-bottom: 0px;
+}
 .icon_connection_check {
   width: 65px !important;
   height: 65px !important;

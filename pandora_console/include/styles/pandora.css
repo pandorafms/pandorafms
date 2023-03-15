@@ -11260,6 +11260,15 @@ input.main_menu_icon[src$=".svg"] {
 .main_menu_icon.arrow_down {
   transform: rotate(270deg);
 }
+
+.main_menu_icon.arrow_left {
+  transform: rotate(0deg);
+}
+
+.main_menu_icon.arrow_right {
+  transform: rotate(180deg);
+}
+
 .after_input_icon {
   width: 32px;
   margin-left: 10px;
@@ -11518,6 +11527,12 @@ div[role="dialog"] {
 .alert_background_state {
   mask: url(../../images/alert@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/alert@svg.svg) no-repeat center / contain;
+  margin: 0 auto;
+}
+
+.policy_background_state {
+  mask: url(../../images/policy@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/policy@svg.svg) no-repeat center / contain;
   margin: 0 auto;
 }
 

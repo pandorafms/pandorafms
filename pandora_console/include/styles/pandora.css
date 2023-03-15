@@ -10465,6 +10465,10 @@ button div.upd {
   -webkit-mask: url(../../images/validate.svg) no-repeat center / contain;
 }
 
+button div.mail {
+  mask: url(../../images/mail@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/mail@svg.svg) no-repeat center / contain;
+}
 button div.sound {
   mask: url(../../images/sound_console@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/sound_console@svg.svg) no-repeat center /

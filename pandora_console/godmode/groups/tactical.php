@@ -72,14 +72,14 @@ if (is_metaconsole() === false) {
             ],
             [
                 'link'  => '',
-                'label' => __('Tactic group'),
+                'label' => __('Tactical group view'),
             ],
         ],
         [
             'id_element' => $id_group,
             'url'        => 'gagent&sec2=godmode/groups/tactical&id_group='.$id_group,
             'label'      => groups_get_name($id_group),
-            'section'    => 'Tactic_group',
+            'section'    => 'Groups',
         ]
     );
 }
@@ -187,7 +187,7 @@ try {
         [
             'id'                  => 'list_agents_tactical',
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $columnNames,
             'return'              => true,
@@ -196,6 +196,7 @@ try {
                 'method'   => 'getAgentsByGroup',
                 'id_group' => $id_group,
             ],
+            'dom_elements'        => 'lpfti',
             'no_sortable_columns' => [-1],
             'order'               => [
                 'field'     => 'alias',

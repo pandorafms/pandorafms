@@ -73,9 +73,12 @@ $output .= '<p id="text_tip">';
 $output .= $text;
 $output .= '</p>';
 
+$link_class = 'invisible';
 if (empty($url) === false && $url !== '') {
-    $output .= '<a href="'.$url.'" target="_blank" id="url_tip">'.__('See more info').'<span class="arrow_tips">→</span></a>';
+    $link_class = '';
 }
+
+$output .= '<a href="'.$url.'" class="'.$link_class.'" target="_blank" id="url_tip">'.__('See more info').'</a>';
 
 $output .= '</div>';
 
@@ -116,7 +119,7 @@ if ($preview === true) {
         '',
         [
             'onclick' => 'next_tip()',
-            'class'   => 'mini',
+            'class'   => ($totalTips === '1') ? 'mini hide-button' : 'mini',
         ],
         true
     );

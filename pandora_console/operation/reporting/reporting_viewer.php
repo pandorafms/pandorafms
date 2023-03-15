@@ -221,6 +221,12 @@ ui_print_standard_header(
             'link'  => '',
             'label' => __('Custom reports'),
         ],
+    ],
+    [
+        'id_element' => $id_report,
+        'url'        => 'operation/reporting/reporting_viewer&id='.$id_report,
+        'label'      => reporting_get_name($id_report),
+        'section'    => 'Reporting',
     ]
 );
 

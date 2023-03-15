@@ -240,6 +240,12 @@ if (!$config['pure']) {
                 'link'  => '',
                 'label' => __('Visual console'),
             ],
+        ],
+        [
+            'id_element' => $visualConsoleId,
+            'url'        => 'operation/visual_console/render_view&id='.$visualConsoleId,
+            'label'      => $visualConsoleName,
+            'section'    => 'Visual_Console',
         ]
     );
 }

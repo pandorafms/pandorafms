@@ -487,21 +487,18 @@ if (isset($groups[$grupo]) === true || $new_agent === true) {
     $tableAgent->data['primary_group'][0] .= html_print_input_hidden('grupo', $grupo, true);
 }
 
-$tableAgent->data['primary_group'][0] .= html_print_div(
-    [
-        'content' => ui_print_group_icon(
-            $grupo,
-            true,
-            '',
-            ($id_agente === 0) ? 'display: none;' : '',
-            true,
-            false,
-            false,
-            'after_input_icon'
-        ),
-    ],
-    true
+$tableAgent->data['primary_group'][0] .= '<span id="group_preview">';
+$tableAgent->data['primary_group'][0] .= ui_print_group_icon(
+    $grupo,
+    true,
+    '',
+    ($id_agente === 0) ? 'display: none;' : '',
+    true,
+    false,
+    false,
+    'after_input_icon'
 );
+$tableAgent->data['primary_group'][0] .= '</span>';
 
 $tableAgent->data['caption_interval'][0] = __('Interval');
 // $tableAgent->rowstyle['interval'] = 'width: 260px';
@@ -974,7 +971,7 @@ foreach ($fields as $field) {
         $data_field[1] .= html_print_textarea(
             'customvalue_'.$field['id_field'].'[]',
             2,
-            65,
+            1000,
             $link_text,
             'class="min-height-30px w100p"',
             true
@@ -985,7 +982,7 @@ foreach ($fields as $field) {
         $data_field[1] .= html_print_textarea(
             'customvalue_'.$field['id_field'].'[]',
             2,
-            65,
+            1000,
             $link_url,
             'class="min-height-30px w100p"',
             true
@@ -994,7 +991,7 @@ foreach ($fields as $field) {
         $customContent = html_print_textarea(
             'customvalue_'.$field['id_field'],
             2,
-            65,
+            1000,
             $custom_value,
             'class="min-height-30px w100p"',
             true
@@ -1039,7 +1036,7 @@ if (empty($fields) === false) {
         '',
         true,
         false,
-        'white_box white_box_opened white_table_graph_fixed',
+        'white_box white_box_opened white_table_graph_fixed no_border',
         'no-border custom_fields_elements'
     );
 }

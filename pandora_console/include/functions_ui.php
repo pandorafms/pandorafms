@@ -723,7 +723,23 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
         $output .= '<span title="'.groups_get_name($id_group, true).'">'.groups_get_name($id_group, true).'&nbsp;</span>';
     } else {
         if (empty($icon) === true) {
-            $output .= '<span title="'.groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
+            $output .= '<span title="'.groups_get_name($id_group, true).'">';
+            $output .= '</span>';
+            $output .= html_print_image(
+                'images/unknown@groups.svg',
+                true,
+                [
+                    'style' => $style,
+                    'class' => 'main_menu_icon '.$class,
+                    'alt'   => groups_get_name($id_group, true),
+                    'title' => groups_get_name($id_group, true),
+                ],
+                false,
+                false,
+                false,
+                true
+            );
+            $output .= '</span>';
         } else {
             if (empty($class) === true) {
                 $class = 'bot';
@@ -3879,8 +3895,8 @@ function ui_print_datatable(array $parameters)
     }
 
     $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
-                $("div[id^=info_box_]").show();
-                $("div[id^=info_box_]").removeClass(\'invisible_important\');
+                $(".datatable-msg-info-'.$table_id.'").show();
+                $(".datatable-msg-info-'.$table_id.'").removeClass(\'invisible_important\');
                 $("table#'.$table_id.'").hide();
                 $("div.dataTables_paginate").hide();
                 $("div.dataTables_info").hide();
@@ -3891,7 +3907,7 @@ function ui_print_datatable(array $parameters)
                     $(".dataTables_paginate.paging_simple_numbers").show()
                 }
             } else {
-                $("div[id^=info_box_]").hide();
+                $(".datatable-msg-info-'.$table_id.'").hide();
                 $("table#'.$table_id.'").show();
                 $("div.dataTables_paginate").show();
                 $("div.dataTables_info").show();
@@ -4028,7 +4044,7 @@ function ui_print_datatable(array $parameters)
     // Order.
     $info_msg_arr = [];
     $info_msg_arr['message'] = $emptyTable;
-    $info_msg_arr['div_class'] = 'info_box_container invisible_important';
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
 
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
     $err_msg = '<div id="error-'.$table_id.'"></div>';

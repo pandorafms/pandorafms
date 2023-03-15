@@ -152,6 +152,13 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
     $autosearch = true;
 }
 
+// The execution has not been done manually.
+$userRequest = (bool) get_parameter('uptbutton');
+if ($userRequest === false) {
+    $autosearch = true;
+    $status = AGENT_MODULE_STATUS_NOT_NORMAL;
+}
+
 if (is_metaconsole() === false) {
     $ag_group = (int) get_parameter('ag_group', 0);
 } else {
@@ -2270,11 +2277,7 @@ if (empty($result) === false) {
         $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', false);
     }
 } else {
-    if ($first_interaction) {
-        ui_print_info_message(['no_close' => true, 'message' => __('This group doesn\'t have any monitor')]);
-    } else {
-        ui_print_info_message(['no_close' => true, 'message' => __('Sorry no search parameters')]);
-    }
+    ui_print_info_message(['no_close' => true, 'message' => __('Sorry no search parameters')]);
 }
 
 if (is_metaconsole() !== true) {

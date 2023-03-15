@@ -7047,7 +7047,7 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
     echo '<div id="message_dialog_'.$id.'" title="'.$title.'" style="'.$style.'">';
         echo '<div class="content_dialog">';
             echo '<div class="icon_message_dialog">';
-                echo html_print_image($img, true, ['alt' => $title, 'border' => 0]);
+                echo html_print_image($img, true, ['alt' => $title, 'border' => 0, 'class' => 'icon_connection_check']);
             echo '</div>';
             echo '<div class="content_message_dialog">';
                 echo '<div class="text_message_dialog">';

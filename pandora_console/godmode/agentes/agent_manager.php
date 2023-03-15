@@ -971,7 +971,7 @@ foreach ($fields as $field) {
         $data_field[1] .= html_print_textarea(
             'customvalue_'.$field['id_field'].'[]',
             2,
-            65,
+            1000,
             $link_text,
             'class="min-height-30px w100p"',
             true
@@ -982,7 +982,7 @@ foreach ($fields as $field) {
         $data_field[1] .= html_print_textarea(
             'customvalue_'.$field['id_field'].'[]',
             2,
-            65,
+            1000,
             $link_url,
             'class="min-height-30px w100p"',
             true
@@ -991,7 +991,7 @@ foreach ($fields as $field) {
         $customContent = html_print_textarea(
             'customvalue_'.$field['id_field'],
             2,
-            65,
+            1000,
             $custom_value,
             'class="min-height-30px w100p"',
             true
@@ -1036,7 +1036,7 @@ if (empty($fields) === false) {
         '',
         true,
         false,
-        'white_box white_box_opened white_table_graph_fixed',
+        'white_box white_box_opened white_table_graph_fixed no_border',
         'no-border custom_fields_elements'
     );
 }

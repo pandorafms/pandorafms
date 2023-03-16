@@ -8255,6 +8255,11 @@ div.graph div.legend table {
   justify-content: center;
 }
 
+.flex_justify_end {
+  display: flex;
+  justify-content: end;
+}
+
 .span_priority {
   width: 20px;
   height: 10px;

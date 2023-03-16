@@ -216,6 +216,19 @@ table tbody td.cellBig {
   font-size: 18px;
 }
 
-table.info_table > tbody > tr:nth-child(even) {
-  background-color: #e5e9ed !important;
+table.info_table {
+  border-collapse: collapse;
+}
+
+table.info_table thead tr th,
+table.info_table thead tr td {
+  background-color: white !important;
+}
+
+table.info_table thead tr th {
+  border-bottom: 1px solid #333333;
+}
+
+table.info_table tbody tr td {
+  border-bottom: 1px solid #e5e5e5;
 }

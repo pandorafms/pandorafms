@@ -1075,24 +1075,6 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         }
 
         foreach ($item['data'] as $k => $event) {
-            // First pass along the class of this row.
-            if ($item['show_summary_group']) {
-                $table1->cellclass[$k][2] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][3] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][4] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][5] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][6] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][8] = get_priority_class($event['criticity']);
-            } else {
-                $table1->cellclass[$k][2] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][3] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][4] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][5] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][6] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
-            }
-
             $data = [];
 
             // Colored box.
@@ -1125,7 +1107,11 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
                 ]
             );
 
-            $data[] = events_print_type_img($event['event_type'], true);
+            if ($pdf) {
+                $data[] = events_print_type_img_pdf($event['event_type'], true);
+            } else {
+                $data[] = events_print_type_img($event['event_type'], true);
+            }
 
             if ($item['show_summary_group']) {
                 $data[] = $event['event_rep'];
@@ -1343,19 +1329,6 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                 if (is_array($item_data) || is_object($item_data)) {
                     foreach ($item_data as $i => $event) {
                         $data = [];
-                        if ($show_summary_group) {
-                            $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
-                        } else {
-                            $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
-                        }
-
                         // Colored box.
                         switch ($event['estado']) {
                             case 0:
@@ -1386,7 +1359,12 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                             ]
                         );
 
-                        $data[1] = events_print_type_img($event['event_type'], true);
+                        if ($pdf) {
+                            $data[1] = events_print_type_img_pdf($event['event_type'], true);
+                        } else {
+                            $data[1] = events_print_type_img($event['event_type'], true);
+                        }
+
                         $data[2] = io_safe_output($event['evento']);
                         $data[3] = get_priority_name($event['criticity']);
                         if ($show_summary_group) {
@@ -2671,21 +2649,6 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         }
 
         foreach ($item['data'] as $i => $event) {
-            if ($item['show_summary_group']) {
-                $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][7] = get_priority_class($event['criticity']);
-            } else {
-                $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
-            }
-
             $data = [];
             // Colored box.
             switch ($event['status']) {
@@ -2716,7 +2679,11 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
                 ]
             );
 
-            $data[] = events_print_type_img($event['type'], true);
+            if ($pdf) {
+                $data[] = events_print_type_img_pdf($event['type'], true);
+            } else {
+                $data[] = events_print_type_img($event['type'], true);
+            }
 
             if ($item['show_summary_group']) {
                 $data[] = $event['count'];
@@ -3284,6 +3251,7 @@ function get_alert_table($data)
 {
     $table = new StdCLass();
     $table->width = '99%';
+    $table->class = 'info_table';
     $table->data = [];
     $table->head = [];
     $table->headstyle = [];

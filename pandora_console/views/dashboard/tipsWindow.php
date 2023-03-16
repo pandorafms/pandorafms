@@ -83,7 +83,7 @@ $output .= '<a href="'.$url.'" class="'.$link_class.'" target="_blank" id="url_t
 $output .= '</div>';
 
 $output .= '<div class="ui-dialog-buttonset">';
-// TODO Delete this buttons and use html_print_button when merge new design
+
 $output .= html_print_button(
     __('Maybe later'),
     '',

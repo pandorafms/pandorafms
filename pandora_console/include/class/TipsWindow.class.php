@@ -436,7 +436,14 @@ class TipsWindow
                 'title',
                 'text',
                 'enable',
-                'actions',
+                [
+                    'text'  => 'edit',
+                    'class' => 'table_action_buttons',
+                ],
+                [
+                    'text'  => 'delete',
+                    'class' => 'table_action_buttons',
+                ],
             ];
 
             $columnNames = [
@@ -444,7 +451,8 @@ class TipsWindow
                 __('Title'),
                 __('Text'),
                 __('Enable'),
-                __('Actions'),
+                __('Edit'),
+                __('Delete'),
             ];
 
             // Load datatables user interface.
@@ -452,7 +460,9 @@ class TipsWindow
                 [
                     'id'                  => 'list_tips_windows',
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
+                    'dom_elements'        => 'lpfti',
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                     'columns'             => $columns,
                     'column_names'        => $columnNames,
                     'ajax_url'            => $this->ajaxController,
@@ -475,18 +485,21 @@ class TipsWindow
                     ],
                 ]
             );
-            echo '<div class="action-buttons w100p">';
-            echo '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create">';
-            html_print_submit_button(
+            echo '<div class="action-buttons w100p" style="width: 100%">';
+            $buttonCreate = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create">';
+            $buttonCreate .= html_print_submit_button(
                 __('Create tip'),
                 'create',
                 false,
                 [
                     'class' => 'sub',
                     'icon'  => 'create_file',
-                ]
+                    ''
+                ],
+                true
             );
-            echo '</a>';
+            $buttonCreate .= '</a>';
+            html_print_action_buttons($buttonCreate);
             echo '</div>';
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -586,16 +599,15 @@ class TipsWindow
                 $data[$key]['title'] = io_safe_output($row['title']);
                 $data[$key]['text'] = io_safe_output($row['text']);
                 $data[$key]['url'] = io_safe_output($row['url']);
-                $data[$key]['actions'] = '<div class="buttons_actions">';
-                $data[$key]['actions'] .= '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&idTip='.$row['id'].'">';
-                $data[$key]['actions'] .= html_print_image(
+                $data[$key]['edit'] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&idTip='.$row['id'].'">';
+                $data[$key]['edit'] .= html_print_image(
                     'images/edit.svg',
                     true,
                     ['class' => 'main_menu_icon']
                 );
-                $data[$key]['actions'] .= '</a>';
-                $data[$key]['actions'] .= '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&action=delete">';
-                $data[$key]['actions'] .= html_print_input_image(
+                $data[$key]['edit'] .= '</a>';
+                $data[$key]['delete'] .= '<form name="grupo" method="post" class="rowPair table_action_buttons" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&action=delete">';
+                $data[$key]['delete'] .= html_print_input_image(
                     'button_delete_tip',
                     'images/delete.svg',
                     '',
@@ -603,12 +615,11 @@ class TipsWindow
                     true,
                     [
                         'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
-                        'class'   => 'main_menu_icon',
+                        'class'   => 'main_menu_icon invert_filter',
                     ]
                 );
-                $data[$key]['actions'] .= html_print_input_hidden('idTip', $row['id'], true);
-                $data[$key]['actions'] .= '</form>';
-                $data[$key]['actions'] .= '</div>';
+                $data[$key]['delete'] .= html_print_input_hidden('idTip', $row['id'], true);
+                $data[$key]['delete'] .= '</form>';
             }
 
             if (empty($data) === true) {
@@ -681,14 +692,50 @@ class TipsWindow
               </script>';
         $table = new stdClass();
         $table->width = '100%';
-        $table->class = 'databox filters';
+        $table->class = 'databox filter-table-adv';
 
-        $table->style[0] = 'font-weight: bold';
+        $table->style[0] = 'width: 50%';
 
         $table->data = [];
-        $table->data[0][0] = __('Images');
-        $table->data[0][1] .= html_print_div(['id' => 'inputs_images'], true);
-        $table->data[0][1] .= html_print_div(
+        $table->data[0][0] = html_print_label_input_block(
+            __('Language'),
+            html_print_select_from_sql(
+                'SELECT id_language, name FROM tlanguage',
+                'id_lang',
+                '',
+                '',
+                '',
+                '0',
+                true,
+                false,
+                true,
+                false,
+                'width: 100%;'
+            )
+        );
+        $table->data[0][1] = html_print_label_input_block(
+            __('Profile'),
+            html_print_select($profiles, 'id_profile', '0', '', __('All'), 0, true)
+        );
+        $table->data[1][0] = html_print_label_input_block(
+            __('Title'),
+            html_print_input_text('title', '', '', 35, 100, true)
+        );
+        $table->data[1][1] = html_print_label_input_block(
+            __('Url'),
+            html_print_input_text('url', '', '', 35, 100, true)
+        );
+        $table->data[2][0] = html_print_label_input_block(
+            __('Text'),
+            html_print_textarea('text', 5, 50, '', '', true),
+        );
+        $table->data[2][1] = html_print_label_input_block(
+            __('Enable'),
+            html_print_checkbox_switch('enable', true, true, true)
+        );
+
+        $inputImages = html_print_div(['id' => 'inputs_images'], true);
+        $inputImages .= html_print_div(
             [
                 'id'      => 'notices_images',
                 'class'   => 'invisible',
@@ -696,41 +743,36 @@ class TipsWindow
             ],
             true
         );
-        $table->data[0][1] .= html_print_button(__('Add image'), 'button_add_image', false, '', '', true);
-        $table->data[1][0] = __('Language');
-        $table->data[1][1] = html_print_select_from_sql(
-            'SELECT id_language, name FROM tlanguage',
-            'id_lang',
-            '',
-            '',
-            '',
-            '0',
+        $inputImages .= html_print_div(
+            [
+                'id'      => 'notices_images',
+                'class'   => 'invisible empty_input_images',
+                'content' => '<p>'.__('Please select a image').'</p>',
+            ],
             true
         );
-        $table->data[2][0] = __('Profile');
-        $table->data[2][1] = html_print_select($profiles, 'id_profile', '0', '', __('All'), 0, true);
-        $table->data[3][0] = __('Title');
-        $table->data[3][1] = html_print_input_text('title', '', '', 35, 100, true);
-        $table->data[4][0] = __('Text');
-        $table->data[4][1] = html_print_textarea('text', 5, 50, '', '', true);
-        $table->data[5][0] = __('Url');
-        $table->data[5][1] = html_print_input_text('url', '', '', 35, 100, true);
-        $table->data[6][0] = __('Enable');
-        $table->data[6][1] = html_print_checkbox_switch('enable', true, true, true);
+        $inputImages .= html_print_button(__('Add image'), 'button_add_image', false, '', ['class' => 'button-add-image'], true);
 
-        echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create&action=create" enctype="multipart/form-data">';
+        $table->data[3][0] = html_print_label_input_block(
+            __('Images'),
+            $inputImages
+        );
+
+        echo '<form method="post" class="max_floating_element_size" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create&action=create" enctype="multipart/form-data">';
         html_print_table($table);
         echo '<div class="action-buttons" style="width: '.$table->width.'">';
-        html_print_submit_button(
+
+        $actionButtons = html_print_submit_button(
             __('Send'),
             'submit_button',
             false,
             [
                 'class' => 'sub',
                 'icon'  => 'update',
-            ]
+            ],
+            true
         );
-        html_print_submit_button(
+        $actionButtons .= html_print_submit_button(
             __('Preview'),
             'preview_button',
             false,
@@ -738,8 +780,11 @@ class TipsWindow
                 'class' => 'sub preview',
                 'id'    => 'prev_button',
                 'icon'  => 'preview',
-            ]
+            ],
+            true
         );
+
+        html_print_action_buttons($actionButtons);
         echo '</div>';
         echo '</form>';
         html_print_div(['id' => 'tips_window_modal_preview']);
@@ -813,16 +858,52 @@ class TipsWindow
               </script>';
         $table = new stdClass();
         $table->width = '100%';
-        $table->class = 'databox filters';
+        $table->class = 'databox filter-table-adv';
 
-        $table->style[0] = 'font-weight: bold';
+        $table->style[0] = 'width: 50%';
 
         $table->data = [];
-        $table->data[0][0] = __('Images');
-        $table->data[0][1] .= $outputImagesTip;
-        $table->data[0][1] .= html_print_div(['id' => 'inputs_images'], true);
-        $table->data[0][1] .= html_print_input_hidden('images_to_delete', '{}', true);
-        $table->data[0][1] .= html_print_div(
+
+        $table->data[0][0] = html_print_label_input_block(
+            __('Language'),
+            html_print_select_from_sql(
+                'SELECT id_language, name FROM tlanguage',
+                'id_lang',
+                $tip['id_lang'],
+                '',
+                '',
+                '0',
+                true,
+                false,
+                true,
+                false,
+                'width: 100%;'
+            )
+        );
+        $table->data[0][1] = html_print_label_input_block(
+            __('Profile'),
+            html_print_select($profiles, 'id_profile', $tip['id_profile'], '', __('All'), 0, true)
+        );
+        $table->data[1][0] = html_print_label_input_block(
+            __('Title'),
+            html_print_input_text('title', $tip['title'], '', 35, 100, true)
+        );
+        $table->data[1][1] = html_print_label_input_block(
+            __('Url'),
+            html_print_input_text('url', $tip['url'], '', 35, 100, true)
+        );
+        $table->data[2][0] = html_print_label_input_block(
+            __('Text'),
+            html_print_textarea('text', 5, 50, $tip['text'], '', true),
+        );
+        $table->data[2][1] = html_print_label_input_block(
+            __('Enable'),
+            html_print_checkbox_switch('enable', 1, ($tip['enable'] === '1') ? true : false, true)
+        );
+        $inputImages = $outputImagesTip;
+        $inputImages .= html_print_div(['id' => 'inputs_images'], true);
+        $inputImages .= html_print_input_hidden('images_to_delete', '{}', true);
+        $inputImages .= html_print_div(
             [
                 'id'      => 'notices_images',
                 'class'   => 'invisible',
@@ -830,41 +911,35 @@ class TipsWindow
             ],
             true
         );
-        $table->data[0][1] .= html_print_button(__('Add image'), 'button_add_image', false, '', '', true);
-        $table->data[1][0] = __('Language');
-        $table->data[1][1] = html_print_select_from_sql(
-            'SELECT id_language, name FROM tlanguage',
-            'id_lang',
-            $tip['id_lang'],
-            '',
-            '',
-            '0',
+        $inputImages .= html_print_div(
+            [
+                'id'      => 'notices_images',
+                'class'   => 'invisible empty_input_images',
+                'content' => '<p>'.__('Please select a image').'</p>',
+            ],
             true
         );
-        $table->data[2][0] = __('Profile');
-        $table->data[2][1] = html_print_select($profiles, 'id_profile', $tip['id_profile'], '', __('All'), 0, true);
-        $table->data[3][0] = __('Title');
-        $table->data[3][1] = html_print_input_text('title', $tip['title'], '', 35, 100, true);
-        $table->data[4][0] = __('Text');
-        $table->data[4][1] = html_print_textarea('text', 5, 50, $tip['text'], '', true);
-        $table->data[5][0] = __('Url');
-        $table->data[5][1] = html_print_input_text('url', $tip['url'], '', 35, 100, true);
-        $table->data[6][0] = __('Enable');
-        $table->data[6][1] = html_print_checkbox_switch('enable', 1, ($tip['enable'] === '1') ? true : false, true);
+        $inputImages .= html_print_button(__('Add image'), 'button_add_image', false, '', ['class' => 'button-add-image'], true);
+
+        $table->data[3][0] = html_print_label_input_block(
+            __('Images'),
+            $inputImages
+        );
 
         echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&action=edit&idTip='.$tip['id'].'" enctype="multipart/form-data">';
         html_print_table($table);
         echo '<div class="action-buttons" style="width: '.$table->width.'">';
-        html_print_submit_button(
+        $actionButtons = html_print_submit_button(
             __('Send'),
             'submit_button',
             false,
             [
                 'class' => 'sub',
                 'icon'  => 'update',
-            ]
+            ],
+            true
         );
-        html_print_submit_button(
+        $actionButtons .= html_print_submit_button(
             __('Preview'),
             'preview_button',
             false,
@@ -872,8 +947,11 @@ class TipsWindow
                 'class' => 'sub preview',
                 'id'    => 'prev_button',
                 'icon'  => 'preview',
-            ]
+            ],
+            true
         );
+
+        html_print_action_buttons($actionButtons);
 
         echo '</div>';
         echo '</form>';

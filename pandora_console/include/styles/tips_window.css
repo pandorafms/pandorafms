@@ -172,17 +172,17 @@ span.count-round-tip.active {
 }
 span.enable {
   display: block;
-  width: 15px;
-  height: 15px;
-  border-radius: 15px;
+  width: 40px;
+  height: 20px;
+  border-radius: 4px;
   background-color: #82b92e;
   margin: 0 auto;
 }
 span.disable {
   display: block;
-  width: 15px;
-  height: 15px;
-  border-radius: 15px;
+  width: 40px;
+  height: 20px;
+  border-radius: 4px;
   background-color: #e63c52;
   margin: 0 auto;
 }
@@ -211,4 +211,13 @@ span.disable {
 .hide-button {
   opacity: 0;
   pointer-events: none;
+}
+#list_tips_windows .main_menu_icon {
+  padding: 0px;
+}
+#list_tips_windows .table_action_buttons {
+  text-align: center;
+}
+.button-add-image {
+  max-width: fit-content;
 }

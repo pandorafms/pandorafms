@@ -907,12 +907,12 @@ if ($agents !== false) {
             $agentDisableEnableTitle = __('Enable agent');
             $agentDisableEnableAction = 'enable_agent';
             $agentDisableEnableCaption = __('You are going to enable a cluster agent. Are you sure?');
-            $agentDisableEnableIcon = 'change-pause.svg';
+            $agentDisableEnableIcon = 'change-active.svg';
         } else {
             $agentDisableEnableTitle = __('Disable agent');
             $agentDisableEnableAction = 'disable_agent';
             $agentDisableEnableCaption = __('You are going to disable a cluster agent. Are you sure?');
-            $agentDisableEnableIcon = 'change-active.svg';
+            $agentDisableEnableIcon = 'change-pause.svg';
         }
 
         $agentActionButtons[] = html_print_menu_button(

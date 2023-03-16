@@ -11695,3 +11695,8 @@ div#menu_full > div#menu_tabs > ul.tabs_ul {
   display: flex;
   flex-direction: column;
 }
+
+div.relative > div > div#ui-datepicker-div {
+  top: 55px !important;
+  left: 5px !important;
+}

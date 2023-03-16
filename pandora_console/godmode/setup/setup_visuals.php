@@ -65,7 +65,7 @@ require_once 'include/functions_themes.php';
 require_once 'include/functions_gis.php';
 
 $row = 0;
-echo '<form id="form_setup" method="post">';
+echo '<form id="form_setup" class="max_floating_element_size" method="post">';
 html_print_input_hidden('update_config', 1);
 
 $performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
@@ -392,7 +392,7 @@ $table_styles->data[$row][] = html_print_label_input_block(
                 $config['login_background'],
                 '',
                 __('Default'),
-                '',
+                'background_pandora_console_keys.jpg',
                 true,
                 false,
                 true,
@@ -532,7 +532,7 @@ if (enterprise_installed() === true) {
                     $config['custom_splash_login'],
                     '',
                     __('Default'),
-                    'default',
+                    'default.svg',
                     true,
                     false,
                     true,
@@ -648,7 +648,7 @@ if (enterprise_installed() === true) {
                     $config['custom_network_center_logo'],
                     '',
                     __('Default'),
-                    '',
+                    'bola_pandora_network_maps.png',
                     true,
                     false,
                     true,
@@ -1588,44 +1588,84 @@ $switchProminentTime .= html_print_radio_button(
     true
 );
 
-if ($config['csv_divider'] !== ';' && $config['csv_divider'] !== ',' && $config['csv_divider'] !== '|') {
-    $csvDividerInputs = html_print_input_text(
-        'csv_divider',
-        $config['csv_divider'],
-        '',
-        20,
-        255,
-        true
-    );
-    $csvDividerInputs .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
-        'images/logs@svg.svg',
-        true,
-        [
-            'id'    => 'select',
-            'class' => 'main_menu_icon invert_filter',
-        ]
-    ).'</a>';
-} else {
-    $csvDividerInputs = html_print_select(
-        $common_dividers,
-        'csv_divider',
-        $config['csv_divider'],
-        '',
-        '',
-        '',
-        true,
-        false,
-        false
-    );
-    $csvDividerInputs .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
-        'images/edit.svg',
-        true,
-        [
-            'id'    => 'pencil',
-            'class' => 'main_menu_icon invert_filter',
-        ]
-    ).'</a>';
-}
+$csvDividerIconEdit = 'images/edit.svg';
+$csvDividerIconFile = 'images/logs@svg.svg';
+
+$isCommonDivider = (in_array($config['csv_divider'], $common_dividers) === true);
+$csvDividerIcon = ($isCommonDivider === false) ? $csvDividerIconEdit : $csvDividerIconFile;
+
+$csvDividerInputsSub = html_print_div(
+    [
+        'class'   => ($isCommonDivider === false) ? 'invisible' : '',
+        'id'      => 'custom_divider_input',
+        'content' => html_print_input_text(
+            'csv_divider',
+            $config['csv_divider'],
+            '',
+            20,
+            255,
+            true,
+            false,
+            false,
+            '',
+            '',
+            '',
+            'off',
+            false,
+            '',
+            '',
+            '',
+            ($isCommonDivider === false)
+        ),
+    ],
+    true
+);
+
+$csvDividerInputsSub .= html_print_div(
+    [
+        'class'   => ($isCommonDivider === true) ? 'invisible' : '',
+        'id'      => 'common_divider_input',
+        'content' => html_print_select(
+            $common_dividers,
+            'csv_divider',
+            $config['csv_divider'],
+            '',
+            '',
+            '',
+            true,
+            false,
+            false,
+            '',
+            ($isCommonDivider === true),
+        ),
+    ],
+    true
+);
+
+$csvDividerInputs = html_print_div(
+    [
+        'class'   => 'mrgn_right_10px',
+        'content' => $csvDividerInputsSub,
+    ],
+    true
+);
+
+$csvDividerInputs .= html_print_image(
+    $csvDividerIcon,
+    true,
+    [
+        'id'    => 'select_csv_divider',
+        'class' => 'invert_filter',
+    ]
+);
+
+$csvDividerBlock = html_print_div(
+    [
+        'class'   => 'flex-row-center',
+        'content' => $csvDividerInputs,
+    ],
+    true
+);
 
 $options_data_multiplier = [];
 $options_data_multiplier[0] = __('Use 1024 when module unit are bytes');
@@ -1980,7 +2020,7 @@ $row++;
 
 $table_other->data[$row][] = html_print_label_input_block(
     __('CSV divider'),
-    $csvDividerInputs
+    $csvDividerBlock
 );
 
 $table_other->data[$row][] = html_print_label_input_block(
@@ -2001,47 +2041,47 @@ $row++;
  *
  */
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('Behaviour configuration').' '.ui_print_help_icon('behavoir_conf_tab', true).'</legend>';
 html_print_table($table_behaviour);
 echo '</fieldset>';
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('GIS configuration').' '.ui_print_help_icon('gis_conf_tab', true).'</legend>';
 html_print_table($table_gis);
 echo '</fieldset>';
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('Style configuration').' '.ui_print_help_icon('style_conf_tab', true).'</legend>';
 html_print_table($table_styles);
 echo '</fieldset>';
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('Charts configuration').' '.ui_print_help_icon('charts_conf_tab', true).'</legend>';
 html_print_table($table_chars);
 echo '</fieldset>';
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('Font and Text configuration').' '.ui_print_help_icon('front_and_text_conf_tab', true).'</legend>';
 html_print_table($table_font);
 echo '</fieldset>';
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('Visual consoles configuration').' '.ui_print_help_icon('visual_consoles_conf_tab', true).'</legend>';
 html_print_table($table_vc);
 echo '</fieldset>';
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('Reports configuration ').ui_print_help_icon('reports_configuration_tab', true).'</legend>';
 html_print_table($table_report);
 echo '</fieldset>';
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('Services configuration').' '.ui_print_help_icon('services_conf_tab', true).'</legend>';
 html_print_table($table_ser);
 echo '</fieldset>';
 
-echo '<fieldset class="max_floating_element_size">';
+echo '<fieldset>';
 echo '<legend>'.__('Other configuration').' '.ui_print_help_icon('other_conf_tab', true).'</legend>';
 html_print_table($table_other);
 echo '</fieldset>';
@@ -2068,26 +2108,21 @@ ui_require_javascript_file('pandora');
 ?>
 <script language="javascript" type="text/javascript">
 
-function edit_csv_divider () {
-    if ($("#csv_divider_custom img").attr("id") == "pencil") {
-        $("#csv_divider_custom img").attr("src", "images/default_list.png");
-        $("#csv_divider_custom img").attr("id", "select");
-        var value = $("#csv_divider").val();
-        $("#csv_divider").replaceWith("<input id='text-csv_divider' name='csv_divider' type='text'>");
-        $("#text-csv_divider").val(value);
-    }
-    else {
-        $("#csv_divider_custom img").attr("src", "images/edit.svg");
-        $("#csv_divider_custom img").attr("id", "pencil");
-        $("#text-csv_divider").replaceWith("<select id='csv_divider' name='csv_divider'>");
-        var o = new Option(";", ";");
-        var o1 = new Option(",", ",");
-        var o2 = new Option("|", "|");
-        $("#csv_divider").append(o);
-        $("#csv_divider").append(o1);
-        $("#csv_divider").append(o2);
-    }
-}
+$(document).ready(function(){
+    var editIcon = "<?php echo $csvDividerIconEdit; ?>";
+    var listIcon = "<?php echo $csvDividerIconFile; ?>";
+
+    $("#select_csv_divider").click(function(){
+        $("#custom_divider_input").toggleClass('invisible');
+        $("#common_divider_input").toggleClass('invisible');
+        let iconPath = $("#select_csv_divider").attr("src");
+        if (iconPath.includes(editIcon)) {
+            $("#select_csv_divider").attr("src", listIcon);
+        } else {
+            $("#select_csv_divider").attr("src", editIcon);
+        }
+    })
+})
 
 // Juanma (07/05/2014) New feature: Custom front page for reports  
 function display_custom_report_front (show,table) {
@@ -2213,17 +2248,15 @@ $(document).ready (function () {
         $("input[name='custom_value']").val("");
         $("input[name='custom_text']").val("");
         
-        $('#submit-update_button').trigger('click');
+        $('#button-update_button').trigger('click');
     });
     
     $("#button-custom_value_add_btn").click( function() {
         $('#hidden-custom_value_add').val(1);
-        
-        $('#submit-update_button').trigger('click');
+        $('#button-update_button').trigger('click');
     });
     //------------------------------------------------------------------
-    
-    
+
     //------------------------------------------------------------------
     // CUSTOM INTERVAL VALUES
     //------------------------------------------------------------------
@@ -2234,10 +2267,11 @@ $(document).ready (function () {
     });
     
     $("#button-interval_add_btn").click( function() {
+        $('#hidden-interval_values').val(1);
         $('#button-update_button').trigger('click');
     });
     //------------------------------------------------------------------
-    
+
     //------------------------------------------------------------------
     // CUSTOM MODULE UNITS
     //------------------------------------------------------------------

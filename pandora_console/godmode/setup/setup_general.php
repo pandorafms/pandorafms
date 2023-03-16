@@ -178,18 +178,18 @@ $select_in = html_print_select(
 
 $table_ichanges = '<table>
         <tr>
-            <td>'.__('Out of black list').'</td>
-            <td></td>
-            <td>'.__('In black list').'</td>
+            <td style="width: 45%">'.__('Out of black list').'</td>
+            <td style="width: 10%"></td>
+            <td style="width: 45%">'.__('In black list').'</td>
         </tr>
         <tr>
-            <td>'.$select_out.'</td>
-            <td>
+            <td style="width: 45%">'.$select_out.'</td>
+            <td style="width: 10%">
                 <a href="javascript:">'.html_print_image('images/arrow@svg.svg', true, ['style' => 'rotate: 180deg;', 'id' => 'right_iblacklist', 'alt' => __('Push selected modules into blacklist'), 'title' => __('Push selected modules into blacklist'), 'class' => 'main_menu_icon invert_filter']).'</a>
                 <br><br>
                 <a href="javascript:">'.html_print_image('images/arrow@svg.svg', true, ['style' => 'rotate: 0', 'id' => 'left_iblacklist', 'alt' => __('Pop selected modules out of blacklist'), 'title' => __('Pop selected modules out of blacklist'), 'class' => 'main_menu_icon invert_filter']).'</a>
             </td>
-            <td>'.$select_in.'</td>
+            <td style="width: 45%">'.$select_in.'</td>
         </tr>
     </table>';
 

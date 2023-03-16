@@ -1423,7 +1423,7 @@ div#menu_container {
 div#menu {
   width: 45px;
   float: left;
-  z-index: 2;
+  z-index: 3;
   position: absolute;
 }
 
@@ -1438,7 +1438,7 @@ div#head {
   min-width: 882px;
   background-color: #fff;
   color: #000;
-  z-index: 2;
+  z-index: 3;
 }
 
 .fixed_header {
@@ -1795,7 +1795,7 @@ div.title_line {
 #menu_tab_frame_view_bc {
   position: sticky;
   top: 61px;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;

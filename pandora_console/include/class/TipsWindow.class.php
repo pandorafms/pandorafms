@@ -121,7 +121,10 @@ class TipsWindow
         }
 
         ui_require_css_file('tips_window');
-        ui_require_css_file('pandora_black');
+        if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
+            ui_require_css_file('pandora_black');
+        }
+
         ui_require_css_file('jquery.bxslider');
         ui_require_javascript_file('tipsWindow');
         ui_require_javascript_file('jquery.bxslider.min');

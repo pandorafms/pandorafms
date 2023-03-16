@@ -2041,47 +2041,47 @@ $row++;
  *
  */
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Behaviour configuration').' '.ui_print_help_icon('behavoir_conf_tab', true).'</legend>';
 html_print_table($table_behaviour);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('GIS configuration').' '.ui_print_help_icon('gis_conf_tab', true).'</legend>';
 html_print_table($table_gis);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Style configuration').' '.ui_print_help_icon('style_conf_tab', true).'</legend>';
 html_print_table($table_styles);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Charts configuration').' '.ui_print_help_icon('charts_conf_tab', true).'</legend>';
 html_print_table($table_chars);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Font and Text configuration').' '.ui_print_help_icon('front_and_text_conf_tab', true).'</legend>';
 html_print_table($table_font);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Visual consoles configuration').' '.ui_print_help_icon('visual_consoles_conf_tab', true).'</legend>';
 html_print_table($table_vc);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Reports configuration ').ui_print_help_icon('reports_configuration_tab', true).'</legend>';
 html_print_table($table_report);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Services configuration').' '.ui_print_help_icon('services_conf_tab', true).'</legend>';
 html_print_table($table_ser);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Other configuration').' '.ui_print_help_icon('other_conf_tab', true).'</legend>';
 html_print_table($table_other);
 echo '</fieldset>';

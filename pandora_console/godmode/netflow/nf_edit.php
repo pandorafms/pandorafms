@@ -211,7 +211,6 @@ $buttons = html_print_submit_button(
     true
 );
 
-// hd($filters);
 if (empty($filters) === false) {
     echo '<form id="multiple_delete" method="POST" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure='.$pure.'">';
     html_print_input_hidden('multiple_delete', 1);

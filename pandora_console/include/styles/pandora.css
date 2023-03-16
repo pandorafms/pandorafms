@@ -304,6 +304,8 @@ td input[type="checkbox"] {
 input[type="image"] {
   border: 0px;
   background-color: transparent;
+  height: auto;
+  padding: 0px;
 }
 
 .container-div-input-password input {
@@ -11250,8 +11252,9 @@ img.main_menu_icon[src$=".svg"] {
 }
 
 input.main_menu_icon[src$=".svg"] {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+  padding: 0px;
 }
 
 .header_help_icon {

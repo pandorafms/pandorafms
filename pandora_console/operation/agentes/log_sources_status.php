@@ -107,9 +107,6 @@ if (!empty($table->data)) {
         'white-box-content',
         'box-flat white_thable_graph mrgn_top_30px'
     );
-} else {
-    ui_print_info_message(['no_close' => true, 'message' => __('No log sources found') ]);
-    $log_sources_defined = false;
 }
 
 // Hidden form to perform post request to Log Viewer page when clicking on the Review field icon.

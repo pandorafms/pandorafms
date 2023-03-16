@@ -11,7 +11,7 @@ $(document).ready(function() {
       `<input type="file" accept="image/png,image/jpeg,image/gif" class="input-file" name="file_${numberImages}"  onchange="checkImage(this)"/>`
     );
     $(div_image).append(
-      `<input type="image" src="images/delete.svg" onclick="removeInputImage(this);" class="remove-image" value="-"/>`
+      `<input type="image" src="images/delete.svg" onclick="removeInputImage(this);" class="remove-image main_menu_icon" value="-"/>`
     );
     $("#inputs_images").append(div_image);
   });

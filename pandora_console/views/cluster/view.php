@@ -385,7 +385,7 @@ $table_events .= '</div>';
             <div class="agent_details_header">
                 <?php echo $table_agent_header; ?>
             </div>
-            <div class="agent_details_content">
+            <div class="agent_details_content pdd_l_50px">
                 <div class="agent_details_graph">
                     <?php echo $table_agent_graph; ?>
                     <div class="agent_details_bullets">

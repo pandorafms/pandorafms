@@ -49,11 +49,11 @@ $output .= '<div class="images">';
 if ($files !== false) {
     if ($preview === true) {
         foreach ($files as $key => $file) {
-            $output .= html_print_image($file, true);
+            $output .= html_print_image($file, true, ['class' => 'main_menu_icon']);
         }
     } else {
         foreach ($files as $key => $file) {
-            $output .= html_print_image($file['path'].$file['filename'], true);
+            $output .= html_print_image($file['path'].$file['filename'], true, ['class' => 'main_menu_icon']);
         }
     }
 }

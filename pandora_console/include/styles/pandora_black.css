@@ -1515,3 +1515,13 @@ div.fixed-bottom-box
 span.select2 {
   border-radius: 6px;
 }
+
+.ui-dialog .tips_header.ui-dialog-titlebar {
+  color: white !important;
+  background-color: #222222 !important;
+}
+
+#tips_window_modal > div.window > div.description > #title_tip,
+#tips_window_modal > div.window > div.description > #text_tip {
+  color: white !important;
+}

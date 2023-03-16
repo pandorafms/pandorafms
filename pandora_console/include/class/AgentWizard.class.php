@@ -601,6 +601,7 @@ class AgentWizard extends HTML
             'action' => $this->sectionUrl,
             'id'     => 'form-main-wizard',
             'method' => 'POST',
+            'class'  => 'white_box pdd_20px filter-list-adv',
         ];
 
         // Inputs.
@@ -829,24 +830,22 @@ class AgentWizard extends HTML
             ];
         }
 
-        $inputs[] = [
-            'arguments' => [
-                'label'      => $this->actionLabel,
-                'name'       => 'sub-protocol',
-                'type'       => 'submit',
-                'attributes' => [
+        html_print_action_buttons(
+            html_print_submit_button(
+                $this->actionLabel,
+                'sub-protocol',
+                false,
+                [
                     'icon'    => 'cog',
-                    'onclick' => '$(\'#form-main-wizard\').submit();',
+                    'onclick' => '$("#form-main-wizard").submit();',
                 ],
-                'return'     => true,
-            ],
-        ];
+                true
+            )
+        );
 
         // Prints main form.
         html_print_div(
             [
-                'class'   => 'white_box',
-                'style'   => 'padding: 20px',
                 'content' => $this->printForm(
                     [
                         'form'      => $form,
@@ -1330,7 +1329,7 @@ class AgentWizard extends HTML
                 $table->rowstyle[$i] = 'color:#ccc;';
                 $data[0] .= ' ';
                 $data[0] .= html_print_image(
-                    'images/error.png',
+                    'images/alert-warning@svg.svg',
                     true,
                     ['title' => $msgError]
                 );
@@ -1348,7 +1347,7 @@ class AgentWizard extends HTML
             // Img Server.
             if ($this->serverType == SERVER_TYPE_ENTERPRISE_SATELLITE) {
                 $img_server = html_print_image(
-                    'images/satellite.png',
+                    'images/satellite@os.svg',
                     true,
                     [
                         'title' => __('Enterprise Satellite server'),
@@ -1358,7 +1357,7 @@ class AgentWizard extends HTML
             } else {
                 if ($module['execution_type'] == EXECUTION_TYPE_PLUGIN) {
                     $img_server = html_print_image(
-                        'images/plugin.png',
+                        'images/plugins@svg.svg',
                         true,
                         [
                             'title' => __('Plugin server'),
@@ -1368,7 +1367,7 @@ class AgentWizard extends HTML
                 } else {
                     if ($this->protocol === 'wmi') {
                         $img_server = html_print_image(
-                            'images/wmi.png',
+                            'images/WMI@svg.svg',
                             true,
                             [
                                 'title' => __('WMI server'),
@@ -1377,7 +1376,7 @@ class AgentWizard extends HTML
                         );
                     } else {
                         $img_server = html_print_image(
-                            'images/op_network.png',
+                            'images/network@svg.svg',
                             true,
                             [
                                 'title' => __('Network server'),
@@ -4091,7 +4090,7 @@ class AgentWizard extends HTML
                     $blockTitle .= '<b>'.$block['name'];
                     $blockTitle .= '&nbsp;&nbsp;';
                     $blockTitle .= html_print_image(
-                        'images/tip_help.png',
+                        'images/info@svg.svg',
                         true,
                         [
                             'title' => __('Modules selected'),
@@ -4111,7 +4110,7 @@ class AgentWizard extends HTML
 
                 $blockTitle .= '&nbsp;&nbsp;';
                 $blockTitle .= html_print_image(
-                    'images/tip_help.png',
+                    'images/info@svg.svg',
                     true,
                     [
                         'title' => __('Modules selected'),
@@ -4206,6 +4205,9 @@ class AgentWizard extends HTML
             $table->size[4] = '140px';
             $table->size[5] = '3%';
 
+            $table->align = [];
+            $table->align[1] = 'center';
+
             // If is needed show current value, we must correct the table.
             if ($showCurrentValue === true) {
                 // Correct headers.
@@ -4274,7 +4276,7 @@ class AgentWizard extends HTML
                         false,
                         false,
                         '',
-                        $md5IdBlock,
+                        $md5IdBlock.' w100p',
                         '',
                         '',
                         false,
@@ -4294,8 +4296,9 @@ class AgentWizard extends HTML
                         1,
                         20,
                         $module['description'],
-                        'form=\'form-create-modules\' class=\'min-height-50px\'',
-                        true
+                        'form=\'form-create-modules\'',
+                        true,
+                        'w100p'
                     );
                 }
 
@@ -4704,8 +4707,6 @@ class AgentWizard extends HTML
                     'toggle_class'      => '',
                     'container_class'   => 'white-box-content',
                     'main_class'        => $class,
-                    'img_a'             => 'images/arrow_down_green.png',
-                    'img_b'             => 'images/arrow_right_green.png',
                     'clean'             => false,
                     'reverseImg'        => $reverseImg,
                     'switch'            => $buttonSwitch,
@@ -5980,7 +5981,7 @@ class AgentWizard extends HTML
                 });
 
                 // Loading.
-                $('#submit-sub-protocol').click(function() {
+                $('#button-sub-protocol').click(function() {
                     $('.wizard-result').remove();
                     $('#form-create-modules').remove();
                     $('.textodialogo').remove();

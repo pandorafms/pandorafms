@@ -1116,6 +1116,7 @@ select,
   border: 1px solid #707070;
   background-color: #222 !important;
   color: #fff !important;
+  border-radius: 0;
 }
 
 .white_table_graph {
@@ -1248,8 +1249,7 @@ a.pandora_pagination:hover {
   background-color: #555 !important;
 }
 .dt-button.buttons-csv.buttons-html5 {
-  filter: invert(100%);
-  background-color: transparent;
+  box-shadow: 0px 3px 6px #111;
 }
 
 .info_table.events > tbody > tr > td {
@@ -1480,13 +1480,6 @@ span.select2-dropdown.select2-dropdown--below {
   z-index: 1200;
 }
 
-div.fixed_filter_bar,
-div.white_table_graph_header {
-  border-radius: 0;
-  border-left: 0px;
-  border-right: 0px;
-}
-
 div.white_table_graph {
   border-radius: 0;
 }
@@ -1500,10 +1493,25 @@ div.white_box.white_box_opened.no_border {
   border-radius: 0px;
 }
 
-table.filter-table-adv td > div label {
+table.filter-table-adv td > div label:not(.inputFile) {
   color: white !important;
 }
 
 #principal_action_buttons {
   background: #111111;
+}
+div.fixed-bottom-box,
+div.fixed-bottom-box
+  > div.fixed-bottom-box-head
+  > div.fixed-bottom-box-head-body {
+  background-color: #111111 !important;
+}
+
+.filter_table,
+.white_table_graph_fixed table {
+  background-color: transparent;
+}
+
+span.select2 {
+  border-radius: 6px;
 }

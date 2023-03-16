@@ -4254,3 +4254,15 @@ CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
     REFERENCES `twelcome_tip` (`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tfavmenu_user`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_user` VARCHAR(255) NOT NULL,
+  `id_element` TEXT,
+  `url` TEXT NOT NULL,
+  `label` VARCHAR(255) NOT NULL,
+  `section` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`));

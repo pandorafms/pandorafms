@@ -875,7 +875,7 @@ if (defined('METACONSOLE')) {
         ],
         true
     );
-    $form .= html_print_input_hidden('action', 'filter', true);
+    $form .= html_print_input_hidden('action', 'sort_items', true);
     $form .= '</form>';
 
     ui_toggle($form, __('Sort items'), '', '', false);

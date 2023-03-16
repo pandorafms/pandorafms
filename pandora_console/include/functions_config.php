@@ -3226,7 +3226,7 @@ function config_process_config()
             // Try to update user table in order to refresh skin inmediatly.
             $is_user_updating = get_parameter('sec2', '');
 
-            if ($is_user_updating == 'operation/users/user_edit') {
+            if ($is_user_updating === 'godmode/users/configure_user') {
                 $id = get_parameter_get('id', $config['id_user']);
                 // ID given as parameter.
                 $user_info = get_user_info($id);
@@ -3754,7 +3754,7 @@ function config_user_set_custom_config()
         }
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $config['metaconsole_access'] = $userinfo['metaconsole_access'];
     }
 }

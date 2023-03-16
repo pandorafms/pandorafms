@@ -418,7 +418,7 @@ class SingleGraphWidget extends Widget
             'dashboard'       => true,
         ];
 
-        $output = '<div class="container-center">';
+        $output = '<div class="container-center widget-mrgn-0px">';
         $output .= \grafico_modulo_sparse($params);
         $output .= '</div>';
         return $output;

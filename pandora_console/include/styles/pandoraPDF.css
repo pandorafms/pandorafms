@@ -28,6 +28,10 @@
  * ============================================================================
  */
 
+body {
+  background-color: white !important;
+}
+
 table.header_table {
   width: 100%;
 }
@@ -38,7 +42,7 @@ table.header_table tr td {
 }
 
 table thead tr th {
-  background-color: #919191;
+  background-color: #e5e5e5;
 }
 
 table thead tr th.title_table_pdf {
@@ -210,4 +214,8 @@ table tbody td.cellBorder1 {
 
 table tbody td.cellBig {
   font-size: 18px;
+}
+
+table.info_table > tbody > tr:nth-child(even) {
+  background-color: #e5e9ed !important;
 }

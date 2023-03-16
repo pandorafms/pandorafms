@@ -492,6 +492,7 @@ class NetworkMapWidget extends Widget
                 'auth_class'    => 'PandoraFMS\Dashboard\Manager',
                 'auth_hash'     => Manager::generatePublicHash(),
                 'node'          => $node,
+                'size'          => $size,
             ]
         );
 

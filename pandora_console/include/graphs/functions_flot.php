@@ -730,8 +730,9 @@ function flot_slicesbar_graph(
     global $config;
 
     if ($ttl == 2) {
+        $tokem_config = uniqid('slicebar');
         $params = [
-            'graph_data'         => $graph_data,
+            'tokem_config'       => $tokem_config,
             'period'             => $period,
             'width'              => $width,
             'height'             => $height,
@@ -752,7 +753,10 @@ function flot_slicesbar_graph(
             'return_img_base_64' => true,
             'date_to'            => $date_to,
             'server_id'          => $server_id,
+            'backgroundColor'    => '#f6f7fb',
         ];
+        // TO-DO Cambiar esto para que se pase por POST, NO SE PUEDE PASAR POR GET.
+        update_config_token($tokem_config, json_encode($graph_data));
 
         $graph = '<img src="data:image/png;base64,';
         $graph .= generator_chart_to_pdf('slicebar', $params);

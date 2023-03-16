@@ -179,7 +179,7 @@ class ModulesByStatus extends Widget
         // This forces at least a first configuration.
         // This forces at least a first configuration.
         $this->configurationRequired = false;
-        if (empty($this->values['status']) === true) {
+        if (empty($this->values['status']) === true && $this->values['status'] !== '0') {
             $this->configurationRequired = true;
         }
 
@@ -311,6 +311,8 @@ class ModulesByStatus extends Widget
                 $nodes_fields[$server['id']] = $server['server_name'];
             }
 
+            $nodes_fields[0] = __('Metaconsola');
+
             $nodes_selected = explode(',', $values['nodes']);
 
             (isset($values['nodes']) === false) ? $nodes_selected = $servers_ids : '';
@@ -369,6 +371,8 @@ class ModulesByStatus extends Widget
     {
         $this->size = parent::getSize();
 
+        global $config;
+
         $output = '';
 
         if (is_metaconsole() === true) {
@@ -413,7 +417,7 @@ class ModulesByStatus extends Widget
                     [
                         'id'                 => $tableId,
                         'class'              => 'info_table align-left-important',
-                        'style'              => 'width: 100%',
+                        'style'              => 'width: 99%',
                         'columns'            => $columns,
                         'column_names'       => $column_names,
                         'ajax_url'           => 'include/ajax/module',
@@ -430,6 +434,26 @@ class ModulesByStatus extends Widget
                             'direction' => 'desc',
                         ],
                         'csv'                => 0,
+                        'pagination_options' => [
+                            [
+                                5,
+                                10,
+                                25,
+                                100,
+                                200,
+                                500,
+                                1000,
+                            ],
+                            [
+                                5,
+                                10,
+                                25,
+                                100,
+                                200,
+                                500,
+                                1000,
+                            ],
+                        ],
                     ]
                 );
             } catch (\Exception $e) {

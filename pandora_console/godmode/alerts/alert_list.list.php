@@ -672,10 +672,10 @@ foreach ($simple_alerts as $alert) {
         '[&hellip;]',
         ''
     );
-    $data[2] .= ' <a class="template_details patatas"
+    $data[2] .= ' <a class="template_details"
 		href="'.ui_get_full_url(false, false, false, false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">';
         $data[2] .= html_print_image(
-            'images/zoom.png',
+            'images/details.svg',
             true,
             [
                 'id'    => 'template-details-'.$alert['id_alert_template'],
@@ -753,7 +753,7 @@ foreach ($simple_alerts as $alert) {
                 'delete',
                 'images/delete.svg',
                 1,
-                'padding:0px; margin-left:5px; margin-right:5px;',
+                'padding:0px; margin-left:5px; margin-right:5px; width: 22px;',
                 true,
                 [
                     'title' => __('Delete action'),
@@ -913,7 +913,7 @@ foreach ($simple_alerts as $alert) {
             'enable',
             'images/lightbulb_off.png',
             1,
-            'padding:0px',
+            'padding:0px; width: 22px; height: 22px;',
             true,
             ['class' => 'filter_none main_menu_icon']
         );
@@ -923,7 +923,7 @@ foreach ($simple_alerts as $alert) {
             'disable',
             'images/lightbulb.png',
             1,
-            'padding:0px;',
+            'padding:0px; width: 22px; height: 22px;',
             true,
             ['class' => 'main_menu_icon']
         );
@@ -941,7 +941,7 @@ foreach ($simple_alerts as $alert) {
                 'standby_off',
                 'images/bell.png',
                 1,
-                'padding:0px;',
+                'padding:0px; width: 22px; height: 22px;',
                 true,
                 ['class' => 'invert_filter main_menu_icon']
             );
@@ -951,7 +951,7 @@ foreach ($simple_alerts as $alert) {
                 'standby_on',
                 'images/bell_pause.png',
                 1,
-                'padding:0px;',
+                'padding:0px; width: 22px; height: 22px;',
                 true,
                 ['class' => 'invert_filter main_menu_icon']
             );

@@ -714,6 +714,14 @@ if ($is_management_allowed === true
             );
 
             if ($result && (!$usedGroup['return'])) {
+                db_process_sql_delete(
+                    'tfavmenu_user',
+                    [
+                        'id_element' => $id_group,
+                        'section'    => 'Groups',
+                        'id_user'    => $config['id_user'],
+                    ]
+                );
                 ui_print_success_message(__('Group successfully deleted'));
             } else {
                 ui_print_error_message(
@@ -898,7 +906,6 @@ if ($tab == 'tree') {
 
         foreach ($groups as $key => $group) {
             $url_edit = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
-            $url_tactical = 'index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$group['id_grupo'];
             if (is_metaconsole()) {
                 $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'].'&tab=groups';
             } else {
@@ -907,7 +914,7 @@ if ($tab == 'tree') {
 
             $table->data[$key][0] = $group['id_grupo'];
             if ($is_management_allowed === true) {
-                $table->data[$key][1] = '<a href="'.$url_tactical.'">'.$group['nombre'].'</a>';
+                $table->data[$key][1] = '<a href="'.$url_edit.'">'.$group['nombre'].'</a>';
             } else {
                 $table->data[$key][1] = $group['nombre'];
             }

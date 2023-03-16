@@ -1921,7 +1921,7 @@ switch ($tab) {
 
 if ((bool) $config['pure'] === false) {
     ui_print_standard_header(
-        __('Agent main view'),
+        __('Agent main view').' ( '.strtolower(agents_get_alias($id_agente)).' )',
         $icon,
         false,
         ($help_header ?? ''),
@@ -1940,6 +1940,12 @@ if ((bool) $config['pure'] === false) {
                 'link'  => '',
                 'label' => $tab_name,
             ],
+        ],
+        [
+            'id_element' => $id_agente,
+            'url'        => 'operation/agentes/ver_agente&id_agente='.$id_agente,
+            'label'      => agents_get_alias($id_agente),
+            'section'    => 'Agents',
         ]
     );
 }

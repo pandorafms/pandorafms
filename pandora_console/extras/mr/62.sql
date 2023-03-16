@@ -175,4 +175,6 @@ CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
   `section` VARCHAR(255) NOT NULL,
 PRIMARY KEY (`id`));
 
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('legacy_database_ha', 1);
+
 COMMIT;

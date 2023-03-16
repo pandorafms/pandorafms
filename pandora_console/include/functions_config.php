@@ -2242,7 +2242,7 @@ function config_process_config()
     }
 
     if (!isset($config['legacy_database_ha'])) {
-        config_update_value('legacy_database_ha', 1);
+        config_update_value('legacy_database_ha', 0);
     }
 
     if (!isset($config['disabled_newsletter'])) {

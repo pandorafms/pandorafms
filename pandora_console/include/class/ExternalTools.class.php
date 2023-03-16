@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -203,132 +203,161 @@ class ExternalTools extends HTML
             }
         }
 
+        html_print_div(['id' => 'layer_sound_alert']);
+        html_print_div(['id' => 'layer_sound_critical']);
+        html_print_div(['id' => 'layer_sound_warning']);
         // Make the table for show the form.
         $table = new stdClass();
         $table->width = '100%';
+        $table->class = 'filter-table-adv';
         $table->id = 'commandsTable';
 
         $table->data = [];
 
-        $table->data[$i][0] = __('Sound for Alert fired');
-        $table->data[$i][1] = html_print_select(
-            $sounds,
-            'sound_alert',
-            $config['sound_alert'],
-            'replaySound(\'alert\');',
-            '',
-            '',
-            true
-        );
-        $table->data[$i][1] .= html_print_anchor(
-            [
-                'href'    => 'javascript:toggleButton(\'alert\')',
-                'content' => html_print_image(
-                    'images/control_play_col.png',
-                    true,
-                    [
-                        'id'    => 'button_sound_warning',
-                        'style' => 'vertical-align: middle;',
-                        'width' => '16',
-                        'title' => __('Play sound'),
-                        'class' => 'invert_filter',
-
-                    ]
-                ),
-            ],
-            true
-        );
-        $table->data[$i++][1] .= '<div id="layer_sound_alert"></div>';
-
-        $table->data[$i][0] = __('Sound for Monitor critical');
-        $table->data[$i][1] = html_print_select(
-            $sounds,
-            'sound_critical',
-            $config['sound_critical'],
-            'replaySound(\'critical\');',
-            '',
-            '',
-            true
-        );
-        $table->data[$i][1] .= html_print_anchor(
-            [
-                'href'    => 'javascript:toggleButton(\'critical\')',
-                'content' => html_print_image(
-                    'images/control_play_col.png',
-                    true,
-                    [
-                        'id'    => 'button_sound_warning',
-                        'style' => 'vertical-align: middle;',
-                        'width' => '16',
-                        'title' => __('Play sound'),
-                        'class' => 'invert_filter',
-
-                    ]
-                ),
-            ],
-            true
-        );
-        $table->data[$i++][1] .= '<div id="layer_sound_critical"></div>';
-
-        $table->data[$i][0] = __('Sound for Monitor warning');
-        $table->data[$i][1] = html_print_select(
-            $sounds,
-            'sound_warning',
-            $config['sound_warning'],
-            'replaySound(\'warning\');',
-            '',
-            '',
-            true
-        );
-        $table->data[$i][1] .= html_print_anchor(
-            [
-                'href'    => 'javascript:toggleButton(\'warning\')',
-                'content' => html_print_image(
-                    'images/control_play_col.png',
-                    true,
-                    [
-                        'id'    => 'button_sound_warning',
-                        'style' => 'vertical-align: middle;',
-                        'width' => '16',
-                        'title' => __('Play sound'),
-                        'class' => 'invert_filter',
-
-                    ]
-                ),
-            ],
-            true
-        );
-        $table->data[$i++][1] .= '<div id="layer_sound_warning"></div>';
-
-        $table->data[$i][0] = __('Custom graphviz directory');
-        $table->data[$i++][1] = html_print_input_text(
-            'graphviz_bin_dir',
-            $config['graphviz_bin_dir'],
-            '',
-            25,
-            255,
-            true
+        $table->data[$i][] = html_print_label_input_block(
+            __('Sound for Alert fired'),
+            html_print_div(
+                [
+                    'class'   => '',
+                    'content' => html_print_select(
+                        $sounds,
+                        'sound_alert',
+                        $config['sound_alert'],
+                        'replaySound(\'alert\');',
+                        '',
+                        '',
+                        true
+                    ).html_print_anchor(
+                        [
+                            'href'    => 'javascript:toggleButton(\'alert\')',
+                            'content' => html_print_image(
+                                'images/change-active.svg',
+                                true,
+                                [
+                                    'id'    => 'button_sound_warning',
+                                    'style' => 'vertical-align: middle; margin-left: 10px',
+                                    'width' => '16',
+                                    'title' => __('Play sound'),
+                                    'class' => 'invert_filter',
+                                ]
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            ),
         );
 
-        $table->data[$i][0] = __('Traceroute path');
-        $table->data[$i++][1] = html_print_input_text('traceroute_path', $this->pathTraceroute, '', 40, 255, true);
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Sound for Monitor critical'),
+            html_print_div(
+                [
+                    'class'   => '',
+                    'content' => html_print_select(
+                        $sounds,
+                        'sound_critical',
+                        $config['sound_critical'],
+                        'replaySound(\'critical\');',
+                        '',
+                        '',
+                        true
+                    ).html_print_anchor(
+                        [
+                            'href'    => 'javascript:toggleButton(\'critical\')',
+                            'content' => html_print_image(
+                                'images/change-active.svg',
+                                true,
+                                [
+                                    'id'    => 'button_sound_warning',
+                                    'style' => 'vertical-align: middle; margin-left: 10px',
+                                    'width' => '16',
+                                    'title' => __('Play sound'),
+                                    'class' => 'invert_filter',
+                                ]
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            ),
+        );
 
-        $table->data[$i][0] = __('Ping path');
-        $table->data[$i++][1] = html_print_input_text('ping_path', $this->pathPing, '', 40, 255, true);
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Sound for Monitor warning'),
+            html_print_div(
+                [
+                    'class'   => '',
+                    'content' => html_print_select(
+                        $sounds,
+                        'sound_warning',
+                        $config['sound_warning'],
+                        'replaySound(\'warning\');',
+                        '',
+                        '',
+                        true
+                    ).html_print_anchor(
+                        [
+                            'href'    => 'javascript:toggleButton(\'warning\')',
+                            'content' => html_print_image(
+                                'images/change-active.svg',
+                                true,
+                                [
+                                    'id'    => 'button_sound_warning',
+                                    'style' => 'vertical-align: middle; margin-left: 10px',
+                                    'width' => '16',
+                                    'title' => __('Play sound'),
+                                    'class' => 'invert_filter',
+                                ]
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            ),
+        );
 
-        $table->data[$i][0] = __('Nmap path');
-        $table->data[$i++][1] = html_print_input_text('nmap_path', $this->pathNmap, '', 40, 255, true);
+        $table->data[$i][] = html_print_label_input_block(
+            __('Custom graphviz directory'),
+            html_print_input_text(
+                'graphviz_bin_dir',
+                $config['graphviz_bin_dir'],
+                '',
+                25,
+                255,
+                true
+            )
+        );
 
-        $table->data[$i][0] = __('Dig path');
-        $table->data[$i++][1] = html_print_input_text('dig_path', $this->pathDig, '', 40, 255, true);
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Snmpget path'),
+            html_print_input_text('snmpget_path', $this->pathSnmpget, '', 40, 255, true)
+        );
 
-        $table->data[$i][0] = __('Snmpget path');
-        $table->data[$i++][1] = html_print_input_text('snmpget_path', $this->pathSnmpget, '', 40, 255, true);
+        $table->data[$i][] = html_print_label_input_block(
+            __('Traceroute path'),
+            html_print_input_text('traceroute_path', $this->pathTraceroute, '', 40, 255, true)
+        );
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Ping path'),
+            html_print_input_text('ping_path', $this->pathPing, '', 40, 255, true)
+        );
+
+        $table->data[$i][] = html_print_label_input_block(
+            __('Nmap path'),
+            html_print_input_text('nmap_path', $this->pathNmap, '', 40, 255, true)
+        );
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Dig path'),
+            html_print_input_text('dig_path', $this->pathDig, '', 40, 255, true)
+        );
 
         $table->data[$i][0] = html_print_div(
             [
                 'class'   => 'title_custom_commands bolder float-left',
-                'content' => __('Custom commands'),
+                'content' => '<label>'.__('Custom commands').'</label>',
             ],
             true
         );
@@ -336,13 +365,13 @@ class ExternalTools extends HTML
             [
                 'id'      => 'add_button_custom_command',
                 'content' => html_print_image(
-                    'images/add.png',
+                    'images/plus@svg.svg',
                     true,
                     [
                         'title'   => __('Add new custom command'),
                         'onclick' => 'manageCommandLines(event)',
                         'id'      => 'img_add_button_custom_command',
-                        'class'   => 'invert_filter',
+                        'class'   => 'main_menu_icon invert_filter',
 
                     ]
                 ),
@@ -350,8 +379,8 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->data[$i][0] = __('Command');
-        $table->data[$i++][1] = __('Parameters').ui_print_help_tip(__('Adding `_address_` macro will use agent\'s IP when perform the execution'), true);
+        $table->data[$i][0] = '<div><label>'.__('Command').'</label></div>';
+        $table->data[$i++][1] = '<div style="flex-direction: row;justify-content: flex-start;"><label>'.__('Parameters').'</label>'.ui_print_help_tip(__('Adding `_address_` macro will use agent\'s IP when perform the execution'), true, '', false, 'margin-top: 2px').'</div>';
 
         $y = 1;
         $iRow = $i;
@@ -378,29 +407,26 @@ class ExternalTools extends HTML
             }
         }
 
-        $form = '<form id="form_setup" method="post" >';
+        $form = '<form class="max_floating_element_size" id="form_setup" method="POST" >';
         $form .= '<fieldset>';
         $form .= '<legend>'.__('Options').'</legend>';
         $form .= html_print_input_hidden('update_paths', 1, true);
         $form .= html_print_table($table, true);
         $form .= '</fieldset>';
-        $form .= html_print_div(
-            [
-                'id'      => '',
-                'class'   => 'action-buttons',
-                'style'   => 'width: 100%',
-                'content' => html_print_submit_button(
-                    __('Update'),
-                    'update_button',
-                    false,
-                    [ 'icon' => 'update' ],
-                    true
-                ),
-            ],
-            true
-        );
-
         $form .= '</form>';
+
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Update'),
+                'update_button',
+                false,
+                [
+                    'icon' => 'update',
+                    'form' => 'form_setup',
+                ],
+                true
+            )
+        );
 
         echo $form;
     }
@@ -436,15 +462,14 @@ class ExternalTools extends HTML
                 $output = html_print_div(
                     [
                         'id'      => 'delete_button_custom_'.$index,
-                        'class'   => '',
                         'content' => html_print_image(
-                            'images/delete.png',
+                            'images/delete.svg',
                             true,
                             [
                                 'title'   => __('Delete this custom command'),
                                 'onclick' => 'manageCommandLines(event)',
                                 'id'      => 'img_delete_button_custom_'.$index,
-                                'class'   => 'invert_filter',
+                                'class'   => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],

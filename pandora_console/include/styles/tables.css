@@ -575,6 +575,10 @@ table.filter-table-adv td input[type="radio"] {
   height: 20px;
 }
 
+table.filter-table-adv div.select-with-sibling {
+  display: flex;
+  align-items: center;
+}
 table.databox.filter-table-adv {
   padding: 10px;
 }

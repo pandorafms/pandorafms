@@ -236,7 +236,8 @@
 .table_action_buttons > a,
 .table_action_buttons > img,
 .table_action_buttons > button,
-.table_action_buttons > form {
+.table_action_buttons > form,
+.table_action_buttons > div {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -248,7 +249,8 @@
 .info_table > tbody > tr:hover .table_action_buttons > a,
 .info_table > tbody > tr:hover .table_action_buttons > img,
 .info_table > tbody > tr:hover .table_action_buttons > button,
-.info_table > tbody > tr:hover .table_action_buttons > form {
+.info_table > tbody > tr:hover .table_action_buttons > form,
+.info_table > tbody > tr:hover .table_action_buttons > div {
   visibility: visible;
 }
 
@@ -460,9 +462,6 @@ a.pandora_pagination.current:hover {
 .table_action_buttons input[type="image"],
 .action_button_img {
   border-radius: 4px;
-  /*border: 1px solid #dcdcdc !important;*/
-  padding: 1px !important;
-  /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);*/
 }
 
 /* This class is for only one icon to be a button type. */

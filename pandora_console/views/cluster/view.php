@@ -192,7 +192,7 @@ if ($in_planned_downtime && !$cluster->agent()->disabled() && !$cluster->agent()
 $table_agent_header = '<div class="agent_details_agent_alias">';
 $table_agent_header .= $agent_name;
 $table_agent_header .= '</div>';
-$table_agent_header .= '<div class="agent_details_agent_name">';
+$table_agent_header .= '<div class="agent_details_agent_name mrgn_lft_10px">';
 if (!$config['show_group_name']) {
     $table_agent_header .= ui_print_group_icon(
         $cluster->agent()->id_grupo(),
@@ -385,7 +385,7 @@ $table_events .= '</div>';
             <div class="agent_details_header">
                 <?php echo $table_agent_header; ?>
             </div>
-            <div class="agent_details_content">
+            <div class="agent_details_content pdd_l_50px">
                 <div class="agent_details_graph">
                     <?php echo $table_agent_graph; ?>
                     <div class="agent_details_bullets">

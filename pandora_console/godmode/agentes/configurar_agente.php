@@ -1907,62 +1907,64 @@ if ($create_module) {
         );
     }
 
-    if (is_error($id_agent_module) === true) {
-        switch ($id_agent_module) {
-            case ERR_EXIST:
-                $msg = __('There was a problem adding module. Another module already exists with the same name.');
-            break;
+    if ($update_module || $create_module) {
+        if (is_error($id_agent_module) === true) {
+            switch ($id_agent_module) {
+                case ERR_EXIST:
+                    $msg = __('There was a problem adding module. Another module already exists with the same name.');
+                break;
 
-            case ERR_INCOMPLETE:
-                $msg = __('There was a problem adding module. Some required fields are missed : (name)');
-            break;
+                case ERR_INCOMPLETE:
+                    $msg = __('There was a problem adding module. Some required fields are missed : (name)');
+                break;
 
-            case ERR_DB:
-            case ERR_GENERIC:
-            default:
-                $msg = __('There was a problem adding module. Processing error');
-            break;
-        }
+                case ERR_DB:
+                case ERR_GENERIC:
+                default:
+                    $msg = __('There was a problem adding module. Processing error');
+                break;
+            }
 
-        // I save the result of the action (insert or update).
-        $success_action = $id_agent_module;
+            // I save the result of the action (insert or update).
+            $success_action = $id_agent_module;
 
-        $id_agent_module = false;
-        ui_print_error_message($msg);
-        $edit_module = true;
-        $moduletype = $id_module;
-        db_pandora_audit(
-            AUDIT_LOG_AGENT_MANAGEMENT,
-            "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
-        );
-    } else {
-        if ($prediction_module === MODULE_PREDICTION_SYNTHETIC) {
-            enterprise_hook(
-                'modules_create_synthetic_operations',
-                [
-                    $id_agent_module,
-                    $serialize_ops,
-                ]
+            $id_agent_module = false;
+            ui_print_error_message($msg);
+            $edit_module = true;
+            $moduletype = $id_module;
+            db_pandora_audit(
+                AUDIT_LOG_AGENT_MANAGEMENT,
+                "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
+            );
+        } else {
+            if ($prediction_module === MODULE_PREDICTION_SYNTHETIC) {
+                enterprise_hook(
+                    'modules_create_synthetic_operations',
+                    [
+                        $id_agent_module,
+                        $serialize_ops,
+                    ]
+                );
+            }
+
+            // Update the module interval.
+            cron_update_module_interval($id_agent_module, $cron_interval);
+
+            ui_print_success_message(__('Module added successfully'));
+            $id_agent_module = false;
+            $edit_module = false;
+
+            $info = '';
+
+            $agent = db_get_row('tagente', 'id_agente', $id_agente);
+            db_pandora_audit(
+                AUDIT_LOG_AGENT_MANAGEMENT,
+                "Added module '".db_escape_string_sql($name)."' for agent ".io_safe_output($agent['alias']),
+                false,
+                true,
+                io_json_mb_encode($values)
             );
         }
-
-        // Update the module interval.
-        cron_update_module_interval($id_agent_module, $cron_interval);
-
-        ui_print_success_message(__('Module added successfully'));
-        $id_agent_module = false;
-        $edit_module = false;
-
-        $info = '';
-
-        $agent = db_get_row('tagente', 'id_agente', $id_agente);
-        db_pandora_audit(
-            AUDIT_LOG_AGENT_MANAGEMENT,
-            "Added module '".db_escape_string_sql($name)."' for agent ".io_safe_output($agent['alias']),
-            false,
-            true,
-            io_json_mb_encode($values)
-        );
     }
 }
 

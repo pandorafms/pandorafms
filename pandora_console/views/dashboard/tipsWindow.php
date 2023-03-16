@@ -49,11 +49,11 @@ $output .= '<div class="images">';
 if ($files !== false) {
     if ($preview === true) {
         foreach ($files as $key => $file) {
-            $output .= html_print_image($file, true);
+            $output .= html_print_image($file, true, ['class' => 'main_menu_icon']);
         }
     } else {
         foreach ($files as $key => $file) {
-            $output .= html_print_image($file['path'].$file['filename'], true);
+            $output .= html_print_image($file['path'].$file['filename'], true, ['class' => 'main_menu_icon']);
         }
     }
 }
@@ -83,7 +83,7 @@ $output .= '<a href="'.$url.'" class="'.$link_class.'" target="_blank" id="url_t
 $output .= '</div>';
 
 $output .= '<div class="ui-dialog-buttonset">';
-// TODO Delete this buttons and use html_print_button when merge new design
+
 $output .= html_print_button(
     __('Maybe later'),
     '',

@@ -132,7 +132,7 @@ $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     [
         'id'    => 'right',
         'title' => __('Add fields to select'),
-        'style' => 'rotate: 180deg; width: 40px',
+        'style' => 'rotate: 180deg;',
     ]
 ).'</a>';
 $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
@@ -141,7 +141,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
     [
         'id'    => 'left',
         'title' => __('Delete fields to select'),
-        'style' => 'width: 40px',
+        'style' => '',
     ]
 ).'</a>';
 

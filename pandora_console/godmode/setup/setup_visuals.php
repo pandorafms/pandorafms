@@ -352,6 +352,42 @@ $table_styles->data[$row][] = html_print_label_input_block(
         'width: 100%'
     )
 );
+
+$table_styles->data[$row][] = html_print_label_input_block(
+    __('Status icon set'),
+    html_print_div(
+        [
+            'class'   => 'select-with-sibling',
+            'content' => html_print_select(
+                $iconsets,
+                'status_images_set',
+                $config['status_images_set'],
+                '',
+                '',
+                '',
+                true,
+                false,
+                true,
+                '',
+                false,
+                'width: 240px'
+            ).html_print_button(
+                __('View'),
+                'status_set_preview',
+                false,
+                '',
+                [
+                    'icon'  => 'camera',
+                    'mode'  => 'link',
+                    'class' => 'logo_preview',
+                ],
+                true
+            ),
+        ],
+        true
+    )
+);
+
 $row++;
 $table_styles->data[$row][] = html_print_label_input_block(
     __('Custom favicon'),
@@ -374,7 +410,10 @@ $table_styles->data[$row][] = html_print_label_input_block(
             ).html_print_image(
                 ui_get_favicon(),
                 true,
-                ['id' => 'favicon_preview']
+                [
+                    'id'    => 'favicon_preview',
+                    'style' => 'margin-left: 10px',
+                ]
             ),
         ],
         true
@@ -498,7 +537,7 @@ $table_styles->data[$row][] = html_print_label_input_block(
     html_print_div(
         [
             'class'   => 'select-with-sibling',
-            'content' => $entOpenFilesInput.html_print_button(
+            'content' => $customLogoLoginInput.html_print_button(
                 __('View'),
                 'custom_logo_login_preview',
                 $open,

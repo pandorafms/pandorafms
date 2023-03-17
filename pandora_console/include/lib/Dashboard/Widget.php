@@ -420,6 +420,9 @@ class Widget
                 case 'ColorModuleTabs':
                 case 'BlockHistogram':
                 case 'DataMatrix':
+                case 'EventCardboard':
+                case 'ModulesByStatus':
+                case 'AvgSumMaxMinModule':
                     $className .= '\\'.$name;
                 break;
 

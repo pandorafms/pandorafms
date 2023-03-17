@@ -59,81 +59,112 @@ ui_print_warning_message(
     ]
 );
 
-$table = new StdClass();
+$table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filter-table-adv mrgn_top_15px pdd_t_0px_important';
 $table->data = [];
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->head[0] = __('Agent position');
 $table->head_colspan[0] = 4;
 $table->headstyle[0] = 'text-align:center';
-$table->style[0] = 'font-weight: bold; ';
-$table->style[2] = 'font-weight: bold; ';
+$table->size[0] = '50%';
+$table->size[2] = '50%';
 
-$table->data[1][0] = __('Latitude: ');
-$table->data[1][1] = html_print_input_text_extended(
-    'latitude',
-    $agentData['stored_latitude'],
-    'text-latitude',
-    '',
-    20,
-    20,
-    false,
-    '',
-    [
-        'onchange' => 'setIgnoreGISDataEnabled()',
-        'onkeyup'  => 'setIgnoreGISDataEnabled()',
-    ],
-    true
+$table->data[1][0] = html_print_label_input_block(
+    __('Latitude: '),
+    html_print_input_text_extended(
+        'latitude',
+        $agentData['stored_latitude'],
+        'text-latitude',
+        '',
+        20,
+        20,
+        false,
+        '',
+        [
+            'onchange' => 'setIgnoreGISDataEnabled()',
+            'onkeyup'  => 'setIgnoreGISDataEnabled()',
+        ],
+        true
+    )
 );
 
-$table->data[1][2] = __('Longitude: ');
-$table->data[1][3] = html_print_input_text_extended(
-    'longitude',
-    $agentData['stored_longitude'],
-    'text-longitude',
-    '',
-    20,
-    20,
-    false,
-    '',
-    [
-        'onchange' => 'setIgnoreGISDataEnabled()',
-        'onkeyup'  => 'setIgnoreGISDataEnabled()',
-    ],
-    true
+$table->data[1][1] = html_print_label_input_block(
+    __('Longitude: '),
+    html_print_input_text_extended(
+        'longitude',
+        $agentData['stored_longitude'],
+        'text-longitude',
+        '',
+        20,
+        20,
+        false,
+        '',
+        [
+            'onchange' => 'setIgnoreGISDataEnabled()',
+            'onkeyup'  => 'setIgnoreGISDataEnabled()',
+        ],
+        true
+    )
 );
 
-$table->data[2][0] = __('Altitude: ');
-$table->data[2][1] = html_print_input_text_extended(
-    'altitude',
-    $agentData['stored_altitude'],
-    'text-altitude',
-    '',
-    10,
-    10,
-    false,
-    '',
-    [
-        'onchange' => 'setIgnoreGISDataEnabled()',
-        'onkeyup'  => 'setIgnoreGISDataEnabled()',
-    ],
-    true
+$table->data[2][0] = html_print_label_input_block(
+    __('Altitude: '),
+    html_print_input_text_extended(
+        'altitude',
+        $agentData['stored_altitude'],
+        'text-altitude',
+        '',
+        10,
+        10,
+        false,
+        '',
+        [
+            'onchange' => 'setIgnoreGISDataEnabled()',
+            'onkeyup'  => 'setIgnoreGISDataEnabled()',
+        ],
+        true
+    )
 );
 
-$table->data[2][2] = __('Ignore new GIS data:');
-$table->data[2][3] = __('Yes').' '.html_print_radio_button_extended('update_gis_data', 0, '', $updateGisData, false, '', 'class="mrgn_right_40px"', true);
-$table->data[2][3] .= __('No').' '.html_print_radio_button_extended('update_gis_data', 1, '', $updateGisData, false, '', 'class="mrgn_right_40px"', true);
+$table->data[2][1] = html_print_label_input_block(
+    __('Ignore new GIS data: '),
+    '<div class="flex mrgn_top_5px">'.__('Yes').' '.html_print_radio_button_extended(
+        'update_gis_data',
+        0,
+        '',
+        $updateGisData,
+        false,
+        '',
+        'class="mrgn_right_40px"',
+        true
+    ).__('No').' '.html_print_radio_button_extended(
+        'update_gis_data',
+        1,
+        '',
+        $updateGisData,
+        false,
+        '',
+        'class="mrgn_right_40px"',
+        true
+    ).'</div>'
+);
 
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente;
-echo "<form method='post' action='".$url."' onsubmit ='return validateFormFields();'>";
+echo "<form method='post' action='".$url."' onsubmit ='return validateFormFields();' class='max_floating_element_size'>";
 html_print_input_hidden('update_gis', 1);
 html_print_table($table);
 
-echo '<div class="action-buttons float-left" style="width: '.$table->width.';">';
-html_print_submit_button(__('Update'), '', false, 'class="sub upd"');
-echo '</div>';
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Update'),
+        '',
+        false,
+        ['icon' => 'wand'],
+        true
+    )
+);
 echo '</form>';
 ?>
 <script type="text/javascript">

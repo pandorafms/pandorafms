@@ -81,9 +81,7 @@ $table->width = '100%';
 $table->class = 'databox filters';
 
 $table->size = [];
-// ~ $table->size[0] = '20%';
 $table->size[1] = '10px';
-// ~ $table->size[2] = '20%';
 $table->style[0] = 'text-align:center;';
 $table->style[2] = 'text-align:center;';
 
@@ -129,19 +127,21 @@ foreach ($fields_available as $key => $available) {
 $table->data[0][0] = '<b>'.__('Fields available').'</b>';
 $table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
-    'images/darrowright_green.png',
+    'images/arrow@svg.svg',
     true,
     [
         'id'    => 'right',
         'title' => __('Add fields to select'),
+        'style' => 'rotate: 180deg;',
     ]
 ).'</a>';
 $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
-    'images/darrowleft_green.png',
+    'images/arrow@svg.svg',
     true,
     [
         'id'    => 'left',
         'title' => __('Delete fields to select'),
+        'style' => '',
     ]
 ).'</a>';
 
@@ -184,10 +184,17 @@ $table->data[1][2] .= '</div></div>';
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(__('Update'), 'upd_button', false, 'class="sub upd"');
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Update'),
+        'upd_button',
+        false,
+        [ 'icon' => 'update' ],
+        true
+    ),
+    [ 'type' => 'form_action' ]
+);
 echo '</form>';
-echo '</div>';
 ?>
 
 <script type="text/javascript">
@@ -234,7 +241,7 @@ $(document).ready (function () {
         }
     });
 
-    $("#submit-upd_button").click(function () {
+    $("#button-upd_button").click(function () {
         $("#fields_selected").find("option[value='0']").remove();
         $('#fields_selected option').map(function() {
             $(this).prop('selected', true);

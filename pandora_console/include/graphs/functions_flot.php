@@ -367,7 +367,7 @@ function menu_graph(
 
     $return .= "<div id='general_menu_$graph_id' class='menu_graph'>";
     $return .= "<div id='menu_$graph_id' "."style='display: none; ".'text-align: center;'.'position: relative;'."border-bottom: 0px;'>
-        <a href='javascript:'><img id='menu_cancelzoom_$graph_id' class='invert_filter' src='".$params['homeurl'].'images/operation.png'."' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+        <a href='javascript:'><img id='menu_cancelzoom_$graph_id' class='main_menu_icon invert_filter' src='".$params['homeurl'].'images/disable.svg'."' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
     if ($threshold) {
         $return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$params['homeurl'].'images/chart_curve_threshold.png'."' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
     }
@@ -379,7 +379,7 @@ function menu_graph(
 
     // Export buttons.
     if ($params['show_export_csv'] && enterprise_installed() === true) {
-        $return .= "<a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$params['homeurl'].'images/csv_grey.png'."' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
+        $return .= "<a href='javascript:'><img id='menu_export_csv_$graph_id' class='main_menu_icon invert_filter' src='".$params['homeurl'].'images/file-csv.svg'."' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
     }
 
     $return .= '</div>';
@@ -730,8 +730,9 @@ function flot_slicesbar_graph(
     global $config;
 
     if ($ttl == 2) {
+        $tokem_config = uniqid('slicebar');
         $params = [
-            'graph_data'         => $graph_data,
+            'tokem_config'       => $tokem_config,
             'period'             => $period,
             'width'              => $width,
             'height'             => $height,
@@ -752,7 +753,10 @@ function flot_slicesbar_graph(
             'return_img_base_64' => true,
             'date_to'            => $date_to,
             'server_id'          => $server_id,
+            'backgroundColor'    => '#f6f7fb',
         ];
+        // TO-DO Cambiar esto para que se pase por POST, NO SE PUEDE PASAR POR GET.
+        update_config_token($tokem_config, json_encode($graph_data));
 
         $graph = '<img src="data:image/png;base64,';
         $graph .= generator_chart_to_pdf('slicebar', $params);
@@ -855,7 +859,7 @@ function flot_slicesbar_graph(
         $full_legend_date = false;
     }
 
-    if (!$date_to) {
+    if (!$date_to || $date_to === '1') {
         $date_to = get_system_time();
     }
 

@@ -36,16 +36,20 @@ if ((bool) \is_metaconsole() === true) {
     \ui_require_css_file('meta_dashboards');
 }
 
-// Header.
-if ((bool) is_metaconsole() === false) {
-    \ui_print_page_header(
-        __('Dashboards'),
-        '',
-        false,
-        '',
-        false
-    );
-}
+ui_print_standard_header(
+    __('Dashboards'),
+    '',
+    false,
+    '',
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Dashboards'),
+        ],
+    ]
+);
 
 if (isset($resultDelete) === true) {
     \ui_print_result_message(
@@ -88,7 +92,7 @@ if (empty($dashboards) === true) {
     $table->style['full_screen'] = 'text-align: center;';
 
     $table->size = [];
-    $table->size['name'] = '75%';
+    $table->size['name'] = '40%';
     $table->size['full_screen'] = '30px';
 
     $table->head = [];
@@ -118,7 +122,6 @@ if (empty($dashboards) === true) {
 
     $table->data = [];
 
-    \ui_pagination($count, false, $offset);
     foreach ($dashboards as $dashboard) {
         $data = [];
 
@@ -154,9 +157,9 @@ if (empty($dashboards) === true) {
         $urlFull .= '&'.\http_build_query($dataQueryFull);
         $data['full_screen'] = '<a href="'.$urlFull.'">';
         $data['full_screen'] .= \html_print_image(
-            'images/fullscreen.png',
+            'images/fullscreen@svg.svg',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'main_menu_icon invert_filter']
         );
         $data['full_screen'] .= '</a>';
 
@@ -172,7 +175,7 @@ if (empty($dashboards) === true) {
             ];
             $urlCopy = $urlDashboard.'&'.\http_build_query($dataQueryCopy);
             $data['copy'] = '<a href="'.$urlCopy.'">';
-            $data['copy'] .= html_print_image('images/copy.png', true, ['class' => 'invert_filter']);
+            $data['copy'] .= html_print_image('images/copy.svg', true, ['class' => 'main_menu_icon invert_filter']);
             $data['copy'] .= '</a>';
 
             $dataQueryDelete = [
@@ -184,41 +187,41 @@ if (empty($dashboards) === true) {
             $data['delete'] = '<a href="'.$urlDelete;
             $data['delete'] .= '" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">';
             $data['delete'] .= \html_print_image(
-                'images/cross.png',
+                'images/delete.svg',
                 true,
-                ['class' => 'invert_filter']
+                ['class' => 'main_menu_icon invert_filter']
             );
             $data['delete'] .= '</a>';
         }
 
         $table->cellclass[] = [
-            'full_screen' => 'action_buttons',
-            'copy'        => 'action_buttons',
-            'delete'      => 'action_buttons',
+            'full_screen' => 'table_action_buttons',
+            'copy'        => 'table_action_buttons',
+            'delete'      => 'table_action_buttons',
         ];
 
         $table->data[] = $data;
     }
 
     \html_print_table($table);
-    \ui_pagination(
+    $tablePagination = \ui_pagination(
         $count,
         false,
         $offset,
         0,
-        false,
-        'offset',
         true,
+        'offset',
+        false,
         'pagination-bottom'
     );
 }
 
+$input_button = '';
 if ($writeDashboards === 1) {
     $text = __('Create a new dashboard');
 
     // Button for display modal options dashboard.
-    $output = '<a href="#" class="float-right" onclick=\'';
-    $output .= 'show_option_dialog('.json_encode(
+    $onclick = 'show_option_dialog('.json_encode(
         [
             'title'      => $text,
             'btn_text'   => __('Ok'),
@@ -227,21 +230,31 @@ if ($writeDashboards === 1) {
             'url_ajax'   => ui_get_full_url('ajax.php'),
         ]
     );
-    $output .= ')\'>';
-    $output .= html_print_button(
+    $onclick .= ')';
+
+    $input_button = html_print_button(
         __('New dashboard'),
         '',
         false,
-        '',
-        'class="sub next"',
+        $onclick,
+        ['icon' => 'add'],
         true
     );
-    $output .= '</a>';
+
+    $output .= '</div>';
 
     echo $output;
 
     // Div for modal update dashboard.
     echo '<div id="modal-update-dashboard" class="invisible"></div>';
-
-    ui_require_javascript_file('pandora_dashboards');
 }
+
+html_print_action_buttons(
+    $input_button,
+    [
+        'type'          => 'form_action',
+        'right_content' => $tablePagination,
+    ]
+);
+
+ui_require_javascript_file('pandora_dashboards');

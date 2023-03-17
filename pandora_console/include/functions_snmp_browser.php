@@ -144,7 +144,7 @@ function snmp_browser_get_html_tree(
         // Branch or leave with branches!
         if (isset($sub_level['__OID__'])) {
             $output .= "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"".addslashes($sub_level['__OID__'])."\");'>";
-            $output .= '<img src="'.$url.'/../../images/operation.png" class="vertical_middle">';
+            $output .= '<img src="'.$url.'/../../images/details.svg" class="main_menu_icon invert_filter vertical_middle">';
             $output .= '</a>';
         }
 
@@ -612,8 +612,8 @@ function snmp_browser_print_oid(
     $table->head[1] = __('OID Information');
     $output .= html_print_table($table, true);
 
-    $url = 'index.php?'.'sec=gmodules&'.'sec2=godmode/modules/manage_network_components';
-    $output .= '<form id="snmp_create_module" class="center mrgn_10px" target="_blank" method="post" action="'.$url.'">';
+    $url = 'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components';
+    $output .= '<form id="snmp_create_module" class="center mrgn_10px flex" target="_blank" method="post" action="'.$url.'">';
     $output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
     $output .= html_print_input_hidden('id_component_type', 2, true);
     $output .= html_print_input_hidden('type', 17, true);
@@ -638,19 +638,21 @@ function snmp_browser_print_oid(
         __('Create network component'),
         'create_network_component',
         false,
-        'class="sub add float-left mrgn_right_20px"',
+        'class="buttonButton mrgn_right_20px"',
         true
     );
 
-    // Hidden by default.
-    $output .= html_print_button(
-        __('Create agent module'),
-        'create_module_agent_single',
-        false,
-        'show_add_module()',
-        'class="sub add invisible"',
-        true
-    );
+    if (isset($_POST['print_create_agent_module'])) {
+        // Hidden by default.
+        $output .= html_print_button(
+            __('Create agent module'),
+            'create_module_agent_single',
+            false,
+            'show_add_module()',
+            'class="sub add invisible"',
+            true
+        );
+    }
 
     // Select agent modal.
     $output .= snmp_browser_print_create_modules(true);
@@ -685,81 +687,98 @@ function snmp_browser_print_container(
     $width='100%',
     $height='60%',
     $display='',
-    $show_massive_buttons=false
+    $show_massive_buttons=false,
+    $toggle=false
 ) {
     global $config;
 
     $snmp_version = get_parameter('snmp_browser_version', '2c');
+
     // Target selection.
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'filter-table-adv';
     $table->size = [];
     $table->data = [];
 
     $table->size[0] = '30%';
+    $table->size[1] = '30%';
+    $table->size[2] = '30%';
 
-    $table->data[0][0] = '<div class="mw500px"><strong>'.__('Target IP').'</strong> &nbsp;&nbsp;';
-    $table->data[0][0] .= html_print_input(
-        [
-            'type'      => 'text',
-            'name'      => 'target_ip',
-            'value'     => get_parameter('target_ip', ''),
-            'required'  => true,
-            'size'      => 25,
-            'maxlength' => 0,
-            'return'    => true,
-        ]
-    );
-    $table->data[0][0] .= '&nbsp;&nbsp<strong>'.__('Port').'</strong>&nbsp;&nbsp;';
-    $table->data[0][0] .= html_print_input(
-        [
-            'type'     => 'number',
-            'name'     => 'target_port',
-            'id'       => 'target_port',
-            'value'    => get_parameter('target_port', 161),
-            'required' => true,
-            'return'   => true,
-        ]
-    );
-    $table->data[0][0] .= '</div>';
-
-    $table->data[0][1] = '<strong>'.__('Community').'</strong> &nbsp;&nbsp;';
-    $table->data[0][1] .= html_print_input_text(
-        'community',
-        get_parameter('community', ''),
-        '',
-        25,
-        0,
-        true
-    );
-    $table->data[0][2] = '<strong>'.__('Starting OID').'</strong> &nbsp;&nbsp;';
-    $table->data[0][2] .= html_print_input_text(
-        'starting_oid',
-        get_parameter('starting_oid', '.1.3.6.1.2.1.2.2'),
-        '',
-        25,
-        0,
-        true
+    $table->data[0][0] = html_print_label_input_block(
+        __('Target IP'),
+        html_print_input(
+            [
+                'type'      => 'text',
+                'name'      => 'target_ip',
+                'value'     => get_parameter('target_ip', ''),
+                'required'  => true,
+                'size'      => 25,
+                'maxlength' => 0,
+                'return'    => true,
+            ]
+        )
     );
 
-    $table->data[1][0] = '<strong>'.__('Version').'</strong> &nbsp;&nbsp;';
-    $table->data[1][0] .= html_print_select(
-        [
-            '1'  => 'v. 1',
-            '2'  => 'v. 2',
-            '2c' => 'v. 2c',
-            '3'  => 'v. 3',
-        ],
-        'snmp_browser_version',
-        get_parameter('snmp_browser_version', '2c'),
-        'checkSNMPVersion();',
-        '',
-        '',
-        true,
-        false,
-        false,
-        ''
+    $table->data[0][1] .= html_print_label_input_block(
+        __('Port'),
+        html_print_input(
+            [
+                'type'     => 'number',
+                'name'     => 'target_port',
+                'id'       => 'target_port',
+                'value'    => get_parameter('target_port', 161),
+                'required' => true,
+                'return'   => true,
+            ]
+        )
+    );
+
+    $table->data[0][2] = html_print_label_input_block(
+        __('Community'),
+        html_print_input_text(
+            'community',
+            get_parameter('community', ''),
+            '',
+            25,
+            0,
+            true
+        )
+    );
+
+    $table->data[1][0] = html_print_label_input_block(
+        __('Starting OID'),
+        html_print_input_text(
+            'starting_oid',
+            get_parameter('starting_oid', '.1.3.6.1.2.1.2.2'),
+            '',
+            25,
+            0,
+            true
+        )
+    );
+
+    $table->data[1][1] = html_print_label_input_block(
+        __('Version'),
+        html_print_select(
+            [
+                '1'  => 'v. 1',
+                '2'  => 'v. 2',
+                '2c' => 'v. 2c',
+                '3'  => 'v. 3',
+            ],
+            'snmp_browser_version',
+            get_parameter('snmp_browser_version', '2c'),
+            'checkSNMPVersion();',
+            '',
+            '',
+            true,
+            false,
+            false,
+            '',
+            false,
+            'width: 100%',
+        )
     );
 
     $servers_to_exec = [];
@@ -782,31 +801,22 @@ function snmp_browser_print_container(
         }
     }
 
-    $table->data[1][1] = '<strong>';
-    $table->data[1][1] .= __('Server to execute');
-    $table->data[1][1] .= '</strong> &nbsp;&nbsp;';
-    $table->data[1][1] .= html_print_select(
-        $servers_to_exec,
-        'server_to_exec',
-        '',
-        '',
-        '',
-        '',
-        true
-    );
-
-    $table->data[1][2] = html_print_input(
-        [
-            'type'       => 'submit',
-            'label'      => __('Browse'),
-            'name'       => 'browse',
-            'disabled'   => false,
-            'script'     => 'snmpBrowse()',
-            'attributes' => 'class="sub search mrgn_top_0px"',
-            'return'     => true,
-        ],
-        'div',
-        true
+    $table->data[1][2] = html_print_label_input_block(
+        __('Server to execute'),
+        html_print_select(
+            $servers_to_exec,
+            'server_to_exec',
+            '',
+            '',
+            '',
+            '',
+            true,
+            false,
+            false,
+            '',
+            false,
+            'width: 100%',
+        )
     );
 
     // SNMP v3 options.
@@ -819,88 +829,176 @@ function snmp_browser_print_container(
 
     $table3 = new stdClass();
     $table3->width = '100%';
+    $table3->class = 'filter-table-adv';
 
-    $table3->valign[0] = '';
-    $table3->valign[1] = '';
+    $table3->size[0] = '30%';
+    $table3->size[1] = '30%';
+    $table3->size[2] = '30%';
 
-    $table3->data[2][1] = '<b>'.__('Auth user').'</b>';
-    $table3->data[2][2] = html_print_input_text(
-        'snmp3_browser_auth_user',
-        $snmp3_auth_user,
-        '',
-        15,
-        60,
-        true
+    $table3->data[0][0] = html_print_label_input_block(
+        __('Auth user'),
+        html_print_input_text(
+            'snmp3_browser_auth_user',
+            $snmp3_auth_user,
+            '',
+            15,
+            60,
+            true
+        )
     );
 
-    $table3->data[2][3] = '<b>'.__('Auth password').'</b>';
-    $table3->data[2][4] = html_print_input_password(
-        'snmp3_browser_auth_pass',
-        $snmp3_auth_pass,
-        '',
-        15,
-        60,
-        true
+    $table3->data[0][1] = html_print_label_input_block(
+        __('Auth password'),
+        '<div>'.html_print_input_password(
+            'snmp3_browser_auth_pass',
+            $snmp3_auth_pass,
+            '',
+            15,
+            60,
+            true
+        ).'</div>'
     );
 
-    $table3->data[2][4] .= html_print_input_hidden_extended(
+    $table3->data[0][1] .= html_print_input_hidden_extended(
         'active_snmp_v3',
         0,
         'active_snmp_v3_fsb',
         true
     );
 
-    $table3->data[5][0] = '<b>'.__('Privacy method').'</b>';
-    $table3->data[5][1] = html_print_select(
+    $table3->data[0][2] = html_print_label_input_block(
+        __('Privacy method'),
+        html_print_select(
+            [
+                'DES' => __('DES'),
+                'AES' => __('AES'),
+            ],
+            'snmp3_browser_privacy_method',
+            $snmp3_privacy_method,
+            '',
+            '',
+            '',
+            true
+        )
+    );
+
+    $table3->data[1][0] = html_print_label_input_block(
+        __('Privacy pass'),
+        '<div>'.html_print_input_password(
+            'snmp3_browser_privacy_pass',
+            $snmp3_privacy_pass,
+            '',
+            15,
+            60,
+            true
+        ).'</div>'
+    );
+
+    $table3->data[1][1] = html_print_label_input_block(
+        __('Auth method'),
+        html_print_select(
+            [
+                'MD5' => __('MD5'),
+                'SHA' => __('SHA'),
+            ],
+            'snmp3_browser_auth_method',
+            $snmp3_auth_method,
+            '',
+            '',
+            '',
+            true
+        )
+    );
+
+    $table3->data[1][2] = html_print_label_input_block(
+        __('Security level'),
+        html_print_select(
+            [
+                'noAuthNoPriv' => __('Not auth and not privacy method'),
+                'authNoPriv'   => __('Auth and not privacy method'),
+                'authPriv'     => __('Auth and privacy method'),
+            ],
+            'snmp3_browser_security_level',
+            $snmp3_security_level,
+            '',
+            '',
+            '',
+            true
+        )
+    );
+
+    if (isset($snmp_version) === false) {
+        $snmp_version = null;
+    }
+
+    if ($snmp_version == 3) {
+        $table->data[2] = '<div id="snmp3_browser_options">';
+    } else {
+        $table->data[2] = '<div id="snmp3_browser_options" style="display: none;">';
+    }
+
+    $table->colspan[2][0] = 3;
+    $table->data[2] .= ui_toggle(
+        html_print_table(
+            $table3,
+            true
+        ),
+        __('SNMP v3 settings'),
+        '',
+        '',
+        true,
+        true
+    );
+    $table->data[2] .= '</div>';
+
+    if ($toggle == true) {
+        $print_create_agent_module = 1;
+    } else {
+        $print_create_agent_module = 0;
+    }
+
+    $searchForm = '<form onsubmit="snmpBrowse(); return false;">';
+    $searchForm .= html_print_table($table, true);
+    $searchForm .= html_print_input_hidden(
+        'print_create_agent_module',
+        $print_create_agent_module,
+        true,
+        false,
+        false,
+        'print_create_agent_module'
+    );
+    $searchForm .= html_print_div(
         [
-            'DES' => __('DES'),
-            'AES' => __('AES'),
+            'class'   => 'action-buttons',
+            'content' => html_print_submit_button(
+                __('Execute'),
+                'srcbutton',
+                false,
+                [
+                    'mode' => 'mini',
+                    'icon' => 'cog',
+                ],
+                true
+            ),
         ],
-        'snmp3_browser_privacy_method',
-        $snmp3_privacy_method,
-        '',
-        '',
-        '',
         true
     );
 
-    $table3->data[5][2] = '<b>'.__('Privacy pass').'</b>';
-    $table3->data[5][3] = html_print_input_password(
-        'snmp3_browser_privacy_pass',
-        $snmp3_privacy_pass,
-        '',
-        15,
-        60,
-        true
-    );
+    $searchForm .= '</form>';
 
-    $table3->data[6][0] = '<b>'.__('Auth method').'</b>';
-    $table3->data[6][1] = html_print_select(
-        [
-            'MD5' => __('MD5'),
-            'SHA' => __('SHA'),
-        ],
-        'snmp3_browser_auth_method',
-        $snmp3_auth_method,
-        '',
-        '',
-        '',
-        true
-    );
-    $table3->data[6][2] = '<b>'.__('Security level').'</b>';
-    $table3->data[6][3] = html_print_select(
-        [
-            'noAuthNoPriv' => __('Not auth and not privacy method'),
-            'authNoPriv'   => __('Auth and not privacy method'),
-            'authPriv'     => __('Auth and privacy method'),
-        ],
-        'snmp3_browser_security_level',
-        $snmp3_security_level,
-        '',
-        '',
-        '',
-        true
-    );
+    if ($toggle == true) {
+        ui_toggle(
+            $searchForm,
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
+            'filter_form',
+            '',
+            false,
+            false,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
+        );
+    }
 
     // Search tools.
     $table2 = new stdClass();
@@ -1011,34 +1109,7 @@ function snmp_browser_print_container(
     $table2->data[0][2] .= '</a>';
     $table2->cellstyle[0][2] = 'text-align:center;';
 
-    // This extra div that can be handled by jquery's dialog.
-    $output = '<div id="snmp_browser_container" style="'.$display.'">';
-    $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
-    $output .= '<div class="w100p">';
-    $output .= '<form onsubmit="snmpBrowse(); return false;">';
-    $output .= html_print_table($table, true);
-    $output .= '</form></div>';
-
-    if (isset($snmp_version) === false) {
-        $snmp_version = null;
-    }
-
-    if ($snmp_version == 3) {
-        $output .= '<div id="snmp3_browser_options">';
-    } else {
-        $output .= '<div id="snmp3_browser_options" style="display: none;">';
-    }
-
-    $output .= ui_toggle(
-        html_print_table($table3, true),
-        __('SNMP v3 options'),
-        '',
-        '',
-        true,
-        true
-    );
-    $output .= '</div>';
-    $output .= '<div class="search_options">';
+    $output = '<div class="search_options" id="search_options" style="display:none">';
     $output .= ui_toggle(
         html_print_table($table2, true),
         __('Search options'),
@@ -1049,8 +1120,64 @@ function snmp_browser_print_container(
     );
     $output .= '</div>';
 
+    if ($toggle === false) {
+        // This extra div that can be handled by jquery's dialog.
+        $output .= '<div id="snmp_browser_container" style="display:none">';
+        $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
+        $output .= '<div class="w100p">';
+        $output .= '<form onsubmit="snmpBrowse(); return false;">';
+        $output .= html_print_table($table, true);
+        $output .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Execute'),
+                    'srcbutton',
+                    false,
+                    [
+                        'mode' => 'mini',
+                        'icon' => 'cog',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
+        $output .= '</form></div>';
+
+        if (isset($snmp_version) === false) {
+            $snmp_version = null;
+        }
+
+        if ($snmp_version == 3) {
+            $output .= '<div id="snmp3_browser_options">';
+        } else {
+            $output .= '<div id="snmp3_browser_options" style="display: none;">';
+        }
+
+        $output .= ui_toggle(
+            html_print_table($table3, true),
+            __('SNMP v3 options'),
+            '',
+            '',
+            true,
+            true
+        );
+        $output .= '</div>';
+        $output .= '<div class="search_options">';
+        $output .= ui_toggle(
+            html_print_table($table2, true),
+            __('Search options'),
+            '',
+            '',
+            true,
+            true
+        );
+        $output .= '</div>';
+    }
+
     // SNMP tree container.
-    $output .= '<div class="snmp_tree_container">';
+    $output .= '<div class="snmp_tree_container" id="snmp_tree_container" style="display:none">';
     $output .= html_print_input_hidden('search_count', 0, true);
     $output .= html_print_input_hidden('search_index', -1, true);
 
@@ -1482,63 +1609,62 @@ function snmp_browser_print_create_module_massive(
     $table = new stdClass();
     $table->width = '100%';
     $table->data = [];
+    $table->class = 'filter-table-adv databox';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
 
-    $table->data[0][0] = __('Filter group')."<div id='loading_group' class='loading_div invisible left'><img src='images/spinner.gif'></div>";
-
-    $table->data[0][1] = html_print_select_groups(
-        false,
-        'RR',
-        users_can_manage_group_all('RR'),
-        'group',
-        '',
-        '',
-        '',
-        0,
-        true,
-        false,
-        false,
-        '',
-        false,
-        false,
-        false,
-        false,
-        $keys_field,
-        $strict_user
+    $table->data[0][0] = html_print_label_input_block(
+        __('Filter group')."<div id='loading_group' class='loading_div invisible left'><img src='images/spinner.gif'></div>",
+        html_print_select_groups(
+            false,
+            'RR',
+            users_can_manage_group_all('RR'),
+            'group',
+            '',
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            $keys_field,
+            $strict_user
+        )
     );
 
-    $table->data[1][0] = __('Search')."<div id='loading_filter' class='loading_div invisible left'><img src='images/spinner.gif'></div>";
-    $table->data[1][1] = html_print_input_text(
-        'filter',
-        '',
-        '',
-        20,
-        150,
-        true
+    $table->data[0][1] = html_print_label_input_block(
+        __('Search')."<div id='loading_filter' class='loading_div invisible left'><img src='images/spinner.gif'></div>",
+        html_print_input_text(
+            'filter',
+            '',
+            '',
+            false,
+            150,
+            true
+        )
     );
+    $attr = [
+        'id'    => 'image-select_all_available',
+        'title' => __('Select all'),
+        'style' => 'cursor: pointer;',
+    ];
+    $table->data[1][0] = '<b>'.__($target_item.' available').'</b>&nbsp;&nbsp;'.html_print_image('images/tick.png', true, $attr, false, true);
 
-    $table->data[2][0] = '<b>'.__($target_item.' available').'</b><br> '.__('Select all').html_print_checkbox_switch('select_all_left', 1, false, true);
-    $table->data[2][1] = '';
-    $table->data[2][2] = '<b>'.__($target_item.' to apply').'</b><br> '.__('Select all').html_print_checkbox_switch('select_all_right', 1, false, true);
-
-    $table->data[3][0] = html_print_select(
-        [],
-        'id_item[]',
-        0,
-        false,
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'width: 100%;',
-        []
-    );
+    $attr = [
+        'id'    => 'image-select_all_apply',
+        'title' => __('Select all'),
+        'style' => 'cursor: pointer;',
+    ];
+    $table->data[1][1] = '<b>'.__($target_item.' to apply').'</b>&nbsp;&nbsp;'.html_print_image('images/tick.png', true, $attr, false, true);
 
     if ($target == 'policy') {
         if (enterprise_installed()) {
-            $table->data[4][0] = html_print_button(
+            $table->data[2][0] = html_print_button(
                 __('Create new policy'),
                 'snmp_browser_create_policy',
                 false,
@@ -1548,7 +1674,7 @@ function snmp_browser_print_create_module_massive(
             );
         }
 
-        $table->data[4][1] = html_print_div(
+        $table->data[2][1] = html_print_div(
             [
                 'style' => 'display:none',
                 'id'    => 'policy_modal',
@@ -1557,38 +1683,88 @@ function snmp_browser_print_create_module_massive(
         );
     }
 
-    $table->cellstyle[3][1] = 'text-align: center';
-    $table->data[3][1] = html_print_image(
-        'images/darrowright.png',
+    // Container with all agents list.
+    $AgentsFullList = html_print_div(
+        [
+            'content' => html_print_select(
+                [],
+                'id_item[]',
+                0,
+                false,
+                '',
+                '',
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width: 100%;'
+            ),
+            'style'   => 'width:45% !important',
+        ],
+        true
+    );
+
+    $controls[] = html_print_image(
+        'images/plus.svg',
         true,
         [
             'id'    => 'right',
             'title' => __('Add'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
-    ).'<br /><br /><br /><br />'.html_print_image(
-        'images/darrowleft.png',
+    );
+
+    $controls[] = html_print_image(
+        'images/minus.svg',
         true,
         [
             'id'    => 'left',
             'title' => __('Undo'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     );
-    $table->data[3][2] = html_print_select(
-        [],
-        'id_item2[]',
-        0,
-        false,
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'width: 100%;',
-        []
+
+    // Container with controls.
+    $AgentsControls = html_print_div(
+        [
+            'content' => implode('', $controls),
+            'style'   => 'width:10% !important',
+            'class'   => 'flex-colum-center',
+        ],
+        true
+    );
+
+    // Container with selected agents list.
+    $AgentsSelectedList = html_print_div(
+        [
+            'content' => html_print_select(
+                [],
+                'id_item2[]',
+                0,
+                false,
+                '',
+                '',
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width: 100%;'
+            ),
+            'style'   => 'width:45% !important',
+        ],
+        true
+    );
+
+    $table->colspan[3][0] = 2;
+    $table->data[3][0] = html_print_div(
+        [
+            'id'      => 'agent_controls',
+            'content' => $AgentsFullList.$AgentsControls.$AgentsSelectedList,
+            'style'   => 'width:100% !important',
+        ],
+        true
     );
 
     $output .= html_print_table($table, true);
@@ -1664,31 +1840,50 @@ function snmp_browser_print_create_policy()
     $description = get_parameter('description');
 
     $table->width = '100%';
-    $table->class = 'databox filters bold_top';
+    $table->class = 'filter-table-adv databox';
     $table->style = [];
     $table->data = [];
-    $table->data[0][0] = __('Name');
-    $table->data[0][1] = html_print_input_text('name', $name, '', '60%', 150, true);
+    $table->size[0] = '100%';
+    $table->size[1] = '100%';
+    $table->size[2] = '100%';
 
-    $table->data[1][0] = __('Group');
-    $table->data[1][1] = '<div class="flex flex-row"><div class="w90p">';
-    $table->data[1][1] .= html_print_select_groups(
-        false,
-        'AW',
-        false,
-        'id_group',
-        $id_group,
-        '',
-        '',
-        '',
-        true
-    ).'</div>';
-    $table->data[1][1] .= ' <span id="group_preview">';
-    $table->data[1][1] .= ui_print_group_icon($id_group, true, 'groups_small', '', false);
-    $table->data[1][1] .= '</span></div>';
+    $table->data[0][0] = html_print_label_input_block(
+        __('Name'),
+        html_print_input_text(
+            'name',
+            $name,
+            '',
+            '60%',
+            150,
+            true
+        )
+    );
 
-    $table->data[2][0] = __('Description');
-    $table->data[2][1] = html_print_textarea('description', 3, 30, $description, '', true);
+    $table->data[1][0] = html_print_label_input_block(
+        __('Group'),
+        '<div class="flex flex-row"><div class="w90p">'.html_print_select_groups(
+            false,
+            'AW',
+            false,
+            'id_group',
+            $id_group,
+            '',
+            '',
+            '',
+            true
+        ).'</div><span id="group_preview">'.ui_print_group_icon(
+            $id_group,
+            true,
+            'groups_small',
+            '',
+            false
+        ).'</span></div>'
+    );
+
+    $table->data[2][0] = html_print_label_input_block(
+        __('Description'),
+        html_print_textarea('description', 3, 30, $description, '', true)
+    );
 
     $output = '<form method="post" id="snmp_browser_add_policy_form">';
     $output .= html_print_table($table, true);

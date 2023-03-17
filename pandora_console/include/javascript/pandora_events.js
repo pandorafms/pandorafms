@@ -67,7 +67,7 @@ function show_event_dialog(event, dialog_page) {
             background: "black"
           },
           width: 710,
-          height: 600,
+          height: 650,
           autoOpen: true,
           open: function() {
             if (
@@ -628,7 +628,7 @@ function delete_event(table, id_evento, event_rep, row, server_id) {
     },
     onDeny: function() {
       button.children[0];
-      button.children[0].src = "images/cross.png";
+      button.children[0].src = "images/delete.svg";
       return;
     }
   });
@@ -1028,6 +1028,7 @@ function openSoundEventModal(settings) {
                   .addClass("alerts");
                 // Change value button.
                 $("#button-no-alerts").val(settings.noAlert);
+                $("#button-no-alerts > span").text(settings.noAlert);
 
                 // Background button.
                 $(".container-button-alert").removeClass("fired");
@@ -1074,6 +1075,7 @@ function action_events_sound(mode, settings) {
       .addClass("stop");
     // Change value button.
     $("#button-start-search").val(settings.stop);
+    $("#button-start-search > span").text(settings.stop);
     // Add Progress bar.
     listen_event_sound(settings);
   } else {
@@ -1089,6 +1091,7 @@ function action_events_sound(mode, settings) {
       .addClass("play");
     // Change value button.
     $("#button-start-search").val(settings.start);
+    $("#button-start-search > span").text(settings.start);
     // Remove progress bar.
     $("#progressbar_time").empty();
     // Remove audio.
@@ -1104,6 +1107,7 @@ function action_events_sound(mode, settings) {
       .addClass("alerts");
     // Change value button.
     $("#button-no-alerts").val(settings.noAlert);
+    $("#button-no-alerts > span").text(settings.noAlert);
 
     // Background button.
     $(".container-button-alert").removeClass("fired");
@@ -1158,6 +1162,7 @@ function check_event_sound(settings) {
           .addClass("silence-alerts");
         // Change value button.
         $("#button-no-alerts").val(settings.silenceAlarm);
+        $("#button-no-alerts > span").text(settings.silenceAlarm);
 
         // Background button.
         $(".container-button-alert").addClass("fired");

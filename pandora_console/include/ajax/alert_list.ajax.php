@@ -331,11 +331,11 @@ if ($get_agent_alerts_agent_view) {
     $rowPair = true;
     $iterator = 0;
     foreach ($alerts['alerts_simple'] as $alert) {
-        $row = ui_format_alert_row($alert, false, $url, 'font-size: 7pt;');
+        $row = ui_format_alert_row($alert, false, $url, 'font-size: 9pt;');
         $table->data[] = $row;
     }
 
-    if (!empty($table->data)) {
+    if (empty($table->data) === false) {
         html_print_table($table);
     } else {
         ui_print_info_message(['no_close' => true, 'message' => __('No alerts found') ]);
@@ -663,9 +663,9 @@ if ($get_agent_alerts_datatable === true) {
         include_once $config['homedir'].'/operation/agentes/alerts_status.functions.php';
         include_once $config['homedir'].'/include/functions_users.php';
 
-        $agent_a = check_acl($config['id_user'], 0, 'AR');
-        $agent_w = check_acl($config['id_user'], 0, 'AW');
-        $access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
+        $agent_a = (bool) check_acl($config['id_user'], 0, 'AR');
+        $agent_w = (bool) check_acl($config['id_user'], 0, 'AW');
+        $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
 
         $all_groups = get_parameter('all_groups');
         $idAgent = (int) get_parameter('id_agent');
@@ -861,7 +861,7 @@ if ($get_agent_alerts_datatable === true) {
 
         if (is_metaconsole() === true) {
             include_once $config['homedir'].'/enterprise/meta/include/functions_alerts_meta.php';
-            if ($idAgent != 0) {
+            if ($idAgent !== 0) {
                 $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
 
                 $countAlertsSimple = alerts_meta_get_alerts($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
@@ -875,7 +875,7 @@ if ($get_agent_alerts_datatable === true) {
                 $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
             }
         } else {
-            if ($idAgent != 0) {
+            if ($idAgent !== 0) {
                 $alerts['alerts_simple'] = agents_get_alerts_simple($idAgent, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
 
                 $countAlertsSimple = agents_get_alerts_simple($idAgent, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);

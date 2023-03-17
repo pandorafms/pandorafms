@@ -305,6 +305,10 @@ class ModuleIconWidget extends Widget
             $values['imageSrc'] = $decoder['imageSrc'];
         }
 
+        if (isset($decoder['horizontal']) === true) {
+            $values['horizontal'] = $decoder['horizontal'];
+        }
+
         return $values;
     }
 
@@ -482,6 +486,18 @@ class ModuleIconWidget extends Widget
             ],
         ];
 
+        // Horizontal.
+        $inputs[] = [
+            'label'     => __('Horizontal').ui_print_help_tip(__('If not, layout is vertical'), true),
+            'arguments' => [
+                'wrapper' => 'div',
+                'name'    => 'horizontal',
+                'type'    => 'switch',
+                'value'   => $values['horizontal'],
+                'return'  => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -504,6 +520,7 @@ class ModuleIconWidget extends Widget
         $values['sizeValue'] = \get_parameter('sizeValue', 0);
         $values['sizeLabel'] = \get_parameter_switch('sizeLabel');
         $values['sizeIcon'] = \get_parameter_switch('sizeIcon');
+        $values['horizontal'] = \get_parameter_switch('horizontal');
 
         return $values;
     }
@@ -533,39 +550,84 @@ class ModuleIconWidget extends Widget
             $this->values['moduleId']
         );
 
+        $unit = \modules_get_unit($this->values['moduleId']);
+
         $icon = $this->values['imageSrc'];
         $label = $this->values['label'];
         $sizeLabel = (($this->values['sizeLabel'] !== 0) ? $this->values['sizeLabel'] : 20);
         $sizeValue = (($this->values['sizeValue'] !== 0) ? $this->values['sizeValue'] : 20);
         $sizeIcon = (($this->values['sizeIcon'] !== 0) ? $this->values['sizeIcon'] : 100);
 
-        $output .= '<div class="container-center">';
+        $uuid = uniqid();
+
+        $output .= '<div class="container-center" id="container-'.$uuid.'">';
+
+        $orientation = '';
+        if ((int) $this->values['horizontal'] === 1) {
+            $orientation = 'flex aligni_center';
+        } else {
+            $orientation = 'grid';
+        }
+
         // General div.
-        $output .= '<div class="container-icon">';
+        $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
+
+        $sql = 'SELECT min_warning,
+        max_warning,
+        min_critical,
+        max_critical,
+        str_warning,
+        str_critical 
+        FROM tagente_modulo
+        WHERE id_agente_modulo = '.(int) $this->values['moduleId'];
+        $sql_data = db_get_row_sql($sql);
+
+        $last = modules_get_last_value($this->values['moduleId']);
+
+        $color_icon = '_ok';
+        if (($last >= $sql_data['min_warning']) && ($last < $sql_data['max_warning'])) {
+            $color_icon = '_warning';
+        }
+
+        if ($last >= $sql_data['max_warning']) {
+            $color_icon = '_bad';
+        }
 
         // Div image.
-        $output .= '<div style="flex: 0 1 '.$sizeIcon.'px;">';
+        $style_icon = 'flex: 0 1 '.$sizeIcon.'px;';
+
+        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_25px" style="flex: 0 1 '.$sizeIcon.'px; height: '.$sizeIcon.'px;">';
         $output .= html_print_image(
-            'images/console/icons/'.$icon.'.png',
+            'images/console/icons/'.$icon.$color_icon.'.png',
             true,
             ['width' => $sizeIcon]
         );
         $output .= '</div>';
-
         // Div value.
-        $output .= '<div style="flex: 0 1 10px; font-size:'.$sizeValue.'px;">';
+        $output .= '<div class="mrgn_btn_15px" style="flex: 0 1 10px; line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px;">';
         $output .= remove_right_zeros(
             number_format($data_module, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator'])
-        );
+        ).$unit;
         $output .= '</div>';
 
         if (empty($label) === false) {
             // Div Label.
-            $output .= '<div style="flex: 1; font-size:'.$sizeLabel.'px;">'.$label.'</div>';
+            $output .= '<div class="pdd_l_15px pdd_r_15px" style="flex: 1; line-height: '.$sizeLabel.'px; font-size:'.$sizeLabel.'px;">'.$label.'</div>';
         }
 
         $output .= '</div>';
         $output .= '</div>';
+
+        $output .= '<script>
+        var containerWidth = document.querySelector("#container-'.$uuid.'").offsetWidth;
+        var generalWidth = document.querySelector("#general-'.$uuid.'").offsetWidth;
+
+        if (generalWidth >= containerWidth) {
+            $("#container-'.$uuid.'").css("align-items", "flex-start");
+        } else {
+            $("#container-'.$uuid.'").css("align-items", "center");
+        }
+        </script>';
         return $output;
     }
 

@@ -27,8 +27,6 @@
  */
 
 // Begin.
-require_once 'config.php';
-
 require_once __DIR__.'/config.php';
 require_once __DIR__.'/functions.php';
 require_once __DIR__.'/functions_db.php';
@@ -47,6 +45,7 @@ if (json_last_error() === JSON_ERROR_NONE) {
     $data = $data_decoded['data'];
     $session_id = $data_decoded['session_id'];
     $type_graph_pdf = $data_decoded['type_graph_pdf'];
+    $id_user = $data_decoded['id_user'];
 
     $data_combined = [];
     if (isset($data_decoded['data_combined']) === true) {
@@ -61,6 +60,10 @@ if (json_last_error() === JSON_ERROR_NONE) {
 
 // Initialize session.
 global $config;
+
+// Care whit this!!! check_login not working if you remove this.
+$config['id_user'] = $id_user;
+$_SESSION['id_usuario'] = $id_user;
 
 // Try to initialize session using existing php session id.
 $user = new PandoraFMS\User(['phpsessionid' => $session_id]);
@@ -82,6 +85,7 @@ if (check_login(false) === false) {
 </head>
 <body>
     <h1>Access is not granted</h1>
+    <div id="container-chart-generator-item" style="display:none; margin:0px;width:100px;height:100px;">
 </body>
 </html>
 
@@ -240,6 +244,9 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'slicebar':
+            // TO-DO Cambiar esto para que se pase por POST, NO SE PUEDE PASAR POR GET.
+            $params['graph_data'] = json_decode(io_safe_output($config[$params['tokem_config']]), true);
+            delete_config_token($params['tokem_config']);
             echo flot_slicesbar_graph(
                 $params['graph_data'],
                 $params['period'],

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -274,8 +274,6 @@ if (is_ajax() === true) {
     return;
 }
 
-enterprise_hook('open_meta_frame');
-
 $tab = (string) get_parameter('tab', 'groups');
 
 if ($tab !== 'credbox'
@@ -308,11 +306,11 @@ $url_groups = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=groups'
 $buttons['tree'] = [
     'active' => false,
     'text'   => '<a href="'.$url_tree.'">'.html_print_image(
-        'images/gm_massive_operations.png',
+        'images/snmp-trap@svg.svg',
         true,
         [
             'title' => __('Tree Group view'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -320,11 +318,11 @@ $buttons['tree'] = [
 $buttons['groups'] = [
     'active' => false,
     'text'   => '<a href="'.$url_groups.'">'.html_print_image(
-        'images/group.png',
+        'images/groups@svg.svg',
         true,
         [
             'title' => __('Group view'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -336,7 +334,7 @@ $buttons['credbox'] = [
         true,
         [
             'title' => __('Credential Store'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -364,12 +362,6 @@ switch ($tab) {
 // Header.
 if (is_metaconsole() === true) {
     agents_meta_print_header();
-    html_print_div(
-        [
-            'class'   => 'notify',
-            'content' => __('Edit or delete groups can cause problems with synchronization'),
-        ]
-    );
 } else {
     // Header.
     ui_print_standard_header(
@@ -722,6 +714,14 @@ if ($is_management_allowed === true
             );
 
             if ($result && (!$usedGroup['return'])) {
+                db_process_sql_delete(
+                    'tfavmenu_user',
+                    [
+                        'id_element' => $id_group,
+                        'section'    => 'Groups',
+                        'id_user'    => $config['id_user'],
+                    ]
+                );
                 ui_print_success_message(__('Group successfully deleted'));
             } else {
                 ui_print_error_message(
@@ -746,14 +746,7 @@ if ($tab == 'tree') {
      * Group tree view.
      */
 
-    echo html_print_image(
-        'images/spinner.gif',
-        true,
-        [
-            'class' => 'loading_tree',
-            'style' => 'display: none;',
-        ]
-    );
+    ui_print_spinner(__('Loading'));
     echo "<div id='tree-controller-recipient'></div>";
 } else {
     /*
@@ -765,6 +758,8 @@ if ($tab == 'tree') {
     $offset = (int) get_parameter('offset', 0);
     $search = (string) get_parameter('search', '');
     $block_size = $config['block_size'];
+
+    $tablePagination = '';
 
     if (empty($search) === false) {
         $search_name = 'AND t.nombre LIKE "%'.$search.'%"';
@@ -786,23 +781,58 @@ if ($tab == 'tree') {
     }
 
     $form = "<form method='post' action=''>";
-        $form .= "<table class='databox filters bolder' width='100%'>";
-            $form .= '<tr><td>'.__('Search').'&nbsp;&nbsp;&nbsp;';
-                $form .= html_print_input_text(
+        $form .= "<table class='filter-table-adv' width='100%'>";
+            $form .= '<tr><td>'.html_print_label_input_block(
+                __('Search'),
+                html_print_input_text(
                     'search',
                     $search,
                     '',
                     30,
                     30,
                     true
-                );
-            $form .= '</td><td style="text-align: right">';
-                $form .= "<input name='find' type='submit' class='sub search' value='".__('Search')."'>";
+                )
+            );
+            $form .= '</td>';
             $form .= '</tr>';
         $form .= '</table>';
+        $buttons = html_print_submit_button(
+            __('Filter'),
+            'find',
+            false,
+            [
+                'icon' => 'search',
+                'mode' => 'mini',
+            ],
+            true
+        );
+
+        $form .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => $buttons,
+            ],
+            true
+        );
     $form .= '</form>';
 
-    echo $form;
+    ui_toggle(
+        $form,
+        '<span class="subsection_header_title">'.__('Filters').'</span>',
+        'filter_form',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph fixed_filter_bar'
+    );
+
+    if (is_metaconsole() === true) {
+        ui_print_info_message(
+            __('Edit or delete groups can cause problems with synchronization')
+        );
+    }
 
     $groups_sql = sprintf(
         'SELECT t.*,
@@ -875,7 +905,7 @@ if ($tab == 'tree') {
         $table->data = [];
 
         foreach ($groups as $key => $group) {
-            $url = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
+            $url_edit = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
             if (is_metaconsole()) {
                 $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'].'&tab=groups';
             } else {
@@ -884,14 +914,14 @@ if ($tab == 'tree') {
 
             $table->data[$key][0] = $group['id_grupo'];
             if ($is_management_allowed === true) {
-                $table->data[$key][1] = '<a href="'.$url.'">'.$group['nombre'].'</a>';
+                $table->data[$key][1] = '<a href="'.$url_edit.'">'.$group['nombre'].'</a>';
             } else {
                 $table->data[$key][1] = $group['nombre'];
             }
 
             if ($group['icon'] != '') {
                 $table->data[$key][2] = html_print_image(
-                    'images/groups_small/'.$group['icon'].'.png',
+                    'images/'.$group['icon'],
                     true,
                     [
                         'style' => '',
@@ -914,14 +944,14 @@ if ($tab == 'tree') {
             $table->data[$key][4] = $group['parent_name'];
             $table->data[$key][5] = $group['description'];
             if ($is_management_allowed === true) {
-                $table->cellclass[$key][6] = 'action_buttons';
-                $table->data[$key][6] = '<a href="'.$url.'">'.html_print_image(
-                    'images/config.png',
+                $table->cellclass[$key][6] = 'table_action_buttons';
+                $table->data[$key][6] = '<a href="'.$url_edit.'">'.html_print_image(
+                    'images/edit.svg',
                     true,
                     [
-                        'alt'    => __('Edit'),
-                        'title'  => __('Edit'),
-                        'border' => '0',
+                        'alt'   => __('Edit'),
+                        'title' => __('Edit'),
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>';
 
@@ -936,35 +966,26 @@ if ($tab == 'tree') {
                 }
 
                 $table->data[$key][6] .= '<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
-                    'images/cross.png',
+                    'images/delete.svg',
                     true,
                     [
-                        'alt'    => __('Delete'),
-                        'title'  => __('Delete'),
-                        'border' => '0',
+                        'alt'   => __('Delete'),
+                        'title' => __('Delete'),
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>';
             }
         }
 
-        echo ui_pagination(
-            $groups_count,
-            false,
-            $offset,
-            $block_size,
-            true,
-            'offset',
-            true
-        );
         html_print_table($table);
-        echo ui_pagination(
+        $tablePagination = ui_pagination(
             $groups_count,
             false,
             $offset,
             $block_size,
             true,
             'offset',
-            true,
+            false,
             'pagination-bottom'
         );
     } else {
@@ -977,20 +998,34 @@ if ($tab == 'tree') {
     }
 }
 
-
+$button_form = '';
 if ($is_management_allowed === true
     && (bool) check_acl($config['id_user'], 0, 'PM') === true
 ) {
-    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
-        echo '<div class="action-buttons w100p">';
-            html_print_submit_button(__('Create group'), 'crt', false, 'class="sub next"');
-        echo '</div>';
-    echo '</form>';
+    $button_form = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
+    $button_form .= html_print_submit_button(
+        __('Create group'),
+        'crt',
+        false,
+        ['icon' => 'next'],
+        true
+    );
+    $button_form .= '</form>';
 }
+
+
+html_print_action_buttons(
+    $button_form,
+    [
+        'type'          => 'data_table',
+        'class'         => 'fixed_action_buttons',
+        'right_content' => $tablePagination,
+    ]
+);
+
 
 ui_require_javascript_file('TreeController', 'include/javascript/tree/');
 
-enterprise_hook('close_meta_frame');
 $tab = 'group_edition';
 
 ?>
@@ -1007,7 +1042,7 @@ $tab = 'group_edition';
     if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
             treeController.recipient.empty();
 
-        $(".loading_tree").show();
+        showSpinner();
 
         var parameters = {};
         parameters['page'] = "include/ajax/tree.ajax";
@@ -1031,7 +1066,7 @@ $tab = 'group_edition';
             data: parameters,
             success: function(data) {
                 if (data.success) {
-                    $(".loading_tree").hide();
+                    hideSpinner();
 
                     treeController.init({
                         recipient: $("div#tree-controller-recipient"),

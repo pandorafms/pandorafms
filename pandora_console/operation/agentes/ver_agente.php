@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Agent view.
  *
- * @category   Extensions
+ * @category   Resources
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -15,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,6 +36,7 @@ require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_metaconsole.php');
+enterprise_include_once('include/functions_omnishell.php');
 
 ui_require_javascript_file('openlayers.pandora');
 ui_require_css_file('agent_view');
@@ -1357,7 +1357,7 @@ if ($flag_agent !== '') {
 if ($agent['icon_path']) {
     $icon = gis_get_agent_icon_map($agent['id_agente'], true);
 } else {
-    $icon = 'images/agent.png';
+    $icon = 'images/agents@svg.svg';
 }
 
 
@@ -1367,41 +1367,32 @@ $tab = get_parameter('tab', 'main');
 // Manage tab.
 $managetab = [];
 
-if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    $managetab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'.html_print_image(
-        'images/setup.png',
-        true,
+if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+    $managetab['text'] = html_print_menu_button(
         [
+            'href'  => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente,
+            'image' => 'images/configuration@svg.svg',
             'title' => __('Manage'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+        ],
+        true
+    );
 
-    if ($tab == 'manage') {
-        $managetab['active'] = true;
-    } else {
-        $managetab['active'] = false;
-    }
-
+    $managetab['active'] = ($tab === 'manage');
     $managetab['godmode'] = 1;
 }
 
 
 // Main tab.
-$maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'.html_print_image(
-    'images/agent.png',
-    true,
+$maintab['text'] = html_print_menu_button(
     [
+        'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente,
+        'image' => 'images/agents@svg.svg',
         'title' => __('Main'),
-        'class' => 'invert_filter',
-    ]
-).'</a>';
+    ],
+    true
+);
 
-if ($tab == 'main') {
-    $maintab['active'] = true;
-} else {
-    $maintab['active'] = false;
-}
+$maintab['active'] = ($tab === 'main');
 
 // Interfaces tab.
 $agent_interfaces = agents_get_network_interfaces(
@@ -1438,28 +1429,24 @@ if ($agent_interfaces_count > 0) {
 }
 
 // Alert tab.
-$alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'.html_print_image(
-    'images/bell.png',
-    true,
+$alerttab['text'] = html_print_menu_button(
     [
+        'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert',
+        'image' => 'images/alert@svg.svg',
         'title' => __('Alerts'),
-        'class' => 'invert_filter',
-    ]
-).'</a>';
+    ],
+    true
+);
 
-if ($tab === 'alert') {
-    $alerttab['active'] = true;
-} else {
-    $alerttab['active'] = false;
-}
+$alerttab['active'] = ($tab === 'alert');
 
 // Inventory.
 $inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
 $inventorytab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
-    'images/page_white_text.png',
+    'images/hardware-software-component@svg.svg',
     true,
     [
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
         'title' => __('Inventory'),
     ]
 ).'</a>';
@@ -1468,38 +1455,54 @@ if ($tab == 'inventory') {
     $inventorytab['active'] = true;
 } else {
     $inventorytab['active'] = false;
-}if ($inventorytab == -1 || $inventoryCount === 0) {
+}
+
+$inventorytab = enterprise_hook('inventory_tab');
+if ($inventorytab === ENTERPRISE_NOT_HOOK || $inventoryCount === 0) {
     $inventorytab = '';
 }
 
 // Collection.
 if ((int) $config['license_nms'] !== 1) {
     $collectiontab = enterprise_hook('collection_tab');
-    if ($collectiontab == -1) {
+    if ($collectiontab === ENTERPRISE_NOT_HOOK) {
         $collectiontab = '';
     }
+} else {
+    $collectiontab = '';
 }
 
 
 // Policy.
 $policyTab = enterprise_hook('policy_tab');
-if ($policyTab == -1) {
+if ($policyTab === ENTERPRISE_NOT_HOOK) {
     $policyTab = '';
+}
+
+
+// Omnishell.
+$tasks = count_tasks_agent($id_agente);
+
+if ($tasks === true) {
+    $omnishellTab = enterprise_hook('omnishell_tab');
+    if ($omnishellTab == -1) {
+        $omnishellTab = '';
+    }
 }
 
 // WUX Console.
 $modules_wux = enterprise_hook('get_wux_modules', [$id_agente]);
-if ($modules_wux) {
+if ((bool) $modules_wux === true) {
     $wux_console_tab = enterprise_hook('wux_console_tab');
-    if ($wux_console_tab == -1) {
+    if ($wux_console_tab === ENTERPRISE_NOT_HOOK) {
         $wux_console_tab = '';
     }
 }
 
 $url_route_analyzer = enterprise_hook('get_url_route_analyzer_modules', [$id_agente]);
-if ($url_route_analyzer) {
+if ((bool) $url_route_analyzer === true) {
     $url_route_analyzer_tab = enterprise_hook('url_route_analyzer_tab');
-    if ($url_route_analyzer_tab == -1) {
+    if ($url_route_analyzer_tab === ENTERPRISE_NOT_HOOK) {
         $url_route_analyzer_tab = '';
     }
 }
@@ -1511,128 +1514,106 @@ if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
 
 // GIS tab.
 $gistab = [];
-if ($config['activate_gis']) {
-    $gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.html_print_image(
-        'images/op_gis.png',
-        true,
+if ((bool) $config['activate_gis'] === true) {
+    $gistab['text'] = html_print_menu_button(
         [
+            'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente,
+            'image' => 'images/poi@svg.svg',
             'title' => __('GIS data'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+        ],
+        true
+    );
 
-    if ($tab == 'gis') {
-        $gistab['active'] = true;
-    } else {
-        $gistab['active'] = false;
-    }
+    $gistab['active'] = ($tab === 'gis');
 }
-
 
 // Incident tab.
 $total_incidents = agents_get_count_incidents($id_agente);
 if ($total_incidents > 0) {
-    $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">'.html_print_image(
-        'images/book_edit.png',
-        true,
+    $incidenttab['text'] = html_print_menu_button(
         [
+            'href'  => 'index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente,
+            'image' => 'images/logs@svg.svg',
             'title' => __('Incidents'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+        ],
+        true
+    );
 
-    if ($tab == 'incident') {
-        $incidenttab['active'] = true;
-    } else {
-        $incidenttab['active'] = false;
-    }
+    $incidenttab['active'] = ($tab === 'incident');
 }
-
 
 // Url address tab.
-if ($agent['url_address'] != '') {
-    $urladdresstab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente.'">'.html_print_image(
-        'images/link.png',
-        true,
+if (empty($agent['url_address']) === false) {
+    $urladdresstab['text'] = html_print_menu_button(
         [
+            'href'  => 'index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente,
+            'image' => 'images/generic-string@svg.svg',
             'title' => __('Url address'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+        ],
+        true
+    );
 }
 
-if ($tab == 'url_address') {
-    $urladdresstab['active'] = true;
-} else {
-    $urladdresstab['active'] = false;
-}
-
+$urladdresstab['active'] = ($tab === 'url_address');
 
 // Custom fields tab.
-$custom_fields['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'.html_print_image(
-    'images/custom_field.png',
-    true,
+$custom_fields['text'] = html_print_menu_button(
     [
+        'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente,
+        'image' => 'images/custom-input@svg.svg',
         'title' => __('Custom fields'),
-        'class' => 'invert_filter',
-    ]
-).'</a>';
-if ($tab == 'custom_fields') {
-    $custom_fields['active'] = true;
-} else {
-    $custom_fields['active'] = false;
-}
+    ],
+    true
+);
+
+$custom_fields['active'] = ($tab === 'custom_fields');
 
 
 // Graphs tab.
-$graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'.html_print_image(
-    'images/chart.png',
-    true,
+$graphs['text'] = html_print_menu_button(
     [
+        'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente,
+        'image' => 'images/graph@svg.svg',
         'title' => __('Graphs'),
-        'class' => 'invert_filter',
-    ]
-).'</a>';
-if ($tab == 'graphs') {
-    $graphs['active'] = true;
-} else {
-    $graphs['active'] = false;
-}
+    ],
+    true
+);
 
+$graphs['active'] = ($tab === 'graphs');
 
 // Log viewer tab.
-if (enterprise_installed() && $config['log_collector']) {
+if (enterprise_installed() === true && (bool) $config['log_collector'] === true) {
     $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
     $agent_has_logs = (bool) db_get_value('id_agent', 'tagent_module_log', 'id_agent', $id_agente);
 
-    if ($agent_has_logs && !$is_windows) {
+    if ($agent_has_logs === true && (bool) $is_windows === false) {
         $log_viewer_tab = [];
-        $log_viewer_tab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente.'">'.html_print_image(
-            'images/gm_log.png',
-            true,
+        $log_viewer_tab['text'] = html_print_menu_button(
             [
+                'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente,
+                'image' => 'images/gm_log.png',
                 'title' => __('Log Viewer'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
-        $log_viewer_tab['active'] = $tab == 'log_viewer';
+            ],
+            true
+        );
+        $log_viewer_tab['active'] = ($tab === 'log_viewer');
     }
 }
 
 // EHorus tab.
-if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
+if ((bool) $config['ehorus_enabled'] === true && empty($config['ehorus_custom_field'] === false)
     && (check_acl_one_of_groups(
         $config['id_user'],
         $all_groups,
         'AW'
-    ) || is_user_admin($config['id_user']))
+    ) || is_user_admin($config['id_user']) === true)
 ) {
     $user_info = users_get_user_by_id($config['id_user']);
-    if ($config['ehorus_user_level_conf'] && !$user_info['ehorus_user_level_enabled']) {
+    if ($config['ehorus_user_level_conf'] && (bool) $user_info['ehorus_user_level_enabled'] === false) {
         // If ehorus user configuration is enabled, and userr acces level is disabled do not show eHorus tab.
     } else {
         $ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
-        if (!empty($ehorus_agent_id)) {
+        if (empty($ehorus_agent_id) === false) {
             $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
             $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image(
                 'images/ehorus/ehorus.png',
@@ -1647,11 +1628,11 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
             $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu float-none">';
             $ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="'.$tab_url.'&client_tab=terminal">';
             $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode center">'.html_print_image(
-                'images/ehorus/terminal.png',
+                'images/quick-shell@svg.svg',
                 true,
                 [
                     'title' => __('Terminal'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             );
             $ehorus_tab['sub_menu'] .= '</li>';
@@ -1708,28 +1689,32 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
 }
 
 $is_sap = agents_get_sap_agents($id_agente);
-if ($is_sap) {
-    $saptab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.html_print_image(
-        'images/sap_icon.png',
-        true,
-        ['title' => __('SAP view')]
-    ).'</a>';
-    if ($tab == 'sap_view') {
-        $saptab['active'] = true;
-    } else {
-        $saptab['active'] = false;
-    }
+if ($is_sap === true) {
+    $saptab['text'] = html_print_menu_button(
+        [
+            'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sap_view&page=1&id_agente='.$id_agente,
+            'image' => 'images/sap_icon.png',
+            'title' => __('SAP view'),
+        ],
+        true
+    );
+
+    $saptab['active'] = ($tab === 'sap_view');
 } else {
     $saptab = '';
 }
 
 // External Tools tab.
-$external_tools['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=external_tools&id_agente='.$id_agente.'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools'), 'class' => 'invert_filter']).'</a>';
-if ($tab == 'external_tools') {
-    $external_tools['active'] = true;
-} else {
-    $external_tools['active'] = false;
-}
+$external_tools['text'] = html_print_menu_button(
+    [
+        'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=external_tools&id_agente='.$id_agente,
+        'image' => 'images/external-tools@svg.svg',
+        'title' => __('External Tools'),
+    ],
+    true
+);
+
+$external_tools['active'] = ($tab === 'external_tools');
 
 $onheader = [
     'manage'             => ($managetab ?? null),
@@ -1749,6 +1734,7 @@ $onheader = [
     'ncm_view'           => ($ncm_tab ?? null),
     'external_tools'     => ($external_tools ?? null),
     'incident'           => ($incidenttab ?? null),
+    'omnishell'          => ($omnishellTab ?? null),
 ];
 
 
@@ -1757,12 +1743,12 @@ if ($agent['url_address'] != '') {
 }
 
 // If the log viewer tab exists.
-if (isset($log_viewer_tab) && !empty($log_viewer_tab)) {
+if (isset($log_viewer_tab) === true && empty($log_viewer_tab) === false) {
     $onheader['log_viewer'] = $log_viewer_tab;
 }
 
 // If the ehorus id exists.
-if (isset($ehorus_tab) && !empty($ehorus_tab)) {
+if (isset($ehorus_tab) === true && empty($ehorus_tab) === false) {
     $onheader['ehorus'] = $ehorus_tab;
 }
 
@@ -1833,77 +1819,81 @@ foreach ($config['extensions'] as $extension) {
 
 switch ($tab) {
     case 'custom_fields':
-        $tab_name = 'Custom fields';
+        $tab_name = __('Custom fields');
     break;
 
     case 'gis':
-        $tab_name = 'GIS data';
+        $tab_name = __('GIS data');
     break;
 
     case 'manage':
-        $tab_name = 'Manage';
+        $tab_name = __('Manage');
     break;
 
     case 'main':
-        $tab_name = 'Main';
+        $tab_name = __('Main');
         $help_header = 'agent_'.$tab.'_tab';
     break;
 
     case 'data_view':
-        $tab_name = '';
+        $tab_name = __('Data View');
     break;
 
     case 'interface':
-        $tab_name = 'Interfaces';
+        $tab_name = __('Interfaces');
     break;
 
     case 'alert':
-        $tab_name = 'Alerts';
+        $tab_name = __('Alerts');
     break;
 
     case 'inventory':
-        $tab_name = 'Inventory';
+        $tab_name = __('Inventory');
     break;
 
     case 'collection':
-        $tab_name = 'Collection';
+        $tab_name = __('Collection');
     break;
 
     case 'policy':
-        $tab_name = 'Policies';
+        $tab_name = __('Policies');
+    break;
+
+    case 'omnishell':
+        $tab_name = 'Omnishell';
     break;
 
     case 'ux_console_tab':
-        $tab_name = 'UX Console';
+        $tab_name = __('UX Console');
     break;
 
     case 'wux_console_tab':
-        $tab_name = 'WUX Console';
+        $tab_name = __('WUX Console');
         $help_header = 'wux_console_tab';
     break;
 
     case 'url_route_analyzer_tab':
-        $tab_name = 'URL Route Analyzer';
+        $tab_name = __('URL Route Analyzer');
     break;
 
     case 'graphs';
-        $tab_name = 'Graphs';
+        $tab_name = __('Graphs');
     break;
 
     case 'incident':
-        $tab_name = 'Incidents';
+        $tab_name = __('Incidents');
     break;
 
     case 'url_address':
-        $tab_name = 'Url address';
+        $tab_name = __('Url address');
     break;
 
     case 'log_viewer':
-        $tab_name = 'Log viewer';
+        $tab_name = __('Log viewer');
     break;
 
     case 'ehorus':
-        $tab_name = 'eHorus';
+        $tab_name = __('eHorus');
     break;
 
     case 'extension':
@@ -1911,17 +1901,16 @@ switch ($tab) {
     break;
 
     case 'sap_view':
-            $tab_description = '- '.__('SAP view');
-            $help_header = 'sap_view';
-            $tab_name = 'SAP View';
+        $tab_name = __('SAP view');
+        $help_header = 'sap_view';
     break;
 
     case 'ncm':
-        $tab_name = 'Network configuration';
+        $tab_name = __('Network configuration');
     break;
 
     case 'external_tools':
-        $tab_name = 'External Tools';
+        $tab_name = __('External Tools');
     break;
 
     default:
@@ -1930,25 +1919,34 @@ switch ($tab) {
     break;
 }
 
-if (!$config['pure']) {
-    ui_print_page_header(
-        agents_get_alias($id_agente),
+if ((bool) $config['pure'] === false) {
+    ui_print_standard_header(
+        __('Agent main view').' ( '.strtolower(agents_get_alias($id_agente)).' )',
         $icon,
         false,
-        '',
+        ($help_header ?? ''),
         false,
         $onheader,
-        false,
-        '',
-        $config['item_title_size_text'],
-        '',
-        ui_print_breadcrums(
+        [
             [
-                __('Monitoring'),
-                __('View'),
-                '<span class="breadcrumb_active">'.$tab_name.'</span>',
-            ]
-        )
+                'link'  => '',
+                'label' => __('Resources'),
+            ],
+            [
+                'link'  => 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+                'label' => __('View agents'),
+            ],
+            [
+                'link'  => '',
+                'label' => $tab_name,
+            ],
+        ],
+        [
+            'id_element' => $id_agente,
+            'url'        => 'operation/agentes/ver_agente&id_agente='.$id_agente,
+            'label'      => agents_get_alias($id_agente),
+            'section'    => 'Agents',
+        ]
     );
 }
 
@@ -2009,6 +2007,10 @@ switch ($tab) {
 
     case 'policy':
         enterprise_include('operation/agentes/policy_view.php');
+    break;
+
+    case 'omnishell':
+        enterprise_include('operation/agentes/omnishell_view.php');
     break;
 
     case 'ux_console_tab':

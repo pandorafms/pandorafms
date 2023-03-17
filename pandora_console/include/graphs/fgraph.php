@@ -696,7 +696,7 @@ function get_build_setup_charts($type, $options, $data)
         $legend->setAlign($legendAlign);
 
         // Defaults fonts legends.
-        $legend->labels()->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $legend->labels()->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
         $legend->labels()->getFonts()->setStyle('normal');
         $legend->labels()->getFonts()->setWeight(600);
         $legend->labels()->getFonts()->setSize(((int) $config['font_size'] + 2));
@@ -835,7 +835,7 @@ function get_build_setup_charts($type, $options, $data)
         $dataLabel->setFormatter($dataLabelFormatter);
 
         // Defaults fonts datalabel.
-        $dataLabel->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $dataLabel->getFonts()->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
         $dataLabel->getFonts()->setStyle('normal');
         $dataLabel->getFonts()->setWeight(600);
         $dataLabel->getFonts()->setSize(((int) $config['font_size'] + 2));
@@ -944,14 +944,14 @@ function get_build_setup_charts($type, $options, $data)
 
         // Defaults scalesFont X.
         $scalesXFonts = $scales->getX()->ticks()->getFonts();
-        $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
         $scalesXFonts->setStyle('normal');
         $scalesXFonts->setWeight(600);
         $scalesXFonts->setSize(((int) $config['font_size'] + 2));
 
         // Defaults scalesFont Y.
         $scalesYFonts = $scales->getY()->ticks()->getFonts();
-        $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'Lato' : $config['fontpath']);
+        $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
         $scalesYFonts->setStyle('normal');
         $scalesYFonts->setWeight(600);
         $scalesYFonts->setSize(((int) $config['font_size'] + 2));

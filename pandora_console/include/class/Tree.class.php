@@ -214,6 +214,11 @@ class Tree
 											AND ta.unknown_count = 0
 											AND ta.normal_count > 0) ';
             break;
+
+            case AGENT_STATUS_NOT_NORMAL:
+                $agent_status_filter = ' AND (ta.critical_count > 0
+											OR ta.warning_count > 0) ';
+            break;
         }
 
         return $agent_status_filter;
@@ -283,6 +288,10 @@ class Tree
 
         if ($this->getEmptyModuleFilterStatus()) {
             return $show_init_condition;
+        }
+
+        if ((int) $this->filter['statusModule'] === 6) {
+            return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)';
         }
 
         $field_filter = modules_get_counter_by_states($this->filter['statusModule']);
@@ -396,13 +405,13 @@ class Tree
         $processed_item['rootType'] = $this->rootType;
         $processed_item['searchChildren'] = 1;
 
-        if (isset($item['type'])) {
+        if (isset($item['type']) === true) {
             $processed_item['type'] = $item['type'];
         } else {
             $processed_item['type'] = $this->type;
         }
 
-        if (isset($item['rootType'])) {
+        if (isset($item['rootType']) === true) {
             $processed_item['rootType'] = $item['rootType'];
         } else {
             $processed_item['rootType'] = $this->rootType;
@@ -411,23 +420,23 @@ class Tree
         if ($processed_item['type'] == 'group') {
             $processed_item['parent'] = $item['parent'];
 
-            $processed_item['icon'] = empty($item['icon']) ? 'without_group.png' : $item['icon'].'.png';
+            $processed_item['icon'] = empty($item['icon']) === true ? 'unknown@groups.svg' : $item['icon'];
         }
 
-        if (isset($item['iconHTML'])) {
+        if (isset($item['iconHTML']) === true) {
             $processed_item['icon'] = $item['iconHTML'];
         }
 
-        if (is_metaconsole() && !empty($server)) {
+        if (is_metaconsole() === true && empty($server) === false) {
             $processed_item['serverID'] = $server['id'];
         }
 
         $counters = [];
-        if (isset($item['total_unknown_count'])) {
+        if (isset($item['total_unknown_count']) === true) {
             $counters['unknown'] = $item['total_unknown_count'];
         }
 
-        if (isset($item['total_critical_count'])) {
+        if (isset($item['total_critical_count']) === true) {
             $counters['critical'] = $item['total_critical_count'];
         }
 
@@ -668,10 +677,9 @@ class Tree
             }
         }
 
-        $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true);
-
-        // HTML of the server type image
-        $module['serverTypeHTML'] = servers_show_type($module['server_type']);
+        $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true, ['is_tree_view' => true]);
+        // HTML of the server type image.
+        $module['serverTypeHTML'] = ui_print_servertype_icon((int) $module['server_type']);
 
         // Link to the Module graph.
         // ACL.
@@ -772,10 +780,19 @@ class Tree
         if ((bool) $module['alerts']) {
             // Module has alerts triggered.
             if ($module_alert_triggered === true) {
-                $module['alertsImageHTML'] = html_print_image('images/bell_orange.png', true, ['title' => __('Module alerts'), 'style' => 'filter: initial']);
+                $colorAlertButton = COL_ALERTFIRED;
             } else {
-                $module['alertsImageHTML'] = html_print_image('images/bell_green.png', true, ['title' => __('Module alerts'), 'style' => 'filter: initial']);
+                $colorAlertButton = COL_NORMAL;
             }
+
+            $module['alertsImageHTML'] = html_print_div(
+                [
+                    'title' => __('Module alerts'),
+                    'class' => 'alert_background_state main_menu_icon module-button',
+                    'style' => 'background-color: '.$colorAlertButton,
+                ],
+                true
+            );
         }
     }
 
@@ -894,6 +911,18 @@ class Tree
                     $agent['counters']['ok'] = $agent['normal_count'];
                     $agent['counters']['total'] = $agent['normal_count'];
                 break;
+
+                case AGENT_MODULE_STATUS_NOT_NORMAL:
+                    if (empty($agent['critical_count']) === false) {
+                        $agent['counters']['critical'] = $agent['critical_count'];
+                    }
+
+                    if (empty($agent['warning_count']) === false) {
+                        $agent['counters']['warning'] = $agent['warning_count'];
+                    }
+
+                    $agent['counters']['total'] = ($agent['warning_count'] + $agent['critical_count']);
+                break;
             }
         }
 
@@ -904,7 +933,7 @@ class Tree
 
         // Quiet image
         if (isset($agent['quiet']) && $agent['quiet']) {
-               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
+               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['is_tree_view' => 'yes', 'class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
         }
 
         // Children

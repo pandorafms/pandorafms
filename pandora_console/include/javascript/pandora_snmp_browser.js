@@ -59,6 +59,11 @@ function snmpBrowse() {
       $("#spinner").css("display", "none");
 
       // Load the SNMP tree
+      $("#snmp_tree_container").show();
+      $("#search_options").show();
+      $("#button-srcbutton")
+        .find("div")
+        .removeClass("rotation");
       $("#snmp_browser").html(data);
 
       // Manage click and select events.
@@ -84,7 +89,11 @@ function snmpBrowse() {
           errorThrown +
           "</p>";
       }
-
+      $("#snmp_tree_container").show();
+      $("#search_options").show();
+      $("#button-srcbutton")
+        .find("div")
+        .removeClass("rotation");
       $("#snmp_browser").html(htmlError);
     }
   });
@@ -248,6 +257,8 @@ function snmpGet(oid) {
   var snmp3_privacy_pass = $("#password-snmp3_browser_privacy_pass").val();
   var ajax_url = $("#hidden-ajax_url").val();
   var server_to_exec = $("#server_to_exec").val();
+  var target_port = $("#target_port").val();
+  var print_create_agent_module = $("#print_create_agent_module").val();
 
   // Check for a custom action
   var custom_action = $("#hidden-custom_action").val();
@@ -271,6 +282,8 @@ function snmpGet(oid) {
   params["action"] = "snmpget";
   params["custom_action"] = custom_action;
   params["page"] = "include/ajax/snmp_browser.ajax";
+  params["target_port"] = target_port;
+  params["print_create_agent_module"] = print_create_agent_module;
 
   // SNMP get!
   jQuery.ajax({
@@ -551,7 +564,7 @@ function snmpBrowserWindow() {
         background: "black"
       },
       width: 1000,
-      height: 500
+      height: 800
     });
 }
 
@@ -604,7 +617,9 @@ function snmp_browser_create_modules(module_target, return_post = true) {
   var oids = [];
   id_check.forEach(function(product, index) {
     var oid = $("#" + product)
-      .siblings("a")
+      .parent()
+      .parent()
+      .find("a")
       .attr("href");
     if (oid.indexOf('javascript: snmpGet("') != -1) {
       oid = oid.replace('javascript: snmpGet("', "");
@@ -648,23 +663,29 @@ function snmp_browser_create_modules(module_target, return_post = true) {
     params["page"] = "include/ajax/snmp_browser.ajax";
     params["snmp_extradata"] = snmp_data;
 
-    $("input[name=create_modules_" + module_target + "]").removeClass(
+    $("button[name=create_modules_" + module_target + "]").removeClass(
       "sub add"
     );
-    $("input[name=create_modules_" + module_target + "]").addClass("sub spinn");
+    $("button[name=create_modules_" + module_target + "]").addClass(
+      "sub spinn"
+    );
 
     $("#dialog_error").on("dialogclose", function(event) {
-      $("input[name=create_modules_" + module_target + "]").removeClass(
+      $("button[name=create_modules_" + module_target + "]").removeClass(
         "sub spinn"
       );
-      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+      $("button[name=create_modules_" + module_target + "]").addClass(
+        "sub add"
+      );
     });
 
     $("#dialog_success").on("dialogclose", function(event) {
-      $("input[name=create_modules_" + module_target + "]").removeClass(
+      $("button[name=create_modules_" + module_target + "]").removeClass(
         "sub spinn"
       );
-      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+      $("button[name=create_modules_" + module_target + "]").addClass(
+        "sub add"
+      );
     });
 
     $.ajax({

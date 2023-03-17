@@ -4,6 +4,7 @@
 ##############################################################################################################
 ## Tested versions ##
 # Ubuntu 22.04.1
+# Ubuntu 22.04.2  
 
 #avoid promps
 export DEBIAN_FRONTEND=noninteractive
@@ -16,7 +17,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='202302081'
+S_VERSION='202302201'
 LOGFILE="/tmp/deploy-ext-db-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 
@@ -181,7 +182,7 @@ cat > /etc/mysql/my.cnf << EOF_DB
 [mysqld]
 datadir=/var/lib/mysql
 user=mysql
-character-set-server=utf8
+character-set-server=utf8mb4
 skip-character-set-client-handshake
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
@@ -196,7 +197,7 @@ innodb_flush_log_at_trx_commit = 0
 innodb_flush_method = O_DIRECT
 innodb_log_file_size = 64M
 innodb_log_buffer_size = 16M
-innodb_io_capacity = 100
+innodb_io_capacity = 300
 thread_cache_size = 8
 thread_stack    = 256K
 max_connections = 100

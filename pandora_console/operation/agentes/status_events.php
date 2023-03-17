@@ -21,15 +21,22 @@ if (!isset($id_agente)) {
 
 require_once 'include/functions_events.php';
 ui_require_css_file('events');
-ui_toggle(
-    "<div class='w100p' id='event_list'>".html_print_image('images/spinner.gif', true).'</div>',
-    __('Latest events for this agent'),
-    __('Latest events for this agent'),
-    '',
-    false,
-    false,
-    '',
-    'white_table_graph_content no-padding-imp'
+
+html_print_div(
+    [
+        'class'   => 'agent_details_line',
+        'content' => ui_toggle(
+            '<div class=\'w100p\' id=\'event_list\'>'.html_print_image('images/spinner.gif', true).'</div>',
+            '<span class="subsection_header_title">'.__('Latest events for this agent').'</span>',
+            __('Latest events for this agent'),
+            'latest_events_agent',
+            false,
+            true,
+            '',
+            'box-flat white-box-content no_border',
+            'box-flat white_table_graph w100p'
+        ),
+    ],
 );
 
 ?>

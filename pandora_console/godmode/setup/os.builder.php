@@ -1,17 +1,32 @@
 <?php
+/**
+ * OS Builder
+ *
+ * @category   Os
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -25,31 +40,65 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
+$icons = get_list_os_icons_dir();
+
+$iconData = [];
+$iconData[] = html_print_select(
+    $icons,
+    'icon',
+    $icon,
+    'show_icon_OS();',
+    __('None'),
+    0,
+    true
+);
+$iconData[] = html_print_div(
+    [
+        'id'      => 'icon_image',
+        'class'   => 'invert_filter main_menu_icon',
+        'style'   => 'margin-left: 10px',
+        'content' => ui_print_os_icon($idOS, false, true),
+    ],
+    true
+);
+
 echo '<form id="form_setup" method="post">';
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filter-table-adv';
 
-$table->style[0] = 'font-weight: bolder;';
+// $table->style[0] = 'width: 15%';
+$table->data[0][] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text('name', $name, __('Name'), 20, 30, true, false, false, '', 'w250px')
+);
 
-$table->data[0][0] = __('Name:');
-$table->data[0][1] = html_print_input_text('name', $name, __('Name'), 20, 30, true);
-$table->data[1][0] = __('Description');
-$table->data[1][1] = html_print_textarea('description', 5, 10, $description, '', true);
-$icons = get_list_os_icons_dir();
-$table->data[2][0] = __('Icon');
-$table->data[2][1] = html_print_select($icons, 'icon', $icon, 'show_icon_OS();', __('None'), 0, true);
-$table->data[2][1] .= ' <span id="icon_image">'.ui_print_os_icon($idOS, false, true).'</span>';
+$table->data[0][] = html_print_label_input_block(
+    __('Icon'),
+    html_print_div(
+        [
+            'class'   => 'flex-row-center',
+            'content' => implode('', $iconData),
+        ],
+        true
+    )
+);
 
+$table->data[1][] = html_print_label_input_block(
+    __('Description'),
+    html_print_textarea('description', 5, 20, $description, '', true, 'w250px')
+);
 
 html_print_table($table);
 
 html_print_input_hidden('id_os', $idOS);
 html_print_input_hidden('action', $actionHidden);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button($textButton, 'update_button', false, $classButton);
-echo '</div>';
+html_print_action_buttons(
+    html_print_submit_button($textButton, 'update_button', false, $classButton, true),
+    ['type' => 'form_action']
+);
+
 echo '</form>';
 
 
@@ -59,18 +108,10 @@ function get_list_os_icons_dir()
 
     $return = [];
 
-    $items = scandir($config['homedir'].'/images/os_icons');
+    $items = scandir($config['homedir'].'/images/');
 
     foreach ($items as $item) {
-        if (strstr($item, '_small.png') || strstr($item, '_small.gif')
-            || strstr($item, '_small.jpg')
-        ) {
-            continue;
-        }
-
-        if (strstr($item, '.png') || strstr($item, '.gif')
-            || strstr($item, '.jpg')
-        ) {
+        if (strstr($item, '@os.svg')) {
             $return[$item] = $item;
         }
     }
@@ -86,7 +127,7 @@ function show_icon_OS() {
 
     var params = [];
     params.push("get_image_path=1");
-    params.push('img_src=images/os_icons/' + $("#icon").val());
+    params.push('img_src=images/' + $("#icon").val());
     params.push("page=include/ajax/skins.ajax");
     jQuery.ajax ({
         data: params.join ("&"),

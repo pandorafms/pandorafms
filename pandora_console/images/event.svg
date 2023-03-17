@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Dark / 20 / event@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dark-/-20-/-event" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g>
+            <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+            <path d="M15.9503156,6.25 L10.901623,6.25 L12.7653518,1.1796875 C12.9403498,0.5859375 12.4372305,0 11.7503633,0 L5.45043493,0 C4.9254409,0 4.47919597,0.34765625 4.40919676,0.8125 L3.00921267,10.1875 C2.92608862,10.75 3.41608305,11.25 4.05045084,11.25 L9.24351682,11.25 L7.22666474,18.8476562 C7.06916653,19.4414062 7.57666077,20 8.24602816,20 C8.61352398,20 8.96352,19.828125 9.15601782,19.53125 L16.8559303,7.65625 C17.2628007,7.03515625 16.7596814,6.25 15.9503156,6.25 Z" id="Path" fill="#3F3F3F"></path>
+        </g>
+    </g>
+</svg>

@@ -257,6 +257,7 @@ function initialiceLayout(data) {
               "<h3 style='text-align: center;padding-top: 20px;'>All changes made to this widget will be lost</h3>",
             cancel: "Cancel",
             ok: "Ok",
+            size: 400,
             onAccept: function() {
               // Continue execution.
               var nodo = event.target.offsetParent;
@@ -412,7 +413,6 @@ function initialiceLayout(data) {
           widgetId: widgetId
         },
         width: size.width,
-        maxHeight: size.height,
         minHeight: size.height
       },
       onsubmit: {
@@ -583,7 +583,7 @@ function initialiceLayout(data) {
       success: function(data) {
         $("#modal-add-widget").empty();
         $("#modal-add-widget").append(data);
-        $("a.pagination").click(function() {
+        $("a.pandora_pagination").click(function() {
           var offset = $(this)
             .attr("href")
             .split("=")
@@ -806,7 +806,9 @@ function dashboardLoadNetworkMap(settings) {
       auth_hash: settings.auth_hash,
       id_user: settings.id_user,
       ignore_acl: 1,
-      node: settings.node
+      node: settings.node,
+      dashboard: 1,
+      size: settings.size
     },
     dataType: "html",
     success: function(data) {
@@ -956,6 +958,11 @@ function processTreeSearch(settings) {
               agents: settings.translate.ok.agents,
               modules: settings.translate.ok.modules,
               none: settings.translate.ok.none
+            },
+            not_normal: {
+              agents: settings.translate.not_normal.agents,
+              modules: settings.translate.not_normal.modules,
+              none: settings.translate.not_normal.none
             }
           }
         });

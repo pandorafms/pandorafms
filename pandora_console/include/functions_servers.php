@@ -550,11 +550,11 @@ function servers_get_info($id_server=-1)
         switch ($server['server_type']) {
             case SERVER_TYPE_DATA:
                 $server['img'] = html_print_image(
-                    'images/database.png',
+                    'images/data-server@svg.svg',
                     true,
                     [
                         'title' => __('Data server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'data';
@@ -563,11 +563,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_NETWORK:
                 $server['img'] = html_print_image(
-                    'images/network.png',
+                    'images/network-server@os.svg',
                     true,
                     [
                         'title' => __('Network server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'network';
@@ -576,11 +576,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_SNMP:
                 $server['img'] = html_print_image(
-                    'images/snmp.png',
+                    'images/snmp-trap@svg.svg',
                     true,
                     [
                         'title' => __('SNMP Trap server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'snmp';
@@ -589,11 +589,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_DISCOVERY:
                 $server['img'] = html_print_image(
-                    'images/recon.png',
+                    'images/rrs@svg.svg',
                     true,
                     [
                         'title' => __('Discovery server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'recon';
@@ -602,11 +602,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_PLUGIN:
                 $server['img'] = html_print_image(
-                    'images/plugin.png',
+                    'images/plugins@svg.svg',
                     true,
                     [
                         'title' => __('Plugin server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'plugin';
@@ -615,11 +615,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_PREDICTION:
                 $server['img'] = html_print_image(
-                    'images/chart_bar.png',
+                    'images/prediction@svg.svg',
                     true,
                     [
                         'title' => __('Prediction server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'prediction';
@@ -628,11 +628,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_WMI:
                 $server['img'] = html_print_image(
-                    'images/wmi.png',
+                    'images/WMI@svg.svg',
                     true,
                     [
                         'title' => __('WMI server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'wmi';
@@ -641,11 +641,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_EXPORT:
                 $server['img'] = html_print_image(
-                    'images/server_export.png',
+                    'images/server-export@svg.svg',
                     true,
                     [
                         'title' => __('Export server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'export';
@@ -654,11 +654,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_INVENTORY:
                 $server['img'] = html_print_image(
-                    'images/page_white_text.png',
+                    'images/hardware-software-component@svg.svg',
                     true,
                     [
                         'title' => __('Inventory server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'inventory';
@@ -667,11 +667,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_WEB:
                 $server['img'] = html_print_image(
-                    'images/world.png',
+                    'images/server-web@svg.svg',
                     true,
                     [
                         'title' => __('Web server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'web';
@@ -680,11 +680,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_EVENT:
                 $server['img'] = html_print_image(
-                    'images/lightning_go.png',
+                    'images/server-events@svg.svg',
                     true,
                     [
                         'title' => __('Event server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'event';
@@ -693,11 +693,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_CORRELATION:
                 $server['img'] = html_print_image(
-                    'images/lightning_go.png',
+                    'images/server-events@svg.svg',
                     true,
                     [
                         'title' => __('Correlation server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'correlation';
@@ -706,11 +706,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_ENTERPRISE_ICMP:
                 $server['img'] = html_print_image(
-                    'images/network.png',
+                    'images/network@svg.svg',
                     true,
                     [
                         'title' => __('Enterprise ICMP server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'enterprise icmp';
@@ -719,11 +719,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_ENTERPRISE_SNMP:
                 $server['img'] = html_print_image(
-                    'images/network.png',
+                    'images/network@svg.svg',
                     true,
                     [
                         'title' => __('Enterprise SNMP server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'enterprise snmp';
@@ -732,11 +732,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_ENTERPRISE_SATELLITE:
                 $server['img'] = html_print_image(
-                    'images/satellite.png',
+                    'images/satellite@os.svg',
                     true,
                     [
                         'title' => __('Enterprise Satellite server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'enterprise satellite';
@@ -745,11 +745,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_ENTERPRISE_TRANSACTIONAL:
                 $server['img'] = html_print_image(
-                    'images/transactional_map.png',
+                    'images/server-transactions@svg.svg',
                     true,
                     [
                         'title' => __('Enterprise Transactional server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'enterprise transactional';
@@ -758,11 +758,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_MAINFRAME:
                 $server['img'] = html_print_image(
-                    'images/mainframe.png',
+                    'images/mainframe@os.svg',
                     true,
                     [
                         'title' => __('Mainframe server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'mainframe';
@@ -775,7 +775,7 @@ function servers_get_info($id_server=-1)
                     true,
                     [
                         'title' => __('Sync server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'sync';
@@ -784,11 +784,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_WUX:
                 $server['img'] = html_print_image(
-                    'images/icono-wux.png',
+                    'images/wux@svg.svg',
                     true,
                     [
                         'title' => __('Wux server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'wux';
@@ -797,11 +797,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_SYSLOG:
                 $server['img'] = html_print_image(
-                    'images/syslog.png',
+                    'images/logs@svg.svg',
                     true,
                     [
                         'title' => __('Log server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'syslog';
@@ -810,11 +810,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_NCM:
                 $server['img'] = html_print_image(
-                    'images/book_edit.png',
+                    'images/custom-input@svg.svg',
                     true,
                     [
                         'title' => __('NCM server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'ncm';
@@ -827,7 +827,7 @@ function servers_get_info($id_server=-1)
                     true,
                     [
                         'title' => __('Autoprovision server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'autoprovision';
@@ -836,11 +836,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_MIGRATION:
                 $server['img'] = html_print_image(
-                    'images/migration.png',
+                    'images/server-export@svg.svg',
                     true,
                     [
                         'title' => __('Migration server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'migration';
@@ -849,11 +849,11 @@ function servers_get_info($id_server=-1)
 
             case SERVER_TYPE_ALERT:
                 $server['img'] = html_print_image(
-                    'images/alerts_extern.png',
+                    'images/alert@svg.svg',
                     true,
                     [
                         'title' => __('Alert server'),
-                        'class' => 'invert_filter',
+                        'class' => 'main_menu_icon invert_filter',
                     ]
                 );
                 $server['type'] = 'alert';
@@ -1017,39 +1017,57 @@ function servers_get_info($id_server=-1)
                 // Remote servers LAG Calculation (server_type != 0).
                 if ($server['server_type'] != 0) {
                     // MySQL 8.0 has function lag(). So, lag must be enclosed in quotations.
-                    $result = db_get_row_sql(
-                        'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag,
-                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS "lag"
-                        FROM tagente_estado, tagente_modulo, tagente
-                        WHERE utimestamp > 0
-                            AND tagente.disabled = 0
-                            AND tagente.id_agente = tagente_estado.id_agente
+                    $sql = sprintf(
+                        'SELECT COUNT(tam.id_agente_modulo) AS module_lag,
+                        AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag" 
+                        FROM (
+                            SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+                            FROM tagente_estado
+                            WHERE tagente_estado.current_interval > 0
+                            AND tagente_estado.last_execution_try > 0
+                            AND tagente_estado.running_by = %d
+                        ) tae
+                        JOIN (
+                            SELECT tagente_modulo.id_agente_modulo
+                            FROM tagente_modulo LEFT JOIN tagente
+                            ON tagente_modulo.id_agente = tagente.id_agente
+                            WHERE tagente.disabled = 0
                             AND tagente_modulo.disabled = 0
-                            AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-                            AND current_interval > 0
-                            AND running_by = '.$server['id_server'].'
-                            AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-                            AND (UNIX_TIMESTAMP() - utimestamp) > current_interval'
+                        ) tam
+                        ON tae.id_agente_modulo = tam.id_agente_modulo
+                        WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval)
+                        AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)',
+                        $server['id_server']
                     );
                 } else {
                     // Local/Dataserver server LAG calculation.
                     // MySQL 8.0 has function lag(). So, lag must be enclosed in quotations.
-                    $result = db_get_row_sql(
-                        'SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag,
-                            AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS "lag"
-                        FROM tagente_estado, tagente_modulo, tagente
-                        WHERE utimestamp > 0
-                            AND tagente.disabled = 0
-                            AND tagente.id_agente = tagente_estado.id_agente
+                    $sql = sprintf(
+                        'SELECT COUNT(tam.id_agente_modulo) AS module_lag,
+                        AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS "lag"
+                        FROM (
+                          SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+                            FROM tagente_estado
+                            WHERE tagente_estado.current_interval > 0
+                            AND tagente_estado.last_execution_try > 0
+                            AND tagente_estado.running_by = %d
+                        ) tae
+                        JOIN (
+                            SELECT tagente_modulo.id_agente_modulo
+                            FROM tagente_modulo LEFT JOIN tagente
+                            ON tagente_modulo.id_agente = tagente.id_agente
+                            WHERE tagente.disabled = 0
                             AND tagente_modulo.disabled = 0
                             AND tagente_modulo.id_tipo_modulo < 5
-                            AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-                            AND current_interval > 0
-                            AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-                            AND running_by = '.$server['id_server'].'
-                            AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)'
+                    ) tam
+                        ON tae.id_agente_modulo = tam.id_agente_modulo
+                        WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval * 1.1)
+                        AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)',
+                        $server['id_server']
                     );
                 }
+
+                $result = db_get_row_sql($sql);
 
                 // Lag over current_interval * 2 is not lag,
                 // it's a timed out module.
@@ -1149,108 +1167,6 @@ function servers_check_remote_config($server_name)
         && is_writable($filenames['conf'])
         && file_exists($filenames['md5'])
         && is_writable($filenames['md5']));
-}
-
-
-/**
- * Return a string containing image tag for a given target id (server).
- * TODO: Make this print_servertype_icon and move to functions_ui.php.
- *      Make XHTML compatible. Make string translatable.
- *
- * @param integer $id Server type id.
- *
- * @deprecated Use print_servertype_icon instead.
- *
- * @return string Fully formatted IMG HTML tag with icon.
- */
-function servers_show_type($id)
-{
-    global $config;
-
-    switch ($id) {
-        case 1:
-            $return = html_print_image(
-                'images/database.png',
-                true,
-                [
-                    'title' => get_product_name().' Data server',
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case 2:
-            $return = html_print_image(
-                'images/network.png',
-                true,
-                [
-                    'title' => get_product_name().' Network server',
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case 4:
-            $return = html_print_image(
-                'images/plugin.png',
-                true,
-                [
-                    'title' => get_product_name().' Plugin server',
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case 5:
-            $return = html_print_image(
-                'images/chart_bar.png',
-                true,
-                [
-                    'title' => get_product_name().' Prediction server',
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case 6:
-            $return = html_print_image(
-                'images/wmi.png',
-                true,
-                [
-                    'title' => get_product_name().' WMI server',
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case 7:
-            $return = html_print_image(
-                'images/server_web.png',
-                true,
-                [
-                    'title' => get_product_name().' WEB server',
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        case 8:
-            $return = html_print_image(
-                'images/module-wux.png',
-                true,
-                [
-                    'title' => get_product_name().' WUX server',
-                    'class' => 'invert_filter',
-                ]
-            );
-        break;
-
-        default:
-            $return = '--';
-        break;
-    }
-
-    return $return;
 }
 
 

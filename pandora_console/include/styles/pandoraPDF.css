@@ -28,6 +28,10 @@
  * ============================================================================
  */
 
+body {
+  background-color: white !important;
+}
+
 table.header_table {
   width: 100%;
 }
@@ -38,7 +42,7 @@ table.header_table tr td {
 }
 
 table thead tr th {
-  background-color: #919191;
+  background-color: #e5e5e5;
 }
 
 table thead tr th.title_table_pdf {
@@ -210,4 +214,21 @@ table tbody td.cellBorder1 {
 
 table tbody td.cellBig {
   font-size: 18px;
+}
+
+table.info_table {
+  border-collapse: collapse;
+}
+
+table.info_table thead tr th,
+table.info_table thead tr td {
+  background-color: white !important;
+}
+
+table.info_table thead tr th {
+  border-bottom: 1px solid #333333;
+}
+
+table.info_table tbody tr td {
+  border-bottom: 1px solid #e5e5e5;
 }

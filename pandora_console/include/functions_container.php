@@ -180,7 +180,7 @@ function folder_table($graphs)
 
         if (($report_w || $report_m) && users_can_manage_group_all($access)) {
             $data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.$graph['id_graph'].'">'.html_print_image(
-                'images/config.png',
+                'images/edit.svg',
                 true,
                 ['class' => 'invert_filter']
             ).'</a>';
@@ -188,7 +188,7 @@ function folder_table($graphs)
             $data[4] .= '&nbsp;';
 
             $data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter']).'</a>'.html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete mrgn_lft_2px"', true);
+					return false;">'.html_print_image('images/delete.svg', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter']).'</a>'.html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete mrgn_lft_2px"', true);
         }
 
         array_push($table->data, $data);
@@ -316,13 +316,13 @@ function ui_toggle_container($code, $name, $title='', $hidden_default=true, $ret
     $data[0] = '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">'.html_print_image($original, true, ['title' => $title, 'id' => 'image_'.$uniqid, 'class' => 'invert_filter']).'&nbsp;&nbsp;<b>'.$name.'</b></a>';
     $data[1] = ui_print_group_icon($group, true);
     if ($report_r && $report_w) {
-        $data[2] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&id='.$id_container.'">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a>';
+        $data[2] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&id='.$id_container.'">'.html_print_image('images/edit.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>';
     }
 
     if ($report_r && $report_w && $report_m) {
         if ($id_container !== '1') {
             $data[2] .= '&nbsp;&nbsp;&nbsp;&nbsp'.'<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container&delete_container=1&id='.$id_container.'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-              return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+              return false;">'.html_print_image('images/delete.svg', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
         }
     }
 

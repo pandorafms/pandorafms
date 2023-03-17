@@ -37,7 +37,9 @@ select,
 .edit_user_comments #textarea_comments,
 .discovery_textarea_input,
 .selection,
-button.sub {
+button.sub,
+.select2-container .select2-selection--single,
+.select2-container .select2-selection--multiple {
   background-color: #111 !important;
   color: #fff !important;
 }
@@ -65,6 +67,24 @@ table.agent_info_table tr {
   color: #fff !important;
 }
 
+div#head {
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.menu_full_classic #menu_tabs {
+  height: 49px;
+  border-bottom: 1px solid #82b92e;
+}
+
+.menu_full_collapsed #menu_tabs {
+  height: 49px;
+  border-bottom: 1px solid #82b92e;
+  padding-bottom: 1px;
+}
+
+#menu_full {
+  border-right: 1px solid #111;
+}
 .logo_green {
   background-color: #000;
 }
@@ -89,6 +109,7 @@ table.agent_info_table tr {
   font-size: 10pt;
 }
 
+.moduleIdBox,
 input[readonly] {
   background-color: #444 !important;
   color: #a2a2a2 !important;
@@ -175,6 +196,11 @@ input.pure_full {
   background-color: #888;
 }
 
+.p-slider:before {
+  background-color: #fff;
+  box-shadow: 0px 3px 6px #494949;
+  border: 1px solid #222;
+}
 .fileupload_form,
 #button-pure {
   background-color: #222 !important;
@@ -232,13 +258,10 @@ ol.steps li a {
 /* Tabs icons change color */
 
 /* menu.css */
-.operation {
-  background-color: #252525;
-}
-
+.operation,
 .godmode,
 #menu_full {
-  background-color: #1a1a1a;
+  background-color: #222;
 }
 
 .button_collapse {
@@ -248,11 +271,72 @@ ol.steps li a {
 .operation .selected,
 .godmode .selected,
 .menu_icon:hover {
-  background-color: #080808;
+  background-color: #191919;
+}
+
+.submenu_text,
+.span_has_menu_text,
+.title_menu_classic span {
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: -0.3px;
+  height: 18px;
+  color: #fff;
+}
+
+.head_tab_selected span {
+  color: #fff;
+}
+
+.tabs_selected {
+  background-color: #1d7874;
+}
+
+.operation .menu_icon ul.submenu > li,
+.godmode .menu_icon ul.submenu > li {
+  background-color: #222;
+  padding-left: 24px !important;
+}
+
+.submenu_not_selected:hover {
+  background-color: #171717 !important;
+  color: #fff !important;
+}
+
+.submenu_selected {
+  margin-bottom: 0px;
+  background-color: #171717 !important;
+}
+
+.submenu_selected_no_submenu {
+  background-color: #111 !important;
+  color: #ffffff !important;
 }
 
 .sub_subMenu {
-  background-color: #343434;
+  font-weight: normal;
+  background-color: #171717;
+  padding-left: 1.5em;
+  color: #fff !important;
+}
+
+.sub_subMenu.selected {
+  font-weight: 600;
+  background-color: #111 !important;
+}
+
+.sub_subMenu:hover {
+  background-color: #141414;
+}
+
+.sub_subMenu.selected a {
+  color: #fff !important;
+}
+
+.span_has_menu_text {
+  font-weight: normal;
+  font-size: 9.4pt;
+  color: #fff;
 }
 
 /* footer */
@@ -330,8 +414,8 @@ table.black_table_modal_alternate tr:nth-child(even) td {
   color: #fff;
 }
 
-.action_buttons a[href] img,
-.action_buttons input[type="image"],
+.table_action_buttons a[href] img,
+.table_action_buttons input[type="image"],
 .action_button_img {
   filter: brightness(4.5) contrast(50%);
   background-color: transparent !important;
@@ -341,6 +425,9 @@ a.pandora_pagination {
   color: #fff;
 }
 
+span.reinvert_filter {
+  filter: invert(1);
+}
 /* firts_task.css */
 .new_task,
 div.new_task,
@@ -364,7 +451,11 @@ div.new_task > div {
 }
 
 /* tree.css */
-.node-content:hover {
+.tree-node div.node-content {
+  background-color: #444;
+}
+
+.tree-node div.node-content:hover {
   background-color: #222;
 }
 
@@ -540,21 +631,20 @@ div#form_activate_licence #code {
 #menu_tab_frame,
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
+  /*
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 2px solid #82b92e;
-  min-height: 50px;
-  width: calc(100% + 3em);
+    */
+  border-bottom: 1px solid #82b92e;
+  /*  
+                                                                                                                                                                        width: 100%;
   padding-right: 0px;
   margin-bottom: 20px;
-  height: 50px;
+  height: 53px;
   box-sizing: border-box;
+  */
   background-color: #111 !important;
-  border-top-right-radius: 7px;
-  border-top-left-radius: 7px;
-  box-shadow: 1px 1px 4px rgba(160, 160, 160, 0.514);
-  margin-left: -3em;
 }
 
 .info_box {
@@ -661,6 +751,8 @@ div#main_pure {
   position: static;
 }
 
+div#main,
+div#container,
 body.pure {
   background-color: #111;
 }
@@ -679,6 +771,11 @@ form ul.form_flex {
 
 .invert_filter,
 .labels {
+  filter: invert(100%);
+}
+
+.info_table .invert_filter,
+.info_table .labels {
   filter: invert(100%);
 }
 
@@ -977,10 +1074,6 @@ div.integria_details_description textarea {
 }
 
 .networkconsole {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
   background-color: #111;
 }
 
@@ -1007,6 +1100,7 @@ fieldset {
 input,
 textarea,
 select,
+.moduleIdBox,
 .selection {
   border-color: #707070;
 }
@@ -1022,8 +1116,12 @@ select,
   border: 1px solid #707070;
   background-color: #222 !important;
   color: #fff !important;
+  border-radius: 0;
 }
 
+.white_table_graph {
+  background-color: #222 !important;
+}
 table.databox {
   border-color: #707070;
   background-color: #222 !important;
@@ -1143,9 +1241,15 @@ a.pandora_pagination,
   border: 1px solid #707070 !important;
 }
 
+a.pandora_pagination {
+  background-color: #111;
+}
+
+a.pandora_pagination:hover {
+  background-color: #555 !important;
+}
 .dt-button.buttons-csv.buttons-html5 {
-  filter: invert(100%);
-  background-color: transparent;
+  box-shadow: 0px 3px 6px #111;
 }
 
 .info_table.events > tbody > tr > td {
@@ -1211,7 +1315,16 @@ input[type="image"] {
   font-family: source-code, mono, monospace;
 }
 
-* table about dialog */ .table-about {
+.title-blue {
+  text-transform: none !important;
+  font-size: 1em !important;
+  margin: 0px !important;
+  padding: 0px !important;
+  color: #95a3bf;
+}
+
+/* Table about dialog */
+.table-about {
   background-color: #222 !important;
   width: 100%;
   border-collapse: collapse;
@@ -1298,4 +1411,117 @@ p.trademark-copyright {
 #tab-database {
   height: 80%;
   overflow: auto;
+}
+
+button.buttonButton,
+button.submitButton {
+  box-shadow: 0px 3px 6px #111;
+}
+
+button.buttonButton.secondary,
+button.submitButton.secondary {
+  background-color: #999;
+  color: #fff;
+  border-color: #fff;
+}
+
+button.buttonButton.secondary:hover,
+button.submitButton.secondary:hover {
+  color: #ddd !important;
+  border-color: #ddd !important;
+}
+
+button.buttonButton.secondary > div,
+button.submitButton.secondary > div {
+  background-color: #fff !important;
+}
+
+button.buttonButton.secondary:hover > div,
+button.submitButton.secondary:hover > div {
+  background-color: #ddd !important;
+}
+.fixed_filter_bar {
+  background-color: #222;
+}
+
+.section_table_title_line {
+  background-color: #008d86;
+}
+
+.section_table_title {
+  color: #008d86;
+}
+
+select[multiple] option:checked,
+select[multiple] option:active {
+  background: #008d86;
+}
+
+.select2-results
+  > .select2-results__options
+  > .select2-results__option.select2-results__option--highlighted {
+  background-color: #008d86;
+}
+
+.filter_summary > div,
+.filter_summary > div > div.content {
+  background-color: #222 !important;
+}
+
+ul.datatable_filter:has(li > div.action-buttons) {
+  background-color: #222 !important;
+}
+
+span.ui-dialog-title {
+  color: #fff !important;
+}
+
+span.select2-dropdown.select2-dropdown--below {
+  z-index: 1200;
+}
+
+div.white_table_graph {
+  border-radius: 0;
+}
+
+div.white_box_opened[style*="height: 0px"],
+div.white_box_opened[style*="height:0"] {
+  border: 0px;
+}
+
+div.white_box.white_box_opened.no_border {
+  border-radius: 0px;
+}
+
+table.filter-table-adv td > div label:not(.inputFile) {
+  color: white !important;
+}
+
+#principal_action_buttons {
+  background: #111111;
+}
+div.fixed-bottom-box,
+div.fixed-bottom-box
+  > div.fixed-bottom-box-head
+  > div.fixed-bottom-box-head-body {
+  background-color: #111111 !important;
+}
+
+.filter_table,
+.white_table_graph_fixed table {
+  background-color: transparent;
+}
+
+span.select2 {
+  border-radius: 6px;
+}
+
+.ui-dialog .tips_header.ui-dialog-titlebar {
+  color: white !important;
+  background-color: #222222 !important;
+}
+
+#tips_window_modal > div.window > div.description > #title_tip,
+#tips_window_modal > div.window > div.description > #text_tip {
+  color: white !important;
 }

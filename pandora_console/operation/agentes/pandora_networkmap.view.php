@@ -517,6 +517,7 @@ if (is_ajax() === true) {
                 $return['error'] = false;
                 error_log('Failed to reset map '.$map_id);
             } else {
+                ui_update_name_fav_element($map_id, 'Network_map', $new_values['name']);
                 $return['error'] = true;
             }
         } else {

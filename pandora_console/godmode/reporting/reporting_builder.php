@@ -1488,6 +1488,8 @@ switch ($action) {
                             ['id_report' => $idReport]
                         );
 
+                        ui_update_name_fav_element($idReport, 'Reporting', $new_values['name']);
+
                         $auditMessage = ($resultOperationDB === true) ? 'Update report' : 'Fail try to update report';
                         db_pandora_audit(
                             AUDIT_LOG_REPORT_MANAGEMENT,

@@ -534,6 +534,7 @@ if ($is_management_allowed === true && $update_group === true) {
             }
 
             if ($result) {
+                ui_update_name_fav_element($id_group, 'Groups', $name);
                 ui_print_success_message(__('Group successfully updated'));
             } else {
                 ui_print_error_message(__('There was a problem modifying group'));

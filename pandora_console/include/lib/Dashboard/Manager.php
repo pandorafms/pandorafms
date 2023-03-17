@@ -1002,6 +1002,10 @@ class Manager implements PublicLogin
             $res = $this->put($values);
         }
 
+        if ($res !== false) {
+            ui_update_name_fav_element($this->dashboardId, 'Dashboard_', $name);
+        }
+
         $result = [
             'error'        => ($res === false) ? 1 : 0,
             'error_mesage' => __('Error create or update dashboard'),

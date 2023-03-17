@@ -1525,3 +1525,12 @@ span.select2 {
 #tips_window_modal > div.window > div.description > #text_tip {
   color: white !important;
 }
+
+.agent_details_header span.subsection_header_title {
+  color: #fff;
+}
+
+pre code.hljs {
+  background-color: #222222;
+  color: #fff;
+}

@@ -925,7 +925,7 @@ if ($tab == 'tree') {
                     true,
                     [
                         'style' => '',
-                        'class' => 'bot',
+                        'class' => 'bot main_menu_icon invert_filter',
                         'alt'   => io_safe_input($group['nombre']),
                         'title' => io_safe_input($group['nombre']),
                     ],

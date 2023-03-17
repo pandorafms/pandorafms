@@ -2623,7 +2623,7 @@ function events_print_event_table(
                 $img,
                 true,
                 [
-                    'class' => 'image_status',
+                    'class' => 'image_status invert_filter main_menu_icon',
                     'title' => $title,
                 ]
             );

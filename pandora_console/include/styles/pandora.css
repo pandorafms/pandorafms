@@ -10553,6 +10553,18 @@ button div.cog.rotation {
   animation: rotation 4s infinite linear;
 }
 
+div.status_dot {
+  mask: url(../../images/status_dot.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/status_dot.svg) no-repeat center / contain;
+}
+
+.status_dot.ok {
+  background-color: #82b92e;
+}
+
+.status_dot.critical {
+  background-color: #e63c52;
+}
 @keyframes rotation {
   from {
     transform: rotate(0deg);

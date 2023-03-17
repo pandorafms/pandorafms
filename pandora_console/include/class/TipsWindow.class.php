@@ -489,19 +489,17 @@ class TipsWindow
                 ]
             );
             echo '<div class="action-buttons w100p" style="width: 100%">';
-            $buttonCreate = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create">';
-            $buttonCreate .= html_print_submit_button(
+            $buttonCreate = html_print_button(
                 __('Create tip'),
                 'create',
                 false,
+                'window.location.replace("index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=create")',
                 [
                     'class' => 'sub',
-                    'icon'  => 'create_file',
-                    ''
+                    'icon'  => 'plus',
                 ],
                 true
             );
-            $buttonCreate .= '</a>';
             html_print_action_buttons($buttonCreate);
             echo '</div>';
         } catch (Exception $e) {
@@ -839,7 +837,7 @@ class TipsWindow
                     true,
                     [
                         'onclick' => 'deleteImage(this, \''.$value['id'].'\', \''.$namePath.'\')',
-                        'class'   => 'remove-image',
+                        'class'   => 'remove-image main_menu_icon',
                     ]
                 );
                 $outputImagesTip .= html_print_div(
@@ -929,7 +927,7 @@ class TipsWindow
             $inputImages
         );
 
-        echo '<form name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&action=edit&idTip='.$tip['id'].'" enctype="multipart/form-data">';
+        echo '<form class="max_floating_element_size" name="grupo" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&view=edit&action=edit&idTip='.$tip['id'].'" enctype="multipart/form-data">';
         html_print_table($table);
         echo '<div class="action-buttons" style="width: '.$table->width.'">';
         $actionButtons = html_print_submit_button(

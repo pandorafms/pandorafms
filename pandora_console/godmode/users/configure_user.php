@@ -392,6 +392,7 @@ if ($create_user === true) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+    $values['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
@@ -653,6 +654,7 @@ if ($update_user) {
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
     $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
+    $values['time_autorefresh'] = (int) get_parameter('time_autorefresh');
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
     $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($values['id_user']);
@@ -1562,8 +1564,8 @@ $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console'
 $autorefresh_list_out['operation/events/events'] = 'Events';
 
 
-if (isset($autorefresh_list) === false) {
-    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
+if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
+    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
     $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
     if ($autorefresh_list === null) {
         $autorefresh_list[0] = __('None');
@@ -1645,9 +1647,13 @@ if ($new_user === true) {
     html_print_input_hidden('json_profile', $json_profile);
 }
 
-echo '</div>';
-
 echo '</form>';
+
+// User Profile definition table. (Only where user is not creating).
+if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
+    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
+}
+
 echo '</div>';
 
 $actionButtons = [];
@@ -1767,6 +1773,13 @@ if (is_metaconsole() === false) {
                     }
                 }
             });
+        });
+
+        $("#button-uptbutton").click (function () {
+            console.log('aaaaaaaaaaaaa');
+            if($("#autorefresh_list option").length > 0) {
+                $('#autorefresh_list option').prop('selected', true);
+            }
         });
 
         $("input#checkbox-double_auth").change(function(e) {

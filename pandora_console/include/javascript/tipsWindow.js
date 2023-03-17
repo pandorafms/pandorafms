@@ -8,7 +8,7 @@ $(document).ready(function() {
     var div_image = document.createElement("div");
     $(div_image).attr("class", "action_image");
     $(div_image).append(
-      `<input type="file" accept="image/png,image/jpeg,image/gif" class="input-file" name="file_${numberImages}"  onchange="checkImage(this)"/>`
+      `<input type="file" accept="image/png,image/jpeg,image/gif" class="input-file" name="file_${numberImages}"  onchange="checkImage(this)" required/>`
     );
     $(div_image).append(
       `<input type="image" src="images/delete.svg" onclick="removeInputImage(this);" class="remove-image main_menu_icon" value="-"/>`

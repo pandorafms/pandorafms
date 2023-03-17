@@ -29,8 +29,9 @@ require_once __DIR__.'/../include/functions_html.php';
 
 
 if ($config['visual_animation']) {
+    // form#login_form, div.login_data {
     echo '<style>
-        div.container_login {
+    div.container_login {
             animation: container_login 3s ease;
         }
         
@@ -185,7 +186,7 @@ echo '</div>';
 
 echo '<div class="container_login">';
 echo '<div class="login_page">';
-    echo '<form method="post" action="'.ui_get_full_url('index.php'.$url).'" ><div class="login_logo_icon">';
+    echo '<form method="post" id="login_form" action="'.ui_get_full_url('index.php'.$url).'" ><div class="login_logo_icon">';
         echo '<a href="'.$logo_link.'">';
 if (is_metaconsole() === true) {
     if (!isset($config['custom_logo_login'])) {
@@ -307,8 +308,9 @@ switch ($login_screen) {
                     '',
                     false,
                     '',
-                    'autocomplete="off" placeholder="'.__('User').'"'
+                    'autocomplete="off" class="input" placeholder=" "'
                 );
+                echo '<label for="nick" class="placeholder">'.__('User').'</label>';
             echo '</div>';
             echo '<div class="login_pass">';
                 html_print_input_text_extended(
@@ -320,20 +322,18 @@ switch ($login_screen) {
                     '',
                     false,
                     '',
-                    'autocomplete="off" placeholder="'.__('Password').'"',
+                    'autocomplete="off" class="input" placeholder=" "',
                     false,
                     true
                 );
+                echo '<label for="pass" class="placeholder">'.__('Password').'</label>';
             echo '</div>';
             echo '<div class="login_button">';
                 html_print_submit_button(
-                    __('Login'),
+                    __('Let&#39;s go'),
                     'login_button',
                     false,
-                    [
-                        'fixed_id' => 'submit-login_button',
-                        'icon'     => 'signin',
-                    ]
+                    ['fixed_id' => 'submit-login_button']
                 );
             echo '</div>';
         }
@@ -350,11 +350,32 @@ switch ($login_screen) {
         echo '<div>';
 
         echo '</div>';
-        html_print_input_text_extended('auth_code', '', 'auth_code', '', '', '', false, '', 'class="login login_password" placeholder="'.__('Authentication code').'"', false, true);
+        html_print_input_text_extended(
+            'auth_code',
+            '',
+            'auth_code',
+            '',
+            '',
+            '',
+            false,
+            '',
+            'class="login login_password input" placeholder=" "',
+            false,
+            true
+        );
+        echo '<label for="pass" class="placeholder">'.__('Authentication code').'</label>';
         echo '</div>';
         echo '<div class="login_button">';
         // html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, 'class="next_login"');
-        html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
+        html_print_submit_button(
+            __('Check code'),
+            'login_button',
+            false,
+            [
+                'fixed_id' => 'submit-login_button',
+                'class'    => 'next_login',
+            ]
+        );
         echo '</div>';
     break;
 
@@ -425,33 +446,8 @@ html_print_csrf_hidden();
 
     echo '</form></div>';
     echo '<div class="login_data">';
-        echo '<div class ="text_banner_login">';
-            echo '<div><span class="span1">';
-if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
-    if ($config['custom_title1_login']) {
-        echo io_safe_output($config['custom_title1_login']);
-    } else {
-        echo __('WELCOME TO %s', get_product_name());
-    }
-} else {
-    echo __('WELCOME TO %s', get_product_name());
-}
 
-            echo '</span></div>';
-            echo '<div><span class="span2">';
-if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
-    if ($config['custom_title2_login']) {
-        echo io_safe_output($config['custom_title2_login']);
-    } else {
-        echo __('NEXT GENERATION');
-    }
-} else {
-    echo __('NEXT GENERATION');
-}
-
-            echo '</span></div>';
-        echo '</div>';
-        echo '<div class ="img_banner_login">';
+    echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (empty($config['custom_splash_login']) === false && $config['custom_splash_login'] !== 'default') {
         html_print_image(
@@ -467,35 +463,61 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         );
     } else {
         echo '
-            <div class="loginimg-container">
-                <div class="lineone"></div> 
-                <div class="linetwo"></div>
-                <div class="linethree"></div>
-                <div style="display:flex;">
-                    <div class="towerone"></div>
-                    <div class="towertwo"></div>
-                    <div class="towerthree"></div>
-                    <div class="towerfour"></div>
+                <div class="loginimg-container">
+                    <div class="lineone"></div> 
+                    <div class="linetwo"></div>
+                    <div class="linethree"></div>
+                    <div style="display:flex;">
+                        <div class="towerone"></div>
+                        <div class="towertwo"></div>
+                        <div class="towerthree"></div>
+                        <div class="towerfour"></div>
+                    </div>
                 </div>
-            </div>
-        ';
+            ';
     }
 } else {
     echo '
-            <div class="loginimg-container">
-                <div class="lineone"></div> 
-                <div class="linetwo"></div>
-                <div class="linethree"></div>
-                <div style="display:flex;">
-                    <div class="towerone"></div>
-                    <div class="towertwo"></div>
-                    <div class="towerthree"></div>
-                    <div class="towerfour"></div>
+                <div class="loginimg-container">
+                    <div class="lineone"></div> 
+                    <div class="linetwo"></div>
+                    <div class="linethree"></div>
+                    <div style="display:flex;">
+                        <div class="towerone"></div>
+                        <div class="towertwo"></div>
+                        <div class="towerthree"></div>
+                        <div class="towerfour"></div>
+                    </div>
                 </div>
-            </div>
-        ';
+            ';
 }
 
+            echo '</div>';
+
+        echo '<div class ="text_banner_login">';
+// echo '<div><span class="span1">';
+// if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+// if ($config['custom_title1_login']) {
+// echo io_safe_output($config['custom_title1_login']);
+// } else {
+// echo __('WELCOME TO %s', get_product_name());
+// }
+// } else {
+// echo __('WELCOME TO %s', get_product_name());
+// }
+// echo '</span></div>';
+            echo '<div><span class="span2">';
+if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if ($config['custom_title2_login']) {
+        echo io_safe_output($config['custom_title2_login']);
+    } else {
+        echo __('NEXT GENERATION');
+    }
+} else {
+    echo __('NEXT GENERATION');
+}
+
+            echo '</span></div>';
         echo '</div>';
     echo '</div>';
 echo '</div>';

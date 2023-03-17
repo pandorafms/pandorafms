@@ -1694,7 +1694,7 @@ $csvDividerInputs .= html_print_image(
     true,
     [
         'id'    => 'select_csv_divider',
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 

@@ -141,7 +141,7 @@ sub pandora_get_sharedconfig ($$) {
 	# Netflow configuration options
 	$pa_config->{"activate_netflow"} = pandora_get_tconfig_token ($dbh, 'activate_netflow', 0);
 	$pa_config->{"netflow_path"} = pandora_get_tconfig_token ($dbh, 'netflow_path', '/var/spool/pandora/data_in/netflow');
-	$pa_config->{"netflow_interval"} = pandora_get_tconfig_token ($dbh, 'netflow_interval', 300);
+	$pa_config->{"netflow_interval"} = pandora_get_tconfig_token ($dbh, 'netflow_interval', 3600);
 	$pa_config->{"netflow_daemon"} = pandora_get_tconfig_token ($dbh, 'netflow_daemon', '/usr/bin/nfcapd');
 
 	# Log module configuration

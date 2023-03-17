@@ -46,12 +46,8 @@ $table->data[0][] = html_print_label_input_block(
     html_print_input_text('netflow_path', $config['netflow_path'], false, 50, 200, true)
 );
 
-$table->data[0][] = html_print_label_input_block(
-    __('Daemon interval'),
-    html_print_input_text('netflow_interval', $config['netflow_interval'], false, 50, 200, true)
-);
 
-$table->data[1][] = html_print_label_input_block(
+$table->data[0][] = html_print_label_input_block(
     __('Daemon binary path'),
     html_print_input_text('netflow_daemon', $config['netflow_daemon'], false, 50, 200, true)
 );
@@ -61,7 +57,7 @@ $table->data[1][] = html_print_label_input_block(
     html_print_input_text('netflow_nfdump', $config['netflow_nfdump'], false, 50, 200, true)
 );
 
-$table->data[2][] = html_print_label_input_block(
+$table->data[1][] = html_print_label_input_block(
     __('Nfexpire binary path'),
     html_print_input_text('netflow_nfexpire', $config['netflow_nfexpire'], false, 50, 200, true)
 );
@@ -71,7 +67,7 @@ $table->data[2][] = html_print_label_input_block(
     html_print_input_text('netflow_max_resolution', $config['netflow_max_resolution'], false, 50, 200, true)
 );
 
-$table->data[3][] = html_print_label_input_block(
+$table->data[2][] = html_print_label_input_block(
     __('Disable custom live view filters'),
     html_print_checkbox_switch('netflow_disable_custom_lvfilters', 1, $config['netflow_disable_custom_lvfilters'], true)
 );
@@ -82,7 +78,7 @@ $table->data[3][] = html_print_label_input_block(
 );
 
 $onclick = "if (!confirm('".__('Warning').'. '.__('IP address resolution can take a lot of time')."')) return false;";
-$table->data[4][] = html_print_label_input_block(
+$table->data[3][] = html_print_label_input_block(
     __('Name resolution for IP address'),
     html_print_checkbox_switch_extended('netflow_get_ip_hostname', 1, $config['netflow_get_ip_hostname'], false, $onclick, '', true)
 );

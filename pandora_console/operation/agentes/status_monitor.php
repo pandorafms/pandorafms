@@ -1759,7 +1759,7 @@ if (empty($result) === false) {
                     true,
                     [
                         'title' => $row['tags'],
-                        'class' => 'inverse_filter main_menu_icon',
+                        'class' => 'invert_filter main_menu_icon',
                     ]
                 );
             }

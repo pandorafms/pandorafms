@@ -1645,9 +1645,13 @@ if ($new_user === true) {
     html_print_input_hidden('json_profile', $json_profile);
 }
 
-echo '</div>';
-
 echo '</form>';
+
+// User Profile definition table. (Only where user is not creating).
+if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
+    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
+}
+
 echo '</div>';
 
 $actionButtons = [];

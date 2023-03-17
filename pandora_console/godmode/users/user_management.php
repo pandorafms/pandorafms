@@ -763,23 +763,3 @@ html_print_div(
 );
 
 html_print_table($userManagementTable);
-// User Profile definition table. (Only where user is not creating).
-if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
-    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
-}
-
-?>
-<!--
-    <script>
-    paint_qrcode(
-        "
-        <?php
-        // echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente);
-        ?>
-        ",
-        "#qr_code_agent_view",
-        128,
-        128
-    );
-</script>
--->

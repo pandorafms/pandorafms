@@ -454,6 +454,7 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
             'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
             false,
             [
+                'class'  => 'splash-logo',
                 'alt'    => 'splash',
                 'border' => 0,
             ],

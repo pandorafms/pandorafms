@@ -451,9 +451,9 @@ if ($delete_user === true) {
     }
 }
 
-        $filter_group = (int) get_parameter('filter_group', 0);
-        $filter_search = get_parameter('filter_search', '');
-        $search = (bool) get_parameter('search', false);
+$filter_group = (int) get_parameter('filter_group', 0);
+$filter_search = get_parameter('filter_search', '');
+$search = (bool) get_parameter('search', false);
 
 if (($filter_group == 0) && ($filter_search == '')) {
     $search = false;
@@ -803,7 +803,6 @@ foreach ($info as $user_id => $user_info) {
                 );
             }
 
-            $data[4] .= '<br/>';
             $data[4] .= '<br/>';
 
             $total_profile++;

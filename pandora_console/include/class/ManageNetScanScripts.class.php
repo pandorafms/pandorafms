@@ -453,7 +453,7 @@ class ManageNetScanScripts extends Wizard
                     'delete',
                     'images/delete.svg',
                     1,
-                    'width:40px;',
+                    '',
                     true,
                     [
                         'title' => __('Delete Script'),

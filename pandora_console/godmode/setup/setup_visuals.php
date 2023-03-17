@@ -352,6 +352,42 @@ $table_styles->data[$row][] = html_print_label_input_block(
         'width: 100%'
     )
 );
+
+$table_styles->data[$row][] = html_print_label_input_block(
+    __('Status icon set'),
+    html_print_div(
+        [
+            'class'   => 'select-with-sibling',
+            'content' => html_print_select(
+                $iconsets,
+                'status_images_set',
+                $config['status_images_set'],
+                '',
+                '',
+                '',
+                true,
+                false,
+                true,
+                '',
+                false,
+                'width: 240px'
+            ).html_print_button(
+                __('View'),
+                'status_set_preview',
+                false,
+                '',
+                [
+                    'icon'  => 'camera',
+                    'mode'  => 'link',
+                    'class' => 'logo_preview',
+                ],
+                true
+            ),
+        ],
+        true
+    )
+);
+
 $row++;
 $table_styles->data[$row][] = html_print_label_input_block(
     __('Custom favicon'),
@@ -374,7 +410,10 @@ $table_styles->data[$row][] = html_print_label_input_block(
             ).html_print_image(
                 ui_get_favicon(),
                 true,
-                ['id' => 'favicon_preview']
+                [
+                    'id'    => 'favicon_preview',
+                    'style' => 'margin-left: 10px',
+                ]
             ),
         ],
         true
@@ -498,7 +537,7 @@ $table_styles->data[$row][] = html_print_label_input_block(
     html_print_div(
         [
             'class'   => 'select-with-sibling',
-            'content' => $entOpenFilesInput.html_print_button(
+            'content' => $customLogoLoginInput.html_print_button(
                 __('View'),
                 'custom_logo_login_preview',
                 $open,
@@ -2041,47 +2080,47 @@ $row++;
  *
  */
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Behaviour configuration').' '.ui_print_help_icon('behavoir_conf_tab', true).'</legend>';
 html_print_table($table_behaviour);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('GIS configuration').' '.ui_print_help_icon('gis_conf_tab', true).'</legend>';
 html_print_table($table_gis);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Style configuration').' '.ui_print_help_icon('style_conf_tab', true).'</legend>';
 html_print_table($table_styles);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Charts configuration').' '.ui_print_help_icon('charts_conf_tab', true).'</legend>';
 html_print_table($table_chars);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Font and Text configuration').' '.ui_print_help_icon('front_and_text_conf_tab', true).'</legend>';
 html_print_table($table_font);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Visual consoles configuration').' '.ui_print_help_icon('visual_consoles_conf_tab', true).'</legend>';
 html_print_table($table_vc);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Reports configuration ').ui_print_help_icon('reports_configuration_tab', true).'</legend>';
 html_print_table($table_report);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Services configuration').' '.ui_print_help_icon('services_conf_tab', true).'</legend>';
 html_print_table($table_ser);
 echo '</fieldset>';
 
-echo '<fieldset>';
+echo '<fieldset class="margin-bottom-10">';
 echo '<legend>'.__('Other configuration').' '.ui_print_help_icon('other_conf_tab', true).'</legend>';
 html_print_table($table_other);
 echo '</fieldset>';

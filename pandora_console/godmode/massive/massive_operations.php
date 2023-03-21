@@ -306,21 +306,37 @@ $onheader['snmp'] = $snmptab;
 $onheader['satellite'] = $satellitetab;
 $onheader['services'] = $servicestab;
 
+
 // Header.
-if (is_metaconsole() === false) {
-    ui_print_page_header(
-        __('Bulk operations').' &raquo; '.$options[$option],
-        'images/gm_massive_operations.png',
-        false,
-        $help_header,
-        true,
-        $onheader,
-        false,
-        'massivemodal'
-    );
-} else {
-    massive_meta_print_header();
-}
+ui_print_standard_header(
+    __('Bulk operations').' - '.$options[$option],
+    'images/gm_massive_operations.png',
+    false,
+    $help_header,
+    false,
+    [
+        $agentstab,
+        $modulestab,
+        $pluginstab,
+        $userstab,
+        $alertstab,
+        $policiestab,
+        $snmptab,
+        $satellitetab,
+        $servicestab,
+    ],
+    [
+        [
+            'link'  => '',
+            'label' => __('Configuration'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Bulk operations'),
+        ],
+    ]
+);
+
 
 // Checks if the PHP configuration is correctly.
 if ((get_cfg_var('max_execution_time') != 0)

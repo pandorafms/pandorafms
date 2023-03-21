@@ -679,7 +679,7 @@ foreach ($simple_alerts as $alert) {
             true,
             [
                 'id'    => 'template-details-'.$alert['id_alert_template'],
-                'class' => 'img_help action_button_img invert_filter',
+                'class' => 'img_help main_menu_icon invert_filter',
             ]
         );
     $data[2] .= '</a> ';
@@ -757,7 +757,7 @@ foreach ($simple_alerts as $alert) {
                 true,
                 [
                     'title' => __('Delete action'),
-                    'class' => 'action_button_img invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[3] .= html_print_input_hidden('delete_action', 1, true);
@@ -772,7 +772,7 @@ foreach ($simple_alerts as $alert) {
                 true,
                 [
                     'title'   => __('Update action'),
-                    'class'   => 'action_button_img invert_filter',
+                    'class'   => 'main_menu_icon invert_filter',
                     'onclick' => 'show_display_update_action(\''.$action['id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action_id.'\',\''.$alert['id_agent_module'].'\')',
                 ]
             );

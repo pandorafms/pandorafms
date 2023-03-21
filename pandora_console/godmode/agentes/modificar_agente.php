@@ -794,7 +794,7 @@ if ($agents !== false) {
         // Agent name column (1). Agent name.
         $agentNameColumn = html_print_anchor(
             [
-                'href'    => ui_get_full_url($agentNameUrl),
+                'href'    => ui_get_full_url($agentViewUrl),
                 'title'   => $agent['nombre'],
                 'content' => ui_print_truncate_text($agent['alias'], 'agent_medium').implode('', $additionalDataAgentName),
             ],

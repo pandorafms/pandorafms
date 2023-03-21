@@ -301,6 +301,10 @@ td input[type="checkbox"] {
   height: 15px;
 }
 
+input[type="radio"] {
+  height: 15px;
+}
+
 input[type="image"] {
   border: 0px;
   background-color: transparent;
@@ -707,6 +711,10 @@ select:-internal-list-box {
   width: 60%;
 }
 
+.w67p {
+  width: 67%;
+}
+
 .w70p {
   width: 70%;
 }
@@ -968,6 +976,10 @@ select:-internal-list-box {
 
 .padding-left-2-imp {
   padding-left: 2em !important;
+}
+
+.padding10 {
+  padding: 10px;
 }
 
 .margin-soft {
@@ -10174,8 +10186,8 @@ button.submitButton > div.mini {
   height: 1.5rem;
 }
 
-button.buttonButton:not(.secondary):not(.link),
-button.submitButton:not(.secondary):not(.link) {
+button.buttonButton:not(.secondary):not(.link):not(.onlyIcon),
+button.submitButton:not(.secondary):not(.link):not(.onlyIcon) {
   background: linear-gradient(
     90deg,
     var(--primary-color) 0%,
@@ -10208,16 +10220,20 @@ button.submitButton > div {
 
 button.buttonButton.onlyIcon,
 button.submitButton.onlyIcon {
-  /*
-  min-width: 32px;
-  height: 32px;
-  */
   padding: 0 !important;
-  min-width: 2em !important;
-  width: 2em !important;
-  height: 2em !important;
+  min-width: 1.7em !important;
+  width: 1.7em !important;
+  height: 1.7em !important;
   border: none;
   box-shadow: none;
+}
+
+button.buttonButton.onlyIcon {
+  background-color: #333;
+}
+
+button.buttonButton.onlyIcon:disabled {
+  background-color: #cacaca;
 }
 
 button.buttonButton.onlyIcon.pending,
@@ -10265,6 +10281,12 @@ button.submitButton.onlyIcon.bars_graph {
 
 button.buttonButton.onlyIcon.auto_sla_graph_min,
 button.submitButton.onlyIcon.auto_sla_graph_min {
+  mask: url(../../images/event-history.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/event-history.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.basic_chart_min,
+button.submitButton.onlyIcon.basic_chart_min {
   mask: url(../../images/event-history.svg) no-repeat right / contain;
   -webkit-mask: url(../../images/event-history.svg) no-repeat right / contain;
 }
@@ -11681,9 +11703,9 @@ ul.tag-editor {
 }
 
 .select2-container--default .select2-search--inline .select2-search__field {
-  height: 20px;
+  height: 12px;
   padding-left: 5px !important;
-  font-size: 20px !important;
+  font-size: 12px !important;
 }
 
 div.ui-dialog-buttonset > button.ui-button.ui-corner-all.ui-widget {
@@ -11719,4 +11741,14 @@ div#menu_full > div#menu_tabs > ul.tabs_ul {
 div.relative > div > div#ui-datepicker-div {
   top: 55px !important;
   left: 5px !important;
+}
+
+.ui-widget-overlay {
+  background: #aaa;
+  opacity: 0.3 !important;
+}
+
+.ui-dialog .ui-widget-content.ui-autocomplete {
+  border-radius: 0px;
+  margin-left: 10px;
 }

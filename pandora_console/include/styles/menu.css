@@ -478,7 +478,7 @@ ul li {
 
 .logo_green {
   background-color: #fff;
-  min-height: 60px;
+  min-height: 61px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -601,7 +601,7 @@ ul li {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  min-height: 50px;
+  min-height: 51px;
 }
 
 .tabs_li {

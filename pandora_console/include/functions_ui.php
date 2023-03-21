@@ -283,6 +283,14 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         if (empty($message['force_class']) === false) {
             $force_class = $message['force_class'];
         }
+
+        if (isset($message['autoclose']) === true) {
+            if ($message['autoclose'] === true) {
+                $autoclose = true;
+            } else {
+                $autoclose = false;
+            }
+        }
     } else {
         $text_message = $message;
     }
@@ -5012,30 +5020,22 @@ function ui_print_standard_header(
         $applyBreadcrumbs,
         true
     );
-    // Create the header.
-    // if (is_metaconsole() === true) {
-    // $output = ui_meta_print_header(
-    // $title,
-    // false,
-    // $options
-    // );
-    // } else {
-        $output = ui_print_page_header(
-            $title,
-            $icon,
-            true,
-            $help,
-            $godmode,
-            $options,
-            false,
-            '',
-            GENERIC_SIZE_TEXT,
-            '',
-            $headerInformation->printHeader(true),
-            false,
-            $fav_menu_config
-        );
-    // }
+
+    $output = ui_print_page_header(
+        $title,
+        $icon,
+        true,
+        $help,
+        $godmode,
+        $options,
+        false,
+        '',
+        GENERIC_SIZE_TEXT,
+        '',
+        $headerInformation->printHeader(true),
+        false,
+        $fav_menu_config
+    );
     if ($return !== true) {
         echo $output;
     } else {
@@ -5986,14 +5986,14 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change .= '
         function setInputBackground(inputId, image) {
             $("#"+inputId)
-            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
         }
 
         $(document).ready(function () {
             $("#'.$input_id.'").focusout(function (e) {
                 setTimeout(() => {
                     let iconImage = "'.$icon_image.'";
-                    $("#'.$input_id.'").attr("style", "background-image: url(\'"+iconImage+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                    $("#'.$input_id.'").attr("style", "background-image: url(\'"+iconImage+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
                 }, 100);
             });
         });
@@ -6267,7 +6267,7 @@ function ui_print_agent_autocomplete_input($parameters)
 			if (select_item_click) {
                 select_item_click = 0;
                 $("#'.$input_id.'")
-                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 				return;
 			} else {
                 // Clear selectbox if item is not selected.
@@ -6282,7 +6282,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 			//Set loading
 			$("#'.$input_id.'")
-                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 			var term = input_value; //Word to search
 			
 			'.$javascript_change_ajax_params_text.'
@@ -6299,7 +6299,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				success: function (data) {
 						if (data.length < 2) {
 							//Set icon
-							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 							return;
 						}
 
@@ -6349,7 +6349,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 						//Set icon
 						$("#'.$input_id.'")
-                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; background-size: 20px; '.$inputStyles.'")
+                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; background-size: 20px; width:100%; '.$inputStyles.'")
 						return;
 					}
 				});
@@ -6368,7 +6368,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$text_color.' '.$inputStyles.'';
+    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$text_color.' '.$inputStyles.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';
@@ -7319,9 +7319,6 @@ function ui_get_inventory_module_add_form(
     $table->rowstyle = [];
     $table->rowstyle['hidden-custom-field-row'] = 'display: none;';
     $table->rowstyle['custom-fields-button'] = 'display: none;';
-    // $table->colspan = [];
-    // $table->colspan['custom-fields-row'] = [];
-    // $table->colspan['custom-fields-row']['custom-fields-column'] = 2;
     $table->data = [];
 
     $row = [];
@@ -7585,13 +7582,10 @@ function ui_get_inventory_module_add_form(
 
     ob_start();
 
-    echo '<form name="modulo" method="post" action="'.$form_action.'" class="max_floating_element_size">';
+    echo '<form id="policy_inventory_module_edit_form" name="modulo" method="post" action="'.$form_action.'" class="max_floating_element_size">';
     echo html_print_table($table);
-    echo '<div class="action-buttons w100p">';
     echo $form_buttons;
-    echo '</div>';
     echo '</form>';
-
     ?>
 
 <script type="text/javascript">

@@ -27,6 +27,22 @@ require_once __DIR__.'/../include/functions_ui.php';
 require_once __DIR__.'/../include/functions.php';
 require_once __DIR__.'/../include/functions_html.php';
 
+echo '<style>
+        :root {';
+if ($config['style'] === 'pandora') {
+    echo '--login-background-color: rgba(255, 255, 255, 0.2);';
+    echo '--login-label-color: #545454;';
+    echo '--login-text-color: #000;';
+    $style_theme = 'white-theme';
+} else {
+    echo '--login-background-color: rgba(0, 0, 0, 0.8);';
+    echo '--login-label-color: #c5c5c5;';
+    echo '--login-text-color: #fff;';
+    $style_theme = '';
+}
+
+echo '}
+</style>';
 
 if ($config['visual_animation']) {
     // form#login_form, div.login_data {
@@ -121,7 +137,13 @@ if (empty($config['background_opacity']) === false) {
     $opacity = 30;
 }
 
-$login_body_style = 'style="'.$background_100.'background: linear-gradient(rgba(0,0,0,.'.$opacity.'), rgba(0,0,0,.'.$opacity.")), url('".$background_url."');\"";
+if ($config['style'] === 'pandora') {
+    $opacity_color = '255, 255, 255, .';
+} else {
+    $opacity_color = '0, 0, 0, .';
+}
+
+$login_body_style = 'style="'.$background_100.'background: linear-gradient(rgba('.$opacity_color.$opacity.'), rgba('.$opacity_color.$opacity.")), url('".$background_url."');\"";
 
 // Get alternative custom in case of db fail.
 $custom_fields = [
@@ -148,7 +170,7 @@ foreach ($custom_fields as $field) {
 $docs_logo = ui_get_docs_logo();
 $support_logo = ui_get_support_logo();
 echo '<div id="login_body" '.$login_body_style.'>';
-echo '<div id="header_login">';
+echo '<div id="header_login" class="'.$style_theme.'">';
 
 echo '<div id="list_icon_docs_support"><ul>';
 
@@ -298,7 +320,7 @@ switch ($login_screen) {
                 );
             echo '</div>';
         } else {
-            echo '<div class="login_nick">';
+            echo '<div class="login_nick '.$style_theme.'">';
                 html_print_input_text_extended(
                     'nick',
                     '',
@@ -312,7 +334,7 @@ switch ($login_screen) {
                 );
                 echo '<label for="nick" class="placeholder">'.__('User').'</label>';
             echo '</div>';
-            echo '<div class="login_pass">';
+            echo '<div class="login_pass '.$style_theme.'">';
                 html_print_input_text_extended(
                     'pass',
                     '',
@@ -322,7 +344,7 @@ switch ($login_screen) {
                     '',
                     false,
                     '',
-                    'autocomplete="off" class="input" placeholder=" "',
+                    'autocomplete="off" class="input " placeholder=" " style="background-image: url(images/enable.svg);"',
                     false,
                     true
                 );
@@ -346,7 +368,7 @@ switch ($login_screen) {
             }
         }
 
-        echo '<div class="login_nick">';
+        echo '<div class="login_nick '.$style_theme.'">';
         echo '<div>';
 
         echo '</div>';
@@ -495,31 +517,28 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
             echo '</div>';
 
         echo '<div class ="text_banner_login">';
-// echo '<div><span class="span1">';
-// if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
-// if ($config['custom_title1_login']) {
-// echo io_safe_output($config['custom_title1_login']);
-// } else {
-// echo __('WELCOME TO %s', get_product_name());
-// }
-// } else {
-// echo __('WELCOME TO %s', get_product_name());
-// }
-// echo '</span></div>';
-            echo '<div><span class="span2">';
+echo '<div><span class="span1">';
+if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if ($config['custom_title1_login']) {
+        echo io_safe_output($config['custom_title1_login']);
+    } else {
+        echo __('ONE TOOL TO MONITOR THEM ALL');
+    }
+} else {
+    echo __('ONE TOOL TO MONITOR THEM ALL');
+}
+
+echo '</span></div>';
+echo '<div><span class="span2">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if ($config['custom_title2_login']) {
         echo io_safe_output($config['custom_title2_login']);
-    } else {
-        echo __('NEXT GENERATION');
     }
-} else {
-    echo __('NEXT GENERATION');
 }
 
-            echo '</span></div>';
-        echo '</div>';
-    echo '</div>';
+echo '</span></div>';
+echo '</div>';
+echo '</div>';
 echo '</div>';
 echo '</div>';
 

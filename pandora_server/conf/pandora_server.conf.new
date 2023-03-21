@@ -332,7 +332,8 @@ recon_timing_template 3
 snmpget /usr/bin/snmpget
 
 # Location of the braa binary needed by the Enterprise SNMP Server
-# /usr/bin/braa by default (PANDORA FMS ENTERPRISE ONLY).
+# /usr/bin/pandorafsnmp by default for v1 and v2c (PANDORA FMS ENTERPRISE ONLY).
+# /usr/bin/braa could be set as optional legacy binary for snmp v1 and v2c (PANDORA FMS ENTERPRISE ONLY).
 
 braa /usr/bin/pandorafsnmp
 
@@ -341,7 +342,7 @@ braa /usr/bin/pandorafsnmp
 braa_retries 3
 
 # Location of the pandorafsnmp binary needed by the Enterprise SNMP Server.
-# /usr/bin/pandorafsnmp by default (PANDORA FMS ENTERPRISE ONLY).
+# /usr/bin/pandorafsnmp by default for snmp version 3 (PANDORA FMS ENTERPRISE ONLY).
 
 fsnmp /usr/bin/pandorafsnmp
 

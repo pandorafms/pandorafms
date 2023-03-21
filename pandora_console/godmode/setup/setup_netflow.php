@@ -45,7 +45,6 @@ $table->data[0][] = html_print_label_input_block(
     __('Data storage path'),
     html_print_input_text('netflow_name_dir', $config['netflow_name_dir'], false, 50, 200, true)
 );
-$table->data[0][] = '<script>$("input[name=netflow_name_dir]").on("input", function() {$(this).val($(this).val().replace(/[^a-z0-9]/gi, ""));});</script>';
 
 $table->data[0][] = html_print_label_input_block(
     __('Daemon interval'),
@@ -101,3 +100,9 @@ html_print_action_buttons(
     )
 );
 echo '</form>';
+?>
+<script>
+$("input[name=netflow_name_dir]").on("input", function() {
+    $(this).val($(this).val().replace(/[^a-z0-9]/gi, ""));
+});
+</script>

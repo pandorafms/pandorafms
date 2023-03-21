@@ -293,7 +293,7 @@ switch ($section) {
 
     case 'sflow':
         $buttons['sflow']['active'] = true;
-        $subpage = ' &raquo '.__('Sflow');
+        $subpage = __('Sflow');
         $help_header = 'setup_flow_tab';
     break;
 

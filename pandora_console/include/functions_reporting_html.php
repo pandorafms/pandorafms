@@ -6002,6 +6002,7 @@ function reporting_get_last_activity()
     $table = new stdClass();
     $table->width = '100%';
     $table->data = [];
+    $table->class = 'info_table';
     $table->size = [];
     $table->size[2] = '150px';
     $table->size[3] = '130px';
@@ -6015,37 +6016,13 @@ function reporting_get_last_activity()
     $table->head[5] = __('Comments');
     $table->title = '<span>'.__('Last activity in %s console', get_product_name()).'</span>';
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $sql = sprintf(
-                'SELECT id_usuario,accion,fecha,ip_origen,descripcion,utimestamp
-                FROM tsesion
-                WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - '.SECONDS_1WEEK.") 
-                    AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 5",
-                $config['id_user']
-            );
-        break;
-
-        case 'postgresql':
-            $sql = sprintf(
-                "SELECT \"id_usuario\", accion, fecha, \"ip_origen\", descripcion, utimestamp
-                FROM tsesion
-                WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - ".SECONDS_1WEEK.") 
-                    AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 5",
-                $config['id_user']
-            );
-        break;
-
-        case 'oracle':
-            $sql = sprintf(
-                "SELECT id_usuario, accion, fecha, ip_origen, descripcion, utimestamp
-                FROM tsesion
-                WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - '.SECONDS_1WEEK.") 
-                    AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC",
-                $config['id_user']
-            );
-        break;
-    }
+    $sql = sprintf(
+        'SELECT id_usuario,accion,fecha,ip_origen,descripcion,utimestamp
+        FROM tsesion
+        WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - '.SECONDS_1WEEK.") 
+            AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 5",
+        $config['id_user']
+    );
 
     $sessions = db_get_all_rows_sql($sql);
 
@@ -6056,18 +6033,8 @@ function reporting_get_last_activity()
     foreach ($sessions as $session) {
         $data = [];
 
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'oracle':
-                $session_id_usuario = $session['id_usuario'];
-                $session_ip_origen = $session['ip_origen'];
-            break;
-
-            case 'postgresql':
-                $session_id_usuario = $session['id_usuario'];
-                $session_ip_origen = $session['ip_origen'];
-            break;
-        }
+        $session_id_usuario = $session['id_usuario'];
+        $session_ip_origen = $session['ip_origen'];
 
         $data[0] = '<strong>'.$session_id_usuario.'</strong>';
         $data[1] = ui_print_session_action_icon($session['accion'], true);
@@ -6077,10 +6044,6 @@ function reporting_get_last_activity()
         $data[5] = io_safe_output($session['descripcion']);
 
         array_push($table->data, $data);
-    }
-
-    if (defined('METACONSOLE')) {
-        $table->class = 'databox_tactical';
     }
 
     return html_print_table($table, true);

@@ -5020,30 +5020,22 @@ function ui_print_standard_header(
         $applyBreadcrumbs,
         true
     );
-    // Create the header.
-    // if (is_metaconsole() === true) {
-    // $output = ui_meta_print_header(
-    // $title,
-    // false,
-    // $options
-    // );
-    // } else {
-        $output = ui_print_page_header(
-            $title,
-            $icon,
-            true,
-            $help,
-            $godmode,
-            $options,
-            false,
-            '',
-            GENERIC_SIZE_TEXT,
-            '',
-            $headerInformation->printHeader(true),
-            false,
-            $fav_menu_config
-        );
-    // }
+
+    $output = ui_print_page_header(
+        $title,
+        $icon,
+        true,
+        $help,
+        $godmode,
+        $options,
+        false,
+        '',
+        GENERIC_SIZE_TEXT,
+        '',
+        $headerInformation->printHeader(true),
+        false,
+        $fav_menu_config
+    );
     if ($return !== true) {
         echo $output;
     } else {
@@ -7327,9 +7319,6 @@ function ui_get_inventory_module_add_form(
     $table->rowstyle = [];
     $table->rowstyle['hidden-custom-field-row'] = 'display: none;';
     $table->rowstyle['custom-fields-button'] = 'display: none;';
-    // $table->colspan = [];
-    // $table->colspan['custom-fields-row'] = [];
-    // $table->colspan['custom-fields-row']['custom-fields-column'] = 2;
     $table->data = [];
 
     $row = [];
@@ -7593,13 +7582,10 @@ function ui_get_inventory_module_add_form(
 
     ob_start();
 
-    echo '<form name="modulo" method="post" action="'.$form_action.'" class="max_floating_element_size">';
+    echo '<form id="policy_inventory_module_edit_form" name="modulo" method="post" action="'.$form_action.'" class="max_floating_element_size">';
     echo html_print_table($table);
-    echo '<div class="action-buttons w100p">';
     echo $form_buttons;
-    echo '</div>';
     echo '</form>';
-
     ?>
 
 <script type="text/javascript">

@@ -707,6 +707,10 @@ select:-internal-list-box {
   width: 60%;
 }
 
+.w67p {
+  width: 67%;
+}
+
 .w70p {
   width: 70%;
 }
@@ -968,6 +972,10 @@ select:-internal-list-box {
 
 .padding-left-2-imp {
   padding-left: 2em !important;
+}
+
+.padding10 {
+  padding: 10px;
 }
 
 .margin-soft {
@@ -11719,4 +11727,9 @@ div#menu_full > div#menu_tabs > ul.tabs_ul {
 div.relative > div > div#ui-datepicker-div {
   top: 55px !important;
   left: 5px !important;
+}
+
+.ui-widget-overlay {
+  background: #aaa;
+  opacity: 0.3 !important;
 }

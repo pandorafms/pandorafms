@@ -5,7 +5,6 @@
   background-size: 100% 100%;
   background-position: center;
   margin-top: 5px;
-  z-index: 0;
 }
 
 .is-maintenance {
@@ -400,10 +399,6 @@ p.error-p-validate {
 
 #html-tabs .ui-tabs-nav li {
   border-radius: 5px 5px 0px 0px;
-}
-
-label span.p-slider {
-  width: 30px;
 }
 
 li.interval-color-ranges > label,
@@ -857,5 +852,6 @@ div.module-graph .gauge_d3_class {
 .visual-console-item .analogic-clock .second-hand {
   animation: rotate-second 60s infinite linear;
 }
+
 
 /*# sourceMappingURL=vc.main.css.map*/

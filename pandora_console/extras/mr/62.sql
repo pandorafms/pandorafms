@@ -171,6 +171,6 @@ ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_max` INTEGER NOT NULL default 
 ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_critical` float(20,2) NOT NULL default 0;
 ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_warning` float(20,2) NOT NULL default 0;
 ALTER TABLE `tnetflow_filter` ADD COLUMN `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0;
-ALTER TABLE `tnetflow_filter` ADD COLUMN   `interval` INT UNSIGNED NOT NULL DEFAULT 300;
+ALTER TABLE `tnetflow_filter` ADD COLUMN   `netflow_monitoring_interval` INT UNSIGNED NOT NULL DEFAULT 300;
 
 COMMIT;

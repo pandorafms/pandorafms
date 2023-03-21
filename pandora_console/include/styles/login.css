@@ -26,7 +26,7 @@ div#error_buttons a {
   /* Set rules to fill background */
   /* background-color:#000 !important; */
   min-height: 100%;
-  min-width: 1200px;
+  /* min-width: 1200px; */
   width: 100%;
   position: absolute;
   background-repeat: repeat;
@@ -68,7 +68,7 @@ div#login_f {
 
 #ver_num {
   width: 100%;
-  color: #878787;
+  color: #dddddd;
   text-align: center;
   font-weight: 350;
   font-size: 10px;
@@ -105,7 +105,7 @@ div#list_icon_docs_support ul {
 
 div#list_icon_docs_support ul li {
   display: inline-block;
-  color: white;
+  color: #fff;
   vertical-align: middle;
   margin-right: 5px;
   font-size: 10pt;
@@ -140,7 +140,9 @@ li#li_margin_support {
 }
 
 div.login_page {
-  background-color: rgba(0, 0, 0, 0.8);
+  /* background-color: rgba(0, 0, 0, 0.8); */
+  /* background-color: rgba(255, 255, 255, 0.2); */
+  background-color: var(--login-background-color);
   width: 40vw;
   min-width: 300px;
   height: 100vh;
@@ -164,7 +166,8 @@ div.login_logo_icon {
 
 div.login_logo_icon img {
   margin: 0 auto;
-  width: 300px;
+  max-height: 185px;
+  max-width: 300px;
 }
 
 div.login_double_auth_code,
@@ -174,7 +177,6 @@ div.login_pass {
   width: 300px;
   height: 40px;
   margin-bottom: 20px;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
   border-radius: 3px;
 }
 
@@ -195,8 +197,8 @@ div.login_pass input {
   box-sizing: border-box;
 }
 
-div.login_pass > input#pass {
-  background-image: url(../../images/enable.svg);
+input {
+  background-color: transparent;
 }
 
 input:not([type="image"]):focus,
@@ -335,23 +337,26 @@ div.login_data {
 
 div.text_banner_login {
   width: 100%;
-  color: white;
+  color: #fff;
   margin-top: 40px;
+  display: flex;
+  flex-direction: column;
 }
 
 span.span1 {
-  font-size: 38px;
-  letter-spacing: -0.38px;
+  display: block;
+  max-width: 700px;
+  font-size: 80pt;
+  line-height: 80pt;
   font-family: "lato-bolder";
-  color: white;
-  line-height: 49pt;
+  color: #fff;
 }
 
 span.span2 {
   display: block;
-  width: 700px;
-  font-size: 80pt;
-  line-height: 80pt;
+  max-width: 700px;
+  font-size: 30pt;
+  line-height: 30pt;
   font-family: "lato-bolder";
   color: #fff;
 }
@@ -377,16 +382,18 @@ div.img_banner_login img {
 
 @media all and (max-width: 1266px) {
   span.span1 {
-    font-size: 38px;
-    letter-spacing: -0.38px;
-    font-weight: bold;
-    color: white;
-    line-height: 49pt;
-  }
-  span.span2 {
-    width: 550px;
+    display: block;
+    max-width: 500px;
     font-size: 60pt;
     line-height: 60pt;
+    font-weight: bold;
+    color: #fff;
+  }
+  span.span2 {
+    display: block;
+    max-width: 500px;
+    font-size: 20pt;
+    line-height: 20pt;
     font-family: "lato-bolder";
     color: #fff;
   }
@@ -682,7 +689,7 @@ div.button_message_alert_form input {
   bottom: 10px;
   /* background: transparent; */
   background: #f1f1f1;
-  border: solid white 10px;
+  border: solid #fff 10px;
   border-radius: 50%;
 }
 
@@ -715,6 +722,7 @@ div.login_pass input:-webkit-autofill:active {
   background-size: 27px;
   background-position: right 10px bottom 50%;
   box-sizing: border-box;
+  -webkit-box-shadow: 0 0 0 30px rgba(0, 0, 0, 0) inset !important;
 }
 
 div.login_pass input:-webkit-autofill,
@@ -795,4 +803,63 @@ button.submitButton > span {
   color: #fff;
   font-size: 9pt;
   top: -10px;
+}
+
+div.login_nick.white-theme input,
+div.login_pass.white-theme input {
+  background-color: #f6f7fb;
+  border: 0px;
+  color: #343434;
+  border-radius: 3px;
+  width: 100%;
+  height: 40px;
+  font-size: 10pt;
+  padding: 0px 0px 0px 8%;
+  background-repeat: no-repeat;
+  background-size: 27px;
+  background-position: right 10px bottom 50%;
+  box-sizing: border-box;
+}
+
+div.white-theme > .placeholder {
+  color: #8b8b8b;
+  left: 24px;
+}
+
+div.white-theme > .input:not(:placeholder-shown) ~ .placeholder {
+  top: 15px;
+  color: transparent;
+}
+
+div.white-theme > .input:focus ~ .placeholder {
+  top: 15px;
+  color: transparent;
+}
+
+div.white-theme input:-webkit-autofill,
+div.white-theme input:-webkit-autofill:hover,
+div.white-theme input:-webkit-autofill:focus,
+div.white-theme input:-webkit-autofill:active {
+  -webkit-text-fill-color: #343434;
+  border: 0px;
+  border-bottom: 0px;
+  border-radius: 3px;
+  width: 100%;
+  height: 40px;
+  font-size: 12pt;
+  background-repeat: no-repeat;
+  background-size: 27px;
+  background-position: right 10px bottom 50%;
+  box-sizing: border-box;
+  -webkit-box-shadow: 0 0 0 30px rgba(0, 0, 0, 0) inset !important;
+}
+
+div.white-theme input:not([type="image"]):focus,
+textarea:focus,
+select:focus {
+  border: 2px solid #8a96a6;
+}
+
+div#header_login.white-theme {
+  background-color: rgba(0, 0, 0, 0.5);
 }

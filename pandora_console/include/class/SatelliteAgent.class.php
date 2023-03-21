@@ -393,7 +393,7 @@ class SatelliteAgent extends HTML
                                 true,
                                 [
                                     'border'  => '0',
-                                    'class'   => 'action_button_img mrgn_lft_05em invert_filter',
+                                    'class'   => 'main_menu_icon mrgn_lft_05em invert_filter',
                                     'onclick' => 'disable_agent(\''.$tmp->address.'\',\''.strip_tags($tmp->name).'\',\''.(int) $disable.'\',\''.$id_agente.'\')',
                                 ]
                             );
@@ -405,7 +405,7 @@ class SatelliteAgent extends HTML
                                 true,
                                 [
                                     'border'  => '0',
-                                    'class'   => 'action_button_img mrgn_lft_05em invert_filter',
+                                    'class'   => 'main_menu_icon mrgn_lft_05em invert_filter',
                                     'onclick' => 'delete_agent(\''.$tmp->address.'\',\''.strip_tags($tmp->name).'\',\''.(int) $delete.'\',\''.$id_agente.'\')',
                                 ]
                             );

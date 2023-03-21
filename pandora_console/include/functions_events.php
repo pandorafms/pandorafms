@@ -5320,10 +5320,6 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
             true
         );
         $comments_form .= '</div><br></div>';
-    } else {
-        $comments_form = ui_print_message(
-            __('If event replication is ongoing, it won\'t be possible to enter comments here. This option is only to allow local pandora users to see comments, but not to operate with them. The operation, when event replication is enabled, must be done only in the Metaconsole.')
-        );
     }
 
     if ($ajax === true) {
@@ -5348,9 +5344,10 @@ function events_clean_tags($tags)
     }
 
     $event_tags = tags_get_tags_formatted($tags, false);
+    $event_tags = str_replace(' ', '', $event_tags);
     $event_tags = io_safe_input($event_tags);
 
-    return explode(',', str_replace(' ', '', $event_tags));
+    return explode(',', $event_tags);
 }
 
 

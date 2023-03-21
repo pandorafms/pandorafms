@@ -56,9 +56,13 @@ ui_print_standard_header(
     [
         [
             'link'  => '',
-            'label' => __('Netflow'),
+            'label' => __('Resources'),
         ],
-    ],
+        [
+            'link'  => '',
+            'label' => __('Netflow filters'),
+        ],
+    ]
 );
 
 $is_windows = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');

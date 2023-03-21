@@ -331,7 +331,7 @@ recon_timing_template 3
 
 snmpget /usr/bin/snmpget
 
-# Location of the pandorafsnm/braa binary needed by the Enterprise SNMP Server v1 and v2c
+# Location of the pandorafsnmp/braa binary needed by the Enterprise SNMP Server v1 and v2c
 # /usr/bin/pandorafsnmp by default for v1 and v2c (PANDORA FMS ENTERPRISE ONLY).
 # /usr/bin/braa could be set as optional legacy binary for snmp v1 and v2c (PANDORA FMS ENTERPRISE ONLY).
 

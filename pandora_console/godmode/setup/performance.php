@@ -845,9 +845,9 @@ foreach ($defaultAgentWizardOptions as $key => $value) {
     $i++;
 }
 
-echo '<form id="form_setup" method="post">';
+echo '<form id="form_setup" method="post" class="max_floating_element_size">';
 
-echo '<fieldset class="full-column">';
+echo '<fieldset>';
     echo '<legend>'.__('Database maintenance status').' '.ui_print_help_icon('database_maintenance_status_tab', true).'</legend>';
     html_print_table($table_status);
 echo '</fieldset>';

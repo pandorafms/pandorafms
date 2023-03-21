@@ -632,7 +632,7 @@ if ($favorite_menu !== false) {
         $sub[$section]['text'] = __(str_replace('_', ' ', $section));
         $sub[$section]['type'] = 'direct';
         $sub[$section]['subtype'] = 'nolink';
-        $sub[$section]['id'] = $row['section'];
+        $sub[$section]['id'] = $row['section'].'-fav-menu';
 
         $sub2[$row['url']]['text'] = io_safe_output($row['label']);
         $sub[$section]['sub2'] = $sub2;

@@ -334,7 +334,7 @@ snmpget /usr/bin/snmpget
 # Location of the braa binary needed by the Enterprise SNMP Server
 # /usr/bin/braa by default (PANDORA FMS ENTERPRISE ONLY).
 
-braa /usr/bin/braa
+braa /usr/bin/pandorafsnmp
 
 # Number of retries before braa hands a module over to the Network Server (PANDORA FMS ENTERPRISE ONLY).
 

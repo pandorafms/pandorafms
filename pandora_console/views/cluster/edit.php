@@ -62,11 +62,11 @@ $buttons = [];
 
 $main_page = '<a href="'.$wizard->parentUrl.'">';
 $main_page .= html_print_image(
-    'images/list.png',
+    'images/logs@svg.svg',
     true,
     [
         'title' => __('Cluster list'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
     ]
 );
 $main_page .= '</a>';
@@ -82,11 +82,11 @@ if ($cluster !== null) {
     if ($cluster->id() !== null) {
         $view = '<a href="'.$wizard->parentUrl.'&op=view&id='.$cluster->id().'">';
         $view .= html_print_image(
-            'images/operation.png',
+            'images/details.svg',
             true,
             [
                 'title' => __('View this cluster'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         );
         $view .= '</a>';
@@ -127,3 +127,33 @@ if (empty($form) === false) {
 
 // Print always go back button.
 HTML::printForm($wizard->getGoBackForm(), false);
+
+html_print_action_buttons(
+    '',
+    []
+);
+
+?>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var buttonnext = $('#button-next').parent().html();
+        $('#button-next').hide();
+        var buttonnext = buttonnext.replace('button-next','button-next_copy');
+        var buttonback = $('#button-submit').parent().html();
+        $('#button-submit').hide();
+        var buttonback = buttonback.replace('button-submit','button-submit_copy');
+        $('.action_buttons_right_content').parent().html(buttonnext+buttonback);
+        var style = $('#principal_action_buttons').attr('style');
+        $('#principal_action_buttons').attr('style',style+' justify-content: unset;');
+
+        // Button next/finish on action buttons.
+        $('#button-next_copy').click(function(){
+            $('#button-next').trigger('click');
+        });
+        // Button back on action buttons.
+        $('#button-submit_copy').click(function(){
+            $('#button-submit').trigger('click');
+        });
+    });
+</script>

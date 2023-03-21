@@ -371,11 +371,12 @@ if ($agent_view_page === true) {
         [
             'id'                  => 'alerts_status_datatable',
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'no_sortable_columns' => $no_sortable_columns,
             'ajax_url'            => 'include/ajax/alert_list.ajax',
+            'dom_elements'        => 'pfrti',
             'ajax_data'           => [
                 'get_agent_alerts_datatable' => 1,
                 'id_agent'                   => $idAgent,
@@ -406,6 +407,7 @@ if ($agent_view_page === true) {
                     ],
                 ],
                 'no_toggle' => true,
+                'class'     => 'flex',
             ],
         ]
     );
@@ -495,9 +497,9 @@ if ($agent_view_page === true) {
                 !$alerts_defined,
                 false,
                 true,
-                'box-flat agent_details_col',
-                'white-box-content',
-                'width_available'
+                '',
+                '',
+                'box-flat white_table_graph w100p'
             ),
         ],
     );
@@ -545,7 +547,7 @@ function alerts_table_controls() {
     
     $(document).ready ( function () {
         alerts_table_controls();
-        $('#submit-alert_validate').on('click', function () {
+        $('#button-alert_validate').on('click', function () {
             validateAlerts();
         });
     });

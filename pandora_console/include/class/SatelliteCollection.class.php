@@ -84,7 +84,7 @@ class SatelliteCollection extends HTML
             return;
         }
 
-        if ((int) $config['license_nms'] === 0) {
+        if ((int) $config['license_nms'] === 1) {
             db_pandora_audit(
                 AUDIT_LOG_NMS_VIOLATION,
                 'Trying to access satellite collections'
@@ -236,7 +236,7 @@ class SatelliteCollection extends HTML
 
                         $tmp->actions = '';
                         $tmp->actions .= html_print_image(
-                            ($delete === 0) ? 'images/add.png' : 'images/cross.png',
+                            ($delete === 0) ? 'images/add.png' : 'images/delete.svg',
                             true,
                             [
                                 'border'  => '0',

@@ -26,7 +26,7 @@
 <div class="pdd_l_30px w150px float-left line_17px">
     <h3>アクション</h3>
     <?php html_print_image('images/ok.png', false, ['title' => '承諾する', 'alt' => '承諾する']); ?> - 承諾する<br>
-    <?php html_print_image('images/cross.png', false, ['title' => '削除する', 'alt' => '削除する']); ?> - 削除する<br>
+    <?php html_print_image('images/delete.svg', false, ['title' => '削除する', 'alt' => '削除する']); ?> - 削除する<br>
     <?php html_print_image('images/page_lightning.png', false, ['title' => 'インシデントを作成する', 'alt' => 'インシデントを作成する']); ?> - インシデントを作成する
 </div>
 

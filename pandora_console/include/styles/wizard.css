@@ -13,6 +13,10 @@ ul.wizard li {
   padding-top: 10px;
 }
 
+#principal_action_buttons ul.wizard li {
+  padding: 0px;
+}
+
 ul.wizard.inline li {
   display: flex;
   flex-direction: row;
@@ -235,4 +239,8 @@ form.alert-correlation > div > ul > li.flex-flex-end > input {
 
 form.alert-correlation > div > ul > li.flex-flex-end > label {
   width: 50px !important;
+}
+
+form.alert-correlation > div > ul > li.display-grid > textarea {
+  width: 100% !important;
 }

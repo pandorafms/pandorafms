@@ -520,7 +520,7 @@ class DataMatrix extends Widget
                     [
                         'id'                  => $tableId,
                         'class'               => 'info_table',
-                        'style'               => 'width: 100%',
+                        'style'               => 'width: 99%',
                         'columns'             => $columns,
                         'column_names'        => $column_names,
                         'ajax_url'            => 'include/ajax/module',
@@ -539,6 +539,7 @@ class DataMatrix extends Widget
                             'direction' => 'desc',
                         ],
                         'csv'                 => 0,
+                        'dom_elements'        => 'frtilp',
                     ]
                 );
             } catch (\Exception $e) {
@@ -643,7 +644,14 @@ class DataMatrix extends Widget
             }
 
             $columns_sort[] = ($key + 1);
-            $column_names[] = $name;
+            $column_names[] = \ui_print_truncate_text(
+                \io_safe_output($name),
+                'agent_small',
+                false,
+                true,
+                false,
+                '...'
+            );
         }
 
         $data = [

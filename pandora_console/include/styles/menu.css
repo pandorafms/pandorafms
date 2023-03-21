@@ -248,6 +248,10 @@
   background: url(../../images/menu/events.svg) no-repeat 50% 50%;
   background-size: 18px;
 }
+.icon_fav-menu {
+  background: url(../../images/menu/fav_menu_gray.svg) no-repeat 50% 50%;
+  background-size: 18px;
+}
 
 /* users */
 .icon_oper-users {
@@ -577,7 +581,6 @@ ul li {
 #menu_tabs {
   height: 49px;
   border-bottom: 1px solid #c1ccdc;
-  padding-bottom: 2px;
 }
 
 .div_border_line {
@@ -598,7 +601,7 @@ ul li {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  min-height: 53px;
+  min-height: 50px;
 }
 
 .tabs_li {
@@ -637,7 +640,7 @@ ul li {
 }
 
 .tabs_collapsed {
-  height: 53px;
+  height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -695,4 +698,13 @@ ul li {
 
 .head_tab_unselected span {
   color: #95a3bf;
+}
+
+.logo_full {
+  width: 215px !important;
+  height: auto !important;
+}
+
+.fav-menu {
+  margin-left: 9px;
 }

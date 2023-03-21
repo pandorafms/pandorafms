@@ -339,10 +339,10 @@ $user_id .= html_print_anchor(
             base64_encode(__('Your API Token is:').'<br><span class="font_12pt bolder">'.users_get_API_token($config['id_user']).'</span><br>'.__('Please, avoid share this string with others.')),
         ),
         'content' => html_print_image(
-            'images/eye_show.png',
+            'images/see-details@svg.svg',
             true,
             [
-                'class' => 'renew_api_token_image clickable',
+                'class' => 'main_menu_icon renew_api_token_image clickable',
                 'title' => __('Show API Token'),
             ]
         ),
@@ -583,19 +583,6 @@ if ((bool) check_acl($config['id_user'], 0, 'ER') === true) {
         true
     ).'</div>';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
@@ -1118,12 +1105,6 @@ $(document).ready (function () {
                     }
                 }
         });
-    });
-
-    $("#submit-uptbutton").click (function () {
-        if($("#autorefresh_list option").length > 0) {
-            $('#autorefresh_list option').prop('selected', true);
-        }
     });
 
     check_default_block_size()

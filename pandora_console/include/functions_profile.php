@@ -191,15 +191,9 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     $table->id = 'table_profiles';
     $table->width = '100%';
     $table->class = 'info_table';
-    if (is_metaconsole() === true) {
-        $table->head_colspan[0] = 0;
-        $table->width = '100%';
-        $table->class = 'databox_tactical data';
-        $table->title = $title;
-    } else {
-        echo '<div id="edit_user_profiles" class="floating_form white_box">';
-        echo '<p class="subsection_header_title padding-lft-10">'.$title.'</p>';
-    }
+
+    echo '<div id="edit_user_profiles" class="max_floating_element_size white_box">';
+    echo '<p class="subsection_header_title padding-lft-10">'.$title.'</p>';
 
     $table->data = [];
     $table->head = [];
@@ -318,12 +312,12 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
                 true,
                 [
                     'onclick' => 'delete_profile(event, this)',
-                    'class'   => 'invert_filter',
+                    'class'   => 'main_menu_icon invert_filter',
                 ]
             );
         } else {
             $data['actions'] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-            $data['actions'] .= html_print_input_image('del', 'images/delete.svg', 1, 'width:40px; height: 28px', true);
+            $data['actions'] .= html_print_input_image('del', 'images/delete.svg', 1, '', true, ['class' => 'main_menu_icon invert_filter']);
             $data['actions'] .= html_print_input_hidden('delete_profile', 1, true);
             $data['actions'] .= html_print_input_hidden('id_user_profile', $profile['id_up'], true);
             $data['actions'] .= html_print_input_hidden('id_user', $id, true);
@@ -397,7 +391,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
 
     $data['last_hierarchy'] = html_print_checkbox('no_hierarchy', 1, false, true);
 
-    $data['last_actions'] = html_print_input_image('add', 'images/validate.svg', 1, 'width: 40px; height: 28px', true);
+    $data['last_actions'] = html_print_input_image('add', 'images/validate.svg', 1, '', true, ['class' => 'main_menu_icon invert_filter']);
     $data['last_actions'] .= html_print_input_hidden('id', $id, true);
     $data['last_actions'] .= html_print_input_hidden('add_profile', 1, true);
     $data['last_actions'] .= '</form>';
@@ -405,9 +399,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
     array_push($table->data, $data);
     html_print_table($table, $return);
 
-    if (is_metaconsole() === false) {
-        echo '</div>';
-    }
+    echo '</div>';
 
     unset($table);
 }

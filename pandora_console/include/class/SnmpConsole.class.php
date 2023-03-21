@@ -181,113 +181,47 @@ class SnmpConsole extends HTML
 
         $default_refr = 300;
 
-        if (!isset($config['pure']) || $config['pure'] === false) {
-            $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'">'.html_print_image(
-                'images/logs@svg.svg',
-                true,
-                [
-                    'title' => __('Statistics'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-            $list['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0">'.html_print_image(
-                'images/SNMP-network-numeric-data@svg.svg',
-                true,
-                [
-                    'title' => __('List'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-            $list['active'] = true;
+        $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'">'.html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'title' => __('Statistics'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        ).'</a>';
+        $list['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0">'.html_print_image(
+            'images/SNMP-network-numeric-data@svg.svg',
+            true,
+            [
+                'title' => __('List'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        ).'</a>';
+        $list['active'] = true;
 
-            $screen['text'] = '<a href="#" onClick="javascript:fullscreen(1)">'.html_print_image(
-                'images/fullscreen@svg.svg',
-                true,
+        // Header.
+        ui_print_standard_header(
+            __('SNMP Console'),
+            'images/op_snmp.png',
+            false,
+            'snmp_console',
+            false,
+            [
+                $screen,
+                $list,
+                $statistics,
+            ],
+            [
                 [
-                    'title' => __('View in full screen'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-
-            // Header.
-            ui_print_standard_header(
-                __('SNMP Console'),
-                'images/op_snmp.png',
-                false,
-                'snmp_console',
-                false,
-                [
-                    $screen,
-                    $list,
-                    $statistics,
+                    'link'  => '',
+                    'label' => __('Monitoring'),
                 ],
                 [
-                    [
-                        'link'  => '',
-                        'label' => __('Monitoring'),
-                    ],
-                    [
-                        'link'  => '',
-                        'label' => __('SNMP'),
-                    ],
-                ]
-            );
-        } else {
-            echo '<div id="dashboard-controls">';
-
-            echo '<div id="menu_tab">';
-            echo '<ul class="mn">';
-            // Normal view button.
-            echo '<li class="nomn">';
-
-            echo '<a href="#" onClick="javascript:fullscreen(0)">';
-            echo html_print_image(
-                'images/exit_fullscreen@svg.svg',
-                true,
-                [
-                    'title' => __('Exit fullscreen'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            );
-            echo '</a>';
-            echo '</li>';
-
-            // Auto refresh control.
-            echo '<li class="nomn">';
-            echo '<div class="dashboard-refr mrgn_top_6px">';
-            echo '<div class="dashboard-countdown display_in"></div>';
-            $normal_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view';
-
-            echo '<form id="refr-form" method="get" action="'.$normal_url.'"  >';
-            echo __('Refresh every').':';
-            echo html_print_select(get_refresh_time_array(), 'refresh', $this->refr, '', '', 0, true, false, false);
-            echo '</form>';
-            echo '</li>';
-
-            html_print_input_hidden('sec', 'snmpconsole');
-            html_print_input_hidden('sec2', 'operation/snmpconsole/snmp_view');
-            html_print_input_hidden('pure', 1);
-            html_print_input_hidden('refresh', (($this->refr > 0) ? $this->refr : $default_refr));
-
-            // Dashboard name.
-            echo '<li class="nomn">';
-            echo '<div class="dashboard-title">'.__('SNMP Traps').'</div>';
-            echo '</li>';
-
-            echo '</ul>';
-            echo '</div>';
-
-            echo '</div>';
-
-            ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
-            ui_require_css_file('pandora_dashboard', ENTERPRISE_DIR.'/include/styles/');
-            ui_require_css_file('cluetip', 'include/styles/js/');
-
-            ui_require_jquery_file('countdown');
-            ui_require_javascript_file('pandora_dashboard', ENTERPRISE_DIR.'/include/javascript/');
-            ui_require_javascript_file('wz_jsgraphics');
-            ui_require_javascript_file('pandora_visual_console');
-        }
+                    'link'  => '',
+                    'label' => __('SNMP'),
+                ],
+            ]
+        );
 
         // Datatables list.
         try {
@@ -325,7 +259,10 @@ class SnmpConsole extends HTML
                     'class' => 'snmp-td',
                 ],
                 'alert',
-                'action',
+                [
+                    'text'  => 'action',
+                    'class' => 'table_action_buttons w120px',
+                ],
                 [
                     'text'  => 'm',
                     'class' => 'mw60px pdd_0px',
@@ -947,13 +884,25 @@ class SnmpConsole extends HTML
                             ).'</a> ';
                         }
 
-                        $tmp->action .= '<a href="javascript: toggleVisibleExtendedInfo('.$tmp->id_trap.','.$count.');">'.html_print_image(
+                        $tmp->action .= '<a id="eye_'.$tmp->id_trap.'" data-show="show"
+                        href="javascript: toggleVisibleExtendedInfo('.$tmp->id_trap.','.$count.');">'.html_print_image(
                             'images/see-details@svg.svg',
                             true,
                             [
+                                'id'    => 'img_'.$tmp->id_trap,
                                 'alt'   => __('Show more'),
                                 'title' => __('Show more'),
                                 'class' => 'invert_filter main_menu_icon',
+                            ]
+                        ).' '.html_print_image(
+                            'images/disable.svg',
+                            true,
+                            [
+                                'id'    => 'img_hide_'.$tmp->id_trap,
+                                'alt'   => __('Hide details'),
+                                'title' => __('Hide details'),
+                                'class' => 'invert_filter main_menu_icon',
+                                'style' => 'display:none',
                             ]
                         ).'</a>';
 
@@ -1380,119 +1329,138 @@ class SnmpConsole extends HTML
              *   Show more information
              */
             function toggleVisibleExtendedInfo(id, position) {
-                $('tr[id^=show_]').remove()
-                $.ajax({
-                    method: 'get',
-                    url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                    data: {
-                        page: 'operation/snmpconsole/snmp_view',
-                        method: 'showInfo',
-                        id: id,
-                        group_by : $('#filter_group_by').val(),
-                        alert: $('#filter_alert').val(),
-                        severity: $('#filter_severity').val(),
-                        search: $('#text-filter_free_search').val(),
-                        status: $('#filter_status').val(),
-                        hours_ago: $('#text-filter_hours_ago').val(),
-                        trap_type: $('#filter_trap_type').val()
-                    },
-                    datatype: "json",
-                    success: function(data) {
-                        let trap = JSON.parse(data);
-                        var tr = $('#snmp_console tr').eq(position+1);
-
-                        // Count.
-                        if ($('#filter_group_by').val() == 1) {
-                            let labelCount = '<td align="left" valign="top"><b><?php echo __('Count:'); ?></b></br><b><?php echo __('First trap:'); ?></b></br><b><?php echo __('Last trap:'); ?></td>';
-                            let variableCount = `<td align="left" valign="top" style="line-height: 16pt">${trap['count']}</br>${trap['first']}</br>${trap['last']}</td>`;
-
-                            tr.after(`<tr id="show_" role="row">${labelCount}${variableCount}</tr>`);
-                        }
-
-                        // Type.
-                        desc_trap_type = "<?php echo __('Other'); ?>";
-                        switch (trap['type']) {
-                            case -1:
-                                desc_trap_type = "<?php echo __('None'); ?>";
-                            break;
-
-                            case 0:
-                                desc_trap_type = "<?php echo __('Cold start (0)'); ?>";
-                            break;
-
-                            case 1:
-                                desc_trap_type = "<?php echo __('Warm start (1)'); ?>";
-                            break;
-
-                            case 2:
-                                desc_trap_type = "<?php echo __('Link down (2)'); ?>";
-                            break;
-
-                            case 3:
-                                desc_trap_type = "<?php echo __('Link up (3)'); ?>";
-                            break;
-
-                            case 4:
-                                desc_trap_type = "<?php echo __('Authentication failure (4)'); ?>";
-                            break;
-
-                            default:
-                                desc_trap_type = "<?php echo __('Other'); ?>";
-                            break;
-                        }
-
-                        let labelType = '<td align="left" valign="top"><b><?php echo __('Type:'); ?></td>';
-                        let variableType = `<td align="left">${desc_trap_type}</td>`;
-
-                        tr.after(`<tr id="show_" role="row">${labelType}${variableType}</tr>`);
-
-                        // Description.
-                        if (trap['description']) {
-                            let labelDesc = '<td align="left" valign="top"><b><?php echo __('Description:'); ?></td>';
-                            let variableDesc = `<td align="left">${trap['description']}</td>`;
-
-                            tr.after(`<tr id="show_" role="row">${labelDesc}${variableDesc}</tr>`);
-                        }
-
-                        // Enterprise String.
-                        let labelOid = '<td align="left" valign="top"><b><?php echo __('Enterprise String:'); ?></td>';
-                        let variableOId = `<td align="left">${trap['oid']}</td>`;
-
-                        tr.after(`<tr id="show_" role="row">${labelOid}${variableOId}</tr>`);
-
-                        // Variable bindings.
-                        let labelBindings = '';
-                        let variableBindings = '';
-                        if ($('#filter_group_by').val() == 1) {
-                            labelBindings = '<td align="left" valign="top" width="15%"><b><?php echo __('Variable bindings:'); ?></b></td>';
-
-                            let new_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view';
-                            new_url += '&filter_severity='+$('#filter_severity').val();
-                            new_url += '&filter_status='+$('#filter_status').val();
-                            new_url += '&filter_alert='+$('#filter_alert').val();
-                            new_url += '&filter_group_by=0&filter_free_search='+$('#text-filter_free_search').val();
-                            new_url += '&filter_hours_ago='+$('#text-filter_hours_ago').val();
-                            new_url += '&filter_trap_type='+$('#filter_trap_type').val();
-
-                            const string = '<a href="'+new_url+'"><?php echo __('See more details'); ?></a>';
-
-                            variableBindings = `<td align="left">${string}</td>`;
-                        } else {
-                            labelBindings = '<td align="left" valign="top" width="15%"><b><?php echo __('Variable bindings:'); ?></b></td>';
-                            const binding_vars = trap['oid_custom'].split("\t");
-                            let string = '';
-                            binding_vars.forEach(function(oid) {
-                                string += oid+'<br/>';
-                            });
-                            variableBindings = `<td align="left">${string}</td>`;
-                        }
-
-                        tr.after(`<tr id="show_" role="row">${labelBindings}${variableBindings}</tr>`);
-                    },
-                    error: function(e) {
-                        console.error(e);
-                    }
+                // Show all "Show more"
+                $('[id^=img_]').each(function() {
+                    $(this).show();
                 });
+                // Hide all "Hide details"
+                $('[id^=img_hide_]').each(function() {
+                    $(this).hide();
+                });
+                var status = $('#eye_'+id).attr('data-show');
+                if(status == "show"){
+                    $('tr[id^=show_]').remove()
+                    $.ajax({
+                        method: 'get',
+                        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                        data: {
+                            page: 'operation/snmpconsole/snmp_view',
+                            method: 'showInfo',
+                            id: id,
+                            group_by : $('#filter_group_by').val(),
+                            alert: $('#filter_alert').val(),
+                            severity: $('#filter_severity').val(),
+                            search: $('#text-filter_free_search').val(),
+                            status: $('#filter_status').val(),
+                            hours_ago: $('#text-filter_hours_ago').val(),
+                            trap_type: $('#filter_trap_type').val()
+                        },
+                        datatype: "json",
+                        success: function(data) {
+                            let trap = JSON.parse(data);
+                            var tr = $('#snmp_console tr').eq(position+1);
+
+                            // Count.
+                            if ($('#filter_group_by').val() == 1) {
+                                let labelCount = '<td align="left" valign="top"><b><?php echo __('Count:'); ?></b></br><b><?php echo __('First trap:'); ?></b></br><b><?php echo __('Last trap:'); ?></td>';
+                                let variableCount = `<td align="left" valign="top" style="line-height: 16pt">${trap['count']}</br>${trap['first']}</br>${trap['last']}</td>`;
+
+                                tr.after(`<tr id="show_" role="row">${labelCount}${variableCount}</tr>`);
+                            }
+
+                            // Type.
+                            desc_trap_type = "<?php echo __('Other'); ?>";
+                            switch (trap['type']) {
+                                case -1:
+                                    desc_trap_type = "<?php echo __('None'); ?>";
+                                break;
+
+                                case 0:
+                                    desc_trap_type = "<?php echo __('Cold start (0)'); ?>";
+                                break;
+
+                                case 1:
+                                    desc_trap_type = "<?php echo __('Warm start (1)'); ?>";
+                                break;
+
+                                case 2:
+                                    desc_trap_type = "<?php echo __('Link down (2)'); ?>";
+                                break;
+
+                                case 3:
+                                    desc_trap_type = "<?php echo __('Link up (3)'); ?>";
+                                break;
+
+                                case 4:
+                                    desc_trap_type = "<?php echo __('Authentication failure (4)'); ?>";
+                                break;
+
+                                default:
+                                    desc_trap_type = "<?php echo __('Other'); ?>";
+                                break;
+                            }
+
+                            let labelType = '<td align="left" valign="top"><b><?php echo __('Type:'); ?></td>';
+                            let variableType = `<td align="left" colspan="8">${desc_trap_type}</td>`;
+
+                            tr.after(`<tr id="show_" role="row">${labelType}${variableType}</tr>`);
+
+                            // Description.
+                            if (trap['description']) {
+                                let labelDesc = '<td align="left" valign="top"><b><?php echo __('Description:'); ?></td>';
+                                let variableDesc = `<td align="left" colspan="8">${trap['description']}</td>`;
+
+                                tr.after(`<tr id="show_" role="row">${labelDesc}${variableDesc}</tr>`);
+                            }
+
+                            // Enterprise String.
+                            let labelOid = '<td align="left" valign="top"><b><?php echo __('Enterprise String:'); ?></td>';
+                            let variableOId = `<td align="left" colspan="8">${trap['oid']}</td>`;
+
+                            tr.after(`<tr id="show_" role="row">${labelOid}${variableOId}</tr>`);
+
+                            // Variable bindings.
+                            let labelBindings = '';
+                            let variableBindings = '';
+                            if ($('#filter_group_by').val() == 1) {
+                                labelBindings = '<td align="left" valign="top" width="15%"><b><?php echo __('Variable bindings:'); ?></b></td>';
+
+                                let new_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view';
+                                new_url += '&filter_severity='+$('#filter_severity').val();
+                                new_url += '&filter_status='+$('#filter_status').val();
+                                new_url += '&filter_alert='+$('#filter_alert').val();
+                                new_url += '&filter_group_by=0&filter_free_search='+$('#text-filter_free_search').val();
+                                new_url += '&filter_hours_ago='+$('#text-filter_hours_ago').val();
+                                new_url += '&filter_trap_type='+$('#filter_trap_type').val();
+
+                                const string = '<a href="'+new_url+'"><?php echo __('See more details'); ?></a>';
+
+                                variableBindings = `<td align="left" colspan="8">${string}</td>`;
+                            } else {
+                                labelBindings = '<td align="left" valign="top" width="15%"><b><?php echo __('Variable bindings:'); ?></b></td>';
+                                const binding_vars = trap['oid_custom'].split("\t");
+                                let string = '';
+                                binding_vars.forEach(function(oid) {
+                                    string += oid+'<br/>';
+                                });
+                                variableBindings = `<td align="left" colspan="8">${string}</td>`;
+                            }
+
+                            tr.after(`<tr id="show_" role="row">${labelBindings}${variableBindings}</tr>`);
+                        },
+                        error: function(e) {
+                            console.error(e);
+                        }
+                    });
+                    $('#eye_'+id).attr('data-show', 'hide');
+                    $('#img_'+id).hide();
+                    $('#img_hide_'+id).show();
+                } else{
+                    $('tr[id^=show_]').remove();
+                    $('#eye_'+id).attr('data-show', 'show');
+                    $('#img_'+id).show();
+                    $('#img_hide_'+id).hide();
+                }
             }
 
             $(document).ready(function() {

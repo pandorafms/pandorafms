@@ -1020,33 +1020,29 @@ $tableAgents->class = 'info_table tactical_table';
 $tableAgents->head = [];
 $tableAgents->head[0] = '<span>'.__('Agent').'</span>';
 $tableAgents->head[0] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
-$tableAgents->size[0] = '12%';
+$tableAgents->size[0] = '10%';
 
 $tableAgents->head[1] = '<span>'.__('Description').'</span>';
-$tableAgents->head[0] .= ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
-$tableAgents->size[1] = '16%';
-
-$tableAgents->head[10] = '<span>'.__('Remote').'</span>';
-$tableAgents->head[10] .= ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);
-$tableAgents->size[10] = '9%';
+$tableAgents->head[1] .= ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
+$tableAgents->size[1] = '14%';
 
 $tableAgents->head[2] = '<span>'.__('OS').'</span>';
 $tableAgents->head[2] .= ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
-$tableAgents->size[2] = '8%';
+$tableAgents->size[2] = '5%';
 
 $tableAgents->head[3] = '<span>'.__('Interval').'</span>';
 $tableAgents->head[3] .= ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
-$tableAgents->size[3] = '10%';
+$tableAgents->size[3] = '7%';
 
 $tableAgents->head[4] = '<span>'.__('Group').'</span>';
 $tableAgents->head[4] .= ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
-$tableAgents->size[4] = '8%';
+$tableAgents->size[4] = '7%';
 
 $tableAgents->head[5] = '<span>'.__('Type').'</span>';
-$tableAgents->size[5] = '8%';
+$tableAgents->size[5] = '7%';
 
 $tableAgents->head[6] = '<span>'.__('Modules').'</span>';
-$tableAgents->size[6] = '10%';
+$tableAgents->size[6] = '7%';
 
 $tableAgents->head[7] = '<span>'.__('Status').'</span>';
 $tableAgents->size[7] = '4%';
@@ -1056,14 +1052,14 @@ $tableAgents->size[8] = '4%';
 
 $tableAgents->head[9] = '<span>'.__('Last contact').'</span>';
 $tableAgents->head[9] .= ui_get_sorting_arrows($url_up_last, $url_down_last, $selectLastContactUp, $selectLastContactDown);
-$tableAgents->size[9] = '15%';
+$tableAgents->size[9] = '7%';
 
-$tableAgents->head[10] = '<span>'.__('Last status change').'</span>';
+$tableAgents->head[10] = '<span>'.__('L.S change').'</span>';
 $tableAgents->head[10] .= ui_get_sorting_arrows($url_up_last_status_change, $url_down_last_status_change, $selectLastStatusChangeUp, $selectLastStatusChangeDown);
-$tableAgents->size[10] = '10%';
+$tableAgents->size[10] = '8%';
 
-$tableAgents->head[11] = '<span>'.__('Agent events').'</span>';
-$tableAgents->size[11] = '4%';
+$tableAgents->head[11] = '<span>'.__('Op').'</span>';
+$tableAgents->size[11] = '6%';
 
 $tableAgents->align = [];
 
@@ -1076,10 +1072,10 @@ $tableAgents->align[7] = 'left';
 $tableAgents->align[8] = 'left';
 $tableAgents->align[9] = 'left';
 $tableAgents->align[10] = 'left';
-$tableAgents->align[11] = 'left';
 
 $tableAgents->style = [];
 $tableAgents->data = [];
+$tableAgents->cellclass = [];
 
 $rowPair = true;
 $iterator = 0;
@@ -1116,9 +1112,22 @@ foreach ($agents as $agent) {
 
     $data[0] = '<div class="left_'.$agent['id_agente'].'">';
 
+    if ($agent['id_os'] == CLUSTER_OS_ID) {
+        $cluster = PandoraFMS\Cluster::loadFromAgentId(
+            $agent['id_agente']
+        );
+        $url = 'index.php?sec=reporting&sec2=';
+        $url .= 'operation/cluster/cluster';
+        $url = ui_get_full_url(
+            $url.'&op=view&id='.$cluster->id()
+        );
+    } else {
+        $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'];
+    }
+
     $data[0] .= html_print_anchor(
         [
-            'href'    => ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente']),
+            'href'    => ui_get_full_url($url),
             'content' => ui_print_truncate_text($agent['alias'], 'agent_medium', false, true, true),
         ],
         true
@@ -1146,60 +1155,11 @@ foreach ($agents as $agent) {
         $data[0] .= '</em>';
     }
 
-    $data[0] .= '<div class="agentleft_'.$agent['id_agente'].'" style="visibility: hidden; clear: left;">';
-
-    if ($agent['id_os'] == CLUSTER_OS_ID) {
-        $cluster = PandoraFMS\Cluster::loadFromAgentId(
-            $agent['id_agente']
-        );
-        $url = 'index.php?sec=reporting&sec2=';
-        $url .= 'operation/cluster/cluster';
-        $url = ui_get_full_url(
-            $url.'&op=view&id='.$cluster->id()
-        );
-        $data[0] .= '<a href="'.$url.'">'.__('View').'</a>';
-    } else {
-        $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'">'.__('View').'</a>';
-    }
-
-    if (check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
-        $data[0] .= ' | ';
-
-        if ($agent['id_os'] == CLUSTER_OS_ID) {
-            $cluster = PandoraFMS\Cluster::loadFromAgentId(
-                $agent['id_agente']
-            );
-            $url = 'index.php?sec=reporting&sec2=';
-            $url .= 'operation/cluster/cluster';
-            $url = ui_get_full_url(
-                $url.'&op=update&id='.$cluster->id()
-            );
-            $data[0] .= '<a href="'.$url.'">'.__('Edit').'</a>';
-        } else {
-                $data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent['id_agente'].'">'.__('Edit').'</a>';
-        }
-    }
-
-    $data[0] .= '</div></div>';
+    $data[0] .= '</div>';
 
     $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]').'</span>';
 
     $data[2] = '';
-
-    if (enterprise_installed()) {
-        enterprise_include_once('include/functions_config_agents.php');
-        if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
-            $data[10] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
-                'images/remote-configuration@svg.svg',
-                true,
-                [
-                    'align' => 'middle',
-                    'title' => __('Remote config'),
-                    'class' => 'invert_filter main_menu_icon',
-                ]
-            ).'</a>';
-        }
-    }
 
     $data[2] = html_print_div(
         [
@@ -1234,6 +1194,21 @@ foreach ($agents as $agent) {
         $agent['agent_version']
     );
 
+    if (enterprise_installed()) {
+        enterprise_include_once('include/functions_config_agents.php');
+        if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
+            $data[5] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
+                'images/remote-configuration@svg.svg',
+                true,
+                [
+                    'align' => 'middle',
+                    'title' => __('Remote config'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ).'</a>';
+        }
+    }
+
     $data[6] = reporting_tiny_stats($agent, true, 'modules', ':', $strict_user);
 
     $data[7] = $status_img;
@@ -1253,6 +1228,7 @@ foreach ($agents as $agent) {
     ];
 
     $fb64 = base64_encode(json_encode($agent_event_filter));
+    $tableAgents->cellclass[][11] = 'table_action_buttons';
     $data[11] = '<a href="index.php?sec=eventos&sec2=operation/events/events&fb64='.$fb64.'">'.html_print_image(
         'images/event.svg',
         true,
@@ -1262,6 +1238,31 @@ foreach ($agents as $agent) {
             'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
+
+    if (check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
+        if ($agent['id_os'] == CLUSTER_OS_ID) {
+            $cluster = PandoraFMS\Cluster::loadFromAgentId(
+                $agent['id_agente']
+            );
+            $url = 'index.php?sec=reporting&sec2=';
+            $url .= 'operation/cluster/cluster';
+            $url = ui_get_full_url(
+                $url.'&op=update&id='.$cluster->id()
+            );
+        } else {
+            $url = 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent['id_agente'];
+        }
+
+        $data[11] .= '<a href="'.$url.'">'.html_print_image(
+            'images/edit.svg',
+            true,
+            [
+                'align' => 'middle',
+                'title' => __('Edit'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        ).'</a>';
+    }
 
     array_push($tableAgents->data, $data);
 }

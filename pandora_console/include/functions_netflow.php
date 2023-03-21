@@ -202,7 +202,7 @@ function netflow_stat_table($data, $start_date, $end_date, $aggregate)
     $table = new stdClass();
     $table->width = '100%';
     $table->cellspacing = 0;
-    $table->class = 'databox';
+    $table->class = 'info_table';
     $table->data = [];
     $j = 0;
     $x = 0;
@@ -270,7 +270,7 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $pdf=fals
         $table->size = ['100%'];
     }
 
-    $table->class = 'databox w100p';
+    $table->class = 'info_table w100p';
     $table->cellspacing = 0;
     $table->data = [];
 
@@ -339,7 +339,7 @@ function netflow_top_n_table(array $data, int $total_bytes)
 
     $values = [];
     $table = new stdClass();
-    $table->class = 'w100p';
+    $table->class = 'info_table w100p';
     $table->cellspacing = 0;
     $table->data = [];
 
@@ -405,7 +405,7 @@ function netflow_summary_table($data)
     $values = [];
     $table = new stdClass();
     $table->cellspacing = 0;
-    $table->class = 'databox';
+    $table->class = 'info_table';
     $table->styleTable = 'width: 100%';
     $table->data = [];
 
@@ -1342,7 +1342,7 @@ function netflow_draw_item(
             }
 
             if ($output === 'HTML' || $output === 'PDF') {
-                $html = '<table class="w100p">';
+                $html = '<table class="databox w100p">';
                 $html .= '<tr>';
                 $html .= '<td class="w50p">';
                 $html .= netflow_summary_table($data_summary);

@@ -32,9 +32,9 @@ html_print_div(
             'latest_events_agent',
             false,
             true,
-            'box-flat agent_details_col',
-            'white-box-content',
-            'width_available'
+            '',
+            'box-flat white-box-content no_border',
+            'box-flat white_table_graph w100p'
         ),
     ],
 );

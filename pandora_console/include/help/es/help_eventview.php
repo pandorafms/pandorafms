@@ -26,7 +26,7 @@
 <div class="pdd_l_30px w150px float-left line_17px">
     <h3>Acciones</h3>
     <?php html_print_image('images/ok.png', false, ['title' => 'Validate event', 'alt' => 'Validate event']); ?> - Validar evento<br>
-    <?php html_print_image('images/cross.png', false, ['title' => 'Delete event', 'alt' => 'Delete event']); ?> - Borrar evento<br>
+    <?php html_print_image('images/delete.svg', false, ['title' => 'Delete event', 'alt' => 'Delete event']); ?> - Borrar evento<br>
     <?php html_print_image('images/eye.png', false, ['title' => 'Mostrar más', 'alt' => 'Mostrar más']); ?> - Mostrar más<br>
     <?php html_print_image('images/hourglass.png', false, ['title' => 'En progreso', 'alt' => 'En progreso']); ?> - En progreso
 </div>

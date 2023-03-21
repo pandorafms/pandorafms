@@ -588,7 +588,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
         $hashdata = md5($hashdata);
         if ((bool) $grants_on_node === true && (bool) $user_access_node !== false) {
-            $urlAgent = 'sendHash(\''.$server_data['server_url'].'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'\')';
+            $urlAgent = $server_data['server_url'].'/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'];
         } else {
             $urlAgent = '';
         }
@@ -727,8 +727,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         false,
         '',
-        'white-box-content',
-        'white_table_flex margin-bottom-10 border-bottom-gray'
+        'white-box-content mrgn_top_0 mrgn_btn_0px',
+        'white_table_flex'
     );
 
     if ($config['agentaccess']) {
@@ -747,8 +747,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             true,
             false,
             '',
-            'white-box-content border-bottom-gray',
-            'white_table_flex margin-top-10 margin-bottom-10'
+            'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
+            'white_table_flex'
         );
     }
 
@@ -920,8 +920,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         true,
         false,
         '',
-        'white-box-content border-bottom-gray',
-        'white_table_flex margin-top-10 margin-bottom-10'
+        'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
+        'white_table_flex'
     );
 
     if (empty($server_data) === false && is_metaconsole() === true) {

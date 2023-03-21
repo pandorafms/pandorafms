@@ -1443,10 +1443,10 @@ $alerttab['active'] = ($tab === 'alert');
 // Inventory.
 $inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
 $inventorytab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
-    'images/page_white_text.png',
+    'images/hardware-software-component@svg.svg',
     true,
     [
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
         'title' => __('Inventory'),
     ]
 ).'</a>';
@@ -1921,7 +1921,7 @@ switch ($tab) {
 
 if ((bool) $config['pure'] === false) {
     ui_print_standard_header(
-        __('Agent main view'),
+        __('Agent main view').' ( '.strtolower(agents_get_alias($id_agente)).' )',
         $icon,
         false,
         ($help_header ?? ''),
@@ -1940,6 +1940,12 @@ if ((bool) $config['pure'] === false) {
                 'link'  => '',
                 'label' => $tab_name,
             ],
+        ],
+        [
+            'id_element' => $id_agente,
+            'url'        => 'operation/agentes/ver_agente&id_agente='.$id_agente,
+            'label'      => agents_get_alias($id_agente),
+            'section'    => 'Agents',
         ]
     );
 }

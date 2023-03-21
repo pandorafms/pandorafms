@@ -1,16 +1,31 @@
 <?php
+/**
+ * Netflow Filter Editor.
+ *
+ * @category   Netflow
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 global $config;
 
 require_once $config['homedir'].'/include/functions_ui.php';
@@ -46,40 +61,28 @@ if ($id) {
     }
 }
 
-// Header
-if (! defined('METACONSOLE')) {
-    $buttons['edit']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'.html_print_image('images/list.png', true, ['title' => __('Filter list')]).'</a>';
+// Header Buttons.
+$buttons = [];
+$buttons[] = ['text' => '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Filter list')]).'</a>'];
+$buttons[] = ['text' => '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'.html_print_image('images/plus@svg.svg', true, ['title' => __('Add filter')]).'</a>'];
+// Header Caption.
+$headerTitle = ($id) ? __('Update filter') : __('Create filter');
 
-    $buttons['add']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'.html_print_image('images/add_mc.png', true, ['title' => __('Add filter')]).'</a>';
-
-    ui_print_page_header(
-        __('Netflow Filter'),
-        'images/gm_netflow.png',
-        false,
-        '',
-        true,
-        $buttons
-    );
-} else {
-    $nav_bar = [
+// Header.
+ui_print_standard_header(
+    $headerTitle,
+    'images/gm_netflow.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
         [
-            'link' => 'index.php?sec=main',
-            'text' => __('Main'),
+            'link'  => '',
+            'label' => __('Netflow'),
         ],
-        [
-            'link' => 'index.php?sec=netf&sec2=godmode/netflow/nf_edit',
-            'text' => __('Netflow filters'),
-        ],
-        [
-            'link' => 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form',
-            'text' => __('Add filter'),
-        ],
-    ];
-
-    ui_meta_print_page_header($nav_bar);
-
-    ui_meta_print_header(__('Netflow filters'));
-}
+    ],
+);
 
 if ($id) {
     $filter = netflow_filter_get_filter($id);
@@ -127,7 +130,7 @@ if ($update) {
             'advanced_filter' => $advanced_filter,
         ];
 
-        // Save filter args
+        // Save filter args.
         $values['filter_args'] = netflow_get_filter_arguments($values, true);
 
         $result = db_process_sql_update('tnetflow_filter', $values, ['id_sg' => $id]);
@@ -172,83 +175,8 @@ if ($create) {
     }
 }
 
-$table = new stdClass();
-$table->id = 'table1';
-$table->width = '100%';
-$table->border = 0;
-$table->cellspacing = 0;
-$table->cellpadding = 0;
-$table->class = 'databox filters';
-$table->style[0] = 'font-weight: bold';
-
-if (defined('METACONSOLE')) {
-    if ($id) {
-        $table->head[0] = __('Update filter');
-    } else {
-        $table->head[0] = __('Create filter');
-    }
-
-    $table->head_colspan[0] = 5;
-    $table->headstyle[0] = 'text-align: center';
-}
-
-$table->data = [];
-
-$table->data[0][0] = '<b>'.__('Name').'</b>';
-$table->data[0][1] = html_print_input_text('name', $name, false, 20, 80, true);
-
 $own_info = get_user_info($config['id_user']);
-$table->data[1][0] = '<b>'.__('Group').'</b>';
-// Fix: Netflow filters have to check RW ACL
-$table->data[1][1] = html_print_select_groups(
-    $config['id_user'],
-    'RW',
-    $own_info['is_admin'],
-    'assign_group',
-    $assign_group,
-    '',
-    '',
-    -1,
-    true,
-    false,
-    false,
-    '',
-    false,
-    false,
-    false,
-    false,
-    'id_grupo',
-    false,
-    false,
-    false,
-    '250px'
-);
-
-if ($advanced_filter != '') {
-    $filter_type = 1;
-} else {
-    $filter_type = 0;
-}
-
-$table->data[2][0] = '<b>'.__('Filter:').'</b>';
-$table->data[2][1] = __('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'class="mrgn_right_40px"', true);
-$table->data[2][1] .= __('Advanced').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'class="mrgn_right_40px"', true);
-
-$table->data[3][0] = __('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true);
-$table->data[3][1] = html_print_input_text('ip_dst', $ip_dst, false, 40, 80, true);
-
-$table->data[4][0] = __('Src Ip').ui_print_help_tip(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true);
-$table->data[4][1] = html_print_input_text('ip_src', $ip_src, false, 40, 80, true);
-
-$table->data[5][0] = __('Dst Port').ui_print_help_tip(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true);
-$table->data[5][1] = html_print_input_text('dst_port', $dst_port, false, 40, 80, true);
-
-$table->data[6][0] = __('Src Port').ui_print_help_tip(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true);
-$table->data[6][1] = html_print_input_text('src_port', $src_port, false, 40, 80, true);
-
-$table->data[7][1] = html_print_textarea('advanced_filter', 4, 40, $advanced_filter, '', true);
-
-$table->data[8][0] = '<b>'.__('Aggregate by').'</b>';
+$filter_type = (empty($advanced_filter) === false) ? 1 : 0;
 $aggregate_list = [
     'srcip'   => __('Src Ip Address'),
     'dstip'   => __('Dst Ip Address'),
@@ -256,27 +184,194 @@ $aggregate_list = [
     'dstport' => __('Dst Port'),
 ];
 
-$table->data[8][1] = html_print_select($aggregate_list, 'aggregate', $aggregate, '', '', 0, true, false, true, '', false);
 
-echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
-html_print_table($table);
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+$table = new stdClass();
+$table->id = 'table1';
+$table->width = '100%';
+$table->class = 'databox filter-table-adv';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+
+$table->data = [];
+
+$table->data['first_line'][] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text(
+        'name',
+        $name,
+        false,
+        20,
+        80,
+        true
+    )
+);
+
+$table->data['first_line'][] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        $config['id_user'],
+        'RW',
+        $own_info['is_admin'],
+        'assign_group',
+        $assign_group,
+        '',
+        '',
+        -1,
+        true,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        false,
+        'id_grupo',
+        false,
+        false,
+        false,
+        '250px'
+    )
+);
+
+$table->data['filter_line'][] = html_print_label_input_block(
+    __('Filter'),
+    html_print_div(
+        [
+            'class'   => 'flex',
+            'content' => html_print_div(
+                [
+                    'class'   => 'flex-row-end',
+                    'content' => __('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'class="mrgn_right_40px"', true),
+                ],
+                true
+            ).html_print_div(
+                [
+                    'class'   => 'flex-row-end',
+                    'content' => __('Advanced').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'class="mrgn_right_40px"', true),
+                ],
+                true
+            ),
+        ],
+        true
+    ),
+);
+
+$table->data['filter_line'][] = html_print_label_input_block(
+    __('Aggregate by'),
+    html_print_select(
+        $aggregate_list,
+        'aggregate',
+        $aggregate,
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
+);
+
+$table->data['ip_line'][] = html_print_label_input_block(
+    __('Dst Ip'),
+    html_print_input_text(
+        'ip_dst',
+        $ip_dst,
+        false,
+        40,
+        80,
+        true
+    ).ui_print_input_placeholder(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true)
+);
+
+$table->data['ip_line'][] = html_print_label_input_block(
+    __('Src Ip'),
+    html_print_input_text(
+        'ip_src',
+        $ip_src,
+        false,
+        40,
+        80,
+        true
+    ).ui_print_input_placeholder(__('Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true)
+);
+
+$table->data['ports_line'][] = html_print_label_input_block(
+    __('Dst Port'),
+    html_print_input_text(
+        'dst_port',
+        $dst_port,
+        false,
+        40,
+        80,
+        true
+    ).ui_print_input_placeholder(__('Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true)
+);
+
+$table->data['ports_line'][] = html_print_label_input_block(
+    __('Src Port'),
+    html_print_input_text(
+        'src_port',
+        $src_port,
+        false,
+        40,
+        80,
+        true
+    ).ui_print_input_placeholder(__('Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22'), true)
+);
+
+$table->colspan['advanced_filters'][] = 2;
+$table->data['advanced_filters'][] = html_print_label_input_block(
+    __('Advanced filters'),
+    html_print_textarea('advanced_filter', 4, 40, $advanced_filter, '', true, 'w50p')
+);
+
+
+$hiddens = '';
 if ($id) {
-    html_print_input_hidden('update', 1);
-    html_print_input_hidden('id', $id);
-    html_print_submit_button(__('Update'), 'crt', false, 'class="sub upd"');
+    $buttonTitle = __('Update');
+    $hiddens .= html_print_input_hidden('update', 1, true);
+    $hiddens .= html_print_input_hidden('id', $id, true);
 } else {
-    html_print_input_hidden('create', 1);
-    html_print_submit_button(__('Create'), 'crt', false, 'class="sub wand"');
+    $buttonTitle = __('Create');
+    $hiddens .= html_print_input_hidden('create', 1, true);
 }
 
-echo '</div>';
+echo '<form class="max_floating_element_size" id="nf_edit_form" method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
+echo $hiddens;
+html_print_table($table);
 echo '</form>';
+
+html_print_action_buttons(
+    html_print_submit_button(
+        $buttonTitle,
+        'crt',
+        false,
+        [
+            'icon' => 'upd',
+            'form' => 'nf_edit_form',
+        ],
+        true
+    )
+);
 
 ?>
 
 <script type="text/javascript">
+    $(document).ready(function(){
+        var filter_type = <?php echo $filter_type; ?>;
+        if (filter_type == 0) {
+            displayNormalFilter ();
+        }
+        else {
+            displayAdvancedFilter ();
+        }
+    });
+
     function displayAdvancedFilter () {
+        console.log('papapa advanced filter');
         // Erase the normal filter
         document.getElementById("text-ip_dst").value = '';
         document.getElementById("text-ip_src").value = '';
@@ -284,34 +379,32 @@ echo '</form>';
         document.getElementById("text-src_port").value = '';
         
         // Hide the normal filter
-        document.getElementById("table1-3").style.display = 'none';
-        document.getElementById("table1-4").style.display = 'none';
-        document.getElementById("table1-5").style.display = 'none';
-        document.getElementById("table1-6").style.display = 'none';
-        
+        //document.getElementById("table1-3").style.display = 'none';
+        //document.getElementById("table1-4").style.display = 'none';
+        //document.getElementById("table1-5").style.display = 'none';
+        //document.getElementById("table1-6").style.display = 'none';
+        $("#table1-ip_line").css("display", "none");
+        $("#table1-ports_line").css("display", "none");
         // Show the advanced filter
-        document.getElementById("table1-7").style.display = '';
+        $("#table1-advanced_filters").css("display", "table-row");
+        //document.getElementById("table1-7").style.display = '';
     };
     
     function displayNormalFilter () {
+        console.log('papapa normal filter');
         // Erase the advanced filter
         document.getElementById("textarea_advanced_filter").value = '';
-        
         // Hide the advanced filter
-        document.getElementById("table1-7").style.display = 'none';
-        
+        //document.getElementById("table1-7").style.display = 'none';
+        $("#table1-advanced_filters").css("display", "none");
         // Show the normal filter
+        $("#table1-ip_line").css("display", "table-row");
+        $("#table1-ports_line").css("display", "table-row");
+        /*
         document.getElementById("table1-3").style.display = '';
         document.getElementById("table1-4").style.display = '';
         document.getElementById("table1-5").style.display = '';
         document.getElementById("table1-6").style.display = '';
+        */
     };
-    
-    var filter_type = <?php echo $filter_type; ?>;
-    if (filter_type == 0) {
-        displayNormalFilter ();
-    }
-    else {
-        displayAdvancedFilter ();
-    }
 </script>

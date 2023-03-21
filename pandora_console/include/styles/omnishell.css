@@ -489,14 +489,6 @@ li > .select2-selection {
   padding: 0px !important;
 }
 
-.box-flat {
-  margin: 20px;
-}
-
-.mrgn_20px {
-  margin: 20px !important;
-}
-
 .omnishell_results_wrapper {
   max-width: 100% !important;
 }
@@ -547,10 +539,6 @@ ul.datatable_filter > li > div.action-buttons > button {
   height: auto !important;
 }
 
-.action_buttons_right_content {
-  padding-left: 20px;
-}
-
 #image-1,
 #image-2 {
   padding-left: 0px !important;
@@ -558,10 +546,6 @@ ul.datatable_filter > li > div.action-buttons > button {
 
 .flex-column {
   margin-bottom: 10px !important;
-}
-
-.dataTables_length {
-  margin-bottom: 50px !important;
 }
 
 .item_status_tree_view {

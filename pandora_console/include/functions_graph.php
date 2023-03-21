@@ -4816,7 +4816,7 @@ function graph_nodata_image($options)
         $height = $options['height'];
     }
 
-    $width_style = '';
+    $width_style = 'width: 200px';
     if (isset($options['width']) === true
         && empty($options['width']) === false
     ) {
@@ -4835,7 +4835,7 @@ function graph_nodata_image($options)
         true,
         [
             'title' => __('No data'),
-            'style' => 'height:'.$height.'px;'.$width_style,
+            'style' => $width_style,
         ]
     );
 }

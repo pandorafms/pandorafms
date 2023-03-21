@@ -238,6 +238,11 @@ $buttons['external_tools'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=external_tools').'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools'), 'class' => 'invert_filter']).'</a>',
 ];
 
+$buttons['welcome_tips'] = [
+    'active' => false,
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips').'">'.html_print_image('images/inventory.png', true, ['title' => __('Welcome tips'), 'class' => 'invert_filter']).'</a>',
+];
+
 if ($config['activate_gis']) {
     $buttons['gis'] = [
         'active' => false,
@@ -260,29 +265,29 @@ if (enterprise_installed()) {
 switch ($section) {
     case 'general':
         $buttons['general']['active'] = true;
-        $subpage = ' &raquo '.__('General');
+        $subpage = __('General');
         $help_header = 'setup_general_tab';
     break;
 
     case 'auth':
         $buttons['auth']['active'] = true;
-        $subpage = ' &raquo '.__('Authentication');
+        $subpage = __('Authentication');
     break;
 
     case 'perf':
         $buttons['perf']['active'] = true;
-        $subpage = ' &raquo '.__('Performance');
+        $subpage = __('Performance');
         $help_header = '';
     break;
 
     case 'vis':
         $buttons['vis']['active'] = true;
-        $subpage = ' &raquo '.__('Visual styles');
+        $subpage = __('Visual styles');
     break;
 
     case 'net':
         $buttons['net']['active'] = true;
-        $subpage = ' &raquo '.__('Netflow');
+        $subpage = __('Netflow');
         $help_header = 'setup_netflow_tab';
     break;
 
@@ -294,73 +299,97 @@ switch ($section) {
 
     case 'ehorus':
         $buttons['ehorus']['active'] = true;
-        $subpage = ' &raquo '.__('eHorus');
+        $subpage = __('eHorus');
         $help_header = 'setup_ehorus_tab';
     break;
 
     case 'integria':
         $buttons['integria']['active'] = true;
-        $subpage = ' &raquo '.__('Integria IMS');
+        $subpage = __('Integria IMS');
         $help_header = 'setup_integria_tab';
     break;
 
     case 'module_library':
         $buttons['module_library']['active'] = true;
-        $subpage = ' &raquo '.__('Module Library');
+        $subpage = __('Module Library');
         $help_header = 'setup_module_library_tab';
     break;
 
     case 'gis':
         $buttons['gis']['active'] = true;
-        $subpage = ' &raquo '.__('Map conections GIS');
+        $subpage = __('Map conections GIS');
     break;
 
     case 'notifications':
         $buttons['notifications']['active'] = true;
-        $subpage = ' &raquo '.__('Notifications');
+        $subpage = __('Notifications');
     break;
 
     case 'websocket_engine':
         $buttons['websocket_engine']['active'] = true;
-        $subpage = ' &raquo '.__('Pandora Websocket Engine');
+        $subpage = __('Pandora Websocket Engine');
         $help_header = 'quickshell_settings';
     break;
 
     case 'external_tools':
         $buttons['external_tools']['active'] = true;
-        $subpage = ' &raquo '.__('External Tools');
+        $subpage = __('External Tools');
+        $help_header = '';
+    break;
+
+    case 'welcome_tips':
+        $view = get_parameter('view', '');
+        $title = __('Welcome tips');
+        if ($view === 'create') {
+            $title = __('Create tip');
+        } else if ($view === 'edit') {
+            $title = __('Edit tip');
+        }
+
+        $buttons['welcome_tips']['active'] = true;
+        $subpage = $title;
         $help_header = '';
     break;
 
     case 'enterprise':
         $buttons['enterprise']['active'] = true;
-        $subpage = ' &raquo '.__('Enterprise');
+        $subpage = __('Enterprise');
         $help_header = 'setup_enterprise_tab';
     break;
 
+    case 'hist_db':
+        $buttons['hist_db']['active'] = true;
+        $subpage = __('Historical database');
+        $help_header = '';
+    break;
+
+    case 'pass':
+        $buttons['pass']['active'] = true;
+        $subpage = __('Password policies');
+        $help_header = '';
+    break;
+
     default:
+        $subpage = 'seccion: '.$section;
         // Default.
     break;
 }
 
-// Put header inside div for special sizing.(No right margin).
-echo '<div id="header_configuration" style="width: calc(100%);">';
 // Header.
-ui_print_page_header(
-    __('Configuration').$subpage,
+ui_print_standard_header(
+    $subpage,
     '',
     false,
     $help_header,
     true,
     $buttons,
-    false,
-    '',
-    GENERIC_SIZE_TEXT,
-    '',
-    '',
-    true
+    [
+        [
+            'link'  => '',
+            'label' => __('Setup'),
+        ],
+    ]
 );
-echo '</div>';
 
 if (isset($config['error_config_update_config'])) {
     if ($config['error_config_update_config']['correct'] == false) {
@@ -431,6 +460,10 @@ switch ($section) {
 
     case 'external_tools':
         include_once $config['homedir'].'/godmode/setup/setup_external_tools.php';
+    break;
+
+    case 'welcome_tips':
+        include_once $config['homedir'].'/godmode/setup/welcome_tips.php';
     break;
 
     default:

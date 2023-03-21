@@ -11,11 +11,12 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-function view_logfile($file_name)
+function view_logfile($file_name, $toggle=false)
 {
     global $config;
 
     $memory_limit = ini_get('memory_limit');
+    $code = '';
 
     if (strstr($memory_limit, 'M') !== false) {
         $memory_limit = str_replace('M', '', $memory_limit);
@@ -31,21 +32,37 @@ function view_logfile($file_name)
         $file_size = filesize($file_name);
 
         if ($memory_limit < $file_size) {
-            echo "<h2>$file_name (".__('File is too large than PHP memory allocated in the system.').')</h2>';
-            echo '<h2>'.__('The preview file is imposible.').'</h2>';
+            $code .= '<pre><h2>'.$file_name.' ('.__('File is too large than PHP memory allocated in the system.').')</h2>';
+            $code .= '<h2>'.__('The preview file is imposible.').'</h2>';
         } else if ($file_size > ($config['max_log_size'] * 1000)) {
             $data = file_get_contents($file_name, false, null, ($file_size - ($config['max_log_size'] * 1000)));
-            echo "<h2>$file_name (".format_numeric(filesize($file_name) / 1024).' KB) '.ui_print_help_tip(__('The folder /var/log/pandora must have pandora:apache and its content too.'), true).' </h2>';
-            echo "<textarea class='pandora_logs' name='$file_name'>";
-            echo '... ';
-            echo $data;
-            echo '</textarea><br><br>';
+            $code .= "<h2>$file_name (".format_numeric(filesize($file_name) / 1024).' KB) '.ui_print_help_tip(__('The folder /var/log/pandora must have pandora:apache and its content too.'), true).' </h2>';
+            $code .= "<textarea class='pandora_logs' name='$file_name'>";
+            $code .= '... ';
+            $code .= $data;
+            $code .= '</textarea><br><br>';
         } else {
             $data = file_get_contents($file_name);
-            echo "<h2>$file_name (".format_numeric(filesize($file_name) / 1024).' KB) '.ui_print_help_tip(__('The folder /var/log/pandora must have pandora:apache and its content too.'), true).' </h2>';
-            echo "<textarea class='pandora_logs' name='$file_name'>";
-            echo $data;
-            echo '</textarea><br><br>';
+            $code .= "<h2>$file_name (".format_numeric(filesize($file_name) / 1024).' KB) '.ui_print_help_tip(__('The folder /var/log/pandora must have pandora:apache and its content too.'), true).' </h2>';
+            $code .= "<textarea class='pandora_logs' name='$file_name'>";
+            $code .= $data;
+            $code .= '</textarea><br><br></pre>';
+        }
+
+        if ($toggle === true) {
+            ui_toggle(
+                $code,
+                '<span class="subsection_header_title">'.$file_name.'</span>',
+                $file_name,
+                'a',
+                false,
+                false,
+                '',
+                'white-box-content no_border',
+                'filter-datatable-main box-flat white_table_graph'
+            );
+        } else {
+            echo $code;
         }
     }
 }
@@ -64,21 +81,45 @@ function pandoralogs_extension_main()
         return;
     }
 
-    ui_print_page_header(__('System logfile viewer'), 'images/extensions.png', false, '', true, '');
+    // Header.
+    ui_print_standard_header(
+        __('Extensions'),
+        'images/extensions.png',
+        false,
+        '',
+        true,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Admin tools'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Extension manager'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('System logfile viewer'),
+            ],
+        ]
+    );
 
-    echo '<p>'.__('Use this tool to view your %s logfiles directly on the console', get_product_name()).'</p>';
-
-    echo '<p>'.__('You can choose the amount of information shown in general setup (Log size limit in system logs viewer extension), '.($config['max_log_size'] * 1000).'B at the moment').'</p>';
+    ui_print_info_message(
+        __('Use this tool to view your %s logfiles directly on the console', get_product_name()).'<br>
+        '.__('You can choose the amount of information shown in general setup (Log size limit in system logs viewer extension), '.($config['max_log_size'] * 1000).'B at the moment')
+    );
 
     $logs_directory = (!empty($config['server_log_dir'])) ? io_safe_output($config['server_log_dir']) : '/var/log/pandora';
 
     // Do not attempt to show console log if disabled.
     if ($config['console_log_enabled']) {
-        view_logfile($config['homedir'].'/log/console.log');
+        view_logfile($config['homedir'].'/log/console.log', true);
     }
 
-    view_logfile($logs_directory.'/pandora_server.log');
-    view_logfile($logs_directory.'/pandora_server.error');
+    view_logfile($logs_directory.'/pandora_server.log', true);
+    view_logfile($logs_directory.'/pandora_server.error', true);
+
 }
 
 

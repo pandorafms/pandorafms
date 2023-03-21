@@ -55,7 +55,7 @@ $iconData[] = html_print_select(
 $iconData[] = html_print_div(
     [
         'id'      => 'icon_image',
-        'class'   => 'inverse_filter main_menu_icon',
+        'class'   => 'invert_filter main_menu_icon',
         'style'   => 'margin-left: 10px',
         'content' => ui_print_os_icon($idOS, false, true),
     ],

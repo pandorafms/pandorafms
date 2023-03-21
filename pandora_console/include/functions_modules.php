@@ -1019,7 +1019,7 @@ function modules_format_delete($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -1040,7 +1040,7 @@ function modules_format_delete_string($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -1061,7 +1061,7 @@ function modules_format_delete_log4x($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -1142,6 +1142,27 @@ function modules_get_raw_data($id_agent_module, $date_init, $date_end)
     $data = db_get_all_rows_sql(
         '
 		SELECT *
+		FROM '.$table.'
+		WHERE id_agente_modulo = '.$id_agent_module.'
+			AND utimestamp >= '.$date_init.'
+			AND utimestamp <= '.$date_end,
+        $search_in_history_db
+    );
+
+    return $data;
+}
+
+
+function module_get_min_max_tagente_datos($id_agent_module, $date_init, $date_end)
+{
+    $table = modules_get_table_data($id_agent_module, null);
+
+    $datelimit = ($date_init - $date_end);
+    $search_in_history_db = db_search_in_history_db($datelimit);
+
+    $data = db_get_all_rows_sql(
+        '
+		SELECT max(datos) as max, min(datos) as min
 		FROM '.$table.'
 		WHERE id_agente_modulo = '.$id_agent_module.'
 			AND utimestamp >= '.$date_init.'

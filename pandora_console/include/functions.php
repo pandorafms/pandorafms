@@ -3548,6 +3548,18 @@ function update_config_token($cfgtoken, $cfgvalue)
 }
 
 
+function delete_config_token($cfgtoken)
+{
+    $delete = db_process_sql(sprintf('DELETE FROM tconfig WHERE token = "%s"', $cfgtoken));
+
+    if ($delete) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 function get_number_of_mr($package, $ent, $offline)
 {
     global $config;
@@ -4264,15 +4276,18 @@ function generator_chart_to_pdf(
             'type_graph_pdf'   => $type_graph_pdf,
             'data_module_list' => $module_list,
             'data_combined'    => $params_combined,
+            'id_user'          => $config['id_user'],
         ];
     } else {
         $data = [
             'data'           => $params,
             'session_id'     => $session_id,
             'type_graph_pdf' => $type_graph_pdf,
+            'id_user'        => $config['id_user'],
         ];
     }
 
+    unset($data['data']['graph_data']);
     // If not install chromium avoid 500 convert tu images no data to show.
     $chromium_dir = io_safe_output($config['chromium_path']);
     $result_ejecution = exec($chromium_dir.' --version');

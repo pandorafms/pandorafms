@@ -117,6 +117,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 }
             }
 
+            $search_bar .= '<div id="result_order" class="result_order"></div>';
             $search_bar .= '<input id="keywords" name="keywords"';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= "value='".__('Enter keywords to search')."'";
@@ -126,15 +127,11 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 $search_bar .= "value='".$config['search_keywords']."'";
             }
 
-            $search_bar .= 'type="search" onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-                    onkeyup="showinterpreter()" class="search_input"/>';
+            $search_bar .= 'type="search" onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');" onkeyup="showinterpreter()" class="search_input"/>';
 
-
-            $search_bar .= '<div id="result_order" class="result_order"></div>';
             // $search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
             $search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
             $search_bar .= '</form>';
-
             $header_searchbar = '<div id="header_searchbar">'.$search_bar.'</div>';
         }
 
@@ -410,7 +407,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
 
         // User.
-        // $headerUserImage = (is_user_admin($config['id_user']) === true) ? 'images/header_user_admin_green.png' : 'images/header_user_green.png';
         $headerUser = [];
         $headerUser[] = html_print_image(
             'images/edit_user@header.svg',
@@ -470,10 +466,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         ?>
     </div>    <!-- Closes #table_header_inner -->
 </div>    <!-- Closes #table_header -->
-
-
-<!-- Notifications content wrapper-->
-<div id='notification-content' class='invisible'/></div>
 
 <!-- Old style div wrapper -->
 <div id="alert_messages" class="invisible"></div>

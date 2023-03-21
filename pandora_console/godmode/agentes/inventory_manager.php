@@ -225,7 +225,7 @@ if (db_get_num_rows($sql) == 0) {
 } else {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox info_trable';
+    $table->class = 'databox info_table max_floating_element_size';
     $table->data = [];
     $table->head = [];
     $table->styleTable = '';

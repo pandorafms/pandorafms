@@ -657,7 +657,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $table->data['description'] = $row;
 
     // Last contact.
-    $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true, ['class' => 'font_11']);
+    $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true, ['style' => 'font-size: 13px;']);
 
     if ($agent['ultimo_contacto_remoto'] === '01-01-1970 00:00:00') {
         $last_remote_contact = __('Never');
@@ -689,8 +689,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         '#ececec',
         true,
         '',
-        false,
-        'line-height: 13px;'
+        false
     );
     $table->data['next_contact'] = $row;
 

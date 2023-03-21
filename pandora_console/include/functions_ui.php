@@ -723,7 +723,23 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
         $output .= '<span title="'.groups_get_name($id_group, true).'">'.groups_get_name($id_group, true).'&nbsp;</span>';
     } else {
         if (empty($icon) === true) {
-            $output .= '<span title="'.groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
+            $output .= '<span title="'.groups_get_name($id_group, true).'">';
+            $output .= '</span>';
+            $output .= html_print_image(
+                'images/unknown@groups.svg',
+                true,
+                [
+                    'style' => $style,
+                    'class' => 'main_menu_icon invert_filter '.$class,
+                    'alt'   => groups_get_name($id_group, true),
+                    'title' => groups_get_name($id_group, true),
+                ],
+                false,
+                false,
+                false,
+                true
+            );
+            $output .= '</span>';
         } else {
             if (empty($class) === true) {
                 $class = 'bot';
@@ -739,7 +755,7 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
                 true,
                 [
                     'style' => $style,
-                    'class' => 'main_menu_icon '.$class,
+                    'class' => 'main_menu_icon invert_filter '.$class,
                     'alt'   => groups_get_name($id_group, true),
                     'title' => groups_get_name($id_group, true),
                 ],
@@ -846,7 +862,7 @@ function ui_print_os_icon(
     }
 
     if (isset($options['class']) === false) {
-        $options['class'] = 'main_menu_icon';
+        $options['class'] = 'main_menu_icon invert_filter';
     }
 
     $no_in_meta = (is_metaconsole() === false);
@@ -3879,8 +3895,8 @@ function ui_print_datatable(array $parameters)
     }
 
     $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
-                $("div[id^=info_box_]").show();
-                $("div[id^=info_box_]").removeClass(\'invisible_important\');
+                $(".datatable-msg-info-'.$table_id.'").show();
+                $(".datatable-msg-info-'.$table_id.'").removeClass(\'invisible_important\');
                 $("table#'.$table_id.'").hide();
                 $("div.dataTables_paginate").hide();
                 $("div.dataTables_info").hide();
@@ -3891,7 +3907,7 @@ function ui_print_datatable(array $parameters)
                     $(".dataTables_paginate.paging_simple_numbers").show()
                 }
             } else {
-                $("div[id^=info_box_]").hide();
+                $(".datatable-msg-info-'.$table_id.'").hide();
                 $("table#'.$table_id.'").show();
                 $("div.dataTables_paginate").show();
                 $("div.dataTables_info").show();
@@ -4028,7 +4044,7 @@ function ui_print_datatable(array $parameters)
     // Order.
     $info_msg_arr = [];
     $info_msg_arr['message'] = $emptyTable;
-    $info_msg_arr['div_class'] = 'info_box_container invisible_important';
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
 
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
     $err_msg = '<div id="error-'.$table_id.'"></div>';
@@ -4358,34 +4374,6 @@ function ui_toggle(
     $rotateA = '90deg';
     $rotateB = '180deg';
 
-    if (empty($img_a) === false) {
-        $image_a = html_print_image(
-            $img_a,
-            true,
-            [
-                'class' => 'mrgn_right_10px',
-                'style' => 'rotate: '.$rotateA,
-            ],
-            true
-        );
-    } else {
-        $image_a = '';
-    }
-
-    if (empty($img_b) === false) {
-        $image_b = html_print_image(
-            $img_b,
-            true,
-            [
-                'class' => 'mrgn_right_10px',
-                'style' => 'margin-right:10px; rotate: '.$rotateB,
-            ],
-            true
-        );
-    } else {
-        $image_b = '';
-    }
-
     // Options.
     $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-available;';
     $style = 'overflow:hidden;';
@@ -4442,7 +4430,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'float-left main_menu_icon mrgn_right_10px',
+                    'class' => 'float-left main_menu_icon mrgn_right_10px invert_filter',
                     'style' => 'object-fit: contain; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
@@ -4474,7 +4462,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'main_menu_icon mrgn_right_10px',
+                    'class' => 'main_menu_icon mrgn_right_10px invert_filter',
                     'style' => 'object-fit: contain; float:right; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,

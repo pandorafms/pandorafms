@@ -1107,12 +1107,6 @@ $(document).ready (function () {
         });
     });
 
-    $("#submit-uptbutton").click (function () {
-        if($("#autorefresh_list option").length > 0) {
-            $('#autorefresh_list option').prop('selected', true);
-        }
-    });
-
     check_default_block_size()
     $("#checkbox-default_block_size").change(function() {
         check_default_block_size();

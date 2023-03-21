@@ -710,7 +710,7 @@ if ((bool) $config['agentaccess'] === true && $access_agent > 0) {
 
     $agentAccessRate = html_print_div(
         [
-            'class'   => 'box-flat agent_details_col mrgn_lft_20px',
+            'class'   => 'box-flat agent_details_col mrgn_lft_20px w50p',
             'id'      => 'table_access_rate',
             'content' => $agentAccessRateHeader.$agentAccessRateContent,
         ],
@@ -1038,7 +1038,7 @@ $agentEventsGraph = html_print_div(
 
 $agentEvents = html_print_div(
     [
-        'class'   => 'box-flat agent_details_col',
+        'class'   => 'box-flat agent_details_col w50p',
         'content' => $agentEventsHeader.$agentEventsGraph,
     ],
     true

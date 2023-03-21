@@ -675,10 +675,13 @@ if (empty($draw) === false) {
             'selected_style_theme',
             $config['style']
         );
+
+        $netflowContainerClass = ($chart_type === 'netflow_data' || $chart_type === 'netflow_summary' || $chart_type === 'netflow_top_N') ? '' : 'white_box';
+
         // Draw the netflow chart.
         html_print_div(
             [
-                'class'   => 'white_box',
+                'class'   => $netflowContainerClass,
                 'content' => netflow_draw_item(
                     $start_date,
                     $end_date,

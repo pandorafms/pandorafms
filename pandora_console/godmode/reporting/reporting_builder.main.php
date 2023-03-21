@@ -176,6 +176,31 @@ if (is_metaconsole() === true) {
     );
 }
 
+if (is_metaconsole() === true) {
+    $table->data['description'][0] = __('Description');
+    $table->data['description'][1] = html_print_textarea(
+        'description',
+        2,
+        80,
+        $description,
+        '',
+        true
+    );
+} else {
+    $table->colspan[1][0] = 2;
+    $table->data[1][0] = html_print_label_input_block(
+        __('Description'),
+        html_print_textarea(
+            'description',
+            2,
+            1,
+            $description,
+            '',
+            true
+        )
+    );
+}
+
 if ($report_id_user == $config['id_user']
     || is_user_admin($config['id_user'])
 ) {
@@ -222,7 +247,7 @@ if ($report_id_user == $config['id_user']
         $table->data['access'][1] .= '</div>';
         $table->data['access'][1] .= '</span>';
     } else {
-        $table->data[1][0] = html_print_label_input_block(
+        $table->data[2][0] = html_print_label_input_block(
             __('Write Access').ui_print_help_tip(
                 __('For example, you want a report that the people of "All" groups can see but you want to edit only for you or your group.'),
                 true
@@ -244,7 +269,7 @@ if ($report_id_user == $config['id_user']
             $options['div_class'] = '';
         }
 
-        $table->data[1][1] = html_print_label_input_block(
+        $table->data[2][1] = html_print_label_input_block(
             __('Group'),
             html_print_select_groups(
                 false,
@@ -277,7 +302,7 @@ if ($enterpriseEnable) {
             true
         );
     } else {
-        $table->data[2][0] = html_print_label_input_block(
+        $table->data[2][1] = html_print_label_input_block(
             __('Non interactive report'),
             html_print_checkbox_switch(
                 'non_interactive',
@@ -289,29 +314,6 @@ if ($enterpriseEnable) {
     }
 }
 
-if (is_metaconsole() === true) {
-    $table->data['description'][0] = __('Description');
-    $table->data['description'][1] = html_print_textarea(
-        'description',
-        2,
-        80,
-        $description,
-        '',
-        true
-    );
-} else {
-    $table->data[2][1] = html_print_label_input_block(
-        __('Description'),
-        html_print_textarea(
-            'description',
-            2,
-            1,
-            $description,
-            '',
-            true
-        )
-    );
-}
 
 if (enterprise_installed() === true) {
     if (is_metaconsole() === true) {

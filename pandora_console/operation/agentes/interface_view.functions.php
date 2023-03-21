@@ -146,35 +146,35 @@ function print_filters($sec)
 
         $filters .= '</form>';
     } else {
-        $table->style[0] = 'font-weight: bold;';
-
-        $table->data[0][0] = '<b>'.__('Interfaces').'</b>';
-        $table->data[0][1] = html_print_select(
-            [],
-            'selected_interfaces[]',
-            '',
-            '',
-            '',
-            0,
-            true,
-            true,
-            true,
-            '',
-            false,
-            'min-width: 180px; max-width: 200px;'
+        $table->data[0][0] = html_print_label_input_block(
+            __('Interfaces'),
+            html_print_select(
+                [],
+                'selected_interfaces[]',
+                '',
+                '',
+                '',
+                0,
+                true,
+                true,
+                true,
+                '',
+                false,
+                'min-width: 200px; max-width: 250px; min-height: 70px;'
+            )
         );
 
         $filters = '<form method="post" action="'.ui_get_url_refresh().'">';
 
         $filters .= html_print_table($table, true);
 
-        $filters .= "<div class='height_100p right'>".html_print_submit_button(
+        $filters .= html_print_submit_button(
             __('Show'),
             'uptbutton',
             false,
-            'class="sub search mgn_tp_0"',
+            ['class' => 'float-right mini'],
             true
-        ).'</div>';
+        );
 
         $filters .= '</form>';
     }

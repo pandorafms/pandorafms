@@ -283,6 +283,14 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         if (empty($message['force_class']) === false) {
             $force_class = $message['force_class'];
         }
+
+        if (isset($message['autoclose']) === true) {
+            if ($message['autoclose'] === true) {
+                $autoclose = true;
+            } else {
+                $autoclose = false;
+            }
+        }
     } else {
         $text_message = $message;
     }

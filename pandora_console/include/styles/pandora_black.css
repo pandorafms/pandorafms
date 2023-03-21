@@ -1534,3 +1534,9 @@ pre code.hljs {
   background-color: #222222;
   color: #fff;
 }
+
+a.autorefresh_txt,
+#refrcounter {
+  color: #ffffff;
+  font-size: 8.5pt;
+}

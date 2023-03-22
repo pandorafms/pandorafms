@@ -1297,8 +1297,9 @@ a.pandora_pagination:hover {
   filter: brightness(0) contrast(50%) !important;
 }
 
-input[type="image"] {
+input:not(div.login_pass > input):not(div.login_nick > input[type="image"]) {
   background-color: transparent !important;
+  color: inherit !important;
 }
 
 .databox_color {

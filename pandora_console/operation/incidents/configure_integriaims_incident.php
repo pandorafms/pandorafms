@@ -23,10 +23,29 @@ $update = (isset($_GET['incident_id']) === true);
 // Header tabs.
 $onheader = integriaims_tabs('create_tab', $_GET['incident_id']);
 if ($update) {
-    ui_print_page_header(__('Update Integria IMS Ticket'), '', false, '', false, $onheader);
+    $title_header = __('Update Integria IMS Ticket');
 } else {
-    ui_print_page_header(__('Create Integria IMS Ticket'), '', false, '', false, $onheader);
+    $title_header = __('Create Integria IMS Ticket');
 }
+
+ui_print_standard_header(
+    $title_header,
+    '',
+    false,
+    '',
+    false,
+    $onheader,
+    [
+        [
+            'link'  => '',
+            'label' => __('Issues'),
+        ],
+        [
+            'link'  => '',
+            'label' => $title_header,
+        ],
+    ]
+);
 
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
@@ -166,19 +185,14 @@ if ($update) {
 $table = new stdClass();
 $table->width = '100%';
 $table->id = 'add_alert_table';
-$table->class = 'databox filters integria_incidents_options';
+$table->class = 'databox filter-table-adv';
 $table->head = [];
-
 $table->data = [];
 $table->size = [];
 $table->size = [];
-$table->style[0] = 'width: 33%; padding-right: 50px; padding-left: 100px;';
-$table->style[1] = 'width: 33%; padding-right: 50px; padding-left: 50px;';
-$table->style[2] = 'width: 33%; padding-right: 100px; padding-left: 50px;';
 $table->colspan[0][0] = 2;
 $table->colspan[4][0] = 3;
 $table->colspan[6][0] = 3;
-
 $help_macros = isset($_GET['from_event']) ? ui_print_help_icon('response_macros', true) : '';
 
 if ($update) {
@@ -210,177 +224,205 @@ if ($update) {
     $input_value_resolution = 0;
 }
 
-$table->data[0][0] = '<div class="label_select"><p class="input_label">'.__('Title').':&nbsp'.$help_macros.'</p>';
-$table->data[0][0] .= '<div class="label_select_parent">'.html_print_input_text(
-    'incident_title',
-    $input_value_title,
-    __('Name'),
-    50,
-    100,
-    true,
-    false,
-    true,
-    '',
-    'w100p'
-).'</div>';
+$table->data[0][0] = html_print_label_input_block(
+    __('Title').$help_macros,
+    html_print_input_text(
+        'incident_title',
+        $input_value_title,
+        __('Name'),
+        50,
+        100,
+        true,
+        false,
+        true,
+        '',
+        'w100p'
+    )
+);
 
 $integria_logo = 'images/integria_logo_gray.png';
 if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     $integria_logo = 'images/integria_logo.svg';
 }
 
-$table->data[0][2] = html_print_image($integria_logo, true, ['style' => 'width: 70%; float: right;'], false);
+$table->data[0][2] = html_print_image($integria_logo, true, ['style' => 'width: 30%; float: right;'], false);
 
-$table->data[1][0] = '<div class="label_select"><p class="input_label">'.__('Type').': </p>';
-$table->data[1][0] .= '<div class="label_select_parent">'.html_print_select(
-    $integria_types_values,
-    'type',
-    $input_value_type,
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 100%;'
-).'</div>';
+$table->data[1][0] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        $integria_types_values,
+        'type',
+        $input_value_type,
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%;'
+    )
+);
 
-$table->data[2][0] = '<div class="label_select"><p class="input_label">'.__('Status').': </p>';
-$table->data[2][0] .= '<div class="label_select_parent">'.html_print_select(
-    $integria_status_values,
-    'status',
-    $input_value_status,
-    '',
-    __('Select'),
-    1,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 100%;'
-).'</div>';
+$table->data[1][1] = html_print_label_input_block(
+    __('Group'),
+    html_print_select(
+        $integria_group_values,
+        'group',
+        $input_value_group,
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%;'
+    )
+);
 
-$table->data[1][1] = '<div class="label_select"><p class="input_label">'.__('Group').': </p>';
-$table->data[1][1] .= '<div class="label_select_parent">'.html_print_select(
-    $integria_group_values,
-    'group',
-    $input_value_group,
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 100%;'
-).'</div>';
+$table->data[1][2] = html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        $integria_criticity_values,
+        'criticity',
+        $input_value_criticity,
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%;'
+    )
+);
 
-$table->data[2][1] = '<div class="label_select"><p class="input_label">'.__('Creator').': </p>';
-$table->data[2][1] .= '<div class="label_select_parent">'.html_print_input_text(
-    'creator',
-    $config['integria_user'],
-    '',
-    '30',
-    100,
-    true,
-    true,
-    false,
-    '',
-    'w100p'
-).ui_print_help_tip(__('This field corresponds to the Integria IMS user specified in Integria IMS setup'), true).'</div>';
+$table->data[2][0] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $integria_status_values,
+        'status',
+        $input_value_status,
+        '',
+        __('Select'),
+        1,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%;'
+    )
+);
 
-$table->data[1][2] = '<div class="label_select"><p class="input_label">'.__('Priority').': </p>';
-$table->data[1][2] .= '<div class="label_select_parent">'.html_print_select(
-    $integria_criticity_values,
-    'criticity',
-    $input_value_criticity,
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 100%;'
-).'</div>';
+$table->data[2][1] = html_print_label_input_block(
+    __('Creator').ui_print_help_tip(__('This field corresponds to the Integria IMS user specified in Integria IMS setup'), true),
+    html_print_input_text(
+        'creator',
+        $config['integria_user'],
+        '',
+        '30',
+        100,
+        true,
+        true,
+        false,
+        '',
+        'w100p'
+    )
+);
 
-$table->data[2][2] = '<div class="label_select"><p class="input_label">'.__('Owner').': </p>';
+$table->data[2][2] = html_print_label_input_block(
+    __('Owner'),
+    html_print_autocomplete_users_from_integria(
+        'owner',
+        $input_value_owner,
+        true,
+        '30',
+        false,
+        false,
+        'w100p'
+    ),
+    ['div_class' => 'inline']
+);
 
-$table->data[2][2] .= '<div class="label_select_parent">'.html_print_autocomplete_users_from_integria(
-    'owner',
-    $input_value_owner,
-    true,
-    '30',
-    false,
-    false,
-    'w100p'
-).'</div>';
+$table->data[3][0] = html_print_label_input_block(
+    __('Resolution'),
+    html_print_select(
+        $integria_resolution_values,
+        'resolution',
+        $input_value_resolution,
+        '',
+        '',
+        1,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%;'
+    )
+);
 
+$table->data[4][0] = html_print_label_input_block(
+    __('Description').$help_macros,
+    html_print_textarea(
+        'incident_content',
+        3,
+        20,
+        $input_value_content,
+        '',
+        true
+    )
+);
 
-$table->data[3][0] = '<div class="label_select"><p class="input_label">'.__('Resolution').': </p>';
+$table->data[5][0] = html_print_label_input_block(
+    __('File name'),
+    html_print_input_file('userfile', true)
+);
 
-$table->data[3][0] .= '<div class="label_select_parent">'.html_print_select(
-    $integria_resolution_values,
-    'resolution',
-    $input_value_resolution,
-    '',
-    '',
-    1,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 100%;'
-).'</div>';
-
-$table->data[4][0] = '<div class="label_select"><p class="input_label">'.__('Description').':&nbsp'.$help_macros.'</p>';
-$table->data[4][0] .= '<div class="label_select_parent">'.html_print_textarea(
-    'incident_content',
-    3,
-    20,
-    $input_value_content,
-    '',
-    true
-).'</div>';
-
-$table->data[5][0] = '<div class="label_select"><p class="input_label">'.__('File name').':</p>';
-$table->data[5][0] .= html_print_input_file('userfile', true);
-$table->data[6][0] = '<div class="label_select"><p class="input_label">'.__('Attachment description').':</p>';
-$table->data[6][0] .= html_print_textarea(
-    'file_description',
-    3,
-    20,
-    '',
-    '',
-    true
+$table->data[6][0] = html_print_label_input_block(
+    __('Attachment description'),
+    html_print_textarea(
+        'file_description',
+        3,
+        20,
+        '',
+        '',
+        true
+    )
 );
 
 // Print forms and stuff.
-echo '<form id="create_integria_incident_form" name="create_integria_incident_form" method="POST" enctype="multipart/form-data">';
+echo '<form class="max_floating_element_size" id="create_integria_incident_form" name="create_integria_incident_form" method="POST" enctype="multipart/form-data">';
 html_print_table($table);
-
+$buttons = '';
 if (!$update) {
-    html_print_input_hidden('create_incident', 1);
+    $buttons .= html_print_input_hidden('create_incident', 1, true);
+    $buttons .= html_print_submit_button(
+        __('Create'),
+        'accion',
+        false,
+        [ 'icon' => 'next' ],
+        true
+    );
 } else {
-    html_print_input_hidden('update_incident', 1);
+    $buttons .= html_print_input_hidden('update_incident', 1, true);
+    $buttons .= html_print_submit_button(
+        __('Update'),
+        'accion',
+        false,
+        [ 'icon' => 'upd' ],
+        true
+    );
 }
+
+html_print_action_buttons($buttons);
 
 echo '</form>';
-
-echo '<div class="w100p right">';
-if ($update) {
-    html_print_submit_button(__('Update'), 'accion', false, 'form="create_integria_incident_form" class="sub wand"');
-} else {
-    html_print_submit_button(__('Create'), 'accion', false, 'form="create_integria_incident_form" class="sub wand"');
-}
-
-echo '</div>';
 ?>
 
 <script type="text/javascript">

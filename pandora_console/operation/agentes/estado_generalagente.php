@@ -483,8 +483,7 @@ $data[1] = ui_progress(
             'refresh_contact' => 1,
         ],
 
-    ],
-    'line-height: 13px;'
+    ]
 );
 $table_contact->data[] = $data;
 

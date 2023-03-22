@@ -34,7 +34,7 @@ if (\is_metaconsole() === true) {
     \alerts_meta_print_header($tabs);
 } else {
     // Header.
-    \ui_print_standard_header(
+    ui_print_standard_header(
         __('Alerts'),
         'images/gm_alerts.png',
         false,
@@ -44,7 +44,11 @@ if (\is_metaconsole() === true) {
         [
             [
                 'link'  => '',
-                'label' => __('Calendars Edit'),
+                'label' => __('Alerts'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Special days'),
             ],
         ]
     );

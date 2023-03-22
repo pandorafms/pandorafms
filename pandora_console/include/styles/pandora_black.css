@@ -31,7 +31,7 @@ ul.subsubmenu li,
 input.search_input,
 .filters input,
 input#text-id_parent.ac_input,
-input,
+input:not(div.login_pass > input):not(div.login_nick > input),
 textarea,
 select,
 .edit_user_comments #textarea_comments,
@@ -464,12 +464,6 @@ ul.tree-group
   div.node-content
   img:not(.module-status):not(.agent-status):not(.agent-alerts-fired) {
   filter: invert(100%);
-}
-
-/* login.css */
-div.login_nick input,
-div.login_pass input {
-  background-color: #111 !important;
 }
 
 /* user edit */
@@ -1533,4 +1527,10 @@ span.select2 {
 pre code.hljs {
   background-color: #222222;
   color: #fff;
+}
+
+a.autorefresh_txt,
+#refrcounter {
+  color: #ffffff;
+  font-size: 8.5pt;
 }

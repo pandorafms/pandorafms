@@ -76,9 +76,9 @@ if ($fields === false) {
         $data[0] = '<b>'.$field['name'].'</b>';
 
         if ($field['display_on_front']) {
-            $data[1] = html_print_image('images/validate.svg', true, ['class' => 'invert_filter']);
+            $data[1] = html_print_image('images/validate.svg', true, ['class' => 'invert_filter main_menu_icon']);
         } else {
-            $data[1] = html_print_image('images/delete.svg', true, ['class' => 'invert_filter']);
+            $data[1] = html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']);
         }
 
         $custom_value = db_get_all_rows_sql(

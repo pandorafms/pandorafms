@@ -713,13 +713,14 @@ switch ($action) {
 
         $table_aux = new stdClass();
         $table_aux->width = '100%';
-        if (is_metaconsole()) {
-            $table_aux->class = 'databox filters';
+        $table_aux->class = 'filter-table-adv';
+        $table_aux->size[0] = '30%';
+        $table_aux->size[1] = '30%';
+        $table_aux->size[2] = '30%';
 
-            $table_aux->colspan[0][0] = 4;
-            $table_aux->data[0][0] = '<b>'.__('Group').'</b>';
-
-            $table_aux->data[0][1] = html_print_select_groups(
+        $table_aux->data[0][0] = html_print_label_input_block(
+            __('Group'),
+            html_print_select_groups(
                 false,
                 $access,
                 true,
@@ -737,116 +738,56 @@ switch ($action) {
                 false,
                 false,
                 'id_grupo'
-            ).'<br>';
+            )
+        );
 
-            $table_aux->data[0][2] = '<b>'.__('Free text for search: ');
-            $table_aux->data[0][2] .= ui_print_help_tip(
+        $table_aux->data[0][1] = html_print_label_input_block(
+            __('Free text for search: ').ui_print_help_tip(
                 __('Search by report name or description, list matches.'),
                 true
-            );
-            $table_aux->data[0][2] .= '</b>';
-            $table_aux->data[0][3] = html_print_input_text(
+            ),
+            html_print_input_text(
                 __('search'),
                 $search,
                 '',
                 30,
                 '',
                 true
-            );
-        } else {
-            $table_aux->class = 'filter-table-adv';
-            $table_aux->size[0] = '30%';
-            $table_aux->size[1] = '30%';
-            $table_aux->size[2] = '30%';
-
-            $table_aux->data[0][0] = html_print_label_input_block(
-                __('Group'),
-                html_print_select_groups(
-                    false,
-                    $access,
-                    true,
-                    'id_group',
-                    $id_group,
-                    '',
-                    '',
-                    '',
-                    true,
-                    false,
-                    true,
-                    '',
-                    false,
-                    '',
-                    false,
-                    false,
-                    'id_grupo'
-                )
-            );
-
-            $table_aux->data[0][1] = html_print_label_input_block(
-                __('Free text for search: ').ui_print_help_tip(
-                    __('Search by report name or description, list matches.'),
-                    true
-                ),
-                html_print_input_text(
-                    __('search'),
-                    $search,
-                    '',
-                    30,
-                    '',
-                    true
-                )
-            );
-        }
-
-        if (is_metaconsole()) {
-            $table_aux->data[0][6] = html_print_submit_button(
-                __('Search'),
-                'search_submit',
-                false,
-                'class="sub upd"',
-                true
-            );
-        }
+            )
+        );
 
         $url_rb = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
-        if (is_metaconsole()) {
-            $filter = '<form action="'.$url_rb.'&id_group='.$id_group.'&pure='.$pure.'" method="post">';
-            $filter .= html_print_table($table_aux, true);
-            $filter .= '</form>';
-            ui_toggle($filter, __('Show Option'));
-        } else {
-            $searchForm = '<form action="'.$url_rb.'&id_group='.$id_group.'&pure='.$pure.'" method="post">';
-            $searchForm .= html_print_table($table_aux, true);
-            $searchForm .= html_print_div(
-                [
-                    'class'   => 'action-buttons',
-                    'content' => html_print_submit_button(
-                        __('Filter'),
-                        'search_submit',
-                        false,
-                        [
-                            'mode' => 'mini',
-                            'icon' => 'search',
-                        ],
-                        true
-                    ),
-                ],
-                true
-            );
-            $searchForm .= '</form>';
+        $searchForm = '<form action="'.$url_rb.'&id_group='.$id_group.'&pure='.$pure.'" method="post">';
+        $searchForm .= html_print_table($table_aux, true);
+        $searchForm .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Filter'),
+                    'search_submit',
+                    false,
+                    [
+                        'mode' => 'mini',
+                        'icon' => 'search',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
+        $searchForm .= '</form>';
 
-            ui_toggle(
-                $searchForm,
-                '<span class="subsection_header_title">'.__('Filters').'</span>',
-                'filter_form',
-                '',
-                false,
-                false,
-                '',
-                'white-box-content',
-                'box-flat white_table_graph fixed_filter_bar'
-            );
-        }
+        ui_toggle(
+            $searchForm,
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
+            'filter_form',
+            '',
+            false,
+            false,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
+        );
 
         ui_require_jquery_file('pandora.controls');
         ui_require_jquery_file('ajaxqueue');

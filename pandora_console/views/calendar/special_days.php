@@ -45,6 +45,10 @@ if (\is_metaconsole() === true) {
         [
             [
                 'link'  => '',
+                'label' => __('Alerts'),
+            ],
+            [
+                'link'  => '',
                 'label' => __('Special days'),
             ],
         ]

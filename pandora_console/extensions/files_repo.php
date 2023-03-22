@@ -240,7 +240,28 @@ function pandora_files_repo_operation()
     }
 
     // Header.
-    ui_print_page_header(__('Files repository'), 'images/extensions.png', false, '', false, $onheader);
+    ui_print_standard_header(
+        __('Files repository'),
+        'images/extensions.png',
+        false,
+        '',
+        false,
+        $onheader,
+        [
+            [
+                'link'  => '',
+                'label' => __('Admin tools'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Extension manager'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Files repository'),
+            ],
+        ]
+    );
 
     $full_extensions_dir = $config['homedir'].'/'.EXTENSIONS_DIR.'/';
     include_once $full_extensions_dir.'files_repo/functions_files_repo.php';

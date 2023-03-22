@@ -69,7 +69,6 @@ if ($is_management_allowed === true) {
     $table->head[4] = '';
 }
 
-$table->align[1] = 'center';
 if ($is_management_allowed === true) {
     $table->align[4] = 'center';
 }
@@ -100,7 +99,7 @@ $table->data = [];
 foreach ($osList as $os) {
     $data = [];
     $data[] = $os['id_os'];
-    $data[] = html_print_div(['class' => 'invert_filter main_menu_icon', 'content' => ui_print_os_icon($os['id_os'], false, true)], true);
+    $data[] = ui_print_os_icon($os['id_os'], false, true);
     if ($is_management_allowed === true) {
         if (is_metaconsole() === true) {
             $osNameUrl = 'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=edit&tab2=builder&id_os='.$os['id_os'];

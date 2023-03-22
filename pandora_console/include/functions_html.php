@@ -3630,10 +3630,9 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $classes .= ' buttonButton';
     }
 
-    if ($disabled === true) {
-        $classes .= ' disabled_action_button';
-    }
-
+    // if ($disabled === true) {
+    // $classes .= ' disabled_action_button';
+    // }
     if (empty($buttonAttributes) === true) {
         $parameters = [];
         $parameters[] = 'class="'.$classes.'"';
@@ -6199,7 +6198,8 @@ function html_print_tabs(array $tabs)
         $result .= "<li><a href='".$value['href']."' id='".$value['id']."'>";
         $result .= html_print_image(
             'images/'.$value['img'],
-            true
+            true,
+            ['class' => 'main_menu_icon invert_filter']
         );
         $result .= '<span>'.$value['name'].'</span>';
         $result .= '</a></li>';

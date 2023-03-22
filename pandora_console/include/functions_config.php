@@ -2627,7 +2627,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_splash_login'])) {
-        config_update_value('custom_splash_login', 'default');
+        config_update_value('custom_splash_login', 'none.png');
     }
 
     if (!isset($config['custom_docs_logo'])) {
@@ -2663,11 +2663,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_title1_login'])) {
-        config_update_value('custom_title1_login', __('PANDORA FMS'));
+        config_update_value('custom_title1_login', __('ONE TOOL TO MONITOR THEM ALL'));
     }
 
     if (!isset($config['custom_title2_login'])) {
-        config_update_value('custom_title2_login', __('ONE TOOL TO MONITOR THEM ALL'));
+        config_update_value('custom_title2_login', '');
     }
 
     if (!isset($config['custom_docs_url'])) {
@@ -2715,11 +2715,11 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_title1_login'])) {
-        config_update_value('meta_custom_title1_login', __('PANDORA FMS NEXT GENERATION'));
+        config_update_value('meta_custom_title1_login', __('ONE TOOL TO MONITOR THEM ALL'));
     }
 
     if (!isset($config['meta_custom_title2_login'])) {
-        config_update_value('meta_custom_title2_login', __('METACONSOLE'));
+        config_update_value('meta_custom_title2_login', __('COMMAND CENTER'));
     }
 
     if (!isset($config['vc_favourite_view'])) {
@@ -3612,7 +3612,7 @@ function config_process_config()
     }
 
     if (!isset($config['random_background'])) {
-        config_update_value('random_background', '');
+        config_update_value('random_background', 1);
     }
 
     if (!isset($config['meta_random_background'])) {

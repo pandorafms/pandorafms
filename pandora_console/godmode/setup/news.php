@@ -25,8 +25,25 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     exit;
 }
 
-// Header
-ui_print_page_header(__('Site news management'), '', false, '', true);
+// Header.
+ui_print_standard_header(
+    __('Site news management'),
+    'images/custom_field.png',
+    false,
+    '',
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Admin tools'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Site news'),
+        ],
+    ]
+);
 
 
 

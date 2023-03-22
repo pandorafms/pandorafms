@@ -143,7 +143,9 @@ html_print_action_buttons(
         var buttonback = $('#button-submit').parent().html();
         $('#button-submit').hide();
         var buttonback = buttonback.replace('button-submit','button-submit_copy');
-        $('.action_buttons_right_content').parent().html(buttonnext+buttonback);
+        var buttonalert = $('#button-add').parent().html();
+        var buttonalert = buttonalert.replace('button-add','button-add_copy');
+        $('.action_buttons_right_content').parent().html(buttonnext+buttonback+buttonalert);
         var style = $('#principal_action_buttons').attr('style');
         $('#principal_action_buttons').attr('style',style+' justify-content: unset;');
 

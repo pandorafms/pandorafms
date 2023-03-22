@@ -187,7 +187,7 @@ $table->data[2][0] = html_print_label_input_block(
 );
 
 if (isset($step) === false) {
-    echo '<form class="add_alert_form max_floating_element_size" method="post">';
+    echo '<form id="form_alerts" class="add_alert_form max_floating_element_size" method="post">';
     html_print_table($table);
 }
 
@@ -215,6 +215,26 @@ if (isset($step) === false) {
         [ 'icon' => 'wand' ],
         true
     );
+
+    if ($_GET['sec2'] === 'operation/cluster/cluster') {
+        html_print_div(
+            [
+                'content' => html_print_submit_button(
+                    __('Add alert'),
+                    'add',
+                    false,
+                    [
+                        'icon' => 'wand',
+                        'form' => 'form_alerts',
+                        'mode' => 'secondary',
+                    ],
+                    true
+                ),
+                'style'   => 'display:none',
+                'id'      => 'add_alert_div',
+            ]
+        );
+    }
 
     html_print_action_buttons($actionButtons, ['right_content' => $pagination]);
 

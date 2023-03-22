@@ -31,13 +31,24 @@ $buttons['gis_maps_list'] = [
     ).'</a>',
 ];
 
-ui_print_page_header(
-    __('GIS Maps'),
+// Header.
+ui_print_standard_header(
+    __('List of GIS maps'),
     'images/op_gis.png',
     false,
     '',
     false,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('GIS Maps'),
+        ],
+    ]
 );
 
 $own_info = get_user_info($config['id_user']);
@@ -187,7 +198,7 @@ if ($maps !== false) {
             }
 
             $table->cellclass[]['op'] = 'table_action_buttons';
-            $data['op'] = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">'.html_print_image('images/edit.svg', true, ['title' => __('Edit')]).'</a>'.'<a href="index.php?sec=godgismaps&amp;sec2=operation/gis_maps/gis_map&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">'.html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+            $data['op'] = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">'.html_print_image('images/edit.svg', true, ['title' => __('Edit')]).'</a>'.'<a href="index.php?sec=godgismaps&amp;sec2=operation/gis_maps/gis_map&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">'.html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
         }
 
         array_push($table->data, $data);

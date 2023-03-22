@@ -220,7 +220,7 @@ $alertstab = [
         true,
         [
             'title' => __('Alerts operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_alerts',
@@ -232,7 +232,7 @@ $userstab = [
         true,
         [
             'title' => __('Users operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_users',
@@ -244,7 +244,7 @@ $agentstab = [
         true,
         [
             'title' => __('Agents operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_agents',
@@ -256,7 +256,7 @@ $modulestab = [
         true,
         [
             'title' => __('Modules operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_modules',
@@ -268,7 +268,7 @@ $pluginstab = [
         true,
         [
             'title' => __('Plugins operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_plugins',
@@ -308,34 +308,58 @@ $onheader['services'] = $servicestab;
 
 
 // Header.
-ui_print_standard_header(
-    __('Bulk operations').' - '.$options[$option],
-    'images/gm_massive_operations.png',
-    false,
-    $help_header,
-    false,
-    [
-        $agentstab,
-        $modulestab,
-        $pluginstab,
-        $userstab,
-        $alertstab,
-        $policiestab,
-        $snmptab,
-        $satellitetab,
-        $servicestab,
-    ],
-    [
+if (is_metaconsole() === false) {
+    ui_print_standard_header(
+        __('Bulk operations').' - '.$options[$option],
+        'images/gm_massive_operations.png',
+        false,
+        $help_header,
+        false,
         [
-            'link'  => '',
-            'label' => __('Configuration'),
+            $agentstab,
+            $modulestab,
+            $pluginstab,
+            $userstab,
+            $alertstab,
+            $policiestab,
+            $snmptab,
+            $satellitetab,
+            $servicestab,
         ],
         [
-            'link'  => '',
-            'label' => __('Bulk operations'),
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Bulk operations'),
+            ],
+        ]
+    );
+} else {
+    ui_print_standard_header(
+        __('Bulk operations').' - '.$options[$option],
+        'images/gm_massive_operations.png',
+        false,
+        $help_header,
+        false,
+        [
+            $userstab,
+            $agentstab,
         ],
-    ]
-);
+        [
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Bulk operations'),
+            ],
+        ]
+    );
+}
 
 
 // Checks if the PHP configuration is correctly.

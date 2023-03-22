@@ -558,6 +558,16 @@ table.filter-table-adv td > div label {
   margin-bottom: 10px;
 }
 
+div.filter-table-adv-manual > div.inline,
+table.filter-table-adv td > div.inline {
+  display: block;
+}
+
+div.filter-table-adv-manual > div.inline input,
+table.filter-table-adv td > div.inline input {
+  margin-top: 10px;
+}
+
 table.filter-table-adv td > div.add-input-reverse {
   flex-direction: row-reverse;
   justify-content: flex-end;

@@ -109,6 +109,7 @@ if ($id) {
     $traffic_max = $filter['traffic_max'];
     $traffic_critical = $filter['traffic_critical'];
     $traffic_warning = $filter['traffic_warning'];
+    $netflow_monitoring_interval = $filter['netflow_monitoring_interval'];
 } else {
     $name = '';
     $assign_group = '';
@@ -118,10 +119,11 @@ if ($id) {
     $src_port = '';
     $aggregate = 'dstip';
     $advanced_filter = '';
-    $netflow_monitoring = 0;
+    $netflow_monitoring = false;
     $traffic_max = 0;
     $traffic_critical = 0;
     $traffic_warning = 0;
+    $netflow_monitoring_interval = 300;
 }
 
 if ($update) {
@@ -137,24 +139,27 @@ if ($update) {
     $traffic_max = get_parameter('traffic_max', 0);
     $traffic_critical = get_parameter('traffic_critical', 0);
     $traffic_warning = get_parameter('traffic_warning', 0);
+    $netflow_monitoring_interval = get_parameter('netflow_monitoring_interval', 300);
+
 
     if ($name == '') {
         ui_print_error_message(__('Not updated. Blank name'));
     } else {
         $values = [
-            'id_sg'              => $id,
-            'id_name'            => $name,
-            'id_group'           => $assign_group,
-            'aggregate'          => $aggregate,
-            'ip_dst'             => $ip_dst,
-            'ip_src'             => $ip_src,
-            'dst_port'           => $dst_port,
-            'src_port'           => $src_port,
-            'advanced_filter'    => $advanced_filter,
-            'netflow_monitoring' => $netflow_monitoring,
-            'traffic_max'        => $traffic_max,
-            'traffic_critical'   => $traffic_critical,
-            'traffic_warning'    => $traffic_warning,
+            'id_sg'                       => $id,
+            'id_name'                     => $name,
+            'id_group'                    => $assign_group,
+            'aggregate'                   => $aggregate,
+            'ip_dst'                      => $ip_dst,
+            'ip_src'                      => $ip_src,
+            'dst_port'                    => $dst_port,
+            'src_port'                    => $src_port,
+            'advanced_filter'             => $advanced_filter,
+            'netflow_monitoring'          => $netflow_monitoring,
+            'traffic_max'                 => $traffic_max,
+            'traffic_critical'            => $traffic_critical,
+            'traffic_warning'             => $traffic_warning,
+            'netflow_monitoring_interval' => $netflow_monitoring_interval,
         ];
 
         // Save filter args.
@@ -183,16 +188,23 @@ if ($create) {
     $traffic_max = get_parameter('traffic_max', 0);
     $traffic_critical = get_parameter('traffic_critical', 0);
     $traffic_warning = get_parameter('traffic_warning', 0);
+    $netflow_monitoring_interval = get_parameter('netflow_monitoring_interval', 300);
 
     $values = [
-        'id_name'         => $name,
-        'id_group'        => $assign_group,
-        'ip_dst'          => $ip_dst,
-        'ip_src'          => $ip_src,
-        'dst_port'        => $dst_port,
-        'src_port'        => $src_port,
-        'aggregate'       => $aggregate,
-        'advanced_filter' => $advanced_filter,
+        'id_name'                     => $name,
+        'id_group'                    => $assign_group,
+        'ip_dst'                      => $ip_dst,
+        'ip_src'                      => $ip_src,
+        'dst_port'                    => $dst_port,
+        'src_port'                    => $src_port,
+        'aggregate'                   => $aggregate,
+        'advanced_filter'             => $advanced_filter,
+        'netflow_monitoring'          => $netflow_monitoring,
+        'traffic_max'                 => $traffic_max,
+        'traffic_critical'            => $traffic_critical,
+        'traffic_warning'             => $traffic_warning,
+        'netflow_monitoring_interval' => $netflow_monitoring_interval,
+
     ];
 
     // Save filter args
@@ -234,6 +246,8 @@ $table->data['first_line'][] = html_print_label_input_block(
         false,
         20,
         80,
+        true,
+        false,
         true
     )
 );
@@ -361,8 +375,8 @@ $table->data['advanced_filters'][] = html_print_label_input_block(
 
 
 // Netflow server options.
-$table->colspan['netflow_monitoring'][] = 1;
-$table->data['netflow_server_filters'][] = html_print_label_input_block(
+$table->colspan['netflow_monitoring'][] = 2;
+$table->data['netflow_monitoring'][] = html_print_label_input_block(
     __('Enable Netflow monitoring'),
     html_print_checkbox_switch(
         'netflow_monitoring',
@@ -370,10 +384,23 @@ $table->data['netflow_server_filters'][] = html_print_label_input_block(
         (bool) $netflow_monitoring,
         true,
         false,
+        'displayMonitoringFilter()'
     ).ui_print_input_placeholder(
         __('Allows you to create an agent that monitors the traffic volume of this filter. It also creates a module that measures if the traffic of any IP of this filter exceeds a certain threshold. A text type module will be created with the traffic rate for each IP within this filter every five minutes (the 10 IP\'s with the most traffic). Only available for Enterprise version.'),
         true
     )
+);
+
+$table->data['netflow_server_filters'][] = html_print_label_input_block(
+    __('Netflow monitoring interval'),
+    html_print_input_number(
+        [
+            'step'  => 1,
+            'name'  => 'netflow_monitoring_interval',
+            'id'    => 'netflow_monitoring_interval',
+            'value' => $netflow_monitoring_interval,
+        ]
+    ).ui_print_input_placeholder(__('Netflow monitoring interval in secs.'), true)
 );
 
 $table->data['netflow_server_filters'][] = html_print_label_input_block(
@@ -389,11 +416,12 @@ $table->data['netflow_server_filters'][] = html_print_label_input_block(
 );
 
 $table->colspan['netflow_thresholds'][] = 1;
+
 $table->data['netflow_thresholds'][] = html_print_label_input_block(
     __('CRITICAL threshold for the maximum % of traffic for an IP.'),
     html_print_input_number(
         [
-            'step'      => 0.1,
+            'step'      => 0.01,
             'name'      => 'traffic_critical',
             'id'        => 'traffic_critical',
             'value'     => $traffic_critical,
@@ -407,7 +435,7 @@ $table->data['netflow_thresholds'][] = html_print_label_input_block(
     __('WARNING threshold for the maximum % of traffic for an IP.'),
     html_print_input_number(
         [
-            'step'      => 0.1,
+            'step'      => 0.01,
             'name'      => 'traffic_warning',
             'id'        => 'traffic_warning',
             'value'     => $traffic_warning,
@@ -456,6 +484,7 @@ html_print_action_buttons(
         else {
             displayAdvancedFilter ();
         }
+        displayMonitoringFilter();
     });
 
     function displayAdvancedFilter () {
@@ -493,5 +522,25 @@ html_print_action_buttons(
         document.getElementById("table1-5").style.display = '';
         document.getElementById("table1-6").style.display = '';
         */
+    };
+
+    function displayMonitoringFilter () {
+        var checked = $('#checkbox-netflow_monitoring').prop('checked');
+
+        if(checked == false) {
+            // Reset values.
+            $("#netflow_monitoring_interval").val(300);
+            $("#traffic_max").val(0);
+            $("#traffic_critical").val(0);
+            $("#traffic_warning").val(0);
+
+            // Hide filters.
+            $("#table1-netflow_server_filters").hide();        
+            $("#table1-netflow_thresholds").hide(); 
+        } else {
+            // Show filters.
+            $("#table1-netflow_server_filters").show();        
+            $("#table1-netflow_thresholds").show();
+        }
     };
 </script>

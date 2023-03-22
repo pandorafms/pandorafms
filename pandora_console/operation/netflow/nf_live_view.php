@@ -94,6 +94,7 @@ $filter['dst_port'] = get_parameter('dst_port', '');
 $filter['src_port'] = get_parameter('src_port', '');
 $filter['advanced_filter'] = get_parameter('advanced_filter', '');
 $filter['netflow_monitoring'] = (bool) get_parameter('netflow_monitoring');
+$filter['netflow_monitoring_interval'] = (int) get_parameter('netflow_monitoring_interval', 300);
 $filter['traffic_max'] = get_parameter('traffic_max', 0);
 $filter['traffic_critical'] = get_parameter('traffic_critical', 0);
 $filter['traffic_warning'] = get_parameter('traffic_warning', 0);
@@ -373,9 +374,21 @@ $advanced_toggle .= "<td style='font-weight:bold;'>".__('Enable Netflow monitori
 $advanced_toggle .= '<td colspan="2">'.html_print_checkbox_switch(
     'netflow_monitoring',
     1,
-    (bool) $netflow_monitoring,
+    (bool) $filter['netflow_monitoring'],
     true,
     false,
+    'displayMonitoringFilter()',
+).'</td>';
+
+$advanced_toggle .= '<tr id="netlofw_monitoring_filters">';
+$advanced_toggle .= "<td style='font-weight:bold;'>".__('Netflow monitoring interval').ui_print_help_tip(__('Netflow monitoring interval in secs.'), true).'</td>';
+$advanced_toggle .= '<td colspan="2">'.html_print_input_number(
+    [
+        'step'  => 1,
+        'name'  => 'netflow_monitoring_interval',
+        'id'    => 'netflow_monitoring_interval',
+        'value' => $filter['netflow_monitoring_interval'],
+    ]
 ).'</td>';
 
 $advanced_toggle .= "<td style='font-weight:bold;'>".__('Maximum traffic value of the filter').ui_print_help_tip(__('Specifies the maximum rate (in bytes/sec) of traffic in the filter. It is then used to calculate the % of maximum traffic per IP.'), true).'</td>';
@@ -390,12 +403,12 @@ $advanced_toggle .= '<td colspan="2">'.html_print_input_number(
 
 
 $advanced_toggle .= '</tr>';
-$advanced_toggle .= '<tr>';
+$advanced_toggle .= '<tr id="netlofw_monitoring_thresholds">';
 
 $advanced_toggle .= "<td style='font-weight:bold;'>".__('CRITICAL threshold for the maximum % of traffic for an IP.').ui_print_help_tip(__('If this % is exceeded by any IP within the filter, a CRITICAL status will be generated.'), true).'</td>';
 $advanced_toggle .= '<td colspan="2">'.html_print_input_number(
     [
-        'step'  => 1,
+        'step'  => 0.01,
         'name'  => 'traffic_critical',
         'id'    => 'traffic_critical',
         'value' => $filter['traffic_critical'],
@@ -405,7 +418,7 @@ $advanced_toggle .= '<td colspan="2">'.html_print_input_number(
 $advanced_toggle .= "<td style='font-weight:bold;'>".__('WARNING threshold for the maximum % of traffic of an IP.').ui_print_help_tip(__('If this % is exceeded by any IP within the filter, a WARNING status will be generated.'), true).'</td>';
 $advanced_toggle .= '<td colspan="2">'.html_print_input_number(
     [
-        'step'  => 1,
+        'step'  => 0.01,
         'name'  => 'traffic_warning',
         'id'    => 'traffic_warning',
         'value' => $filter['traffic_warning'],
@@ -766,6 +779,26 @@ ui_include_time_picker();
         // Show the normal filter
         $(".filter_normal").show();
     };
+
+    function displayMonitoringFilter () {
+        var checked = $('#checkbox-netflow_monitoring').prop('checked');
+
+        if(checked == false) {
+            // Reset values.
+            $("#netflow_monitoring_interval").val(300);
+            $("#traffic_max").val(0);
+            $("#traffic_critical").val(0);
+            $("#traffic_warning").val(0);
+
+            // Hide filters.
+            $("#netlofw_monitoring_filters").hide();
+            $("#netlofw_monitoring_thresholds").hide();        
+        } else {
+            // Show filters.
+            $("#netlofw_monitoring_filters").show();
+            $("#netlofw_monitoring_thresholds").show();
+        }
+    }
     
     // Ask the user to define a name for the filter in order to save it
     function defineFilterName () {
@@ -789,7 +822,6 @@ ui_include_time_picker();
     
     $("#filter_id").change(function () {
         var filter_type;
-        
         // Hide information and name/group row
         $(".filter_save").hide();
         
@@ -811,6 +843,7 @@ ui_include_time_picker();
             $("#traffic_max").val('');
             $("#traffic_critical").val('');
             $("#traffic_warning").val('');
+            $("#netflow_monitoring_interval").val(300);
             $('#checkbox-netflow_monitoring').prop('checked', false);
             
             
@@ -884,25 +917,29 @@ ui_include_time_picker();
                             $("#aggregate").val(val);
                         if (i == 'netflow_monitoring')
                             $("#checkbox-netflow_monitoring").prop('checked', val == "0" ? false : true);
+                            // Hide or show monitoring filters.
+                             displayMonitoringFilter();
+                        if (i == 'netflow_monitoring_interval')
+                            $("#netflow_monitoring_interval").val(val);
                         if (i == 'traffic_max')
                             $("#traffic_max").val(val);
                         if (i == 'traffic_critical')
                             $("#traffic_critical").val(val);
                         if (i == 'traffic_warning')
                             $("#traffic_warning").val(val);
-                            
                     });
                 }
 <?php echo ', "json");'; ?>
 
             // Shows update filter button
             $("#submit-update_button").show();
-            
+        
         }
         
     });
     
     $(document).ready( function() {
+        displayMonitoringFilter();
         // Update visibility of controls.
         nf_view_click_period();
         // Hide update filter button

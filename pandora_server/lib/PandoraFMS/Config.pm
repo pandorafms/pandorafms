@@ -553,6 +553,9 @@ sub pandora_load_config {
 
 	$pa_config->{"unknown_block_size"} = 1000; # 7.0.769
 
+	$pa_config->{"netflowserver"} = 0; # 7.0.770
+	$pa_config->{"netflowserver_threads"} = 1; # 7.0.770
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1312,6 +1315,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^dataserver_smart_queue\s([0-1])/i) {
 			$pa_config->{'dataserver_smart_queue'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^netflowserver\s([0-1])/i) {
+			$pa_config->{'netflowserver'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^netflowserver_threads\s+([0-9]*)/i) {
+			$pa_config->{'netflowserver_threads'}= clean_blank($1); 
 		}
 		
 	} # end of loop for parameter #

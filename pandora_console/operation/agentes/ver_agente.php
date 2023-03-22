@@ -30,7 +30,7 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 
 global $config;
 
-require_once 'include/functions_gis.php';
+require_once $config['homedir'].'/include/functions_gis.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';

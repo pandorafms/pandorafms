@@ -455,7 +455,7 @@ div.form_message_alert {
   width: 90%;
   clear: both;
   padding-top: 20px;
-  padding-left: 40px;
+  padding-left: 20px;
 }
 
 div.form_message_alert ul li {
@@ -765,7 +765,7 @@ button.submitButton:hover {
   background-position: 0 !important;
 }
 
-button.submitButton > span {
+button.submitButton:not(.mini) > span {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 15pt;
 }

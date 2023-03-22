@@ -6097,6 +6097,8 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
+    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
+
     html_print_input_text_extended(
         $name,
         $default,
@@ -6109,8 +6111,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
-
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>

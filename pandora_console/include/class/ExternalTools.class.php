@@ -234,7 +234,7 @@ class ExternalTools extends HTML
                                 'images/change-active.svg',
                                 true,
                                 [
-                                    'id'    => 'button_sound_warning',
+                                    'id'    => 'button_sound_alert',
                                     'style' => 'vertical-align: middle; margin-left: 10px',
                                     'width' => '16',
                                     'title' => __('Play sound'),
@@ -269,7 +269,7 @@ class ExternalTools extends HTML
                                 'images/change-active.svg',
                                 true,
                                 [
-                                    'id'    => 'button_sound_warning',
+                                    'id'    => 'button_sound_critical',
                                     'style' => 'vertical-align: middle; margin-left: 10px',
                                     'width' => '16',
                                     'title' => __('Play sound'),

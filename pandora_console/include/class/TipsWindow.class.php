@@ -302,17 +302,6 @@ class TipsWindow
 
 
     /**
-     * Get number of tips in database
-     *
-     * @return integer
-     */
-    public function getTotalTips()
-    {
-        return db_get_sql('SELECT count(*) FROM twelcome_tip');
-    }
-
-
-    /**
      * Get totals tips that user can show
      *
      * @return array
@@ -590,6 +579,16 @@ class TipsWindow
 
             $data = db_get_all_rows_sql($sql);
 
+            $sqlCount = sprintf(
+                'SELECT count(*)
+                FROM twelcome_tip t
+                LEFT JOIN tlanguage l ON t.id_lang = l.id_language COLLATE utf8mb4_0900_ai_ci
+                %s',
+                $filter
+            );
+
+            $total = db_get_sql($sqlCount);
+
             foreach ($data as $key => $row) {
                 if ($row['enable'] === '1') {
                     $data[$key]['enable'] = '<span class="enable"></span>';
@@ -626,8 +625,6 @@ class TipsWindow
             if (empty($data) === true) {
                 $total = 0;
                 $data = [];
-            } else {
-                $total = $this->getTotalTips();
             }
 
             echo json_encode(

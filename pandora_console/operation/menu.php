@@ -411,7 +411,7 @@ if ($access_console_node === true) {
         // INI GIS Maps.
         if ($config['activate_gis']) {
             $sub['gismaps']['text'] = __('GIS Maps');
-            $sub['gismaps']['id'] = 'GIS Maps';
+            $sub['gismaps']['id'] = 'GIS_Maps';
             $sub['gismaps']['type'] = 'direct';
             $sub['gismaps']['subtype'] = 'nolink';
             $sub2 = [];

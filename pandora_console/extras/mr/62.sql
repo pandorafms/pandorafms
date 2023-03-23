@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `twelcome_tip` (
   `url` VARCHAR(255) NULL,
   `enable` TINYINT NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
     FOREIGN KEY (`twelcome_tip_file`)
     REFERENCES `twelcome_tip` (`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 INSERT INTO `twelcome_tip` VALUES
 (1,'es',0,'¿Sab&iacute;as&#x20;que&#x20;puedes&#x20;monitorizar&#x20;webs?','De&#x20;manera&#x20;sencilla&#x20;a&#x20;trav&eacute;s&#x20;de&#x20;chequeos&#x20;HTTP&#x20;est&aacute;ndar&#x20;o&#x20;transaccional&#x20;mediante&#x20;transacciones&#x20;centralizadas&#x20;WUX,&#x20;o&#x20;descentralizadas&#x20;con&#x20;el&#x20;plugin&#x20;UX&#x20;de&#x20;agente.','https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring','1'),

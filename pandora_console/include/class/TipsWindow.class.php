@@ -581,7 +581,7 @@ class TipsWindow
             $sql = sprintf(
                 'SELECT id, name AS language, title, text, url, enable
                 FROM twelcome_tip t
-                LEFT JOIN tlanguage l ON t.id_lang = l.id_language
+                LEFT JOIN tlanguage l ON t.id_lang = l.id_language COLLATE utf8mb4_0900_ai_ci
                 %s %s %s',
                 $filter,
                 $order,

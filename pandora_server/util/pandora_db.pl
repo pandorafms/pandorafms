@@ -629,6 +629,21 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'errorlogfile'} = $conf->{'errorlog_file'};
 	$conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
 
+	# The DB host was overridden by pandora_ha.
+	$conf->{'ha_hosts_file'} = '/var/spool/pandora/data_in/conf/pandora_ha_hosts.conf' unless defined($conf->{'ha_hosts_file'});
+	if (-f $conf->{'ha_hosts_file'}) {
+		eval {
+			open(my $fh, '<', $conf->{'ha_hosts_file'}) or return;
+			my $dbhost = <$fh>;
+			chomp($dbhost);
+			if (defined($dbhost) && $dbhost ne '') {
+				$conf->{'dbhost'} = $dbhost;
+			}
+			close($fh);
+		};
+	}
+	print " [*] DB Host is " . $conf->{'dbhost'} . "\n";
+
 	# Read additional tokens from the DB
 	my $dbh = db_connect ($conf->{'dbengine'}, $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});
 

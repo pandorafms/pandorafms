@@ -702,8 +702,35 @@ ncm_ssh_utility /usr/share/pandora_server/util/ncm_ssh_extension
 # Pandora FMS Daemon Watchdog execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
 ha_interval 30
 
-# Pandora FMS Daemon Watchdog monitoring interval in seconds. Must be a multiple of ha_interval (PANDORA FMS ENTERPRISE ONLY).
-ha_monitoring_interval 60
+# HA operation mode. For backward compatibility with pacemaker. Do not change this value (PANDORA FMS ENTERPRISE ONLY).
+ha_mode pandora
+
+# Comma separated list of HA host IPs or FQDNs (PANDORA FMS ENTERPRISE ONLY).
+#ha_hosts 172.16.0.8,172.168.0.16
+
+# Database username for pandora_ha (PANDORA FMS ENTERPRISE ONLY).
+#ha_dbuser pandora
+
+# Database password for pandora_ha (PANDORA FMS ENTERPRISE ONLY).
+#ha_dbpass pandora
+
+# SSH username for pandora_ha (PANDORA FMS ENTERPRISE ONLY).
+#ha_sshuser pandora
+
+# SSH port for pandora_ha (PANDORA FMS ENTERPRISE ONLY).
+#ha_sshport 22
+
+# Absolute path to the HA slave resync script (PANDORA FMS ENTERPRISE ONLY).
+#ha_resync /usr/share/pandora_server/util/pandora_ha_resync_slave.sh
+
+# Database username for HA replication (PANDORA FMS ENTERPRISE ONLY).
+#repl_dbuser pandora
+
+# Database password for HA replication (PANDORA FMS ENTERPRISE ONLY).
+#repl_dbpass pandora
+
+# Number of retries for connection attempts to HA databases.
+#ha_connect_retries 2
 
 # Enable (1) or disable (0) Pandora FMS Alert Server.
 alertserver 0

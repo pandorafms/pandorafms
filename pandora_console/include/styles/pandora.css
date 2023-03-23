@@ -11582,6 +11582,12 @@ div[role="dialog"] {
   margin: 0 auto;
 }
 
+.database_background_state {
+  mask: url(../../images/database@groups.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/database@groups.svg) no-repeat center / contain;
+  margin: 0 auto;
+}
+
 .filter-list-adv .wizard li {
   display: grid;
 }

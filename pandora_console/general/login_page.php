@@ -30,7 +30,7 @@ require_once __DIR__.'/../include/functions_html.php';
 echo '<style>
         :root {';
 if ($config['style'] === 'pandora') {
-    echo '--login-background-color: rgba(255, 255, 255, 0.2);';
+    echo '--login-background-color: rgba(255, 255, 255, 0.4);';
     echo '--login-label-color: #545454;';
     echo '--login-text-color: #000;';
     $style_theme = 'white-theme';
@@ -213,7 +213,7 @@ echo '<div class="login_page">';
 if (is_metaconsole() === true) {
     if (!isset($config['custom_logo_login'])) {
         html_print_image(
-            'enterprise/images/custom_logo_login/login_logo.png',
+            'enterprise/images/custom_logo_login/Pandora-FMS-1.png',
             false,
             [
                 'class'  => 'login_logo',
@@ -238,13 +238,13 @@ if (is_metaconsole() === true) {
     }
 } else if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (!isset($config['custom_logo_login'])) {
-        html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/login_logo_v7.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/Pandora-FMS-1.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
         html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/'.$config['custom_logo_login']), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 } else {
     if (empty($config['custom_logo_login']) === true) {
-        html_print_image(ui_get_full_url('images/custom_logo_login/pandora_logo.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('images/custom_logo_login/Pandora-FMS-1.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
         html_print_image(ui_get_full_url('images/custom_logo_login/').$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
@@ -472,17 +472,19 @@ html_print_csrf_hidden();
     echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (empty($config['custom_splash_login']) === false && $config['custom_splash_login'] !== 'default') {
-        html_print_image(
-            'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
-            false,
-            [
-                'class'  => 'splash-logo',
-                'alt'    => 'splash',
-                'border' => 0,
-            ],
-            false,
-            false
-        );
+        if ($config['custom_splash_login'] !== 'none.png') {
+            html_print_image(
+                'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
+                false,
+                [
+                    'class'  => 'splash-logo',
+                    'alt'    => 'splash',
+                    'border' => 0,
+                ],
+                false,
+                false
+            );
+        }
     } else {
         echo '
                 <div class="loginimg-container">

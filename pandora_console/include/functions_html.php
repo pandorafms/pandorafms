@@ -4787,13 +4787,16 @@ function html_print_input_file($name, $return=false, $options=false)
         if (isset($options['accept']) === true) {
             $output .= ' accept="'.$options['accept'].'"';
         }
+
+        $label = '';
+        if (isset($options['label']) === true) {
+            $label = $options['label'];
+        }
     }
 
     // Close input.
     $output .= '/>';
-    if (is_metaconsole() === false) {
-        $output .= ($options['caption'] ?? __('Select a file'));
-    }
+    $output .= ($options['caption'] ?? __('Select a file'));
 
     $output .= '</label>';
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';

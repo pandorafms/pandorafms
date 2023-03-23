@@ -63,7 +63,7 @@ if (empty($idVisualConsole) === true) {
     $idVisualConsole = get_parameter('id', 0);
 }
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $action_name_parameter = 'action';
 } else {
     $action_name_parameter = 'action2';
@@ -92,7 +92,6 @@ $activeTab = get_parameterBetweenListValues(
     ],
     'data'
 );
-
 
 // Visual console creation tab and actions.
 if (empty($idVisualConsole)) {
@@ -136,7 +135,6 @@ $pure = (int) get_parameter('pure', 0);
 $refr = (int) get_parameter('refr', $config['vc_refr']);
 
 $id_layout = 0;
-
 
 // Save/Update data in DB
 global $statusProcessInDB;
@@ -798,14 +796,18 @@ if (!defined('METACONSOLE')) {
 $hash = User::generatePublicHash();
 
 $buttons = [];
-
 $buttons['consoles_list'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Visual consoles list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['public_link'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public Visual Console'), 'class' => 'main_menu_icon invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url(
+        'operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user'],
+        false,
+        false,
+        false
+    ).'">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public Visual Console'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['data'] = [
     'active' => false,

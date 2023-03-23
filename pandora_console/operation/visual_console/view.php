@@ -141,12 +141,15 @@ if ($aclWrite === true || $aclManage === true) {
         'edit'
     );
 
-    $baseUrl = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action='.$action;
+    $baseUrl = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&'.((is_metaconsole() === true) ? 'action2' : 'action').'='.$action;
 
     $hash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
 
     $options['public_link']['text'] = '<a href="'.ui_get_full_url(
-        'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user']
+        'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user'],
+        false,
+        false,
+        false
     ).'" target="_blank">'.html_print_image(
         'images/item-icon.svg',
         true,

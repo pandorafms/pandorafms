@@ -2565,7 +2565,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_logo_login'])) {
-        config_update_value('custom_logo_login', 'login_logo_v7.png');
+        config_update_value('custom_logo_login', 'Pandora-FMS-1.png');
     }
 
     if (!isset($config['custom_splash_login'])) {
@@ -2629,7 +2629,7 @@ function config_process_config()
     }
 
     if (!isset($config['background_opacity'])) {
-        config_update_value('background_opacity', 30);
+        config_update_value('background_opacity', 20);
     }
 
     if (!isset($config['meta_background_opacity'])) {
@@ -2649,7 +2649,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_logo_login'])) {
-        config_update_value('meta_custom_logo_login', 'pandora_logo.png');
+        config_update_value('meta_custom_logo_login', 'Pandora-FMS-1.png');
     }
 
     if (!isset($config['meta_custom_splash_login'])) {

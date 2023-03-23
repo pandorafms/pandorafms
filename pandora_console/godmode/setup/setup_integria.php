@@ -386,120 +386,132 @@ $table_alert_settings->data = [];
 $table_alert_settings->width = '100%';
 $table_alert_settings->styleTable = 'margin-bottom: 10px;';
 $table_alert_settings->id = 'integria-cr-settings-setup';
-$table_alert_settings->class = 'databox filters';
-$table_alert_settings->size['name'] = '30%';
-$table_alert_settings->style['name'] = 'font-weight: bold';
+$table_alert_settings->class = 'databox filters filter-table-adv';
+$table_alert_settings->size[0] = '50%';
+$table_alert_settings->size[1] = '50%';
 
 // Alert incident title.
 $row = [];
-$row['name'] = __('Title');
-$row['control'] = html_print_input_text(
-    'incident_title',
-    $config['incident_title'],
-    __('Name'),
-    50,
-    100,
-    true,
-    false,
-    false
+$row[0] = html_print_label_input_block(
+    __('Title'),
+    html_print_input_text(
+        'incident_title',
+        $config['incident_title'],
+        __('Name'),
+        50,
+        100,
+        true,
+        false,
+        false
+    )
 );
-$table_alert_settings->data['custom_response_incident_title'] = $row;
 
 // Alert incident description.
-$row = [];
-$row['name'] = __('Ticket body');
-$row['control'] = html_print_textarea(
-    'incident_content',
-    7,
-    25,
-    $config['incident_content'],
-    '',
-    true
+$row[1] = html_print_label_input_block(
+    __('Ticket body'),
+    html_print_textarea(
+        'incident_content',
+        3,
+        25,
+        $config['incident_content'],
+        '',
+        true
+    )
 );
-$table_alert_settings->data['custom_response_incident_content'] = $row;
+$table_alert_settings->data[0] = $row;
 
 // Alert default group.
 $row = [];
-$row['name'] = __('Group');
-$row['control'] = html_print_select(
-    $integria_group_values,
-    'default_group',
-    $config['default_group'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select(
+        $integria_group_values,
+        'default_group',
+        $config['default_group'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_alert_settings->data['custom_response_def_group'] = $row;
 
 // Alert default criticity.
-$row = [];
-$row['name'] = __('Priority');
-$row['control'] = html_print_select(
-    $integria_criticity_values,
-    'default_criticity',
-    $config['default_criticity'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[1] = html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        $integria_criticity_values,
+        'default_criticity',
+        $config['default_criticity'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_alert_settings->data['custom_response_def_criticity'] = $row;
+$table_alert_settings->data[1] = $row;
 
 // Alert default owner.
 $row = [];
-$row['name'] = __('Owner');
-$row['control'] = html_print_autocomplete_users_from_integria(
-    'default_owner',
-    $config['default_owner'],
-    true
+$row[0] = html_print_label_input_block(
+    __('Owner'),
+    html_print_autocomplete_users_from_integria(
+        'default_owner',
+        $config['default_owner'],
+        true,
+        '30',
+        false,
+        false,
+        'w100p'
+    ),
+    ['div_class' => 'inline']
 );
-
-$table_alert_settings->data['custom_response_def_owner'] = $row;
 
 // Alert default incident type.
-$row = [];
-$row['name'] = __('Type');
-$row['control'] = html_print_select(
-    $integria_types_values,
-    'incident_type',
-    $config['incident_type'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[1] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        $integria_types_values,
+        'incident_type',
+        $config['incident_type'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_alert_settings->data['custom_response_incident_type'] = $row;
+$table_alert_settings->data[2] = $row;
 
 // Alert default incident status.
 $row = [];
-$row['name'] = __('Status');
-$row['control'] = html_print_select(
-    $integria_status_values,
-    'incident_status',
-    $config['incident_status'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[0] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $integria_status_values,
+        'incident_status',
+        $config['incident_status'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_alert_settings->data['custom_response_incident_status'] = $row;
+$table_alert_settings->data[3] = $row;
 
 // Custom response settings.
 $table_cr_settings = new StdClass();
@@ -507,121 +519,133 @@ $table_cr_settings->data = [];
 $table_cr_settings->width = '100%';
 $table_cr_settings->styleTable = 'margin-bottom: 10px;';
 $table_cr_settings->id = 'integria-cr-settings-setup';
-$table_cr_settings->class = 'databox filters';
-$table_cr_settings->size['name'] = '30%';
-$table_cr_settings->style['name'] = 'font-weight: bold';
+$table_cr_settings->class = 'databox filters filter-table-adv';
+$table_cr_settings->size[0] = '50%';
+$table_cr_settings->size[1] = '50%';
 
 // Custom response incident title.
 $row = [];
-$row['name'] = __('Title');
-$row['control'] = html_print_input_text(
-    'cr_incident_title',
-    $config['cr_incident_title'],
-    __('Name'),
-    50,
-    100,
-    true,
-    false,
-    false
+$row[0] = html_print_label_input_block(
+    __('Title'),
+    html_print_input_text(
+        'cr_incident_title',
+        $config['cr_incident_title'],
+        __('Name'),
+        50,
+        100,
+        true,
+        false,
+        false
+    )
 );
-$table_cr_settings->data['custom_response_incident_title'] = $row;
 
 // Custom response incident description.
-$row = [];
-$row['name'] = __('Ticket body');
-$row['control'] = html_print_textarea(
-    'cr_incident_content',
-    7,
-    25,
-    $config['cr_incident_content'],
-    '',
-    true
+$row[1] = html_print_label_input_block(
+    __('Ticket body'),
+    html_print_textarea(
+        'cr_incident_content',
+        3,
+        25,
+        $config['cr_incident_content'],
+        '',
+        true
+    )
 );
 
-$table_cr_settings->data['custom_response_incident_content'] = $row;
+$table_cr_settings->data[0] = $row;
 
 // Custom response default group.
 $row = [];
-$row['name'] = __('Group');
-$row['control'] = html_print_select(
-    $integria_group_values,
-    'cr_default_group',
-    $config['cr_default_group'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select(
+        $integria_group_values,
+        'cr_default_group',
+        $config['cr_default_group'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_cr_settings->data['custom_response_def_group'] = $row;
 
 // Custom response default criticity.
-$row = [];
-$row['name'] = __('Priority');
-$row['control'] = html_print_select(
-    $integria_criticity_values,
-    'cr_default_criticity',
-    $config['cr_default_criticity'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[1] = html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        $integria_criticity_values,
+        'cr_default_criticity',
+        $config['cr_default_criticity'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_cr_settings->data['custom_response_def_criticity'] = $row;
+$table_cr_settings->data[1] = $row;
 
 // Custom response default owner.
 $row = [];
-$row['name'] = __('Owner');
-$row['control'] = html_print_autocomplete_users_from_integria(
-    'cr_default_owner',
-    $config['cr_default_owner'],
-    true
+$row[0] = html_print_label_input_block(
+    __('Owner'),
+    html_print_autocomplete_users_from_integria(
+        'cr_default_owner',
+        $config['cr_default_owner'],
+        true,
+        '30',
+        false,
+        false,
+        'w100p'
+    ),
+    ['div_class' => 'inline']
 );
-
-$table_cr_settings->data['custom_response_def_owner'] = $row;
 
 // Custom response default incident type.
-$row = [];
-$row['name'] = __('Type');
-$row['control'] = html_print_select(
-    $integria_types_values,
-    'cr_incident_type',
-    $config['cr_incident_type'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[1] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        $integria_types_values,
+        'cr_incident_type',
+        $config['cr_incident_type'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_cr_settings->data['custom_response_incident_type'] = $row;
+$table_cr_settings->data[2] = $row;
 
 // Custom response default incident status.
 $row = [];
-$row['name'] = __('Status');
-$row['control'] = html_print_select(
-    $integria_status_values,
-    'cr_incident_status',
-    $config['cr_incident_status'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[0] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $integria_status_values,
+        'cr_incident_status',
+        $config['cr_incident_status'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_cr_settings->data['custom_response_incident_status'] = $row;
+$table_cr_settings->data[3] = $row;
 
 // Test.
 $row = [];
@@ -682,7 +706,7 @@ echo '</div>';
 if ($has_connection != false) {
     // Form alert default settings.
     echo '<div id="form_alert_settings">';
-    echo '<fieldset>';
+    echo '<fieldset class="mrgn_top_15px">';
     echo '<legend>'.__('Alert default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_alert_settings);
@@ -692,7 +716,7 @@ if ($has_connection != false) {
 
     // Form custom response default settings.
     echo '<div id="form_custom_response_settings">';
-    echo '<fieldset>';
+    echo '<fieldset class="mrgn_top_15px">';
     echo '<legend>'.__('Event custom response default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_cr_settings);

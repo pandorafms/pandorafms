@@ -137,8 +137,6 @@ echo $formHidden;
 $table = new stdClass();
 $table->width = '100%';
 
-
-
 $table->class = 'databox filter-table-adv';
 $table->size = [];
 $table->size[0] = '50%';

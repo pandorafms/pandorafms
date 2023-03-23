@@ -269,7 +269,6 @@ class ModulesByStatus extends Widget
                 'selected'   => $status_selected,
                 'return'     => true,
                 'multiple'   => true,
-                'class'      => 'overflow-hidden',
                 'size'       => count($status_fields),
                 'select_all' => false,
                 'required'   => true,
@@ -486,6 +485,18 @@ class ModulesByStatus extends Widget
     {
         if (empty($search) === false) {
             $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
+        }
+
+        if (str_contains($status, '6') === true) {
+            $expl = explode(',', $status);
+            $exist = array_search('6', $expl);
+            if (isset($exist) === true) {
+                unset($expl[$exist]);
+            }
+
+            array_push($expl, '1', '2');
+
+            $status = implode(',', $expl);
         }
 
         $where .= sprintf(

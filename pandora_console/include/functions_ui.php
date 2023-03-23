@@ -2032,7 +2032,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_css = ui_get_full_url($filename, false, false, false);
-        $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
+        $output .= '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'" type="text/css" />'."\n\t";
     }
 
     /*
@@ -2089,7 +2089,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_js = ui_get_full_url($filename, false, false, false);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+        $output .= '<script type="text/javascript" src="'.$url_js.'?v='.$config['current_package'].'"></script>'."\n\t";
     }
 
     /*
@@ -2134,7 +2134,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_js = ui_get_full_url($filename, false, false, false);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+        $output .= '<script type="text/javascript" src="'.$url_js.'?v='.$config['current_package'].'"></script>'."\n\t";
     }
 
     /*

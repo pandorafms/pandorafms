@@ -89,7 +89,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('netflow_nfdump', '/usr/bin/nfdump'),
 ('netflow_max_resolution', '50'),
 ('sflow_interval', '3600'),
-('sflow_daemon', '/usr/bin/nfcapd'),
+('sflow_daemon', '/usr/bin/sfcapd'),
 ('sflow_nfdump', '/usr/bin/nfdump'),
 ('sflow_max_resolution', '50'),
 ('event_fields', 'mini_severity,evento,estado,agent_name,timestamp'),

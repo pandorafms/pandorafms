@@ -2899,7 +2899,7 @@ function config_process_config()
     }
 
     if (!isset($config['sflow_daemon'])) {
-        config_update_value('sflow_daemon', '/usr/bin/nfcapd');
+        config_update_value('sflow_daemon', '/usr/bin/sfcapd');
     }
 
     if (!isset($config['sflow_nfdump'])) {

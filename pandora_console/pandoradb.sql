@@ -4240,7 +4240,7 @@ CREATE TABLE IF NOT EXISTS `twelcome_tip` (
   `url` VARCHAR(255) NULL,
   `enable` TINYINT NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
@@ -4253,7 +4253,7 @@ CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
     FOREIGN KEY (`twelcome_tip_file`)
     REFERENCES `twelcome_tip` (`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
 -- Table `tfavmenu_user`

@@ -4133,7 +4133,7 @@ sub pandora_timed_event ($@) {
 
 	# Do not generate more than one event every $time_limit seconds.
 	my $now = time();
-	if (!defined($TIMED_EVENTS{$event_msg}) || $TIMED_EVENTS{$event_msg} + $time_limit > $now) {
+	if (!defined($TIMED_EVENTS{$event_msg}) || $TIMED_EVENTS{$event_msg} + $time_limit < $now) {
 		$TIMED_EVENTS{$event_msg} = $now;
 		pandora_event(@event);
 	}

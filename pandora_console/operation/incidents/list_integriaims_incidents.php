@@ -643,7 +643,7 @@ if (empty($table->data) === true) {
         true,
         'offset',
         false,
-        'pagination-bottom'
+        ''
     );
 }
 

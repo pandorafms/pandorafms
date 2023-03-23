@@ -1390,7 +1390,7 @@ if (check_login()) {
                     false,
                     'offset',
                     true,
-                    'pagination-bottom',
+                    '',
                     'pagination_list_modules(offset_param)',
                     [
                         'count'  => '',

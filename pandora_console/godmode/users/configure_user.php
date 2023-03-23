@@ -1,5 +1,4 @@
 <?php
-
 /**
  * User creation / update.
  *
@@ -60,7 +59,7 @@ if ($enterprise_include === true) {
 $id = get_parameter('id', get_parameter('id_user', ''));
 // Check if we are the same user for edit or we have a proper profile for edit users.
 if ($id !== $config['id_user']) {
-    if ((is_centralized() === true) || (bool) check_acl($config['id_user'], 0, 'UM') === false) {
+    if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access User Management'
@@ -393,6 +392,7 @@ if ($create_user === true) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+    $values['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
@@ -654,6 +654,7 @@ if ($update_user) {
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
     $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
+    $values['time_autorefresh'] = (int) get_parameter('time_autorefresh');
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
     $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($values['id_user']);
@@ -996,28 +997,19 @@ if (!users_is_admin() && $config['id_user'] !== $id && $new_user === false) {
     }
 }
 
-if (is_metaconsole() === true) {
-    html_print_div(
-        [
-            'class'   => 'user_form_title',
-            'content' => ((bool) $id === true) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
-        ]
-    );
-}
-
 if (!$new_user) {
     $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
     $user_id .= '<span>'.$id.'</span>';
     $user_id .= html_print_input_hidden('id_user', $id, true);
     $user_id .= '</div>';
 
-    $apiTokenContentElements[] = '<span style="height: 15px;font-size: 14px;">'.__('API Token').'</span>';
+    $apiTokenContentElements[] = '<span style="line-height: 15px; height: 15px;font-size: 14px;">'.__('API Token').'</span>';
     $apiTokenContentElements[] = html_print_button(
         __('Renew'),
         'renew_api_token',
         false,
         sprintf(
-            'javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')',
+            'javascript:renewAPIToken("%s", "%s", "%s")',
             __('Warning'),
             __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
             'user_profile_form',
@@ -1033,7 +1025,7 @@ if (!$new_user) {
         'show_api_token',
         false,
         sprintf(
-            'javascript:showAPIToken(\'%s\', \'%s\')',
+            'javascript:showAPIToken("%s", "%s")',
             __('API Token'),
             base64_encode(__('Your API Token is:').'&nbsp;<br><span class="font_12pt bolder">'.users_get_API_token($id).'</span><br>&nbsp;'.__('Please, avoid share this string with others.')),
         ),
@@ -1282,8 +1274,9 @@ if (is_metaconsole() === false) {
 if (is_metaconsole() === true) {
     $array_filters = get_filters_custom_fields_view(0, true);
 
-    $search_custom_fields_view = '<div class="label_select"><p class="edit_user_labels">'.__('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true).'</p>';
-    $search_custom_fields_view .= html_print_select(
+    $searchCustomFieldView = [];
+    $searchCustomFieldView[] = __('Search custom field view');
+    $searchCustomFieldView[] = html_print_select(
         $array_filters,
         'default_custom_view',
         $user_info['default_custom_view'],
@@ -1295,7 +1288,10 @@ if (is_metaconsole() === true) {
         true,
         '',
         false
-    ).'</div>';
+    ).ui_print_input_placeholder(
+        __('Load by default the selected view in custom field view'),
+        true
+    );
 }
 
 $values = [
@@ -1377,6 +1373,8 @@ $home_screen .= html_print_input_text(
     false
 );
 
+$home_screen = '';
+
 $size_pagination = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Block size for pagination').'</p>';
 $size_pagination .= html_print_input_text(
     'block_size',
@@ -1395,19 +1393,20 @@ if ($id === $config['id_user']) {
     );
 }
 
-if (enterprise_installed() && is_metaconsole() === true) {
+if (enterprise_installed() === true && is_metaconsole() === true) {
     $user_info_metaconsole_access = 'only_console';
     if (isset($user_info['metaconsole_access'])) {
         $user_info_metaconsole_access = $user_info['metaconsole_access'];
     }
 
-    // TODO review help tips on meta.
-    $meta_access = '<div class="label_select"><p class="edit_user_labels">'.__('Metaconsole access').' './* ui_print_help_icon('meta_access', true). */ '</p>';
     $metaconsole_accesses = [
         'basic'    => __('Basic'),
         'advanced' => __('Advanced'),
     ];
-    $meta_access .= html_print_select(
+
+    $outputMetaAccess = [];
+    $outputMetaAccess[] = __('Metaconsole access');
+    $outputMetaAccess[] = html_print_select(
         $metaconsole_accesses,
         'metaconsole_access',
         $user_info_metaconsole_access,
@@ -1417,51 +1416,9 @@ if (enterprise_installed() && is_metaconsole() === true) {
         true,
         false,
         false
-    ).'</div>';
+    );
 }
 
-/*
-    $not_login = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Not Login').'</p>';
-    $not_login .= ui_print_help_tip(
-    __('The user with not login set only can access to API.'),
-    true
-    );
-    $not_login .= html_print_checkbox_switch(
-    'not_login',
-    1,
-    $user_info['not_login'],
-    true
-    ).'</div>';
-
-    $local_user = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Local user').'</p>';
-    $local_user .= ui_print_help_tip(
-    __('The user with local authentication enabled will always use local authentication.'),
-    true
-    );
-    $local_user .= html_print_checkbox_switch(
-    'local_user',
-    1,
-    $user_info['local_user'],
-    true
-    ).'</div>';
-
-    $session_time = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Session Time');
-    $session_time .= ui_print_help_tip(
-    __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
-    true
-    ).'</p>';
-    $session_time .= html_print_input_text(
-    'session_time',
-    $user_info['session_time'],
-    '',
-    5,
-    5,
-    true.false,
-    false,
-    '',
-    'class="input_line_small"'
-    ).'</div>';
-*/
 $user_groups = implode(',', array_keys((users_get_groups($id, 'AR', $display_all_group))));
 
 if (empty($user_groups) === false) {
@@ -1582,31 +1539,6 @@ if (empty($doubleAuthElementsContent) === false) {
     $doubleAuthentication = '';
 }
 
-
-/*
-    if (isset($double_authentication)) {
-    $double_authentication .= '</div>';
-}*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
@@ -1632,8 +1564,8 @@ $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console'
 $autorefresh_list_out['operation/events/events'] = 'Events';
 
 
-if (isset($autorefresh_list) === false) {
-    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
+if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
+    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
     $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
     if ($autorefresh_list === null) {
         $autorefresh_list[0] = __('None');
@@ -1665,30 +1597,31 @@ if (isset($autorefresh_list) === false) {
     }
 }
 
-
-
 if (is_metaconsole() === true) {
     enterprise_include_once('include/functions_metaconsole.php');
 
     $access_node = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
 
-    $metaconsole_agents_manager = '<div class="label_select_simple" id="metaconsole_agents_manager_div"><p class="edit_user_labels">'.__('Enable agents managment').'</p>';
-    $metaconsole_agents_manager .= html_print_checkbox_switch(
+    $metaconsoleAgentManager = [];
+    $metaconsoleAgentManager[] = __('Enable agents managment');
+    $metaconsoleAgentManager[] = html_print_checkbox_switch(
         'metaconsole_agents_manager',
         1,
         $user_info['metaconsole_agents_manager'],
         true
-    ).'</div>';
+    );
 
-    $metaconsole_access_node = '<div class="label_select_simple" id="metaconsole_access_node_div"><p class="edit_user_labels">'.__('Enable node access').ui_print_help_tip(__('With this option enabled, the user will can access to nodes console'), true).'</p>';
-    $metaconsole_access_node .= html_print_checkbox(
+    $metaconsoleAgentManager[] = __('Enable node access').ui_print_help_tip(
+        __('With this option enabled, the user will can access to nodes console'),
+        true
+    );
+    $metaconsoleAgentManager[] = html_print_checkbox_switch(
         'metaconsole_access_node',
         1,
         $access_node,
         true
-    ).'</div>';
+    );
 }
-
 
 echo '<div class="max_floating_element_size">';
 echo '<form id="user_profile_form" name="user_profile_form" method="post" autocomplete="off" action="#">';
@@ -1701,137 +1634,8 @@ if (!$id) {
     $user_id_create = $user_id;
 }
 
-if (is_metaconsole() === true) {
-    $access_or_pagination = $meta_access;
-    if ($id != '' && !$is_err) {
-        $div_user_info = '<div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
-        <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$own_pass_confirm.$global_profile.'</div>';
-    } else {
-        $div_user_info = '<div class="edit_user_info_left">'.$avatar.'</div>
-        <div class="edit_user_info_right">'.$user_id_create.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
-    }
-
-    echo '<div id="user_form">
-    <div class="user_edit_first_row">
-        <div class="edit_user_info white_box">'.$div_user_info.'</div>
-        <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$local_user.$session_time.'</div>
-    </div>
-    <div class="user_edit_second_row white_box">
-        <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$default_event_filter.$double_authentication.'</div>
-    
-        <div class="edit_user_timezone">'.$timezone;
-
-    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_access_node;
-
-    $autorefresh_show = '<p class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
-        __('This will activate autorefresh in selected pages'),
-        true
-    ).'</p>';
-    $select_out = html_print_select(
-        $autorefresh_list_out,
-        'autorefresh_list_out[]',
-        '',
-        '',
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'width:100%'
-    );
-    $arrows = ' ';
-    $select_in = html_print_select(
-        $autorefresh_list,
-        'autorefresh_list[]',
-        '',
-        '',
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'width:100%'
-    );
-
-    $table_ichanges = '<div class="autorefresh_select">
-                            <div class="autorefresh_select_list_out">
-                                <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
-                                <div>'.$select_out.'</div>
-                            </div>
-                            <div class="autorefresh_select_arrows" style="display:grid">
-                                <a href="javascript:">'.html_print_image(
-                                    'images/darrowright_green.png',
-                                    true,
-                                    [
-                                        'id'    => 'right_autorefreshlist',
-                                        'alt'   => __('Push selected pages into autorefresh list'),
-                                        'title' => __('Push selected pages into autorefresh list'),
-                                    ]
-                                ).'</a>
-                                <a href="javascript:">'.html_print_image(
-                                    'images/darrowleft_green.png',
-                                    true,
-                                    [
-                                        'id'    => 'left_autorefreshlist',
-                                        'alt'   => __('Pop selected pages out of autorefresh list'),
-                                        'title' => __('Pop selected pages out of autorefresh list'),
-                                    ]
-                                ).'</a>
-                            </div>    
-                            <div class="autorefresh_select_list">    
-                                <p class="autorefresh_select_text">'.__('List of pages with autorefresh').': </p>   
-                                <div>'.$select_in.'</div>
-                            </div>
-                        </div>';
-
-    $autorefresh_show .= $table_ichanges;
-
-    // Time autorefresh.
-    $times = get_refresh_time_array();
-    $time_autorefresh = '<div class="label_select"><p class="edit_user_labels">'.__('Time autorefresh');
-    $time_autorefresh .= ui_print_help_tip(
-        __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
-        true
-    ).'</p>';
-    $time_autorefresh .= html_print_select(
-        $times,
-        'time_autorefresh',
-        $user_info['time_autorefresh'],
-        '',
-        '',
-        '',
-        true,
-        false,
-        false
-    ).'</div>';
-
-
-    echo '</div>
-    </div>
-    <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
-    <div class="user_edit_third_row white_box">
-        <div class="edit_user_comments">'.$comments.'</div>
-    </div>';
-
-    if (empty($ehorus) === false) {
-        html_print_div(
-            [
-                'class'   => 'user_edit_third_row white_box',
-                'content' => $ehorus,
-            ],
-            true
-        );
-    }
-} else {
-    $access_or_pagination = $size_pagination;
-    // WIP: Only for node.
-    include_once 'user_management.php';
-}
-
+// User management form.
+require_once 'user_management.php';
 
 if ((bool) $config['admin_can_add_user'] === true) {
     html_print_csrf_hidden();
@@ -1843,9 +1647,13 @@ if ($new_user === true) {
     html_print_input_hidden('json_profile', $json_profile);
 }
 
-echo '</div>';
-
 echo '</form>';
+
+// User Profile definition table. (Only where user is not creating).
+if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
+    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
+}
+
 echo '</div>';
 
 $actionButtons = [];
@@ -1912,7 +1720,7 @@ if (is_metaconsole() === false) {
         $(document).ready(function() {
             // Set up the picker to update target timezone and country select lists.
             $('#timezone-image').timezonePicker({
-                target: '#timezone',
+                target: '#timezone1',
             });
 
             // Optionally an auto-detect button to trigger JavaScript geolocation.
@@ -1934,23 +1742,13 @@ if (is_metaconsole() === false) {
     var json_profile = $('#hidden-json_profile');
     /* <![CDATA[ */
     $(document).ready(function() {
-
-        // Set up the picker to update target timezone and country select lists.
-        $('#timezone-image').timezonePicker({
-            target: '#timezone1',
-        });
-
-        // Optionally an auto-detect button to trigger JavaScript geolocation.
-        $('#timezone-detect').click(function() {
-            $('#timezone-image').timezonePicker('detectLocation');
-        });
-
         $("#right_autorefreshlist").click(function() {
             jQuery.each($("select[name='autorefresh_list_out[]'] option:selected"), function(key, value) {
                 imodule_name = $(value).html();
                 if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
                     id_imodule = $(value).attr('value');
-                    $("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
+                    $("select[name='autorefresh_list[]'] option").each(function() { $(this).attr("selected", true) });
+                    $("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>').attr("selected", true));
                     $("#autorefresh_list_out").find("option[value='" + id_imodule + "']").remove();
                     $("#autorefresh_list").find("option[value='']").remove();
                     $("#autorefresh_list").find("option[value='0']").remove();
@@ -1975,6 +1773,13 @@ if (is_metaconsole() === false) {
                     }
                 }
             });
+        });
+
+        $("#button-uptbutton").click (function () {
+            console.log('aaaaaaaaaaaaa');
+            if($("#autorefresh_list option").length > 0) {
+                $('#autorefresh_list option').prop('selected', true);
+            }
         });
 
         $("input#checkbox-double_auth").change(function(e) {

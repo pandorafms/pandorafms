@@ -521,7 +521,7 @@ class CustomGraphWidget extends Widget
 
         $params = [
             'period'          => $this->values['period'],
-            'width'           => ($size['width'] - 10),
+            'width'           => ($size['width']),
             'height'          => $height,
             'only_image'      => false,
             'homeurl'         => $config['homeurl'],

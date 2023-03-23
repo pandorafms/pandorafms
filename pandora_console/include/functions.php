@@ -3548,6 +3548,18 @@ function update_config_token($cfgtoken, $cfgvalue)
 }
 
 
+function delete_config_token($cfgtoken)
+{
+    $delete = db_process_sql(sprintf('DELETE FROM tconfig WHERE token = "%s"', $cfgtoken));
+
+    if ($delete) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 function get_number_of_mr($package, $ent, $offline)
 {
     global $config;
@@ -4275,6 +4287,7 @@ function generator_chart_to_pdf(
         ];
     }
 
+    unset($data['data']['graph_data']);
     // If not install chromium avoid 500 convert tu images no data to show.
     $chromium_dir = io_safe_output($config['chromium_path']);
     $result_ejecution = exec($chromium_dir.' --version');

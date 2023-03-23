@@ -85,7 +85,7 @@ $product_name = get_product_name(); ?>
                 __('Cancel'),
                 'cancel_registration',
                 false,
-                'class="lato ui-widget
+                'id="submit-cancel_registration" class="lato ui-widget
             ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel"',
                 true
             );
@@ -97,7 +97,7 @@ $product_name = get_product_name(); ?>
                 __('OK!'),
                 'register',
                 false,
-                'class="lato ui-widget
+                'id="submit-register" class="lato ui-widget
             ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
                 true
             );

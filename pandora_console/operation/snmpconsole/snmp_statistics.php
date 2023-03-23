@@ -57,16 +57,18 @@ if ($config['pure']) {
     ).'</a>';
 }
 
-// List
-$list = [];
-$list['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image(
-    'images/SNMP-network-numeric-data@svg.svg',
-    true,
-    [
-        'title' => __('List'),
-        'class' => 'main_menu_icon invert_filter',
-    ]
-).'</a>';
+if ($config['pure'] === false) {
+    // List.
+    $list = [];
+    $list['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image(
+        'images/SNMP-network-numeric-data@svg.svg',
+        true,
+        [
+            'title' => __('List'),
+            'class' => 'main_menu_icon invert_filter',
+        ]
+    ).'</a>';
+}
 
 // Statistics (This file)
 $statistics = [];
@@ -165,10 +167,9 @@ $water_mark = [
 // By SOURCE
 $table_source = new StdClass();
 $table_source->width = '100%';
-$table_source->class = 'databox data';
+$table_source->class = 'info_table';
 $table_source->head[] = __('Traps received by source').' - '.sprintf(__('Top %d'), 25);
 $table_source->head_colspan[] = 2;
-$table_source->headstyle[] = 'background-color: #82b92e';
 $table_source->size = [];
 $table_source->size['table'] = '50%';
 $table_source->size['graph'] = '50%';
@@ -182,6 +183,7 @@ $table_source_data->head = [];
 $table_source_data->head['source'] = __('Source IP');
 $table_source_data->head['num'] = __('Number');
 $table_source_data->data = [];
+$table_source_data->class = 'info_table';
 
 $table_source_graph_data = [];
 $labels = [];
@@ -239,9 +241,9 @@ unset($table_source);
 // By OID
 $table_oid = new StdClass();
 $table_oid->width = '100%';
+$table_oid->class = 'info_table';
 $table_oid->head[] = __('Traps received by Enterprise String').' - '.sprintf(__('Top %d'), 25);
 $table_oid->head_colspan[] = 2;
-$table_oid->headstyle[] = 'background-color: #82b92e';
 $table_oid->size = [];
 $table_oid->size['table'] = '50%';
 $table_oid->size['graph'] = '50%';
@@ -255,6 +257,7 @@ $table_oid_data->head = [];
 $table_oid_data->head['oid'] = __('Trap Enterprise String');
 $table_oid_data->head['num'] = __('Number');
 $table_oid_data->data = [];
+$table_oid_data->class = 'info_table';
 
 $table_oid_graph_data = [];
 $labels = [];

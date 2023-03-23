@@ -31,7 +31,7 @@ require_once $config['homedir'].'/include/functions.php';
  * @param string $active_tab Current tab or false for View page.
  * @param number $view       Id of incident. Show View tab.
  *
- * @return string HTML code. Print tabs in header.
+ * @return array HTML code. Print tabs in header.
  */
 function integriaims_tabs($active_tab, $view=false)
 {

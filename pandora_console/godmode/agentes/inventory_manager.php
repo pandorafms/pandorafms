@@ -180,14 +180,26 @@ if ($load_inventory_module) {
 $form_buttons = '';
 if ($load_inventory_module) {
     $form_buttons .= html_print_input_hidden('id_agent_module_inventory', $id_agent_module_inventory, true);
-    $form_buttons .= html_print_submit_button(__('Update'), 'update_inventory_module', false, 'class="sub next"', true);
+    $form_buttons .= html_print_submit_button(
+        __('Update'),
+        'update_inventory_module',
+        false,
+        ['icon' => 'wand'],
+        true
+    );
 } else {
-    $form_buttons .= html_print_submit_button(__('Add'), 'add_inventory_module', false, 'class="sub next"', true);
+    $form_buttons .= html_print_submit_button(
+        __('Add'),
+        'add_inventory_module',
+        false,
+        ['icon' => 'wand'],
+        true
+    );
 }
 
 echo ui_get_inventory_module_add_form(
     'index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente,
-    $form_buttons,
+    html_print_action_buttons($form_buttons, [], true),
     $load_inventory_module,
     $id_os,
     $target,
@@ -213,10 +225,10 @@ if (db_get_num_rows($sql) == 0) {
 } else {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'databox info_table max_floating_element_size';
     $table->data = [];
     $table->head = [];
-    $table->styleTable = 'margin-top: 20px;';
+    $table->styleTable = '';
     $table->head[0] = "<span title='".__('Policy')."'>".__('P.').'</span>';
     $table->head[1] = __('Name');
     $table->head[2] = __('Description');

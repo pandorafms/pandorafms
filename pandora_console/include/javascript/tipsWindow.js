@@ -2,15 +2,16 @@
 $(document).ready(function() {
   $("#button-button_add_image").on("click", function() {
     var numberImages = $("#inputs_images").children().length;
+    $(".input-file").each(function(index) {
+      $(this).attr("name", "file_" + index);
+    });
     var div_image = document.createElement("div");
     $(div_image).attr("class", "action_image");
     $(div_image).append(
-      `<input type="file" accept="image/png,image/jpeg,image/gif" name="file_${numberImages +
-        1}"  onchange="checkImage(this)"/>`
+      `<input type="file" accept="image/png,image/jpeg,image/gif" class="input-file" name="file_${numberImages}"  onchange="checkImage(this)" required/>`
     );
     $(div_image).append(
-      `<input type="image" src="images/delete.svg" onclick="removeInputImage('file_${numberImages +
-        1}');" class="remove-image" value="-"/>`
+      `<input type="image" src="images/delete.svg" onclick="removeInputImage(this);" class="remove-image main_menu_icon" value="-"/>`
     );
     $("#inputs_images").append(div_image);
   });
@@ -72,8 +73,8 @@ function activeCarousel() {
     $(".carousel .images").bxSlider({ controls: true });
   }
 }
-function removeInputImage(name) {
-  $(`input[name=${name}]`)
+function removeInputImage(e) {
+  $(e)
     .parent()
     .remove();
   if ($(".action_image").length === 0) {
@@ -314,7 +315,7 @@ function previewTip() {
 
   //Images in client
   var totalInputsFiles = $("input[type=file]").length;
-  if (totalInputsFiles > 0) {
+  if (totalInputsFiles > 0 && validateImages()) {
     extradata["totalFiles64"] = totalInputsFiles;
     $("input[type=file]").each(function(index) {
       var reader = new FileReader();
@@ -351,4 +352,16 @@ function previewTip() {
       extradata //Receive json
     });
   }
+}
+
+function validateImages() {
+  $(".empty_input_images").addClass("invisible");
+  let validate = true;
+  $("input[type=file]").each(function() {
+    if (this.files.length == 0) {
+      $(".empty_input_images").removeClass("invisible");
+      validate = false;
+    }
+  });
+  return validate;
 }

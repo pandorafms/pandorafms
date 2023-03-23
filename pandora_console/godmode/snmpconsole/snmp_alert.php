@@ -1885,7 +1885,7 @@ if ($create_alert || $update_alert) {
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->align = [];
 
     $table->head[0] = '<span title="'.__('Position').'">'.__('P.').'</span>';
@@ -1983,7 +1983,7 @@ if ($create_alert || $update_alert) {
                             [
                                 'alt'   => __('Duplicate'),
                                 'title' => __('Duplicate'),
-                                'class' => 'main_menu_icon invert_filter',
+                                'class' => 'main_menu_icon',
                             ]
                         ),
                     ],
@@ -2001,7 +2001,7 @@ if ($create_alert || $update_alert) {
                             [
                                 'alt'    => __('Update'),
                                 'border' => 0,
-                                'class'  => 'main_menu_icon invert_filter',
+                                'class'  => 'main_menu_icon',
                             ]
                         ),
                     ],
@@ -2031,6 +2031,7 @@ if ($create_alert || $update_alert) {
                             true,
                             [
                                 'title' => __('Delete action'),
+                                'class' => 'main_menu_icon',
                             ]
                         ),
                         'onClick' => 'delete_snmp_alert('.$row['id_as'].')',

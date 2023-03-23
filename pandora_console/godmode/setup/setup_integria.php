@@ -269,52 +269,102 @@ $table_remote->data = [];
 $table_remote->width = '100%';
 $table_remote->styleTable = 'margin-bottom: 10px;';
 $table_remote->id = 'integria-remote-setup';
-$table_remote->class = 'databox filters';
-$table_remote->size['name'] = '30%';
-$table_remote->style['name'] = 'font-weight: bold';
-$table_remote->style['control'] = 'display: flex;align-items: center;';
+$table_remote->class = 'databox filters filter-table-adv';
+$table_remote->size['hostname'] = '50%';
+$table_remote->size['api_pass'] = '50%';
 
-// Enable eHorus user configuration.
+// Enable Integria user configuration.
 $row = [];
-$row['name'] = ('Integria configuration at user level');
-$row['control'] = html_print_checkbox_switch('integria_user_level_conf', 1, $config['integria_user_level_conf'], true);
+$row['user_level'] = html_print_label_input_block(
+    __('Integria configuration at user level'),
+    html_print_checkbox_switch(
+        'integria_user_level_conf',
+        1,
+        $config['integria_user_level_conf'],
+        true
+    )
+);
 $table_remote->data['integria_user_level_conf'] = $row;
 
 // Integria user.
 $row = [];
-$row['name'] = __('User');
-$row['control'] = html_print_input_text('integria_user', $config['integria_user'], '', 30, 100, true);
-$table_remote->data['integria_user'] = $row;
+$row['user'] = html_print_label_input_block(
+    __('User'),
+    html_print_input_text(
+        'integria_user',
+        $config['integria_user'],
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_user']
+);
 
 // Integria password.
-$row = [];
-$row['name'] = __('Password');
-$row['control'] = html_print_input_password('integria_pass', io_output_password($config['integria_pass']), '', 30, 100, true);
-$row['control'] .= ui_print_reveal_password('integria_pass', true);
+$row['password'] = html_print_label_input_block(
+    __('Password'),
+    html_print_input_password(
+        'integria_pass',
+        io_output_password($config['integria_pass']),
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_pass']
+);
 $table_remote->data['integria_pass'] = $row;
 
 // Integria hostname.
 $row = [];
-$row['name'] = __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true);
-$row['control'] = html_print_input_text('integria_hostname', $config['integria_hostname'], '', 30, 100, true);
-$table_remote->data['integria_hostname'] = $row;
+$row['hostname'] = html_print_label_input_block(
+    __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true),
+    html_print_input_text(
+        'integria_hostname',
+        $config['integria_hostname'],
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_hostname']
+);
 
 // API password.
-$row = [];
-$row['name'] = __('API Password');
-$row['control'] = html_print_input_password('integria_api_pass', io_output_password($config['integria_api_pass']), '', 30, 100, true);
-$row['control'] .= ui_print_reveal_password('integria_api_pass', true);
+$row['api_pass'] = html_print_label_input_block(
+    __('API Password'),
+    html_print_input_password(
+        'integria_api_pass',
+        io_output_password($config['integria_api_pass']),
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_api_pass']
+);
 $table_remote->data['integria_api_pass'] = $row;
 
 // Request timeout.
 $row = [];
-$row['name'] = __('Request timeout');
-$row['control'] = html_print_input_text('integria_req_timeout', $config['integria_req_timeout'], '', 3, 10, true);
+$row['req_timeout'] = html_print_label_input_block(
+    __('Request timeout'),
+    html_print_input_text(
+        'integria_req_timeout',
+        $config['integria_req_timeout'],
+        '',
+        3,
+        10,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_req_timeout']
+);
 $table_remote->data['integria_req_timeout'] = $row;
 
 $row = [];
-$row['name'] = __('Inventory');
-$row['control'] = html_print_button(
+$row['control'] = __('Inventory');
+$row['control'] .= html_print_button(
     __('Sync inventory'),
     'sync-inventory',
     false,
@@ -575,8 +625,8 @@ $table_cr_settings->data['custom_response_incident_status'] = $row;
 
 // Test.
 $row = [];
-$row['name'] = __('Test');
-$row['control'] = html_print_button(
+$row['control'] = __('Test');
+$row['control'] .= html_print_button(
     __('Start'),
     'test-integria',
     false,
@@ -594,12 +644,12 @@ $row['control'] .= '&nbsp;<span id="test-integria-message" class="invisible"></s
 $table_remote->data['integria_test'] = $row;
 
 // Print.
-echo '<div class="center pdd_b_20px mrgn_top_20px">';
+echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
 html_print_image(
     'images/integria_logo.svg',
     false,
-    ['class' => 'w400px'    ]
+    ['class' => 'w400px mrgn_top_15px']
 );
 echo '</a>';
 echo '<br />';
@@ -611,7 +661,7 @@ echo 'https://integriaims.com';
 echo '</a>';
 echo '</div>';
 
-echo "<form method='post'>";
+echo "<form method='post' class='max_floating_element_size'>";
 html_print_input_hidden('update_config', 1);
 
 // Form enable.
@@ -650,33 +700,24 @@ if ($has_connection != false) {
     echo '</fieldset>';
     echo '</div>';
 
-    html_print_div(
-        [
-            'class'   => 'action-buttons w100p',
-            'content' => html_print_submit_button(
-                __('Update'),
-                'update_button',
-                false,
-                ['icon' => 'update'],
-                true
-            ),
-        ]
+    $update_button = html_print_submit_button(
+        __('Update'),
+        'update_button',
+        false,
+        ['icon' => 'update'],
+        true
     );
 } else {
-    html_print_div(
-        [
-            'class'   => 'action-buttons w100p',
-            'content' => html_print_submit_button(
-                __('Update and continue'),
-                'update_button',
-                false,
-                ['icon' => 'update'],
-                true
-            ),
-        ]
+    $update_button = html_print_submit_button(
+        __('Update and continue'),
+        'update_button',
+        false,
+        ['icon' => 'update'],
+        true
     );
 }
 
+html_print_action_buttons($update_button);
 
 echo '</form>';
 
@@ -686,8 +727,8 @@ echo '</form>';
 
     if($('input:checkbox[name="integria_user_level_conf"]').is(':checked'))
     {
-        $('#integria-remote-setup-integria_user').hide();
-        $('#integria-remote-setup-integria_pass').hide()
+        $('.integria-remote-setup-integria_user').hide();
+        $('.integria-remote-setup-integria_pass').hide()
     }
 
     var handleUserLevel = function(event) {
@@ -726,13 +767,13 @@ echo '</form>';
     }
 
     var hideUserPass = function () {
-        $('#integria-remote-setup-integria_user').hide();
-        $('#integria-remote-setup-integria_pass').hide();
+        $('.integria-remote-setup-integria_user').hide();
+        $('.integria-remote-setup-integria_pass').hide();
     }
 
     var showUserPass = function () {
-        $('#integria-remote-setup-integria_user').show();
-        $('#integria-remote-setup-integria_pass').show();
+        $('.integria-remote-setup-integria_user').show();
+        $('.integria-remote-setup-integria_pass').show();
     }
 
     var handleEnable = function (event) {

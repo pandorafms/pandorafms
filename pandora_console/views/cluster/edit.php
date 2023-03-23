@@ -127,3 +127,33 @@ if (empty($form) === false) {
 
 // Print always go back button.
 HTML::printForm($wizard->getGoBackForm(), false);
+
+html_print_action_buttons(
+    '',
+    []
+);
+
+?>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var buttonnext = $('#button-next').parent().html();
+        $('#button-next').hide();
+        var buttonnext = buttonnext.replace('button-next','button-next_copy');
+        var buttonback = $('#button-submit').parent().html();
+        $('#button-submit').hide();
+        var buttonback = buttonback.replace('button-submit','button-submit_copy');
+        $('.action_buttons_right_content').parent().html(buttonnext+buttonback);
+        var style = $('#principal_action_buttons').attr('style');
+        $('#principal_action_buttons').attr('style',style+' justify-content: unset;');
+
+        // Button next/finish on action buttons.
+        $('#button-next_copy').click(function(){
+            $('#button-next').trigger('click');
+        });
+        // Button back on action buttons.
+        $('#button-submit_copy').click(function(){
+            $('#button-submit').trigger('click');
+        });
+    });
+</script>

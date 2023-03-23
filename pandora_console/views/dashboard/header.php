@@ -296,6 +296,12 @@ if ($publicLink === false) {
                 'link'  => '',
                 'label' => __('Dashboard'),
             ],
+        ],
+        [
+            'id_element' => $dashboardId,
+            'url'        => 'operation/dashboard/dashboard&dashboardId='.$dashboardId,
+            'label'      => $dashboardName,
+            'section'    => 'Dashboard_',
         ]
     );
 } else {

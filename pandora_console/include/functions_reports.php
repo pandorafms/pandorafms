@@ -221,6 +221,8 @@ function reports_update_report($id_report, $values)
  */
 function reports_delete_report($id_report)
 {
+    global $config;
+
     $id_report = safe_int($id_report);
     if (empty($id_report)) {
         return false;
@@ -230,6 +232,16 @@ function reports_delete_report($id_report)
     if ($report === false) {
         return false;
     }
+
+    // Delete report from fav menu.
+    db_process_sql_delete(
+        'tfavmenu_user',
+        [
+            'id_element' => $id_report,
+            'section'    => 'Reporting',
+            'id_user'    => $config['id_user'],
+        ]
+    );
 
     @db_process_sql_delete('treport_content', ['id_report' => $id_report]);
     return @db_process_sql_delete('treport', ['id_report' => $id_report]);

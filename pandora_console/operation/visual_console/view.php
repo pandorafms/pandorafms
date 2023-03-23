@@ -240,6 +240,12 @@ if (!$config['pure']) {
                 'link'  => '',
                 'label' => __('Visual console'),
             ],
+        ],
+        [
+            'id_element' => $visualConsoleId,
+            'url'        => 'operation/visual_console/render_view&id='.$visualConsoleId,
+            'label'      => $visualConsoleName,
+            'section'    => 'Visual_Console',
         ]
     );
 }
@@ -274,25 +280,25 @@ if ($pure === false) {
         $class_delete = 'delete_item delete_min';
         $class_copy = 'copy_item';
         if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
-            $class_camera = 'camera_min_white link-create-item';
-            $class_percentile = 'percentile_item_min_white link-create-item';
-            $class_module_graph = 'graph_min_white link-create-item';
-            $class_donut = 'donut_graph_min_white link-create-item';
-            $class_bars = 'bars_graph_min_white link-create-item';
-            $class_value = 'binary_min_white link-create-item';
-            $class_sla = 'auto_sla_graph_min_white link-create-item';
-            $class_label = 'label_min_white link-create-item';
-            $class_icon = 'icon_min_white link-create-item';
-            $class_clock = 'clock_min_white link-create-item';
-            $class_group = 'group_item_min_white link-create-item';
-            $class_box = 'box_item_white link-create-item';
-            $class_line = 'line_item_white link-create-item';
-            $class_cloud = 'color_cloud_min_white link-create-item';
-            $class_nlink = 'network_link_min_white link-create-item';
-            $class_odometer = 'odometer_min_white link-create-item';
-            $class_basic_chart = 'basic_chart_min_white link-create-item';
-            $class_delete = 'delete_item_white delete_min_white';
-            $class_copy = 'copy_item_white';
+            $class_camera .= ' invert_filter';
+            $class_percentile .= ' invert_filter';
+            $class_module_graph .= ' invert_filter';
+            $class_donut .= ' invert_filter';
+            $class_bars .= ' invert_filter';
+            $class_value .= ' invert_filter';
+            $class_sla .= ' invert_filter';
+            $class_label .= ' invert_filter';
+            $class_icon .= ' invert_filter';
+            $class_clock .= ' invert_filter';
+            $class_group .= ' invert_filter';
+            $class_box .= ' invert_filter';
+            $class_line .= ' invert_filter';
+            $class_cloud .= ' invert_filter';
+            $class_nlink .= ' invert_filter';
+            $class_odometer .= ' invert_filter';
+            $class_basic_chart .= ' invert_filter';
+            $class_delete .= ' invert_filter';
+            $class_copy .= ' invert_filter';
         }
 
         visual_map_print_button_editor_refactor(

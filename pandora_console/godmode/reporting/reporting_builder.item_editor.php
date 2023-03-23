@@ -1047,17 +1047,6 @@ $class = 'databox filters';
 
 ?>
 <table id="table_item_edit_reporting"  class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
-    <?php
-    if (defined('METACONSOLE')) {
-        echo '<thead>
-				<tr>
-					<th align=center colspan=5>
-						'.__('Item Editor').'
-					</th>
-				</tr>
-			</thead>';
-    }
-    ?>
     <tbody>
         <tr id="row_type"   class="datos">
             <td class="bolder w220px">

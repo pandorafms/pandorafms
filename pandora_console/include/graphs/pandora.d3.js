@@ -2167,7 +2167,7 @@ function print_circular_progress_bar(
 
   var numberText = circle
     .append("text")
-    .attr("fill", label_color)
+    .attr("fill", "#333333")
     .style("font-weight", "bold")
     .style("font-size", numberSize)
     .attr("text-anchor", "middle")
@@ -2175,7 +2175,7 @@ function print_circular_progress_bar(
 
   var percentText = circle
     .append("text")
-    .attr("fill", label_color)
+    .attr("fill", "#333333")
     .style("font-weight", "bold")
     .style("font-size", unitSize)
     .text(unit)

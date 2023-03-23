@@ -297,7 +297,7 @@ if (!empty($table->data)) {
     html_print_input_hidden('multiple_delete', 1);
     ui_pagination($count_network_templates, false, $offset);
     html_print_table($table);
-    ui_pagination($count_network_templates, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination($count_network_templates, false, $offset, 0, false, 'offset', true, '');
     echo "<div class='pdd_l_5px right'>";
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';

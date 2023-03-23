@@ -146,17 +146,41 @@ foreach ($osList as $os) {
     $table->data[] = $data;
 }
 
+$tablePagination = '';
 if (isset($data) === true) {
     html_print_table($table);
-    ui_pagination($count_osList, ui_get_url_refresh(['message' => false]), $offset, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination(
+        $count_osList,
+        ui_get_url_refresh(['message' => false]),
+        $offset,
+        0,
+        true,
+        'offset',
+        false,
+        ''
+    );
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined operating systems') ]);
 }
 
+$buttons = '';
 if (is_metaconsole() === true) {
-    echo '<form method="post" action="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=builder">';
-        echo "<div style='text-align:right;width:".$table->width."'>";
-            html_print_submit_button(__('Create OS'), '', false, 'class="sub next"');
-        echo '</div>';
-    echo '</form>';
+    $buttons .= '<form method="post" action="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=builder">';
+    $buttons .= html_print_submit_button(
+        __('Create OS'),
+        '',
+        false,
+        ['icon' => 'next'],
+        true
+    );
+    $buttons .= '</form>';
 }
+
+html_print_action_buttons(
+    $buttons,
+    [
+        'type'          => 'data_table',
+        'class'         => 'fixed_action_buttons',
+        'right_content' => $tablePagination,
+    ]
+);

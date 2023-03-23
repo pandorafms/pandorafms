@@ -393,6 +393,7 @@ if ($create_user === true) {
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
     $values['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
+    $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 

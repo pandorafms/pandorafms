@@ -407,7 +407,3 @@ div#tree-controller-recipient {
 .tree-node .node-icon.node-status {
   border: 0;
 }
-
-.max-graph-tree-view {
-  width: calc(100% - 100px);
-}

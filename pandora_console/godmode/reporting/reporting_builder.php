@@ -1597,11 +1597,13 @@ switch ($action) {
                                 $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
                                 $log_number = get_parameter('log_number', '');
 
                                 $es['source'] = $source;
                                 $es['id_agents'] = $agents_to_report;
                                 $es['search'] = $search;
+                                $es['full_text'] = $full_text;
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
@@ -2542,11 +2544,13 @@ switch ($action) {
                                 $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
                                 $log_number = get_parameter('log_number', '');
 
                                 $es['source'] = $source;
                                 $es['id_agents'] = $agents_to_report;
                                 $es['search'] = $search;
+                                $es['full_text'] = $full_text;
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);

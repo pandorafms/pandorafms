@@ -1390,7 +1390,7 @@ if (check_login()) {
                     false,
                     'offset',
                     true,
-                    'pagination-bottom',
+                    '',
                     'pagination_list_modules(offset_param)',
                     [
                         'count'  => '',
@@ -1690,6 +1690,18 @@ if (check_login()) {
 
         if (empty($search) === false) {
             $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
+        }
+
+        if (str_contains($status, '6') === true) {
+            $expl = explode(',', $status);
+            $exist = array_search('6', $expl);
+            if (isset($exist) === true) {
+                unset($expl[$exist]);
+            }
+
+            array_push($expl, '1', '2');
+
+            $status = implode(',', $expl);
         }
 
         $where .= sprintf(

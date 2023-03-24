@@ -702,6 +702,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $eventsGraph = html_print_div(
         [
             'style'   => 'height: 150px;',
+            'class'   => 'max-graph-tree-view',
             'content' => graph_graphic_agentevents(
                 $id_agente,
                 '500px;',
@@ -932,6 +933,33 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             function sendHash(url) {
                 window.location = url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."';
  
+            }
+
+            $('.max-graph-tree-view').ready(function() {
+                widthGraph();
+            });
+
+            $(window).resize(function() {
+                widthGraph();
+            });
+
+            function widthGraph () {
+                var parentWidth = $('.max-graph-tree-view').parent().width();
+                $('.max-graph-tree-view').children().width(parentWidth + 5);
+                
+                $('<input>').attr({
+                    type: 'hidden',
+                    id: 'graph-counter',
+                    value: 1
+                }).appendTo('#container');
+
+                
+                if ($('#graph-counter').val() == 1) {
+                    $('.max-graph-tree-view div.flot-x-axis').css('inset', '-25px').css('margin-top', '10px').css('margin-left', '10px');
+                    $('.max-graph-tree-view canvas.flot-base').css('height', '85px');
+                    $('#graph-counter').val(2);
+                }
+
             }
 
         </script>";

@@ -2640,9 +2640,17 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
   `action` TINYINT UNSIGNED DEFAULT 0,
   `ssh_key` TEXT,
   `ssh_pubkey` TEXT,
+  `ssh_status` TINYINT UNSIGNED DEFAULT 0,
   `last_error` TEXT,
+  `db_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_delay` BIGINT DEFAULT 0,
+  `master` TINYINT UNSIGNED DEFAULT 0,
+  `utimestamp` BIGINT DEFAULT 0,
+  `mysql_version` VARCHAR(10) DEFAULT '',
+  `pandora_version` VARCHAR(10) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
 -- Table `twidget`

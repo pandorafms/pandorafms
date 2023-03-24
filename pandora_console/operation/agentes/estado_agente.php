@@ -1163,7 +1163,6 @@ foreach ($agents as $agent) {
 
     $data[2] = html_print_div(
         [
-            'class'   => 'invert_filter main_menu_icon',
             'content' => ui_print_os_icon($agent['id_os'], false, true),
         ],
         true

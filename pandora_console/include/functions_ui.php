@@ -959,15 +959,39 @@ function ui_print_type_agent_icon(
     if ((int) $id_os === SATELLITE_OS_ID) {
         // Satellite.
         $options['title'] = __('Satellite');
-        $output = html_print_image('images/satellite@os.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/satellite@os.svg',
+            true,
+            ['class' => 'main_menu_icon invert_filter'],
+            false,
+            false,
+            false,
+            true
+        );
     } else if ($remote_contact === $contact && $remote === 0 && empty($version) === true) {
         // Network.
         $options['title'] = __('Network');
-        $output = html_print_image('images/network-server@os.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/network-server@os.svg',
+            true,
+            ['class' => 'main_menu_icon invert_filter'],
+            false,
+            false,
+            false,
+            true
+        );
     } else {
         // Software.
         $options['title'] = __('Software');
-        $output = html_print_image('images/data-server@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/data-server@svg.svg',
+            true,
+            ['class' => 'main_menu_icon invert_filter'],
+            false,
+            false,
+            false,
+            true
+        );
     }
 
     return $output;

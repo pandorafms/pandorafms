@@ -43,7 +43,7 @@ if (is_ajax() === true) {
         $table = new StdClass();
         $table->data = [];
         $table->width = '100%';
-        $table->class = 'databox filters table_result_auth';
+        $table->class = 'databox filters table_result_auth filter-table-adv';
         $table->size['name'] = '30%';
         $table->style['name'] = 'font-weight: bold';
 
@@ -94,7 +94,11 @@ if (is_ajax() === true) {
                     '',
                     30,
                     100,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w400px'
                 );
                 $table->data['ldap_server'] = $row;
 
@@ -107,7 +111,11 @@ if (is_ajax() === true) {
                     '',
                     10,
                     100,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w400px'
                 );
                 $table->data['ldap_port'] = $row;
 
@@ -126,7 +134,10 @@ if (is_ajax() === true) {
                     '',
                     '',
                     0,
-                    true
+                    true,
+                    false,
+                    true,
+                    'w400px'
                 );
                 $table->data['ldap_version'] = $row;
 
@@ -189,12 +200,12 @@ if (is_ajax() === true) {
                     $alt = '',
                     60,
                     100,
-                    true
+                    true,
+                    false,
+                    false,
+                    'w400px-important'
                 );
-                $row['control'] .= ui_print_reveal_password(
-                    'ldap_admin_pass',
-                    true
-                );
+
                 $table->data['ldap_admin_pass'] = $row;
 
                 // Ldapsearch timeout.
@@ -208,7 +219,11 @@ if (is_ajax() === true) {
                     '',
                     10,
                     10,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w400px'
                 );
                 $table->data['ldap_search_timeout'] = $row;
 
@@ -239,7 +254,11 @@ if (is_ajax() === true) {
                     '',
                     30,
                     100,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w400px'
                 );
                 $table->data['ldap_server_secondary'] = $row;
 
@@ -252,7 +271,11 @@ if (is_ajax() === true) {
                     '',
                     10,
                     100,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w400px'
                 );
                 $table->data['ldap_port_secondary'] = $row;
 
@@ -271,7 +294,10 @@ if (is_ajax() === true) {
                     '',
                     '',
                     0,
-                    true
+                    true,
+                    false,
+                    true,
+                    'w400px'
                 );
                 $table->data['ldap_version_secondary'] = $row;
 
@@ -334,11 +360,10 @@ if (is_ajax() === true) {
                     $alt = '',
                     60,
                     100,
-                    true
-                );
-                $row['control'] .= ui_print_reveal_password(
-                    'ldap_admin_pass_secondary',
-                    true
+                    true,
+                    false,
+                    false,
+                    'w400px-important'
                 );
                 $table->data['ldap_admin_pass_secondary'] = $row;
             break;
@@ -407,7 +432,11 @@ if (is_ajax() === true) {
             '',
             10,
             10,
-            true
+            true,
+            false,
+            false,
+            '',
+            'w400px'
         );
         $table->data['session_timeout'] = $row;
 
@@ -421,7 +450,7 @@ require_once $config['homedir'].'/include/functions_profile.php';
 $table = new StdClass();
 $table->data = [];
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
 $table->size['name'] = '30%';
 $table->style['name'] = 'font-weight: bold';
 
@@ -459,12 +488,15 @@ $row['control'] = html_print_select(
     '',
     '',
     0,
-    true
+    true,
+    false,
+    true,
+    'w400px'
 );
 $table->data['auth'] = $row;
 
 // Form.
-echo '<form id="form_setup" method="post">';
+echo '<form id="form_setup" class="max_floating_element_size" method="post">';
 
 if (is_metaconsole() === false) {
     html_print_input_hidden('update_config', 1);
@@ -478,17 +510,14 @@ html_print_csrf_hidden();
 
 html_print_table($table);
 html_print_div([ 'id' => 'table_auth_result' ]);
-html_print_div(
-    [
-        'class'   => 'action-buttons w100p',
-        'content' => html_print_submit_button(
-            __('Update'),
-            'update_button',
-            false,
-            [ 'icon' => 'update' ],
-            true
-        ),
-    ]
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Update'),
+        'update_button',
+        false,
+        [ 'icon' => 'update' ],
+        true
+    )
 );
 
 echo '</form>';

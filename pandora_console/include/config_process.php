@@ -20,7 +20,7 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC230322';
+$build_version = 'PC230324';
 $pandora_version = 'v7.0NG.769';
 
 // Do not overwrite default timezone set if defined.
@@ -153,6 +153,19 @@ if (! defined('ENTERPRISE_DIR')) {
 }
 
 db_select_engine();
+
+if (empty($config['remote_config']) === false
+    && file_exists($config['remote_config'].'/conf/'.PANDORA_HA_FILE)
+    && filesize($config['remote_config'].'/conf/'.PANDORA_HA_FILE) > 0
+) {
+    $data = file_get_contents($config['remote_config'].'/conf/'.PANDORA_HA_FILE);
+    if (empty($data) === false) {
+        $ip_list = explode(',', $data);
+        // Connects to the first pandora_ha_dbs.conf database.
+        $config['dbhost'] = trim($ip_list[0]);
+    }
+}
+
 $config['dbconnection'] = db_connect();
 
 require_once $ownDir.'functions_config.php';

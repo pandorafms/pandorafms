@@ -54,6 +54,8 @@ Exported Functions:
 
 =item * C<pandora_event>
 
+=item * C<pandora_timed_event>
+
 =item * C<pandora_execute_alert>
 
 =item * C<pandora_execute_action>
@@ -194,6 +196,7 @@ our @EXPORT = qw(
 	pandora_evaluate_alert
 	pandora_evaluate_snmp_alerts
 	pandora_event
+	pandora_timed_event
 	pandora_extended_event
 	pandora_execute_alert
 	pandora_execute_action
@@ -3999,7 +4002,8 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
+#sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
+sub pandora_event {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh,
 		$source, $user_name, $comment, $id_extra, $tags,
@@ -4114,6 +4118,28 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
 	close (EVENT_FILE);
 
 	return $event_id;
+}
+
+##########################################################################
+=head2 C<< pandora_timed_event (I<$time_limit>, I<@event>) >> 
+
+Generate an event, but no more than one every $time_limit seconds.
+
+=cut
+##########################################################################
+my %TIMED_EVENTS :shared;
+sub pandora_timed_event ($@) {
+	my ($time_limit, @event) = @_;
+
+	# Match events by message.
+	my $event_msg = $event[1];
+
+	# Do not generate more than one event every $time_limit seconds.
+	my $now = time();
+	if (!defined($TIMED_EVENTS{$event_msg}) || $TIMED_EVENTS{$event_msg} + $time_limit < $now) {
+		$TIMED_EVENTS{$event_msg} = $now;
+		pandora_event(@event);
+	}
 }
 
 ##########################################################################

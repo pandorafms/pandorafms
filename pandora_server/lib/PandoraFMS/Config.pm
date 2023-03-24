@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.769";
-my $pandora_build = "230323";
+my $pandora_build = "230324";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -552,6 +552,25 @@ sub pandora_load_config {
 	$pa_config->{"dataserver_smart_queue"} = 0; # 7.0.765
 
 	$pa_config->{"unknown_block_size"} = 1000; # 7.0.769
+
+	$pa_config->{"ha_mode"} = "pacemaker"; # 7.0.770
+	$pa_config->{"ha_file"} = undef; # 7.0.770
+	$pa_config->{"ha_hosts_file"} = '/var/spool/pandora/data_in/conf/pandora_ha_hosts.conf'; # 7.0.770
+	$pa_config->{"ha_connect_retries"} = 2; # 7.0.770
+	$pa_config->{"ha_connect_delay"} = 1; # 7.0.770
+	$pa_config->{"ha_dbuser"} = undef; # 7.0.770
+	$pa_config->{"ha_dbpass"} = undef; # 7.0.770
+	$pa_config->{"ha_hosts"} = undef; # 7.0.770
+	$pa_config->{"ha_resync"} = '/usr/share/pandora_server/util/pandora_ha_resync_slave.sh'; # 7.0.770
+	$pa_config->{"ha_resync_log"} = '/var/log/pandora/pandora_ha_resync.log'; # 7.0.770
+	$pa_config->{"ha_sshuser"} = 'pandora'; # 7.0.770
+	$pa_config->{"ha_sshport"} = 22; # 7.0.770
+
+	$pa_config->{"ha_max_splitbrain_retries"} = 2;
+	$pa_config->{"ha_resync_sleep"} = 10;
+
+	$pa_config->{"repl_dbuser"} = undef; # 7.0.770
+	$pa_config->{"repl_dbpass"} = undef; # 7.0.770
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -1283,8 +1302,35 @@ sub pandora_load_config {
 		}
 
 		# Pandora HA extra
+		elsif ($parametro =~ m/^ha_mode\s(.*)/i) {
+			$pa_config->{'ha_mode'} = clean_blank($1);
+		}
 		elsif ($parametro =~ m/^ha_file\s(.*)/i) {
 			$pa_config->{'ha_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_hosts_file\s(.*)/i) {
+			$pa_config->{'ha_hosts_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_dbuser\s(.*)/i) {
+			$pa_config->{'ha_dbuser'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_dbpass\s(.*)/i) {
+			$pa_config->{'ha_dbpass'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_sshuser\s(.*)/i) {
+			$pa_config->{'ha_sshuser'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_sshport\s(.*)/i) {
+			$pa_config->{'ha_sshport'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_hosts\s(.*)/i) {
+			$pa_config->{'ha_hosts'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_resync\s(.*)/i) {
+			$pa_config->{'ha_resync'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_resync_log\s(.*)/i) {
+			$pa_config->{'ha_resync_log'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^ha_pid_file\s(.*)/i) {
 			$pa_config->{'ha_pid_file'} = clean_blank($1);
@@ -1313,8 +1359,41 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^dataserver_smart_queue\s([0-1])/i) {
 			$pa_config->{'dataserver_smart_queue'} = clean_blank($1);
 		}
-		
+		elsif ($parametro =~ m/^ha_connect_retries\s+([0-9]*)/i) {
+			$pa_config->{'ha_connect_retries'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_connect_delay\s+([0-9]*)/i) {
+			$pa_config->{'ha_connect_delay'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^repl_dbuser\s(.*)/i) {
+			$pa_config->{'repl_dbuser'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^repl_dbpass\s(.*)/i) {
+			$pa_config->{'repl_dbpass'} = clean_blank($1);
+		}
 	} # end of loop for parameter #
+
+	# The DB host was overridden by pandora_ha.
+	if (-f $pa_config->{'ha_hosts_file'}) {
+		eval {
+			open(my $fh, '<', $pa_config->{'ha_hosts_file'}) or return;
+			my $dbhost = <$fh>;
+			chomp($dbhost);
+			if (defined($dbhost) && $dbhost ne '') {
+				$pa_config->{'dbhost'} = $dbhost;
+			}
+			close($fh);
+		};
+	}
+	print " [*] DB Host is " . $pa_config->{'dbhost'} . "\n";
+
+	# ha_dbuser and ha_dbpass default to dbuser and dbpass respectively.
+	$pa_config->{'ha_dbuser'} = $pa_config->{'dbuser'} unless defined($pa_config->{'ha_dbuser'});
+	$pa_config->{'ha_dbpass'} = $pa_config->{'dbpass'} unless defined($pa_config->{'ha_dbpass'});
+
+	# repl_dbuser and repl_dbpass default to dbuser and dbpass respectively.
+	$pa_config->{'repl_dbuser'} = $pa_config->{'dbuser'} unless defined($pa_config->{'repl_dbuser'});
+	$pa_config->{'repl_dbpass'} = $pa_config->{'dbpass'} unless defined($pa_config->{'repl_dbpass'});
 
 	# Generate the encryption key after reading the passphrase.
 	$pa_config->{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [$pa_config, $pa_config->{"encryption_passphrase"}]);

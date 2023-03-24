@@ -75,10 +75,10 @@ if (check_login(false) === false) {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Access denied</title>
-    <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
-    <link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
-    <link rel="stylesheet" href="styles/js/jquery-ui.min.css" type="text/css" />
-    <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
+    <link rel="stylesheet" href="styles/pandora.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+    <link rel="stylesheet" href="styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+    <link rel="stylesheet" href="styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+    <link rel="stylesheet" href="styles/js/jquery-ui_custom.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
     <script language="javascript" type='text/javascript' src='javascript/pandora.js?v=<?php echo $config['current_package']; ?>'></script>
     <script language="javascript" type='text/javascript' src='javascript/pandora_ui.js?v=<?php echo $config['current_package']; ?>'></script>
     <script language="javascript" type='text/javascript' src='javascript/jquery.current.js?v=<?php echo $config['current_package']; ?>'></script>
@@ -137,10 +137,10 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Pandora FMS Graph</title>
-        <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
-        <link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
-        <link rel="stylesheet" href="styles/js/jquery-ui.min.css" type="text/css" />
-        <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
+        <link rel="stylesheet" href="styles/pandora.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="styles/js/jquery-ui_custom.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
         <script language="javascript" type='text/javascript' src='javascript/pandora_ui.js?v=<?php echo $config['current_package']; ?>'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery.current.js?v=<?php echo $config['current_package']; ?>'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery.pandora.js?v=<?php echo $config['current_package']; ?>'></script>

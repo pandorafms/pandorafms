@@ -27,11 +27,11 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
-
+global $config;
 ?>
 <head>
-    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
-    <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
+    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>?v=<?php echo $config['current_package']; ?>">
+    <script src="<?php $asset('resources/javascript/umc.js'); ?>?v=<?php echo $config['current_package']; ?>" type="text/javascript"></script>
 </head>
 
 

@@ -80,9 +80,9 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')) {
             $query = ui_get_url_refresh(false);
             echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
             if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-                echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
+                echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css?v='.$config['current_package'].'" type="text/css"/>';
             } else {
-                echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+                echo '<link rel="stylesheet" href="../../include/styles/pandora.css?v='.$config['current_package'].'" type="text/css"/>';
             }
         }
         ?>

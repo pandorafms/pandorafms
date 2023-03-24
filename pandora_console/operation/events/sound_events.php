@@ -154,9 +154,9 @@ ui_require_css_file('discovery');
 <?php
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
 if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css" />';
+    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css?v='.$config['current_package'].'" type="text/css" />';
 } else {
-    echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+    echo '<link rel="stylesheet" href="../../include/styles/pandora.css?v='.$config['current_package'].'" type="text/css" />';
 }
 
 echo '</head>';

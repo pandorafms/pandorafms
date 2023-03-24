@@ -4102,7 +4102,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
         // Load tables.css.
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
@@ -4111,7 +4111,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
         if (is_metaconsole() === true) {
             // Load meta_tables.css.
             $output .= '<link rel="stylesheet" href="';
@@ -4121,7 +4121,7 @@ function ui_print_datatable(array $parameters)
                 false,
                 false
             );
-            $output .= '"/>';
+            $output .= '?v='.$config['current_package'].'"/>';
         }
 
         // Load datatables.js.

@@ -233,7 +233,7 @@ ob_start('ui_process_page_head');
 enterprise_include_once('index.php');
 
 // Load event.css to display the about section dialog with correct styles.
-echo '<link rel="stylesheet" href="'.ui_get_full_url('/include/styles/events.css', false, false, false).'" type="text/css" />';
+echo '<link rel="stylesheet" href="'.ui_get_full_url('/include/styles/events.css', false, false, false).'?v='.$config['current_package'].'" type="text/css" />';
 
 echo '<script type="text/javascript">';
 echo 'var dispositivo = navigator.userAgent.toLowerCase();';

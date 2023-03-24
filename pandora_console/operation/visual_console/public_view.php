@@ -62,7 +62,13 @@ require_once 'include/functions_visual_map.php';
 
 $hash = (string) get_parameter('hash');
 $visualConsoleId = (int) get_parameter('id_layout');
-$config['id_user'] = (string) get_parameter('id_user');
+$userAccessMaintenance = null;
+if (empty($config['id_user']) === true) {
+    $config['id_user'] = (string) get_parameter('id_user');
+} else {
+    $userAccessMaintenance = $config['id_user'];
+}
+
 $refr = (int) get_parameter('refr', ($config['refr'] ?? null));
 
 if (!isset($config['pure'])) {
@@ -179,6 +185,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
 
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
+    var user = "<?php echo $userAccessMaintenance; ?>";
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode(',', $visualConsoleItems).']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
@@ -282,7 +289,9 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     );
 
     if(props.maintenanceMode != null) {
-        visualConsoleManager.visualConsole.enableMaintenanceMode();
+        if(props.maintenanceMode.user !== user) {
+            visualConsoleManager.visualConsole.enableMaintenanceMode();
+        }
     }
 
     var controls = document.getElementById('vc-controls');

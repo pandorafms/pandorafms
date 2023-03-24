@@ -226,7 +226,7 @@ final class DonutGraph extends Item
                     'module_input'            => true,
                     'module_name'             => 'moduleId',
                     'module_none'             => false,
-                    'get_only_string_modules' => true,
+                    'get_only_string_modules' => false,
                 ],
             ];
 
@@ -235,14 +235,13 @@ final class DonutGraph extends Item
                 'label'     => __('Module'),
                 'arguments' => [
                     'type'                    => 'autocomplete_module',
-                    'fields'                  => $fields,
                     'name'                    => 'moduleId',
                     'selected'                => $values['moduleId'],
                     'return'                  => true,
                     'sort'                    => false,
                     'agent_id'                => $values['agentId'],
                     'metaconsole_id'          => $values['metaconsoleId'],
-                    'get_only_string_modules' => true,
+                    'get_only_string_modules' => false,
                 ],
             ];
 

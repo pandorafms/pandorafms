@@ -230,10 +230,15 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
             'title' => __('Standby'),
             'text'  => __('Standby'),
         ],
+        [
+            'title' => __('Operations'),
+            'text'  => __('Operations'),
+        ],
     );
 
     $columns = array_merge(
         ['standby'],
+        ['force'],
         $columns
     );
 
@@ -270,7 +275,11 @@ if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) che
         $column_names,
         ['text' => 'Module'],
         ['text' => 'Template'],
-        ['text' => 'Operation'],
+        [
+            'title' => __('Actions'),
+            'text'  => __('Actions'),
+            'style' => 'min-width: 15%;',
+        ],
         ['text' => 'Last fired'],
         ['text' => 'Status']
     );
@@ -279,22 +288,9 @@ if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) che
         $columns,
         ['agent_module_name'],
         ['template_name'],
-        ['operation'],
+        ['actions'],
         ['last_fired'],
         ['status']
-    );
-}
-
-
-if ($print_agent === true) {
-    array_push(
-        $column_names,
-        ['text' => 'Agent']
-    );
-
-    $columns = array_merge(
-        $columns,
-        ['agent_name']
     );
 }
 
@@ -313,22 +309,6 @@ if (is_metaconsole() === false) {
         $columns = array_merge(
             ['validate'],
             $columns
-        );
-    }
-
-    if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
-        array_push(
-            $column_names,
-            [
-                'title' => __('Actions'),
-                'text'  => __('Actions'),
-                'style' => 'min-width: 15%;',
-            ]
-        );
-
-        $columns = array_merge(
-            $columns,
-            ['actions']
         );
     }
 }

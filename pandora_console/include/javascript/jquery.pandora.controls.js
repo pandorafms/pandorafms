@@ -269,6 +269,7 @@
 
           $(this).change(function() {
             var id_os = this.value;
+            $("select#id_os").select2("close");
 
             var home_url;
             if (typeof settings == "undefined") home_url = "./";

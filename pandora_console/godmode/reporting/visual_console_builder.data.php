@@ -367,69 +367,65 @@ $(document).ready (function () {
     $("#button-getsize").click(function(event){
         event.preventDefault();
         if ($('#imagen').attr('src') != '') {
-        if (parseInt($('#imagen').width()) < 1024){
-            alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
-            $('input[name=width]').val('1024');
-            $('#preimagew').html(1024);
+            if (parseInt($('#imagen').width()) < 1024){
+                alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
+                $('input[name=width]').val('1024');
+                $('#preimagew').html(1024);
+            } else{
+                $('input[name=width]').val($('#imagen').width());
+                $('#preimagew').html($('#imagen').width());
+            }
+
+            if (parseInt($('#imagen').height()) < 768){
+                alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');
+                $('input[name=height]').val('768');
+                $('#preimageh').html(768);
+            } else{
+                $('input[name=height]').val($('#imagen').height());
+                $('#preimageh').html($('#imagen').height());
+            }
+        } else {
+            original_image=new Image();
+            url_hack_metaconsole = metaconsole_url();
+            original_image.src= url_hack_metaconsole + 'images/console/background/'+$('#background').val();
+            if (parseInt(original_image.width) < 1024){
+                alert('Default width is '+original_image.width+'px, smaller than minimum -> 1024px');
+                $('input[name=width]').val('1024');
+                $('#preimagew').html(1024);
+            } else {
+                $('input[name=width]').val(original_image.height);
+                $('#preimagew').html(original_image.height);
+            }
+            if (parseInt(original_image.height) < 768){
+                alert('Default height is '+original_image.height+'px, smaller than minimum -> 768px');
+                $('input[name=height]').val('768');
+                $('#preimageh').html(768);
+            } else {
+                $('input[name=height]').val(original_image.height);
+                $('#preimageh').html(original_image.height);
+            }
         }
-        else{
-            $('input[name=width]').val($('#imagen').width());
-            $('#preimagew').html($('#imagen').width());
-        }
-        if (parseInt($('#imagen').height()) < 768){
-            alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');
-            $('input[name=height]').val('768');
-            $('#preimageh').html(768);
-        }
-        else{
-            $('input[name=height]').val($('#imagen').height());
-            $('#preimageh').html($('#imagen').height());
-        }
-    }
-    else{
-        original_image=new Image();
-        url_hack_metaconsole = metaconsole_url();
-        original_image.src= url_hack_metaconsole + 'images/console/background/'+$('#background').val();
-        if (parseInt(original_image.width) < 1024){
-            alert('Default width is '+original_image.width+'px, smaller than minimum -> 1024px');
-            $('input[name=width]').val('1024');
-            $('#preimagew').html(1024);
-        }
-        else{
-            $('input[name=width]').val(original_image.height);
-            $('#preimagew').html(original_image.height);
-        }
-        if (parseInt(original_image.height) < 768){
-            alert('Default height is '+original_image.height+'px, smaller than minimum -> 768px');
-            $('input[name=height]').val('768');
-            $('#preimageh').html(768);
-        }
-        else{
-            $('input[name=height]').val(original_image.height);
-            $('#preimageh').html(original_image.height);
-        }
-    }
     });
     
-    $( "input[type=submit]" ).click(function( event ) {
-            if (parseInt($('input[name=width]').val()) < 1024){
-                alert('Default width is '+$('input[name=width]').val()+'px, smaller than minimum -> 1024px');
-                $('input[name=width]').val('1024');
-                $('#preimagew').html('1024');
-                var x = 1;
-            }
+    $( "button[type=submit]" ).click(function( event ) {
+        console.log('aaaaaaaaaaa');
+        if (parseInt($('input[name=width]').val()) < 1024){
+            alert('Default width is '+$('input[name=width]').val()+'px, smaller than minimum -> 1024px');
+            $('input[name=width]').val('1024');
+            $('#preimagew').html('1024');
+            var x = 1;
+        }
             
-            if (parseInt($('input[name=height]').val()) < 768){
-                alert('Default height is '+$('input[name=height]').val()+'px, smaller than minimum -> 768px');
-                $('input[name=height]').val('768');
-                $('#preimageh').html('768');
-                var y = 1;
-            }
+        if (parseInt($('input[name=height]').val()) < 768){
+            alert('Default height is '+$('input[name=height]').val()+'px, smaller than minimum -> 768px');
+            $('input[name=height]').val('768');
+            $('#preimageh').html('768');
+            var y = 1;
+        }
             
-            if (x || y){
-                return false;
-            }
-            
+        if (x || y){
+            return false;
+        }   
     });
     
     //Preload image size and activate auto image size changer when user click over a image in the selector

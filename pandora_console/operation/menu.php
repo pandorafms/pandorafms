@@ -205,7 +205,7 @@ if ($access_console_node === true) {
             $sub['operation/inventory/inventory']['refr'] = 0;
         }
 
-        if ($config['activate_netflow']) {
+        if ($config['activate_netflow'] || $config['activate_sflow']) {
             $sub['network_traffic'] = [
                 'text'    => __('Network'),
                 'id'      => 'Network',
@@ -213,34 +213,20 @@ if ($access_console_node === true) {
                 'subtype' => 'nolink',
                 'refr'    => 0,
             ];
-
-            // Initialize the submenu.
-            $netflow_sub = [];
-
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/netflow/netflow_explorer' => [
-                        'text' => __('Netflow explorer'),
-                        'id'   => 'Netflow explorer',
-                    ],
-                    'operation/netflow/nf_live_view'     => [
-                        'text' => __('Netflow Live View'),
-                        'id'   => 'Netflow Live View',
-                    ],
-                ]
-            );
-
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/network/network_usage_map' => [
-                        'text' => __('Network usage map'),
-                        'id'   => 'Network usage map',
-                    ],
-                ]
-            );
-
+            $netflow_sub = [
+                'operation/netflow/netflow_explorer'  => [
+                    'text' => __('Netflow explorer'),
+                    'id'   => 'Netflow explorer',
+                ],
+                'operation/netflow/nf_live_view'      => [
+                    'text' => __('Netflow Live View'),
+                    'id'   => 'Netflow Live View',
+                ],
+                'operation/network/network_usage_map' => [
+                    'text' => __('Network usage map'),
+                    'id'   => 'Network usage map',
+                ],
+            ];
             $sub['network_traffic']['sub2'] = $netflow_sub;
         }
 

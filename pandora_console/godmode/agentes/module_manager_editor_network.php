@@ -33,7 +33,7 @@ $snmp_browser_path = (is_metaconsole() === true) ? '../../' : '';
 $snmp_browser_path .= 'include/javascript/pandora_snmp_browser.js';
 $array_credential_identifier = CredentialStore::getKeys('CUSTOM');
 
-echo "<script type='text/javascript' src='".$snmp_browser_path."'></script>";
+echo '<script type="text/javascript" src="'.$snmp_browser_path.'?v='.$config['current_package'].'"></script>';
 
 // Define a custom action to save the OID selected
 // in the SNMP browser to the form.

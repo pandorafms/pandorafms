@@ -966,9 +966,9 @@ foreach ($fields as $field) {
             $link_url = '';
         }
 
-        $data_field[1] = '<span style="line-height: 3.5;">'.__('Link text:').'</span>';
-        $data_field[1] .= '<br>';
-        $data_field[1] .= html_print_textarea(
+        $customContent = '<span style="line-height: 3.5;">'.__('Link text:').'</span>';
+        $customContent .= '<br>';
+        $customContent .= html_print_textarea(
             'customvalue_'.$field['id_field'].'[]',
             2,
             1000,
@@ -976,10 +976,10 @@ foreach ($fields as $field) {
             'class="min-height-30px w100p"',
             true
         );
-        $data_field[1] .= '<br>';
-        $data_field[1] .= '<span style="line-height: 3.5;">'.__('Link URL:').'</span>';
-        $data_field[1] .= '<br>';
-        $data_field[1] .= html_print_textarea(
+        $customContent .= '<br>';
+        $customContent .= '<span style="line-height: 3.5;">'.__('Link URL:').'</span>';
+        $customContent .= '<br>';
+        $customContent .= html_print_textarea(
             'customvalue_'.$field['id_field'].'[]',
             2,
             1000,

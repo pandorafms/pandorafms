@@ -14,6 +14,7 @@ div.external-visual-console-container {
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
+  position: relative;
   z-index: 0;
 }
 
@@ -47,7 +48,6 @@ div#vc-controls .nomn #vc-refr-form {
 }
 div#vc-controls div.vc-title,
 div#vc-controls div.vc-refr {
-  /*margin-top: 15px;*/
   margin-left: 3px;
   margin-right: 3px;
 }

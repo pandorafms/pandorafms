@@ -229,7 +229,6 @@ echo '</form>';
 <script>
 $(document).ready (function () {
     if($('input[type=hidden][name=update_field]').val() == 1 && $('#textarea_combo_values').val() != ''){
-        console.log('entra2');
         $('input[type=checkbox][name=is_combo_enable]').prop('checked', true);
         $('#configure_field-3').show();
 
@@ -250,7 +249,6 @@ $(document).ready (function () {
             }
         });
     } else {
-        console.log('entra');
         $('#configure_field-3').hide();
     }
    
@@ -261,17 +259,19 @@ $(document).ready (function () {
     }
 
     $('input[type=checkbox][name=is_link_enabled]').change(function () {
-        if( $(this).is(":checked") ){
+        if( $('input[type=checkbox][name=is_link_enabled]').prop('checked') ){
             $('#configure_field-2').hide();
             $('#configure_field-3').hide();
         } else{
             $('#configure_field-2').show();
-            $('#configure_field-3').show();
+            if($('input[type=checkbox][name=is_combo_enable]').prop('checked') === true) {
+                $('#configure_field-3').show();
+            }
         }
     });
     
     $('input[type=checkbox][name=is_combo_enable]').change(function () {
-        if( $(this).is(":checked") ){
+        if( $('input[type=checkbox][name=is_combo_enable]').prop('checked') ){
           $('#configure_field-3').show();
           dialog_message("#message_no_set_password");
           $('#configure_field-1').hide();
@@ -282,12 +282,14 @@ $(document).ready (function () {
         }
     });
     $('input[type=checkbox][name=is_password_type]').change(function () {
-        if( $(this).is(":checked")){
+        if( $('input[type=checkbox][name=is_password_type]').prop('checked')){
             dialog_message("#message_no_set_combo");
             $('#configure_field-3').hide();
         }
         else{
-            $('#configure_field-3').show();
+            if($('input[type=checkbox][name=is_combo_enable]').prop('checked') === true) {
+                $('#configure_field-3').show();
+            }
         }
     });
 });

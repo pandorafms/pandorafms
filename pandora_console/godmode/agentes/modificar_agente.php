@@ -794,7 +794,7 @@ if ($agents !== false) {
         // Agent name column (1). Agent name.
         $agentNameColumn = html_print_anchor(
             [
-                'href'    => ui_get_full_url($agentNameUrl),
+                'href'    => ui_get_full_url($agentViewUrl),
                 'title'   => $agent['nombre'],
                 'content' => ui_print_truncate_text($agent['alias'], 'agent_medium').implode('', $additionalDataAgentName),
             ],
@@ -866,7 +866,6 @@ if ($agents !== false) {
         // Operating System icon column.
         $osIconColumn = html_print_div(
             [
-                'class'   => 'main_menu_icon invert_filter',
                 'content' => ui_print_os_icon($agent['id_os'], false, true),
             ],
             true
@@ -885,7 +884,6 @@ if ($agents !== false) {
         // Group icon and name column.
         $agentGroupIconColumn = html_print_div(
             [
-                'class'   => 'main_menu_icon invert_filter',
                 'content' => ui_print_group_icon($agent['id_grupo'], true),
             ],
             true
@@ -907,12 +905,12 @@ if ($agents !== false) {
             $agentDisableEnableTitle = __('Enable agent');
             $agentDisableEnableAction = 'enable_agent';
             $agentDisableEnableCaption = __('You are going to enable a cluster agent. Are you sure?');
-            $agentDisableEnableIcon = 'change-pause.svg';
+            $agentDisableEnableIcon = 'change-active.svg';
         } else {
             $agentDisableEnableTitle = __('Disable agent');
             $agentDisableEnableAction = 'disable_agent';
             $agentDisableEnableCaption = __('You are going to disable a cluster agent. Are you sure?');
-            $agentDisableEnableIcon = 'change-active.svg';
+            $agentDisableEnableIcon = 'change-pause.svg';
         }
 
         $agentActionButtons[] = html_print_menu_button(

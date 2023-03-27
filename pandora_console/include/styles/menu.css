@@ -478,7 +478,7 @@ ul li {
 
 .logo_green {
   background-color: #fff;
-  min-height: 60px;
+  min-height: 61px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -528,15 +528,6 @@ ul li {
   background-position: center;
   height: 35px;
   width: 35px;
-}
-
-/* Menu height: 601px, 720px, 735px */
-@media screen and (max-height: 750px) {
-  .menu li,
-  .menu li a,
-  .menu li div {
-    min-height: 28px;
-  }
 }
 
 @media screen and (max-height: 750px) {
@@ -601,7 +592,7 @@ ul li {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  min-height: 50px;
+  min-height: 51px;
 }
 
 .tabs_li {

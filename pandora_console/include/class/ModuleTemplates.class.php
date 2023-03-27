@@ -868,7 +868,7 @@ class ModuleTemplates extends HTML
                 'delete_profile',
                 'images/delete.svg',
                 $row['id_np'],
-                'width:40px',
+                '',
                 true,
                 [
                     'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
@@ -1156,7 +1156,7 @@ class ModuleTemplates extends HTML
                             'del_block_'.$id_group.'_',
                             'images/delete.svg',
                             1,
-                            'width: 40px',
+                            '',
                             true,
                             [
                                 'title'   => __('Delete this block'),
@@ -1253,7 +1253,7 @@ class ModuleTemplates extends HTML
                                 'del_module_'.$module['component_id'].'_',
                                 'images/delete.svg',
                                 1,
-                                'width:40px;',
+                                '',
                                 true,
                                 [
                                     'title'   => __('Delete this module'),

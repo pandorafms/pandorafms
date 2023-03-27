@@ -972,6 +972,9 @@ function openSoundEventModal(settings) {
       width: 600,
       height: 600,
       open: function() {
+        $(".ui-widget-overlay")
+          .css("background", "black")
+          .css("opacity", 0.5);
         $.ajax({
           method: "post",
           url: settings.url,

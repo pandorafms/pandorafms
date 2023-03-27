@@ -538,7 +538,7 @@ final class ModuleGraph extends Item
             // Choose Type module graph if graph normal or custom.
             $inputs[] = [
                 'wrapper'       => 'div',
-                'class'         => 'flex-row-vcenter',
+                'class'         => 'flex',
                 'direct'        => 1,
                 'block_content' => [
                     [

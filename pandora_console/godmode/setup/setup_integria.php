@@ -269,52 +269,102 @@ $table_remote->data = [];
 $table_remote->width = '100%';
 $table_remote->styleTable = 'margin-bottom: 10px;';
 $table_remote->id = 'integria-remote-setup';
-$table_remote->class = 'databox filters';
-$table_remote->size['name'] = '30%';
-$table_remote->style['name'] = 'font-weight: bold';
-$table_remote->style['control'] = 'display: flex;align-items: center;';
+$table_remote->class = 'databox filters filter-table-adv';
+$table_remote->size['hostname'] = '50%';
+$table_remote->size['api_pass'] = '50%';
 
-// Enable eHorus user configuration.
+// Enable Integria user configuration.
 $row = [];
-$row['name'] = ('Integria configuration at user level');
-$row['control'] = html_print_checkbox_switch('integria_user_level_conf', 1, $config['integria_user_level_conf'], true);
+$row['user_level'] = html_print_label_input_block(
+    __('Integria configuration at user level'),
+    html_print_checkbox_switch(
+        'integria_user_level_conf',
+        1,
+        $config['integria_user_level_conf'],
+        true
+    )
+);
 $table_remote->data['integria_user_level_conf'] = $row;
 
 // Integria user.
 $row = [];
-$row['name'] = __('User');
-$row['control'] = html_print_input_text('integria_user', $config['integria_user'], '', 30, 100, true);
-$table_remote->data['integria_user'] = $row;
+$row['user'] = html_print_label_input_block(
+    __('User'),
+    html_print_input_text(
+        'integria_user',
+        $config['integria_user'],
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_user']
+);
 
 // Integria password.
-$row = [];
-$row['name'] = __('Password');
-$row['control'] = html_print_input_password('integria_pass', io_output_password($config['integria_pass']), '', 30, 100, true);
-$row['control'] .= ui_print_reveal_password('integria_pass', true);
+$row['password'] = html_print_label_input_block(
+    __('Password'),
+    html_print_input_password(
+        'integria_pass',
+        io_output_password($config['integria_pass']),
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_pass']
+);
 $table_remote->data['integria_pass'] = $row;
 
 // Integria hostname.
 $row = [];
-$row['name'] = __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true);
-$row['control'] = html_print_input_text('integria_hostname', $config['integria_hostname'], '', 30, 100, true);
-$table_remote->data['integria_hostname'] = $row;
+$row['hostname'] = html_print_label_input_block(
+    __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true),
+    html_print_input_text(
+        'integria_hostname',
+        $config['integria_hostname'],
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_hostname']
+);
 
 // API password.
-$row = [];
-$row['name'] = __('API Password');
-$row['control'] = html_print_input_password('integria_api_pass', io_output_password($config['integria_api_pass']), '', 30, 100, true);
-$row['control'] .= ui_print_reveal_password('integria_api_pass', true);
+$row['api_pass'] = html_print_label_input_block(
+    __('API Password'),
+    html_print_input_password(
+        'integria_api_pass',
+        io_output_password($config['integria_api_pass']),
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_api_pass']
+);
 $table_remote->data['integria_api_pass'] = $row;
 
 // Request timeout.
 $row = [];
-$row['name'] = __('Request timeout');
-$row['control'] = html_print_input_text('integria_req_timeout', $config['integria_req_timeout'], '', 3, 10, true);
+$row['req_timeout'] = html_print_label_input_block(
+    __('Request timeout'),
+    html_print_input_text(
+        'integria_req_timeout',
+        $config['integria_req_timeout'],
+        '',
+        3,
+        10,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_req_timeout']
+);
 $table_remote->data['integria_req_timeout'] = $row;
 
 $row = [];
-$row['name'] = __('Inventory');
-$row['control'] = html_print_button(
+$row['control'] = __('Inventory');
+$row['control'] .= html_print_button(
     __('Sync inventory'),
     'sync-inventory',
     false,
@@ -336,120 +386,132 @@ $table_alert_settings->data = [];
 $table_alert_settings->width = '100%';
 $table_alert_settings->styleTable = 'margin-bottom: 10px;';
 $table_alert_settings->id = 'integria-cr-settings-setup';
-$table_alert_settings->class = 'databox filters';
-$table_alert_settings->size['name'] = '30%';
-$table_alert_settings->style['name'] = 'font-weight: bold';
+$table_alert_settings->class = 'databox filters filter-table-adv';
+$table_alert_settings->size[0] = '50%';
+$table_alert_settings->size[1] = '50%';
 
 // Alert incident title.
 $row = [];
-$row['name'] = __('Title');
-$row['control'] = html_print_input_text(
-    'incident_title',
-    $config['incident_title'],
-    __('Name'),
-    50,
-    100,
-    true,
-    false,
-    false
+$row[0] = html_print_label_input_block(
+    __('Title'),
+    html_print_input_text(
+        'incident_title',
+        $config['incident_title'],
+        __('Name'),
+        50,
+        100,
+        true,
+        false,
+        false
+    )
 );
-$table_alert_settings->data['custom_response_incident_title'] = $row;
 
 // Alert incident description.
-$row = [];
-$row['name'] = __('Ticket body');
-$row['control'] = html_print_textarea(
-    'incident_content',
-    7,
-    25,
-    $config['incident_content'],
-    '',
-    true
+$row[1] = html_print_label_input_block(
+    __('Ticket body'),
+    html_print_textarea(
+        'incident_content',
+        3,
+        25,
+        $config['incident_content'],
+        '',
+        true
+    )
 );
-$table_alert_settings->data['custom_response_incident_content'] = $row;
+$table_alert_settings->data[0] = $row;
 
 // Alert default group.
 $row = [];
-$row['name'] = __('Group');
-$row['control'] = html_print_select(
-    $integria_group_values,
-    'default_group',
-    $config['default_group'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select(
+        $integria_group_values,
+        'default_group',
+        $config['default_group'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_alert_settings->data['custom_response_def_group'] = $row;
 
 // Alert default criticity.
-$row = [];
-$row['name'] = __('Priority');
-$row['control'] = html_print_select(
-    $integria_criticity_values,
-    'default_criticity',
-    $config['default_criticity'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[1] = html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        $integria_criticity_values,
+        'default_criticity',
+        $config['default_criticity'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_alert_settings->data['custom_response_def_criticity'] = $row;
+$table_alert_settings->data[1] = $row;
 
 // Alert default owner.
 $row = [];
-$row['name'] = __('Owner');
-$row['control'] = html_print_autocomplete_users_from_integria(
-    'default_owner',
-    $config['default_owner'],
-    true
+$row[0] = html_print_label_input_block(
+    __('Owner'),
+    html_print_autocomplete_users_from_integria(
+        'default_owner',
+        $config['default_owner'],
+        true,
+        '30',
+        false,
+        false,
+        'w100p'
+    ),
+    ['div_class' => 'inline']
 );
-
-$table_alert_settings->data['custom_response_def_owner'] = $row;
 
 // Alert default incident type.
-$row = [];
-$row['name'] = __('Type');
-$row['control'] = html_print_select(
-    $integria_types_values,
-    'incident_type',
-    $config['incident_type'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[1] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        $integria_types_values,
+        'incident_type',
+        $config['incident_type'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_alert_settings->data['custom_response_incident_type'] = $row;
+$table_alert_settings->data[2] = $row;
 
 // Alert default incident status.
 $row = [];
-$row['name'] = __('Status');
-$row['control'] = html_print_select(
-    $integria_status_values,
-    'incident_status',
-    $config['incident_status'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[0] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $integria_status_values,
+        'incident_status',
+        $config['incident_status'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_alert_settings->data['custom_response_incident_status'] = $row;
+$table_alert_settings->data[3] = $row;
 
 // Custom response settings.
 $table_cr_settings = new StdClass();
@@ -457,126 +519,138 @@ $table_cr_settings->data = [];
 $table_cr_settings->width = '100%';
 $table_cr_settings->styleTable = 'margin-bottom: 10px;';
 $table_cr_settings->id = 'integria-cr-settings-setup';
-$table_cr_settings->class = 'databox filters';
-$table_cr_settings->size['name'] = '30%';
-$table_cr_settings->style['name'] = 'font-weight: bold';
+$table_cr_settings->class = 'databox filters filter-table-adv';
+$table_cr_settings->size[0] = '50%';
+$table_cr_settings->size[1] = '50%';
 
 // Custom response incident title.
 $row = [];
-$row['name'] = __('Title');
-$row['control'] = html_print_input_text(
-    'cr_incident_title',
-    $config['cr_incident_title'],
-    __('Name'),
-    50,
-    100,
-    true,
-    false,
-    false
+$row[0] = html_print_label_input_block(
+    __('Title'),
+    html_print_input_text(
+        'cr_incident_title',
+        $config['cr_incident_title'],
+        __('Name'),
+        50,
+        100,
+        true,
+        false,
+        false
+    )
 );
-$table_cr_settings->data['custom_response_incident_title'] = $row;
 
 // Custom response incident description.
-$row = [];
-$row['name'] = __('Ticket body');
-$row['control'] = html_print_textarea(
-    'cr_incident_content',
-    7,
-    25,
-    $config['cr_incident_content'],
-    '',
-    true
+$row[1] = html_print_label_input_block(
+    __('Ticket body'),
+    html_print_textarea(
+        'cr_incident_content',
+        3,
+        25,
+        $config['cr_incident_content'],
+        '',
+        true
+    )
 );
 
-$table_cr_settings->data['custom_response_incident_content'] = $row;
+$table_cr_settings->data[0] = $row;
 
 // Custom response default group.
 $row = [];
-$row['name'] = __('Group');
-$row['control'] = html_print_select(
-    $integria_group_values,
-    'cr_default_group',
-    $config['cr_default_group'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select(
+        $integria_group_values,
+        'cr_default_group',
+        $config['cr_default_group'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_cr_settings->data['custom_response_def_group'] = $row;
 
 // Custom response default criticity.
-$row = [];
-$row['name'] = __('Priority');
-$row['control'] = html_print_select(
-    $integria_criticity_values,
-    'cr_default_criticity',
-    $config['cr_default_criticity'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[1] = html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        $integria_criticity_values,
+        'cr_default_criticity',
+        $config['cr_default_criticity'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_cr_settings->data['custom_response_def_criticity'] = $row;
+$table_cr_settings->data[1] = $row;
 
 // Custom response default owner.
 $row = [];
-$row['name'] = __('Owner');
-$row['control'] = html_print_autocomplete_users_from_integria(
-    'cr_default_owner',
-    $config['cr_default_owner'],
-    true
+$row[0] = html_print_label_input_block(
+    __('Owner'),
+    html_print_autocomplete_users_from_integria(
+        'cr_default_owner',
+        $config['cr_default_owner'],
+        true,
+        '30',
+        false,
+        false,
+        'w100p'
+    ),
+    ['div_class' => 'inline']
 );
-
-$table_cr_settings->data['custom_response_def_owner'] = $row;
 
 // Custom response default incident type.
-$row = [];
-$row['name'] = __('Type');
-$row['control'] = html_print_select(
-    $integria_types_values,
-    'cr_incident_type',
-    $config['cr_incident_type'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[1] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        $integria_types_values,
+        'cr_incident_type',
+        $config['cr_incident_type'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_cr_settings->data['custom_response_incident_type'] = $row;
+$table_cr_settings->data[2] = $row;
 
 // Custom response default incident status.
 $row = [];
-$row['name'] = __('Status');
-$row['control'] = html_print_select(
-    $integria_status_values,
-    'cr_incident_status',
-    $config['cr_incident_status'],
-    '',
-    __('Select'),
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$row[0] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $integria_status_values,
+        'cr_incident_status',
+        $config['cr_incident_status'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
-$table_cr_settings->data['custom_response_incident_status'] = $row;
+$table_cr_settings->data[3] = $row;
 
 // Test.
 $row = [];
-$row['name'] = __('Test');
-$row['control'] = html_print_button(
+$row['control'] = __('Test');
+$row['control'] .= html_print_button(
     __('Start'),
     'test-integria',
     false,
@@ -594,12 +668,12 @@ $row['control'] .= '&nbsp;<span id="test-integria-message" class="invisible"></s
 $table_remote->data['integria_test'] = $row;
 
 // Print.
-echo '<div class="center pdd_b_20px mrgn_top_20px">';
+echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
 html_print_image(
     'images/integria_logo.svg',
     false,
-    ['class' => 'w400px'    ]
+    ['class' => 'w400px mrgn_top_15px']
 );
 echo '</a>';
 echo '<br />';
@@ -611,7 +685,7 @@ echo 'https://integriaims.com';
 echo '</a>';
 echo '</div>';
 
-echo "<form method='post'>";
+echo "<form method='post' class='max_floating_element_size'>";
 html_print_input_hidden('update_config', 1);
 
 // Form enable.
@@ -632,7 +706,7 @@ echo '</div>';
 if ($has_connection != false) {
     // Form alert default settings.
     echo '<div id="form_alert_settings">';
-    echo '<fieldset>';
+    echo '<fieldset class="mrgn_top_15px">';
     echo '<legend>'.__('Alert default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_alert_settings);
@@ -642,7 +716,7 @@ if ($has_connection != false) {
 
     // Form custom response default settings.
     echo '<div id="form_custom_response_settings">';
-    echo '<fieldset>';
+    echo '<fieldset class="mrgn_top_15px">';
     echo '<legend>'.__('Event custom response default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_cr_settings);
@@ -650,33 +724,24 @@ if ($has_connection != false) {
     echo '</fieldset>';
     echo '</div>';
 
-    html_print_div(
-        [
-            'class'   => 'action-buttons w100p',
-            'content' => html_print_submit_button(
-                __('Update'),
-                'update_button',
-                false,
-                ['icon' => 'update'],
-                true
-            ),
-        ]
+    $update_button = html_print_submit_button(
+        __('Update'),
+        'update_button',
+        false,
+        ['icon' => 'update'],
+        true
     );
 } else {
-    html_print_div(
-        [
-            'class'   => 'action-buttons w100p',
-            'content' => html_print_submit_button(
-                __('Update and continue'),
-                'update_button',
-                false,
-                ['icon' => 'update'],
-                true
-            ),
-        ]
+    $update_button = html_print_submit_button(
+        __('Update and continue'),
+        'update_button',
+        false,
+        ['icon' => 'update'],
+        true
     );
 }
 
+html_print_action_buttons($update_button);
 
 echo '</form>';
 
@@ -686,8 +751,8 @@ echo '</form>';
 
     if($('input:checkbox[name="integria_user_level_conf"]').is(':checked'))
     {
-        $('#integria-remote-setup-integria_user').hide();
-        $('#integria-remote-setup-integria_pass').hide()
+        $('.integria-remote-setup-integria_user').hide();
+        $('.integria-remote-setup-integria_pass').hide()
     }
 
     var handleUserLevel = function(event) {
@@ -726,13 +791,13 @@ echo '</form>';
     }
 
     var hideUserPass = function () {
-        $('#integria-remote-setup-integria_user').hide();
-        $('#integria-remote-setup-integria_pass').hide();
+        $('.integria-remote-setup-integria_user').hide();
+        $('.integria-remote-setup-integria_pass').hide();
     }
 
     var showUserPass = function () {
-        $('#integria-remote-setup-integria_user').show();
-        $('#integria-remote-setup-integria_pass').show();
+        $('.integria-remote-setup-integria_user').show();
+        $('.integria-remote-setup-integria_pass').show();
     }
 
     var handleEnable = function (event) {

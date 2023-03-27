@@ -743,8 +743,12 @@ while (my ($key, $value) = each (@{$plugin_setup{"log"}})) {
     if (defined($value->{"log_location_multiple"})){
         $log_filename_multiple = $value->{"log_location_multiple"};
         $log_create_module_for_each_log = $value->{"module_for_each_log"};
-        #my @buffer = `dir "$log_filename_multiple" /b /a-d`;
-        my @buffer = `ls -d "$log_filename_multiple"`;
+        my @buffer;
+        if($^O =~ /win/i){        
+            @buffer = `dir "$log_filename_multiple" /b /a-d`;
+        }else{
+            @buffer = `ls -d "$log_filename_multiple"`;
+        }
         foreach (@buffer) {
             # This should solve problems with carriage return in Unix, Linux and Windooze    
             chomp($_);
@@ -757,6 +761,7 @@ while (my ($key, $value) = each (@{$plugin_setup{"log"}})) {
                 $module_name_multiple =~ s/\//_/g;
                 $module_name_multiple = $module_name . "_" . $module_name_multiple;
             }
+            $log_filename = $log_filename_multiple . $_;
             manage_logfile ($log_filename, $module_name_multiple, $readall, $type, $regexp, $description);
         }
     } 

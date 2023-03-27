@@ -254,188 +254,187 @@ if ($config['history_db_enabled'] == 1) {
 
 $table = new StdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'filter-table-adv';
 $table->data = [];
-$table->style[0] = 'font-weight: bold';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 
-$table->size[0] = '70%';
-$table->size[1] = '30%';
-
-$table->data[1][0] = __('Max. days before delete events');
-$table->data[1][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['event_purge']->max,
-        'name'   => 'event_purge',
-        'value'  => $config['event_purge'],
-        'return' => true,
-        'min'    => $performance_variables_control['event_purge']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[0][0] = html_print_label_input_block(
+    __('Max. days before delete events'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['event_purge']->max,
+            'name'   => 'event_purge',
+            'value'  => $config['event_purge'],
+            'return' => true,
+            'min'    => $performance_variables_control['event_purge']->min,
+        ]
+    )
 );
 
-$table->data[2][0] = __('Max. days before delete traps');
-$table->data[2][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['trap_purge']->max,
-        'name'   => 'trap_purge',
-        'value'  => $config['trap_purge'],
-        'return' => true,
-        'min'    => $performance_variables_control['trap_purge']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[0][1] = html_print_label_input_block(
+    __('Max. days before delete traps'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['trap_purge']->max,
+            'name'   => 'trap_purge',
+            'value'  => $config['trap_purge'],
+            'return' => true,
+            'min'    => $performance_variables_control['trap_purge']->min,
+        ]
+    )
 );
 
-$table->data[3][0] = __('Max. days before delete audit events');
-$table->data[3][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['audit_purge']->max,
-        'name'   => 'audit_purge',
-        'value'  => $config['audit_purge'],
-        'return' => true,
-        'min'    => $performance_variables_control['audit_purge']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[1][0] = html_print_label_input_block(
+    __('Max. days before delete audit events'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['audit_purge']->max,
+            'name'   => 'audit_purge',
+            'value'  => $config['audit_purge'],
+            'return' => true,
+            'min'    => $performance_variables_control['audit_purge']->min,
+        ]
+    )
 );
 
-$table->data[4][0] = __('Max. days before delete string data');
-$table->data[4][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['string_purge']->max,
-        'name'   => 'string_purge',
-        'value'  => $config['string_purge'],
-        'return' => true,
-        'min'    => $performance_variables_control['string_purge']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[1][1] = html_print_label_input_block(
+    __('Max. days before delete string data'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['string_purge']->max,
+            'name'   => 'string_purge',
+            'value'  => $config['string_purge'],
+            'return' => true,
+            'min'    => $performance_variables_control['string_purge']->min,
+        ]
+    )
 );
 
-$table->data[5][0] = __('Max. days before delete GIS data');
-$table->data[5][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['gis_purge']->max,
-        'name'   => 'gis_purge',
-        'value'  => $config['gis_purge'],
-        'return' => true,
-        'min'    => $performance_variables_control['gis_purge']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[2][0] = html_print_label_input_block(
+    __('Max. days before delete GIS data'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['gis_purge']->max,
+            'name'   => 'gis_purge',
+            'value'  => $config['gis_purge'],
+            'return' => true,
+            'min'    => $performance_variables_control['gis_purge']->min,
+        ]
+    )
 );
 
-$table->data[6][0] = __('Max. days before purge');
-$table->data[6][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['days_purge']->max,
-        'name'   => 'days_purge',
-        'value'  => $config['days_purge'],
-        'return' => true,
-        'min'    => $performance_variables_control['days_purge']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[2][1] = html_print_label_input_block(
+    __('Max. days before purge'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['days_purge']->max,
+            'name'   => 'days_purge',
+            'value'  => $config['days_purge'],
+            'return' => true,
+            'min'    => $performance_variables_control['days_purge']->min,
+        ]
+    )
 );
 
-$table->data[7][0] = __('Max. days before compact data');
-$table->data[7][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['days_compact']->max,
-        'name'   => 'days_compact',
-        'value'  => $config['days_compact'],
-        'return' => true,
-        'min'    => $performance_variables_control['days_compact']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[3][0] = html_print_label_input_block(
+    __('Max. days before compact data'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['days_compact']->max,
+            'name'   => 'days_compact',
+            'value'  => $config['days_compact'],
+            'return' => true,
+            'min'    => $performance_variables_control['days_compact']->min,
+        ]
+    )
 );
 
-$table->data[8][0] = __('Max. days before delete unknown modules');
-$table->data[8][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['days_delete_unknown']->max,
-        'name'   => 'days_delete_unknown',
-        'value'  => $config['days_delete_unknown'],
-        'return' => true,
-        'min'    => $performance_variables_control['days_delete_unknown']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[3][1] = html_print_label_input_block(
+    __('Max. days before delete unknown modules'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['days_delete_unknown']->max,
+            'name'   => 'days_delete_unknown',
+            'value'  => $config['days_delete_unknown'],
+            'return' => true,
+            'min'    => $performance_variables_control['days_delete_unknown']->min,
+        ]
+    )
 );
 
-
-$table->data[9][0] = __('Max. days before delete not initialized modules');
-$table->data[9][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['days_delete_not_initialized']->max,
-        'name'   => 'days_delete_not_initialized',
-        'value'  => $config['days_delete_not_initialized'],
-        'return' => true,
-        'min'    => $performance_variables_control['days_delete_not_initialized']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[4][0] = html_print_label_input_block(
+    __('Max. days before delete not initialized modules'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['days_delete_not_initialized']->max,
+            'name'   => 'days_delete_not_initialized',
+            'value'  => $config['days_delete_not_initialized'],
+            'return' => true,
+            'min'    => $performance_variables_control['days_delete_not_initialized']->min,
+        ]
+    )
 );
 
-$table->data[10][0] = __('Max. days before delete autodisabled agents');
-$table->data[10][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['days_autodisable_deletion']->max,
-        'name'   => 'days_autodisable_deletion',
-        'value'  => $config['days_autodisable_deletion'],
-        'return' => true,
-        'min'    => $performance_variables_control['days_autodisable_deletion']->min,
-        'style'  => 'width:43px',
-    ]
+$table->data[4][1] = html_print_label_input_block(
+    __('Max. days before delete autodisabled agents'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['days_autodisable_deletion']->max,
+            'name'   => 'days_autodisable_deletion',
+            'value'  => $config['days_autodisable_deletion'],
+            'return' => true,
+            'min'    => $performance_variables_control['days_autodisable_deletion']->min,
+        ]
+    )
 );
 
-$table->data[11][0] = __('Retention period of past special days');
-$table->data[11][1] = html_print_input_text(
-    'num_past_special_days',
-    $config['num_past_special_days'],
-    '',
-    5,
-    5,
-    true
-);
-
-$table->data[12][0] = __('Max. macro data fields');
-$table->data[12][1] = html_print_input_text(
-    'max_macro_fields',
-    $config['max_macro_fields'],
-    '',
-    5,
-    5,
-    true,
-    false,
-    false,
-    'onChange="change_macro_fields()"'
-);
-
-if (enterprise_installed()) {
-    $table->data[13][0] = __('Max. days before delete inventory data');
-    $table->data[13][1] = html_print_input_text(
-        'inventory_purge',
-        $config['inventory_purge'],
+$table->data[5][0] = html_print_label_input_block(
+    __('Retention period of past special days'),
+    html_print_input_text(
+        'num_past_special_days',
+        $config['num_past_special_days'],
         '',
-        5,
+        false,
         5,
         true
-    );
-}
+    )
+);
+
+$table->data[5][1] = html_print_label_input_block(
+    __('Max. macro data fields'),
+    html_print_input_text(
+        'max_macro_fields',
+        $config['max_macro_fields'],
+        '',
+        false,
+        5,
+        true,
+        false,
+        false,
+        'onChange="change_macro_fields()"'
+    )
+);
 
 if ($config['history_db_enabled'] == 1) {
     if (! isset($config['history_db_connection'])
@@ -459,86 +458,94 @@ if ($config['history_db_enabled'] == 1) {
 
     $table_historical = new StdClass();
     $table_historical->width = '100%';
-    $table_historical->class = 'databox filters';
+    $table_historical->class = 'filter-table-adv';
     $table_historical->data = [];
-    $table_historical->style[0] = 'font-weight: bold';
 
-    $table_historical->size[0] = '70%';
-    $table_historical->size[1] = '30%';
+    $table_historical->size[0] = '50%';
+    $table_historical->size[1] = '50%';
 
     enterprise_hook('enterprise_warnings_history_days');
 
-    $table_historical->data[0][0] = __('Max. days before purge');
-    $table_historical->data[0][1] = html_print_input_text(
-        'historical_days_purge',
-        $config_history['days_purge'],
-        '',
-        5,
-        5,
-        true
+    $table_historical->data[0][0] = html_print_label_input_block(
+        __('Max. days before purge'),
+        html_print_input_text(
+            'historical_days_purge',
+            $config_history['days_purge'],
+            '',
+            false,
+            5,
+            true
+        )
     );
 
-    $table_historical->data[1][0] = __('Max. days before compact data');
-    $table_historical->data[1][1] = html_print_input_text(
-        'historical_days_compact',
-        $config_history['days_compact'],
-        '',
-        5,
-        5,
-        true
+    $table_historical->data[0][1] = html_print_label_input_block(
+        __('Max. days before compact data'),
+        html_print_input_text(
+            'historical_days_compact',
+            $config_history['days_compact'],
+            '',
+            false,
+            5,
+            true
+        )
     );
 
-    $table_historical->data[2][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-    $table_historical->data[2][1] = html_print_input_text(
-        'historical_step_compact',
-        $config_history['step_compact'],
-        '',
-        5,
-        5,
-        true
+    $table_historical->data[1][0] = html_print_label_input_block(
+        __('Compact interpolation in hours (1 Fine-20 bad)'),
+        html_print_input_text(
+            'historical_step_compact',
+            $config_history['step_compact'],
+            '',
+            false,
+            5,
+            true
+        )
     );
 
-    $table_historical->data[3][0] = __('Max. days before delete events');
-    $table_historical->data[3][1] = html_print_input_text(
-        'historical_event_purge',
-        $config_history['event_purge'],
-        '',
-        5,
-        5,
-        true
+    $table_historical->data[1][1] = html_print_label_input_block(
+        __('Max. days before delete events'),
+        html_print_input_text(
+            'historical_event_purge',
+            $config_history['event_purge'],
+            '',
+            false,
+            5,
+            true
+        )
     );
 
-    $table_historical->data[4][0] = __('Max. days before delete string data');
-    $table_historical->data[4][1] = html_print_input_text(
-        'historical_string_purge',
-        $config_history['string_purge'],
-        '',
-        5,
-        5,
-        true
+    $table_historical->data[2][0] = html_print_label_input_block(
+        __('Max. days before delete string data'),
+        html_print_input_text(
+            'historical_string_purge',
+            $config_history['string_purge'],
+            '',
+            5,
+            5,
+            true
+        )
     );
 
-    $table_historical->data[4][1] .= html_print_input_hidden(
+    $table_historical->data[2][0] .= html_print_input_hidden(
         'historical_history_db_enabled',
         0,
         true
     );
 }
 
-$table->data[] = [
+$table->data[6][0] = html_print_label_input_block(
     __('Max. days before delete old messages'),
     html_print_input_text(
         'delete_old_messages',
         $config['delete_old_messages'],
         '',
-        5,
+        false,
         5,
         true
-    ),
-];
+    )
+);
 
-
-$table->data[] = [
+$table->data[6][1] = html_print_label_input_block(
     __('Max. days before delete old network matrix data'),
     html_print_input(
         [
@@ -549,55 +556,71 @@ $table->data[] = [
             'value'  => $config['delete_old_network_matrix'],
             'return' => true,
             'min'    => $performance_variables_control['delete_old_network_matrix']->min,
-            'style'  => 'width:43px',
         ]
-    ),
-];
+    )
+);
+
+if (enterprise_installed()) {
+    $table->data[7][0] = html_print_label_input_block(
+        __('Max. days before delete inventory data'),
+        html_print_input_text(
+            'inventory_purge',
+            $config['inventory_purge'],
+            '',
+            false,
+            5,
+            true
+        )
+    );
+}
 
 $table_other = new stdClass();
 $table_other->width = '100%';
-$table_other->class = 'databox filters';
+$table_other->class = 'filter-table-adv';
 $table_other->data = [];
-$table_other->style[0] = 'font-weight: bold';
 
-$table_other->size[0] = '70%';
-$table_other->size[1] = '30%';
-$i = 0;
-$table_other->data[$i][0] = __('Item limit for realtime reports');
-$table_other->data[$i++][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['report_limit']->max,
-        'name'   => 'report_limit',
-        'value'  => $config['report_limit'],
-        'return' => true,
-        'min'    => $performance_variables_control['report_limit']->min,
-        'style'  => 'width:43px',
-    ]
+$table_other->size[0] = '50%';
+$table_other->size[1] = '50%';
+
+$table_other->data[0][0] = html_print_label_input_block(
+    __('Item limit for realtime reports'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['report_limit']->max,
+            'name'   => 'report_limit',
+            'value'  => $config['report_limit'],
+            'return' => true,
+            'min'    => $performance_variables_control['report_limit']->min,
+        ]
+    )
 );
 
-$table_other->data[$i][0] = __('Limit of events per query');
-$table_other->data[$i++][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => 10000,
-        'name'   => 'events_per_query',
-        'value'  => $config['events_per_query'],
-        'return' => true,
-        'style'  => 'width:50px',
-    ]
+$table_other->data[0][1] = html_print_label_input_block(
+    __('Limit of events per query'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => 10000,
+            'name'   => 'events_per_query',
+            'value'  => $config['events_per_query'],
+            'return' => true,
+        ]
+    )
 );
 
-$table_other->data[$i][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table_other->data[$i++][1] = html_print_input_text(
-    'step_compact',
-    $config['step_compact'],
-    '',
-    5,
-    5,
-    true
+$table_other->data[1][0] = html_print_label_input_block(
+    __('Compact interpolation in hours (1 Fine-20 bad)'),
+    html_print_input_text(
+        'step_compact',
+        $config['step_compact'],
+        '',
+        false,
+        5,
+        true
+    )
 );
 
 $intervals = [];
@@ -610,140 +633,172 @@ $intervals[SECONDS_1WEEK] = __('Last week');
 $intervals[SECONDS_2WEEK] = __('2 weeks');
 $intervals[SECONDS_1MONTH] = __('Last month');
 
-$table_other->data[$i][0] = __('Default hours for event view');
-$table_other->data[$i++][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['event_view_hr']->max,
-        'name'   => 'event_view_hr',
-        'value'  => $config['event_view_hr'],
-        'return' => true,
-        'min'    => $performance_variables_control['event_view_hr']->min,
-        'style'  => 'width:43px',
-    ]
+$table_other->data[1][1] = html_print_label_input_block(
+    __('Default hours for event view'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['event_view_hr']->max,
+            'name'   => 'event_view_hr',
+            'value'  => $config['event_view_hr'],
+            'return' => true,
+            'min'    => $performance_variables_control['event_view_hr']->min,
+        ]
+    )
 );
 
-$table_other->data[$i][0] = __('Use realtime statistics');
-$table_other->data[$i++][1] = html_print_checkbox_switch(
-    'realtimestats',
-    1,
-    $config['realtimestats'],
-    true
+$table_other->data[2][0] = html_print_label_input_block(
+    __('Use realtime statistics'),
+    html_print_checkbox_switch(
+        'realtimestats',
+        1,
+        $config['realtimestats'],
+        true
+    )
 );
 
-$table_other->data[$i][0] = __('Batch statistics period (secs)');
-$table_other->data[$i++][1] = html_print_input_text(
-    'stats_interval',
-    $config['stats_interval'],
-    '',
-    5,
-    5,
-    true
+$table_other->data[2][1] = html_print_label_input_block(
+    __('Batch statistics period (secs)'),
+    html_print_input_text(
+        'stats_interval',
+        $config['stats_interval'],
+        '',
+        false,
+        5,
+        true
+    )
 );
 
-$table_other->data[$i][0] = __('Use agent access graph');
-$table_other->data[$i++][1] = html_print_checkbox_switch('agentaccess', 1, $config['agentaccess'], true, $disable_agentaccess);
-
-$table_other->data[$i][0] = __('Max. recommended number of files in attachment directory');
-$table_other->data[$i++][1] = html_print_input_text(
-    'num_files_attachment',
-    $config['num_files_attachment'],
-    '',
-    5,
-    5,
-    true
+$table_other->data[3][0] = html_print_label_input_block(
+    __('Use agent access graph'),
+    html_print_checkbox_switch(
+        'agentaccess',
+        1,
+        $config['agentaccess'],
+        true,
+        $disable_agentaccess
+    )
 );
 
-$table_other->data[$i][0] = __('Delete not init modules');
-$table_other->data[$i++][1] = html_print_checkbox_switch('delete_notinit', 1, $config['delete_notinit'], true);
-
-$table_other->data[$i][0] = __('Big Operation Step to purge old data');
-$table_other->data[$i++][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['big_operation_step_datos_purge']->max,
-        'name'   => 'big_operation_step_datos_purge',
-        'value'  => $config['big_operation_step_datos_purge'],
-        'return' => true,
-        'min'    => $performance_variables_control['big_operation_step_datos_purge']->min,
-        'style'  => 'width:50px',
-    ]
+$table_other->data[3][1] = html_print_label_input_block(
+    __('Max. recommended number of files in attachment directory'),
+    html_print_input_text(
+        'num_files_attachment',
+        $config['num_files_attachment'],
+        '',
+        false,
+        5,
+        true
+    )
 );
 
-
-
-$table_other->data[$i][0] = __('Small Operation Step to purge old data');
-$table_other->data[$i++][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['small_operation_step_datos_purge']->max,
-        'name'   => 'small_operation_step_datos_purge',
-        'value'  => $config['small_operation_step_datos_purge'],
-        'return' => true,
-        'min'    => $performance_variables_control['small_operation_step_datos_purge']->min,
-        'style'  => 'width:50px',
-    ]
+$table_other->data[4][0] = html_print_label_input_block(
+    __('Delete not init modules'),
+    html_print_checkbox_switch(
+        'delete_notinit',
+        1,
+        $config['delete_notinit'],
+        true
+    )
 );
 
-$table_other->data[$i][0] = __('Graph container - Max. Items');
-$table_other->data[$i++][1] = html_print_input_text(
-    'max_graph_container',
-    $config['max_graph_container'],
-    '',
-    5,
-    5,
-    true
+$table_other->data[4][1] = html_print_label_input_block(
+    __('Big Operation Step to purge old data'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['big_operation_step_datos_purge']->max,
+            'name'   => 'big_operation_step_datos_purge',
+            'value'  => $config['big_operation_step_datos_purge'],
+            'return' => true,
+            'min'    => $performance_variables_control['big_operation_step_datos_purge']->min,
+        ]
+    )
 );
 
-$table_other->data[$i][0] = __('Events response max. execution');
-$table_other->data[$i++][1] = html_print_input_text(
-    'max_execution_event_response',
-    $config['max_execution_event_response'],
-    '',
-    5,
-    5,
-    true
+$table_other->data[5][0] = html_print_label_input_block(
+    __('Small Operation Step to purge old data'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['small_operation_step_datos_purge']->max,
+            'name'   => 'small_operation_step_datos_purge',
+            'value'  => $config['small_operation_step_datos_purge'],
+            'return' => true,
+            'min'    => $performance_variables_control['small_operation_step_datos_purge']->min,
+        ]
+    )
 );
 
-$table_other->data[$i][0] = __('Row limit in csv log');
-$table_other->data[$i++][1] = html_print_input(
-    [
-        'type'   => 'number',
-        'size'   => 5,
-        'max'    => $performance_variables_control['row_limit_csv']->max,
-        'name'   => 'row_limit_csv',
-        'value'  => $config['row_limit_csv'],
-        'return' => true,
-        'min'    => $performance_variables_control['row_limit_csv']->min,
-        'style'  => 'width:63px',
-    ]
+$table_other->data[5][1] = html_print_label_input_block(
+    __('Graph container - Max. Items'),
+    html_print_input_text(
+        'max_graph_container',
+        $config['max_graph_container'],
+        '',
+        false,
+        5,
+        true
+    )
 );
 
-$table_other->data[$i][0] = __('SNMP walk binary');
-$table_other->data[$i++][1] = html_print_input_text(
-    'snmpwalk',
-    $config['snmpwalk'],
-    '',
-    50,
-    10,
-    true
+$table_other->data[6][0] = html_print_label_input_block(
+    __('Events response max. execution'),
+    html_print_input_text(
+        'max_execution_event_response',
+        $config['max_execution_event_response'],
+        '',
+        false,
+        5,
+        true
+    )
+);
+
+$table_other->data[6][1] = html_print_label_input_block(
+    __('Row limit in csv log'),
+    html_print_input(
+        [
+            'type'   => 'number',
+            'size'   => 5,
+            'max'    => $performance_variables_control['row_limit_csv']->max,
+            'name'   => 'row_limit_csv',
+            'value'  => $config['row_limit_csv'],
+            'return' => true,
+            'min'    => $performance_variables_control['row_limit_csv']->min,
+        ]
+    )
+);
+
+$table_other->data[7][0] = html_print_label_input_block(
+    __('SNMP walk binary'),
+    html_print_input_text(
+        'snmpwalk',
+        $config['snmpwalk'],
+        '',
+        false,
+        10,
+        true
+    )
 );
 
 $tip = ui_print_help_tip(
     __('SNMP bulk walk is not able to request V1 SNMP, this option will be used instead (by default snmpwalk, slower).'),
     true
 );
-$table_other->data[$i][0] = __('SNMP walk binary (fallback)').$tip;
-$table_other->data[$i++][1] = html_print_input_text(
-    'snmpwalk_fallback',
-    $config['snmpwalk_fallback'],
-    '',
-    50,
-    10,
-    true
+
+$table_other->data[7][1] = html_print_label_input_block(
+    __('SNMP walk binary (fallback)').$tip,
+    html_print_input_text(
+        'snmpwalk_fallback',
+        $config['snmpwalk_fallback'],
+        '',
+        false,
+        10,
+        true
+    )
 );
 
 $tip = ui_print_help_tip(
@@ -754,41 +809,45 @@ $tip = ui_print_help_tip(
     true
 );
 
-$table_other->data[$i][0] = __('WMI binary');
-$table_other->data[$i++][1] = html_print_input_text(
-    'wmiBinary',
-    $config['wmiBinary'],
-    '',
-    50,
-    50,
-    true
+$table_other->data[8][0] = html_print_label_input_block(
+    __('WMI binary'),
+    html_print_input_text(
+        'wmiBinary',
+        $config['wmiBinary'],
+        '',
+        false,
+        50,
+        true
+    )
 );
 
 // Agent Wizard defaults.
 $defaultAgentWizardOptions = json_decode(io_safe_output($config['agent_wizard_defaults']));
 $tableSnmpWizard = new stdClass();
 $tableSnmpWizard->width = '100%';
-$tableSnmpWizard->class = 'databox filters';
+$tableSnmpWizard->class = 'filter-table-adv';
 $tableSnmpWizard->data = [];
-$tableSnmpWizard->style[0] = 'font-weight: bold';
-$tableSnmpWizard->style[2] = 'font-weight: bold';
-$tableSnmpWizard->size[0] = '30%';
-$tableSnmpWizard->size[2] = '30%';
+$tableSnmpWizard->size[0] = '50%';
+$tableSnmpWizard->size[1] = '50%';
 
 $i = 0;
 $j = 0;
 foreach ($defaultAgentWizardOptions as $key => $value) {
-    $tableSnmpWizard->data[$i][$j++] = $key;
-    $tableSnmpWizard->data[$i][$j++] = html_print_checkbox_switch('agent_wizard_defaults_'.$key, 1, $value, true);
-    if ($j >= 3) {
-        $j = 0;
-        $i++;
+    if ($i > 1) {
+        $i = 0;
+        $j++;
     }
+
+    $tableSnmpWizard->data[$j][$i] = html_print_label_input_block(
+        $key,
+        html_print_checkbox_switch('agent_wizard_defaults_'.$key, 1, $value, true)
+    );
+    $i++;
 }
 
-echo '<form id="form_setup" method="post">';
+echo '<form id="form_setup" method="post" class="max_floating_element_size">';
 
-echo '<fieldset class="full-column">';
+echo '<fieldset>';
     echo '<legend>'.__('Database maintenance status').' '.ui_print_help_icon('database_maintenance_status_tab', true).'</legend>';
     html_print_table($table_status);
 echo '</fieldset>';
@@ -817,18 +876,14 @@ echo '</fieldset>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden('update_config', 1);
-html_print_div(
-    [
-        'class'   => 'action-buttons w100p',
-        'content' => html_print_submit_button(
-            __('Update'),
-            'update_button',
-            false,
-            [ 'icon' => 'update' ],
-            true
-        ),
-    ]
+$actionButtons = html_print_submit_button(
+    __('Update'),
+    'update_button',
+    false,
+    [ 'icon' => 'update' ],
+    true
 );
+html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 echo '</form>';
 ?>
 

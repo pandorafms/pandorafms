@@ -835,7 +835,10 @@ class DiscoveryTaskList extends HTML
                         $data[6] = html_print_image(
                             'images/cluster@os.svg',
                             true,
-                            ['title' => __('Discovery Applications Microsoft SQL Server')]
+                            [
+                                'title' => __('Discovery Applications Microsoft SQL Server'),
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
                         ).'&nbsp;&nbsp;';
                         $data[6] .= __('Discovery.App.Microsoft SQL Server');
                     break;
@@ -871,7 +874,7 @@ class DiscoveryTaskList extends HTML
                     $data[7] = ui_progress(
                         $task['status'],
                         '100%',
-                        1.9,
+                        1.2,
                         // Color.
                         '#ececec',
                         // Return.
@@ -888,7 +891,8 @@ class DiscoveryTaskList extends HTML
                                 'id'     => $task['id_rt'],
                                 'method' => 'taskProgress',
                             ],
-                        ]
+                        ],
+                        ''
                     );
                 }
 

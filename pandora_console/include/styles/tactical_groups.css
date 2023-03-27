@@ -29,3 +29,6 @@ rect {
 .graph-distribution-so {
   margin-top: 55px;
 }
+#list_agents_tactical_wrapper .dataTables_length {
+  margin-bottom: 10px;
+}

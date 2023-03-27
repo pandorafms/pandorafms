@@ -474,7 +474,7 @@ class Manager implements PublicLogin
                 "SELECT *
                 FROM tdashboard
                 WHERE id = %d
-                AND (id_group IN (%s) AND id_user = '') OR id_user = '%s'",
+                AND ((id_group IN (%s) AND id_user = '') OR id_user = '%s')",
                 $this->dashboardId,
                 $this->stringGroups,
                 $config['id_user']
@@ -1047,6 +1047,7 @@ class Manager implements PublicLogin
                     'hash'           => self::generatePublicHash(),
                     'publicLink'     => $this->publicLink,
                     'dashboardGroup' => $this->dashboardFields['id_group'],
+                    'dashboardUser'  => $this->dashboardFields['id_user'],
                 ]
             );
         } else {

@@ -1075,24 +1075,6 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         }
 
         foreach ($item['data'] as $k => $event) {
-            // First pass along the class of this row.
-            if ($item['show_summary_group']) {
-                $table1->cellclass[$k][2] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][3] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][4] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][5] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][6] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][8] = get_priority_class($event['criticity']);
-            } else {
-                $table1->cellclass[$k][2] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][3] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][4] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][5] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][6] = get_priority_class($event['criticity']);
-                $table1->cellclass[$k][7] = get_priority_class($event['criticity']);
-            }
-
             $data = [];
 
             // Colored box.
@@ -1125,7 +1107,11 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
                 ]
             );
 
-            $data[] = events_print_type_img($event['event_type'], true);
+            if ($pdf) {
+                $data[] = events_print_type_img_pdf($event['event_type'], true);
+            } else {
+                $data[] = events_print_type_img($event['event_type'], true);
+            }
 
             if ($item['show_summary_group']) {
                 $data[] = $event['event_rep'];
@@ -1343,19 +1329,6 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                 if (is_array($item_data) || is_object($item_data)) {
                     foreach ($item_data as $i => $event) {
                         $data = [];
-                        if ($show_summary_group) {
-                            $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
-                        } else {
-                            $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
-                            $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
-                        }
-
                         // Colored box.
                         switch ($event['estado']) {
                             case 0:
@@ -1386,7 +1359,12 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                             ]
                         );
 
-                        $data[1] = events_print_type_img($event['event_type'], true);
+                        if ($pdf) {
+                            $data[1] = events_print_type_img_pdf($event['event_type'], true);
+                        } else {
+                            $data[1] = events_print_type_img($event['event_type'], true);
+                        }
+
                         $data[2] = io_safe_output($event['evento']);
                         $data[3] = get_priority_name($event['criticity']);
                         if ($show_summary_group) {
@@ -2671,21 +2649,6 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         }
 
         foreach ($item['data'] as $i => $event) {
-            if ($item['show_summary_group']) {
-                $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][7] = get_priority_class($event['criticity']);
-            } else {
-                $table1->cellclass[$i][2] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][3] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][4] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][5] = get_priority_class($event['criticity']);
-                $table1->cellclass[$i][6] = get_priority_class($event['criticity']);
-            }
-
             $data = [];
             // Colored box.
             switch ($event['status']) {
@@ -2716,7 +2679,11 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
                 ]
             );
 
-            $data[] = events_print_type_img($event['type'], true);
+            if ($pdf) {
+                $data[] = events_print_type_img_pdf($event['type'], true);
+            } else {
+                $data[] = events_print_type_img($event['type'], true);
+            }
 
             if ($item['show_summary_group']) {
                 $data[] = $event['count'];
@@ -3284,6 +3251,7 @@ function get_alert_table($data)
 {
     $table = new StdCLass();
     $table->width = '99%';
+    $table->class = 'info_table';
     $table->data = [];
     $table->head = [];
     $table->headstyle = [];
@@ -6034,6 +6002,7 @@ function reporting_get_last_activity()
     $table = new stdClass();
     $table->width = '100%';
     $table->data = [];
+    $table->class = 'info_table';
     $table->size = [];
     $table->size[2] = '150px';
     $table->size[3] = '130px';
@@ -6047,37 +6016,13 @@ function reporting_get_last_activity()
     $table->head[5] = __('Comments');
     $table->title = '<span>'.__('Last activity in %s console', get_product_name()).'</span>';
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $sql = sprintf(
-                'SELECT id_usuario,accion,fecha,ip_origen,descripcion,utimestamp
-                FROM tsesion
-                WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - '.SECONDS_1WEEK.") 
-                    AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 5",
-                $config['id_user']
-            );
-        break;
-
-        case 'postgresql':
-            $sql = sprintf(
-                "SELECT \"id_usuario\", accion, fecha, \"ip_origen\", descripcion, utimestamp
-                FROM tsesion
-                WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - ".SECONDS_1WEEK.") 
-                    AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 5",
-                $config['id_user']
-            );
-        break;
-
-        case 'oracle':
-            $sql = sprintf(
-                "SELECT id_usuario, accion, fecha, ip_origen, descripcion, utimestamp
-                FROM tsesion
-                WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - '.SECONDS_1WEEK.") 
-                    AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC",
-                $config['id_user']
-            );
-        break;
-    }
+    $sql = sprintf(
+        'SELECT id_usuario,accion,fecha,ip_origen,descripcion,utimestamp
+        FROM tsesion
+        WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - '.SECONDS_1WEEK.") 
+            AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 5",
+        $config['id_user']
+    );
 
     $sessions = db_get_all_rows_sql($sql);
 
@@ -6088,18 +6033,8 @@ function reporting_get_last_activity()
     foreach ($sessions as $session) {
         $data = [];
 
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'oracle':
-                $session_id_usuario = $session['id_usuario'];
-                $session_ip_origen = $session['ip_origen'];
-            break;
-
-            case 'postgresql':
-                $session_id_usuario = $session['id_usuario'];
-                $session_ip_origen = $session['ip_origen'];
-            break;
-        }
+        $session_id_usuario = $session['id_usuario'];
+        $session_ip_origen = $session['ip_origen'];
 
         $data[0] = '<strong>'.$session_id_usuario.'</strong>';
         $data[1] = ui_print_session_action_icon($session['accion'], true);
@@ -6109,10 +6044,6 @@ function reporting_get_last_activity()
         $data[5] = io_safe_output($session['descripcion']);
 
         array_push($table->data, $data);
-    }
-
-    if (defined('METACONSOLE')) {
-        $table->class = 'databox_tactical';
     }
 
     return html_print_table($table, true);

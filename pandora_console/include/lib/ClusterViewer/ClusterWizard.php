@@ -1250,7 +1250,10 @@ class ClusterWizard extends \HTML
                 'name'       => 'next',
                 'label'      => $str,
                 'type'       => 'submit',
-                'attributes' => 'class="sub next"',
+                'attributes' => [
+                    'icon' => 'wand',
+                    'mode' => 'primary',
+                ],
                 'return'     => true,
             ],
         ];

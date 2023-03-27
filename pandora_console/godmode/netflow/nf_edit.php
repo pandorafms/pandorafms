@@ -56,9 +56,13 @@ ui_print_standard_header(
     [
         [
             'link'  => '',
-            'label' => __('Netflow'),
+            'label' => __('Resources'),
         ],
-    ],
+        [
+            'link'  => '',
+            'label' => __('Netflow filters'),
+        ],
+    ]
 );
 
 $is_windows = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
@@ -211,7 +215,6 @@ $buttons = html_print_submit_button(
     true
 );
 
-// hd($filters);
 if (empty($filters) === false) {
     echo '<form id="multiple_delete" method="POST" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure='.$pure.'">';
     html_print_input_hidden('multiple_delete', 1);

@@ -777,7 +777,7 @@ if (is_ajax() === true) {
                                     true,
                                     [
                                         'title' => __('New event'),
-                                        'class' => 'forced-title main_menu_icon',
+                                        'class' => 'forced-title invert_filter main_menu_icon',
                                     ]
                                 );
                                 $state = 0;

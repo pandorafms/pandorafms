@@ -259,7 +259,10 @@ class SnmpConsole extends HTML
                     'class' => 'snmp-td',
                 ],
                 'alert',
-                'action',
+                [
+                    'text'  => 'action',
+                    'class' => 'table_action_buttons w120px',
+                ],
                 [
                     'text'  => 'm',
                     'class' => 'mw60px pdd_0px',

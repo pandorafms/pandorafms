@@ -441,84 +441,95 @@ function quickShellSettings()
     }
 
     // Form. Using old style.
-    echo '<fieldset>';
+    echo '<fieldset class="margin-bottom-10">';
     echo '<legend>'.__('Quickshell').'</legend>';
 
     $t = new StdClass();
     $t->data = [];
     $t->width = '100%';
-    $t->class = 'databox filters';
+    $t->class = 'filter-table-adv';
     $t->data = [];
     $t->style = [];
-    $t->style[0] = 'font-weight: bold; width: 40%;';
+    $t->style[0] = 'width: 50%;';
 
-    $t->data[0][0] = __('Gotty path');
-    $t->data[0][1] = html_print_input_text(
-        'gotty',
-        $config['gotty'],
-        '',
-        30,
-        100,
-        true
+    $t->data[0][] = html_print_label_input_block(
+        __('Gotty path'),
+        html_print_input_text(
+            'gotty',
+            $config['gotty'],
+            '',
+            30,
+            100,
+            true
+        )
     );
 
-    $t->data[1][0] = __('Gotty host');
-    $t->data[1][1] = html_print_input_text(
-        'gotty_host',
-        $config['gotty_host'],
-        '',
-        30,
-        100,
-        true
+    $t->data[0][] = html_print_label_input_block(
+        __('Gotty host'),
+        html_print_input_text(
+            'gotty_host',
+            $config['gotty_host'],
+            '',
+            30,
+            100,
+            true
+        )
     );
 
-    $t->data[2][0] = __('Gotty ssh port');
-    $t->data[2][1] = html_print_input_text(
-        'gotty_ssh_port',
-        $config['gotty_ssh_port'],
-        '',
-        30,
-        100,
-        true
+    $t->data[1][] = html_print_label_input_block(
+        __('Gotty ssh port'),
+        html_print_input_text(
+            'gotty_ssh_port',
+            $config['gotty_ssh_port'],
+            '',
+            30,
+            100,
+            true
+        )
     );
 
-    $t->data[3][0] = __('Gotty telnet port');
-    $t->data[3][1] = html_print_input_text(
-        'gotty_telnet_port',
-        $config['gotty_telnet_port'],
-        '',
-        30,
-        100,
-        true
+    $t->data[1][] = html_print_label_input_block(
+        __('Gotty telnet port'),
+        html_print_input_text(
+            'gotty_telnet_port',
+            $config['gotty_telnet_port'],
+            '',
+            30,
+            100,
+            true
+        )
     );
 
-    $hidden = new StdClass();
+    $hidden = new stdClass();
     $hidden->data = [];
     $hidden->width = '100%';
-    $hidden->class = 'databox filters';
+    $hidden->class = 'filter-table-adv';
     $hidden->data = [];
-    $hidden->style[0] = 'font-weight: bold;width: 40%;';
+    $hidden->style[0] = 'width: 50%;';
 
-    $hidden->data[0][0] = __('Gotty user');
-    $hidden->data[0][1] = html_print_input_text(
-        'gotty_user',
-        $config['gotty_user'],
-        '',
-        30,
-        100,
-        true
+    $hidden->data[0][] = html_print_label_input_block(
+        __('Gotty user'),
+        html_print_input_text(
+            'gotty_user',
+            $config['gotty_user'],
+            '',
+            30,
+            100,
+            true
+        )
     );
 
-    $hidden->data[1][0] = __('Gotty password');
-    $hidden->data[1][1] = html_print_input_password(
-        'gotty_pass',
-        io_output_password($config['gotty_pass']),
-        '',
-        30,
-        100,
-        true
+    $hidden->data[0][] = html_print_label_input_block(
+        __('Gotty password'),
+        html_print_input_password(
+            'gotty_pass',
+            io_output_password($config['gotty_pass']),
+            '',
+            30,
+            100,
+            true
+        )
     );
-    $hidden->data[1][1] .= ui_print_reveal_password('gotty_pass', true);
 
     html_print_table($t);
 

@@ -214,12 +214,20 @@ if (!empty($table->data)) {
 }
 
 if ($edit_gis_maps) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form action="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map" method="post">';
     html_print_input_hidden('action', 'new_map');
-    html_print_submit_button(__('Create'), '', false, 'class="sub next"');
+    $ActionButton = html_print_submit_button(
+        __('Create'),
+        'create',
+        false,
+        [
+            'class' => 'sub ok submitButton',
+            'icon'  => 'next',
+        ],
+        true
+    );
+    echo '<div class="action-buttons">'.html_print_action_buttons($ActionButton, ['type' => 'form_action'], true).'</div>';
     echo '</form>';
-    echo '</div>';
 }
 
 unset($table);

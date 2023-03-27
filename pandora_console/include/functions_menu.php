@@ -70,7 +70,11 @@ function menu_print_menu(&$menu)
         $sec2 = 'enterprise/godmode/setup/setup_skins';
     } else if ($sec2 === 'godmode/gis_maps/configure_gis_map') {
         $map_id = (string) get_parameter('map_id');
-        $sec2 = 'operation/gis_maps/render_view&map_id='.$map_id;
+        if (empty($map_id) === false) {
+            $sec2 = 'operation/gis_maps/render_view&map_id='.$map_id;
+        } else {
+            $sec2 = 'operation/gis_maps/gis_map';
+        }
     } else if ($sec2 === 'operation/gis_maps/render_view') {
         $map_id = (int) get_parameter('map_id');
         if (empty($map_id) === false) {

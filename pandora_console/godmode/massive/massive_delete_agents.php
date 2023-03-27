@@ -188,7 +188,7 @@ $params = [
 echo get_table_inputs_masive_agents($params);
 
 if (is_metaconsole() === true || is_management_allowed() === true) {
-    attachActionButton('delete', 'delete', '100%');
+    attachActionButton('delete', 'delete', '100%', false, $SelectAction);
 }
 
 echo '</form>';

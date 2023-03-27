@@ -68,6 +68,19 @@ function menu_print_menu(&$menu)
         $sec2 = 'godmode/alerts/alert_commands';
     } else if ($sec2 === 'enterprise/godmode/setup/edit_skin') {
         $sec2 = 'enterprise/godmode/setup/setup_skins';
+    } else if ($sec2 === 'godmode/gis_maps/configure_gis_map') {
+        $map_id = (string) get_parameter('map_id');
+        if (empty($map_id) === false) {
+            $sec2 = 'operation/gis_maps/render_view&map_id='.$map_id;
+        } else {
+            $sec2 = 'operation/gis_maps/gis_map';
+        }
+    } else if ($sec2 === 'enterprise/godmode/servers/manage_export_form') {
+        $sec2 = 'enterprise/godmode/servers/manage_export';
+    } else if ($sec2 === 'godmode/setup/gis_step_2') {
+        $sec2 = 'godmode/setup/setup&section=gis';
+    } else if ($sec2 === 'enterprise/godmode/agentes/agent_autoconfiguration.definition') {
+        $sec2 = 'enterprise/godmode/agentes/agent_autoconfiguration';
     } else if ($sec2 === 'operation/gis_maps/render_view') {
         $map_id = (int) get_parameter('map_id');
         if (empty($map_id) === false) {

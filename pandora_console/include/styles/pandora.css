@@ -10225,9 +10225,9 @@ button.submitButton > div {
 button.buttonButton.onlyIcon,
 button.submitButton.onlyIcon {
   padding: 0 !important;
-  min-width: 1.7em !important;
-  width: 1.7em !important;
-  height: 1.7em !important;
+  min-width: 1.6em !important;
+  width: 1.6em !important;
+  height: 1.6em !important;
   border: none;
   box-shadow: none;
 }
@@ -10291,8 +10291,9 @@ button.submitButton.onlyIcon.auto_sla_graph_min {
 
 button.buttonButton.onlyIcon.basic_chart_min,
 button.submitButton.onlyIcon.basic_chart_min {
-  mask: url(../../images/event-history.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/event-history.svg) no-repeat right / contain;
+  mask: url(../../images/web-analisys-data@svg.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/web-analisys-data@svg.svg) no-repeat right /
+    contain;
 }
 
 button.buttonButton.onlyIcon.binary_min,

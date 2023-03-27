@@ -41,6 +41,7 @@ if ($agent_a === false && $agent_w === false) {
 }
 
 require_once $config['homedir'].'/include/class/Heatmap.class.php';
+use PandoraFMS\Heatmap;
 
 $pure = (bool) get_parameter('pure', false);
 $type = get_parameter('type', 0);
@@ -60,6 +61,8 @@ if ($group_sent === true) {
 } else {
     $group = (int) get_parameter('group', true);
 }
+
+$dashboard = (bool) get_parameter('dashboard', false);
 
 $is_ajax = is_ajax();
 if ($is_ajax === false && $pure === false) {
@@ -191,6 +194,7 @@ if ($is_ajax === false && $pure === true) {
     html_print_input_hidden('type', $type);
     html_print_input_hidden('search', $search);
     html_print_input_hidden('filter', implode(',', $filter));
+    html_print_input_hidden('dashboard', $dashboard);
     echo '</form>';
     echo '</div>';
     echo '</div>';
@@ -229,7 +233,7 @@ if ($is_ajax === false && $pure === true) {
 // Control call flow.
 try {
     // Heatmap construct.
-    $heatmap = new Heatmap($type, $filter, $randomId, $refresh, $width, $height, $search, $group);
+    $heatmap = new Heatmap($type, $filter, $randomId, $refresh, $width, $height, $search, $group, $dashboard);
 } catch (Exception $e) {
     if (is_ajax() === true) {
         echo json_encode(['error' => '[Heatmap]'.$e->getMessage() ]);

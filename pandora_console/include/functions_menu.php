@@ -79,6 +79,8 @@ function menu_print_menu(&$menu)
         $sec2 = 'enterprise/godmode/servers/manage_export';
     } else if ($sec2 === 'godmode/setup/gis_step_2') {
         $sec2 = 'godmode/setup/setup&section=gis';
+    } else if ($sec2 === 'enterprise/godmode/agentes/agent_autoconfiguration.definition') {
+        $sec2 = 'enterprise/godmode/agentes/agent_autoconfiguration';
     } else if ($sec2 === 'operation/gis_maps/render_view') {
         $map_id = (int) get_parameter('map_id');
         if (empty($map_id) === false) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Heatmap class.
  *
@@ -14,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +26,11 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+
+namespace PandoraFMS;
+
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 class Heatmap
 {
 
@@ -95,18 +101,26 @@ class Heatmap
      */
     protected $group = null;
 
+    /**
+     * Heatmap group.
+     *
+     * @var boolean
+     */
+    protected $dashboard = null;
+
 
     /**
      * Constructor function
      *
-     * @param integer $type     Heatmap type.
-     * @param array   $filter   Heatmap filter.
-     * @param string  $randomId Heatmap random id.
-     * @param integer $refresh  Heatmap refresh.
-     * @param integer $width    Width.
-     * @param integer $height   Height.
-     * @param string  $search   Heatmap search.
-     * @param integer $group    Heatmap group.
+     * @param integer $type      Heatmap type.
+     * @param array   $filter    Heatmap filter.
+     * @param string  $randomId  Heatmap random id.
+     * @param integer $refresh   Heatmap refresh.
+     * @param integer $width     Width.
+     * @param integer $height    Height.
+     * @param string  $search    Heatmap search.
+     * @param integer $group     Heatmap group.
+     * @param boolean $dashboard Dashboard widget.
      */
     public function __construct(
         int $type=0,
@@ -116,7 +130,8 @@ class Heatmap
         int $width=0,
         int $height=0,
         string $search=null,
-        int $group=1
+        int $group=1,
+        bool $dashboard=false
     ) {
         $this->type = $type;
         $this->filter = $filter;
@@ -126,6 +141,7 @@ class Heatmap
         $this->height = $height;
         $this->search = $search;
         $this->group = $group;
+        $this->dashboard = $dashboard;
     }
 
 
@@ -148,107 +164,125 @@ class Heatmap
                 false
             ),
             'data'     => [
-                'page'     => 'operation/heatmap',
-                'method'   => 'showHeatmap',
-                'randomId' => $this->randomId,
-                'type'     => $this->type,
-                'filter'   => $this->filter,
-                'refresh'  => $this->refresh,
-                'search'   => $this->search,
-                'group'    => $this->group,
+                'page'      => 'operation/heatmap',
+                'method'    => 'showHeatmap',
+                'randomId'  => $this->randomId,
+                'type'      => $this->type,
+                'filter'    => $this->filter,
+                'refresh'   => $this->refresh,
+                'search'    => $this->search,
+                'group'     => $this->group,
+                'dashboard' => (int) $this->dashboard,
             ],
         ];
 
-        echo '<div id="div_'.$this->randomId.'" class="mainDiv">';
+        $style_dashboard = '';
+        if ($this->dashboard === true) {
+            $style_dashboard = 'min-height: 0px';
+        }
+
+        echo '<div id="div_'.$this->randomId.'" class="mainDiv" style="width: 100%;height: 100%;'.$style_dashboard.'">';
         ?>
-            <script type="text/javascript">
-                $(document).ready(function() {
-                    const randomId = '<?php echo $this->randomId; ?>';
-                    const refresh = '<?php echo $this->refresh; ?>';
-                    let setting = <?php echo json_encode($settings); ?>;
-                    setting['data']['height'] = $(`#div_${randomId}`).height() + 10;
-                    setting['data']['width'] = $(`#div_${randomId}`).width();
+        <script type="text/javascript">
+            $(document).ready(function() {
+                const randomId = '<?php echo $this->randomId; ?>';
+                const refresh = '<?php echo $this->refresh; ?>';
+                const dashboard = '<?php echo $this->dashboard; ?>';
 
-                    var totalModules = 0;
+                let setting = <?php echo json_encode($settings); ?>;
+                setting['data']['height'] = $(`#div_${randomId}`).height() + 10;
+                setting['data']['width'] = $(`#div_${randomId}`).width();
 
-                    // Initial charge.
-                    $.ajax({
-                        type: setting.type,
-                        dataType: setting.dataType,
-                        url: setting.url,
-                        data: setting.data,
-                        success: function(data) {
-                            $(`#div_${randomId}`).append(data);
-                            totalModules = $('rect').length;
-                            let cont = 0;
-                            while (cont < Math.ceil(totalModules / 10)) {
-                                oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
-                                cont ++;
-                            }
+                if (dashboard === '1') {
+                    setting['data']['width'] -= 10;
+                    setting['data']['height'] -= 10;
+                }
+
+                var totalModules = 0;
+
+                // Initial charge.
+                $.ajax({
+                    type: setting.type,
+                    dataType: setting.dataType,
+                    url: setting.url,
+                    data: setting.data,
+                    success: function(data) {
+                        $(`#div_${randomId}`).append(data);
+                        totalModules = $('rect').length;
+                        let cont = 0;
+                        while (cont < Math.ceil(totalModules / 10)) {
+                            oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                            cont++;
                         }
-                    });
-
-                    function getRandomInteger(min, max) {
-                        return Math.floor(Math.random() * max) + min;
                     }
+                });
 
-                    function oneSquare(solid, time) {
-                        var randomPoint = getRandomInteger(1, totalModules);
-                        let target = $(`#${randomId}_${randomPoint}`);
-                        setTimeout(function() {
-                            let class_name = target.attr('class');
+                function getRandomInteger(min, max) {
+                    return Math.floor(Math.random() * max) + min;
+                }
+
+                function oneSquare(solid, time) {
+                    var randomPoint = getRandomInteger(1, totalModules);
+                    let target = $(`#${randomId}_${randomPoint}`);
+                    setTimeout(function() {
+                        let class_name = target.attr('class');
+                        if (typeof class_name !== 'undefined') {
                             class_name = class_name.split(' ')[0];
                             const newClassName = class_name.split('_')[0];
                             target.removeClass(`${class_name} hover`);
                             target.addClass(`${newClassName}_${solid} hover`);
                             oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
-                        }, time);
-                    }
+                        }
+                    }, time);
+                }
 
-                    // Refresh.
-                    setInterval(
-                        function() {
-                            refreshMap();
+                // Refresh.
+                setInterval(
+                    function() {
+                        refreshMap();
+                    },
+                    (refresh * 1000)
+                );
+
+                function refreshMap() {
+                    $.ajax({
+                        type: 'GET',
+                        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                        data: {
+                            page: "operation/heatmap",
+                            method: 'getDataJson',
+                            randomId: randomId,
+                            type: setting['data']['type'],
+                            refresh: setting['data']['refresh'],
+                            filter: setting['data']['filter'],
+                            search: setting['data']['search'],
+                            group: setting['data']['group']
                         },
-                        (refresh * 1000)
-                    );
+                        dataType: 'json',
+                        success: function(data) {
+                            const total = Object.keys(data).length;
+                            if (total === $(`#svg_${randomId} rect`).length) {
+                                // Object to array.
+                                let lista = Object.values(data);
+                                // randomly sort.
+                                lista = lista.sort(function() {
+                                    return Math.random() - 0.5
+                                });
 
-                    function refreshMap() {
-                        $.ajax({
-                            type: 'GET',
-                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                            data: {
-                                page: "operation/heatmap",
-                                method: 'getDataJson',
-                                randomId: randomId,
-                                type: setting['data']['type'],
-                                refresh: setting['data']['refresh'],
-                                filter: setting['data']['filter'],
-                                search: setting['data']['search'],
-                                group: setting['data']['group']
-                            },
-                            dataType: 'json',
-                            success: function(data) {
-                                const total = Object.keys(data).length;
-                                if (total === $(`#svg_${randomId} rect`).length) {
-                                    // Object to array.
-                                    let lista = Object.values(data);
-                                    // randomly sort.
-                                    lista = lista.sort(function() {return Math.random() - 0.5});
+                                let countPerSecond = total / refresh;
+                                if (countPerSecond < 1) {
+                                    countPerSecond = 1;
+                                }
 
-                                    let countPerSecond = total / refresh;
-                                    if (countPerSecond < 1) {
-                                        countPerSecond = 1;
-                                    }
+                                let cont = 0;
+                                let limit = countPerSecond - 1;
 
-                                    let cont = 0;
-                                    let limit = countPerSecond - 1;
-
-                                    const timer = setInterval(
+                                const timer = setInterval(
                                     function() {
                                         while (cont <= limit) {
                                             if (typeof lista[cont] !== 'undefined') {
                                                 const rect = document.getElementsByName(`${lista[cont]['id']}`);
+                                                console.log(rect[0]);
                                                 $(`#${rect[0].id}`).removeClass();
                                                 $(`#${rect[0].id}`).addClass(`${lista[cont]['status']} hover`);
                                             }
@@ -260,20 +294,20 @@ class Heatmap
                                     1000
                                 );
 
-                                    setTimeout(
-                                        function(){
-                                            clearInterval(timer);
-                                        },
-                                        (refresh * 1000)
-                                    );
-                                } else {
-                                    location.reload();
-                                }
+                                setTimeout(
+                                    function() {
+                                        clearInterval(timer);
+                                    },
+                                    (refresh * 1000)
+                                );
+                            } else {
+                                location.reload();
                             }
-                        });
-                    }
-                });
-            </script>
+                        }
+                    });
+                }
+            });
+        </script>
         <?php
         echo '</div>';
     }
@@ -336,6 +370,8 @@ class Heatmap
      */
     protected function getAllAgents()
     {
+        global $config;
+
         $filter['disabled'] = 0;
 
         $alias = '';
@@ -343,8 +379,16 @@ class Heatmap
             $alias = ' AND alias LIKE "%'.$this->search.'%"';
         }
 
+        $id_user_groups = '';
+        if (users_is_admin() === false) {
+            $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
+            if (empty($user_groups) === false) {
+                $id_user_groups = ' AND id_grupo IN ('.implode(',', $user_groups).')';
+            }
+        }
+
         $id_grupo = '';
-        if (empty($this->filter) === false && current($this->filter) != 0) {
+        if (empty($this->filter) === false && empty(current($this->filter)) === false) {
             $id_grupo = ' AND id_grupo IN ('.implode(',', $this->filter).')';
         }
 
@@ -354,56 +398,121 @@ class Heatmap
             unknown_count,notinit_count,total_count,fired_count,
             (SELECT last_status_change FROM tagente_estado WHERE id_agente = tagente.id_agente
             ORDER BY last_status_change DESC LIMIT 1) AS last_status_change
-            FROM tagente WHERE `disabled` = 0 %s %s ORDER BY id_grupo,id_agente ASC',
+            FROM tagente WHERE `disabled` = 0 %s %s %s ORDER BY id_grupo,id_agente ASC',
             $alias,
+            $id_user_groups,
             $id_grupo
         );
 
-        $result = db_get_all_rows_sql($sql);
-
         $agents = [];
-        // Agent status.
-        foreach ($result as $key => $agent) {
-            if ($agent['total_count'] === 0 || $agent['total_count'] === $agent['notinit_count']) {
-                $status = 'notinit';
-            } else if ($agent['critical_count'] > 0) {
-                $status = 'critical';
-            } else if ($agent['warning_count'] > 0) {
-                $status = 'warning';
-            } else if ($agent['unknown_count'] > 0) {
-                $status = 'unknown';
-            } else {
-                $status = 'normal';
-            }
+        if (is_metaconsole() === true) {
+            $nodes = metaconsole_get_connections();
+            $cont = 0;
+            foreach ($nodes as $node) {
+                try {
+                    $nd = new Node($node['id']);
+                    $nd->connect();
 
-            if ($agent['last_status_change'] != 0) {
-                $seconds = (time() - $agent['last_status_change']);
+                    $result = db_get_all_rows_sql($sql);
+                    // Agent status.
+                    foreach ($result as $agent) {
+                        if ($agent['total_count'] === 0 || $agent['total_count'] === $agent['notinit_count']) {
+                            $status = 'notinit';
+                        } else if ($agent['critical_count'] > 0) {
+                            $status = 'critical';
+                        } else if ($agent['warning_count'] > 0) {
+                            $status = 'warning';
+                        } else if ($agent['unknown_count'] > 0) {
+                            $status = 'unknown';
+                        } else {
+                            $status = 'normal';
+                        }
 
-                if ($seconds >= SECONDS_1DAY) {
-                    $status .= '_10';
-                } else if ($seconds >= 77760) {
-                    $status .= '_9';
-                } else if ($seconds >= 69120) {
-                    $status .= '_8';
-                } else if ($seconds >= 60480) {
-                    $status .= '_7';
-                } else if ($seconds >= 51840) {
-                    $status .= '_6';
-                } else if ($seconds >= 43200) {
-                    $status .= '_5';
-                } else if ($seconds >= 34560) {
-                    $status .= '_4';
-                } else if ($seconds >= 25920) {
-                    $status .= '_3';
-                } else if ($seconds >= 17280) {
-                    $status .= '_2';
-                } else if ($seconds >= 8640) {
-                    $status .= '_1';
+                        if ($agent['last_status_change'] != 0) {
+                            $seconds = (time() - $agent['last_status_change']);
+
+                            if ($seconds >= SECONDS_1DAY) {
+                                $status .= '_10';
+                            } else if ($seconds >= 77760) {
+                                $status .= '_9';
+                            } else if ($seconds >= 69120) {
+                                $status .= '_8';
+                            } else if ($seconds >= 60480) {
+                                $status .= '_7';
+                            } else if ($seconds >= 51840) {
+                                $status .= '_6';
+                            } else if ($seconds >= 43200) {
+                                $status .= '_5';
+                            } else if ($seconds >= 34560) {
+                                $status .= '_4';
+                            } else if ($seconds >= 25920) {
+                                $status .= '_3';
+                            } else if ($seconds >= 17280) {
+                                $status .= '_2';
+                            } else if ($seconds >= 8640) {
+                                $status .= '_1';
+                            }
+                        }
+
+                        $agents[$cont] = $agent;
+                        $agents[$cont]['status'] = $status;
+                        $agents[$cont]['server'] = $node['id'];
+
+                        ++$cont;
+                    }
+                } catch (\Exception $e) {
+                    $nd->disconnect();
+                    $agents = [];
+                } finally {
+                    $nd->disconnect();
                 }
             }
+        } else {
+            $result = db_get_all_rows_sql($sql);
 
-            $agents[$key] = $agent;
-            $agents[$key]['status'] = $status;
+            // Agent status.
+            foreach ($result as $key => $agent) {
+                if ($agent['total_count'] === 0 || $agent['total_count'] === $agent['notinit_count']) {
+                    $status = 'notinit';
+                } else if ($agent['critical_count'] > 0) {
+                    $status = 'critical';
+                } else if ($agent['warning_count'] > 0) {
+                    $status = 'warning';
+                } else if ($agent['unknown_count'] > 0) {
+                    $status = 'unknown';
+                } else {
+                    $status = 'normal';
+                }
+
+                if ($agent['last_status_change'] != 0) {
+                    $seconds = (time() - $agent['last_status_change']);
+
+                    if ($seconds >= SECONDS_1DAY) {
+                        $status .= '_10';
+                    } else if ($seconds >= 77760) {
+                        $status .= '_9';
+                    } else if ($seconds >= 69120) {
+                        $status .= '_8';
+                    } else if ($seconds >= 60480) {
+                        $status .= '_7';
+                    } else if ($seconds >= 51840) {
+                        $status .= '_6';
+                    } else if ($seconds >= 43200) {
+                        $status .= '_5';
+                    } else if ($seconds >= 34560) {
+                        $status .= '_4';
+                    } else if ($seconds >= 25920) {
+                        $status .= '_3';
+                    } else if ($seconds >= 17280) {
+                        $status .= '_2';
+                    } else if ($seconds >= 8640) {
+                        $status .= '_1';
+                    }
+                }
+
+                $agents[$key] = $agent;
+                $agents[$key]['status'] = $status;
+            }
         }
 
         return $agents;
@@ -417,6 +526,8 @@ class Heatmap
      */
     protected function getAllModulesByGroup()
     {
+        global $config;
+
         $filter_group = '';
         if (empty($this->filter) === false && current($this->filter) != -1) {
             $filter_group = 'AND am.id_module_group IN ('.implode(',', $this->filter).')';
@@ -427,81 +538,181 @@ class Heatmap
             $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
         }
 
+        $id_user_groups = '';
+        if (users_is_admin() === false) {
+            $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
+            if (empty($user_groups) === false) {
+                $id_user_groups = sprintf(
+                    'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                    AND a.id_grupo IN (%s)',
+                    implode(',', $user_groups)
+                );
+            }
+        }
+
         // All modules.
         $sql = sprintf(
             'SELECT am.id_agente_modulo AS id, ae.estado AS `status`, am.id_module_group AS id_grupo,
             ae.last_status_change FROM tagente_modulo am
             INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo
+            %s
             WHERE am.disabled = 0 %s %s GROUP BY am.id_module_group, am.id_agente_modulo',
+            $id_user_groups,
             $filter_group,
             $filter_name
         );
 
-        $result = db_get_all_rows_sql($sql);
+        if (is_metaconsole() === true) {
+            $nodes = metaconsole_get_connections();
+            $cont = 0;
+            $result = [];
+            foreach ($nodes as $node) {
+                try {
+                    $nd = new Node($node['id']);
+                    $nd->connect();
 
-        // Module status.
-        foreach ($result as $key => $module) {
-            $status = '';
-            switch ($module['status']) {
-                case AGENT_MODULE_STATUS_CRITICAL_BAD:
-                case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-                case 1:
-                case 100:
-                    $status = 'critical';
-                break;
+                    $modules = db_get_all_rows_sql($sql);
 
-                case AGENT_MODULE_STATUS_NORMAL:
-                case AGENT_MODULE_STATUS_NORMAL_ALERT:
-                case 0:
-                case 300:
-                    $status = 'normal';
-                break;
+                    // Module status.
+                    foreach ($modules as $key => $module) {
+                        $status = '';
+                        switch ($module['status']) {
+                            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                            case 1:
+                            case 100:
+                                $status = 'critical';
+                            break;
 
-                case AGENT_MODULE_STATUS_WARNING:
-                case AGENT_MODULE_STATUS_WARNING_ALERT:
-                case 2:
-                case 200:
-                    $status = 'warning';
-                break;
+                            case AGENT_MODULE_STATUS_NORMAL:
+                            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                            case 0:
+                            case 300:
+                                $status = 'normal';
+                            break;
 
-                default:
-                case AGENT_MODULE_STATUS_UNKNOWN:
-                case 3:
-                    $status = 'unknown';
-                break;
-                case AGENT_MODULE_STATUS_NOT_INIT:
-                case 5:
-                    $status = 'notinit';
-                break;
-            }
+                            case AGENT_MODULE_STATUS_WARNING:
+                            case AGENT_MODULE_STATUS_WARNING_ALERT:
+                            case 2:
+                            case 200:
+                                $status = 'warning';
+                            break;
 
-            if ($module['last_status_change'] != 0) {
-                $seconds = (time() - $module['last_status_change']);
+                            default:
+                            case AGENT_MODULE_STATUS_UNKNOWN:
+                            case 3:
+                                $status = 'unknown';
+                            break;
+                            case AGENT_MODULE_STATUS_NOT_INIT:
+                            case 5:
+                                $status = 'notinit';
+                            break;
+                        }
 
-                if ($seconds >= SECONDS_1DAY) {
-                    $status .= '_10';
-                } else if ($seconds >= 77760) {
-                    $status .= '_9';
-                } else if ($seconds >= 69120) {
-                    $status .= '_8';
-                } else if ($seconds >= 60480) {
-                    $status .= '_7';
-                } else if ($seconds >= 51840) {
-                    $status .= '_6';
-                } else if ($seconds >= 43200) {
-                    $status .= '_5';
-                } else if ($seconds >= 34560) {
-                    $status .= '_4';
-                } else if ($seconds >= 25920) {
-                    $status .= '_3';
-                } else if ($seconds >= 17280) {
-                    $status .= '_2';
-                } else if ($seconds >= 8640) {
-                    $status .= '_1';
+                        if ($module['last_status_change'] != 0) {
+                            $seconds = (time() - $module['last_status_change']);
+
+                            if ($seconds >= SECONDS_1DAY) {
+                                $status .= '_10';
+                            } else if ($seconds >= 77760) {
+                                $status .= '_9';
+                            } else if ($seconds >= 69120) {
+                                $status .= '_8';
+                            } else if ($seconds >= 60480) {
+                                $status .= '_7';
+                            } else if ($seconds >= 51840) {
+                                $status .= '_6';
+                            } else if ($seconds >= 43200) {
+                                $status .= '_5';
+                            } else if ($seconds >= 34560) {
+                                $status .= '_4';
+                            } else if ($seconds >= 25920) {
+                                $status .= '_3';
+                            } else if ($seconds >= 17280) {
+                                $status .= '_2';
+                            } else if ($seconds >= 8640) {
+                                $status .= '_1';
+                            }
+                        }
+
+                        $result[$cont] = $module;
+                        $result[$cont]['status'] = $status;
+                        $result[$cont]['server'] = $node['id'];
+                        ++$cont;
+                    }
+                } catch (\Exception $e) {
+                    $nd->disconnect();
+                } finally {
+                    $nd->disconnect();
                 }
             }
+        } else {
+            $result = db_get_all_rows_sql($sql);
 
-            $result[$key]['status'] = $status;
+            // Module status.
+            foreach ($result as $key => $module) {
+                $status = '';
+                switch ($module['status']) {
+                    case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                    case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                    case 1:
+                    case 100:
+                        $status = 'critical';
+                    break;
+
+                    case AGENT_MODULE_STATUS_NORMAL:
+                    case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                    case 0:
+                    case 300:
+                        $status = 'normal';
+                    break;
+
+                    case AGENT_MODULE_STATUS_WARNING:
+                    case AGENT_MODULE_STATUS_WARNING_ALERT:
+                    case 2:
+                    case 200:
+                        $status = 'warning';
+                    break;
+
+                    default:
+                    case AGENT_MODULE_STATUS_UNKNOWN:
+                    case 3:
+                        $status = 'unknown';
+                    break;
+                    case AGENT_MODULE_STATUS_NOT_INIT:
+                    case 5:
+                        $status = 'notinit';
+                    break;
+                }
+
+                if ($module['last_status_change'] != 0) {
+                    $seconds = (time() - $module['last_status_change']);
+
+                    if ($seconds >= SECONDS_1DAY) {
+                        $status .= '_10';
+                    } else if ($seconds >= 77760) {
+                        $status .= '_9';
+                    } else if ($seconds >= 69120) {
+                        $status .= '_8';
+                    } else if ($seconds >= 60480) {
+                        $status .= '_7';
+                    } else if ($seconds >= 51840) {
+                        $status .= '_6';
+                    } else if ($seconds >= 43200) {
+                        $status .= '_5';
+                    } else if ($seconds >= 34560) {
+                        $status .= '_4';
+                    } else if ($seconds >= 25920) {
+                        $status .= '_3';
+                    } else if ($seconds >= 17280) {
+                        $status .= '_2';
+                    } else if ($seconds >= 8640) {
+                        $status .= '_1';
+                    }
+                }
+
+                $result[$key]['status'] = $status;
+            }
         }
 
         return $result;
@@ -515,6 +726,8 @@ class Heatmap
      */
     protected function getAllModulesByTag()
     {
+        global $config;
+
         $filter_tag = '';
         if (empty($this->filter) === false && $this->filter[0] !== '0') {
             $tags = implode(',', $this->filter);
@@ -526,81 +739,181 @@ class Heatmap
             $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
         }
 
+        $id_user_groups = '';
+        if (users_is_admin() === false) {
+            $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
+            if (empty($user_groups) === false) {
+                $id_user_groups = sprintf(
+                    'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                    AND a.id_grupo IN (%s)',
+                    implode(',', $user_groups)
+                );
+            }
+        }
+
         // All modules.
         $sql = sprintf(
             'SELECT ae.id_agente_modulo AS id, ae.estado AS `status`, tm.id_tag AS id_grupo,
             ae.last_status_change FROM tagente_estado ae
+            %s
             INNER JOIN ttag_module tm ON tm.id_agente_modulo = ae.id_agente_modulo
-            WHERE 1=1 %s %s GROUP BY tm.id_tag, ae.id_agente_modulo',
+            WHERE 1=1 %s %s GROUP BY ae.id_agente_modulo',
+            $id_user_groups,
             $filter_tag,
             $filter_name
         );
 
-        $result = db_get_all_rows_sql($sql);
+        if (is_metaconsole() === true) {
+            $nodes = metaconsole_get_connections();
+            $result = [];
+            $cont = 0;
+            foreach ($nodes as $node) {
+                try {
+                    $nd = new Node($node['id']);
+                    $nd->connect();
 
-        // Module status.
-        foreach ($result as $key => $module) {
-            $status = '';
-            switch ($module['status']) {
-                case AGENT_MODULE_STATUS_CRITICAL_BAD:
-                case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-                case 1:
-                case 100:
-                    $status = 'critical';
-                break;
+                    $modules = db_get_all_rows_sql($sql);
 
-                case AGENT_MODULE_STATUS_NORMAL:
-                case AGENT_MODULE_STATUS_NORMAL_ALERT:
-                case 0:
-                case 300:
-                    $status = 'normal';
-                break;
+                    // Module status.
+                    foreach ($modules as $key => $module) {
+                        $status = '';
+                        switch ($module['status']) {
+                            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                            case 1:
+                            case 100:
+                                $status = 'critical';
+                            break;
 
-                case AGENT_MODULE_STATUS_WARNING:
-                case AGENT_MODULE_STATUS_WARNING_ALERT:
-                case 2:
-                case 200:
-                    $status = 'warning';
-                break;
+                            case AGENT_MODULE_STATUS_NORMAL:
+                            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                            case 0:
+                            case 300:
+                                $status = 'normal';
+                            break;
 
-                default:
-                case AGENT_MODULE_STATUS_UNKNOWN:
-                case 3:
-                    $status = 'unknown';
-                break;
-                case AGENT_MODULE_STATUS_NOT_INIT:
-                case 5:
-                    $status = 'notinit';
-                break;
-            }
+                            case AGENT_MODULE_STATUS_WARNING:
+                            case AGENT_MODULE_STATUS_WARNING_ALERT:
+                            case 2:
+                            case 200:
+                                $status = 'warning';
+                            break;
 
-            if ($module['last_status_change'] != 0) {
-                $seconds = (time() - $module['last_status_change']);
+                            default:
+                            case AGENT_MODULE_STATUS_UNKNOWN:
+                            case 3:
+                                $status = 'unknown';
+                            break;
+                            case AGENT_MODULE_STATUS_NOT_INIT:
+                            case 5:
+                                $status = 'notinit';
+                            break;
+                        }
 
-                if ($seconds >= SECONDS_1DAY) {
-                    $status .= '_10';
-                } else if ($seconds >= 77760) {
-                    $status .= '_9';
-                } else if ($seconds >= 69120) {
-                    $status .= '_8';
-                } else if ($seconds >= 60480) {
-                    $status .= '_7';
-                } else if ($seconds >= 51840) {
-                    $status .= '_6';
-                } else if ($seconds >= 43200) {
-                    $status .= '_5';
-                } else if ($seconds >= 34560) {
-                    $status .= '_4';
-                } else if ($seconds >= 25920) {
-                    $status .= '_3';
-                } else if ($seconds >= 17280) {
-                    $status .= '_2';
-                } else if ($seconds >= 8640) {
-                    $status .= '_1';
+                        if ($module['last_status_change'] != 0) {
+                            $seconds = (time() - $module['last_status_change']);
+
+                            if ($seconds >= SECONDS_1DAY) {
+                                $status .= '_10';
+                            } else if ($seconds >= 77760) {
+                                $status .= '_9';
+                            } else if ($seconds >= 69120) {
+                                $status .= '_8';
+                            } else if ($seconds >= 60480) {
+                                $status .= '_7';
+                            } else if ($seconds >= 51840) {
+                                $status .= '_6';
+                            } else if ($seconds >= 43200) {
+                                $status .= '_5';
+                            } else if ($seconds >= 34560) {
+                                $status .= '_4';
+                            } else if ($seconds >= 25920) {
+                                $status .= '_3';
+                            } else if ($seconds >= 17280) {
+                                $status .= '_2';
+                            } else if ($seconds >= 8640) {
+                                $status .= '_1';
+                            }
+                        }
+
+                        $result[$cont] = $module;
+                        $result[$cont]['status'] = $status;
+                        $result[$cont]['server'] = $node['id'];
+                        ++$cont;
+                    }
+                } catch (\Exception $e) {
+                    $nd->disconnect();
+                } finally {
+                    $nd->disconnect();
                 }
             }
+        } else {
+            $result = db_get_all_rows_sql($sql);
 
-            $result[$key]['status'] = $status;
+            // Module status.
+            foreach ($result as $key => $module) {
+                $status = '';
+                switch ($module['status']) {
+                    case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                    case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                    case 1:
+                    case 100:
+                        $status = 'critical';
+                    break;
+
+                    case AGENT_MODULE_STATUS_NORMAL:
+                    case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                    case 0:
+                    case 300:
+                        $status = 'normal';
+                    break;
+
+                    case AGENT_MODULE_STATUS_WARNING:
+                    case AGENT_MODULE_STATUS_WARNING_ALERT:
+                    case 2:
+                    case 200:
+                        $status = 'warning';
+                    break;
+
+                    default:
+                    case AGENT_MODULE_STATUS_UNKNOWN:
+                    case 3:
+                        $status = 'unknown';
+                    break;
+                    case AGENT_MODULE_STATUS_NOT_INIT:
+                    case 5:
+                        $status = 'notinit';
+                    break;
+                }
+
+                if ($module['last_status_change'] != 0) {
+                    $seconds = (time() - $module['last_status_change']);
+
+                    if ($seconds >= SECONDS_1DAY) {
+                        $status .= '_10';
+                    } else if ($seconds >= 77760) {
+                        $status .= '_9';
+                    } else if ($seconds >= 69120) {
+                        $status .= '_8';
+                    } else if ($seconds >= 60480) {
+                        $status .= '_7';
+                    } else if ($seconds >= 51840) {
+                        $status .= '_6';
+                    } else if ($seconds >= 43200) {
+                        $status .= '_5';
+                    } else if ($seconds >= 34560) {
+                        $status .= '_4';
+                    } else if ($seconds >= 25920) {
+                        $status .= '_3';
+                    } else if ($seconds >= 17280) {
+                        $status .= '_2';
+                    } else if ($seconds >= 8640) {
+                        $status .= '_1';
+                    }
+                }
+
+                $result[$key]['status'] = $status;
+            }
         }
 
         return $result;
@@ -614,9 +927,23 @@ class Heatmap
      */
     protected function getAllModulesByAgents()
     {
+        global $config;
+
         $filter_name = '';
         if (empty($this->search) === false) {
             $filter_name = 'AND nombre LIKE "%'.$this->search.'%"';
+        }
+
+        $id_user_groups = '';
+        if (users_is_admin() === false) {
+            $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
+            if (empty($user_groups) === false) {
+                $id_user_groups = sprintf(
+                    'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                    AND a.id_grupo IN (%s)',
+                    implode(',', $user_groups)
+                );
+            }
         }
 
         // All modules.
@@ -624,75 +951,163 @@ class Heatmap
             'SELECT am.id_agente_modulo AS id, ae.estado AS `status`, am.id_agente AS id_grupo,
             ae.last_status_change FROM tagente_modulo am
             INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo
+            %s
             WHERE am.disabled = 0 %s GROUP BY ae.id_agente_modulo ORDER BY id_grupo',
+            $id_user_groups,
             $filter_name
         );
 
-        $result = db_get_all_rows_sql($sql);
+        if (is_metaconsole() === true) {
+            $result = [];
+            $nodes = metaconsole_get_connections();
+            $cont = 0;
+            foreach ($nodes as $node) {
+                try {
+                    $nd = new Node($node['id']);
+                    $nd->connect();
 
-        // Module status.
-        foreach ($result as $key => $module) {
-            $status = '';
-            switch ($module['status']) {
-                case AGENT_MODULE_STATUS_CRITICAL_BAD:
-                case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-                case 1:
-                case 100:
-                    $status = 'critical';
-                break;
+                    $modules = db_get_all_rows_sql($sql);
+                    // Module status.
+                    foreach ($modules as $key => $module) {
+                        $status = '';
+                        switch ($module['status']) {
+                            case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                            case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                            case 1:
+                            case 100:
+                                $status = 'critical';
+                            break;
 
-                case AGENT_MODULE_STATUS_NORMAL:
-                case AGENT_MODULE_STATUS_NORMAL_ALERT:
-                case 0:
-                case 300:
-                    $status = 'normal';
-                break;
+                            case AGENT_MODULE_STATUS_NORMAL:
+                            case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                            case 0:
+                            case 300:
+                                $status = 'normal';
+                            break;
 
-                case AGENT_MODULE_STATUS_WARNING:
-                case AGENT_MODULE_STATUS_WARNING_ALERT:
-                case 2:
-                case 200:
-                    $status = 'warning';
-                break;
+                            case AGENT_MODULE_STATUS_WARNING:
+                            case AGENT_MODULE_STATUS_WARNING_ALERT:
+                            case 2:
+                            case 200:
+                                $status = 'warning';
+                            break;
 
-                default:
-                case AGENT_MODULE_STATUS_UNKNOWN:
-                case 3:
-                    $status = 'unknown';
-                break;
-                case AGENT_MODULE_STATUS_NOT_INIT:
-                case 5:
-                    $status = 'notinit';
-                break;
-            }
+                            default:
+                            case AGENT_MODULE_STATUS_UNKNOWN:
+                            case 3:
+                                $status = 'unknown';
+                            break;
+                            case AGENT_MODULE_STATUS_NOT_INIT:
+                            case 5:
+                                $status = 'notinit';
+                            break;
+                        }
 
-            if ($module['last_status_change'] != 0) {
-                $seconds = (time() - $module['last_status_change']);
+                        if ($module['last_status_change'] != 0) {
+                            $seconds = (time() - $module['last_status_change']);
 
-                if ($seconds >= SECONDS_1DAY) {
-                    $status .= '_10';
-                } else if ($seconds >= 77760) {
-                    $status .= '_9';
-                } else if ($seconds >= 69120) {
-                    $status .= '_8';
-                } else if ($seconds >= 60480) {
-                    $status .= '_7';
-                } else if ($seconds >= 51840) {
-                    $status .= '_6';
-                } else if ($seconds >= 43200) {
-                    $status .= '_5';
-                } else if ($seconds >= 34560) {
-                    $status .= '_4';
-                } else if ($seconds >= 25920) {
-                    $status .= '_3';
-                } else if ($seconds >= 17280) {
-                    $status .= '_2';
-                } else if ($seconds >= 8640) {
-                    $status .= '_1';
+                            if ($seconds >= SECONDS_1DAY) {
+                                $status .= '_10';
+                            } else if ($seconds >= 77760) {
+                                $status .= '_9';
+                            } else if ($seconds >= 69120) {
+                                $status .= '_8';
+                            } else if ($seconds >= 60480) {
+                                $status .= '_7';
+                            } else if ($seconds >= 51840) {
+                                $status .= '_6';
+                            } else if ($seconds >= 43200) {
+                                $status .= '_5';
+                            } else if ($seconds >= 34560) {
+                                $status .= '_4';
+                            } else if ($seconds >= 25920) {
+                                $status .= '_3';
+                            } else if ($seconds >= 17280) {
+                                $status .= '_2';
+                            } else if ($seconds >= 8640) {
+                                $status .= '_1';
+                            }
+                        }
+
+                        $result[$cont] = $module;
+                        $result[$cont]['status'] = $status;
+                        $result[$cont]['server'] = $node['id'];
+                        ++$cont;
+                    }
+                } catch (\Exception $e) {
+                    $nd->disconnect();
+                    $result = [];
+                } finally {
+                    $nd->disconnect();
                 }
             }
+        } else {
+            $result = db_get_all_rows_sql($sql);
 
-            $result[$key]['status'] = $status;
+            // Module status.
+            foreach ($result as $key => $module) {
+                $status = '';
+                switch ($module['status']) {
+                    case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                    case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                    case 1:
+                    case 100:
+                        $status = 'critical';
+                    break;
+
+                    case AGENT_MODULE_STATUS_NORMAL:
+                    case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                    case 0:
+                    case 300:
+                        $status = 'normal';
+                    break;
+
+                    case AGENT_MODULE_STATUS_WARNING:
+                    case AGENT_MODULE_STATUS_WARNING_ALERT:
+                    case 2:
+                    case 200:
+                        $status = 'warning';
+                    break;
+
+                    default:
+                    case AGENT_MODULE_STATUS_UNKNOWN:
+                    case 3:
+                        $status = 'unknown';
+                    break;
+                    case AGENT_MODULE_STATUS_NOT_INIT:
+                    case 5:
+                        $status = 'notinit';
+                    break;
+                }
+
+                if ($module['last_status_change'] != 0) {
+                    $seconds = (time() - $module['last_status_change']);
+
+                    if ($seconds >= SECONDS_1DAY) {
+                        $status .= '_10';
+                    } else if ($seconds >= 77760) {
+                        $status .= '_9';
+                    } else if ($seconds >= 69120) {
+                        $status .= '_8';
+                    } else if ($seconds >= 60480) {
+                        $status .= '_7';
+                    } else if ($seconds >= 51840) {
+                        $status .= '_6';
+                    } else if ($seconds >= 43200) {
+                        $status .= '_5';
+                    } else if ($seconds >= 34560) {
+                        $status .= '_4';
+                    } else if ($seconds >= 25920) {
+                        $status .= '_3';
+                    } else if ($seconds >= 17280) {
+                        $status .= '_2';
+                    } else if ($seconds >= 8640) {
+                        $status .= '_1';
+                    }
+                }
+
+                $result[$key]['status'] = $status;
+            }
         }
 
         return $result;
@@ -790,7 +1205,6 @@ class Heatmap
     {
         $yAxis = sqrt(($total / $relation));
         return $yAxis;
-
     }
 
 
@@ -801,7 +1215,7 @@ class Heatmap
      *
      * @return boolean True allowed, false not.
      */
-    public function ajaxMethod(string $method):bool
+    public function ajaxMethod(string $method): bool
     {
         return in_array($method, $this->AJAXMethods);
     }
@@ -847,8 +1261,13 @@ class Heatmap
         $contY = 0;
         $cont = 1;
         foreach ($result as $value) {
+            $name = $value['id'];
+            if (empty($value['server']) === false) {
+                $name .= '|'.$value['server'];
+            }
+
             echo '<rect id="'.$this->randomId.'_'.$cont.'" class="'.$value['status'].' hover"
-                width="1" height="1" x ="'.$contX.' "y="'.$contY.'" name="'.$value['id'].'" />';
+                width="1" height="1" x ="'.$contX.' "y="'.$contY.'" name="'.$name.'" />';
 
             $contX++;
             if ($contX >= $Xaxis) {
@@ -866,41 +1285,44 @@ class Heatmap
         }
 
         ?>
-            <script type="text/javascript">
-                $('rect').click(function() {
-                    const type = <?php echo $this->type; ?>;
-                    const id = $(`#${this.id}`).attr("name");
+        <script type="text/javascript">
+            $('rect').click(function() {
+                const type = <?php echo $this->type; ?>;
+                const name = $(`#${this.id}`).attr("name");
+                const id = name.split('|')[0];
+                const server = name.split('|')[1];
 
-                    $("#info_dialog").dialog({
-                        resizable: true,
-                        draggable: true,
-                        modal: true,
-                        closeOnEscape: true,
-                        height: 400,
-                        width: 530,
-                        title: '<?php echo __('Info'); ?>',
-                        open: function() {
-                            $.ajax({
-                                type: 'GET',
-                                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-                                data: {
-                                    page: "include/ajax/heatmap.ajax",
-                                    getInfo: 1,
-                                    type: type,
-                                    id: id,
-                                },
-                                dataType: 'html',
-                                success: function(data) {
-                                    $('#info_dialog').empty();
-                                    $('#info_dialog').append(data);
-                                }
-                            });
-                        },
-                    });
+                $("#info_dialog").dialog({
+                    resizable: true,
+                    draggable: true,
+                    modal: true,
+                    closeOnEscape: true,
+                    height: 400,
+                    width: 530,
+                    title: '<?php echo __('Info'); ?>',
+                    open: function() {
+                        $.ajax({
+                            type: 'GET',
+                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                            data: {
+                                page: "include/ajax/heatmap.ajax",
+                                getInfo: 1,
+                                type: type,
+                                id: id,
+                                id_server: server,
+                            },
+                            dataType: 'html',
+                            success: function(data) {
+                                $('#info_dialog').empty();
+                                $('#info_dialog').append(data);
+                            }
+                        });
+                    },
                 });
-            </script>
+            });
+        </script>
         <?php
-        if (count($groups) > 1 && $this->group === 1) {
+        if (count($groups) > 1 && $this->group === 1 && $this->dashboard === false) {
             $x_back = 0;
             $y_back = 0;
 
@@ -1099,7 +1521,7 @@ class Heatmap
         echo '</svg>';
 
         // Dialog.
-        echo '<div id="info_dialog" style="padding:15px" class="invisible"></div>';
+        echo '<div id="info_dialog"></div>';
     }
 
 

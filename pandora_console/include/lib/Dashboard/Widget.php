@@ -426,6 +426,10 @@ class Widget
                     $className .= '\\'.$name;
                 break;
 
+                case 'heatmap':
+                    $className .= '\HeatmapWidget';
+                break;
+
                 default:
                     $className = false;
                 break;

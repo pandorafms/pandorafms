@@ -1,16 +1,31 @@
 <?php
+/**
+ * Netflow Filter view
+ *
+ * @category   Netflow
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 global $config;
 
 require_once $config['homedir'].'/include/functions_ui.php';
@@ -30,35 +45,29 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 $pure = get_parameter('pure', 0);
 
-// Header
-if (! defined('METACONSOLE')) {
-    ui_print_page_header(
-        __('Manage Netflow Filter'),
-        'images/gm_netflow.png',
-        false,
-        '',
-        true
-    );
-
-    $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
-    if ($is_windows) {
-        ui_print_error_message(__('Not supported in Windows systems'));
-    }
-} else {
-    $nav_bar = [
+// Header.
+ui_print_standard_header(
+    __('Manage Filters'),
+    'images/gm_netflow.png',
+    false,
+    '',
+    true,
+    [],
+    [
         [
-            'link' => 'index.php?sec=main',
-            'text' => __('Main'),
+            'link'  => '',
+            'label' => __('Resources'),
         ],
         [
-            'link' => 'index.php?sec=netf&sec2=godmode/netflow/nf_edit',
-            'text' => __('Netflow filters'),
+            'link'  => '',
+            'label' => __('Netflow filters'),
         ],
-    ];
+    ]
+);
 
-    ui_meta_print_page_header($nav_bar);
-
-    ui_meta_print_header(__('Netflow filters'));
+$is_windows = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+if ($is_windows === true) {
+    ui_print_error_message(__('Not supported in Windows systems'));
 }
 
 $delete = (bool) get_parameter('delete');
@@ -190,30 +199,36 @@ foreach ($filters as $filter) {
 
     if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'AW')) {
         $table->cellclass[][3] = 'table_action_buttons';
-        $data[3] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-            href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+        $data[3] = '<a onclick="if(confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg'].'&offset=0&pure='.$pure.'">';
+        $data[3] .= html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']);
+        $data[3] .= '</a>';
     }
 
     array_push($table->data, $data);
 }
 
-if (isset($data)) {
-    echo "<form method='post' action='".$config['homeurl']."index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure=$pure'>";
+$buttons = html_print_submit_button(
+    __('Create filter'),
+    'crt',
+    false,
+    ['icon' => 'wand'],
+    true
+);
+
+if (empty($filters) === false) {
+    echo '<form id="multiple_delete" method="POST" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure='.$pure.'">';
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-    echo "<div class='right'>";
-
-    html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-    echo '</div>';
     echo '</form>';
+    $buttons .= html_print_submit_button(__('Delete'), 'delete_btn', false, ['icon' => 'delete', 'mode' => 'secondary', 'form' => 'multiple_delete'], true);
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined filters') ]);
 }
 
 echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
-echo "<div class='mrgn_right_5px right'>";
-html_print_submit_button(__('Create filter'), 'crt', false, 'class="sub wand"');
-echo '</div>';
+html_print_action_buttons(
+    $buttons
+);
 echo '</form>';
 
 ?>
@@ -221,27 +236,14 @@ echo '</form>';
 <script type="text/javascript">
 
     $( document ).ready(function() {
-
-        $('[id^=checkbox-delete_multiple]').change(function(){
-            if($(this).parent().parent().hasClass('checkselected')){
-                $(this).parent().parent().removeClass('checkselected');
+        $('[id^=checkbox-all_delete]').change(function() {
+            if ($("input[name=all_delete]").prop("checked")) {
+                $(".custom_checkbox_input").prop("checked", true);
             }
-            else{
-                $(this).parent().parent().addClass('checkselected');    
+            else {
+                $(".custom_checkbox_input").prop("checked", false);
             }
         });
-
-        $('[id^=checkbox-all_delete]').change(function(){    
-            if ($("#checkbox-all_delete").prop("checked")) {
-                $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
-                $(".check_delete").prop("checked", true);
-            }
-            else{
-                $('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
-                $(".check_delete").prop("checked", false);
-            }    
-        });
-
     });
 
 

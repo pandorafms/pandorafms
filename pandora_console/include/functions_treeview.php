@@ -657,7 +657,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $table->data['description'] = $row;
 
     // Last contact.
-    $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true, ['class' => 'font_11']);
+    $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true, ['style' => 'font-size: 13px;']);
 
     if ($agent['ultimo_contacto_remoto'] === '01-01-1970 00:00:00') {
         $last_remote_contact = __('Never');
@@ -689,8 +689,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         '#ececec',
         true,
         '',
-        false,
-        'line-height: 13px;'
+        false
     );
     $table->data['next_contact'] = $row;
 
@@ -703,6 +702,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $eventsGraph = html_print_div(
         [
             'style'   => 'height: 150px;',
+            'class'   => 'max-graph-tree-view',
             'content' => graph_graphic_agentevents(
                 $id_agente,
                 '500px;',
@@ -727,8 +727,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         false,
         '',
-        'white-box-content',
-        'white_table_flex margin-bottom-10 border-bottom-gray'
+        'white-box-content mrgn_top_0 mrgn_btn_0px',
+        'white_table_flex'
     );
 
     if ($config['agentaccess']) {
@@ -747,8 +747,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             true,
             false,
             '',
-            'white-box-content border-bottom-gray',
-            'white_table_flex margin-top-10 margin-bottom-10'
+            'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
+            'white_table_flex'
         );
     }
 
@@ -920,8 +920,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         true,
         false,
         '',
-        'white-box-content border-bottom-gray',
-        'white_table_flex margin-top-10 margin-bottom-10'
+        'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
+        'white_table_flex'
     );
 
     if (empty($server_data) === false && is_metaconsole() === true) {
@@ -933,6 +933,19 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             function sendHash(url) {
                 window.location = url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."';
  
+            }
+
+            $('.max-graph-tree-view').ready(function() {
+                widthGraph();
+            });
+
+            $(window).resize(function() {
+                widthGraph();
+            });
+
+            function widthGraph () {
+                var parentWidth = $('.max-graph-tree-view').parent().width();
+                $('.max-graph-tree-view').children().width(parentWidth + 5);
             }
 
         </script>";

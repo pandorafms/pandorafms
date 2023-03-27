@@ -568,6 +568,16 @@ class Manager implements PublicLogin
                 'tdashboard',
                 ['id' => $this->dashboardId]
             );
+
+            // Delete dashboard from fav menu.
+            \db_process_sql_delete(
+                'tfavmenu_user',
+                [
+                    'id_element' => $this->dashboardId,
+                    'section'    => 'Dashboard_',
+                    'id_user'    => $config['id_user'],
+                ]
+            );
         }
 
         // Audit.

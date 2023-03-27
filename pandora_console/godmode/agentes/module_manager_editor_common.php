@@ -444,79 +444,76 @@ $tableBasicThresholds->data = [];
 $tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width pdd_t_10px';
 $tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
 $tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').'&nbsp;';
-if ($edit_module === false && (isset($stringTypeModule) === false || $stringTypeModule === false)) {
-    $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_minmax_warning">('.__('Min / Max').')</span>';
-    $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
-        'min_warning',
-        $min_warning,
-        '',
-        10,
-        255,
-        true,
-        $disabledBecauseInPolicy || $edit === true,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-    $tableBasicThresholds->data['warning_threshold'][1] .= html_print_input_text(
-        'max_warning',
-        $max_warning,
-        '',
-        10,
-        255,
-        true,
-        $disabledBecauseInPolicy || $edit === true,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    ).'</span>';
 
-    $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_switch_radio_button(
-        [
-            html_print_radio_button_extended('warning_thresholds_checks', 'normal_warning', __('Normal'), ($percentage_warning && $warning_inverse) === false, false, '', '', true, false, '', 'radius-normal_warning'),
-            html_print_radio_button_extended('warning_thresholds_checks', 'warning_inverse', __('Inverse interval'), $warning_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-warning_inverse'),
-            html_print_radio_button_extended('warning_thresholds_checks', 'percentage_warning', __('Percentage'), $percentage_warning, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_warning'),
-        ],
-        [ 'class' => 'margin-top-10' ],
-        true
-    );
-}
+$tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_minmax_warning">('.__('Min / Max').')</span>';
+$tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
+    'min_warning',
+    $min_warning,
+    '',
+    10,
+    255,
+    true,
+    $disabledBecauseInPolicy || $edit === true,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
+$tableBasicThresholds->data['warning_threshold'][1] .= html_print_input_text(
+    'max_warning',
+    $max_warning,
+    '',
+    10,
+    255,
+    true,
+    $disabledBecauseInPolicy || $edit === true,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+).'</span>';
 
-if ($edit_module === false && isset($stringTypeModule) === true && $stringTypeModule === true) {
-    $basicThresholdsIntervalWarning = [];
-    $basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
-    $basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
-        'warning_inverse_string',
-        1,
-        $warning_inverse,
-        true,
-        $disabledBecauseInPolicy
-    );
+$tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_switch_radio_button(
+    [
+        html_print_radio_button_extended('warning_thresholds_checks', 'normal_warning', __('Normal'), ($percentage_warning && $warning_inverse) === false, false, '', '', true, false, '', 'radius-normal_warning'),
+        html_print_radio_button_extended('warning_thresholds_checks', 'warning_inverse', __('Inverse interval'), $warning_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-warning_inverse'),
+        html_print_radio_button_extended('warning_thresholds_checks', 'percentage_warning', __('Percentage'), $percentage_warning, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_warning'),
+    ],
+    [ 'class' => 'margin-top-10' ],
+    true
+);
 
-    $tableBasicThresholds->rowclass['caption_switch_warning_inverse_string'] = 'field_half_width';
-    $tableBasicThresholds->data['caption_switch_warning_inverse_string'][0] = html_print_div(
-        [
-            'class'   => 'margin-top-10',
-            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
-            'content' => implode('', $basicThresholdsIntervalWarning),
-        ],
-        true
-    );
+$basicThresholdsIntervalWarning = [];
+$basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
+$basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
+    'warning_inverse_string',
+    1,
+    $warning_inverse,
+    true,
+    $disabledBecauseInPolicy
+);
 
-    $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_str_warning">('.__('Str.').')</span>';
-    $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
-        'str_warning',
-        str_replace('"', '', $str_warning),
-        '',
-        10,
-        1024,
-        true,
-        $disabledBecauseInPolicy || $edit === false,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    ).'</span>';
-}
+$tableBasicThresholds->rowclass['caption_switch_warning_inverse_string'] = 'field_half_width';
+$tableBasicThresholds->data['caption_switch_warning_inverse_string'][0] = html_print_div(
+    [
+        'class'   => 'margin-top-10',
+        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+        'content' => implode('', $basicThresholdsIntervalWarning),
+    ],
+    true
+);
+
+$tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_str_warning">('.__('Str.').')</span>';
+$tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
+    'str_warning',
+    str_replace('"', '', $str_warning),
+    '',
+    10,
+    1024,
+    true,
+    $disabledBecauseInPolicy || $edit === false,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+).'</span>';
 
 
 $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
@@ -531,87 +528,84 @@ $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
 $tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
 $tableBasicThresholds->rowclass['critical_threshold'] = 'field_half_width';
 $tableBasicThresholds->data['caption_critical_threshold'][0] .= __('Critical threshold').'&nbsp;';
-if ($edit_module === false && (isset($stringTypeModule) === false || $stringTypeModule === false)) {
-    $tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_minmax_critical">('.__('Min / Max').')</span>';
-    $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
-        'min_critical',
-        $min_critical,
-        '',
-        10,
-        255,
-        true,
-        $disabledBecauseInPolicy || $edit === false,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-    $tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
-        'max_critical',
-        $max_critical,
-        '',
-        10,
-        255,
-        true,
-        $disabledBecauseInPolicy || $edit === false,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    ).'</span>';
+$tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_minmax_critical">('.__('Min / Max').')</span>';
+$tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
+    'min_critical',
+    $min_critical,
+    '',
+    10,
+    255,
+    true,
+    $disabledBecauseInPolicy || $edit === false,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
+$tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
+    'max_critical',
+    $max_critical,
+    '',
+    10,
+    255,
+    true,
+    $disabledBecauseInPolicy || $edit === false,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+).'</span>';
 
-    $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_switch_radio_button(
-        [
-            html_print_radio_button_extended('critical_thresholds_checks', 'normal_critical', __('Normal'), ($percentage_critical && $critical_inverse) === false, false, '', '', true, false, '', 'radius-normal_critical'),
-            html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), $critical_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
-            html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), $percentage_critical, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
-        ],
-        [ 'class' => 'margin-top-10' ],
-        true
-    );
-}
+$tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_switch_radio_button(
+    [
+        html_print_radio_button_extended('critical_thresholds_checks', 'normal_critical', __('Normal'), ($percentage_critical && $critical_inverse) === false, false, '', '', true, false, '', 'radius-normal_critical'),
+        html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), $critical_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
+        html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), $percentage_critical, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
+    ],
+    [ 'class' => 'margin-top-10' ],
+    true
+);
 
-if ($edit_module === false && isset($stringTypeModule) === true && $stringTypeModule === true) {
-    $basicThresholdsIntervalCritical = [];
-    $basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
-    $basicThresholdsIntervalCritical[] = html_print_checkbox_switch(
-        'critical_inverse_string',
-        1,
-        $critical_inverse,
-        true,
-        $disabledBecauseInPolicy
-    );
 
-    $tableBasicThresholds->rowclass['caption_switch_critical_inverse_string'] = 'field_half_width';
-    $tableBasicThresholds->data['caption_switch_critical_inverse_string'][0] = html_print_div(
-        [
-            'class'   => 'margin-top-10',
-            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
-            'content' => implode('', $basicThresholdsIntervalCritical),
-        ],
-        true
-    );
+$basicThresholdsIntervalCritical = [];
+$basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
+$basicThresholdsIntervalCritical[] = html_print_checkbox_switch(
+    'critical_inverse_string',
+    1,
+    $critical_inverse,
+    true,
+    $disabledBecauseInPolicy
+);
 
-    $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_div(
-        [
-            'id'      => 'percentage_critical',
-            'content' => $divPercentageContent,
-        ],
-        true
-    );
+$tableBasicThresholds->rowclass['caption_switch_critical_inverse_string'] = 'field_half_width';
+$tableBasicThresholds->data['caption_switch_critical_inverse_string'][0] = html_print_div(
+    [
+        'class'   => 'margin-top-10',
+        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+        'content' => implode('', $basicThresholdsIntervalCritical),
+    ],
+    true
+);
 
-    $tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_str_critical">('.__('Str.').')</span>';
-    $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
-        'str_critical',
-        str_replace('"', '', $str_critical),
-        '',
-        10,
-        1024,
-        true,
-        $disabledBecauseInPolicy,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-}
+$tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_div(
+    [
+        'id'      => 'percentage_critical',
+        'content' => $divPercentageContent,
+    ],
+    true
+);
+
+$tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_str_critical">('.__('Str.').')</span>';
+$tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
+    'str_critical',
+    str_replace('"', '', $str_critical),
+    '',
+    10,
+    1024,
+    true,
+    $disabledBecauseInPolicy,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
 
 $table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 340px;width: 100%';
 $table_simple->cellclass['thresholds_table'][0] = 'table_section half_section_left';
@@ -1622,6 +1616,11 @@ ui_require_jquery_file('json');
 /* <![CDATA[ */
 $(document).ready (function () {
     var disabledBecauseInPolicy = <?php echo '\''.((empty($disabledBecauseInPolicy) === true) ? '0' : '1').'\''; ?>;
+    var idModuleType  = '<?php echo $type_names_hash[$id_module_type]; ?>';
+    if (idModuleType != '') {
+        setModuleType(idModuleType);
+    }
+
     $("#right").click (function () {
         jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
             tag_name = $(value).html();
@@ -1906,77 +1905,50 @@ $(document).ready (function () {
 
     $('.switch_radio_button label').on('click', function(){
         var thisLabel = $(this).attr('for');
-        $('#'+thisLabel).attr('checked', 'checked');
-        $('#'+thisLabel).siblings().attr('checked', false);
+        $('#'+thisLabel).prop('checked', true);
+        $('#'+thisLabel).siblings().prop('checked', false);
         
-        if ($('#radius-warning_inverse').prop('checked') === true) {
-            //$('#percentage_warning').hide();
-            $("#svg_dinamic").show();
-        }
-
-        if ($('#radius-critical_inverse').prop('checked') === true) {
-            //$('#percentage_critical').hide();
+        if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true) {
+            $("#svg_dinamic").hide();
+        } else {
+            paint_graph_values();
             $("#svg_dinamic").show();
         }
 
         if ($('#radius-percentage_warning').prop('checked') === true) {
-            //$('#warning_inverse').hide();
-            $("#svg_dinamic").hide();
+            $('#radius-warning_inverse').hide();
+            $('#label-radius-warning_inverse').hide();
         }
+
+        if ($('#radius-warning_inverse').prop('checked') === true) {
+            $('#radius-percentage_warning').hide();
+            $('#label-radius-percentage_warning').hide();
+        }
+
+        if ($('#radius-normal_warning').prop('checked') === true) {
+            $('#radius-warning_inverse').show();
+            $('#label-radius-warning_inverse').show();
+            $('#radius-percentage_warning').show();
+            $('#label-radius-percentage_warning').show();
+        }
+
 
         if ($('#radius-percentage_critical').prop('checked') === true) {
-            //$('#critical_inverse').hide();
-            $("#svg_dinamic").hide();
+            $('#radius-critical_inverse').hide();
+            $('#label-radius-critical_inverse').hide();
         }
 
-        $('#radius-warning_inverse').change (function() {
-            paint_graph_values();
-            if ($('#radius-warning_inverse').prop('checked') === true){
-                $('#radius-percentage_warning').prop('checked', false);
-                $('#percentage_warning').attr('onClick', 'return false;');
-                $('#percentage_warning>em').addClass('color_666');
-            } else {
-                $('#percentage_warning').removeAttr('onClick');
-                $('#percentage_warning>em').removeClass('color_666');
-            }
-        });
+        if ($('#radius-critical_inverse').prop('checked') === true) {
+            $('#radius-percentage_critical').hide();
+            $('#label-radius-percentage_critical').hide();
+        }
 
-        $('#radius-critical_inverse').change (function() {
-            paint_graph_values();
-
-            if ($('#radius-critical_inverse').prop('checked') === true){
-                $('#radius-percentage_critical').prop('checked', false);
-                $('#percentage_critical').attr('onClick', 'return false;');
-                $('#percentage_critical>em').addClass('color_666');
-            } else {
-                $('#percentage_critical').removeAttr('onClick');
-                $('#percentage_critical>em').removeClass('color_666');
-            }
-        });
-
-        $('#radius-percentage_warning').change (function() {
-            paint_graph_values();
-            if ($('#radius-percentage_warning').prop('checked') === true){
-                $('#radius-warning_inverse').prop('checked', false);
-                $('#warning_inverse').attr('onClick', 'return false;');
-                $('#warning_inverse>em').addClass('color_666');
-            } else {
-                $('#warning_inverse').removeAttr('onClick');
-                $('#warning_inverse>em').removeClass('color_666');
-            }
-        });
-
-        $('#radius-percentage_critical').change (function() {
-            paint_graph_values();
-            if ($('#radius-percentage_critical').prop('checked') === true){
-                $('#radius-critical_inverse').prop('checked', false);
-                $('#critical_inverse').attr('onClick', 'return false;');
-                $('#critical_inverse>em').addClass('color_666');
-            } else {
-                $('#critical_inverse').removeAttr('onClick');
-                $('#critical_inverse>em').removeClass('color_666');
-            }
-        });
+        if ($('#radius-normal_critical').prop('checked') === true) {
+            $('#radius-critical_inverse').show();
+            $('#label-radius-critical_inverse').show();
+            $('#radius-percentage_critical').show();
+            $('#label-radius-percentage_critical').show();
+        }
     });
 
     
@@ -2235,91 +2207,66 @@ function validate_post_process() {
     }
 }
 
-//function paint graph
+//function paint graph.
 function paint_graph_values(){
-    //Parse integrer
     var min_w = parseFloat($('#text-min_warning').val());
-        if(min_w == '0.00'){ min_w = 0; }
-    var max_w = parseFloat($('#text-max_warning').val());
-        if(max_w == '0.00'){ max_w = 0; }
-    var min_c = parseFloat($('#text-min_critical').val());
-        if(min_c =='0.00'){ min_c = 0; }
-    var max_c = parseFloat($('#text-max_critical').val());
-        if(max_c =='0.00'){ max_c = 0; }
-    var inverse_w = $('input:radio[name=warning_inverse]:checked').val();
-        if(!inverse_w){ inverse_w = 0; }
-    var inverse_c = $('input:radio[name=critical_inverse]:checked').val();
-        if(!inverse_c){ inverse_c = 0; }
+    if(min_w == '0.00' || isNaN(min_w)){ min_w = 0; }
 
-    //inicialiced error
+    var max_w = parseFloat($('#text-max_warning').val());
+    if(max_w == '0.00' || isNaN(max_w)){ max_w = 0; }
+
+    var min_c = parseFloat($('#text-min_critical').val());
+    if(min_c =='0.00' || isNaN(min_c)){ min_c = 0; }
+
+    var max_c = parseFloat($('#text-max_critical').val());
+    if(max_c =='0.00' || isNaN(max_c)){ max_c = 0; }
+
+    var inverse_w = $('input:radio[value=warning_inverse]:checked').val();
+    if(!inverse_w){ inverse_w = 0; }
+
+    var inverse_c = $('input:radio[value=critical_inverse]:checked').val();
+    if(!inverse_c){ inverse_c = 0; }
+
+    //inicialiced error.
     var error_w = 0;
     var error_c = 0;
-    //messages legend
+
+    //messages legend.
     var legend_normal = '<?php echo __('Normal Status'); ?>';
     var legend_warning = '<?php echo __('Warning Status'); ?>';
     var legend_critical = '<?php echo __('Critical Status'); ?>';
-    //messages error
+
+    //messages error.
     var message_error_warning = '<?php echo __('Please introduce a maximum warning higher than the minimun warning'); ?>';
     var message_error_critical = '<?php echo __('Please introduce a maximum critical higher than the minimun critical'); ?>';
     var message_error_percentage = '<?php echo __('Please introduce a positive percentage value'); ?>';
-
-
-    //Percentage selector
-    var percentage_w = $('#checkbox-percentage_warning').prop('checked');
-    var percentage_c = $('#checkbox-percentage_critical').prop('checked');
-
-    if(percentage_w == true || percentage_c == true) {
-        d3.select("#svg_dinamic rect").remove();
-        //create svg
-        var svg = d3.select("#svg_dinamic");
-        svg.selectAll("g").remove();
-        if (percentage_w === true) {
-            if(max_w < 0 || min_w < 0) {
-                paint_graph_status(0,0,0,0,0,0,1,0,legend_normal,legend_warning,legend_critical,message_error_percentage,message_error_percentage);
-            } else {
-                $("#text-max_warning").removeClass("input_error");
-                $("#text-min_warning").removeClass("input_error");
-            }
-            
-        }
-
-        if(percentage_c === true) {
-            if(max_c < 0 || min_c < 0) {
-                paint_graph_status(0,0,0,0,0,0,0,1,legend_normal,legend_warning,legend_critical,message_error_percentage,message_error_percentage);
-            } else {
-                $("#text-min-critical").removeClass("input_error");
-                $("#text-max_critical").removeClass("input_error");
-
-            }
-            } 
-
-        return;
-
-    } else {
-        $('#svg_dinamic').show();
-    }
     
     //if haven't error
     if(max_w == 0 || max_w > min_w){
         if(max_c == 0 || max_c > min_c){
-            paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, 
-                                inverse_c, error_w, error_c,
-                                legend_normal, legend_warning, legend_critical,
-                                message_error_warning, message_error_critical);
+            paint_graph_status(
+                min_w, max_w, min_c, max_c, inverse_w, 
+                inverse_c, error_w, error_c,
+                legend_normal, legend_warning, legend_critical,
+                message_error_warning, message_error_critical
+            );
         } else {
             error_c = 1;
-            paint_graph_status(0,0,0,0,0,0, error_w, error_c,
-                            legend_normal, legend_warning, legend_critical,
-                            message_error_warning, message_error_critical);
+            paint_graph_status(
+                0,0,0,0,0,0, error_w, error_c,
+                legend_normal, legend_warning, legend_critical,
+                message_error_warning, message_error_critical
+            );
         }
     } else {
         error_w = 1;
-        paint_graph_status(0,0,0,0,0,0, error_w, error_c, 
-                            legend_normal, legend_warning, legend_critical,
-                            message_error_warning, message_error_critical);
+        paint_graph_status(
+            0,0,0,0,0,0, error_w, error_c, 
+            legend_normal, legend_warning, legend_critical,
+            message_error_warning, message_error_critical
+        );
     }
 }
-/* End of relationship javascript */
 
 /* ]]> */
 </script>

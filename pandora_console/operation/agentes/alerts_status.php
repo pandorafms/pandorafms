@@ -497,9 +497,9 @@ if ($agent_view_page === true) {
                 !$alerts_defined,
                 false,
                 true,
-                'box-flat agent_details_col',
-                'white-box-content',
-                'width_available'
+                '',
+                '',
+                'box-flat white_table_graph w100p'
             ),
         ],
     );

@@ -184,7 +184,7 @@ if (!$double_auth_enabled
       background: "black"
     },
     width: 500,
-    height: 400,
+    height: 'auto',
     close: function (event, ui) {
       // Abort the ajax request
       if (typeof request != 'undefined'){

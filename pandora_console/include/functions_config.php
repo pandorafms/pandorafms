@@ -456,6 +456,10 @@ function config_update_config()
                             $error_update[] = __('Enable Update Manager');
                         }
 
+                        if (config_update_value('legacy_database_ha', get_parameter('legacy_database_ha'), true) === false) {
+                            $error_update[] = __('Legacy database HA');
+                        }
+
                         if (config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'), true) === false) {
                             $error_update[] = __('Ipam Ocuppied Manager Critical');
                         }
@@ -2237,6 +2241,10 @@ function config_process_config()
         config_update_value('enable_update_manager', 1);
     }
 
+    if (!isset($config['legacy_database_ha'])) {
+        config_update_value('legacy_database_ha', 0);
+    }
+
     if (!isset($config['disabled_newsletter'])) {
         config_update_value('disabled_newsletter', 0);
     }
@@ -2561,7 +2569,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_splash_login'])) {
-        config_update_value('custom_splash_login', 'default');
+        config_update_value('custom_splash_login', 'none.png');
     }
 
     if (!isset($config['custom_docs_logo'])) {
@@ -2597,11 +2605,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_title1_login'])) {
-        config_update_value('custom_title1_login', __('PANDORA FMS'));
+        config_update_value('custom_title1_login', __('ONE TOOL TO RULE THEM ALL'));
     }
 
     if (!isset($config['custom_title2_login'])) {
-        config_update_value('custom_title2_login', __('ONE TOOL TO MONITOR THEM ALL'));
+        config_update_value('custom_title2_login', '');
     }
 
     if (!isset($config['custom_docs_url'])) {
@@ -2649,11 +2657,11 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_title1_login'])) {
-        config_update_value('meta_custom_title1_login', __('PANDORA FMS NEXT GENERATION'));
+        config_update_value('meta_custom_title1_login', __('ONE TOOL TO RULE THEM ALL'));
     }
 
     if (!isset($config['meta_custom_title2_login'])) {
-        config_update_value('meta_custom_title2_login', __('METACONSOLE'));
+        config_update_value('meta_custom_title2_login', __('COMMAND CENTER'));
     }
 
     if (!isset($config['vc_favourite_view'])) {
@@ -3218,7 +3226,7 @@ function config_process_config()
             // Try to update user table in order to refresh skin inmediatly.
             $is_user_updating = get_parameter('sec2', '');
 
-            if ($is_user_updating == 'operation/users/user_edit') {
+            if ($is_user_updating === 'godmode/users/configure_user') {
                 $id = get_parameter_get('id', $config['id_user']);
                 // ID given as parameter.
                 $user_info = get_user_info($id);
@@ -3482,7 +3490,7 @@ function config_process_config()
     }
 
     if (!isset($config['random_background'])) {
-        config_update_value('random_background', '');
+        config_update_value('random_background', 1);
     }
 
     if (!isset($config['meta_random_background'])) {
@@ -3746,7 +3754,7 @@ function config_user_set_custom_config()
         }
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $config['metaconsole_access'] = $userinfo['metaconsole_access'];
     }
 }

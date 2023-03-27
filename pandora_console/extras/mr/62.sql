@@ -1,5 +1,14 @@
 START TRANSACTION;
 
+ALTER TABLE `tdatabase` ADD COLUMN `ssh_status` TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `db_status` TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `replication_status` TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `replication_delay` BIGINT DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `master` TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `utimestamp` BIGINT DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `mysql_version` VARCHAR(10) DEFAULT '';
+ALTER TABLE `tdatabase` ADD COLUMN `pandora_version` VARCHAR(10) DEFAULT '';
+
 UPDATE tconfig_os SET `icon_name` = 'linux@os.svg' WHERE `id_os` = 1;
 UPDATE tconfig_os SET `icon_name` = 'solaris@os.svg' WHERE `id_os` = 2;
 UPDATE tconfig_os SET `icon_name` = 'aix@os.svg' WHERE `id_os` = 3;
@@ -154,5 +163,18 @@ INSERT INTO `twelcome_tip_file` (`twelcome_tip_file`, `filename`, `path`) VALUES
 (19, 'graficas_disponibilidad.png', 'images/tips/'),
 (20, 'zoom_en_graficas.png', 'images/tips/'),
 (22, 'politica_de_pass.png', 'images/tips/');
+
+ALTER TABLE `tusuario` ADD COLUMN `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1;
+
+CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_user` VARCHAR(255) NOT NULL,
+  `id_element` TEXT,
+  `url` TEXT NOT NULL,
+  `label` VARCHAR(255) NOT NULL,
+  `section` VARCHAR(255) NOT NULL,
+PRIMARY KEY (`id`));
+
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('legacy_database_ha', 1);
 
 COMMIT;

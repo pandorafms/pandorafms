@@ -314,7 +314,7 @@ if ($start_date != $current) {
 
 if ($combined) {
     // Pass the $modules before the ajax call.
-    echo '<div class="combined-graph-container center w100p"'.'data-period="'.$period.'"'.'data-stacked="'.CUSTOM_GRAPH_LINE.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
+    echo '<div class="combined-graph-container center w100p white_box"'.'data-period="'.$period.'"'.'data-stacked="'.CUSTOM_GRAPH_LINE.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
 } else {
     foreach ($modules as $id_module) {
         $title = modules_get_agentmodule_name($id_module);

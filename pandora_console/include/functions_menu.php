@@ -58,6 +58,16 @@ function menu_print_menu(&$menu)
     $sec2 = (string) get_parameter('sec2');
     if ($sec2 === 'operation/agentes/ver_agente') {
         $sec2 = 'godmode/agentes/configurar_agente';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_template') {
+        $sec2 = 'godmode/alerts/alert_templates';
+    } else if ($sec2 === 'godmode/events/events') {
+        $sec2 = 'godmode/events/events&section=filter';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_action') {
+        $sec2 = 'godmode/alerts/alert_actions';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_command') {
+        $sec2 = 'godmode/alerts/alert_commands';
+    } else if ($sec2 === 'enterprise/godmode/setup/edit_skin') {
+        $sec2 = 'enterprise/godmode/setup/setup_skins';
     } else if ($sec2 === 'godmode/servers/discovery') {
         $wiz = (string) get_parameter('wiz');
         $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
@@ -842,7 +852,7 @@ if (is_ajax()) {
         $fragmentation_status = '';
         if ($db_fragmentation->data->tablesFragmentationStatus->status === 1) {
             $fragmentation_status = html_print_image(
-                'images/exito.png',
+                'images/validate.svg',
                 true,
                 [
                     'title' => __('Successfully'),
@@ -851,7 +861,7 @@ if (is_ajax()) {
             );
         } else {
             $fragmentation_status = html_print_image(
-                'images/error_1.png',
+                'images/fail@svg.svg',
                 true,
                 [
                     'title' => __('Error'),

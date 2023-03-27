@@ -284,6 +284,10 @@ class ModuleValueWidget extends Widget
             $values['sizeLabel'] = $decoder['sizeLabel'];
         }
 
+        if (isset($decoder['horizontal']) === true) {
+            $values['horizontal'] = $decoder['horizontal'];
+        }
+
         return $values;
     }
 
@@ -385,6 +389,18 @@ class ModuleValueWidget extends Widget
             ],
         ];
 
+        // Horizontal.
+        $inputs[] = [
+            'label'     => __('Horizontal').ui_print_help_tip(__('If not, layout is vertical'), true),
+            'arguments' => [
+                'wrapper' => 'div',
+                'name'    => 'horizontal',
+                'type'    => 'switch',
+                'value'   => $values['horizontal'],
+                'return'  => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -405,6 +421,7 @@ class ModuleValueWidget extends Widget
         $values['moduleId'] = \get_parameter('moduleId', 0);
         $values['sizeValue'] = \get_parameter('sizeValue', 0);
         $values['sizeLabel'] = \get_parameter_switch('sizeLabel');
+        $values['horizontal'] = \get_parameter_switch('horizontal');
 
         return $values;
     }
@@ -422,6 +439,7 @@ class ModuleValueWidget extends Widget
         $output = '';
 
         $id_module = $this->values['moduleId'];
+        $unit = modules_get_unit($this->values['moduleId']);
 
         $data_module = \modules_get_last_value($id_module);
 
@@ -429,11 +447,41 @@ class ModuleValueWidget extends Widget
         $sizeLabel = (isset($this->values['sizeLabel']) === true) ? $this->values['sizeLabel'] : 40;
         $sizeValue = (isset($this->values['sizeValue']) === true) ? $this->values['sizeValue'] : 40;
 
-        $output .= '<div class="container-center">';
+        $sql = 'SELECT min_warning,
+        max_warning,
+        min_critical,
+        max_critical,
+        str_warning,
+        str_critical 
+        FROM tagente_modulo
+        WHERE id_agente_modulo = '.(int) $this->values['moduleId'];
+        $sql_data = db_get_row_sql($sql);
+
+        $last = modules_get_last_value($this->values['moduleId']);
+
+        if (($last >= $sql_data['min_warning']) && ($last < $sql_data['max_warning'])) {
+            $color = COL_WARNING;
+        }
+
+        if ($last >= $sql_data['max_warning']) {
+            $color = COL_CRITICAL;
+        }
+
+        $uuid = uniqid();
+        $output .= '<div class="container-center" id="container-'.$uuid.'">';
+
+        $orientation = '';
+        if ((int) $this->values['horizontal'] === 1) {
+            $orientation = 'flex aligni_center';
+        } else {
+            $orientation = 'grid';
+        }
+
         // General div.
-        $output .= '<div class="container-icon">';
+        $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
+
         // Div value.
-        $output .= '<div style="flex: 0 1 '.$sizeValue.'px; font-size:'.$sizeValue.'px;">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_20px" style="flex: 0 1 '.$sizeValue.'px; line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px; color: '.$color.'">';
 
         if (is_numeric($data_module) === true) {
             $dataDatos = remove_right_zeros(
@@ -443,7 +491,7 @@ class ModuleValueWidget extends Widget
                     $config['decimal_separator'],
                     $config['thousand_separator']
                 )
-            );
+            ).$unit;
         } else {
             $dataDatos = trim($data_module);
         }
@@ -454,11 +502,22 @@ class ModuleValueWidget extends Widget
 
         if (empty($label) === false) {
             // Div Label.
-            $output .= '<div style="flex: 1 1 '.$sizeLabel.'px; font-size:'.$sizeLabel.'px;">'.$label.'</div>';
+            $output .= '<div class="pdd_l_15px pdd_r_15px" style="flex: 1 1 '.$sizeLabel.'px; line-height: '.$sizeLabel.'px; font-size:'.$sizeLabel.'px;">'.$label.'</div>';
         }
 
         $output .= '</div>';
         $output .= '</div>';
+
+        $output .= '<script>
+        var containerWidth = document.querySelector("#container-'.$uuid.'").offsetWidth;
+        var generalWidth = document.querySelector("#general-'.$uuid.'").offsetWidth;
+
+        if (generalWidth >= containerWidth) {
+            $("#container-'.$uuid.'").css("align-items", "flex-start");
+        } else {
+            $("#container-'.$uuid.'").css("align-items", "center");
+        }
+        </script>';
         return $output;
     }
 

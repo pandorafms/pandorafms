@@ -1491,7 +1491,7 @@ ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 if ($config['pure'] == 0) {
     echo '</div>';
@@ -1522,13 +1522,6 @@ require 'include/php_to_js_values.php';
 <script type="text/javascript" language="javascript">
     // Handle the scroll.
     $(document).ready(scrollFunction());
-    // When there are less than 5 rows, all rows must be white
-    var theme = "<?php echo $config['style']; ?>";
-    if (theme === 'pandora') {
-        if ($('table.info_table tr').length < 5) {
-            $('table.info_table tbody > tr').css('background-color', '#fff');
-        }
-    }
 
     // When the user scrolls down 400px from the top of the document, show the
     // button.

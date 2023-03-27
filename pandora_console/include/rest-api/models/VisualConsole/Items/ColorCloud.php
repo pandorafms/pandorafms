@@ -480,11 +480,14 @@ final class ColorCloud extends Item
                     [
                         'arguments' => [
                             'name'       => 'add',
-                            'label'      => '',
+                            'label'      => __('Add'),
                             'type'       => 'button',
-                            'attributes' => 'class="add-item-img"',
+                            'attributes' => [
+                                'mode' => 'mini secondary',
+                                'icon' => 'next',
+                            ],
                             'return'     => true,
-                            'script'     => 'createColorRange(\''.$baseUrl.'\',\''.$values['vCId'].'\')',
+                            'script'     => 'createColorRange("'.$baseUrl.'","'.$values['vCId'].'")',
                         ],
                     ],
                 ],
@@ -540,13 +543,14 @@ final class ColorCloud extends Item
                             [
                                 'arguments' => [
                                     'name'       => 'remove-'.$uniqId,
-                                    'label'      => '',
+                                    'label'      => __('Remove'),
                                     'type'       => 'button',
-                                    'attributes' => 'class="remove-item-img"',
+                                    'attributes' => [
+                                        'mode' => 'mini secondary',
+                                        'icon' => 'delete',
+                                    ],
                                     'return'     => true,
-                                    'script'     => 'removeColorRange(
-                                        \''.$uniqId.'\'
-                                    )',
+                                    'script'     => 'removeColorRange("'.$uniqId.'")',
                                 ],
                             ],
                         ],

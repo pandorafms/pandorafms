@@ -321,7 +321,11 @@ if (empty($result_groups) === false) {
             $link = "<a href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']."'>";
         } else {
             $deep = groups_get_group_deep($data['_id_']);
-            $link = "<a href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+            if ($data['_id_'] === '0') {
+                $link = "<a href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+            } else {
+                $link = "<a href='index.php?sec=view&sec2=godmode/groups/tactical&id_group=".$data['_id_']."'>";
+            }
         }
 
         $group_name = '<b><span>'.ui_print_truncate_text($data['_name_'], 50).'</span></b>';

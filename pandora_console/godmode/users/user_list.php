@@ -395,8 +395,6 @@ if ($delete_user === true) {
                         __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
                     );
                 }
-
-                header('Refresh:1');
             }
         } else {
             ui_print_error_message(__('There was a problem deleting the user'));
@@ -453,9 +451,9 @@ if ($delete_user === true) {
     }
 }
 
-        $filter_group = (int) get_parameter('filter_group', 0);
-        $filter_search = get_parameter('filter_search', '');
-        $search = (bool) get_parameter('search', false);
+$filter_group = (int) get_parameter('filter_group', 0);
+$filter_search = get_parameter('filter_search', '');
+$search = (bool) get_parameter('search', false);
 
 if (($filter_group == 0) && ($filter_search == '')) {
     $search = false;
@@ -463,42 +461,71 @@ if (($filter_group == 0) && ($filter_search == '')) {
 
 $filterTable = new stdClass();
 $filterTable->width = '100%';
-$filterTable->class = 'fixed_filter_bar';
+$filterTable->class = 'filter-table-adv';
 $filterTable->rowclass[0] = '';
 $filterTable->cellstyle[0][0] = 'width:0';
 $filterTable->cellstyle[0][1] = 'width:0';
-$filterTable->data[0][0] = __('Group');
-$filterTable->data[1][0] = html_print_select_groups(
-    false,
-    'AR',
-    true,
-    'filter_group',
-    $filter_group,
-    '',
-    '',
-    0,
-    true
+$filterTable->data[0][] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'AR',
+        true,
+        'filter_group',
+        $filter_group,
+        '',
+        '',
+        0,
+        true
+    )
 );
-$filterTable->data[0][1] = __('Search').ui_print_help_tip(__('Search by username, fullname or email'), true);
-$filterTable->data[1][1] = html_print_input_text(
-    'filter_search',
-    $filter_search,
-    __('Search by username, fullname or email'),
-    30,
-    90,
-    true
-);
-$filterTable->cellstyle[1][2] = 'vertical-align: bottom';
-$filterTable->data[1][2] = html_print_submit_button(
+
+$filterTable->data[0][] = html_print_label_input_block(
     __('Search'),
-    'search',
-    false,
+    html_print_input_text(
+        'filter_search',
+        $filter_search,
+        __('Search by username, fullname or email'),
+        30,
+        90,
+        true
+    ).ui_print_input_placeholder(
+        __('Search by username, fullname or email'),
+        true
+    )
+);
+
+$form_filter = "<form method='post'>";
+$form_filter .= html_print_table($filterTable, true);
+$form_filter .= html_print_div(
     [
-        'icon'  => 'search',
-        'class' => 'float-right',
-        'mode'  => 'secondary mini',
+        'class'   => 'action-buttons-right-forced',
+        'content' => html_print_submit_button(
+            __('Search'),
+            'search',
+            false,
+            [
+                'icon'  => 'search',
+                'class' => 'float-right',
+                'mode'  => 'secondary mini',
+            ],
+            true
+        ),
     ],
     true
+);
+$form_filter .= '</form>';
+
+ui_toggle(
+    $form_filter,
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'filter',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
 );
 
 $is_management_allowed = true;
@@ -518,20 +545,6 @@ if (is_metaconsole() === false && is_management_allowed() === false) {
             $url
         )
     );
-}
-
-
-if (is_metaconsole() === true) {
-    $filterTable->width = '96%';
-    $form_filter = "<form class='filters_form' method='post'>";
-    $form_filter .= html_print_table($filterTable, true);
-    $form_filter .= '</form>';
-    ui_toggle($form_filter, __('Show Options'));
-} else {
-    $form_filter = "<form method='post'>";
-    $form_filter .= html_print_table($filterTable, true);
-    $form_filter .= '</form>';
-    echo $form_filter;
 }
 
 // Urls to sort the table.
@@ -790,7 +803,6 @@ foreach ($info as $user_id => $user_info) {
                 );
             }
 
-            $data[4] .= '<br/>';
             $data[4] .= '<br/>';
 
             $total_profile++;

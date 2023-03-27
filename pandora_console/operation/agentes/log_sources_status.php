@@ -94,9 +94,19 @@ if (!empty($table->data)) {
     echo '<div id="log_sources_status" class="w100p">';
     html_print_table($table);
     echo '</div>';
-} else {
-    ui_print_info_message(['no_close' => true, 'message' => __('No log sources found') ]);
-    $log_sources_defined = false;
+    $html_content = ob_get_clean();
+    // Create controlled toggle content.
+    ui_toggle(
+        $html_content,
+        __('Log sources status'),
+        'log_sources_status',
+        !$log_sources_defined,
+        false,
+        '',
+        'white_table_graph_content no-padding-imp',
+        'white-box-content',
+        'box-flat white_thable_graph mrgn_top_30px'
+    );
 }
 
 // Hidden form to perform post request to Log Viewer page when clicking on the Review field icon.
@@ -109,18 +119,6 @@ html_print_input_hidden('redirect_search', 1, false);
 
 echo '</form>';
 
-$html_content = ob_get_clean();
-
-// Create controlled toggle content.
-ui_toggle(
-    $html_content,
-    __('Log sources status'),
-    'log_sources_status',
-    !$log_sources_defined,
-    false,
-    '',
-    'white_table_graph_content no-padding-imp'
-);
 
 ?>
 

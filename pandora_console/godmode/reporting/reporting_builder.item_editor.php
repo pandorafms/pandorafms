@@ -115,6 +115,7 @@ $exception_condition_value = 10;
 $modulegroup = 0;
 $period = SECONDS_1DAY;
 $search = '';
+$full_text = 0;
 $log_number = 1000;
 // Added support for projection graphs.
 $period_pg = SECONDS_5DAY;
@@ -316,6 +317,7 @@ switch ($action) {
                     $source = $es['source'];
                     $search = $es['search'];
                     $log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
+                    $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
                 break;
 
                 case 'simple_graph':
@@ -1047,17 +1049,6 @@ $class = 'databox filters';
 
 ?>
 <table id="table_item_edit_reporting"  class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
-    <?php
-    if (defined('METACONSOLE')) {
-        echo '<thead>
-				<tr>
-					<th align=center colspan=5>
-						'.__('Item Editor').'
-					</th>
-				</tr>
-			</thead>';
-    }
-    ?>
     <tbody>
         <tr id="row_type"   class="datos">
             <td class="bolder w220px">
@@ -1324,6 +1315,14 @@ $class = 'databox filters';
             <td  >
                 <?php
                 html_print_input_text('search', $search, '', 40, 100);
+                html_print_checkbox(
+                    'full_text',
+                    1,
+                    $full_text,
+                    false,
+                    false
+                );
+                ui_print_help_tip(__('Full context'), false);
                 ?>
             </td>
         </tr>

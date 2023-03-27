@@ -118,7 +118,7 @@ if (is_metaconsole() === true) {
 
 
 // Data before table.
-$files = list_files('images/', '@groups.svg', 1, 0);
+$files = list_files(((is_metaconsole() === true) ? '../../' : '').'images/', '@groups.svg', 1, 0);
 
 $table = new stdClass();
 $table->width = '100%';

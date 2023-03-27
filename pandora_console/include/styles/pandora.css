@@ -10225,9 +10225,9 @@ button.submitButton > div {
 button.buttonButton.onlyIcon,
 button.submitButton.onlyIcon {
   padding: 0 !important;
-  min-width: 1.7em !important;
-  width: 1.7em !important;
-  height: 1.7em !important;
+  min-width: 1.6em !important;
+  width: 1.6em !important;
+  height: 1.6em !important;
   border: none;
   box-shadow: none;
 }
@@ -10291,8 +10291,9 @@ button.submitButton.onlyIcon.auto_sla_graph_min {
 
 button.buttonButton.onlyIcon.basic_chart_min,
 button.submitButton.onlyIcon.basic_chart_min {
-  mask: url(../../images/event-history.svg) no-repeat right / contain;
-  -webkit-mask: url(../../images/event-history.svg) no-repeat right / contain;
+  mask: url(../../images/web-analisys-data@svg.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/web-analisys-data@svg.svg) no-repeat right /
+    contain;
 }
 
 button.buttonButton.onlyIcon.binary_min,
@@ -11462,31 +11463,6 @@ p.trademark-copyright {
   height: 24px;
 }
 
-form#satellite_conf_edit {
-  display: flex;
-  flex-direction: row;
-  justify-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-form#satellite_conf_edit > fieldset {
-  background-color: #fff;
-  // border: 1px solid #e2e2e2;
-  padding: 0.5em;
-  margin: 0px 1em;
-  margin-bottom: 20px;
-  position: relative;
-  border-radius: 5px;
-  flex: 1 1 700px;
-}
-
-form#satellite_conf_edit > fieldset.full-column {
-  width: 100%;
-  flex: none;
-  margin: 0 0 20px;
-}
-
 .input_sub_placeholder {
   font-size: 8pt;
   color: #8a96a6;
@@ -11765,4 +11741,8 @@ div.relative > div > div#ui-datepicker-div {
 
 .container-div-input-password:has(.w400px-important) {
   width: 400px;
+}
+
+span.help_icon_15px > img {
+  height: 15px !important;
 }

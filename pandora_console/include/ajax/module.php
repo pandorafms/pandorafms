@@ -1279,16 +1279,18 @@ if (check_login()) {
                     if ((int) $module['flag'] === 0) {
                         $additionalLinkAction = '&amp;flag=1';
                         $linkCaption = __('Force checks');
+                        $imgaction = 'images/target.png';
                     } else {
                         $additionalLinkAction = '';
                         $linkCaption = __('Refresh');
+                        $imgaction = 'images/go-back@svg.svg';
                     }
 
                     $moduleActionButtons[] = html_print_anchor(
                         [
-                            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$addedLinkParams.'"',
+                            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$additionalLinkAction.'"',
                             'content' => html_print_image(
-                                'images/go-back@svg.svg',
+                                $imgaction,
                                 true,
                                 [ 'class' => 'main_menu_icon' ]
                             ),

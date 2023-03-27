@@ -157,7 +157,7 @@ if ($new_user === true) {
         true
     );
 } else {
-    // TODO. Show the user id with a label.
+    $userManagementTable->data['fields_iduser'][0] = html_print_input_hidden('id', $id, false, false, false, 'id');
 }
 
 // User Full name.

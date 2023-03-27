@@ -583,7 +583,7 @@ $table->data['form_agents_3'][3] = html_print_select(
 echo '<form method="post" id="form_modules" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_modules" >';
 html_print_table($table);
 
-attachActionButton('delete', 'delete', $table->width);
+attachActionButton('delete', 'delete', $table->width, false, $SelectAction);
 
 echo '</form>';
 

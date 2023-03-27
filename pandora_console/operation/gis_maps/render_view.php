@@ -175,9 +175,10 @@ if ($has_management_acl) {
     $buttons['setup']['godmode'] = 1;
 }
 
+// Header.
 ui_print_standard_header(
-    __('Map').' &raquo; '.__('Map').'&nbsp;'.$map['map_name'],
-    'images/op_gis.png',
+    __('Map').': '.$map['map_name'],
+    'images/op_snmp.png',
     false,
     '',
     false,
@@ -331,5 +332,8 @@ if ($layers != false) {
     $(document).ready(function() {
         var $map = $("#map");
         $map.css("height", "calc(100vh - " + $map.offset().top + "px - 20px)");
+
+        $('#select2-show_status-container').parent().parent().parent().removeClass('select2');
+        $('#select2-refresh_time-container').parent().parent().parent().removeClass('select2');
     });
 </script>

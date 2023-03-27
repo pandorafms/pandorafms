@@ -27,12 +27,23 @@
  */
 
 // Header.
-\ui_print_page_header(
-    __('Monitoring').' &raquo; '.__('Clusters'),
+ui_print_standard_header(
+    __('Cluster view'),
     'images/chart.png',
     false,
     '',
-    false
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Clusters'),
+        ],
+    ]
 );
 
 if (empty($message) === false) {

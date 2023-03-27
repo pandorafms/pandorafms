@@ -489,10 +489,8 @@ function cron_list_table()
     }
 
     if ($defined_tasks !== false) {
-        echo '<h2>'.__('Scheduled jobs').'</h2>';
-
         $table = new stdClass();
-        $table->class = 'databox data';
+        $table->class = 'info_table';
         $table->width = '100%';
         $table->data = [];
         $table->head = [];
@@ -912,8 +910,7 @@ function cron_list_table()
 
             if ($function_name == 'cron_task_do_backup' || $function_name == 'cron_task_execute_custom_script') {
                 if ($manage_pandora) {
-                    $data[7]  = '<a href="'.$url;
-                    $data[7] .= 'edit_task=1&id='.$task['id'].'">';
+                    $data[7]  = '<a href="javascript:form_add_cron_task('.$task['id'].',1);">';
                     $data[7] .= html_print_image(
                         'images/edit.svg',
                         true,
@@ -926,8 +923,7 @@ function cron_list_table()
                 }
 
                 if ($manage_pandora) {
-                    $data[7] .= '<a href="'.$url;
-                    $data[7] .= 'delete_task=1&id_user_task='.$task['id'].'">';
+                    $data[7] .= '<a href="javascript:form_add_cron_task('.$task['id'].',1);">';
                     $data[7] .= html_print_image(
                         'images/delete.svg',
                         true,
@@ -940,8 +936,7 @@ function cron_list_table()
                 }
             } else {
                 if ($write_perms || $manage_pandora) {
-                    $data[7] = '<a href="'.$url;
-                    $data[7] .= 'edit_task=1&id='.$task['id'].'">';
+                    $data[7] = '<a href="javascript:form_add_cron_task('.$task['id'].',1);">';
                     $data[7] .= html_print_image(
                         'images/edit.svg',
                         true,
@@ -994,5 +989,7 @@ function cron_list_table()
         }
 
         html_print_table($table);
+    } else {
+        ui_print_info_message(['no_close' => true, 'message' => __('There are no jobs') ]);
     }
 }

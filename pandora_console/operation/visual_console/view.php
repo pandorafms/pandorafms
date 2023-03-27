@@ -287,7 +287,7 @@ if ($pure === false) {
         $class_nlink = 'network_link_min link-create-item';
         $class_odometer = 'odometer_min link-create-item';
         $class_basic_chart = 'basic_chart_min link-create-item';
-        $class_delete = 'delete_item delete_min';
+        $class_delete = 'delete_item';
         $class_copy = 'copy_item';
         if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
             $class_camera .= ' invert_filter';

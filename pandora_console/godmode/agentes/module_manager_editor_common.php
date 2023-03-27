@@ -615,6 +615,7 @@ if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) 
     $table_simple->data['thresholds_table'][1] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
+$table_simple->rowclass['caption_historical_data'] = 'mrgn_top_10px';
 $table_simple->data['caption_historical_data'][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
     // If is disabled, we send a hidden in his place and print a false
@@ -1454,17 +1455,14 @@ html_print_input_hidden('module_macro_count', $macro_count);
 $table_new_relations = new stdClass();
 $table_new_relations->id = 'module_new_relations';
 $table_new_relations->width = '100%';
-$table_new_relations->class = 'no-class';
+$table_new_relations->class = 'no-class filter-table-adv';
 $table_new_relations->data = [];
 $table_new_relations->style = [];
-$table_new_relations->style[0] = 'width: 10%; font-weight: bold;';
-$table_new_relations->style[1] = 'width: 25%; text-align: center;';
-$table_new_relations->style[2] = 'width: 10%; font-weight: bold;';
-$table_new_relations->style[3] = 'width: 25%; text-align: center;';
-$table_new_relations->style[4] = 'width: 10%; font-weight: bold;';
-$table_new_relations->style[5] = 'width: 25%; text-align: center;';
+$table_new_relations->size[0] = '25%';
+$table_new_relations->size[1] = '25%';
+$table_new_relations->size[2] = '25%';
+$table_new_relations->size[3] = '25%';
 
-$table_new_relations->data[0][0] = __('Agent');
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
@@ -1473,36 +1471,50 @@ $params['use_hidden_input_idagent'] = true;
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
 $params['javascript_function_action_after_select_js_call'] = 'change_modules_autocomplete_input();';
-$table_new_relations->data[0][1] = ui_print_agent_autocomplete_input($params);
-$table_new_relations->data[0][2] = __('Module');
-$table_new_relations->data[0][3] = "<div id='module_autocomplete'></div>";
+$table_new_relations->data[0][0] = html_print_label_input_block(
+    __('Agent'),
+    ui_print_agent_autocomplete_input($params)
+);
+
+$table_new_relations->data[0][1] = html_print_label_input_block(
+    __('Module'),
+    "<div id='module_autocomplete'></div>"
+);
 
 $array_rel_type = [];
 $array_rel_type['direct'] = __('Direct');
 $array_rel_type['failover'] = __('Failover');
-$table_new_relations->data[0][4] = __('Rel. type');
-$table_new_relations->data[0][5] = html_print_select(
-    $array_rel_type,
-    'relation_type',
-    '',
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    ''
+
+$table_new_relations->data[0][2] = html_print_label_input_block(
+    __('Rel. type'),
+    html_print_select(
+        $array_rel_type,
+        'relation_type',
+        '',
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        ''
+    )
 );
 
-$table_new_relations->data[0][6] = html_print_button(
-    __('Add relationship'),
-    'add_relation',
-    false,
-    'javascript: add_new_relation();',
-    'class="sub add"',
-    true
+$table_new_relations->data[0][3] = html_print_label_input_block(
+    '&nbsp;',
+    '<div class="inline_line">'.html_print_button(
+        __('Add relationship'),
+        'add_relation',
+        false,
+        'javascript: add_new_relation();',
+        [
+            'class' => 'w150px secondary',
+            'icon'  => 'plus',
+        ],
+        true
+    )."<div id='add_relation_status' class='inline_line'></div></div>"
 );
-$table_new_relations->data[0][6] .= "&nbsp;&nbsp;<div id='add_relation_status' class='inline_line'></div>";
 
 // Relationship list.
 $table_relations = new stdClass();

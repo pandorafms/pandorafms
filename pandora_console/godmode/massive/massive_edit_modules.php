@@ -1265,7 +1265,7 @@ $table->data['edit1'][1] = '<table width="100%">';
             echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
             html_print_table($table);
 
-            attachActionButton('update', 'update', $table->width);
+            attachActionButton('update', 'update', $table->width, false, $SelectAction);
 
             echo '</form>';
 

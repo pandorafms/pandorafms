@@ -162,7 +162,7 @@ class SatelliteAgent extends HTML
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -200,6 +200,7 @@ class SatelliteAgent extends HTML
                             ],
                         ],
                     ],
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                 ]
             );
         } catch (Exception $e) {
@@ -213,10 +214,7 @@ class SatelliteAgent extends HTML
 
         echo $modal.$msg.$aux;
 
-        echo '<div style="display: flex;justify-content: space-between;">';
-
-        echo '<div class="flex-content-left">';
-        html_print_select(
+        $select = html_print_select(
             [
                 '0' => 'Disable / Enable selected agents',
                 '1' => 'Delete / Create selected agents',
@@ -226,30 +224,32 @@ class SatelliteAgent extends HTML
             '',
             '',
             0,
-            false,
+            true,
             false,
             false
         );
 
-        html_print_submit_button(
+        $execute = html_print_submit_button(
             __('Execute action'),
             'submit_satellite_action',
             false,
-            'class="sub next"'
+            [
+                'icon'  => 'cog',
+                'class' => 'secondary',
+            ],
+            true
         );
-        echo '</div>';
 
         // Create button add host.
-        echo '<div class="flex-content-right">';
-        html_print_submit_button(
+        $add = html_print_submit_button(
             __('Add host'),
             'create',
             false,
-            'class="sub next"'
+            ['icon' => 'next'],
+            true
         );
-        echo '</div>';
 
-        echo '</div>';
+        html_print_action_buttons($add.$execute.$select);
 
         // Load own javascript file.
         echo $this->loadJS();
@@ -503,6 +503,7 @@ class SatelliteAgent extends HTML
             'arguments' => [
                 'name'   => 'address',
                 'type'   => 'text',
+                'class'  => 'w100p',
                 'value'  => $values['address'],
                 'return' => true,
             ],
@@ -514,6 +515,7 @@ class SatelliteAgent extends HTML
             'arguments' => [
                 'name'   => 'name',
                 'type'   => 'text',
+                'class'  => 'w100p',
                 'value'  => $values['name'],
                 'return' => true,
             ],
@@ -1244,7 +1246,7 @@ class SatelliteAgent extends HTML
                 $('input[name*=check_]').prop('checked', check);
             });
 
-            $('#submit-submit_satellite_action').click(function() {
+            $('#button-submit_satellite_action').click(function() {
                 const checks = $('input[name*=check_]:checked');
                 const action = $('#satellite_action').val();
                 let agent_delete_error = [];

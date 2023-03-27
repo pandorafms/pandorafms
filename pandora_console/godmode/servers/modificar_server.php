@@ -228,11 +228,24 @@ if (isset($_GET['server']) === true) {
         $advanced_editor = false;
 
         if ($server_type === 13) {
-            echo "<table cellpadding='4' cellspacing='4' class='databox filters font_bold margin-bottom-10' width='100%'>
+            echo "<table cellpadding='4' cellspacing='4' class='databox filters margin-bottom-10 max_floating_element_size filter-table-adv'>
             <tr>";
             echo '<td class="w100p">';
-            echo __('Dynamic search').'&nbsp;&nbsp;';
-            html_print_input_text('search_config_token', $search, '', 12);
+            echo html_print_label_input_block(
+                __('Dynamic search'),
+                html_print_input_text(
+                    'search_config_token',
+                    $search,
+                    '',
+                    12,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w400px'
+                )
+            );
             echo '</td>';
             echo '</tr></table>';
         }

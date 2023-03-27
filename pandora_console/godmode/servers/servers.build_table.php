@@ -254,7 +254,7 @@ foreach ($servers as $server) {
 
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext).'">';
             $data[8] .= html_print_image(
-                'images/remote_configuration@svg.svg',
+                'images/remote-configuration@svg.svg',
                 true,
                 [
                     'title' => __('Remote configuration'),

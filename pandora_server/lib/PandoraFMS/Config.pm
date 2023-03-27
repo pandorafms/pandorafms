@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.769";
-my $pandora_build = "230323";
+my $pandora_version = "7.0NG.770";
+my $pandora_build = "230327";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -143,6 +143,12 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{"netflow_path"} = pandora_get_tconfig_token ($dbh, 'netflow_path', '/var/spool/pandora/data_in/netflow');
 	$pa_config->{"netflow_interval"} = pandora_get_tconfig_token ($dbh, 'netflow_interval', 300);
 	$pa_config->{"netflow_daemon"} = pandora_get_tconfig_token ($dbh, 'netflow_daemon', '/usr/bin/nfcapd');
+
+	# Sflow configuration options
+	$pa_config->{"activate_sflow"} = pandora_get_tconfig_token ($dbh, 'activate_sflow', 0);
+	$pa_config->{"sflow_path"} = pandora_get_tconfig_token ($dbh, 'sflow_path', '/var/spool/pandora/data_in/sflow');
+	$pa_config->{"sflow_interval"} = pandora_get_tconfig_token ($dbh, 'sflow_interval', 300);
+	$pa_config->{"sflow_daemon"} = pandora_get_tconfig_token ($dbh, 'sflow_daemon', '/usr/bin/nfcapd');
 
 	# Log module configuration
 	$pa_config->{"log_dir"} = pandora_get_tconfig_token ($dbh, 'log_dir', '/var/spool/pandora/data_in/log');

@@ -118,8 +118,12 @@ if ($aclRead === false && $aclWrite === false && $aclManage === false) {
 
 // Render map.
 $options = [];
+$baseUrlList = 'index.php?sec=network&sec2=godmode/reporting/map_builder';
+if (is_metaconsole() === true) {
+    $baseUrlList = 'index.php?sec=screen&sec2=screens/screens&action=visualmap';
+}
 
-$options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder">'.html_print_image(
+$options['consoles_list']['text'] = '<a href="'.$baseUrlList.'">'.html_print_image(
     'images/logs@svg.svg',
     true,
     [
@@ -142,11 +146,17 @@ if ($aclWrite === true || $aclManage === true) {
     );
 
     $baseUrl = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action='.$action;
+    if (is_metaconsole() === true) {
+        $baseUrl = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&action2='.$action;
+    }
 
     $hash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
 
     $options['public_link']['text'] = '<a href="'.ui_get_full_url(
-        'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user']
+        'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user'],
+        false,
+        false,
+        false
     ).'" target="_blank">'.html_print_image(
         'images/item-icon.svg',
         true,

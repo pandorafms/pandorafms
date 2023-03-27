@@ -1257,7 +1257,7 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 
 html_print_input_hidden('id_agente', $id_agente);
 
-attachActionButton('update_agents', 'update', $table->width);
+attachActionButton('update_agents', 'update', $table->width, false, $SelectAction);
 
 // Shown and hide div.
 echo '</div></form>';

@@ -270,7 +270,7 @@ $agents_with_templates_json = json_encode($agents_with_templates_json);
 
 echo "<input type='hidden' id='hidden-agents_with_templates' value='$agents_with_templates_json'>";
 
-attachActionButton('add', 'create', $table->width);
+attachActionButton('add', 'create', $table->width, false, $SelectAction);
 
 echo '</form>';
 

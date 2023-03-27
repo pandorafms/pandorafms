@@ -443,29 +443,26 @@ if (is_management_allowed() === false) {
     );
 }
 
-echo '<br />';
-echo '<form method="post" id="form_options" action="'.$url.'">';
-echo '<table border="0"><tr><td>';
-echo __('Action');
-echo '</td><td>';
-html_print_select(
+$tip = '';
+if ($option === 'edit_agents' || $option === 'edit_modules') {
+    $tip = ui_print_help_tip(__('The blank fields will not be updated'), true);
+}
+
+$SelectAction = '<form method="post" id="form_options" action="'.$url.'">';
+$SelectAction .= '<span class="mrgn_lft_10px mrgn_right_10px">'._('Action').'</span>';
+$SelectAction .= html_print_select(
     $options,
     'option',
     $option,
     'this.form.submit()',
     '',
     0,
-    false,
+    true,
     false,
     false
-);
-if ($option === 'edit_agents' || $option === 'edit_modules') {
-    ui_print_help_tip(__('The blank fields will not be updated'));
-}
+).$tip;
 
-echo '</td></tr></table>';
-echo '</form>';
-echo '<br />';
+$SelectAction .= '</form>';
 
 switch ($option) {
     case 'delete_alerts':

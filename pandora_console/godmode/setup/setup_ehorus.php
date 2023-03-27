@@ -74,82 +74,98 @@ $table_remote->data = [];
 $table_remote->width = '100%';
 $table_remote->styleTable = 'margin-bottom: 10px;';
 $table_remote->id = 'ehorus-remote-setup';
-$table_remote->class = 'databox filters';
-$table_remote->size['name'] = '30%';
-$table_remote->style['name'] = 'font-weight: bold';
-$table_remote->style['control'] = 'display: flex;align-items: center;';
+$table_remote->class = 'databox filters filter-table-adv';
+$table_remote->size['ehorus_hostname'] = '50%';
+$table_remote->size['ehorus_port'] = '50%';
 
 // Enable eHorus user configuration.
 $row = [];
-$row['name'] = ('eHorus configuration at user level');
-$row['control'] = html_print_checkbox_switch('ehorus_user_level_conf', 1, $config['ehorus_user_level_conf'], true);
+$row['ehorus_user_level_conf'] = html_print_label_input_block(
+    __('eHorus configuration at user level'),
+    html_print_checkbox_switch(
+        'ehorus_user_level_conf',
+        1,
+        $config['ehorus_user_level_conf'],
+        true
+    )
+);
 $table_remote->data['ehorus_user_level_conf'] = $row;
 
 // User.
 $row = [];
-$row['name'] = __('User');
-$row['control'] = html_print_input_text('ehorus_user', $config['ehorus_user'], '', 30, 100, true);
-$table_remote->data['ehorus_user'] = $row;
+$row['ehorus_user'] = html_print_label_input_block(
+    __('User'),
+    html_print_input_text('ehorus_user', $config['ehorus_user'], '', 30, 100, true),
+    ['div_class' => 'ehorus-remote-setup-ehorus_user']
+);
 
 // Pass.
-$row = [];
-$row['name'] = __('Password');
-$row['control'] = html_print_input_password('ehorus_pass', io_output_password($config['ehorus_pass']), '', 30, 100, true);
-$row['control'] .= ui_print_reveal_password('ehorus_pass', true);
+$row['ehorus_pass'] = html_print_label_input_block(
+    __('Password'),
+    html_print_input_password('ehorus_pass', io_output_password($config['ehorus_pass']), '', 30, 100, true),
+    ['div_class' => 'ehorus-remote-setup-ehorus_user']
+);
 $table_remote->data['ehorus_pass'] = $row;
 
 // Directory hostname.
 $row = [];
-$row['name'] = __('API Hostname');
-$row['control'] = html_print_input_text('ehorus_hostname', $config['ehorus_hostname'], '', 30, 100, true);
-$table_remote->data['ehorus_hostname'] = $row;
+$row['ehorus_hostname'] = html_print_label_input_block(
+    __('API Hostname'),
+    html_print_input_text('ehorus_hostname', $config['ehorus_hostname'], '', 30, 100, true)
+);
 
 // Directory port.
-$row = [];
-$row['name'] = __('API Port');
-$row['control'] = html_print_input_text('ehorus_port', $config['ehorus_port'], '', 6, 100, true);
+$row['ehorus_port'] = html_print_label_input_block(
+    __('API Port'),
+    html_print_input_text('ehorus_port', $config['ehorus_port'], '', 6, 100, true)
+);
 $table_remote->data['ehorus_port'] = $row;
 
 // Request timeout.
 $row = [];
-$row['name'] = __('Request timeout');
-$row['control'] = html_print_input_text('ehorus_req_timeout', $config['ehorus_req_timeout'], '', 3, 10, true);
+$row['ehorus_req_timeout'] = html_print_label_input_block(
+    __('Request timeout'),
+    html_print_input_text('ehorus_req_timeout', $config['ehorus_req_timeout'], '', 3, 10, true)
+);
 $table_remote->data['ehorus_req_timeout'] = $row;
 
 // Test.
 $row = [];
-$row['name'] = __('Test');
-$row['control'] = html_print_button(
-    __('Start'),
-    'test-ehorus',
-    false,
-    '',
-    [
-        'icon' => 'cog',
-        'mode' => 'secondary mini',
-    ],
-    true
+$test_start = '<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+$test_start .= '<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+$test_start .= '<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$test_start .= '&nbsp;<span id="test-ehorus-message" class="invisible"></span>';
+$row['ehorus_test'] = html_print_label_input_block(
+    __('Test'),
+    html_print_button(
+        __('Start'),
+        'test-ehorus',
+        false,
+        '',
+        [
+            'icon'  => 'cog',
+            'mode'  => 'secondary mini',
+            'style' => 'width: 115px;',
+        ],
+        true
+    ).$test_start
 );
-$row['control'] .= '<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$row['control'] .= '<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-$row['control'] .= '&nbsp;<span id="test-ehorus-message" class="invisible"></span>';
 $table_remote->data['ehorus_test'] = $row;
 
 // Print.
-echo '<div class="center pdd_b_20px mrgn_top_20px">';
+echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
 if ($config['style'] === 'pandora_black' && is_metaconsole() === true) {
     html_print_image(
         'include/ehorus/images/ehorus-logo.png',
         false,
-        ['class' => 'w400px']
+        ['class' => 'w400px mrgn_top_15px']
     );
 } else {
     html_print_image(
         'include/ehorus/images/ehorus-logo-grey.png',
         false,
-        ['class' => 'w400px']
+        ['class' => 'w400px mrgn_top_15px']
     );
 }
 
@@ -179,7 +195,7 @@ if ($config['ehorus_enabled'] && !$custom_field_exists) {
     ui_print_error_message($error_message);
 }
 
-echo "<form method='post'>";
+echo "<form method='post' class='max_floating_element_size'>";
 // Form enable.
 echo '<div id="form_enable">';
 html_print_input_hidden('update_config', 1);
@@ -195,17 +211,14 @@ echo '</div>';
 
     echo '</fieldset>';
     echo '</div>';
-    html_print_div(
-        [
-            'class'   => 'action-buttons w100p',
-            'content' => html_print_submit_button(
-                __('Update'),
-                'update_button',
-                false,
-                ['icon' => 'update'],
-                true
-            ),
-        ]
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Update'),
+            'update_button',
+            false,
+            ['icon' => 'update'],
+            true
+        )
     );
     echo '</form>';
 
@@ -220,8 +233,8 @@ if(!$('input:checkbox[name="ehorus_enabled"]').is(':checked'))
 
 if($('input:checkbox[name="ehorus_user_level_conf"]').is(':checked'))
 {
-    $('#ehorus-remote-setup-ehorus_user').hide();
-    $('#ehorus-remote-setup-ehorus_pass').hide()
+    $('.ehorus-remote-setup-ehorus_user').hide();
+    $('.ehorus-remote-setup-ehorus_pass').hide()
 }
 
 
@@ -234,13 +247,13 @@ if($('input:checkbox[name="ehorus_user_level_conf"]').is(':checked'))
     }
 
     var hideUserPass = function () {
-        $('#ehorus-remote-setup-ehorus_user').hide();
-        $('#ehorus-remote-setup-ehorus_pass').hide();
+        $('.ehorus-remote-setup-ehorus_user').hide();
+        $('.ehorus-remote-setup-ehorus_pass').hide();
     }
 
     var showUserPass = function () {
-        $('#ehorus-remote-setup-ehorus_user').show();
-        $('#ehorus-remote-setup-ehorus_pass').show();
+        $('.ehorus-remote-setup-ehorus_user').show();
+        $('.ehorus-remote-setup-ehorus_pass').show();
     }
 
     var handleEnable = function (event) {

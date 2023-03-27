@@ -21,13 +21,15 @@ global $config;
 
 require_once 'include/functions_gis.php';
 
-// ui_require_javascript_file('openlayers.pandora');
 $buttons['gis_maps_list'] = [
     'active' => true,
     'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
-        ['title' => __('GIS Maps list')]
+        [
+            'title' => __('GIS Maps list'),
+            'class' => 'main_menu_icon invert_filter',
+        ]
     ).'</a>',
 ];
 

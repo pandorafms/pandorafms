@@ -212,7 +212,7 @@ if (empty($dashboards) === true) {
         true,
         'offset',
         false,
-        'pagination-bottom'
+        ''
     );
 }
 

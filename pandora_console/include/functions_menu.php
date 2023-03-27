@@ -72,8 +72,10 @@ function menu_print_menu(&$menu)
         $map_id = (string) get_parameter('map_id');
         $sec2 = 'operation/gis_maps/render_view&map_id='.$map_id;
     } else if ($sec2 === 'operation/gis_maps/render_view') {
-        $map_id = (string) get_parameter('map_id');
-        $sec2 = 'operation/gis_maps/render_view&map_id='.$map_id;
+        $map_id = (int) get_parameter('map_id');
+        if (empty($map_id) === false) {
+            $sec2 .= '&map_id='.$map_id;
+        }
     } else if ($sec2 === 'godmode/servers/discovery') {
         $wiz = (string) get_parameter('wiz');
         $sec2 = 'godmode/servers/discovery&wiz='.$wiz;

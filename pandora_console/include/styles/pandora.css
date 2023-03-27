@@ -509,6 +509,10 @@ select:-internal-list-box {
   width: 400px;
 }
 
+.w400px-important {
+  width: 400px !important;
+}
+
 .w450px {
   width: 450px;
 }
@@ -11578,6 +11582,12 @@ div[role="dialog"] {
   margin: 0 auto;
 }
 
+.database_background_state {
+  mask: url(../../images/database@groups.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/database@groups.svg) no-repeat center / contain;
+  margin: 0 auto;
+}
+
 .filter-list-adv .wizard li {
   display: grid;
 }
@@ -11751,4 +11761,8 @@ div.relative > div > div#ui-datepicker-div {
 .ui-dialog .ui-widget-content.ui-autocomplete {
   border-radius: 0px;
   margin-left: 10px;
+}
+
+.container-div-input-password:has(.w400px-important) {
+  width: 400px;
 }

@@ -704,6 +704,19 @@ if ($step == 2) {
         )
     );
 
+    $usr_groups = implode(
+        ',',
+        array_keys(users_get_groups($config['id_user'], 'LM', true))
+    );
+
+    $sql_query = sprintf(
+        'SELECT id, name
+        FROM talert_actions
+        WHERE id_group IN (%s)
+        ORDER BY name',
+        $usr_groups
+    );
+
     $table->data[2][1] = html_print_label_input_block(
         __('Default action').ui_print_help_tip(
             __('Unless they\'re left blank, the fields from the action will override those set on the template.'),
@@ -799,19 +812,6 @@ if ($step == 2) {
             true,
             (!$is_management_allowed | $disabled)
         )
-    );
-
-    $usr_groups = implode(
-        ',',
-        array_keys(users_get_groups($config['id_user'], 'LM', true))
-    );
-
-    $sql_query = sprintf(
-        'SELECT id, name
-        FROM talert_actions
-        WHERE id_group IN (%s)
-        ORDER BY name',
-        $usr_groups
     );
 
     $table->data[5][0] = html_print_label_input_block(

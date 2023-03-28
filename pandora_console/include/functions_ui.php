@@ -3760,7 +3760,7 @@ function ui_print_datatable(array $parameters)
 
     // Base table.
     $table = '<table id="'.$table_id.'" ';
-    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'class="'.$parameters['class'].' invisible"';
     $table .= 'style="'.$parameters['style'].'">';
     $table .= '<thead><tr class="datatables_thead_tr">';
 
@@ -4027,6 +4027,7 @@ function ui_print_datatable(array $parameters)
                 $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
                 $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
                 $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
+                $("div.spinner-fixed").hide();
             },
             columns: [';
 
@@ -4070,6 +4071,15 @@ function ui_print_datatable(array $parameters)
     }
 
     $js .= '});';
+    $js .= '
+    $(function() {
+        $(document).on("preInit.dt", function (ev, settings) {
+            // $("table#'.$table_id.'").hide();
+            $("div.dataTables_length").hide();
+            $("div.dt-buttons").hide();
+        });
+    });
+    ';
 
     $js .= '</script>';
 
@@ -4078,9 +4088,11 @@ function ui_print_datatable(array $parameters)
     $info_msg_arr['message'] = $emptyTable;
     $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
 
+    $spinner = '<div class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
+
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
     $err_msg = '<div id="error-'.$table_id.'"></div>';
-    $output = $info_msg.$err_msg.$filter.$extra.$table.$js;
+    $output = $info_msg.$err_msg.$filter.$extra.$spinner.$table.$js;
     if (is_ajax() === false) {
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');

@@ -836,13 +836,19 @@ function get_data_basic_info_sql($params, $count=false)
         $order_condition = sprintf('ORDER BY %s', $params['order']);
     }
 
+    $table = 'tagente';
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_agent';
+    }
+
     $sql = sprintf(
         'SELECT %s
-        FROM tagente
+        FROM %s
         %s
         %s
         %s',
         $fields,
+        $table,
         $where,
         $order_condition,
         $limit_condition

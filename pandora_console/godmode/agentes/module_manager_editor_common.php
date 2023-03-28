@@ -1455,18 +1455,18 @@ html_print_input_hidden('module_macro_count', $macro_count);
 $table_new_relations = new stdClass();
 $table_new_relations->id = 'module_new_relations';
 $table_new_relations->width = '100%';
-$table_new_relations->class = 'no-class filter-table-adv';
+$table_new_relations->class = 'filter-table-adv';
 $table_new_relations->data = [];
 $table_new_relations->style = [];
-$table_new_relations->size[0] = '25%';
-$table_new_relations->size[1] = '25%';
-$table_new_relations->size[2] = '25%';
-$table_new_relations->size[3] = '25%';
+$table_new_relations->size[0] = '33%';
+$table_new_relations->size[1] = '33%';
+$table_new_relations->size[2] = '33%';
 
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'autocomplete_agent_name';
+$params['helptip_text'] = '';
 $params['use_hidden_input_idagent'] = true;
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
@@ -1476,15 +1476,15 @@ $table_new_relations->data[0][0] = html_print_label_input_block(
     ui_print_agent_autocomplete_input($params)
 );
 
+
 $table_new_relations->data[0][1] = html_print_label_input_block(
     __('Module'),
-    "<div id='module_autocomplete'></div>"
+    '<div id="module_autocomplete">'.html_print_input_text('', '', '', false, 255, true, true, false, '', 'w100p').'</div>'
 );
 
 $array_rel_type = [];
 $array_rel_type['direct'] = __('Direct');
 $array_rel_type['failover'] = __('Failover');
-
 $table_new_relations->data[0][2] = html_print_label_input_block(
     __('Rel. type'),
     html_print_select(
@@ -1497,43 +1497,55 @@ $table_new_relations->data[0][2] = html_print_label_input_block(
         true,
         false,
         true,
-        ''
+        'w100p',
+        false,
+        'width:100%'
     )
 );
 
-$table_new_relations->data[0][3] = html_print_label_input_block(
-    '&nbsp;',
-    '<div class="inline_line">'.html_print_button(
-        __('Add relationship'),
-        'add_relation',
-        false,
-        'javascript: add_new_relation();',
-        [
-            'class' => 'w150px secondary',
-            'icon'  => 'plus',
-        ],
-        true
-    )."<div id='add_relation_status' class='inline_line'></div></div>"
+$table_new_relations->data[1][0] = ' ';
+$table_new_relations->data[1][1] = ' ';
+$table_new_relations->cellstyle[1][2] = 'width:100% !important;';
+$table_new_relations->cellclass[1][2] = 'flex flex-end';
+$table_new_relations->data[1][2] = "<div id='add_relation_status' class='inline_line' style='margin-right:10px'></div>".html_print_button(
+    __('Add relationship')."<div id='add_relation_status'></div>",
+    'add_relation',
+    false,
+    'add_new_relation();',
+    [
+        'class' => 'mini',
+        'icon'  => 'next',
+        'mode'  => 'secondary',
+        'style' => 'margin-top: 10px; margin-right: 10px',
+    ],
+    true
 );
 
 // Relationship list.
 $table_relations = new stdClass();
 $table_relations->id = 'module_relations';
 $table_relations->width = '100%';
-$table_relations->class = 'databox data';
+$table_relations->class = 'info_table';
+$table_relations->styleTable = 'border: none';
 $table_relations->head = [];
 $table_relations->data = [];
-$table_relations->rowstyle = [];
 $table_relations->rowstyle[-1] = 'display: none;';
-$table_relations->style = [];
-$table_relations->style[3] = 'width: 10%; text-align: center;';
-$table_relations->style[4] = 'width: 10%; text-align: center;';
 
 $table_relations->head[0] = __('Agent');
 $table_relations->head[1] = __('Module');
 $table_relations->head[2] = __('Type');
 $table_relations->head[3] = __('Changes');
 $table_relations->head[4] = __('Delete');
+$table_relations->headclass[0] = 'w20p';
+$table_relations->headclass[1] = 'w20p';
+$table_relations->headclass[2] = 'w20p';
+$table_relations->headclass[3] = 'w20p';
+$table_relations->headclass[4] = 'w20p';
+$table_relations->style[0] = 'width:20%';
+$table_relations->style[1] = 'width:20%';
+$table_relations->style[2] = 'width:20%';
+$table_relations->style[3] = 'width:20%';
+$table_relations->style[4] = 'width:20%';
 
 // Create an invisible row to use their html to add new rows.
 $table_relations->data[-1][0] = '';
@@ -1565,6 +1577,9 @@ if ($id_agent_module) {
 
     $relations_count = 0;
     foreach ($module_relations as $key => $module_relation) {
+        // Styles.
+        $table_relations->cellclass[$relations_count][4] = 'table_action_buttons';
+
         if ($module_relation['module_a'] == $id_agent_module) {
             $module_id = $module_relation['module_b'];
             $agent_id = modules_give_agent_id_from_module_id(
@@ -2047,6 +2062,7 @@ function change_modules_autocomplete_input () {
                 else {
                     module_autocomplete.html(error_icon);
                 }
+                $('#text-autocomplete_module_name').addClass('w90p');
             },
             error: function (data) {
                 module_autocomplete.removeClass('working');
@@ -2109,15 +2125,15 @@ function add_new_relation () {
                     }
 
                     var rowHTML = '<tr id="module_relations-' + relationsCount + '" class="' + rowClass + '">' +
-                                    '<td id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
-                                    '<td id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-3" class="w10p center">' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-3">' +
                                         '<a id="disable_updates_button" class="alpha50" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
                                             '<?php echo html_print_image('images/policy@svg.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
                                         '</a>' +
                                     '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-4" class="w10p center">' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-4" class="table_action_buttons">' +
                                         '<a id="delete_relation_button" href="javascript: delete_relation(' + relationsCount + ', ' + data +  ');">' +
                                             '<?php echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
                                         '</a>' +

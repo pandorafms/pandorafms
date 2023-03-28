@@ -11743,6 +11743,70 @@ div.relative > div > div#ui-datepicker-div {
   width: 400px;
 }
 
+#module_relations > thead > tr {
+  border: none !important;
+  border-bottom: 1px solid #e2e2e2 !important;
+}
+
 span.help_icon_15px > img {
   height: 15px !important;
+}
+
+.select2-dropdown {
+  z-index: 1116 !important;
+}
+
+/* ==== Spinner ==== */
+.spinner-fixed {
+  position: fixed;
+  left: 50%;
+  bottom: 50%;
+  z-index: 1;
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  background: linear-gradient(#82b92e, #c1ccdc);
+  animation: animate 1.2s linear infinite;
+  margin: auto;
+  margin-bottom: 40px;
+}
+.spinner-fixed span {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: linear-gradient(#82b92e, #c1ccdc);
+}
+.spinner-fixed span:nth-child(1) {
+  filter: blur(4px);
+}
+.spinner-fixed span:nth-child(2) {
+  filter: blur(8px);
+}
+.spinner-fixed span:nth-child(3) {
+  filter: blur(12px);
+}
+.spinner-fixed span:nth-child(4) {
+  filter: blur(16px);
+}
+.spinner-fixed:after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  /* background: transparent; */
+  background: #f1f1f1;
+  border: solid #fff 10px;
+  border-radius: 50%;
+}
+
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

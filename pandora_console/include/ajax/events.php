@@ -729,7 +729,9 @@ function load_form_filter() {
     $("#current_filter").text($('#filter_id option:selected').text());
 
     // Search.
-    dt_events.draw(false);
+    $("#table_events")
+            .DataTable()
+            .draw(false);
 }
 
 $(document).ready (function() {

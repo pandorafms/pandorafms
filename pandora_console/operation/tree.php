@@ -168,6 +168,10 @@ if (!$strict_acl) {
     $header_title = $header_title.' &raquo; '.$header_sub_title;
 }
 
+if (is_metaconsole() === true) {
+    $tabs = [];
+}
+
 ui_print_standard_header(
     $header_title,
     'images/extensions.png',

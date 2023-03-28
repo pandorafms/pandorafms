@@ -921,7 +921,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         '',
         'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
-        'white_table_flex'
+        'white_table_flex margin-bottom-20'
     );
 
     if (empty($server_data) === false && is_metaconsole() === true) {
@@ -951,7 +951,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                     type: 'hidden',
                     id: 'graph-counter',
                     value: 1
-                }).appendTo('#container');
+                }).appendTo('body');
 
                 
                 if ($('#graph-counter').val() == 1) {

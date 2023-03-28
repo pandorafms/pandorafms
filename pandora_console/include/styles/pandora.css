@@ -11463,31 +11463,6 @@ p.trademark-copyright {
   height: 24px;
 }
 
-form#satellite_conf_edit {
-  display: flex;
-  flex-direction: row;
-  justify-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-form#satellite_conf_edit > fieldset {
-  background-color: #fff;
-  // border: 1px solid #e2e2e2;
-  padding: 0.5em;
-  margin: 0px 1em;
-  margin-bottom: 20px;
-  position: relative;
-  border-radius: 5px;
-  flex: 1 1 700px;
-}
-
-form#satellite_conf_edit > fieldset.full-column {
-  width: 100%;
-  flex: none;
-  margin: 0 0 20px;
-}
-
 .input_sub_placeholder {
   font-size: 8pt;
   color: #8a96a6;
@@ -11771,4 +11746,8 @@ div.relative > div > div#ui-datepicker-div {
 #module_relations > thead > tr {
   border: none !important;
   border-bottom: 1px solid #e2e2e2 !important;
+}
+
+span.help_icon_15px > img {
+  height: 15px !important;
 }

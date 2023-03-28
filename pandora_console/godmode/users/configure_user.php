@@ -640,7 +640,6 @@ if ($update_user) {
     }
 
     $values = [];
-    $values['id_user'] = (string) get_parameter('id_user');
     $values['fullname'] = (string) get_parameter('fullname');
     $values['firstname'] = (string) get_parameter('firstname');
     $values['lastname'] = (string) get_parameter('lastname');
@@ -658,7 +657,7 @@ if ($update_user) {
     $values['time_autorefresh'] = (int) get_parameter('time_autorefresh');
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
-    $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($values['id_user']);
+    $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($id);
 
     if (users_is_admin() === false && (bool) $values['is_admin'] !== false) {
         db_pandora_audit(
@@ -806,7 +805,7 @@ if ($update_user) {
             $has_skin = false;
             $has_wizard = false;
 
-            $info = '{"id_user":"'.$values['id_user'].'",
+            $info = '{"id_user":"'.$id.'",
 				"FullName":"'.$values['fullname'].'",
 				"Firstname":"'.$values['firstname'].'",
 				"Lastname":"'.$values['lastname'].'",
@@ -1264,10 +1263,12 @@ if ($new_user) {
 
 if (is_metaconsole() === false) {
     // User only can change skins if has more than one group.
-    if (count($usr_groups) > 1) {
-        if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
-            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+    if (function_exists('skins_print_select')) {
+        if (count($usr_groups) > 1) {
+            if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+                $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
+                $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+            }
         }
     }
 }

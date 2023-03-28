@@ -615,6 +615,7 @@ if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) 
     $table_simple->data['thresholds_table'][1] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
+$table_simple->rowclass['caption_historical_data'] = 'mrgn_top_10px';
 $table_simple->data['caption_historical_data'][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
     // If is disabled, we send a hidden in his place and print a false
@@ -1470,7 +1471,6 @@ $params['use_hidden_input_idagent'] = true;
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
 $params['javascript_function_action_after_select_js_call'] = 'change_modules_autocomplete_input();';
-
 $table_new_relations->data[0][0] = html_print_label_input_block(
     __('Agent'),
     ui_print_agent_autocomplete_input($params)
@@ -1503,9 +1503,11 @@ $table_new_relations->data[0][2] = html_print_label_input_block(
     )
 );
 
-$table_new_relations->cellstyle[1][0] = 'width:100% !important;';
-$table_new_relations->cellclass[1][0] = 'flex flex-end';
-$table_new_relations->data[1][0] = "<div id='add_relation_status' class='inline_line' style='margin-right:10px'></div>".html_print_button(
+$table_new_relations->data[1][0] = ' ';
+$table_new_relations->data[1][1] = ' ';
+$table_new_relations->cellstyle[1][2] = 'width:100% !important;';
+$table_new_relations->cellclass[1][2] = 'flex flex-end';
+$table_new_relations->data[1][2] = "<div id='add_relation_status' class='inline_line' style='margin-right:10px'></div>".html_print_button(
     __('Add relationship')."<div id='add_relation_status'></div>",
     'add_relation',
     false,
@@ -1514,7 +1516,7 @@ $table_new_relations->data[1][0] = "<div id='add_relation_status' class='inline_
         'class' => 'mini',
         'icon'  => 'next',
         'mode'  => 'secondary',
-        'style' => 'margin-top: 10px',
+        'style' => 'margin-top: 10px; margin-right: 10px',
     ],
     true
 );

@@ -157,7 +157,7 @@ if ($new_user === true) {
         true
     );
 } else {
-    // TODO. Show the user id with a label.
+    $userManagementTable->data['fields_iduser'][0] = html_print_input_hidden('id', $id, false, false, false, 'id');
 }
 
 // User Full name.
@@ -572,8 +572,10 @@ if (is_metaconsole() === true) {
         $userManagementTable->data['line2_looknfeel'][1] = $outputMetaAccess[1];
     }
 } else {
-    $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme');
-    $userManagementTable->data['line2_looknfeel'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+    if (function_exists('skins_print_select')) {
+        $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme');
+        $userManagementTable->data['line2_looknfeel'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+    }
 }
 
 $userManagementTable->rowclass['captions_blocksize_eventfilter'] = 'field_half_width';

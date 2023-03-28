@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 if (is_ajax() === true) {
     global $config;
 
@@ -216,6 +218,12 @@ if (is_ajax() === true) {
     if ($getInfo === true) {
         enterprise_include_once('include/functions_agents.php');
         $id = get_parameter('id', 0);
+        $id_server = get_parameter('id_server', 0);
+        if (empty($id_server) === false) {
+            $nd = new Node($id_server);
+            $nd->connect();
+        }
+
         switch ($type) {
             case 3:
             case 2:
@@ -374,6 +382,10 @@ if (is_ajax() === true) {
                     echo '</div>';
                 }
             break;
+        }
+
+        if (empty($id_server) === false) {
+            $nd->disconnect();
         }
     }
 

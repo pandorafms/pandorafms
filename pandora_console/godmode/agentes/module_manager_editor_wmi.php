@@ -42,8 +42,6 @@ if (empty($edit_module)) {
 }
 
 $data = [];
-$data[0] = __('Target IP').' '.ui_print_help_icon('wmi_module_tab', true);
-
 if ($page == 'enterprise/godmode/policies/policy_modules') {
     if ($ip_target != 'auto' && $ip_target != '') {
         $custom_ip_target = $ip_target;
@@ -60,7 +58,7 @@ if ($page == 'enterprise/godmode/policies/policy_modules') {
     $target_ip_values['force_pri'] = __('Force primary key');
     $target_ip_values['custom']    = __('Custom');
 
-    $data[1] = html_print_select(
+    $inputs = html_print_select(
         $target_ip_values,
         'ip_target',
         $ip_target,
@@ -72,108 +70,170 @@ if ($page == 'enterprise/godmode/policies/policy_modules') {
         false,
         '',
         false,
-        'width:200px;'
+        'width: 100%; margin-top: 10px;'
     );
 
-    $data[1] .= html_print_input_text('custom_ip_target', $custom_ip_target, '', 15, 60, true);
+    $inputs .= html_print_input_text('custom_ip_target', $custom_ip_target, '', 15, 60, true);
 } else {
     if ($ip_target == 'auto') {
         $ip_target = agents_get_address($id_agente);
     }
 
-    $data[1] = html_print_input_text('ip_target', $ip_target, '', 15, 60, true);
+    $inputs = html_print_input_text(
+        'ip_target',
+        $ip_target,
+        '',
+        15,
+        60,
+        true,
+        false,
+        false,
+        '',
+        'mrgn_top_10px w100p'
+    );
 }
 
-$data[2] = __('Namespace').ui_print_help_tip(__('Optional. WMI namespace. If unsure leave blank.'), true);
-$data[3] = html_print_input_text(
-    'tcp_send',
-    $tcp_send,
-    '',
-    5,
-    20,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
+$data[0] = html_print_label_input_block(
+    __('Target IP').' <span class="help_icon_15px">'.ui_print_help_icon('wmi_module_tab', true),
+    $inputs,
+    [
+        'label_class' => 'font-title-font',
+        'div_class'   => 'w100p mrgn_right_20px',
+    ]
+);
+
+$data[2] = html_print_label_input_block(
+    __('Namespace').ui_print_help_tip(__('Optional. WMI namespace. If unsure leave blank.'), true),
+    html_print_input_text(
+        'tcp_send',
+        $tcp_send,
+        '',
+        5,
+        20,
+        true,
+        $disabledBecauseInPolicy,
+        false,
+        '',
+        $classdisabledBecauseInPolicy.' mrgn_top_10px w100p'
+    ),
+    [
+        'label_class' => 'font-title-font',
+        'div_class'   => 'w100p mrgn_right_20px',
+    ]
 );
 push_table_simple($data, 'target_ip');
 
 $data = [];
-$data[0] = __('Username');
-$data[1] = html_print_input_text(
-    'plugin_user',
-    $plugin_user,
-    '',
-    15,
-    60,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
+$data[0] = html_print_label_input_block(
+    __('Username'),
+    html_print_input_text(
+        'plugin_user',
+        $plugin_user,
+        '',
+        15,
+        60,
+        true,
+        $disabledBecauseInPolicy,
+        false,
+        '',
+        $classdisabledBecauseInPolicy.' w100p'
+    ),
+    [
+        'label_class' => 'font-title-font',
+        'div_class'   => 'w100p display-grid mrgn_right_20px',
+    ]
 );
-$data[2] = __('Password');
-$data[3] = html_print_input_password(
-    'plugin_pass',
-    '',
-    '',
-    15,
-    60,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    $classdisabledBecauseInPolicy,
-    'new-password'
+
+$data[2] = html_print_label_input_block(
+    __('Password'),
+    html_print_input_password(
+        'plugin_pass',
+        '',
+        '',
+        15,
+        60,
+        true,
+        $disabledBecauseInPolicy,
+        false,
+        $classdisabledBecauseInPolicy.' w100p',
+        'new-password',
+        true
+    ),
+    [
+        'label_class' => 'font-title-font',
+        'div_class'   => 'w100p display-grid mrgn_right_20px',
+    ]
 );
+$table_simple->rowclass['user_pass'] = 'w100p mrgn_top_10px';
 
 push_table_simple($data, 'user_pass');
 
 $data = [];
-$data[0] = __('WMI query');
-$data[1] = html_print_input_text(
-    'snmp_oid',
-    $snmp_oid,
-    '',
-    35,
-    255,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
+$data[0] = html_print_label_input_block(
+    __('WMI query'),
+    html_print_input_text(
+        'snmp_oid',
+        $snmp_oid,
+        '',
+        35,
+        255,
+        true,
+        $disabledBecauseInPolicy,
+        false,
+        '',
+        $classdisabledBecauseInPolicy
+    ),
+    [
+        'label_class' => 'font-title-font',
+        'div_class'   => 'w100p display-grid mrgn_right_20px',
+    ]
 );
-$table_simple->colspan['wmi_query'][1] = 3;
+
+$data[2] = html_print_label_input_block(
+    __('Key string').ui_print_help_tip(__('Optional. Substring to look for in the WQL query result. The module returns 1 if found, 0 if not.'), true),
+    html_print_input_text(
+        'snmp_community',
+        $snmp_community,
+        '',
+        20,
+        60,
+        true,
+        $disabledBecauseInPolicy,
+        false,
+        '',
+        $classdisabledBecauseInPolicy
+    ),
+    [
+        'label_class' => 'font-title-font',
+        'div_class'   => 'w100p display-grid mrgn_right_20px',
+    ]
+);
+$table_simple->rowclass['wmi_query'] = 'w100p mrgn_top_10px';
 
 push_table_simple($data, 'wmi_query');
 
 $data = [];
-$data[0] = __('Key string').ui_print_help_tip(__('Optional. Substring to look for in the WQL query result. The module returns 1 if found, 0 if not.'), true);
-$data[1] = html_print_input_text(
-    'snmp_community',
-    $snmp_community,
-    '',
-    20,
-    60,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
+$data[0] = html_print_label_input_block(
+    __('Field number').ui_print_help_tip(__('Column number to retrieve from the WQL query result (starting from zero).'), true),
+    html_print_input_text(
+        'tcp_port',
+        $tcp_port,
+        '',
+        5,
+        15,
+        true,
+        $disabledBecauseInPolicy,
+        false,
+        '',
+        $classdisabledBecauseInPolicy.' mrgn_right_20px'
+    ),
+    [
+        'label_class' => 'font-title-font',
+        'div_class'   => 'w50p display-grid',
+    ]
 );
-$data[2] = __('Field number').ui_print_help_tip(__('Column number to retrieve from the WQL query result (starting from zero).'), true);
-$data[3] = html_print_input_text(
-    'tcp_port',
-    $tcp_port,
-    '',
-    5,
-    15,
-    true,
-    $disabledBecauseInPolicy,
-    false,
-    '',
-    $classdisabledBecauseInPolicy
-);
+
+$table_simple->rowclass['key_field'] = 'w100p mrgn_top_10px';
 
 push_table_simple($data, 'key_field');
 ?>
@@ -191,11 +251,6 @@ $(document).ready (function () {
             $("#text-custom_ip_target").hide();
         }
     });
-
-    // Add input password values with js to hide it in browser inspector.
-    $('#password-plugin_pass').val('<?php echo $plugin_pass; ?>');
-
-    observerInputPassword();
 });
 
 </script>

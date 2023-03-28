@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 // Begin.
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_inventory.php';
@@ -131,7 +133,6 @@ if (is_ajax() === true) {
 
         try {
             ob_start();
-
             $data = array_reduce(
                 $data,
                 function ($carry, $agent) {
@@ -139,9 +140,16 @@ if (is_ajax() === true) {
                     // of objects, making a post-process of certain fields.
                     $tmp = new stdClass();
 
+                    $tmp->alias = '';
+                    if (is_metaconsole() === true) {
+                        $server = metaconsole_get_connection_by_id($agent['id_tmetaconsole_setup']);
+                        metaconsole_connect($server);
+                        $tmp->alias .= $server['server_name'].' &raquo; ';
+                    }
+
                     $id = $agent['id_agente'];
 
-                    $tmp->alias = $agent['alias'];
+                    $tmp->alias .= $agent['alias'];
                     $ip = '<em>'.__('N/A').'</em>';
                     if (empty($agent['direccion']) === false) {
                         $ip = $agent['direccion'];
@@ -224,6 +232,10 @@ if (is_ajax() === true) {
                     $tmp->lastStatusChange = $time_elapsed;
                     $tmp->customFields = $custom_fields_names;
                     $tmp->valuesCustomFields = $custom_fields_values;
+
+                    if (is_metaconsole() === true) {
+                        metaconsole_restore_db();
+                    }
 
                     $carry[] = $tmp;
                     return $carry;
@@ -456,31 +468,6 @@ if ($is_metaconsole === true) {
 $agent_a = (bool) check_acl($config['id_user'], 0, 'AR');
 $agent_w = (bool) check_acl($config['id_user'], 0, 'AW');
 $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
-
-if (is_metaconsole() === true) {
-    $filteringFunction = 'active_inventory_submit()';
-    ui_print_info_message(['no_close' => true, 'message' => __('You must select at least one filter.'), 'force_class' => 'select_one_filter']);
-    ?>
-    <script type="text/javascript">
-        function active_inventory_submit() {
-            if (
-                $("#id_group").val() == 0 &&
-                $("#id_server").val() == 0 &&
-                $("#module_inventory_general_view").val() == 0 &&
-                $("#text-search_string").val() === ''
-            ) {
-                $("#submit-submit_filter").attr("disabled", true);
-                $(".select_one_filter").css("display", "table");
-            } else {
-                $("#submit-submit_filter").attr("disabled", false);
-                $(".select_one_filter").css("display", "none");
-            }
-        }
-    </script>
-    <?php
-} else {
-    $filteringFunction = '';
-}
 
 $searchForm = '<form method="post" action="index.php?sec=estado&sec2=operation/inventory/inventory" name="form_inventory">';
 $table = new stdClass();
@@ -740,6 +727,31 @@ ui_toggle(
     'white-box-content',
     'box-flat white_table_graph fixed_filter_bar'
 );
+
+if (is_metaconsole() === true) {
+    $filteringFunction = 'active_inventory_submit()';
+    ui_print_info_message(['no_close' => true, 'message' => __('You must select at least one filter.'), 'force_class' => 'select_one_filter']);
+    ?>
+    <script type="text/javascript">
+        function active_inventory_submit() {
+            if (
+                $("#id_group").val() == 0 &&
+                $("#id_server").val() == 0 &&
+                $("#module_inventory_general_view").val() == 0 &&
+                $("#text-search_string").val() === ''
+            ) {
+                $("#submit-submit_filter").attr("disabled", true);
+                $(".select_one_filter").css("display", "table");
+            } else {
+                $("#submit-submit_filter").attr("disabled", false);
+                $(".select_one_filter").css("display", "none");
+            }
+        }
+    </script>
+    <?php
+} else {
+    $filteringFunction = '';
+}
 
 if ($is_metaconsole === false) {
     // Single agent selected.
@@ -1073,8 +1085,8 @@ if ($is_metaconsole === false) {
                         $table = ui_print_datatable(
                             [
                                 'id'                  => $id_table,
-                                'class'               => 'info_table w100p',
-                                'style'               => 'width: 100%',
+                                'class'               => 'info_table',
+                                'style'               => 'width: 99%',
                                 'columns'             => $columns,
                                 'column_names'        => $columns,
                                 'no_sortable_columns' => [],
@@ -1184,8 +1196,8 @@ if ($is_metaconsole === false) {
                         $table = ui_print_datatable(
                             [
                                 'id'                  => $id_table,
-                                'class'               => 'info_table w100p',
-                                'style'               => 'width: 100%',
+                                'class'               => 'info_table',
+                                'style'               => 'width: 99%',
                                 'columns'             => $columns,
                                 'column_names'        => $columns,
                                 'no_sortable_columns' => [],
@@ -1257,12 +1269,27 @@ if ($is_metaconsole === false) {
         $id_agente = $inventory_id_agent;
         $agentes = [];
         $data = [];
-        $class = 'info_table w100p';
-        $style = 'width: 100%';
-        $ordering = false;
+        $class = 'info_table';
+        $style = 'width: 99%';
+        $ordering = true;
         $searching = false;
-        $dom = 't';
+
         $columns = [
+            'alias',
+            'ip',
+            'secondoaryIp',
+            'group',
+            'secondaryGroups',
+            'description',
+            'os',
+            'interval',
+            'lastContact',
+            'lastStatusChange',
+            'customFields',
+            'valuesCustomFields',
+        ];
+
+        $columns_names = [
             __('Alias'),
             __('IP'),
             __('Secondary IP'),
@@ -1277,162 +1304,34 @@ if ($is_metaconsole === false) {
             __('Values Custom Fields'),
         ];
 
-        if ($id_server === 0) {
-            $servers_ids = array_column(metaconsole_get_servers(), 'id');
-        } else {
-            $servers_ids = [$id_server];
-        }
+        ui_print_datatable(
+            [
+                'id'           => 'basic_info',
+                'class'        => $class,
+                'style'        => $style,
+                'columns'      => $columns,
+                'column_names' => $columns_names,
+                'ordering'     => $ordering,
+                'searching'    => $searching,
+                'order'        => [
+                    'field'     => $columns[0],
+                    'direction' => 'asc',
+                ],
+                'ajax_url'     => 'operation/inventory/inventory',
+                'ajax_data'    => [
+                    'get_data_basic_info' => 1,
+                    'id_agent'            => $id_agente,
+                ],
+                'zeroRecords'  => __('Agent info not found'),
+                'emptyTable'   => __('Agent info not found'),
+                'return'       => false,
+            ]
+        );
 
-        foreach ($servers_ids as $server_id) {
-            if (is_metaconsole()) {
-                $server = metaconsole_get_connection_by_id($server_id);
-
-                if ((int) $es_agent_server_filter !== 0
-                    && (int) $es_agent_server_filter !== (int) $server_id
-                ) {
-                    continue;
-                }
-
-                metaconsole_connect($server);
-            }
-
-            if ((int) $id_agente === 0) {
-                $class = 'databox info_table w100p';
-                $style = 'width: 99%';
-                $ordering = true;
-                $searching = true;
-                $dom = 'lftipB';
-                $sql_agentes = 'SELECT t.id_agente 
-                                    FROM tagente t
-                                    LEFT JOIN tgrupo tg ON tg.id_grupo = t.id_grupo
-                                    WHERE (t.alias LIKE "%'.$inventory_search_string.'%")
-                                        OR (t.comentarios LIKE "%'.$inventory_search_string.'%")
-                                        OR (t.direccion LIKE "%'.$inventory_search_string.'%")
-                                        OR (t.os_version LIKE "%'.$inventory_search_string.'%")
-                                        OR (tg.nombre LIKE "%'.$inventory_search_string.'%")';
-                $agentes = db_get_all_rows_sql($sql_agentes);
-            } else {
-                array_push($agentes, $id_agente);
-            }
-
-            foreach ($agentes as $id) {
-                if ((int) $id_agente === 0) {
-                    $id = $id['id_agente'];
-                }
-
-                $agent = db_get_row('tagente', 'id_agente', $id);
-
-                $ip = '<em>'.__('N/A').'</em>';
-                if (empty($agent['direccion']) === false) {
-                    $ip = $agent['direccion'];
-                }
-
-
-                $secondary_ips = '';
-                foreach (agents_get_addresses($id) as $ip) {
-                    if ($ip !== $agent['direccion']) {
-                        $secondary_ips .= '<span class="left" style="height: 1.3em !important">'.$ip.'</span>';
-                    }
-                }
-
-                $group = groups_get_name($agent['id_grupo']);
-                $secondary_groups = enterprise_hook('agents_get_secondary_groups', [$id]);
-
-                if (empty($secondary_groups['for_select']) === true) {
-                    $sec_group_data = '<em>'.__('N/A').'</em>';
-                } else {
-                    $sec_group = [];
-                    foreach ($secondary_groups['for_select'] as $name) {
-                        $sec_group[] = $name;
-                    }
-
-                    $sec_group_data = implode(', ', $sec_group);
-                }
-
-                $os = ui_print_os_icon($agent['id_os'], false, true).' ';
-                $os .= io_safe_output(get_os_name($agent['id_os'])).' '.io_safe_output($agent['os_version']);
-                $interval = human_time_description_raw($agent['intervalo'], false, 'large');
-                $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true);
-                // $last_contact .= ' / '.date_w_fixed_tz($agent['ultimo_contacto_remoto']);
-                $last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
-                $time_elapsed = !empty($last_status_change_agent) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
-
-                $sql_fields = 'SELECT tcf.name, tcd.description, tcf.is_password_type
-                                FROM tagent_custom_fields tcf
-                                INNER JOIN tagent_custom_data tcd ON tcd.id_field=tcf.id_field
-                                WHERE tcd.id_agent='.$id.' AND tcd.description!=""';
-                $field_result = db_get_all_rows_sql($sql_fields);
-
-                $custom_fields_names = '';
-                $custom_fields_values = '';
-                foreach ($field_result as $field) {
-                    $field_name = str_replace(' ', '&nbsp;', io_safe_output($field['name']));
-                    $custom_fields_names .= '<span class="right" style="height: 1.3em !important">'.$field_name.'</span>';
-
-                    $description = $field['description'];
-                    $password_length = strlen(io_safe_output($field['description']));
-                    $asterisks = '';
-
-                    if ((int) $field['is_password_type'] === 1) {
-                        for ($i = 0; $i < $password_length; $i++) {
-                            $asterisks .= '&#9679;';
-                        }
-
-                        $description = $asterisks;
-                    }
-
-                    $custom_fields_values .= '<span class="left" style="height: 1.3em !important">'.$description.'</span>';
-                }
-
-                $data_tmp = [
-                    __('Alias')                => $agent['alias'],
-                    __('IP')                   => $ip,
-                    __('Secondary IP')         => $secondary_ips,
-                    __('Group')                => $group,
-                    __('Secondary groups')     => $sec_group_data,
-                    __('Description')          => $agent['comentarios'],
-                    __('OS')                   => $os,
-                    __('Interval')             => $interval,
-                    __('Last contact')         => $last_contact,
-                    __('Last status change')   => $time_elapsed,
-                    __('Custom fields')        => $custom_fields_names,
-                    __('Values Custom Fields') => $custom_fields_values,
-                ];
-
-                array_push($data, $data_tmp);
-            }
-
-            if (is_metaconsole()) {
-                metaconsole_restore_db();
-            }
-        }
-
-            $table = ui_print_datatable(
-                [
-                    'id'                 => 'basic_info',
-                    'class'              => $class,
-                    'style'              => $style,
-                    'columns'            => $columns,
-                    'column_names'       => $columns,
-                    'ordering'           => $ordering,
-                    'data_element'       => $data,
-                    'searching'          => $searching,
-                    'dom_elements'       => $dom,
-                    'order'              => [
-                        'field'     => $columns[0],
-                        'direction' => 'asc',
-                    ],
-                    'zeroRecords'        => __('Agent info not found'),
-                    'emptyTable'         => __('Agent info not found'),
-                    'default_pagination' => 10,
-                    'return'             => true,
-                ]
-            );
-        if ((int) $id_agente === 0) {
-            echo $table;
-        } else {
-            echo '<div class="databox">'.$table.'</div>';
-        }
+        html_print_action_buttons(
+            '',
+            ['type' => 'form_action']
+        );
     }
 }
 

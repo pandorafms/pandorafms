@@ -276,8 +276,8 @@ if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) che
         ['text' => 'Module'],
         ['text' => 'Template'],
         [
-            'title' => __('Actions'),
-            'text'  => __('Actions'),
+            'title' => __('Action'),
+            'text'  => __('Action'),
             'style' => 'min-width: 15%;',
         ],
         ['text' => 'Last fired'],
@@ -288,7 +288,7 @@ if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) che
         $columns,
         ['agent_module_name'],
         ['template_name'],
-        ['actions'],
+        ['action'],
         ['last_fired'],
         ['status']
     );
@@ -326,14 +326,14 @@ if (is_metaconsole() === true) {
             1,
             2,
             3,
-            7,
+            -1,
         ];
     } else {
         $no_sortable_columns = [
             0,
             1,
             2,
-            6,
+            -1,
         ];
     }
 }

@@ -657,8 +657,7 @@ var TreeController = {
                 $content.append(
                   '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    (treeController.meta != undefined &&
-                    treeController.meta == 1
+                    (controller.meta != undefined && controller.meta == 1
                       ? "../../images/"
                       : "images/") +
                     element.icon +

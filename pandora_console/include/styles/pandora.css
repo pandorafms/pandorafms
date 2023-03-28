@@ -11752,6 +11752,10 @@ span.help_icon_15px > img {
   height: 15px !important;
 }
 
+.select2-dropdown {
+  z-index: 1116 !important;
+}
+
 /* ==== Spinner ==== */
 .spinner-fixed {
   position: fixed;

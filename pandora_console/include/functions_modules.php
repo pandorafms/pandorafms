@@ -4577,3 +4577,81 @@ function getStatuses()
         'normal',
     ];
 }
+
+
+function policies_type_modules_availables(string $sec2): array
+{
+    $network_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_NETWORK
+    );
+    $wmi_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_WMI
+    );
+    $plugin_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_PLUGIN
+    );
+    $prediction_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_PREDICTION
+    );
+    $web_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_WEB
+    );
+
+    if (is_metaconsole()) {
+        $network_available = 1;
+        $wmi_available = 1;
+        $plugin_available = 1;
+        $prediction_available = 1;
+    }
+
+    $modules = [];
+    $modules['dataserver'] = __('Create a new data server module');
+    if ($network_available) {
+        $modules['networkserver'] = __('Create a new network server module');
+    }
+
+    if ($plugin_available) {
+        $modules['pluginserver'] = __('Create a new plugin server module');
+    }
+
+    if ($wmi_available) {
+        $modules['wmiserver'] = __('Create a new WMI server module');
+    }
+
+    if ($prediction_available) {
+        $modules['predictionserver'] = __('Create a new prediction server module');
+    }
+
+    if (is_metaconsole() === true || $web_available >= '1') {
+        $modules['webserver'] = __('Create a new web Server module');
+    }
+
+    if (enterprise_installed() === true) {
+        enterprise_include('godmode/agentes/module_manager.php');
+        set_enterprise_module_types($modules);
+    }
+
+    if (strstr($sec2, 'enterprise/godmode/policies/policies') !== false) {
+        // It is unset because the policies haven't a table tmodule_synth and the
+        // some part of code to apply this kind of modules in policy agents.
+        // But in the future maybe will be good to make this feature, but remember
+        // the modules to show in syntetic module policy form must be the policy
+        // modules from the same policy.
+        unset($modules['predictionserver']);
+        if (enterprise_installed() === true) {
+            unset($modules['webux']);
+        }
+    }
+
+    return $modules;
+}

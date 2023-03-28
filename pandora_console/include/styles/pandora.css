@@ -11767,3 +11767,8 @@ div.relative > div > div#ui-datepicker-div {
 .container-div-input-password:has(.w400px-important) {
   width: 400px;
 }
+
+#module_relations > thead > tr {
+  border: none !important;
+  border-bottom: 1px solid #e2e2e2 !important;
+}

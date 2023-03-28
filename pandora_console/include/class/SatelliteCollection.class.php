@@ -142,7 +142,7 @@ class SatelliteCollection extends HTML
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 100%',
+                    'style'               => 'width: 99%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -164,10 +164,12 @@ class SatelliteCollection extends HTML
                                 'label' => __('Search'),
                                 'type'  => 'text',
                                 'name'  => 'filter_search',
+                                'class' => 'w400px',
                                 'size'  => 12,
                             ],
                         ],
                     ],
+                    'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                 ]
             );
         } catch (Exception $e) {
@@ -176,6 +178,7 @@ class SatelliteCollection extends HTML
 
         echo '<div id="aux" class="invisible"></div>';
         echo '<div id="msg" class="invisible"></div>';
+        html_print_action_buttons('');
 
         // Load own javascript file.
         echo $this->loadJS();
@@ -236,7 +239,7 @@ class SatelliteCollection extends HTML
 
                         $tmp->actions = '';
                         $tmp->actions .= html_print_image(
-                            ($delete === 0) ? 'images/add.png' : 'images/cross.png',
+                            ($delete === 0) ? 'images/add.png' : 'images/delete.svg',
                             true,
                             [
                                 'border'  => '0',

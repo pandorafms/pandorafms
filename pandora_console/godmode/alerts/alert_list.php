@@ -478,17 +478,17 @@ if ($standbyoff_alert) {
 
 
 $searchFlag = true;
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     // The tabs will be shown only with manage alerts permissions
     if (check_acl($config['id_user'], 0, 'LW') || check_acl($config['id_user'], 0, 'LM')) {
         $buttons = [
             'list'    => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List alerts'), 'class' => 'invert_filter']).'</a>',
+                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('List alerts'), 'class' => 'main_menu_icon invert_filter']).'</a>',
             ],
             'builder' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Builder alert'), 'class' => 'invert_filter']).'</a>',
+                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">'.html_print_image('images/edit.svg', true, ['title' => __('Builder alert'), 'class' => 'main_menu_icon invert_filter']).'</a>',
             ],
         ];
 
@@ -497,44 +497,48 @@ if (!is_metaconsole()) {
         $buttons = '';
     }
 
-    if ($tab == 'list') {
-        ui_print_standard_header(
-            __('Alerts'),
-            'images/gm_alerts.png',
-            false,
-            '',
-            true,
-            $buttons,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Manage alerts'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('List'),
-                ],
-            ]
-        );
-    } else {
-        ui_print_standard_header(
-            __('Alerts'),
-            'images/gm_alerts.png',
-            false,
-            '',
-            true,
-            $buttons,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Manage alerts'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('Create'),
-                ],
-            ]
-        );
+    if ($_GET['sec2'] !== 'operation/cluster/cluster') {
+        if ($tab !== 'alert') {
+            if ($tab === 'list') {
+                ui_print_standard_header(
+                    __('Alerts'),
+                    'images/gm_alerts.png',
+                    false,
+                    '',
+                    true,
+                    $buttons,
+                    [
+                        [
+                            'link'  => '',
+                            'label' => __('Manage alerts'),
+                        ],
+                        [
+                            'link'  => '',
+                            'label' => __('List'),
+                        ],
+                    ]
+                );
+            } else {
+                ui_print_standard_header(
+                    __('Alerts'),
+                    'images/gm_alerts.png',
+                    false,
+                    '',
+                    true,
+                    $buttons,
+                    [
+                        [
+                            'link'  => '',
+                            'label' => __('Manage alerts'),
+                        ],
+                        [
+                            'link'  => '',
+                            'label' => __('Create'),
+                        ],
+                    ]
+                );
+            }
+        }
     }
 } else {
     alerts_meta_print_header();

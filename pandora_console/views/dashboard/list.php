@@ -92,7 +92,7 @@ if (empty($dashboards) === true) {
     $table->style['full_screen'] = 'text-align: center;';
 
     $table->size = [];
-    $table->size['name'] = '75%';
+    $table->size['name'] = '40%';
     $table->size['full_screen'] = '30px';
 
     $table->head = [];
@@ -212,7 +212,7 @@ if (empty($dashboards) === true) {
         true,
         'offset',
         false,
-        'pagination-bottom'
+        ''
     );
 }
 

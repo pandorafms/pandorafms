@@ -70,21 +70,13 @@ $table->head = [];
 $table->data = [];
 $table->size = [];
 
-if (is_metaconsole() === true) {
-    $table->class = 'databox filters';
-    $table->head[0] = __('Main data');
-    $table->head_colspan[0] = 4;
-    $table->headstyle[0] = 'text-align: center';
-    $table->size[0] = '15%';
-    $table->size[1] = '90%';
-    $table->style[0] = 'font-weight: bold; vertical-align: top;';
-} else {
-    $table->class = 'filter-table-adv databox';
-    $table->size[0] = '50%';
-    $table->size[1] = '50%';
-    $table->size[2] = '50%';
-    $table->size[3] = '50%';
-}
+
+$table->class = 'filter-table-adv databox';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->size[2] = '50%';
+$table->size[3] = '50%';
+
 
 $write_groups = users_get_groups_for_select(
     false,
@@ -95,35 +87,20 @@ $write_groups = users_get_groups_for_select(
     'id_grupo'
 );
 
-if (is_metaconsole() === true) {
-    $table->data['name'][0] = __('Name');
-    $table->data['name'][1] = html_print_input_text(
+$table->data[0][0] = html_print_label_input_block(
+    __('Name'),
+    html_print_input_text(
         'name',
         $reportName,
         __('Name'),
-        80,
+        false,
         100,
         true,
         false,
         true
-    );
+    )
+);
 
-    $table->data['group'][0] = __('Group');
-} else {
-    $table->data[0][0] = html_print_label_input_block(
-        __('Name'),
-        html_print_input_text(
-            'name',
-            $reportName,
-            __('Name'),
-            false,
-            100,
-            true,
-            false,
-            true
-        )
-    );
-}
 
 // If the report group is not among the
 // RW groups (special permission) we add it.
@@ -137,9 +114,10 @@ if (users_can_manage_group_all('RW') === true) {
     $return_all_group = true;
 }
 
-if (is_metaconsole() === true) {
-    $table->data['group'][1] = '<div class="w290px inline">';
-    $table->data['group'][1] .= html_print_input(
+
+$table->data[0][1] = html_print_label_input_block(
+    __('Group'),
+    html_print_input(
         [
             'type'           => 'select_groups',
             'id_user'        => $config['id_user'],
@@ -153,28 +131,23 @@ if (is_metaconsole() === true) {
             'return'         => true,
             'required'       => true,
         ]
-    );
-    $table->data['group'][1] .= '</div>';
-} else {
-    $table->data[0][1] = html_print_label_input_block(
-        __('Group'),
-        html_print_input(
-            [
-                'type'           => 'select_groups',
-                'id_user'        => $config['id_user'],
-                'privilege'      => 'AR',
-                'returnAllGroup' => $return_all_group,
-                'name'           => 'id_group',
-                'selected'       => $idGroupReport,
-                'script'         => '',
-                'nothing'        => '',
-                'nothing_value'  => '',
-                'return'         => true,
-                'required'       => true,
-            ]
-        )
-    );
-}
+    )
+);
+
+
+$table->colspan[1][0] = 2;
+$table->data[1][0] = html_print_label_input_block(
+    __('Description'),
+    html_print_textarea(
+        'description',
+        2,
+        1,
+        $description,
+        '',
+        true
+    )
+);
+
 
 if ($report_id_user == $config['id_user']
     || is_user_admin($config['id_user'])
@@ -185,13 +158,12 @@ if ($report_id_user == $config['id_user']
         'group_edit' => __('The next group can edit the report'),
         'user_edit'  => __('Only the user and admin user can edit the report'),
     ];
-    if (is_metaconsole() === true) {
-        $table->data['access'][0] = __('Write Access');
-        $table->data['access'][0] .= ui_print_help_tip(
+    $table->data[2][0] = html_print_label_input_block(
+        __('Write Access').ui_print_help_tip(
             __('For example, you want a report that the people of "All" groups can see but you want to edit only for you or your group.'),
             true
-        );
-        $table->data['access'][1] = html_print_select(
+        ),
+        html_print_select(
             $type_access,
             'type_access',
             $type_access_selected,
@@ -199,16 +171,18 @@ if ($report_id_user == $config['id_user']
             '',
             0,
             true
-        );
+        )
+    );
 
-        $class = ' invisible_important ';
-        if ($type_access_selected == 'group_edit') {
-            $class = '';
-        }
+    $options['div_class'] = 'invisible_important';
+    $options['div_id'] = 'group_edit';
+    if ($type_access_selected == 'group_edit') {
+        $options['div_class'] = '';
+    }
 
-        $table->data['access'][1] .= '<span class="access_subform'.$class.'" id="group_edit">';
-        $table->data['access'][1] .= '<div class="w290px inline">';
-        $table->data['access'][1] .= html_print_select_groups(
+    $table->data[2][1] = html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups(
             false,
             'RW',
             false,
@@ -218,48 +192,9 @@ if ($report_id_user == $config['id_user']
             '',
             '',
             true
-        );
-        $table->data['access'][1] .= '</div>';
-        $table->data['access'][1] .= '</span>';
-    } else {
-        $table->data[1][0] = html_print_label_input_block(
-            __('Write Access').ui_print_help_tip(
-                __('For example, you want a report that the people of "All" groups can see but you want to edit only for you or your group.'),
-                true
-            ),
-            html_print_select(
-                $type_access,
-                'type_access',
-                $type_access_selected,
-                'change_type_access(this)',
-                '',
-                0,
-                true
-            )
-        );
-
-        $options['div_class'] = 'invisible_important';
-        $options['div_id'] = 'group_edit';
-        if ($type_access_selected == 'group_edit') {
-            $options['div_class'] = '';
-        }
-
-        $table->data[1][1] = html_print_label_input_block(
-            __('Group'),
-            html_print_select_groups(
-                false,
-                'RW',
-                false,
-                'id_group_edit',
-                $id_group_edit,
-                false,
-                '',
-                '',
-                true
-            ),
-            $options
-        );
-    }
+        ),
+        $options
+    );
 }
 
 if ($enterpriseEnable) {
@@ -268,90 +203,40 @@ if ($enterpriseEnable) {
         $non_interactive_check = $non_interactive;
     }
 
-    if (is_metaconsole() === true) {
-        $table->data['interactive_report'][0] = __('Non interactive report');
-        $table->data['interactive_report'][1] .= html_print_checkbox_switch(
+    $table->data[2][1] = html_print_label_input_block(
+        __('Non interactive report'),
+        html_print_checkbox_switch(
             'non_interactive',
             1,
             $non_interactive_check,
-            true
-        );
-    } else {
-        $table->data[2][0] = html_print_label_input_block(
-            __('Non interactive report'),
-            html_print_checkbox_switch(
-                'non_interactive',
-                1,
-                $non_interactive_check,
-                true
-            )
-        );
-    }
-}
-
-if (is_metaconsole() === true) {
-    $table->data['description'][0] = __('Description');
-    $table->data['description'][1] = html_print_textarea(
-        'description',
-        2,
-        80,
-        $description,
-        '',
-        true
-    );
-} else {
-    $table->data[2][1] = html_print_label_input_block(
-        __('Description'),
-        html_print_textarea(
-            'description',
-            2,
-            1,
-            $description,
-            '',
             true
         )
     );
 }
 
+
 if (enterprise_installed() === true) {
-    if (is_metaconsole() === true) {
-        $table->data['cover'][0] = __('Generate cover page in PDF render');
-        $table->data['cover'][1] = html_print_checkbox_switch(
+    $table->data[3][0] = html_print_label_input_block(
+        __('Generate cover page in PDF render'),
+        html_print_checkbox_switch(
             'cover_page_render',
             1,
             $cover_page_render,
             true
-        );
+        )
+    );
 
-        $table->data['index'][0] = __('Generate index in PDF render');
-        $table->data['index'][1] = html_print_checkbox_switch(
+    $table->data[3][1] = html_print_label_input_block(
+        __('Generate index in PDF render'),
+        html_print_checkbox_switch(
             'index_render',
             1,
             $index_render,
             true
-        );
-    } else {
-        $table->data[3][0] = html_print_label_input_block(
-            __('Generate cover page in PDF render'),
-            html_print_checkbox_switch(
-                'cover_page_render',
-                1,
-                $cover_page_render,
-                true
-            )
-        );
-
-        $table->data[3][1] = html_print_label_input_block(
-            __('Generate index in PDF render'),
-            html_print_checkbox_switch(
-                'index_render',
-                1,
-                $index_render,
-                true
-            )
-        );
-    }
+        )
+    );
 }
+
 
 echo '<form class="" method="post">';
 html_print_table($table);

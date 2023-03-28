@@ -260,7 +260,7 @@ if (isset($config['public_dashboard']) === true
         }
     }
 } else {
-    if (check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
+    if ($dashboardUser !== $config['id_user'] && check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
         $buttons = [
             'back_to_dashboard_list' => $back_to_dashboard_list,
             'fullscreen'             => $fullscreen,
@@ -296,6 +296,12 @@ if ($publicLink === false) {
                 'link'  => '',
                 'label' => __('Dashboard'),
             ],
+        ],
+        [
+            'id_element' => $dashboardId,
+            'url'        => 'operation/dashboard/dashboard&dashboardId='.$dashboardId,
+            'label'      => $dashboardName,
+            'section'    => 'Dashboard_',
         ]
     );
 } else {

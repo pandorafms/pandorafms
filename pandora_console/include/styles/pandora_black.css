@@ -31,7 +31,7 @@ ul.subsubmenu li,
 input.search_input,
 .filters input,
 input#text-id_parent.ac_input,
-input,
+input:not(div.login_pass > input):not(div.login_nick > input),
 textarea,
 select,
 .edit_user_comments #textarea_comments,
@@ -74,7 +74,6 @@ div#head {
 .menu_full_classic #menu_tabs {
   height: 49px;
   border-bottom: 1px solid #82b92e;
-  padding-bottom: 2px;
 }
 
 .menu_full_collapsed #menu_tabs {
@@ -426,6 +425,9 @@ a.pandora_pagination {
   color: #fff;
 }
 
+span.reinvert_filter {
+  filter: invert(1);
+}
 /* firts_task.css */
 .new_task,
 div.new_task,
@@ -449,7 +451,11 @@ div.new_task > div {
 }
 
 /* tree.css */
-.node-content:hover {
+.tree-node div.node-content {
+  background-color: #444;
+}
+
+.tree-node div.node-content:hover {
   background-color: #222;
 }
 
@@ -458,12 +464,6 @@ ul.tree-group
   div.node-content
   img:not(.module-status):not(.agent-status):not(.agent-alerts-fired) {
   filter: invert(100%);
-}
-
-/* login.css */
-div.login_nick input,
-div.login_pass input {
-  background-color: #111 !important;
 }
 
 /* user edit */
@@ -768,6 +768,11 @@ form ul.form_flex {
   filter: invert(100%);
 }
 
+.info_table .invert_filter,
+.info_table .labels {
+  filter: invert(100%);
+}
+
 .graph_conteiner_inside,
 .container_table,
 .second_background,
@@ -1063,10 +1068,6 @@ div.integria_details_description textarea {
 }
 
 .networkconsole {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
   background-color: #111;
 }
 
@@ -1109,6 +1110,7 @@ select,
   border: 1px solid #707070;
   background-color: #222 !important;
   color: #fff !important;
+  border-radius: 0;
 }
 
 .white_table_graph {
@@ -1241,8 +1243,7 @@ a.pandora_pagination:hover {
   background-color: #555 !important;
 }
 .dt-button.buttons-csv.buttons-html5 {
-  filter: invert(100%);
-  background-color: transparent;
+  box-shadow: 0px 3px 6px #111;
 }
 
 .info_table.events > tbody > tr > td {
@@ -1296,8 +1297,9 @@ a.pandora_pagination:hover {
   filter: brightness(0) contrast(50%) !important;
 }
 
-input[type="image"] {
+input:not(div.login_pass > input):not(div.login_nick > input[type="image"]) {
   background-color: transparent !important;
+  color: inherit !important;
 }
 
 .databox_color {
@@ -1406,11 +1408,6 @@ p.trademark-copyright {
   overflow: auto;
 }
 
-.action_buttons_background_mask {
-  background-color: #222;
-  border-top: 1px solid #82b92e;
-}
-
 button.buttonButton,
 button.submitButton {
   box-shadow: 0px 3px 6px #111;
@@ -1478,13 +1475,6 @@ span.select2-dropdown.select2-dropdown--below {
   z-index: 1200;
 }
 
-div.fixed_filter_bar,
-div.white_table_graph_header {
-  border-radius: 0;
-  border-left: 0px;
-  border-right: 0px;
-}
-
 div.white_table_graph {
   border-radius: 0;
 }
@@ -1498,6 +1488,50 @@ div.white_box.white_box_opened.no_border {
   border-radius: 0px;
 }
 
-table.filter-table-adv td > div label {
+table.filter-table-adv td > div label:not(.inputFile) {
   color: white !important;
+}
+
+#principal_action_buttons {
+  background: #111111;
+}
+div.fixed-bottom-box,
+div.fixed-bottom-box
+  > div.fixed-bottom-box-head
+  > div.fixed-bottom-box-head-body {
+  background-color: #111111 !important;
+}
+
+.filter_table,
+.white_table_graph_fixed table {
+  background-color: transparent;
+}
+
+span.select2 {
+  border-radius: 6px;
+}
+
+.ui-dialog .tips_header.ui-dialog-titlebar {
+  color: white !important;
+  background-color: #222222 !important;
+}
+
+#tips_window_modal > div.window > div.description > #title_tip,
+#tips_window_modal > div.window > div.description > #text_tip {
+  color: white !important;
+}
+
+.agent_details_header span.subsection_header_title {
+  color: #fff;
+}
+
+pre code.hljs {
+  background-color: #222222;
+  color: #fff;
+}
+
+a.autorefresh_txt,
+#refrcounter {
+  color: #ffffff;
+  font-size: 8.5pt;
 }

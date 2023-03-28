@@ -2634,9 +2634,17 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
   `action` TINYINT UNSIGNED DEFAULT 0,
   `ssh_key` TEXT,
   `ssh_pubkey` TEXT,
+  `ssh_status` TINYINT UNSIGNED DEFAULT 0,
   `last_error` TEXT,
+  `db_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_delay` BIGINT DEFAULT 0,
+  `master` TINYINT UNSIGNED DEFAULT 0,
+  `utimestamp` BIGINT DEFAULT 0,
+  `mysql_version` VARCHAR(10) DEFAULT '',
+  `pandora_version` VARCHAR(10) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
 -- Table `twidget`
@@ -4263,3 +4271,15 @@ CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
     REFERENCES `twelcome_tip` (`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tfavmenu_user`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_user` VARCHAR(255) NOT NULL,
+  `id_element` TEXT,
+  `url` TEXT NOT NULL,
+  `label` VARCHAR(255) NOT NULL,
+  `section` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`));

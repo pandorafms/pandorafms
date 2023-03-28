@@ -282,10 +282,10 @@ class OsQuickReportWidget extends Widget
             $table->head = [];
             $table->head[0] = __('OS');
             $table->head[1] = __('OS name');
-            $table->head[2] = ucfirst(__('total agents'));
-            $table->head[3] = ucfirst(__('normal agents'));
-            $table->head[4] = ucfirst(__('critical agents'));
-            $table->head[5] = ucfirst(__('unknown agents'));
+            $table->head[2] = ucfirst(__('total'));
+            $table->head[3] = ucfirst(__('normal'));
+            $table->head[4] = ucfirst(__('critical'));
+            $table->head[5] = ucfirst(__('unknown'));
 
             $table->headstyle = [];
             $table->headstyle[0] = 'text-align:center;background-color: '.$values['background'];
@@ -296,22 +296,24 @@ class OsQuickReportWidget extends Widget
             $table->headstyle[5] = 'text-align:center;background-color: '.$values['background'];
 
             $table->style = [];
-            $table->style[0] = 'background-color: '.$values['background'];
-            $table->style[1] = 'background-color: '.$values['background'];
-            $table->style[2] = 'font-size: 22px;background-color: '.$values['background'];
-            $table->style[3] = 'font-size: 22px;background-color: '.$values['background'];
-            $table->style[4] = 'font-size: 22px;background-color: '.$values['background'];
-            $table->style[5] = 'font-size: 22px;background-color: '.$values['background'];
+            $table->style[0] = 'background-color: '.$values['background'].';';
+            $table->style[1] = 'background-color: '.$values['background'].';';
+            $table->style[2] = 'background-color: '.$values['background'].'; font-size: 1.5em; font-weight: bolder;';
+            $table->style[3] = 'background-color: '.$values['background'].'; font-size: 1.5em; font-weight: bolder;';
+            $table->style[4] = 'background-color: '.$values['background'].';';
+            $table->style[5] = 'background-color: '.$values['background'].';';
 
             foreach ($result as $id => $os) {
                 $data = [];
+                ($os['critical'] > 0) ? $color_critical = 'color: '.COL_CRITICAL.';' : $color_critical = '';
+                ($os['unknown'] > 0) ? $color_unknown = 'color: '.COL_UNKNOWN.';' : $color_unknown = '';
 
                 $data[0] = ui_print_os_icon($id, false, true);
                 $data[1] = $os['name'];
                 $data[2] = $os['total'];
                 $data[3] = $os['normal'];
-                $data[4] = $os['critical'];
-                $data[5] = $os['unknown'];
+                $data[4] = '<span class="widget-module-tabs-data" style="'.$color_critical.'">'.$os['critical'].'</span>';
+                $data[5] = '<span class="widget-module-tabs-data" style="'.$color_unknown.'">'.$os['unknown'].'</span>';
 
                 $table->data[] = $data;
             }

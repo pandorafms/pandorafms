@@ -50,14 +50,30 @@ $result_api_call_list = integria_api_call(
 // Return array of api call 'get_incidents'.
 $array_get_incidents = [];
 get_array_from_csv_data_all($result_api_call_list, $array_get_incidents);
-// Remove index (id)
-$array_get_incidents = $array_get_incidents[$incident_id];
 
+// Remove index (id).
+$array_get_incidents = $array_get_incidents[$incident_id];
 
 // Header tabs.
 $onheader = integriaims_tabs(false, $incident_id);
-ui_print_page_header($array_get_incidents[3].' - '.__('Details'), '', false, '', false, $onheader);
-
+ui_print_standard_header(
+    $array_get_incidents[3],
+    '',
+    false,
+    '',
+    false,
+    $onheader,
+    [
+        [
+            'link'  => '',
+            'label' => __('Issues'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Details'),
+        ],
+    ]
+);
 
 // Data.
 $status = $array_get_incidents[6];
@@ -195,7 +211,7 @@ foreach ($files as $key => $value) {
     $table_files->data[$i][4] = $value[13];
     $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
                                 onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-    $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+    $table_files->data[$i][5] .= html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
 
 
     $table_files->data[$i][5] .= '</a>';
@@ -215,7 +231,7 @@ $table_files_section->data[1][0] .= html_print_textarea(
     true
 );
 
-$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
+$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, ['icon' => 'wand', 'mode' => 'mini secondary'], true).'</div>';
 
 $upload_file_form = '<div class="w100p">';
 
@@ -268,7 +284,7 @@ $table_comments_section->data[0][0] .= html_print_textarea(
     true
 );
 
-$table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, 'class="sub wand"', true).'</div>';
+$table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, ['icon' => 'wand', 'mode' => 'mini secondary'], true).'</div>';
 
 // Upload comment. If ticket is closed, this action cannot be performed.
 if ($upload_comment && $array_get_incidents[6] != 7) {
@@ -399,8 +415,8 @@ ui_toggle(
     '',
     true,
     false,
-    'white_box white_box_opened',
-    'no-border flex'
+    'white-box-content',
+    'w98p'
 );
 echo '</div>';
 
@@ -412,15 +428,14 @@ ui_toggle(
     '',
     true,
     false,
-    'white_box white_box_opened',
-    'no-border flex'
+    'white-box-content',
+    'w98p'
 );
 echo '</div>';
 
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
-
     $('#details_box .white_table_graph_header').click(function(){
         $('div#details_box').toggleClass('integria_details_shadow');
     });
@@ -432,6 +447,5 @@ $(document).ready (function () {
     $('#dates_box .white_table_graph_header').click(function(){
         $('div#dates_box').toggleClass('integria_details_shadow');
     });
-
 });
 </script>

@@ -69,7 +69,6 @@ if ($is_management_allowed === true) {
     $table->head[4] = '';
 }
 
-$table->align[1] = 'center';
 if ($is_management_allowed === true) {
     $table->align[4] = 'center';
 }
@@ -100,7 +99,7 @@ $table->data = [];
 foreach ($osList as $os) {
     $data = [];
     $data[] = $os['id_os'];
-    $data[] = html_print_div(['class' => 'invert_filter main_menu_icon', 'content' => ui_print_os_icon($os['id_os'], false, true)], true);
+    $data[] = ui_print_os_icon($os['id_os'], false, true);
     if ($is_management_allowed === true) {
         if (is_metaconsole() === true) {
             $osNameUrl = 'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=edit&tab2=builder&id_os='.$os['id_os'];
@@ -133,7 +132,7 @@ foreach ($osList as $os) {
             $data[] = html_print_anchor(
                 [
                     'href'    => $hrefDelete,
-                    'class'   => 'inverse_filter main_menu_icon',
+                    'class'   => 'invert_filter main_menu_icon',
                     'content' => html_print_image('images/delete.svg', true),
                 ],
                 true
@@ -147,17 +146,41 @@ foreach ($osList as $os) {
     $table->data[] = $data;
 }
 
+$tablePagination = '';
 if (isset($data) === true) {
     html_print_table($table);
-    ui_pagination($count_osList, ui_get_url_refresh(['message' => false]), $offset, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination(
+        $count_osList,
+        ui_get_url_refresh(['message' => false]),
+        $offset,
+        0,
+        true,
+        'offset',
+        false,
+        ''
+    );
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined operating systems') ]);
 }
 
+$buttons = '';
 if (is_metaconsole() === true) {
-    echo '<form method="post" action="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=builder">';
-        echo "<div style='text-align:right;width:".$table->width."'>";
-            html_print_submit_button(__('Create OS'), '', false, 'class="sub next"');
-        echo '</div>';
-    echo '</form>';
+    $buttons .= '<form method="post" action="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=builder">';
+    $buttons .= html_print_submit_button(
+        __('Create OS'),
+        '',
+        false,
+        ['icon' => 'next'],
+        true
+    );
+    $buttons .= '</form>';
 }
+
+html_print_action_buttons(
+    $buttons,
+    [
+        'type'          => 'data_table',
+        'class'         => 'fixed_action_buttons',
+        'right_content' => $tablePagination,
+    ]
+);

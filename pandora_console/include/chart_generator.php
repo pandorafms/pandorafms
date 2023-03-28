@@ -27,8 +27,6 @@
  */
 
 // Begin.
-require_once 'config.php';
-
 require_once __DIR__.'/config.php';
 require_once __DIR__.'/functions.php';
 require_once __DIR__.'/functions_db.php';
@@ -87,7 +85,7 @@ if (check_login(false) === false) {
 </head>
 <body>
     <h1>Access is not granted</h1>
-    <div id="container-chart-generator-item" style="display:none; margin:0px;">
+    <div id="container-chart-generator-item" style="display:none; margin:0px;width:100px;height:100px;">
 </body>
 </html>
 
@@ -246,6 +244,9 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'slicebar':
+            // TO-DO Cambiar esto para que se pase por POST, NO SE PUEDE PASAR POR GET.
+            $params['graph_data'] = json_decode(io_safe_output($config[$params['tokem_config']]), true);
+            delete_config_token($params['tokem_config']);
             echo flot_slicesbar_graph(
                 $params['graph_data'],
                 $params['period'],

@@ -262,10 +262,7 @@ if ($is_management_allowed === true) {
             [ 'icon' => 'next' ],
             true
         ),
-        [
-            'type'          => 'form_action',
-            'right_content' => $tablePagination,
-        ]
+        [ 'right_content' => $tablePagination ]
     );
 
     echo '</form>';

@@ -310,7 +310,7 @@ echo '<legend><span>'.__('To agent(s)').'</span></legend>';
 html_print_table($table);
 echo '</fieldset>';
 
-attachActionButton('do_operation', 'copy', $table->width);
+attachActionButton('do_operation', 'copy', $table->width, false, $SelectAction);
 
 echo '</form>';
 

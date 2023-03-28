@@ -260,6 +260,24 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
+                    if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
+                        $error_update[] = __('Enable Sflow');
+                    }
+
+                    if (config_update_value('general_network_path', get_parameter('general_network_path'), true) === false) {
+                        $error_update[] = __('General network path');
+                    } else {
+                        if (empty($config['netflow_name_dir']) === false && $config['netflow_name_dir'] !== '') {
+                            $path = get_parameter('general_network_path');
+                            config_update_value('netflow_path', $path.$config['netflow_name_dir']);
+                        }
+
+                        if (empty($config['sflow_name_dir']) === false && $config['sflow_name_dir'] !== '') {
+                            $path = get_parameter('general_network_path');
+                            config_update_value('sflow_path', $path.$config['sflow_name_dir']);
+                        }
+                    }
+
                     $timezone = (string) get_parameter('timezone');
                     if (empty($timezone) === true || config_update_value('timezone', $timezone, true) === false) {
                         $error_update[] = __('Timezone setup');
@@ -454,6 +472,10 @@ function config_update_config()
 
                         if (config_update_value('enable_update_manager', get_parameter('enable_update_manager'), true) === false) {
                             $error_update[] = __('Enable Update Manager');
+                        }
+
+                        if (config_update_value('legacy_database_ha', get_parameter('legacy_database_ha'), true) === false) {
+                            $error_update[] = __('Legacy database HA');
                         }
 
                         if (config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'), true) === false) {
@@ -1501,8 +1523,13 @@ function config_update_config()
                 break;
 
                 case 'net':
-                    if (config_update_value('netflow_path', get_parameter('netflow_path'), true) === false) {
-                        $error_update[] = __('Data storage path');
+                    if (config_update_value('netflow_name_dir', get_parameter('netflow_name_dir'), true) === false) {
+                        $error_update[] = __('Name storage path');
+                    } else {
+                        if (empty($config['general_network_path']) === false && $config['general_network_path'] !== '') {
+                            $name = get_parameter('netflow_name_dir');
+                            config_update_value('netflow_path', $config['general_network_path'].$name);
+                        }
                     }
 
                     if (config_update_value('netflow_interval', (int) get_parameter('netflow_interval'), true) === false) {
@@ -1534,6 +1561,49 @@ function config_update_config()
                     }
 
                     if (config_update_value('netflow_get_ip_hostname', (int) get_parameter('netflow_get_ip_hostname'), true) === false) {
+                        $error_update[] = __('Name resolution for IP address');
+                    }
+                break;
+
+                case 'sflow':
+                    if (config_update_value('sflow_name_dir', get_parameter('sflow_name_dir'), true) === false) {
+                        $error_update[] = __('Sflow name dir');
+                    } else {
+                        if (empty($config['general_network_path']) === false && $config['general_network_path'] !== '') {
+                            $name = get_parameter('sflow_name_dir');
+                            config_update_value('sflow_path', $config['general_network_path'].$name);
+                        }
+                    }
+
+                    if (config_update_value('sflow_interval', (int) get_parameter('sflow_interval'), true) === false) {
+                        $error_update[] = __('Daemon interval');
+                    }
+
+                    if (config_update_value('sflow_daemon', get_parameter('sflow_daemon'), true) === false) {
+                        $error_update[] = __('Daemon binary path');
+                    }
+
+                    if (config_update_value('sflow_nfdump', get_parameter('sflow_nfdump'), true) === false) {
+                        $error_update[] = __('Nfdump binary path');
+                    }
+
+                    if (config_update_value('sflow_nfexpire', get_parameter('sflow_nfexpire'), true) === false) {
+                        $error_update[] = __('Nfexpire binary path');
+                    }
+
+                    if (config_update_value('sflow_max_resolution', (int) get_parameter('sflow_max_resolution'), true) === false) {
+                        $error_update[] = __('Maximum chart resolution');
+                    }
+
+                    if (config_update_value('sflow_disable_custom_lvfilters', get_parameter('sflow_disable_custom_lvfilters'), true) === false) {
+                        $error_update[] = __('Disable custom live view filters');
+                    }
+
+                    if (config_update_value('sflow_max_lifetime', (int) get_parameter('sflow_max_lifetime'), true) === false) {
+                        $error_update[] = __('Sflow max lifetime');
+                    }
+
+                    if (config_update_value('sflow_get_ip_hostname', (int) get_parameter('sflow_get_ip_hostname'), true) === false) {
                         $error_update[] = __('Name resolution for IP address');
                     }
                 break;
@@ -2237,6 +2307,10 @@ function config_process_config()
         config_update_value('enable_update_manager', 1);
     }
 
+    if (!isset($config['legacy_database_ha'])) {
+        config_update_value('legacy_database_ha', 0);
+    }
+
     if (!isset($config['disabled_newsletter'])) {
         config_update_value('disabled_newsletter', 0);
     }
@@ -2557,11 +2631,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_logo_login'])) {
-        config_update_value('custom_logo_login', 'login_logo_v7.png');
+        config_update_value('custom_logo_login', 'Pandora-FMS-1.png');
     }
 
     if (!isset($config['custom_splash_login'])) {
-        config_update_value('custom_splash_login', 'default');
+        config_update_value('custom_splash_login', 'none.png');
     }
 
     if (!isset($config['custom_docs_logo'])) {
@@ -2597,11 +2671,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_title1_login'])) {
-        config_update_value('custom_title1_login', __('PANDORA FMS'));
+        config_update_value('custom_title1_login', __('ONE TOOL TO RULE THEM ALL'));
     }
 
     if (!isset($config['custom_title2_login'])) {
-        config_update_value('custom_title2_login', __('ONE TOOL TO MONITOR THEM ALL'));
+        config_update_value('custom_title2_login', '');
     }
 
     if (!isset($config['custom_docs_url'])) {
@@ -2621,7 +2695,7 @@ function config_process_config()
     }
 
     if (!isset($config['background_opacity'])) {
-        config_update_value('background_opacity', 30);
+        config_update_value('background_opacity', 20);
     }
 
     if (!isset($config['meta_background_opacity'])) {
@@ -2641,7 +2715,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_logo_login'])) {
-        config_update_value('meta_custom_logo_login', 'pandora_logo.png');
+        config_update_value('meta_custom_logo_login', 'Pandora-FMS-1.png');
     }
 
     if (!isset($config['meta_custom_splash_login'])) {
@@ -2649,11 +2723,11 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_title1_login'])) {
-        config_update_value('meta_custom_title1_login', __('PANDORA FMS NEXT GENERATION'));
+        config_update_value('meta_custom_title1_login', __('ONE TOOL TO RULE THEM ALL'));
     }
 
     if (!isset($config['meta_custom_title2_login'])) {
-        config_update_value('meta_custom_title2_login', __('METACONSOLE'));
+        config_update_value('meta_custom_title2_login', __('COMMAND CENTER'));
     }
 
     if (!isset($config['vc_favourite_view'])) {
@@ -2768,6 +2842,28 @@ function config_process_config()
         config_update_value('activate_netflow', 0);
     }
 
+    if (!isset($config['activate_sflow'])) {
+        config_update_value('activate_sflow', 0);
+    }
+
+    if (!isset($config['general_network_path'])) {
+        if ($is_windows) {
+            $default = 'C:\PandoraFMS\Pandora_Server\data_in\\';
+        } else {
+            $default = '/var/spool/pandora/data_in/';
+        }
+
+        config_update_value('general_network_path', $default);
+    }
+
+    if (!isset($config['netflow_name_dir'])) {
+        config_update_value('netflow_name_dir', 'netflow');
+    }
+
+    if (!isset($config['sflow_name_dir'])) {
+        config_update_value('sflow_name_dir', 'sflow');
+    }
+
     if (!isset($config['netflow_path'])) {
         if ($is_windows) {
             $default = 'C:\PandoraFMS\Pandora_Server\data_in\netflow';
@@ -2804,6 +2900,48 @@ function config_process_config()
 
     if (!isset($config['netflow_max_lifetime'])) {
         config_update_value('netflow_max_lifetime', '5');
+    }
+
+    if (!isset($config['sflow_interval'])) {
+        config_update_value('sflow_interval', SECONDS_10MINUTES);
+    }
+
+    if (!isset($config['sflow_daemon'])) {
+        config_update_value('sflow_daemon', '/usr/bin/sfcapd');
+    }
+
+    if (!isset($config['sflow_nfdump'])) {
+        config_update_value('sflow_nfdump', '/usr/bin/nfdump');
+    }
+
+    if (!isset($config['sflow_nfexpire'])) {
+        config_update_value('sflow_nfexpire', '/usr/bin/nfexpire');
+    }
+
+    if (!isset($config['sflow_max_resolution'])) {
+        config_update_value('sflow_max_resolution', '50');
+    }
+
+    if (!isset($config['sflow_disable_custom_lvfilters'])) {
+        config_update_value('sflow_disable_custom_lvfilters', 0);
+    }
+
+    if (!isset($config['sflow_max_lifetime'])) {
+        config_update_value('sflow_max_lifetime', '5');
+    }
+
+    if (!isset($config['sflow_name_dir'])) {
+        config_update_value('sflow_name_dir', 'sflow');
+    }
+
+    if (!isset($config['sflow_path'])) {
+        if ($is_windows) {
+            $default = 'C:\PandoraFMS\Pandora_Server\data_in\sflow';
+        } else {
+            $default = '/var/spool/pandora/data_in/sflow';
+        }
+
+        config_update_value('sflow_path', $default);
     }
 
     if (!isset($config['auth'])) {
@@ -3218,7 +3356,7 @@ function config_process_config()
             // Try to update user table in order to refresh skin inmediatly.
             $is_user_updating = get_parameter('sec2', '');
 
-            if ($is_user_updating == 'operation/users/user_edit') {
+            if ($is_user_updating === 'godmode/users/configure_user') {
                 $id = get_parameter_get('id', $config['id_user']);
                 // ID given as parameter.
                 $user_info = get_user_info($id);
@@ -3482,7 +3620,7 @@ function config_process_config()
     }
 
     if (!isset($config['random_background'])) {
-        config_update_value('random_background', '');
+        config_update_value('random_background', 1);
     }
 
     if (!isset($config['meta_random_background'])) {
@@ -3746,7 +3884,7 @@ function config_user_set_custom_config()
         }
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $config['metaconsole_access'] = $userinfo['metaconsole_access'];
     }
 }

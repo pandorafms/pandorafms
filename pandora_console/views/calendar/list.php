@@ -33,19 +33,23 @@ if (\is_metaconsole() === true) {
     \alerts_meta_print_header($tabs);
 } else {
     // Header.
-    \ui_print_page_header(
-        // Title.
-        __('Calendars'),
-        // Icon.
+    ui_print_standard_header(
+        __('Alerts'),
         'images/gm_alerts.png',
-        // Return.
         false,
-        // Help.
         'alert_special_days',
-        // Godmode.
         true,
-        // Options.
-        $tabs
+        $tabs,
+        [
+            [
+                'link'  => '',
+                'label' => __('Alerts'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Special days'),
+            ],
+        ]
     );
 }
 

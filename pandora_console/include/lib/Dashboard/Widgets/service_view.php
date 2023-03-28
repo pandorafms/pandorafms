@@ -367,7 +367,7 @@ class ServiceViewWidget extends Widget
                 'AR'
             );
 
-            $output .= '<div class="white_box mgn_btt_20px mrgn_top_20px pddng_50px services_table" >';
+            $output .= '<div class="services_table" >';
             $output .= '<div id="table_services_dashboard">';
             foreach ($services as $service) {
                 switch ($service['status']) {
@@ -404,40 +404,6 @@ class ServiceViewWidget extends Widget
                     </div>
                     </a>';
             }
-
-            $output .= '</div>';
-                $output .= '<table cellspacing="0" cellpadding="0">';
-                    $output .= '<tr>';
-                        $output .= '<td>';
-                            $output .= '<div class="service_status" style=" background: '.COL_UNKNOWN.';"></div>';
-                        $output .= '</td>';
-                        $output .= '<td>';
-                            $output .= '<div class="service_status" style="background: '.COL_NORMAL.';"></div>';
-                        $output .= '</td>';
-                        $output .= '<td>';
-                            $output .= '<div class="service_status" style="background: '.COL_WARNING.';"></div>';
-                        $output .= '</td>';
-                        $output .= '<td>';
-                            $output .= '<div class="service_status" style="background: '.COL_CRITICAL.';"></div>';
-                        $output .= '</td>';
-
-                        $output .= '</tr><tr>';
-
-                        $output .= '<td>';
-                            $output .= '<div class="pdd_r_15px"><span class="font_12px">Unknown</span></div>';
-                        $output .= '</td>';
-                        $output .= '<td >';
-                            $output .= '<div class="pdd_r_15px"><span class="font_12px">Normal</span></div>';
-                        $output .= '</div>';
-                        $output .= '<td>';
-                            $output .= '<div class="pdd_r_15px"><span class="font_12px">Warning</span></div>';
-                        $output .= '</td>';
-                        $output .= '<td>';
-                            $output .= '<div><span class="font_12px">Critical</span></div>';
-                        $output .= '</td>';
-                    $output .= '</tr>';
-                $output .= '</table>';
-            $output .= '</div>';
         }
 
         return $output;

@@ -216,11 +216,8 @@ if ($get_double_auth_info_page) {
     $html .= '</p>';
     $html .= '</div>';
     $html .= '<br>';
-    $html .= '<div class="center_align">';
+    $html .= '<div class="flex flex-space-around">';
     $html .= html_print_button(__('Download the app'), 'google_authenticator_download', false, '', '', true);
-    $html .= '</div>';
-    $html .= '<br>';
-    $html .= '<div class="center_align">';
     $html .= html_print_button(__('Continue'), 'continue_to_generate', false, '', '', true);
     $html .= '</div>';
 
@@ -311,10 +308,10 @@ if ($get_double_auth_generation_page) {
     $html .= '<br>';
     $html .= __('QR').': <br>';
     $html .= '<div id="qr-container"></div>';
-    $html .= '<br>';
+    $html .= '<br><div class="flex flex-space-around">';
     $html .= html_print_button(__('Refresh code'), 'continue_to_generate', false, '', '', true);
-    $html .= '&nbsp;';
     $html .= html_print_button(__('Continue'), 'continue_to_validate', false, '', '', true);
+    $html .= '</div>';
     $html .= '</div>';
 
     ob_clean();
@@ -453,7 +450,7 @@ if ($get_double_auth_validation_page) {
     $html .= html_print_input_text('code', '', '', 50, $secret_lenght, true);
     $html .= '<div id="code_input_message" class="red"></div>';
     $html .= '<br><br>';
-    $html .= '<div id="button-container">';
+    $html .= '<div id="button-container" class="flex flex-space-around">';
     $html .= html_print_button(__('Validate code'), 'continue_to_validate', false, '', '', true);
     $html .= html_print_image('images/spinner.gif', true);
     $html .= '</div>';

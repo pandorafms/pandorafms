@@ -54,6 +54,8 @@ Exported Functions:
 
 =item * C<pandora_event>
 
+=item * C<pandora_timed_event>
+
 =item * C<pandora_execute_alert>
 
 =item * C<pandora_execute_action>
@@ -194,6 +196,7 @@ our @EXPORT = qw(
 	pandora_evaluate_alert
 	pandora_evaluate_snmp_alerts
 	pandora_event
+	pandora_timed_event
 	pandora_extended_event
 	pandora_execute_alert
 	pandora_execute_action
@@ -3996,7 +3999,8 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
+#sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
+sub pandora_event {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh,
 		$source, $user_name, $comment, $id_extra, $tags,
@@ -4111,6 +4115,28 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
 	close (EVENT_FILE);
 
 	return $event_id;
+}
+
+##########################################################################
+=head2 C<< pandora_timed_event (I<$time_limit>, I<@event>) >> 
+
+Generate an event, but no more than one every $time_limit seconds.
+
+=cut
+##########################################################################
+my %TIMED_EVENTS :shared;
+sub pandora_timed_event ($@) {
+	my ($time_limit, @event) = @_;
+
+	# Match events by message.
+	my $event_msg = $event[1];
+
+	# Do not generate more than one event every $time_limit seconds.
+	my $now = time();
+	if (!defined($TIMED_EVENTS{$event_msg}) || $TIMED_EVENTS{$event_msg} + $time_limit < $now) {
+		$TIMED_EVENTS{$event_msg} = $now;
+		pandora_event(@event);
+	}
 }
 
 ##########################################################################
@@ -5627,39 +5653,56 @@ sub pandora_server_statistics ($$) {
 
 			# Non-dataserver LAG calculation:
 			if ($server->{"server_type"} != DATASERVER){
-				
-				$lag_row = get_db_single_row ($dbh, 
-				"SELECT COUNT(tam.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
+				$lag_row = get_db_single_row (
+					$dbh,
+					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
 					FROM (
-  					SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
-  						FROM tagente_estado
-								WHERE tagente_estado.current_interval > 0
-								AND tagente_estado.last_execution_try > 0
-								AND tagente_estado.running_by = ?
-    			) tae
-    			JOIN (
-						SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag
-							FROM tagente_modulo LEFT JOIN tagente
-							ON tagente_modulo.id_agente = tagente.id_agente
-								WHERE tagente.disabled = 0
-								AND tagente_modulo.disabled = 0
-								AND tagente_modulo.id_tipo_modulo < 5 
-				) tam
-				ON tae.id_agente_modulo = tam.id_agente_modulo
-					WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)
-					AND (tam.flag = 1 OR (UNIX_TIMESTAMP() - tae.last_execution_try) > tae.current_interval)", $server->{"id_server"});
-			}
+						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+						FROM tagente_estado
+						WHERE tagente_estado.current_interval > 0
+						AND tagente_estado.last_execution_try > 0
+						AND tagente_estado.running_by = ?
+					) tae
+					JOIN (
+						SELECT tagente_modulo.id_agente_modulo
+						FROM tagente_modulo LEFT JOIN tagente
+						ON tagente_modulo.id_agente = tagente.id_agente
+						WHERE tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+					) tam
+					ON tae.id_agente_modulo = tam.id_agente_modulo
+					WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval)
+					AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)",
+					$server->{"id_server"}
+				);
+}
 			# Dataserver LAG calculation:
 			else {
-				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
-					FROM tagente_estado, tagente_modulo
-					WHERE utimestamp > 0
-					AND tagente_modulo.disabled = 0
-					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-					AND current_interval > 0
-					AND running_by = ?
-					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-					AND (UNIX_TIMESTAMP() - utimestamp) > current_interval", $server->{"id_server"});
+				$lag_row = get_db_single_row (
+					$dbh,
+					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag
+					FROM (
+						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
+						FROM tagente_estado
+						WHERE tagente_estado.current_interval > 0
+						AND tagente_estado.last_execution_try > 0
+						AND tagente_estado.running_by = ?
+						) tae
+						JOIN (
+							SELECT tagente_modulo.id_agente_modulo
+							FROM tagente_modulo LEFT JOIN tagente
+							ON tagente_modulo.id_agente = tagente.id_agente
+							WHERE tagente.disabled = 0
+							AND tagente_modulo.disabled = 0
+							AND tagente_modulo.id_tipo_modulo < 5
+						) tam
+					ON tae.id_agente_modulo = tam.id_agente_modulo
+					WHERE (UNIX_TIMESTAMP() - tae.last_execution_try) > (tae.current_interval * 1.1)
+					AND  (UNIX_TIMESTAMP() - tae.last_execution_try) < ( tae.current_interval * 10)",
+					$server->{"id_server"}
+				);
 			}
 			
 			$server->{"module_lag"} = $lag_row->{'module_lag'};

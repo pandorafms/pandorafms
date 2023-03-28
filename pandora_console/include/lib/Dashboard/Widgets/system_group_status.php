@@ -477,7 +477,7 @@ class SystemGroupStatusWidget extends Widget
         $this->values['groupId'] = $selected_groups;
         $this->values['status'] = explode(',', $this->values['status'][0]);
 
-        $style = 'font-size: 12px; text-align: center;';
+        $style = 'font-size: 1.5em; font-weight: bolder;text-align: center;';
 
         $table = new \stdClass();
         $table->class = 'group_modules_status_box';

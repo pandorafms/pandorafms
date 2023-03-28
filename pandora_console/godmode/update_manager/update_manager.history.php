@@ -50,7 +50,7 @@ try {
         [
             'id'                  => $tableId,
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'ajax_url'            => 'include/ajax/update_manager',
@@ -66,12 +66,13 @@ try {
                     [
                         'label' => __('Free search'),
                         'type'  => 'text',
-                        'class' => 'mw250px',
+                        'class' => 'w400px',
                         'id'    => 'free_search',
                         'name'  => 'free_search',
                     ],
                 ],
             ],
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar ',
         ]
     );
 } catch (Exception $e) {

@@ -284,11 +284,16 @@ class AlertsFiredWidget extends Widget
 
         if (isset($groups) === true && is_array($groups) === true) {
             $table = new \StdClass();
-            $table->class = 'databox data';
+            $table->class = 'databox data centered';
             $table->cellspacing = '0';
-            $table->width = '90%';
+            $table->width = '100%';
             $table->data = [];
             $table->size = [];
+            $table->style = [];
+            $table->style[0] = 'text-align: left;';
+            $table->style[1] = 'text-align: left;';
+            $table->style[2] = 'text-align: left;';
+            $table->style[3] = 'text-align: left;';
 
             $url = $config['homeurl'];
             $url .= 'index.php?sec=estado&sec2=operation/agentes/alerts_status';
@@ -335,7 +340,7 @@ class AlertsFiredWidget extends Widget
             if ($flag === true) {
                 $height = (count($table->data) * 30);
                 $style = 'min-width:300px; min-height:'.$height.'px;';
-                $output .= '<div class="container-center" style="'.$style.'">';
+                $output .= '<div class="" style="'.$style.'">';
                 $output .= html_print_table($table, true);
                 $output .= '</div>';
             } else {

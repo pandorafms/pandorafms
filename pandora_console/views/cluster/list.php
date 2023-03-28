@@ -27,12 +27,23 @@
  */
 
 // Header.
-\ui_print_page_header(
-    __('Monitoring').' &raquo; '.__('Clusters'),
+ui_print_standard_header(
+    __('Cluster view'),
     'images/chart.png',
     false,
     '',
-    false
+    true,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Clusters'),
+        ],
+    ]
 );
 
 if (empty($message) === false) {
@@ -50,7 +61,7 @@ try {
         'known_status',
         [
             'text'  => 'options',
-            'class' => 'action_buttons',
+            'class' => 'table_action_buttons',
         ],
     ];
 
@@ -71,7 +82,7 @@ try {
         [
             'id'                  => $tableId,
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'ajax_url'            => $model->ajaxController,
@@ -102,6 +113,7 @@ try {
                     ],
                 ],
             ],
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
         ]
     );
 } catch (Exception $e) {
@@ -109,24 +121,20 @@ try {
 }
 
 if (check_acl($config['id_user'], 0, 'AW')) {
-    HTML::printForm(
+    $buttons[] = html_print_submit_button(
+        __('New cluster'),
+        'submit',
+        false,
         [
-            'form'   => [
-                'method' => 'POST',
-                'action' => ui_get_full_url($model->url.'&op=new'),
-            ],
-            'inputs' => [
-                [
-                    'class'     => 'w100p',
-                    'arguments' => [
-                        'name'       => 'submit',
-                        'label'      => __('New cluster'),
-                        'type'       => 'submit',
-                        'attributes' => 'class="sub next"',
-                        'return'     => true,
-                    ],
-                ],
-            ],
-        ]
+            'class' => 'sub ok',
+            'icon'  => 'next',
+        ],
+        true
     );
+    echo '<form action="'.ui_get_full_url($model->url.'&op=new').'" method="POST">';
+    html_print_action_buttons(
+        implode('', $buttons),
+        ['type' => 'form_action']
+    );
+    echo '</form>';
 }

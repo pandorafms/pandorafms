@@ -61,13 +61,19 @@ if ($default_action != 0) {
 }
 
 // Header.
-ui_print_page_header(
+ui_print_standard_header(
     __('Alert details'),
     'images/op_alerts.png',
     false,
     '',
     false,
-    ''
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Alerts'),
+        ],
+    ]
 );
 
 // TABLE DETAILS.

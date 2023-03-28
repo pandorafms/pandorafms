@@ -68,10 +68,10 @@ function network_print_explorer_header(
     $cell = '<div class="flex_center">';
     $cell .= $title;
     $cell .= html_print_link_with_params(
-        'images/arrow-down-white.png',
+        'images/arrow@svg.svg',
         array_merge($hidden_data, ['order_by' => $order]),
         'image',
-        ($selected === $order) ? 'opacity: 0.5' : ''
+        'rotate: 270deg; width: 20px; margin-top: 4px;'.(($selected === $order) ? '' : 'opacity: 0.5')
     );
     $cell .= '</div>';
 

@@ -5,7 +5,6 @@
   background-size: 100% 100%;
   background-position: center;
   margin-top: 5px;
-  z-index: 0;
 }
 
 .is-maintenance {
@@ -42,11 +41,11 @@
 }
 
 .visual-console-item.is-editing:hover {
-  border-color: #82b92e;
+  border-color: #2b2b2b;
 }
 
 .visual-console-item.is-editing.is-selected {
-  border: 2px dashed #2b2b2b;
+  border: 2px dashed #82b92e;
   cursor: move;
   z-index: 10;
 }
@@ -400,10 +399,6 @@ p.error-p-validate {
 
 #html-tabs .ui-tabs-nav li {
   border-radius: 5px 5px 0px 0px;
-}
-
-label span.p-slider {
-  width: 30px;
 }
 
 li.interval-color-ranges > label,
@@ -857,5 +852,6 @@ div.module-graph .gauge_d3_class {
 .visual-console-item .analogic-clock .second-hand {
   animation: rotate-second 60s infinite linear;
 }
+
 
 /*# sourceMappingURL=vc.main.css.map*/

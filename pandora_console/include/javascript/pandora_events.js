@@ -67,7 +67,7 @@ function show_event_dialog(event, dialog_page) {
             background: "black"
           },
           width: 710,
-          height: 600,
+          height: 650,
           autoOpen: true,
           open: function() {
             if (
@@ -628,7 +628,7 @@ function delete_event(table, id_evento, event_rep, row, server_id) {
     },
     onDeny: function() {
       button.children[0];
-      button.children[0].src = "images/cross.png";
+      button.children[0].src = "images/delete.svg";
       return;
     }
   });
@@ -972,6 +972,9 @@ function openSoundEventModal(settings) {
       width: 600,
       height: 600,
       open: function() {
+        $(".ui-widget-overlay")
+          .css("background", "black")
+          .css("opacity", 0.5);
         $.ajax({
           method: "post",
           url: settings.url,

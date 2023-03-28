@@ -216,11 +216,12 @@ $enable_disable['text'] = html_print_div(
 // New Widget.
 $newWidget['text'] = '<a href="#" id="add-widget" class="invisible">';
 $newWidget['text'] .= html_print_image(
-    'images/add.png',
+    'images/plus@svg.svg',
     true,
     [
         'title' => __('Add Cell'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
+        'style' => 'margin-top:5px;',
     ]
 );
 $newWidget['text'] .= '</a>';

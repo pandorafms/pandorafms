@@ -652,13 +652,10 @@ var TreeController = {
                 typeof element.icon != "undefined" &&
                 element.icon.length > 0
               ) {
-                console.log("a");
-                console.log(controller);
                 $content.append(
                   '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    (treeController.meta != undefined &&
-                    treeController.meta == 1
+                    (controller.meta != undefined && controller.meta == 1
                       ? "../../images/"
                       : "images/") +
                     element.icon +

@@ -11743,6 +11743,11 @@ div.relative > div > div#ui-datepicker-div {
   width: 400px;
 }
 
+#module_relations > thead > tr {
+  border: none !important;
+  border-bottom: 1px solid #e2e2e2 !important;
+}
+
 span.help_icon_15px > img {
   height: 15px !important;
 }

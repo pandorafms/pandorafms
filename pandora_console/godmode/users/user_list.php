@@ -1045,20 +1045,6 @@ if ($is_management_allowed === true) {
     } else {
         echo '<i>'.__("The current authentication scheme doesn't support creating users on %s", get_product_name()).'</i>';
     }
-} else {
-    html_print_action_buttons(
-        html_print_submit_button(
-            __('Create user'),
-            'none',
-            true,
-            [ 'icon' => 'wand' ],
-            true
-        ),
-        [
-            'type'          => 'form_action',
-            'right_content' => $tablePagination,
-        ],
-    );
 }
 
 ?>

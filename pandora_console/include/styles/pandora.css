@@ -11621,10 +11621,8 @@ div[role="dialog"] {
 .row-title-font > td > div > div > b {
   font-size: 13px;
   line-height: 16px;
-  color: #161628;
   text-align: left;
   margin-bottom: 10px;
-  /* font-weight: bold; */
 }
 
 .font-title-font {

@@ -655,7 +655,7 @@ var TreeController = {
                 $content.append(
                   '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    (controller.meta != undefined && controller.meta == 1
+                    (controller.baseURL.indexOf("meta") !== -1
                       ? "../../images/"
                       : "images/") +
                     element.icon +
@@ -1078,7 +1078,10 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/module-graph.svg" /> '
+                        (controller.baseURL.indexOf("meta") !== -1
+                          ? "../../images/"
+                          : "images/") +
+                        'module-graph.svg" /> '
                     );
                   }
 
@@ -1123,7 +1126,10 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/simple-value.svg" /> '
+                        (controller.baseURL.indexOf("meta") !== -1
+                          ? "../../images/"
+                          : "images/") +
+                        'simple-value.svg" /> '
                     );
                     $dataImage
                       .addClass("module-data")

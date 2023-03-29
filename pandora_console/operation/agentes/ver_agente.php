@@ -1579,7 +1579,7 @@ if (enterprise_installed() === true && (bool) $config['log_collector'] === true)
         $log_viewer_tab['text'] = html_print_menu_button(
             [
                 'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente,
-                'image' => 'images/gm_log.png',
+                'image' => 'images/gm_log@svg.svg',
                 'title' => __('Log Viewer'),
             ],
             true

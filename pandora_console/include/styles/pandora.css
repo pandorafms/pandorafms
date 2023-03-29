@@ -7071,6 +7071,10 @@ div.graph div.legend table {
   margin-bottom: 5px;
 }
 
+.mrgn_btn_5px_imp {
+  margin-bottom: 5px !important;
+}
+
 .mrgn_btn_10px {
   margin-bottom: 10px;
 }

@@ -736,22 +736,18 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
     true
 );
 
-
-$contentQrCode = [];
-$contentQrCode[] = html_print_image(
-    'images/example_qr.png',
-    true,
-    [
-        'width'  => '200px',
-        'height' => '200px',
-    ]
+$CodeQRContent .= html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
+$CodeQRContent .= html_print_anchor(
+    ['id' => 'qr_code_agent_view'],
+    true
 );
-$contentQrCode[] = '<span class="input_sub_placeholder input_sub_placeholder_qrcode">'.__('Generated automatically with the information provided for the user').'</span>';
+$CodeQRContent .= '<br/>'.$custom_id_div;
 
-$qrCode = html_print_div(
+// QR code div.
+$CodeQRTable = html_print_div(
     [
-        'style'   => 'display: flex;flex-direction: column;align-items: center;',
-        'content' => implode('', $contentQrCode),
+        'class'   => 'agent_qr',
+        'content' => $CodeQRContent,
     ],
     true
 );
@@ -760,8 +756,33 @@ $qrCode = html_print_div(
 html_print_div(
     [
         'id'      => 'api_qrcode_display',
-        'content' => $qrCode.$apiTokenContent,
+        'content' => $CodeQRTable.$apiTokenContent,
     ]
 );
 
 html_print_table($userManagementTable);
+
+$vcard_data = [];
+$vcard_data['version'] = '3.0';
+$vcard_data['firstName'] = $user_info['firstname'];
+$vcard_data['lastName'] = $user_info['lastname'];
+$vcard_data['middleName'] = ($user_info['middlename'] === '1') ? '' : $user_info['middlename'];
+$vcard_data['nickname'] = $user_info['fullname'];
+$vcard_data['workPhone'] = $user_info['phone'];
+$vcard_data['email'] = $user_info['email'];
+$vcard_data['organization'] = io_safe_output(get_product_name());
+$vcard_data['url'] = ui_get_full_url('index.php');
+
+$vcard_json = json_encode($vcard_data);
+?>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    paint_vcard(
+                <?php echo $vcard_json; ?>,
+                "#qr_code_agent_view",
+                128,
+                128
+            );
+});
+</script>

@@ -934,6 +934,12 @@ select:-internal-list-box {
   display: flex;
 }
 
+.flex-row-important {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+}
+
 .padding-2 {
   padding: 2em;
 }

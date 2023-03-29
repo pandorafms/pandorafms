@@ -1442,22 +1442,9 @@ $alerttab['active'] = ($tab === 'alert');
 
 // Inventory.
 $inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
-$inventorytab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
-    'images/hardware-software-component@svg.svg',
-    true,
-    [
-        'class' => 'main_menu_icon invert_filter',
-        'title' => __('Inventory'),
-    ]
-).'</a>';
-
-if ($tab == 'inventory') {
-    $inventorytab['active'] = true;
-} else {
-    $inventorytab['active'] = false;
-}
 
 $inventorytab = enterprise_hook('inventory_tab');
+
 if ($inventorytab === ENTERPRISE_NOT_HOOK || $inventoryCount === 0) {
     $inventorytab = '';
 }

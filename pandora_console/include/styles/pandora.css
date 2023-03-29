@@ -10395,6 +10395,12 @@ button.submitButton.link-create-item {
   margin: 0 0.5em;
 }
 
+.delete_item,
+.copy_item {
+  border-radius: 0;
+  margin: 0 0.5em;
+}
+
 /* End for Visual Consoles */
 button.buttonButton.secondary,
 button.submitButton.secondary {

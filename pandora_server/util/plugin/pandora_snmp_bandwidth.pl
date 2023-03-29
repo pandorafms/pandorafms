@@ -59,6 +59,7 @@ Where OPTIONS could be:
     -uniqid          Use custom temporary file name.
     -inUsage         Show only input usage (in percentage) - 1, or not 0.
     -outUsage        Show only output usage (in percentage) - 1, or not 0.
+    -f               We treat unkonwn duplex as full duplex.
 
 Note: You can also use snmpget/snmpwalk argument notation,
 e.g. -v is equal to -version, -c to -community, etc.

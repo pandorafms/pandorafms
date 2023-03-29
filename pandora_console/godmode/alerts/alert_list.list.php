@@ -967,17 +967,19 @@ foreach ($simple_alerts as $alert) {
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
             $module_linked = policies_is_module_linked($alert['id_agent_module']);
-            if (is_array($policyInfo) === false && $module_linked === false) {
+            if ((is_array($policyInfo) === false && $module_linked === false)
+                || (is_array($policyInfo) === false && $module_linked === '1')
+            ) {
                 $data[$index['policy']] = '';
             } else {
                 $module_linked = policies_is_module_linked($alert['id_agent_module']);
                 if ($module_linked === '0') {
                     $img = 'images/unlinkpolicy.png';
                 } else {
-                    $img = 'images/policies_mc.png';
+                    $img = 'images/policy@svg.svg';
                 }
 
-                $data[1] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[1] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
         }
     }

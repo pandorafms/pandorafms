@@ -1246,20 +1246,22 @@ function ui_format_alert_row(
 
         $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
         $module_linked = policies_is_module_linked($alert['id_agent_module']);
-        if (is_array($policyInfo) === false && $module_linked === false) {
+        if ((is_array($policyInfo) === false && $module_linked === false)
+            || (is_array($policyInfo) === false && $module_linked === '1')
+        ) {
             $data[$index['policy']] = '';
         } else {
             $module_linked = policies_is_module_linked($alert['id_agent_module']);
             if ($module_linked === '0') {
                 $img = 'images/unlinkpolicy.png';
             } else {
-                $img = 'images/policies_mc.png';
+                $img = 'images/policy@svg.svg';
             }
 
             if (is_metaconsole() === false) {
-                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             } else {
-                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
         }
 

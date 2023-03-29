@@ -423,7 +423,7 @@ if ($view_graph) {
     );
 
     if ($graph_return) {
-        echo '<div style="background-color: white;height: 700px;overflow-y: auto;padding-top:20px;">';
+        echo '<div class="container-custom-graph">';
         if (!is_ajax()) {
             echo '<div id="spinner_loading" class="loading invisible" style="display:flex;flex-direction:column-reverse;justify-content:center;align-items:center">';
             echo html_print_image('images/spinner.gif', true, ['width' => '20px']);

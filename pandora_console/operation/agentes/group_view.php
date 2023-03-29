@@ -295,7 +295,7 @@ if (empty($result_groups) === false) {
         echo "<td class='group_view_data center vertical_middle'>";
         if (!isset($data['_is_tag_']) && check_acl($config['id_user'], $data['_id_'], 'AW')) {
             echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$data['_id_'].'">'.html_print_image(
-                'images/change-active.svg',
+                'images/force@svg.svg',
                 true,
                 [
                     'border' => '0',

@@ -753,9 +753,18 @@ class HTML
             ) {
                 $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
+                if (isset($input['extra-container']) === true && $input['extra-container'] === true) {
+                    $output .= '<div class="flex extra-container-input">';
+                }
+
                 $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
+
+                if (isset($input['extra-container']) === true && $input['extra-container'] === true) {
+                    $output .= '</div>';
+                }
+
                 $output .= '</li>';
             } else {
                 $output .= self::printInput($input['arguments']);

@@ -934,6 +934,12 @@ select:-internal-list-box {
   display: flex;
 }
 
+.flex-row-important {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+}
+
 .padding-2 {
   padding: 2em;
 }
@@ -5879,7 +5885,12 @@ div.switch_radio_button label:last-of-type {
   cursor: pointer;
 }
 
-.switch_radio_button input:checked + label,
+.switch_radio_button input:checked + label {
+  background-color: var(--primary-color);
+  box-shadow: none;
+  color: var(--secondary-color) !important;
+}
+
 .switch_radio_button input:checked:has(.custom_checkbox) {
   background-color: var(--primary-color);
   box-shadow: none;
@@ -6877,6 +6888,10 @@ div.graph div.legend table {
   margin-left: 15px;
 }
 
+.mrgn_lft_17px {
+  margin-left: 17px;
+}
+
 .mrgn_lft_20px {
   margin-left: 20px;
 }
@@ -7064,6 +7079,10 @@ div.graph div.legend table {
 
 .mrgn_btn_5px {
   margin-bottom: 5px;
+}
+
+.mrgn_btn_5px_imp {
+  margin-bottom: 5px !important;
 }
 
 .mrgn_btn_10px {
@@ -10380,6 +10399,12 @@ button.submitButton.link-create-item {
   margin: 0 0.5em;
 }
 
+.delete_item,
+.copy_item {
+  border-radius: 0;
+  margin: 0 0.5em;
+}
+
 /* End for Visual Consoles */
 button.buttonButton.secondary,
 button.submitButton.secondary {
@@ -11610,10 +11635,8 @@ div[role="dialog"] {
 .row-title-font > td > div > div > b {
   font-size: 13px;
   line-height: 16px;
-  color: #161628;
   text-align: left;
   margin-bottom: 10px;
-  /* font-weight: bold; */
 }
 
 .font-title-font {
@@ -11809,4 +11832,24 @@ span.help_icon_15px > img {
   100% {
     transform: rotate(360deg);
   }
+}
+
+li.input-interval .extra-container-input .select2 {
+  width: 50% !important;
+  margin-right: 10px;
+}
+
+.ui-widget-header {
+  border: 0px !important;
+}
+
+.container-custom-graph {
+  background-color: white;
+  height: 700px;
+  overflow-y: auto;
+  padding-top: 20px;
+}
+
+.scale-0-8 {
+  transform: scale(0.8);
 }

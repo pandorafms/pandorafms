@@ -1283,14 +1283,95 @@ function paint_qrcode(text, where, width, height) {
 
   $(where).empty();
 
-  var qrcode = new QRCode(where, {
-    text: text,
-    width: width,
-    height: height,
-    colorDark: "#343434",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.M
+  var qrcode = qrCode.createQr({
+    typeElement: "createImg",
+    data: text,
+    typeNumber: 5,
+    cellSize: 5
   });
+
+  $(where).append(qrcode);
+}
+
+function paint_vcard(text, where) {
+  if (typeof text == "undefined") {
+    text = window.location.href;
+  } else {
+    //null value
+    if (isEmptyObject(text)) {
+      text = window.location.href;
+    }
+  }
+
+  if (typeof where == "undefined") {
+    where = $("#qrcode_container_image").get(0);
+  } else if (typeof where == "string") {
+    where = $(where).get(0);
+  }
+
+  if (typeof where == "undefined") {
+    where = $("#qrcode_container_image").get(0);
+  } else if (typeof where == "string") {
+    where = $(where).get(0);
+  }
+
+  // version: "3.0",
+  // lastName: "Нижинский",
+  // middleName: "D",
+  // firstName: "Костя",
+  // nameSuffix: "JR",
+  // namePrefix: "MR",
+  // nickname: "Test User",
+  // gender: "M",
+  // organization: "ACME Corporation",
+  // workPhone: "312-555-1212444",
+  // homePhone: "312-555-1313333",
+  // cellPhone: "312-555-1414111",
+  // pagerPhone: "312-555-1515222",
+  // homeFax: "312-555-1616",
+  // workFax: "312-555-1717",
+  // birthday: "20140112",
+  // anniversary: "20140112",
+  // title: "Crash Test Dummy",
+  // role: "Crash Testing",
+  // email: "john.doe@testmail",
+  // workEmail: "john.doe@workmail",
+  // url: "http://johndoe",
+  // workUrl: "http://acemecompany/johndoe",
+  // homeAddress: {
+  //   label: "Home Address",
+  //   street: "123 Main Street",
+  //   city: "Chicago",
+  //   stateProvince: "IL",
+  //   postalCode: "12345",
+  //   countryRegion: "United States of America"
+  // },
+
+  // workAddress: {
+  //   label: "Work Address",
+  //   street: "123 Corporate Loop\nSuite 500",
+  //   city: "Los Angeles",
+  //   stateProvince: "CA",
+  //   postalCode: "54321",
+  //   countryRegion: "California Republic"
+  // },
+
+  // source: "http://sourceurl",
+  // note: "dddddd",
+  // socialUrls: {
+  //   facebook: "johndoe",
+  //   linkedIn: "johndoe",
+  //   twitter: "johndoe",
+  //   flickr: "johndoe",
+  //   skype: "test_skype",
+  //   custom: "johndoe"
+  // }
+
+  $(where).empty();
+
+  var qrcode = qrCode.createVCardQr(text, { typeNumber: 30, cellSize: 2 });
+
+  $(where).append(qrcode);
 }
 
 function show_dialog_qrcode(dialog, text, where, width, height) {

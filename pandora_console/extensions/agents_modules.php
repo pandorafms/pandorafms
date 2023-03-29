@@ -729,16 +729,31 @@ function mainAgentsModules()
         if (isset($modules_selected[0]) === true && $modules_selected[0]) {
             $all_modules = [];
             foreach ($modules_selected as $key => $value) {
-                $name = modules_get_agentmodule_name($value);
-                $sql = "SELECT id_agente_modulo 
-                        FROM tagente_modulo 
-                        WHERE nombre = '".$name."';";
+                if (is_int($value)) {
+                    $name = modules_get_agentmodule_name($value);
+                    $sql = "SELECT id_agente_modulo
+                            FROM tagente_modulo
+                            WHERE nombre = '".$name."';";
 
-                $result_sql = db_get_all_rows_sql($sql);
+                    $result_sql = db_get_all_rows_sql($sql);
 
-                if (is_array($result_sql)) {
-                    foreach ($result_sql as $key => $value) {
-                        $all_modules[$value['id_agente_modulo']] = io_safe_output($name);
+                    if (is_array($result_sql)) {
+                        foreach ($result_sql as $key => $value) {
+                            $all_modules[$value['id_agente_modulo']] = io_safe_output($name);
+                        }
+                    }
+                } else {
+                    $name = $value;
+                    $sql = "SELECT id_agente_modulo
+                            FROM tagente_modulo
+                            WHERE nombre = '".$name."';";
+
+                    $result_sql = db_get_all_rows_sql($sql);
+
+                    if (is_array($result_sql)) {
+                        foreach ($result_sql as $key => $value) {
+                            $all_modules[$value['id_agente_modulo']] = io_safe_output($name);
+                        }
                     }
                 }
             }
@@ -838,7 +853,7 @@ function mainAgentsModules()
 
     echo '<tr>';
 
-    echo "<th width='140px' class='pdd_r_10px align_right'>".__('Agents').' / '.__('Modules').'</th>';
+    echo "<th width='40px' class='pdd_r_10px align_left'>".__('Agents').' / '.__('Modules').'</th>';
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);
@@ -958,7 +973,7 @@ function mainAgentsModules()
 
             foreach ($module['id'] as $module_id) {
                 if (!$match && array_key_exists($module_id, $agent_modules)) {
-                    echo "<td class='center'>";
+                    echo "<td class='center' style='text-align:left;'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
                     $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."', 800, 480)";

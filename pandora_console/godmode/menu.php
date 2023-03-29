@@ -308,6 +308,13 @@ if ($access_console_node === true) {
             $sub['godmode/servers/modificar_server']['id'] = 'Manage_servers';
         }
 
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true
+            || is_user_admin($config['id_user']) === true
+        ) {
+            $sub['godmode/consoles/consoles']['text'] = __('Manage consoles');
+            $sub['godmode/consoles/consoles']['id'] = 'Manage consoles';
+        }
+
         // This subtabs are only for Pandora Admin.
         if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
             enterprise_hook('ha_cluster');

@@ -934,6 +934,12 @@ select:-internal-list-box {
   display: flex;
 }
 
+.flex-row-important {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+}
+
 .padding-2 {
   padding: 2em;
 }
@@ -11619,10 +11625,8 @@ div[role="dialog"] {
 .row-title-font > td > div > div > b {
   font-size: 13px;
   line-height: 16px;
-  color: #161628;
   text-align: left;
   margin-bottom: 10px;
-  /* font-weight: bold; */
 }
 
 .font-title-font {
@@ -11818,4 +11822,9 @@ span.help_icon_15px > img {
   100% {
     transform: rotate(360deg);
   }
+}
+
+li.input-interval .extra-container-input .select2 {
+  width: 50% !important;
+  margin-right: 10px;
 }

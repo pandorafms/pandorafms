@@ -15,7 +15,7 @@
     <style>
     #alert_messages_na {
         z-index: 2;
-        position: absolute;
+        position: fixed;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
@@ -160,9 +160,9 @@
                 ?>
             </div>
 
-            <div class='modalokbutto cerrar'>
-                <span class='modalokbuttontex'>OK</span>
-            </div>
+            <button type="submit" class="cerrar submitButton" name="" id="" value="OK">
+                <span id="" style="" class="font_11">OK</span>
+            </button>
         </div>
     </div>
     <div id="opacidad"></div>
@@ -173,6 +173,4 @@
     $(".cerrar").click(function() {
         window.location = "<?php echo $config['homeurl']; ?>";
     });
-
-    $('div#page').css('background-color', '#d3d3d3');
 </script>

@@ -4070,15 +4070,16 @@ function ui_print_datatable(array $parameters)
             }";
     }
 
-    $js .= '});';
+    $js .= '$("table#'.$table_id.'").removeClass("invisible");
+        });';
     $js .= '
     $(function() {
         $(document).on("preInit.dt", function (ev, settings) {
-            // $("table#'.$table_id.'").hide();
             $("div.dataTables_length").hide();
             $("div.dt-buttons").hide();
         });
     });
+
     ';
 
     $js .= '</script>';

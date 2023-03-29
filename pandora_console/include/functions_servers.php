@@ -983,12 +983,14 @@ function servers_get_info($id_server=-1)
                     'SELECT UNIX_TIMESTAMP() - utimestamp
                     FROM trecon_task
                     WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep)
+                    AND interval_sweep > 0
                     AND id_recon_server = '.$server['id_server']
                 );
                 $server['module_lag'] = db_get_sql(
                     'SELECT COUNT(id_rt)
                     FROM trecon_task
                     WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep)
+                    AND interval_sweep > 0
                     AND id_recon_server = '.$server['id_server']
                 );
             } else {

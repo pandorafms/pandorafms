@@ -5639,9 +5639,9 @@ sub pandora_server_statistics ($$) {
 		
 				# Lag (take average active time of all active tasks)			
 
-				$server->{"lag"} = get_db_value ($dbh, "SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND id_recon_server = ?", $server->{"id_server"});
+				$server->{"lag"} = get_db_value ($dbh, "SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND interval_sweep > 0 AND id_recon_server = ?", $server->{"id_server"});
 
-				$server->{"module_lag"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND id_recon_server = ?", $server->{"id_server"});
+				$server->{"module_lag"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND interval_sweep AND id_recon_server = ?", $server->{"id_server"});
 
 		}
 		else {

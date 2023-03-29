@@ -87,7 +87,7 @@ ui_print_standard_header(
         ],
         [
             'link'  => '',
-            'label' => __('SMNP'),
+            'label' => __('SNMP'),
         ],
     ]
 );

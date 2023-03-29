@@ -11828,3 +11828,7 @@ li.input-interval .extra-container-input .select2 {
   width: 50% !important;
   margin-right: 10px;
 }
+
+.ui-widget-header {
+  border: 0px !important;
+}

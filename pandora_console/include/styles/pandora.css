@@ -6888,6 +6888,10 @@ div.graph div.legend table {
   margin-left: 15px;
 }
 
+.mrgn_lft_17px {
+  margin-left: 17px;
+}
+
 .mrgn_lft_20px {
   margin-left: 20px;
 }
@@ -11820,4 +11824,8 @@ span.help_icon_15px > img {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.scale-0-8 {
+  transform: scale(0.8);
 }

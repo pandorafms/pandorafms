@@ -5879,7 +5879,12 @@ div.switch_radio_button label:last-of-type {
   cursor: pointer;
 }
 
-.switch_radio_button input:checked + label,
+.switch_radio_button input:checked + label {
+  background-color: var(--primary-color);
+  box-shadow: none;
+  color: var(--secondary-color) !important;
+}
+
 .switch_radio_button input:checked:has(.custom_checkbox) {
   background-color: var(--primary-color);
   box-shadow: none;

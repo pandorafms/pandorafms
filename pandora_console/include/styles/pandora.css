@@ -11838,3 +11838,10 @@ li.input-interval .extra-container-input .select2 {
 .ui-widget-header {
   border: 0px !important;
 }
+
+.container-custom-graph {
+  background-color: white;
+  height: 700px;
+  overflow-y: auto;
+  padding-top: 20px;
+}

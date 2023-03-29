@@ -11821,3 +11821,8 @@ span.help_icon_15px > img {
     transform: rotate(360deg);
   }
 }
+
+li.input-interval .extra-container-input .select2 {
+  width: 50% !important;
+  margin-right: 10px;
+}

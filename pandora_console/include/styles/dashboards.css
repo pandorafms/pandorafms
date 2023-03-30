@@ -430,7 +430,12 @@ li#search_input_widget {
   width: auto;
 }
 
-div#dashboard-controls {
+div#dashboard-controls-slides {
+  width: 720px !important;
+}
+
+div#dashboard-controls,
+div#dashboard-controls-slides {
   position: fixed;
   z-index: 1;
   top: 10px;
@@ -447,27 +452,32 @@ div#dashboard-controls {
   padding: 0px 10px;
 }
 
-div#dashboard-controls div {
+div#dashboard-controls div,
+div#dashboard-controls-slides div {
   margin-left: 10px;
   text-align: center;
 }
 
-div#dashboard-controls div#dashboard-slides-form-countdown {
+div#dashboard-controls div#dashboard-slides-form-countdown,
+div#dashboard-controls-slides div#dashboard-slides-form-countdown {
   flex: 7;
 }
 
-div#dashboard-controls div#dashboard-slides-name {
+div#dashboard-controls div#dashboard-slides-name,
+div#dashboard-controls-slides div#dashboard-slides-name {
   flex: 3;
 }
 
-div#dashboard-controls div.dashboard-mode {
+div#dashboard-controls div.dashboard-mode,
+div#dashboard-controls-slides div.dashboard-mode {
   flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
-div#dashboard-controls div.dashboard-mode a {
+div#dashboard-controls div.dashboard-mode a,
+div#dashboard-controls-slides div.dashboard-mode a {
   margin: 0px;
 }
 

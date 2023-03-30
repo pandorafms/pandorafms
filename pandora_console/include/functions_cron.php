@@ -530,7 +530,7 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/change-active.svg',
+                                    'images/force@svg.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
@@ -568,7 +568,7 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/change-active.svg',
+                                    'images/force@svg.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
@@ -623,7 +623,7 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/change-active.svg',
+                                    'images/force@svg.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
@@ -715,7 +715,7 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/change-active.svg',
+                                    'images/force@svg.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
@@ -751,7 +751,7 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/change-active.svg',
+                                    'images/force@svg.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
@@ -797,7 +797,7 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/change-active.svg',
+                                    'images/force@svg.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
@@ -839,7 +839,7 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/change-active.svg',
+                                    'images/force@svg.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
@@ -873,7 +873,7 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/change-active.svg',
+                                    'images/force@svg.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),

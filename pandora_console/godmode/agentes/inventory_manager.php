@@ -267,7 +267,7 @@ if (db_get_num_rows($sql) == 0) {
         $data[5] .= '</b></a>&nbsp;&nbsp;';
         // Force refresh module
         $data[5] .= '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'&force_inventory_module='.$row['id_agent_module_inventory'].'">';
-        $data[5] .= html_print_image('images/change-active.svg', true, ['border' => '0', 'title' => __('Force'), 'class' => 'main_menu_icon invert_filter']).'</b></a>';
+        $data[5] .= html_print_image('images/force@svg.svg', true, ['border' => '0', 'title' => __('Force'), 'class' => 'main_menu_icon invert_filter']).'</b></a>';
         array_push($table->data, $data);
     }
 

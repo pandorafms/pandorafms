@@ -31,7 +31,7 @@ ul.subsubmenu li,
 input.search_input,
 .filters input,
 input#text-id_parent.ac_input,
-input,
+input:not(div.login_pass > input):not(div.login_nick > input),
 textarea,
 select,
 .edit_user_comments #textarea_comments,
@@ -464,12 +464,6 @@ ul.tree-group
   div.node-content
   img:not(.module-status):not(.agent-status):not(.agent-alerts-fired) {
   filter: invert(100%);
-}
-
-/* login.css */
-div.login_nick input,
-div.login_pass input {
-  background-color: #111 !important;
 }
 
 /* user edit */
@@ -1303,8 +1297,9 @@ a.pandora_pagination:hover {
   filter: brightness(0) contrast(50%) !important;
 }
 
-input[type="image"] {
+input:not(div.login_pass > input):not(div.login_nick > input[type="image"]) {
   background-color: transparent !important;
+  color: inherit !important;
 }
 
 .databox_color {
@@ -1514,4 +1509,29 @@ div.fixed-bottom-box
 
 span.select2 {
   border-radius: 6px;
+}
+
+.ui-dialog .tips_header.ui-dialog-titlebar {
+  color: white !important;
+  background-color: #222222 !important;
+}
+
+#tips_window_modal > div.window > div.description > #title_tip,
+#tips_window_modal > div.window > div.description > #text_tip {
+  color: white !important;
+}
+
+.agent_details_header span.subsection_header_title {
+  color: #fff;
+}
+
+pre code.hljs {
+  background-color: #222222;
+  color: #fff;
+}
+
+a.autorefresh_txt,
+#refrcounter {
+  color: #ffffff;
+  font-size: 8.5pt;
 }

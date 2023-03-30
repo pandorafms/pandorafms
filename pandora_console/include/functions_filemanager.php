@@ -626,7 +626,7 @@ function filemanager_file_explorer(
         $table->width = '100%';
         $table->id = 'table_filemanager';
 
-        $table->class = (is_metaconsole() === true) ? 'databox_tactical' : 'info_table';
+        $table->class = 'info_table';
         $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
         $table->colspan = [];
         $table->data = [];
@@ -751,7 +751,7 @@ function filemanager_file_explorer(
                 && ($readOnly === false)
             ) {
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
-                $data[4] .= '<input type="image" style="margin-top: 2px;height:21px" class="invert_filter" src="images/delete.svg" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[4] .= '<input type="image" style="margin-top: 2px;height:21px" class="invert_filter main_menu_icon" src="../../images/delete.svg" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
                 $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['server_unique_identifier']), true);
                 $data[4] .= html_print_input_hidden('delete_file', 1, true);
@@ -896,7 +896,7 @@ function filemanager_file_explorer(
                 $uploadFileElements .= html_print_input_hidden('upload_file', 1, true);
             }
 
-            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
+            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, [ 'class' => 'submitButton', 'style' => 'float:right; margin-top: 10px;', 'icon' => 'next'], true);
             $uploadFileElements .= html_print_input_hidden('real_directory', $real_directory, true);
             $uploadFileElements .= html_print_input_hidden('directory', $relative_directory, true);
             $uploadFileElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);

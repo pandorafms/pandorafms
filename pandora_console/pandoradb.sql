@@ -2634,9 +2634,17 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
   `action` TINYINT UNSIGNED DEFAULT 0,
   `ssh_key` TEXT,
   `ssh_pubkey` TEXT,
+  `ssh_status` TINYINT UNSIGNED DEFAULT 0,
   `last_error` TEXT,
+  `db_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_delay` BIGINT DEFAULT 0,
+  `master` TINYINT UNSIGNED DEFAULT 0,
+  `utimestamp` BIGINT DEFAULT 0,
+  `mysql_version` VARCHAR(10) DEFAULT '',
+  `pandora_version` VARCHAR(10) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
 -- Table `twidget`
@@ -3761,6 +3769,7 @@ CREATE TABLE IF NOT EXISTS `tuser_task_scheduled` (
   `flag_delete` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `id_grupo` INT UNSIGNED NOT NULL DEFAULT 0,
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `id_console` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4182,6 +4191,21 @@ CREATE TABLE IF NOT EXISTS `tmonitor_filter` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
+-- Table `tconsole`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tconsole` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_console` BIGINT NOT NULL DEFAULT 0,
+  `description` TEXT,
+  `version` TINYTEXT,
+  `last_execution` INT UNSIGNED NOT NULL DEFAULT 0,
+  `console_type` TINYINT NOT NULL DEFAULT 0,
+  `timezone` TINYTEXT,
+  `public_url` TEXT,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
 -- Table `tagent_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagent_filter` (
@@ -4199,6 +4223,7 @@ CREATE TABLE IF NOT EXISTS `tagent_filter` (
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
 -- Table `tevent_sound`
 -- ---------------------------------------------------------------------
 CREATE TABLE `tevent_sound` (

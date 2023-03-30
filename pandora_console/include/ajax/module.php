@@ -1279,16 +1279,18 @@ if (check_login()) {
                     if ((int) $module['flag'] === 0) {
                         $additionalLinkAction = '&amp;flag=1';
                         $linkCaption = __('Force checks');
+                        $imgaction = 'images/target.png';
                     } else {
                         $additionalLinkAction = '';
                         $linkCaption = __('Refresh');
+                        $imgaction = 'images/go-back@svg.svg';
                     }
 
                     $moduleActionButtons[] = html_print_anchor(
                         [
-                            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$addedLinkParams.'"',
+                            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$additionalLinkAction.'"',
                             'content' => html_print_image(
-                                'images/go-back@svg.svg',
+                                $imgaction,
                                 true,
                                 [ 'class' => 'main_menu_icon' ]
                             ),
@@ -1390,7 +1392,7 @@ if (check_login()) {
                     false,
                     'offset',
                     true,
-                    'pagination-bottom',
+                    '',
                     'pagination_list_modules(offset_param)',
                     [
                         'count'  => '',
@@ -1692,6 +1694,18 @@ if (check_login()) {
             $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
         }
 
+        if (str_contains($status, '6') === true) {
+            $expl = explode(',', $status);
+            $exist = array_search('6', $expl);
+            if (isset($exist) === true) {
+                unset($expl[$exist]);
+            }
+
+            array_push($expl, '1', '2');
+
+            $status = implode(',', $expl);
+        }
+
         $where .= sprintf(
             'tagente_estado.estado IN (%s)
             AND tagente_modulo.delete_pending = 0',
@@ -1750,7 +1764,9 @@ if (check_login()) {
                 INNER JOIN tagente
                     ON tagente_modulo.id_agente = tagente.id_agente 
                 INNER JOIN tagente_estado
-                    ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo'
+                    ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                WHERE %s',
+                $where
             );
             $recordsTotal = db_get_value_sql($sql_count);
 
@@ -1792,6 +1808,32 @@ if (check_login()) {
                 } catch (\Exception $e) {
                     // Unexistent modules.
                     $node->disconnect();
+                }
+            }
+
+            if (in_array(0, $servers_ids) === true) {
+                $sql = sprintf(
+                    'SELECT
+                    tagente_modulo.nombre,
+                    tagente.alias,
+                    tagente.id_agente,
+                    tagente_estado.last_status_change,
+                    tagente_estado.estado
+                    FROM tagente_modulo
+                    INNER JOIN tagente
+                        ON tagente_modulo.id_agente = tagente.id_agente 
+                    INNER JOIN tagente_estado
+                        ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                    WHERE %s',
+                    $where
+                );
+
+                $res_sql = db_get_all_rows_sql($sql);
+
+                foreach ($res_sql as $row_sql) {
+                    $row_sql['server_name'] = __('Metaconsole');
+                    $row_sql['server_url'] = $config['homeurl'];
+                    array_push($data, $row_sql);
                 }
             }
 
@@ -1852,7 +1894,9 @@ if (check_login()) {
 
                 $sql_count = sprintf(
                     'SELECT COUNT(*) AS "total"
-                    FROM temp_modules_status'
+                    FROM temp_modules_status
+                    WHERE %s',
+                    $where
                 );
 
                 $recordsTotal = db_get_value_sql($sql_count);

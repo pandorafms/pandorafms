@@ -273,6 +273,7 @@ server_dependencies=" \
 	libencode-perl \
     cron \
 	libgeo-ip-perl \
+    arping \
 	openjdk-8-jdk "
 execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 
@@ -385,7 +386,7 @@ execute_cmd "apt install -y gnupg2 lsb-release ./percona-release_latest.generic_
 execute_cmd "percona-release setup ps80" "Configuring Percona repository for MySQL8"
 
 echo -en "${cyan}Installing Percona Server for MySQL8...${reset}"
-    env DEBIAN_FRONTEND=noninteractive apt install -y percona-server-server &>> "$LOGFILE"
+    env DEBIAN_FRONTEND=noninteractive apt install -y percona-server-server percona-xtrabackup-80 &>> "$LOGFILE"
 check_cmd_status "Error Installing MySql Server"
 
 

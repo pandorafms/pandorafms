@@ -451,9 +451,9 @@ if ($delete_user === true) {
     }
 }
 
-        $filter_group = (int) get_parameter('filter_group', 0);
-        $filter_search = get_parameter('filter_search', '');
-        $search = (bool) get_parameter('search', false);
+$filter_group = (int) get_parameter('filter_group', 0);
+$filter_search = get_parameter('filter_search', '');
+$search = (bool) get_parameter('search', false);
 
 if (($filter_group == 0) && ($filter_search == '')) {
     $search = false;
@@ -804,7 +804,6 @@ foreach ($info as $user_id => $user_info) {
             }
 
             $data[4] .= '<br/>';
-            $data[4] .= '<br/>';
 
             $total_profile++;
         }
@@ -1046,20 +1045,6 @@ if ($is_management_allowed === true) {
     } else {
         echo '<i>'.__("The current authentication scheme doesn't support creating users on %s", get_product_name()).'</i>';
     }
-} else {
-    html_print_action_buttons(
-        html_print_submit_button(
-            __('Create user'),
-            'none',
-            true,
-            [ 'icon' => 'wand' ],
-            true
-        ),
-        [
-            'type'          => 'form_action',
-            'right_content' => $tablePagination,
-        ],
-    );
 }
 
 ?>

@@ -20,13 +20,23 @@ check_login();
 
 // Header tabs.
 $onheader = integriaims_tabs('list_tab');
-ui_print_page_header(
+ui_print_standard_header(
     __('Integria IMS Tickets'),
     '',
     false,
     'integria_tab',
     false,
-    $onheader
+    $onheader,
+    [
+        [
+            'link'  => '',
+            'label' => __('Issues'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Integria IMS Tickets'),
+        ],
+    ]
 );
 
 // Check if Integria integration enabled.
@@ -308,68 +318,100 @@ $resolution_incident = integriaims_get_details('resolution');
 // TABLE FILTERS.
 $table = new StdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
-$table->styleTable = 'margin-bottom:0px';
-$table->cellpadding = '0';
-$table->cellspacing = '0';
+$table->size = [];
+$table->size[0] = '33%';
+$table->size[1] = '33%';
+$table->size[2] = '33%';
+$table->class = 'filter-table-adv';
+
 $table->data = [];
-
-$table->data[0][0] = __('Text filter');
-$table->data[0][1] = html_print_input_text('incident_text', $incident_text, '', 30, 100, true);
-
-$table->data[0][2] = __('Status');
-$table->data[0][3] = html_print_select(
-    $status_incident,
-    'incident_status',
-    $incident_status,
-    '',
-    __('All'),
-    0,
-    true
+$table->data[0][0] = html_print_label_input_block(
+    __('Text filter'),
+    html_print_input_text('incident_text', $incident_text, '', 30, 100, true)
 );
 
-$table->data[0][4] = __('Group');
-$table->data[0][5] = html_print_select(
-    $group_incident,
-    'incident_group',
-    $incident_group,
-    '',
-    __('All'),
-    1,
-    true
+$table->data[0][1] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $status_incident,
+        'incident_status',
+        $incident_status,
+        '',
+        __('All'),
+        0,
+        true
+    )
 );
 
-$table->data[1][0] = __('Owner');
-$table->data[1][1] = html_print_autocomplete_users_from_integria('incident_owner', $incident_owner, true);
-
-$table->data[1][2] = __('Creator');
-$table->data[1][3] = html_print_autocomplete_users_from_integria('incident_creator', $incident_creator, true);
-
-$table->data[1][4] = __('Priority');
-$table->data[1][5] = html_print_select(
-    $priority_incident,
-    'incident_priority',
-    $incident_priority,
-    '',
-    __('All'),
-    -1,
-    true
+$table->data[0][2] = html_print_label_input_block(
+    __('Group'),
+    html_print_select(
+        $group_incident,
+        'incident_group',
+        $incident_group,
+        '',
+        __('All'),
+        1,
+        true
+    )
 );
 
-$table->data[2][0] = __('Resolution');
-$table->data[2][1] = html_print_select(
-    $resolution_incident,
-    'incident_resolution',
-    $incident_resolution,
-    '',
-    __('All'),
-    '',
-    true
+$table->data[1][0] = html_print_label_input_block(
+    __('Owner'),
+    html_print_autocomplete_users_from_integria(
+        'incident_owner',
+        $incident_owner,
+        true,
+        '30',
+        false,
+        false,
+        'w100p'
+    ),
+    ['div_class' => 'inline']
 );
 
-// TODO: field type date.
-$table->data[2][2] = __('Date');
-$table->data[2][3] = html_print_input_text_extended(
+$table->data[1][1] = html_print_label_input_block(
+    __('Creator'),
+    html_print_autocomplete_users_from_integria(
+        'incident_creator',
+        $incident_creator,
+        true,
+        '30',
+        false,
+        false,
+        'w100p'
+    ),
+    ['div_class' => 'inline']
+);
+
+$table->data[1][2] = html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        $priority_incident,
+        'incident_priority',
+        $incident_priority,
+        '',
+        __('All'),
+        -1,
+        true
+    )
+);
+
+$table->data[2][0] = html_print_label_input_block(
+    __('Resolution'),
+    html_print_select(
+        $resolution_incident,
+        'incident_resolution',
+        $incident_resolution,
+        '',
+        __('All'),
+        '',
+        true
+    )
+);
+
+$input_date = '<div>';
+$input_date .= html_print_input_text_extended(
     'created_from',
     $created_from,
     'created_from',
@@ -381,7 +423,7 @@ $table->data[2][3] = html_print_input_text_extended(
     'placeholder="'.__('Created from').'"',
     true
 );
-$table->data[2][3] .= html_print_input_text_extended(
+$input_date .= html_print_input_text_extended(
     'created_to',
     $created_to,
     'created_to',
@@ -393,11 +435,12 @@ $table->data[2][3] .= html_print_input_text_extended(
     'class="mrgn_lft_5px" placeholder="'.__('Created to').'"',
     true
 );
+$input_date .= '</div>';
 
-// TODO: image of Integria IMS.
-$table->data[2][4] = '';
-$table->data[2][5] = '';
-
+$table->data[2][2] = html_print_label_input_block(
+    __('Date'),
+    $input_date
+);
 
 // Send filters to get_tickets_integriaims().
 $tickets_filters = [
@@ -423,20 +466,48 @@ $url = ui_get_full_url(
 // ---- PRINT TABLE FILTERS ----
 $integria_incidents_form = '<form method="post" action="'.$url.'" class="pdd_0px">';
 $integria_incidents_form .= html_print_table($table, true);
-$integria_incidents_form .= '<div class="w100p right">';
-$integria_incidents_form .= '<div class="float-right mrgn_lft_5px">'.html_print_button(
+$buttons = html_print_submit_button(
+    __('Filter'),
+    'filter_button',
+    false,
+    [
+        'icon' => 'search',
+        'mode' => 'mini secondary',
+    ],
+    true
+);
+$buttons .= html_print_button(
     __('Export to CSV'),
     'csv_export',
     false,
     "blockResubmit($(this)); location.href='operation/incidents/integriaims_export_csv.php?tickets_filters=$decode_csv'",
-    'class="sub next"',
+    [
+        'icon' => 'cog',
+        'mode' => 'mini secondary',
+    ],
     true
-).'</div>';
-$integria_incidents_form .= '<div>'.html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true).'</div>';
-$integria_incidents_form .= '</div>';
+);
+
+$integria_incidents_form .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $buttons,
+    ],
+    true
+);
 $integria_incidents_form .= '</form>';
 
-ui_toggle($integria_incidents_form, __('Filter'), '', '', false);
+ui_toggle(
+    $integria_incidents_form,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
+);
 
 /*
  * Order api call 'get_incidents'.
@@ -552,32 +623,51 @@ foreach ($incidents_paginated as $key => $value) {
 
     $table->data[$i][8] .= '<a id="link_delete_incident" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&delete_incident='.$array_get_incidents[$key][0]).'"        
     onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-    $table->data[$i][8] .= html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+    $table->data[$i][8] .= html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter main_menu_icon']);
     $table->data[$i][8] .= '</a>';
 
     $i++;
 }
 
+$tablePagination = '';
 // Show table incidents.
-ui_pagination(count($array_get_incidents), $url, $offset);
 if (empty($table->data) === true) {
     ui_print_info_message(['no_close' => true, 'message' => __('No tickets to show').'.' ]);
 } else {
     html_print_table($table);
-    ui_pagination(count($array_get_incidents), $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    $tablePagination = ui_pagination(
+        count($array_get_incidents),
+        $url,
+        $offset,
+        0,
+        true,
+        'offset',
+        false,
+        ''
+    );
 }
 
 // Show button to create incident.
 echo '<form method="POST" action="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident').'">';
-    echo '<div class="wi100p right">';
-        html_print_submit_button(__('Create'), 'create_new_incident', false, 'class="sub next"');
-    echo '</div>';
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Create'),
+        'create_new_incident',
+        false,
+        [ 'icon' => 'next' ],
+        true
+    ),
+    [
+        'type'          => 'data_table',
+        'class'         => 'fixed_action_buttons',
+        'right_content' => $tablePagination,
+    ]
+);
 echo '</form>';
 
 // Datapicker library for show calendar.
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 ?>
-
 
 <script language="javascript" type="text/javascript">
     $(document).ready( function() {

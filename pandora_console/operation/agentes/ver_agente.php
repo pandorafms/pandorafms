@@ -30,7 +30,7 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 
 global $config;
 
-require_once 'include/functions_gis.php';
+require_once $config['homedir'].'/include/functions_gis.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
@@ -1481,12 +1481,13 @@ if ($policyTab === ENTERPRISE_NOT_HOOK) {
 
 
 // Omnishell.
-$tasks = count_tasks_agent($id_agente);
-
-if ($tasks === true) {
-    $omnishellTab = enterprise_hook('omnishell_tab');
-    if ($omnishellTab == -1) {
-        $omnishellTab = '';
+if (function_exists('count_tasks_agent')) {
+    $tasks = count_tasks_agent($id_agente);
+    if ($tasks === true) {
+        $omnishellTab = enterprise_hook('omnishell_tab');
+        if ($omnishellTab == -1) {
+            $omnishellTab = '';
+        }
     }
 }
 
@@ -1940,6 +1941,12 @@ if ((bool) $config['pure'] === false) {
                 'link'  => '',
                 'label' => $tab_name,
             ],
+        ],
+        [
+            'id_element' => $id_agente,
+            'url'        => 'operation/agentes/ver_agente&id_agente='.$id_agente,
+            'label'      => agents_get_alias($id_agente),
+            'section'    => 'Agents',
         ]
     );
 }

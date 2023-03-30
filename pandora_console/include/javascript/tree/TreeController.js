@@ -655,7 +655,9 @@ var TreeController = {
                 $content.append(
                   '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    "images/" +
+                    (controller.meta != undefined && controller.meta == 1
+                      ? "../../images/"
+                      : "images/") +
                     element.icon +
                     '" class="invert_filter"/></div></div>'
                 );
@@ -679,7 +681,10 @@ var TreeController = {
                 var $deleteBtn = $(
                   '<a style="float: right; margin-top: 5px;"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/delete.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/></a>'
+                    (controller.meta != undefined && controller.meta == 1
+                      ? "../../images/"
+                      : "images/") +
+                    'delete.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/></a>'
                 );
                 $deleteBtn.click(function(event) {
                   var ok_function = function() {
@@ -703,7 +708,10 @@ var TreeController = {
                 var $updateicon = $(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/edit.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/>'
+                    (controller.meta != undefined && controller.meta == 1
+                      ? "../../images/"
+                      : "images/") +
+                    'edit.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/>'
                 );
                 var $updatebtn = $(
                   '<a style="float: right; margin-top: 5px;" href = "' +

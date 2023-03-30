@@ -246,7 +246,7 @@ array_push($table->data, $data);
 
 html_print_table($table);
 
-attachActionButton('delete_profiles', 'delete', $table->width);
+attachActionButton('delete_profiles', 'delete', $table->width, false, $SelectAction);
 
 echo '</form>';
 

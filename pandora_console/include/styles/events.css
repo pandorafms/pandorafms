@@ -54,11 +54,6 @@ form.flex-row div.filter_input.large {
   max-width: 100%;
 }
 
-div.filter_input > label,
-div.filter_input_little > label {
-  width: 10em;
-}
-
 form.flex-row > ul,
 form.flex-row > ul > li,
 form.flex-row > .box-shadow.white_table_graph {
@@ -504,7 +499,7 @@ div.multi-response-buttons {
 }
 
 .events-refr {
-  width: 350px;
+  width: 300px;
   display: flex;
   align-items: center;
   flex-direction: row-reverse;
@@ -528,4 +523,30 @@ td#save_filter_form-0-1 > input[type="radio"] {
 
 .module-search > input[type="text"] {
   margin-bottom: 6px;
+}
+
+div.agent-min-w100p > span {
+  width: 400px;
+}
+
+.events-pure {
+  display: block;
+  position: initial;
+  border-radius: 0px;
+}
+
+.events-pure > .white_table_graph_header {
+  height: 45px;
+}
+
+div.menu_tab_pure {
+  margin-top: 0px !important;
+}
+
+div#main_pure:has(.events-pure) {
+  width: 99%;
+}
+
+.margn-b-50px {
+  margin-bottom: 50px !important;
 }

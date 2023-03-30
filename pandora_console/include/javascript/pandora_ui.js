@@ -352,10 +352,10 @@ function load_modal(settings) {
         }
       } else {
         // No onsumbit configured. Directly close.
-        d.dialog("close");
         if (document.getElementById(settings.form) != undefined) {
           document.getElementById(settings.form).submit();
         }
+        d.dialog("close");
       }
     };
 

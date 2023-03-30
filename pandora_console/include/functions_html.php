@@ -3261,6 +3261,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'onkeyup',
         'class',
         'form',
+        'disabled',
     ];
 
     foreach ($attrs as $attribute) {
@@ -3630,10 +3631,9 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $classes .= ' buttonButton';
     }
 
-    if ($disabled === true) {
-        $classes .= ' disabled_action_button';
-    }
-
+    // if ($disabled === true) {
+    // $classes .= ' disabled_action_button';
+    // }
     if (empty($buttonAttributes) === true) {
         $parameters = [];
         $parameters[] = 'class="'.$classes.'"';
@@ -4565,12 +4565,6 @@ function html_print_image(
     // Dont use safe_input here or the performance will dead.
     $style = '';
 
-    if (empty($options) === false && isset($options['class']) === true) {
-        $options['class'] .= ' main_menu_icon';
-    } else {
-        $options['class'] = 'main_menu_icon invert_filter';
-    }
-
     if (!empty($options)) {
         // Deprecated or value-less attributes.
         if (isset($options['align'])) {
@@ -4794,13 +4788,16 @@ function html_print_input_file($name, $return=false, $options=false)
         if (isset($options['accept']) === true) {
             $output .= ' accept="'.$options['accept'].'"';
         }
+
+        $label = '';
+        if (isset($options['label']) === true) {
+            $label = $options['label'];
+        }
     }
 
     // Close input.
     $output .= '/>';
-    if (is_metaconsole() === false) {
-        $output .= ($options['caption'] ?? __('Select a file'));
-    }
+    $output .= ($options['caption'] ?? __('Select a file'));
 
     $output .= '</label>';
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
@@ -6104,6 +6101,8 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
+    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
+
     html_print_input_text_extended(
         $name,
         $default,
@@ -6116,8 +6115,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
-
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>
@@ -6205,7 +6202,8 @@ function html_print_tabs(array $tabs)
         $result .= "<li><a href='".$value['href']."' id='".$value['id']."'>";
         $result .= html_print_image(
             'images/'.$value['img'],
-            true
+            true,
+            ['class' => 'main_menu_icon invert_filter']
         );
         $result .= '<span>'.$value['name'].'</span>';
         $result .= '</a></li>';

@@ -445,7 +445,7 @@ if (!empty($graphs)) {
             echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
             html_print_input_hidden('multiple_delete', 1);
             html_print_table($table);
-            ui_pagination(count($graphs), false, 0, 0, false, 'offset', true, 'pagination-bottom');
+            ui_pagination(count($graphs), false, 0, 0, false, 'offset', true, '');
             echo "<div class='right'>";
             html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
             echo '</form>';

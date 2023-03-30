@@ -445,79 +445,75 @@ $tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width
 $tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
 $tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').'&nbsp;';
 
-if ((isset($stringTypeModule) === false || $stringTypeModule === false)) {
-    $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_minmax_warning">('.__('Min / Max').')</span>';
-    $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
-        'min_warning',
-        $min_warning,
-        '',
-        10,
-        255,
-        true,
-        $disabledBecauseInPolicy || $edit === true,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-    $tableBasicThresholds->data['warning_threshold'][1] .= html_print_input_text(
-        'max_warning',
-        $max_warning,
-        '',
-        10,
-        255,
-        true,
-        $disabledBecauseInPolicy || $edit === true,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    ).'</span>';
+$tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_minmax_warning">('.__('Min / Max').')</span>';
+$tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
+    'min_warning',
+    $min_warning,
+    '',
+    10,
+    255,
+    true,
+    $disabledBecauseInPolicy || $edit === true,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
+$tableBasicThresholds->data['warning_threshold'][1] .= html_print_input_text(
+    'max_warning',
+    $max_warning,
+    '',
+    10,
+    255,
+    true,
+    $disabledBecauseInPolicy || $edit === true,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+).'</span>';
 
-    $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_switch_radio_button(
-        [
-            html_print_radio_button_extended('warning_thresholds_checks', 'normal_warning', __('Normal'), ($percentage_warning && $warning_inverse) === false, false, '', '', true, false, '', 'radius-normal_warning'),
-            html_print_radio_button_extended('warning_thresholds_checks', 'warning_inverse', __('Inverse interval'), $warning_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-warning_inverse'),
-            html_print_radio_button_extended('warning_thresholds_checks', 'percentage_warning', __('Percentage'), $percentage_warning, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_warning'),
-        ],
-        [ 'class' => 'margin-top-10' ],
-        true
-    );
-}
+$tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_switch_radio_button(
+    [
+        html_print_radio_button_extended('warning_thresholds_checks', 'normal_warning', __('Normal'), ($percentage_warning && $warning_inverse) === false, false, '', '', true, false, '', 'radius-normal_warning'),
+        html_print_radio_button_extended('warning_thresholds_checks', 'warning_inverse', __('Inverse interval'), $warning_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-warning_inverse'),
+        html_print_radio_button_extended('warning_thresholds_checks', 'percentage_warning', __('Percentage'), $percentage_warning, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_warning'),
+    ],
+    [ 'class' => 'margin-top-10' ],
+    true
+);
 
-if (isset($stringTypeModule) === true && $stringTypeModule === true) {
-    $basicThresholdsIntervalWarning = [];
-    $basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
-    $basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
-        'warning_inverse_string',
-        1,
-        $warning_inverse,
-        true,
-        $disabledBecauseInPolicy
-    );
+$basicThresholdsIntervalWarning = [];
+$basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
+$basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
+    'warning_inverse_string',
+    1,
+    $warning_inverse,
+    true,
+    $disabledBecauseInPolicy
+);
 
-    $tableBasicThresholds->rowclass['caption_switch_warning_inverse_string'] = 'field_half_width';
-    $tableBasicThresholds->data['caption_switch_warning_inverse_string'][0] = html_print_div(
-        [
-            'class'   => 'margin-top-10',
-            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
-            'content' => implode('', $basicThresholdsIntervalWarning),
-        ],
-        true
-    );
+$tableBasicThresholds->rowclass['caption_switch_warning_inverse_string'] = 'field_half_width';
+$tableBasicThresholds->data['caption_switch_warning_inverse_string'][0] = html_print_div(
+    [
+        'class'   => 'margin-top-10',
+        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+        'content' => implode('', $basicThresholdsIntervalWarning),
+    ],
+    true
+);
 
-    $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_str_warning">('.__('Str.').')</span>';
-    $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
-        'str_warning',
-        str_replace('"', '', $str_warning),
-        '',
-        10,
-        1024,
-        true,
-        $disabledBecauseInPolicy || $edit === false,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    ).'</span>';
-}
+$tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_str_warning">('.__('Str.').')</span>';
+$tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
+    'str_warning',
+    str_replace('"', '', $str_warning),
+    '',
+    10,
+    1024,
+    true,
+    $disabledBecauseInPolicy || $edit === false,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+).'</span>';
 
 
 $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
@@ -532,87 +528,84 @@ $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
 $tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
 $tableBasicThresholds->rowclass['critical_threshold'] = 'field_half_width';
 $tableBasicThresholds->data['caption_critical_threshold'][0] .= __('Critical threshold').'&nbsp;';
-if ((isset($stringTypeModule) === false || $stringTypeModule === false)) {
-    $tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_minmax_critical">('.__('Min / Max').')</span>';
-    $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
-        'min_critical',
-        $min_critical,
-        '',
-        10,
-        255,
-        true,
-        $disabledBecauseInPolicy || $edit === false,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-    $tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
-        'max_critical',
-        $max_critical,
-        '',
-        10,
-        255,
-        true,
-        $disabledBecauseInPolicy || $edit === false,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    ).'</span>';
+$tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_minmax_critical">('.__('Min / Max').')</span>';
+$tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
+    'min_critical',
+    $min_critical,
+    '',
+    10,
+    255,
+    true,
+    $disabledBecauseInPolicy || $edit === false,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
+$tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
+    'max_critical',
+    $max_critical,
+    '',
+    10,
+    255,
+    true,
+    $disabledBecauseInPolicy || $edit === false,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+).'</span>';
 
-    $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_switch_radio_button(
-        [
-            html_print_radio_button_extended('critical_thresholds_checks', 'normal_critical', __('Normal'), ($percentage_critical && $critical_inverse) === false, false, '', '', true, false, '', 'radius-normal_critical'),
-            html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), $critical_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
-            html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), $percentage_critical, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
-        ],
-        [ 'class' => 'margin-top-10' ],
-        true
-    );
-}
+$tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_switch_radio_button(
+    [
+        html_print_radio_button_extended('critical_thresholds_checks', 'normal_critical', __('Normal'), ($percentage_critical && $critical_inverse) === false, false, '', '', true, false, '', 'radius-normal_critical'),
+        html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), $critical_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
+        html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), $percentage_critical, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
+    ],
+    [ 'class' => 'margin-top-10' ],
+    true
+);
 
-if (isset($stringTypeModule) === true && $stringTypeModule === true) {
-    $basicThresholdsIntervalCritical = [];
-    $basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
-    $basicThresholdsIntervalCritical[] = html_print_checkbox_switch(
-        'critical_inverse_string',
-        1,
-        $critical_inverse,
-        true,
-        $disabledBecauseInPolicy
-    );
 
-    $tableBasicThresholds->rowclass['caption_switch_critical_inverse_string'] = 'field_half_width';
-    $tableBasicThresholds->data['caption_switch_critical_inverse_string'][0] = html_print_div(
-        [
-            'class'   => 'margin-top-10',
-            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
-            'content' => implode('', $basicThresholdsIntervalCritical),
-        ],
-        true
-    );
+$basicThresholdsIntervalCritical = [];
+$basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
+$basicThresholdsIntervalCritical[] = html_print_checkbox_switch(
+    'critical_inverse_string',
+    1,
+    $critical_inverse,
+    true,
+    $disabledBecauseInPolicy
+);
 
-    $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_div(
-        [
-            'id'      => 'percentage_critical',
-            'content' => $divPercentageContent,
-        ],
-        true
-    );
+$tableBasicThresholds->rowclass['caption_switch_critical_inverse_string'] = 'field_half_width';
+$tableBasicThresholds->data['caption_switch_critical_inverse_string'][0] = html_print_div(
+    [
+        'class'   => 'margin-top-10',
+        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+        'content' => implode('', $basicThresholdsIntervalCritical),
+    ],
+    true
+);
 
-    $tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_str_critical">('.__('Str.').')</span>';
-    $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
-        'str_critical',
-        str_replace('"', '', $str_critical),
-        '',
-        10,
-        1024,
-        true,
-        $disabledBecauseInPolicy,
-        false,
-        '',
-        $classdisabledBecauseInPolicy
-    );
-}
+$tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_div(
+    [
+        'id'      => 'percentage_critical',
+        'content' => $divPercentageContent,
+    ],
+    true
+);
+
+$tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_str_critical">('.__('Str.').')</span>';
+$tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
+    'str_critical',
+    str_replace('"', '', $str_critical),
+    '',
+    10,
+    1024,
+    true,
+    $disabledBecauseInPolicy,
+    false,
+    '',
+    $classdisabledBecauseInPolicy
+);
 
 $table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 340px;width: 100%';
 $table_simple->cellclass['thresholds_table'][0] = 'table_section half_section_left';
@@ -622,6 +615,7 @@ if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) 
     $table_simple->data['thresholds_table'][1] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
+$table_simple->rowclass['caption_historical_data'] = 'mrgn_top_10px';
 $table_simple->data['caption_historical_data'][0] = __('Historical data');
 if ($disabledBecauseInPolicy) {
     // If is disabled, we send a hidden in his place and print a false
@@ -1461,74 +1455,97 @@ html_print_input_hidden('module_macro_count', $macro_count);
 $table_new_relations = new stdClass();
 $table_new_relations->id = 'module_new_relations';
 $table_new_relations->width = '100%';
-$table_new_relations->class = 'no-class';
+$table_new_relations->class = 'filter-table-adv';
 $table_new_relations->data = [];
 $table_new_relations->style = [];
-$table_new_relations->style[0] = 'width: 10%; font-weight: bold;';
-$table_new_relations->style[1] = 'width: 25%; text-align: center;';
-$table_new_relations->style[2] = 'width: 10%; font-weight: bold;';
-$table_new_relations->style[3] = 'width: 25%; text-align: center;';
-$table_new_relations->style[4] = 'width: 10%; font-weight: bold;';
-$table_new_relations->style[5] = 'width: 25%; text-align: center;';
+$table_new_relations->size[0] = '33%';
+$table_new_relations->size[1] = '33%';
+$table_new_relations->size[2] = '33%';
 
-$table_new_relations->data[0][0] = __('Agent');
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'autocomplete_agent_name';
+$params['helptip_text'] = '';
 $params['use_hidden_input_idagent'] = true;
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
 $params['javascript_function_action_after_select_js_call'] = 'change_modules_autocomplete_input();';
-$table_new_relations->data[0][1] = ui_print_agent_autocomplete_input($params);
-$table_new_relations->data[0][2] = __('Module');
-$table_new_relations->data[0][3] = "<div id='module_autocomplete'></div>";
+$table_new_relations->data[0][0] = html_print_label_input_block(
+    __('Agent'),
+    ui_print_agent_autocomplete_input($params)
+);
+
+
+$table_new_relations->data[0][1] = html_print_label_input_block(
+    __('Module'),
+    '<div id="module_autocomplete">'.html_print_input_text('', '', '', false, 255, true, true, false, '', 'w100p').'</div>'
+);
 
 $array_rel_type = [];
 $array_rel_type['direct'] = __('Direct');
 $array_rel_type['failover'] = __('Failover');
-$table_new_relations->data[0][4] = __('Rel. type');
-$table_new_relations->data[0][5] = html_print_select(
-    $array_rel_type,
-    'relation_type',
-    '',
-    '',
-    '',
-    0,
-    true,
-    false,
-    true,
-    ''
+$table_new_relations->data[0][2] = html_print_label_input_block(
+    __('Rel. type'),
+    html_print_select(
+        $array_rel_type,
+        'relation_type',
+        '',
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width:100%'
+    )
 );
 
-$table_new_relations->data[0][6] = html_print_button(
-    __('Add relationship'),
+$table_new_relations->data[1][0] = ' ';
+$table_new_relations->data[1][1] = ' ';
+$table_new_relations->cellstyle[1][2] = 'width:100% !important;';
+$table_new_relations->cellclass[1][2] = 'flex flex-end';
+$table_new_relations->data[1][2] = "<div id='add_relation_status' class='inline_line' style='margin-right:10px'></div>".html_print_button(
+    __('Add relationship')."<div id='add_relation_status'></div>",
     'add_relation',
     false,
-    'javascript: add_new_relation();',
-    'class="sub add"',
+    'add_new_relation();',
+    [
+        'class' => 'mini',
+        'icon'  => 'next',
+        'mode'  => 'secondary',
+        'style' => 'margin-top: 10px; margin-right: 10px',
+    ],
     true
 );
-$table_new_relations->data[0][6] .= "&nbsp;&nbsp;<div id='add_relation_status' class='inline_line'></div>";
 
 // Relationship list.
 $table_relations = new stdClass();
 $table_relations->id = 'module_relations';
 $table_relations->width = '100%';
-$table_relations->class = 'databox data';
+$table_relations->class = 'info_table';
+$table_relations->styleTable = 'border: none';
 $table_relations->head = [];
 $table_relations->data = [];
-$table_relations->rowstyle = [];
 $table_relations->rowstyle[-1] = 'display: none;';
-$table_relations->style = [];
-$table_relations->style[3] = 'width: 10%; text-align: center;';
-$table_relations->style[4] = 'width: 10%; text-align: center;';
 
 $table_relations->head[0] = __('Agent');
 $table_relations->head[1] = __('Module');
 $table_relations->head[2] = __('Type');
 $table_relations->head[3] = __('Changes');
 $table_relations->head[4] = __('Delete');
+$table_relations->headclass[0] = 'w20p';
+$table_relations->headclass[1] = 'w20p';
+$table_relations->headclass[2] = 'w20p';
+$table_relations->headclass[3] = 'w20p';
+$table_relations->headclass[4] = 'w20p';
+$table_relations->style[0] = 'width:20%';
+$table_relations->style[1] = 'width:20%';
+$table_relations->style[2] = 'width:20%';
+$table_relations->style[3] = 'width:20%';
+$table_relations->style[4] = 'width:20%';
 
 // Create an invisible row to use their html to add new rows.
 $table_relations->data[-1][0] = '';
@@ -1560,6 +1577,9 @@ if ($id_agent_module) {
 
     $relations_count = 0;
     foreach ($module_relations as $key => $module_relation) {
+        // Styles.
+        $table_relations->cellclass[$relations_count][4] = 'table_action_buttons';
+
         if ($module_relation['module_a'] == $id_agent_module) {
             $module_id = $module_relation['module_b'];
             $agent_id = modules_give_agent_id_from_module_id(
@@ -1623,6 +1643,11 @@ ui_require_jquery_file('json');
 /* <![CDATA[ */
 $(document).ready (function () {
     var disabledBecauseInPolicy = <?php echo '\''.((empty($disabledBecauseInPolicy) === true) ? '0' : '1').'\''; ?>;
+    var idModuleType  = '<?php echo $type_names_hash[$id_module_type]; ?>';
+    if (idModuleType != '') {
+        setModuleType(idModuleType);
+    }
+
     $("#right").click (function () {
         jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
             tag_name = $(value).html();
@@ -2037,6 +2062,7 @@ function change_modules_autocomplete_input () {
                 else {
                     module_autocomplete.html(error_icon);
                 }
+                $('#text-autocomplete_module_name').addClass('w90p');
             },
             error: function (data) {
                 module_autocomplete.removeClass('working');
@@ -2099,15 +2125,15 @@ function add_new_relation () {
                     }
 
                     var rowHTML = '<tr id="module_relations-' + relationsCount + '" class="' + rowClass + '">' +
-                                    '<td id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
-                                    '<td id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-3" class="w10p center">' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-3">' +
                                         '<a id="disable_updates_button" class="alpha50" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
                                             '<?php echo html_print_image('images/policy@svg.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
                                         '</a>' +
                                     '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-4" class="w10p center">' +
+                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-4" class="table_action_buttons">' +
                                         '<a id="delete_relation_button" href="javascript: delete_relation(' + relationsCount + ', ' + data +  ');">' +
                                             '<?php echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
                                         '</a>' +

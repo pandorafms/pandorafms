@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Constants definitions.
  *
@@ -703,6 +704,11 @@ define('HA_ACTION_ENABLE', 6);
 define('HA_ACTION_CLEANUP', 7);
 define('HA_ACTION_RESYNC', 8);
 
+define('HA_RESYNC', 1);
+define('HA_DISABLE', 5);
+define('HA_ENABLE', 6);
+
+
 define('HA_UNINITIALIZED', 0);
 define('HA_ONLINE', 1);
 define('HA_PENDING', 2);
@@ -864,6 +870,8 @@ define(
 
 // Pandora FMS Enterprise license.
 define('LICENSE_FILE', 'customer_key');
+// Pandora HA database list.
+define('PANDORA_HA_FILE', 'pandora_ha_hosts.conf');
 
 // Home screen values for user definition.
 define('HOME_SCREEN_DEFAULT', 'default');

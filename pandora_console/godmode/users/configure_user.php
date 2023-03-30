@@ -392,6 +392,8 @@ if ($create_user === true) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+    $values['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
+    $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
@@ -638,7 +640,6 @@ if ($update_user) {
     }
 
     $values = [];
-    $values['id_user'] = (string) get_parameter('id_user');
     $values['fullname'] = (string) get_parameter('fullname');
     $values['firstname'] = (string) get_parameter('firstname');
     $values['lastname'] = (string) get_parameter('lastname');
@@ -653,9 +654,10 @@ if ($update_user) {
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
     $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
+    $values['time_autorefresh'] = (int) get_parameter('time_autorefresh');
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
-    $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($values['id_user']);
+    $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($id);
 
     if (users_is_admin() === false && (bool) $values['is_admin'] !== false) {
         db_pandora_audit(
@@ -803,7 +805,7 @@ if ($update_user) {
             $has_skin = false;
             $has_wizard = false;
 
-            $info = '{"id_user":"'.$values['id_user'].'",
+            $info = '{"id_user":"'.$id.'",
 				"FullName":"'.$values['fullname'].'",
 				"Firstname":"'.$values['firstname'].'",
 				"Lastname":"'.$values['lastname'].'",
@@ -1261,10 +1263,12 @@ if ($new_user) {
 
 if (is_metaconsole() === false) {
     // User only can change skins if has more than one group.
-    if (count($usr_groups) > 1) {
-        if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
-            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+    if (function_exists('skins_print_select')) {
+        if (count($usr_groups) > 1) {
+            if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+                $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
+                $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+            }
         }
     }
 }
@@ -1562,8 +1566,8 @@ $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console'
 $autorefresh_list_out['operation/events/events'] = 'Events';
 
 
-if (isset($autorefresh_list) === false) {
-    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
+if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
+    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
     $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
     if ($autorefresh_list === null) {
         $autorefresh_list[0] = __('None');
@@ -1645,9 +1649,13 @@ if ($new_user === true) {
     html_print_input_hidden('json_profile', $json_profile);
 }
 
-echo '</div>';
-
 echo '</form>';
+
+// User Profile definition table. (Only where user is not creating).
+if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
+    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
+}
+
 echo '</div>';
 
 $actionButtons = [];
@@ -1767,6 +1775,13 @@ if (is_metaconsole() === false) {
                     }
                 }
             });
+        });
+
+        $("#button-uptbutton").click (function () {
+            console.log('aaaaaaaaaaaaa');
+            if($("#autorefresh_list option").length > 0) {
+                $('#autorefresh_list option').prop('selected', true);
+            }
         });
 
         $("input#checkbox-double_auth").change(function(e) {

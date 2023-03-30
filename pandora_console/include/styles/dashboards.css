@@ -843,3 +843,11 @@ div.widget-mrgn-0px > div.parent_graph {
 div.widget-mrgn-0px > div.parent_graph > div[id^="graph_"] {
   width: calc(100% + 14px) !important;
 }
+
+div.content-widget
+  > div.container-center
+  > div.centered.w90p
+  > div#container_show_stats
+  > canvas {
+  height: 310px;
+}

@@ -295,7 +295,7 @@ array_push($table->data, $data);
 
 html_print_table($table);
 
-attachActionButton('create_profiles', 'update', $table->width);
+attachActionButton('create_profiles', 'update', $table->width, false, $SelectAction);
 
 echo '</form>';
 

@@ -203,7 +203,7 @@ function snmp_browser_show_add_module_massive(module_target = 'agent') {
 function modal_preaction() {
 
     // Select all in select box.
-    $("input[name='select_all_right']").click();    
+    $('#id_item2>option').prop('selected', true);
 
     // Load adding modules modal.
     waiting_modal();

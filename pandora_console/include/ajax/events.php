@@ -91,9 +91,8 @@ $node_id = (int) get_parameter('node_id', 0);
 
 if ($get_comments === true) {
     $event = get_parameter('event', false);
-    $event_rep = (int) get_parameter('event_rep', 0);
-    $event_rep = get_parameter_post('event')['event_rep'];
-    $group_rep = get_parameter_post('event')['group_rep'];
+    $event_rep = (int) get_parameter_post('event')['event_rep'];
+    $group_rep = (int) get_parameter_post('event')['group_rep'];
 
     if ($event === false) {
         return __('Failed to retrieve comments');
@@ -126,7 +125,7 @@ if ($get_comments === true) {
     } else if ($group_rep === EVENT_GROUP_REP_EXTRAIDS) {
         $whereGrouped = sprintf(
             '`id_extra` = "%s"',
-            $event['id_extra']
+            io_safe_output($event['id_extra'])
         );
     } else {
         $whereGrouped = sprintf('`id_evento` = %d', $event['id_evento']);
@@ -730,7 +729,9 @@ function load_form_filter() {
     $("#current_filter").text($('#filter_id option:selected').text());
 
     // Search.
-    dt_events.draw(false);
+    $("#table_events")
+            .DataTable()
+            .draw(false);
 }
 
 $(document).ready (function() {

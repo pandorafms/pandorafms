@@ -375,10 +375,12 @@ $table->data[1][0] = html_print_label_input_block(
     html_print_select($fields, 'os', $os, '', 'All', 0, true)
 );
 
-$pre_fields = policies_get_policies(false, ['id', 'name']);
-$fields = [];
-foreach ($pre_fields as $value) {
-    $fields[$value['id']] = $value['name'];
+if (function_exists('policies_get_policies') === true) {
+    $pre_fields = policies_get_policies(false, ['id', 'name']);
+    $fields = [];
+    foreach ($pre_fields as $value) {
+        $fields[$value['id']] = $value['name'];
+    }
 }
 
 $table->data[1][1] = html_print_label_input_block(
@@ -1163,7 +1165,6 @@ foreach ($agents as $agent) {
 
     $data[2] = html_print_div(
         [
-            'class'   => 'invert_filter main_menu_icon',
             'content' => ui_print_os_icon($agent['id_os'], false, true),
         ],
         true

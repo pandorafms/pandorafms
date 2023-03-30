@@ -827,12 +827,6 @@ if ($id_agente) {
                     'link'  => '',
                     'label' => $tab_name,
                 ],
-            ],
-            [
-                'id_element' => $id_agente,
-                'url'        => 'godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agente,
-                'label'      => agents_get_alias($id_agente),
-                'section'    => 'Agents',
             ]
         );
     }

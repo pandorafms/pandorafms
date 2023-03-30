@@ -179,7 +179,7 @@ class ModulesByStatus extends Widget
         // This forces at least a first configuration.
         // This forces at least a first configuration.
         $this->configurationRequired = false;
-        if (empty($this->values['status']) === true) {
+        if (empty($this->values['status']) === true && $this->values['status'] !== '0') {
             $this->configurationRequired = true;
         }
 
@@ -269,7 +269,6 @@ class ModulesByStatus extends Widget
                 'selected'   => $status_selected,
                 'return'     => true,
                 'multiple'   => true,
-                'class'      => 'overflow-hidden',
                 'size'       => count($status_fields),
                 'select_all' => false,
                 'required'   => true,
@@ -310,6 +309,8 @@ class ModulesByStatus extends Widget
             foreach ($servers_ids as $server) {
                 $nodes_fields[$server['id']] = $server['server_name'];
             }
+
+            $nodes_fields[0] = __('Metaconsola');
 
             $nodes_selected = explode(',', $values['nodes']);
 
@@ -369,6 +370,8 @@ class ModulesByStatus extends Widget
     {
         $this->size = parent::getSize();
 
+        global $config;
+
         $output = '';
 
         if (is_metaconsole() === true) {
@@ -413,7 +416,7 @@ class ModulesByStatus extends Widget
                     [
                         'id'                 => $tableId,
                         'class'              => 'info_table align-left-important',
-                        'style'              => 'width: 100%',
+                        'style'              => 'width: 99%',
                         'columns'            => $columns,
                         'column_names'       => $column_names,
                         'ajax_url'           => 'include/ajax/module',
@@ -430,6 +433,26 @@ class ModulesByStatus extends Widget
                             'direction' => 'desc',
                         ],
                         'csv'                => 0,
+                        'pagination_options' => [
+                            [
+                                5,
+                                10,
+                                25,
+                                100,
+                                200,
+                                500,
+                                1000,
+                            ],
+                            [
+                                5,
+                                10,
+                                25,
+                                100,
+                                200,
+                                500,
+                                1000,
+                            ],
+                        ],
                     ]
                 );
             } catch (\Exception $e) {
@@ -462,6 +485,18 @@ class ModulesByStatus extends Widget
     {
         if (empty($search) === false) {
             $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
+        }
+
+        if (str_contains($status, '6') === true) {
+            $expl = explode(',', $status);
+            $exist = array_search('6', $expl);
+            if (isset($exist) === true) {
+                unset($expl[$exist]);
+            }
+
+            array_push($expl, '1', '2');
+
+            $status = implode(',', $expl);
         }
 
         $where .= sprintf(

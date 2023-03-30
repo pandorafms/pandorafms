@@ -1117,7 +1117,7 @@ $modalCreateModule .= html_print_div(
         'class'   => 'action-buttons-right-forced',
         'content' => html_print_submit_button(
             __('Create'),
-            'create_module',
+            'modal_button_create',
             false,
             [
                 'icon' => 'next',
@@ -1142,7 +1142,6 @@ html_print_div(
 <script type="text/javascript">
 
     function create_module_dialog(){
-        console.log('Entra');
         $('#modal').dialog({
             title: '<?php echo __('Create Module'); ?>',
             resizable: true,

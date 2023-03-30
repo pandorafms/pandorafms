@@ -43,7 +43,8 @@ function attachActionButton(
     string $action,
     string $buttonAction,
     string $tableWidth,
-    bool $return=false
+    bool $return=false,
+    string $SelectAction=''
 ) {
     switch ($buttonAction) {
         case 'add':
@@ -88,7 +89,7 @@ function attachActionButton(
             ['icon' => $class],
             true
         ),
-        [],
+        ['right_content' => $SelectAction],
         $return
     );
 }

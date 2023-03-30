@@ -236,7 +236,8 @@
 .table_action_buttons > a,
 .table_action_buttons > img,
 .table_action_buttons > button,
-.table_action_buttons > form {
+.table_action_buttons > form,
+.table_action_buttons > div {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -248,7 +249,8 @@
 .info_table > tbody > tr:hover .table_action_buttons > a,
 .info_table > tbody > tr:hover .table_action_buttons > img,
 .info_table > tbody > tr:hover .table_action_buttons > button,
-.info_table > tbody > tr:hover .table_action_buttons > form {
+.info_table > tbody > tr:hover .table_action_buttons > form,
+.info_table > tbody > tr:hover .table_action_buttons > div {
   visibility: visible;
 }
 
@@ -460,9 +462,6 @@ a.pandora_pagination.current:hover {
 .table_action_buttons input[type="image"],
 .action_button_img {
   border-radius: 4px;
-  /*border: 1px solid #dcdcdc !important;*/
-  padding: 1px !important;
-  /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);*/
 }
 
 /* This class is for only one icon to be a button type. */
@@ -559,6 +558,16 @@ table.filter-table-adv td > div label {
   margin-bottom: 10px;
 }
 
+div.filter-table-adv-manual > div.inline,
+table.filter-table-adv td > div.inline {
+  display: block;
+}
+
+div.filter-table-adv-manual > div.inline input,
+table.filter-table-adv td > div.inline input {
+  margin-top: 10px;
+}
+
 table.filter-table-adv td > div.add-input-reverse {
   flex-direction: row-reverse;
   justify-content: flex-end;
@@ -575,6 +584,10 @@ table.filter-table-adv td input[type="radio"] {
   height: 20px;
 }
 
+table.filter-table-adv div.select-with-sibling {
+  display: flex;
+  align-items: center;
+}
 table.databox.filter-table-adv {
   padding: 10px;
 }
@@ -728,6 +741,10 @@ tr.datos2 > td.datos2 > div > div > label {
   line-height: 16px;
 }
 
+td[id^="basic_thresholds-"] .switch_radio_button > label[id^="label-radius"] {
+  line-height: 26px;
+}
+
 .mgn_tp_0_imp {
   margin-top: 0px !important;
 }
@@ -805,4 +822,18 @@ div[id^="auto-os-"] > img {
 
 .dataTables_paginate.paging_simple_numbers {
   margin-right: 0;
+}
+
+.w22px {
+  width: 22px;
+}
+
+table#simple.floating_form tr[id^="simple-plugin_"],
+table#simple.floating_form tr[id^="simple-macro_field"] {
+  display: grid;
+  margin-bottom: 10px;
+}
+
+table#simple.floating_form tr[id^="simple-macro_field"] > td > input {
+  width: 50%;
 }

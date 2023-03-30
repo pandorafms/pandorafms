@@ -1,5 +1,28 @@
 START TRANSACTION;
 
+CREATE TABLE IF NOT EXISTS `tconsole` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_console` BIGINT NOT NULL DEFAULT 0,
+  `description` TEXT,
+  `version` TINYTEXT,
+  `last_execution` INT UNSIGNED NOT NULL DEFAULT 0,
+  `console_type` TINYINT NOT NULL DEFAULT 0,
+  `timezone` TINYTEXT,
+  `public_url` TEXT,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+ALTER TABLE `tuser_task_scheduled` ADD COLUMN `id_console` BIGINT NOT NULL DEFAULT 0;
+
+ALTER TABLE `tdatabase` ADD COLUMN `ssh_status` TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `db_status` TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `replication_status` TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `replication_delay` BIGINT DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `master` TINYINT UNSIGNED DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `utimestamp` BIGINT DEFAULT 0;
+ALTER TABLE `tdatabase` ADD COLUMN `mysql_version` VARCHAR(10) DEFAULT '';
+ALTER TABLE `tdatabase` ADD COLUMN `pandora_version` VARCHAR(10) DEFAULT '';
+
 UPDATE tconfig_os SET `icon_name` = 'linux@os.svg' WHERE `id_os` = 1;
 UPDATE tconfig_os SET `icon_name` = 'solaris@os.svg' WHERE `id_os` = 2;
 UPDATE tconfig_os SET `icon_name` = 'aix@os.svg' WHERE `id_os` = 3;
@@ -165,5 +188,7 @@ CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
   `label` VARCHAR(255) NOT NULL,
   `section` VARCHAR(255) NOT NULL,
 PRIMARY KEY (`id`));
+
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('legacy_database_ha', 1);
 
 COMMIT;

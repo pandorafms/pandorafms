@@ -58,6 +58,40 @@ function menu_print_menu(&$menu)
     $sec2 = (string) get_parameter('sec2');
     if ($sec2 === 'operation/agentes/ver_agente') {
         $sec2 = 'godmode/agentes/configurar_agente';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_template') {
+        $sec2 = 'godmode/alerts/alert_templates';
+    } else if ($sec2 === 'godmode/events/events') {
+        $sec2 = 'godmode/events/events&section=filter';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_action') {
+        $sec2 = 'godmode/alerts/alert_actions';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_command') {
+        $sec2 = 'godmode/alerts/alert_commands';
+    } else if ($sec2 === 'enterprise/godmode/setup/edit_skin') {
+        $sec2 = 'enterprise/godmode/setup/setup_skins';
+    } else if ($sec2 === 'godmode/gis_maps/configure_gis_map') {
+        $map_id = (string) get_parameter('map_id');
+        if (empty($map_id) === false) {
+            $sec2 = 'operation/gis_maps/render_view&map_id='.$map_id;
+        } else {
+            $sec2 = 'operation/gis_maps/gis_map';
+        }
+    } else if ($sec2 === 'enterprise/godmode/servers/manage_export_form') {
+        $sec2 = 'enterprise/godmode/servers/manage_export';
+    } else if ($sec2 === 'godmode/setup/gis_step_2') {
+        $sec2 = 'godmode/setup/setup&section=gis';
+    } else if ($sec2 === 'enterprise/godmode/agentes/agent_autoconfiguration.definition') {
+        $sec2 = 'enterprise/godmode/agentes/agent_autoconfiguration';
+    } else if ($sec2 === 'enterprise/godmode/reporting/graph_template_list') {
+        $sec2 = 'godmode/reporting/graphs';
+    } else if ($sec2 === 'enterprise/godmode/reporting/graph_template_wizard') {
+        $sec2 = 'godmode/reporting/graphs';
+    } else if ($sec2 === 'godmode/reporting/graph_container') {
+        $sec2 = 'godmode/reporting/graphs';
+    } else if ($sec2 === 'operation/gis_maps/render_view') {
+        $map_id = (int) get_parameter('map_id');
+        if (empty($map_id) === false) {
+            $sec2 .= '&map_id='.$map_id;
+        }
     } else if ($sec2 === 'godmode/servers/discovery') {
         $wiz = (string) get_parameter('wiz');
         $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
@@ -253,6 +287,7 @@ function menu_print_menu(&$menu)
             if (($sec2 == $subsec2 || $allsec2 == $subsec2
                 || $selected_submenu2) && isset($sub[$subsec2]['options'])
                 && (get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])
+                && $main['id'] !== 'fav-menu'
             ) {
                 // If the subclass is selected and there are options and that options value is true.
                 $class .= 'submenu_selected selected';
@@ -260,7 +295,7 @@ function menu_print_menu(&$menu)
                 $menu2_selected = $sub['id'];
                 $selected = true;
                 $visible = true;
-            } else if (($sec2 === $subsec2 || $allsec2 === $subsec2 || $selected_submenu2 === true) && isset($sub[$subsec2]['options']) === false) {
+            } else if (($sec2 === $subsec2 || $allsec2 === $subsec2 || $selected_submenu2 === true) && isset($sub[$subsec2]['options']) === false && $main['id'] !== 'fav-menu') {
                 $class .= 'submenu_selected selected';
                 $selected = true;
                 $menu_selected = true;
@@ -382,7 +417,7 @@ function menu_print_menu(&$menu)
 
                     $class = 'sub_subMenu';
 
-                    if ($key == $sec2) {
+                    if ($key == $sec2 && $main['id'] !== 'fav-menu') {
                         $class .= ' selected';
                     }
 

@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.769 Build 230315";
+my $version = "7.0NG.770 Build 230329";
 
 # Pandora server configuration
 my %conf;
@@ -353,6 +353,23 @@ sub pandora_purgedb ($$$) {
 	else {
 		log_message ('PURGE', 'netflow_max_lifetime is set to 0. Old netflow data will not be deleted.');
 	}
+
+	# Delete old sflow data
+	if ($conf->{'_sflow_max_lifetime'} > 0) {
+		log_message ('PURGE', "Deleting old sflow data.");
+		if (! defined ($conf->{'_sflow_path'}) || ! -d $conf->{'_sflow_path'}) {
+			log_message ('!', "sflow data directory does not exist, skipping.");
+		}
+		elsif (! -x $conf->{'_sflow_nfexpire'}) {
+			log_message ('!', "Cannot execute " . $conf->{'_sflow_nfexpire'} . ", skipping.");
+		}
+		else {
+			`yes 2>/dev/null | $conf->{'_sflow_nfexpire'} -r "$conf->{'_sflow_path'}" -t $conf->{'_sflow_max_lifetime'}d`;
+		}
+	}
+	else {
+		log_message ('PURGE', 'sflow_max_lifetime is set to 0. Old sflow data will not be deleted.');
+	}
 	
 	# Delete old log data
 	log_message ('PURGE', "Deleting old log data.");
@@ -628,6 +645,21 @@ sub pandora_load_config_pdb ($) {
 	# workaround for name unconsistency (corresponding entry at pandora_server.conf is 'errorlog_file')
 	$conf->{'errorlogfile'} = $conf->{'errorlog_file'};
 	$conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
+
+	# The DB host was overridden by pandora_ha.
+	$conf->{'ha_hosts_file'} = '/var/spool/pandora/data_in/conf/pandora_ha_hosts.conf' unless defined($conf->{'ha_hosts_file'});
+	if (-f $conf->{'ha_hosts_file'}) {
+		eval {
+			open(my $fh, '<', $conf->{'ha_hosts_file'}) or return;
+			my $dbhost = <$fh>;
+			chomp($dbhost);
+			if (defined($dbhost) && $dbhost ne '') {
+				$conf->{'dbhost'} = $dbhost;
+			}
+			close($fh);
+		};
+	}
+	print " [*] DB Host is " . $conf->{'dbhost'} . "\n";
 
 	# Read additional tokens from the DB
 	my $dbh = db_connect ($conf->{'dbengine'}, $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});

@@ -283,6 +283,14 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         if (empty($message['force_class']) === false) {
             $force_class = $message['force_class'];
         }
+
+        if (isset($message['autoclose']) === true) {
+            if ($message['autoclose'] === true) {
+                $autoclose = true;
+            } else {
+                $autoclose = false;
+            }
+        }
     } else {
         $text_message = $message;
     }
@@ -723,7 +731,23 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
         $output .= '<span title="'.groups_get_name($id_group, true).'">'.groups_get_name($id_group, true).'&nbsp;</span>';
     } else {
         if (empty($icon) === true) {
-            $output .= '<span title="'.groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
+            $output .= '<span title="'.groups_get_name($id_group, true).'">';
+            $output .= '</span>';
+            $output .= html_print_image(
+                'images/unknown@groups.svg',
+                true,
+                [
+                    'style' => $style,
+                    'class' => 'main_menu_icon invert_filter '.$class,
+                    'alt'   => groups_get_name($id_group, true),
+                    'title' => groups_get_name($id_group, true),
+                ],
+                false,
+                false,
+                false,
+                true
+            );
+            $output .= '</span>';
         } else {
             if (empty($class) === true) {
                 $class = 'bot';
@@ -739,7 +763,7 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
                 true,
                 [
                     'style' => $style,
-                    'class' => 'main_menu_icon '.$class,
+                    'class' => 'main_menu_icon invert_filter '.$class,
                     'alt'   => groups_get_name($id_group, true),
                     'title' => groups_get_name($id_group, true),
                 ],
@@ -846,7 +870,7 @@ function ui_print_os_icon(
     }
 
     if (isset($options['class']) === false) {
-        $options['class'] = 'main_menu_icon';
+        $options['class'] = 'main_menu_icon invert_filter';
     }
 
     $no_in_meta = (is_metaconsole() === false);
@@ -935,15 +959,39 @@ function ui_print_type_agent_icon(
     if ((int) $id_os === SATELLITE_OS_ID) {
         // Satellite.
         $options['title'] = __('Satellite');
-        $output = html_print_image('images/satellite@os.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/satellite@os.svg',
+            true,
+            ['class' => 'main_menu_icon invert_filter'],
+            false,
+            false,
+            false,
+            true
+        );
     } else if ($remote_contact === $contact && $remote === 0 && empty($version) === true) {
         // Network.
         $options['title'] = __('Network');
-        $output = html_print_image('images/network-server@os.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/network-server@os.svg',
+            true,
+            ['class' => 'main_menu_icon invert_filter'],
+            false,
+            false,
+            false,
+            true
+        );
     } else {
         // Software.
         $options['title'] = __('Software');
-        $output = html_print_image('images/data-server@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/data-server@svg.svg',
+            true,
+            ['class' => 'main_menu_icon invert_filter'],
+            false,
+            false,
+            false,
+            true
+        );
     }
 
     return $output;
@@ -1198,20 +1246,22 @@ function ui_format_alert_row(
 
         $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
         $module_linked = policies_is_module_linked($alert['id_agent_module']);
-        if (is_array($policyInfo) === false && $module_linked === false) {
+        if ((is_array($policyInfo) === false && $module_linked === false)
+            || (is_array($policyInfo) === false && $module_linked === '1')
+        ) {
             $data[$index['policy']] = '';
         } else {
             $module_linked = policies_is_module_linked($alert['id_agent_module']);
             if ($module_linked === '0') {
                 $img = 'images/unlinkpolicy.png';
             } else {
-                $img = 'images/policies_mc.png';
+                $img = 'images/policy@svg.svg';
             }
 
             if (is_metaconsole() === false) {
-                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             } else {
-                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
         }
 
@@ -3712,7 +3762,7 @@ function ui_print_datatable(array $parameters)
 
     // Base table.
     $table = '<table id="'.$table_id.'" ';
-    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'class="'.$parameters['class'].' invisible"';
     $table .= 'style="'.$parameters['style'].'">';
     $table .= '<thead><tr class="datatables_thead_tr">';
 
@@ -3879,8 +3929,8 @@ function ui_print_datatable(array $parameters)
     }
 
     $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
-                $("div[id^=info_box_]").show();
-                $("div[id^=info_box_]").removeClass(\'invisible_important\');
+                $(".datatable-msg-info-'.$table_id.'").show();
+                $(".datatable-msg-info-'.$table_id.'").removeClass(\'invisible_important\');
                 $("table#'.$table_id.'").hide();
                 $("div.dataTables_paginate").hide();
                 $("div.dataTables_info").hide();
@@ -3891,7 +3941,7 @@ function ui_print_datatable(array $parameters)
                     $(".dataTables_paginate.paging_simple_numbers").show()
                 }
             } else {
-                $("div[id^=info_box_]").hide();
+                $(".datatable-msg-info-'.$table_id.'").hide();
                 $("table#'.$table_id.'").show();
                 $("div.dataTables_paginate").show();
                 $("div.dataTables_info").show();
@@ -3979,6 +4029,7 @@ function ui_print_datatable(array $parameters)
                 $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
                 $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
                 $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
+                $("div.spinner-fixed").hide();
             },
             columns: [';
 
@@ -4022,17 +4073,28 @@ function ui_print_datatable(array $parameters)
     }
 
     $js .= '});';
+    $js .= '
+    $(function() {
+        $(document).on("preInit.dt", function (ev, settings) {
+            // $("table#'.$table_id.'").hide();
+            $("div.dataTables_length").hide();
+            $("div.dt-buttons").hide();
+        });
+    });
+    ';
 
     $js .= '</script>';
 
     // Order.
     $info_msg_arr = [];
     $info_msg_arr['message'] = $emptyTable;
-    $info_msg_arr['div_class'] = 'info_box_container invisible_important';
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
+
+    $spinner = '<div class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
     $err_msg = '<div id="error-'.$table_id.'"></div>';
-    $output = $info_msg.$err_msg.$filter.$extra.$table.$js;
+    $output = $info_msg.$err_msg.$filter.$extra.$spinner.$table.$js;
     if (is_ajax() === false) {
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');
@@ -4358,34 +4420,6 @@ function ui_toggle(
     $rotateA = '90deg';
     $rotateB = '180deg';
 
-    if (empty($img_a) === false) {
-        $image_a = html_print_image(
-            $img_a,
-            true,
-            [
-                'class' => 'mrgn_right_10px',
-                'style' => 'rotate: '.$rotateA,
-            ],
-            true
-        );
-    } else {
-        $image_a = '';
-    }
-
-    if (empty($img_b) === false) {
-        $image_b = html_print_image(
-            $img_b,
-            true,
-            [
-                'class' => 'mrgn_right_10px',
-                'style' => 'margin-right:10px; rotate: '.$rotateB,
-            ],
-            true
-        );
-    } else {
-        $image_b = '';
-    }
-
     // Options.
     $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-available;';
     $style = 'overflow:hidden;';
@@ -4442,7 +4476,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'float-left main_menu_icon mrgn_right_10px',
+                    'class' => 'float-left main_menu_icon mrgn_right_10px invert_filter',
                     'style' => 'object-fit: contain; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
@@ -4474,7 +4508,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'main_menu_icon mrgn_right_10px',
+                    'class' => 'main_menu_icon mrgn_right_10px invert_filter',
                     'style' => 'object-fit: contain; float:right; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
@@ -5024,30 +5058,22 @@ function ui_print_standard_header(
         $applyBreadcrumbs,
         true
     );
-    // Create the header.
-    // if (is_metaconsole() === true) {
-    // $output = ui_meta_print_header(
-    // $title,
-    // false,
-    // $options
-    // );
-    // } else {
-        $output = ui_print_page_header(
-            $title,
-            $icon,
-            true,
-            $help,
-            $godmode,
-            $options,
-            false,
-            '',
-            GENERIC_SIZE_TEXT,
-            '',
-            $headerInformation->printHeader(true),
-            false,
-            $fav_menu_config
-        );
-    // }
+
+    $output = ui_print_page_header(
+        $title,
+        $icon,
+        true,
+        $help,
+        $godmode,
+        $options,
+        false,
+        '',
+        GENERIC_SIZE_TEXT,
+        '',
+        $headerInformation->printHeader(true),
+        false,
+        $fav_menu_config
+    );
     if ($return !== true) {
         echo $output;
     } else {
@@ -5998,14 +6024,14 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change .= '
         function setInputBackground(inputId, image) {
             $("#"+inputId)
-            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
         }
 
         $(document).ready(function () {
             $("#'.$input_id.'").focusout(function (e) {
                 setTimeout(() => {
                     let iconImage = "'.$icon_image.'";
-                    $("#'.$input_id.'").attr("style", "background-image: url(\'"+iconImage+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                    $("#'.$input_id.'").attr("style", "background-image: url(\'"+iconImage+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
                 }, 100);
             });
         });
@@ -6279,7 +6305,7 @@ function ui_print_agent_autocomplete_input($parameters)
 			if (select_item_click) {
                 select_item_click = 0;
                 $("#'.$input_id.'")
-                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 				return;
 			} else {
                 // Clear selectbox if item is not selected.
@@ -6294,7 +6320,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 			//Set loading
 			$("#'.$input_id.'")
-                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 			var term = input_value; //Word to search
 			
 			'.$javascript_change_ajax_params_text.'
@@ -6311,7 +6337,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				success: function (data) {
 						if (data.length < 2) {
 							//Set icon
-							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 							return;
 						}
 
@@ -6361,7 +6387,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 						//Set icon
 						$("#'.$input_id.'")
-                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; background-size: 20px; '.$inputStyles.'")
+                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; background-size: 20px; width:100%; '.$inputStyles.'")
 						return;
 					}
 				});
@@ -6380,7 +6406,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$text_color.' '.$inputStyles.'';
+    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$text_color.' '.$inputStyles.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';
@@ -7331,9 +7357,6 @@ function ui_get_inventory_module_add_form(
     $table->rowstyle = [];
     $table->rowstyle['hidden-custom-field-row'] = 'display: none;';
     $table->rowstyle['custom-fields-button'] = 'display: none;';
-    // $table->colspan = [];
-    // $table->colspan['custom-fields-row'] = [];
-    // $table->colspan['custom-fields-row']['custom-fields-column'] = 2;
     $table->data = [];
 
     $row = [];
@@ -7597,13 +7620,10 @@ function ui_get_inventory_module_add_form(
 
     ob_start();
 
-    echo '<form name="modulo" method="post" action="'.$form_action.'" class="max_floating_element_size">';
+    echo '<form id="policy_inventory_module_edit_form" name="modulo" method="post" action="'.$form_action.'" class="max_floating_element_size">';
     echo html_print_table($table);
-    echo '<div class="action-buttons w100p">';
     echo $form_buttons;
-    echo '</div>';
     echo '</form>';
-
     ?>
 
 <script type="text/javascript">

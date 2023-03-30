@@ -152,9 +152,7 @@ foreach ($password_fields as $k => $p) {
         load_plugin_macros_fields('simple-macro');
         
         forced_title_callback();
-    }
 
-    $(document).ready(function () {
-        observerInputPassword();
-    });
+        $('select#id_plugin').select2('close');
+    }
 </script>

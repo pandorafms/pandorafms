@@ -393,6 +393,10 @@ function process_user_login_remote($login, $pass, $api=false)
             $user_info['metaconsole_access_node'] = $config['ldap_adv_user_node'];
         }
 
+        if (isset($config['timezonevisual']) === true) {
+            $user_info['timezone'] = $config['timezonevisual'];
+        }
+
         $permissions = fill_permissions_ldap($sr);
         if (empty($permissions) === true) {
             $config['auth_error'] = __('User not found in database or incorrect password');

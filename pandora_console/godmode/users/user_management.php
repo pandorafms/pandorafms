@@ -157,7 +157,7 @@ if ($new_user === true) {
         true
     );
 } else {
-    // TODO. Show the user id with a label.
+    $userManagementTable->data['fields_iduser'][0] = html_print_input_hidden('id', $id, false, false, false, 'id');
 }
 
 // User Full name.
@@ -572,8 +572,10 @@ if (is_metaconsole() === true) {
         $userManagementTable->data['line2_looknfeel'][1] = $outputMetaAccess[1];
     }
 } else {
-    $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme');
-    $userManagementTable->data['line2_looknfeel'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+    if (function_exists('skins_print_select')) {
+        $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme');
+        $userManagementTable->data['line2_looknfeel'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+    }
 }
 
 $userManagementTable->rowclass['captions_blocksize_eventfilter'] = 'field_half_width';
@@ -763,23 +765,3 @@ html_print_div(
 );
 
 html_print_table($userManagementTable);
-// User Profile definition table. (Only where user is not creating).
-if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
-    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
-}
-
-?>
-<!--
-    <script>
-    paint_qrcode(
-        "
-        <?php
-        // echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente);
-        ?>
-        ",
-        "#qr_code_agent_view",
-        128,
-        128
-    );
-</script>
--->

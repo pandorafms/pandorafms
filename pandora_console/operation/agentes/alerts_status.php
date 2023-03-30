@@ -326,6 +326,7 @@ if (is_metaconsole() === true) {
             1,
             2,
             3,
+            -3,
             -1,
         ];
     } else {
@@ -333,6 +334,7 @@ if (is_metaconsole() === true) {
             0,
             1,
             2,
+            -3,
             -1,
         ];
     }

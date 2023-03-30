@@ -820,7 +820,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $draw_state = '<div class="center">';
+                        $draw_state = '<div class="mrgn_lft_17px">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';

@@ -837,3 +837,8 @@ table#simple.floating_form tr[id^="simple-macro_field"] {
 table#simple.floating_form tr[id^="simple-macro_field"] > td > input {
   width: 50%;
 }
+
+td.FF-thresholds-pdd {
+  padding: 0px !important;
+  padding-left: 13px !important;
+}

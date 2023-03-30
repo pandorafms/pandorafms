@@ -625,19 +625,7 @@ div#form_activate_licence #code {
 #menu_tab_frame,
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
-  /*
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-    */
   border-bottom: 1px solid #82b92e;
-  /*  
-                                                                                                                                                                        width: 100%;
-  padding-right: 0px;
-  margin-bottom: 20px;
-  height: 53px;
-  box-sizing: border-box;
-  */
   background-color: #111 !important;
 }
 
@@ -668,7 +656,7 @@ div.nf {
   margin-left: 7px;
   padding: 8px 1px 6px 25px;
 }
-/*Font header feedback*/
+
 form#modal_form_feedback {
   padding: 10px;
 }
@@ -1297,10 +1285,12 @@ a.pandora_pagination:hover {
   filter: brightness(0) contrast(50%) !important;
 }
 
+/*
 input:not(div.login_pass > input):not(div.login_nick > input[type="image"]) {
   background-color: transparent !important;
   color: inherit !important;
 }
+*/
 
 .databox_color {
   background-color: transparent !important;
@@ -1534,4 +1524,79 @@ a.autorefresh_txt,
 #refrcounter {
   color: #ffffff;
   font-size: 8.5pt;
+}
+
+.container-custom-graph {
+  background-color: #222;
+}
+
+.header-widget {
+  background-color: #222;
+}
+
+.grid-stack-item-content {
+  box-shadow: 0px 0px 15px -10px #888;
+  border-radius: 0px 0px 0px 0px;
+}
+
+/* xxx */
+.table_section {
+  padding: 0;
+  margin-top: 16px;
+  border: 1px solid #3f3f3f;
+  height: 100%;
+}
+
+.white_box,
+.white-box-content {
+  border: 0px;
+  background-color: #222 !important;
+  color: #fff !important;
+}
+
+.info_table,
+.filter_table {
+  border: 1px solid #333;
+}
+
+.info_table.events > tbody > tr > td {
+  border-bottom: 1px solid #333;
+}
+
+.info_table,
+.filter_table {
+  border: 1px solid #333;
+}
+
+a.pandora_pagination,
+.filter_summary > div,
+.border_bt,
+.pagination .page_number {
+  border: 1px solid #2b2b2b !important;
+}
+
+.white_box,
+.white-box-content {
+  border: 1px solid #333;
+}
+
+.tree-node div.node-content {
+  background-color: #000;
+}
+
+.node-content {
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.box-flat {
+  border: 1px solid #333;
+}
+
+.white_table_graph_header {
+  border: 1px solid #333;
+}
+
+.info_table > tbody > tr > td {
+  border-bottom: 1px solid #3f3f3f;
 }

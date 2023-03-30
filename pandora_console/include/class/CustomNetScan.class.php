@@ -523,11 +523,13 @@ class CustomNetScan extends Wizard
 
                 // Schedule.
                 $form['inputs'][] = [
-                    'label'     => __('Interval').ui_print_help_tip(
+                    'label'           => __('Interval').ui_print_help_tip(
                         __('Manual interval means that it will be executed only On-demand'),
                         true
                     ),
-                    'arguments' => [
+                    'class'           => 'input-interval',
+                    'extra-container' => true,
+                    'arguments'       => [
                         'type'     => 'select',
                         'selected' => $interv_manual,
                         'fields'   => [
@@ -537,7 +539,7 @@ class CustomNetScan extends Wizard
                         'name'     => 'interval_manual_defined',
                         'return'   => true,
                     ],
-                    'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
+                    'extra'           => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
                         'interval',
                         $this->task['interval_sweep'],
                         '',

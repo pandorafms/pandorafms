@@ -424,7 +424,7 @@ if ($pure === false) {
                 echo html_print_label(__('Force'), 'force-mode', true);
                 echo '<a id ="force_check" href="">';
                 echo html_print_image(
-                    'images/change-active.svg',
+                    'images/force@svg.svg',
                     true,
                     [
                         'title' => __('Force remote checks'),

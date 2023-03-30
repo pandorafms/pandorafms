@@ -134,12 +134,7 @@ class TreeViewWidget extends Widget
     ) {
         global $config;
 
-        if (is_metaconsole() === true) {
-            ui_require_css_file('tree_meta');
-        } else {
-            ui_require_css_file('tree');
-        }
-
+        ui_require_css_file('tree');
         ui_require_css_file('fixed-bottom-box');
 
         // WARNING: Do not edit. This chunk must be in the constructor.
@@ -559,11 +554,7 @@ class TreeViewWidget extends Widget
         $height = $size['height'];
 
         // Css Files.
-        if (is_metaconsole() === true) {
-            \ui_require_css_file('tree_meta', 'include/styles/', true);
-        } else {
-            \ui_require_css_file('tree', 'include/styles/', true);
-        }
+        \ui_require_css_file('tree', 'include/styles/', true);
 
         if ($config['style'] == 'pandora_black' && !is_metaconsole()) {
             \ui_require_css_file('pandora_black', 'include/styles/', true);
@@ -576,19 +567,11 @@ class TreeViewWidget extends Widget
             'include/javascript/i18n/'
         );
 
-        if (is_metaconsole() === true) {
-            \ui_require_javascript_file(
-                'TreeControllerMeta',
-                'include/javascript/tree/',
-                true
-            );
-        } else {
-            \ui_require_javascript_file(
-                'TreeController',
-                'include/javascript/tree/',
-                true
-            );
-        }
+        \ui_require_javascript_file(
+            'TreeController',
+            'include/javascript/tree/',
+            true
+        );
 
         \ui_require_javascript_file(
             'fixed-bottom-box',

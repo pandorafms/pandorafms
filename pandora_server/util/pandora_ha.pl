@@ -13,6 +13,7 @@ use POSIX qw(setsid strftime :sys_wait_h);
 use threads;
 use threads::shared;
 use File::Path qw(rmtree);
+use LWP::Protocol::https;
 
 # Default lib dir for Pandora FMS RPM and DEB packages.
 BEGIN { push @INC, '/usr/lib/perl5'; }

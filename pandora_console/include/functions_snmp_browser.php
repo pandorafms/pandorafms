@@ -97,7 +97,7 @@ function snmp_browser_get_html_tree(
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
         // Display the branch.
-        $output .= '<li id="li_'.$sub_id.'" class="'.$class.' mrgn_0px pdd_0px">';
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.' mrgn_0px pdd_0px flex_center">';
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {

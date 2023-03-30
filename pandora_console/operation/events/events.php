@@ -536,10 +536,31 @@ if (is_ajax() === true) {
                             (empty($tmp->ack_utimestamp) === true) ? 0 : $tmp->ack_utimestamp,
                             true
                         );
-                        $tmp->timestamp = ui_print_timestamp(
-                            $tmp->utimestamp,
-                            true
-                        );
+
+                        $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+                        if (!$user_timezone) {
+                            $timezone = timezone_open(date_default_timezone_get());
+                            $datetime_eur = date_create('now', timezone_open($config['timezone']));
+                            $dif = timezone_offset_get($timezone, $datetime_eur);
+                            date($config['date_format'], $dif);
+                            if (!date('I')) {
+                                // For summer -3600sec.
+                                $dif -= 3600;
+                            }
+
+                            $total_sec = strtotime($tmp->timestamp);
+                            $total_sec += $dif;
+                            $last_contact = date($config['date_format'], $total_sec);
+                            $last_contact_value = ui_print_timestamp($last_contact, true);
+                        } else {
+                            $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+                            date_default_timezone_set($user_timezone);
+                            $title = date($config['date_format'], strtotime($tmp->timestamp));
+                            $value = human_time_comparation(strtotime($tmp->timestamp), 'large');
+                            $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
+                        }
+
+                        $tmp->timestamp = $last_contact_value;
 
                         if (is_numeric($tmp->data) === true) {
                             $tmp->data = format_numeric(
@@ -756,7 +777,7 @@ if (is_ajax() === true) {
                                     true,
                                     [
                                         'title' => __('New event'),
-                                        'class' => 'forced-title main_menu_icon',
+                                        'class' => 'forced-title invert_filter main_menu_icon',
                                     ]
                                 );
                                 $state = 0;
@@ -799,7 +820,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $draw_state = '<div class="center">';
+                        $draw_state = '<div class="mrgn_lft_17px">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';
@@ -1071,7 +1092,7 @@ if (is_ajax() === true) {
  */
 
 $load_filter_id = (int) get_parameter('filter_id', 0);
-
+$fav_menu = [];
 if ($load_filter_id === 0) {
     // Load user filter.
     $loaded_filter = db_get_row_sql(
@@ -1093,6 +1114,14 @@ if ($load_filter_id === 0) {
         'id_filter',
         $load_filter_id
     );
+
+    // Fav menu
+    $fav_menu = [
+        'id_element' => $load_filter_id,
+        'url'        => 'operation/events/events&pure=&load_filter=1&filter_id='.$load_filter_id,
+        'label'      => $loaded_filter['id_name'],
+        'section'    => 'Events',
+    ];
 }
 
 // Do not load the user filter if we come from the 24h event graph.
@@ -1368,7 +1397,7 @@ if ($pure) {
     // Floating menu - Start.
     echo '<div id="vc-controls" class="zindex999"">';
 
-    echo '<div id="menu_tab">';
+    echo '<div id="menu_tab" class="menu_tab_pure">';
     echo '<ul class="mn">';
 
     // Quit fullscreen.
@@ -1583,7 +1612,8 @@ if ($pure) {
                     'link'  => '',
                     'label' => __('Events'),
                 ],
-            ]
+            ],
+            $fav_menu
         );
 }
 
@@ -1913,7 +1943,7 @@ if ($id_agent !== null) {
 }
 
 $data = ui_print_agent_autocomplete_input($params);
-$in = '<div class="filter_input"><label>'.__('Agent search');
+$in = '<div class="filter_input agent-min-w100p"><label>'.__('Agent search');
 
 $in .= '</label>'.$data.'</div>';
 $adv_inputs[] = $in;
@@ -2481,7 +2511,7 @@ try {
                     'drawCallback'                   => 'process_datatables_callback(this, settings)',
                     'print'                          => false,
                     'csv'                            => 0,
-                    'filter_main_class'              => 'box-flat white_table_graph fixed_filter_bar '.$show_hide_filters,
+                    'filter_main_class'              => 'events-pure box-flat white_table_graph fixed_filter_bar '.$show_hide_filters,
                 ],
             ),
         ]
@@ -3110,6 +3140,7 @@ $(document).ready( function() {
 
     //Autorefresh in fullscreen
     var pure = '<?php echo $pure; ?>';
+    var pure = '<?php echo $pure; ?>';
     if(pure == 1){
         var refresh_interval = parseInt('<?php echo($config['refr'] * 1000); ?>');
         var until_time='';
@@ -3129,7 +3160,9 @@ $(document).ready( function() {
                 layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>)',
                 labels: ['', '', '', '', '', '', ''],
                 onExpiry: function () {
-                    dt_events.draw(false);
+                    $("#table_events")
+                    .DataTable()
+                    .draw(false);
                 }
             });
         }
@@ -3139,7 +3172,7 @@ $(document).ready( function() {
         setInterval(events_refresh, refresh_interval);
 
 
-        $("select#refresh").change (function () {
+        $("select#refresh").on('select2:select', function () {
             var href = window.location.href;
 
             inputs = $("#events_form :input");
@@ -3163,6 +3196,13 @@ $(document).ready( function() {
 
             $(document).attr("location", href);
         });
+
+        $("div.events-pure").removeClass("fixed_filter_bar invisible");
+        $("div#principal_action_buttons").addClass("w100p");
+        $("table#table_events").addClass("margn-b-50px");
+
+        $('#refresh').val('<?php echo $config['refr']; ?>').trigger('change');
+
     }
 
 });
@@ -3204,10 +3244,6 @@ function show_instructions(id){
 }
 
 $(document).ready(function () {
-    let agentLabel = $('#text-text_agent').prev();
-    let agentTip = $('#text-text_agent').next();
-    agentLabel.append(agentTip);
-
     let moduleLabel = $('#text-module_search').prev();
     let moduleTip = $('#text-module_search').next().next();
     moduleLabel.append(moduleTip);

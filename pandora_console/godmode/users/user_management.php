@@ -157,7 +157,7 @@ if ($new_user === true) {
         true
     );
 } else {
-    // TODO. Show the user id with a label.
+    $userManagementTable->data['fields_iduser'][0] = html_print_input_hidden('id', $id, false, false, false, 'id');
 }
 
 // User Full name.
@@ -325,53 +325,57 @@ if ($new_user === false) {
 
 $userManagementTable->data['passwordManage_table'] = html_print_table($passwordManageTable, true);
 
+if (users_is_admin() === true) {
+    $userManagementTable->rowclass['captions_loginErrorUser'] = 'field_half_width w50p';
+    $userManagementTable->cellclass['captions_loginErrorUser'][0] = 'wrap';
+    $userManagementTable->cellclass['captions_loginErrorUser'][1] = 'wrap';
+    $notLoginCheckContent = [];
+    $notLoginCheckContent[] = '<span>'.__('Not Login').'</span>';
+    $notLoginCheckContent[] = html_print_checkbox_switch(
+        'not_login',
+        1,
+        $user_info['not_login'],
+        true
+    );
 
-$userManagementTable->rowclass['captions_loginErrorUser'] = 'field_half_width w50p';
-$userManagementTable->cellclass['captions_loginErrorUser'][0] = 'wrap';
-$userManagementTable->cellclass['captions_loginErrorUser'][1] = 'wrap';
-$notLoginCheckContent = [];
-$notLoginCheckContent[] = '<span>'.__('Not Login').'</span>';
-$notLoginCheckContent[] = html_print_checkbox_switch(
-    'not_login',
-    1,
-    $user_info['not_login'],
-    true
-);
+    $userManagementTable->data['captions_loginErrorUser'][0] = html_print_div(
+        [
+            'class'   => 'margin-top-10',
+            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+            'content' => implode('', $notLoginCheckContent),
+        ],
+        true
+    );
+    $userManagementTable->data['captions_loginErrorUser'][0] .= ui_print_input_placeholder(
+        __('The user with not login set only can access to API.'),
+        true
+    );
 
-$userManagementTable->data['captions_loginErrorUser'][0] = html_print_div(
-    [
-        'class'   => 'margin-top-10',
-        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
-        'content' => implode('', $notLoginCheckContent),
-    ],
-    true
-);
-$userManagementTable->data['captions_loginErrorUser'][0] .= ui_print_input_placeholder(
-    __('The user with not login set only can access to API.'),
-    true
-);
+    $localUserCheckContent = [];
+    $localUserCheckContent[] = '<span>'.__('Local User').'</span>';
+    $localUserCheckContent[] = html_print_checkbox_switch(
+        'local_user',
+        1,
+        $user_info['local_user'],
+        true
+    );
 
-$localUserCheckContent = [];
-$localUserCheckContent[] = '<span>'.__('Local User').'</span>';
-$localUserCheckContent[] = html_print_checkbox_switch(
-    'local_user',
-    1,
-    $user_info['local_user'],
-    true
-);
+    $userManagementTable->data['captions_loginErrorUser'][1] = html_print_div(
+        [
+            'class'   => 'margin-top-10',
+            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+            'content' => implode('', $localUserCheckContent),
+        ],
+        true
+    );
+    $userManagementTable->data['captions_loginErrorUser'][1] .= ui_print_input_placeholder(
+        __('The user with local authentication enabled will always use local authentication.'),
+        true
+    );
+}
 
-$userManagementTable->data['captions_loginErrorUser'][1] = html_print_div(
-    [
-        'class'   => 'margin-top-10',
-        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
-        'content' => implode('', $localUserCheckContent),
-    ],
-    true
-);
-$userManagementTable->data['captions_loginErrorUser'][1] .= ui_print_input_placeholder(
-    __('The user with local authentication enabled will always use local authentication.'),
-    true
-);
+$userManagementTable->data['show_tips_startup'][0] = html_print_checkbox_switch('show_tips_startup', 1, ($user_info['show_tips_startup'] === null) ? true : $user_info['show_tips_startup'], true);
+$userManagementTable->data['show_tips_startup'][1] = '<span>'.__('Show usage tips at startup').'</span>';
 
 // Session time input.
 $userManagementTable->rowclass['captions_userSessionTime'] = 'field_half_width';
@@ -549,10 +553,10 @@ $userManagementTable->data['fields_autorefreshTime'][0] .= ui_print_input_placeh
 // Title for Language and Appearance.
 $userManagementTable->data['title_lookAndFeel'] = html_print_subtitle_table(__('Language and Appearance'));
 // Language and color scheme.
-$userManagementTable->rowclass['captions_lang_colorscheme'] = 'field_half_width';
-$userManagementTable->rowclass['fields_lang_colorscheme'] = 'field_half_width';
-$userManagementTable->data['captions_lang_colorscheme'][0] = __('Language');
-$userManagementTable->data['fields_lang_colorscheme'][0] = html_print_select_from_sql(
+$userManagementTable->rowclass['line1_looknfeel'] = 'field_half_width';
+$userManagementTable->rowclass['line2_looknfeel'] = 'field_half_width';
+$userManagementTable->data['line1_looknfeel'][0] = __('Language');
+$userManagementTable->data['line2_looknfeel'][0] = html_print_select_from_sql(
     'SELECT id_language, name FROM tlanguage',
     'language',
     $user_info['language'],
@@ -562,8 +566,17 @@ $userManagementTable->data['fields_lang_colorscheme'][0] = html_print_select_fro
     true
 );
 
-$userManagementTable->data['captions_lang_colorscheme'][1] = __('User color scheme');
-$userManagementTable->data['fields_lang_colorscheme'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+if (is_metaconsole() === true) {
+    if (users_is_admin() === true) {
+        $userManagementTable->data['line1_looknfeel'][1] = $outputMetaAccess[0];
+        $userManagementTable->data['line2_looknfeel'][1] = $outputMetaAccess[1];
+    }
+} else {
+    if (function_exists('skins_print_select')) {
+        $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme');
+        $userManagementTable->data['line2_looknfeel'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
+    }
+}
 
 $userManagementTable->rowclass['captions_blocksize_eventfilter'] = 'field_half_width';
 $userManagementTable->rowclass['fields_blocksize_eventfilter'] = 'field_half_width';
@@ -589,41 +602,55 @@ $userManagementTable->data['fields_blocksize_eventfilter'][1] = html_print_selec
     false,
     false
 );
+if (is_metaconsole() === false) {
+    // Home screen table.
+    $homeScreenTable = new stdClass();
+    $homeScreenTable->class = 'w100p table_section full_section';
+    $homeScreenTable->id = 'home_screen_table';
+    $homeScreenTable->style = [];
+    $homeScreenTable->rowclass = [];
+    $homeScreenTable->data = [];
+    // Home screen.
+    $homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
+    $homeScreenTable->colspan['captions_homescreen'][0] = 2;
+    $homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
+    $homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
+    $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
+        $homeScreenValues,
+        'section',
+        io_safe_output($user_info['section']),
+        'show_data_section();',
+        '',
+        -1,
+        true,
+        false,
+        false
+    );
+    $homeScreenTable->data['fields_homescreen'][1] = html_print_div(
+        [
+            'class'   => 'w100p',
+            'content' => $customHomeScreenDataField,
+        ],
+        true
+    );
 
-// Home screen table.
-$homeScreenTable = new stdClass();
-$homeScreenTable->class = 'w100p table_section full_section';
-$homeScreenTable->id = 'home_screen_table';
-$homeScreenTable->style = [];
-$homeScreenTable->rowclass = [];
-$homeScreenTable->data = [];
+    $userManagementTable->rowclass['homescreen_table'] = 'w100p';
+    $userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
+}
 
-// Home screen.
-$homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
-$homeScreenTable->colspan['captions_homescreen'][0] = 2;
-$homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
-$homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
-$homeScreenTable->data['fields_homescreen'][0] = html_print_select(
-    $homeScreenValues,
-    'section',
-    io_safe_output($user_info['section']),
-    'show_data_section();',
-    '',
-    -1,
-    true,
-    false,
-    false
-);
-$homeScreenTable->data['fields_homescreen'][1] = html_print_div(
-    [
-        'class'   => 'w100p',
-        'content' => $customHomeScreenDataField,
-    ],
-    true
-);
+if (is_metaconsole() === true && users_is_admin() === true) {
+    $userManagementTable->rowclass['search_custom1_looknfeel'] = 'field_half_width';
+    $userManagementTable->rowclass['search_custom2_looknfeel'] = 'field_half_width flex-column';
+    $userManagementTable->data['search_custom1_looknfeel'][0] = $searchCustomFieldView[0];
+    $userManagementTable->data['search_custom2_looknfeel'][0] = $searchCustomFieldView[1];
 
-$userManagementTable->rowclass['homescreen_table'] = 'w100p';
-$userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
+    $userManagementTable->rowclass['agent_manager1_looknfeel'] = 'field_half_width';
+    $userManagementTable->rowclass['agent_manager2_looknfeel'] = 'field_half_width flex-column';
+    $userManagementTable->data['agent_manager1_looknfeel'][0] = $metaconsoleAgentManager[0];
+    $userManagementTable->data['agent_manager1_looknfeel'][1] = $metaconsoleAgentManager[2];
+    $userManagementTable->data['agent_manager2_looknfeel'][0] = $metaconsoleAgentManager[1];
+    $userManagementTable->data['agent_manager2_looknfeel'][1] = $metaconsoleAgentManager[3];
+}
 
 // Timezone.
 $userManagementTable->rowclass['captions_timezone'] = 'field_half_width';
@@ -637,14 +664,15 @@ $userManagementTable->data['fields_timezone'][0] .= ui_print_input_placeholder(
     __('The timezone must be that of the associated server.'),
     true
 );
-
-$userManagementTable->data['fields_timezone'][1] = html_print_div(
-    [
-        'id'      => 'timezone-picker',
-        'content' => implode('', $timezoneContent),
-    ],
-    true
-);
+if (is_metaconsole() === false) {
+    $userManagementTable->data['fields_timezone'][1] = html_print_div(
+        [
+            'id'      => 'timezone-picker',
+            'content' => implode('', $timezoneContent),
+        ],
+        true
+    );
+}
 
 // Title for Language and Appearance.
 $userManagementTable->data['title_additionalSettings'] = html_print_subtitle_table(__('Additional settings'));
@@ -708,22 +736,18 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
     true
 );
 
-
-$contentQrCode = [];
-$contentQrCode[] = html_print_image(
-    'images/example_qr.png',
-    true,
-    [
-        'width'  => '200px',
-        'height' => '200px',
-    ]
+$CodeQRContent .= html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
+$CodeQRContent .= html_print_anchor(
+    ['id' => 'qr_code_agent_view'],
+    true
 );
-$contentQrCode[] = '<span class="input_sub_placeholder input_sub_placeholder_qrcode">'.__('Generated automatically with the information provided for the user').'</span>';
+$CodeQRContent .= '<br/>'.$custom_id_div;
 
-$qrCode = html_print_div(
+// QR code div.
+$CodeQRTable = html_print_div(
     [
-        'style'   => 'display: flex;flex-direction: column;align-items: center;',
-        'content' => implode('', $contentQrCode),
+        'class'   => 'agent_qr',
+        'content' => $CodeQRContent,
     ],
     true
 );
@@ -732,12 +756,33 @@ $qrCode = html_print_div(
 html_print_div(
     [
         'id'      => 'api_qrcode_display',
-        'content' => $qrCode.$apiTokenContent,
+        'content' => $CodeQRTable.$apiTokenContent,
     ]
 );
 
 html_print_table($userManagementTable);
-// User Profile definition table. (Only where user is not creating).
-if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
-    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
-}
+
+$vcard_data = [];
+$vcard_data['version'] = '3.0';
+$vcard_data['firstName'] = $user_info['firstname'];
+$vcard_data['lastName'] = $user_info['lastname'];
+$vcard_data['middleName'] = ($user_info['middlename'] === '1') ? '' : $user_info['middlename'];
+$vcard_data['nickname'] = $user_info['fullname'];
+$vcard_data['workPhone'] = $user_info['phone'];
+$vcard_data['email'] = $user_info['email'];
+$vcard_data['organization'] = io_safe_output(get_product_name());
+$vcard_data['url'] = ui_get_full_url('index.php');
+
+$vcard_json = json_encode($vcard_data);
+?>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    paint_vcard(
+                <?php echo $vcard_json; ?>,
+                "#qr_code_agent_view",
+                128,
+                128
+            );
+});
+</script>

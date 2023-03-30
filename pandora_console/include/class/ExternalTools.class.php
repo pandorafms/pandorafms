@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -203,132 +203,161 @@ class ExternalTools extends HTML
             }
         }
 
+        html_print_div(['id' => 'layer_sound_alert']);
+        html_print_div(['id' => 'layer_sound_critical']);
+        html_print_div(['id' => 'layer_sound_warning']);
         // Make the table for show the form.
         $table = new stdClass();
         $table->width = '100%';
+        $table->class = 'filter-table-adv';
         $table->id = 'commandsTable';
 
         $table->data = [];
 
-        $table->data[$i][0] = __('Sound for Alert fired');
-        $table->data[$i][1] = html_print_select(
-            $sounds,
-            'sound_alert',
-            $config['sound_alert'],
-            'replaySound(\'alert\');',
-            '',
-            '',
-            true
-        );
-        $table->data[$i][1] .= html_print_anchor(
-            [
-                'href'    => 'javascript:toggleButton(\'alert\')',
-                'content' => html_print_image(
-                    'images/control_play_col.png',
-                    true,
-                    [
-                        'id'    => 'button_sound_warning',
-                        'style' => 'vertical-align: middle;',
-                        'width' => '16',
-                        'title' => __('Play sound'),
-                        'class' => 'invert_filter',
-
-                    ]
-                ),
-            ],
-            true
-        );
-        $table->data[$i++][1] .= '<div id="layer_sound_alert"></div>';
-
-        $table->data[$i][0] = __('Sound for Monitor critical');
-        $table->data[$i][1] = html_print_select(
-            $sounds,
-            'sound_critical',
-            $config['sound_critical'],
-            'replaySound(\'critical\');',
-            '',
-            '',
-            true
-        );
-        $table->data[$i][1] .= html_print_anchor(
-            [
-                'href'    => 'javascript:toggleButton(\'critical\')',
-                'content' => html_print_image(
-                    'images/control_play_col.png',
-                    true,
-                    [
-                        'id'    => 'button_sound_warning',
-                        'style' => 'vertical-align: middle;',
-                        'width' => '16',
-                        'title' => __('Play sound'),
-                        'class' => 'invert_filter',
-
-                    ]
-                ),
-            ],
-            true
-        );
-        $table->data[$i++][1] .= '<div id="layer_sound_critical"></div>';
-
-        $table->data[$i][0] = __('Sound for Monitor warning');
-        $table->data[$i][1] = html_print_select(
-            $sounds,
-            'sound_warning',
-            $config['sound_warning'],
-            'replaySound(\'warning\');',
-            '',
-            '',
-            true
-        );
-        $table->data[$i][1] .= html_print_anchor(
-            [
-                'href'    => 'javascript:toggleButton(\'warning\')',
-                'content' => html_print_image(
-                    'images/control_play_col.png',
-                    true,
-                    [
-                        'id'    => 'button_sound_warning',
-                        'style' => 'vertical-align: middle;',
-                        'width' => '16',
-                        'title' => __('Play sound'),
-                        'class' => 'invert_filter',
-
-                    ]
-                ),
-            ],
-            true
-        );
-        $table->data[$i++][1] .= '<div id="layer_sound_warning"></div>';
-
-        $table->data[$i][0] = __('Custom graphviz directory');
-        $table->data[$i++][1] = html_print_input_text(
-            'graphviz_bin_dir',
-            $config['graphviz_bin_dir'],
-            '',
-            25,
-            255,
-            true
+        $table->data[$i][] = html_print_label_input_block(
+            __('Sound for Alert fired'),
+            html_print_div(
+                [
+                    'class'   => '',
+                    'content' => html_print_select(
+                        $sounds,
+                        'sound_alert',
+                        $config['sound_alert'],
+                        'replaySound(\'alert\');',
+                        '',
+                        '',
+                        true
+                    ).html_print_anchor(
+                        [
+                            'href'    => 'javascript:toggleButton(\'alert\')',
+                            'content' => html_print_image(
+                                'images/change-active.svg',
+                                true,
+                                [
+                                    'id'    => 'button_sound_alert',
+                                    'style' => 'vertical-align: middle; margin-left: 10px',
+                                    'width' => '16',
+                                    'title' => __('Play sound'),
+                                    'class' => 'invert_filter',
+                                ]
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            ),
         );
 
-        $table->data[$i][0] = __('Traceroute path');
-        $table->data[$i++][1] = html_print_input_text('traceroute_path', $this->pathTraceroute, '', 40, 255, true);
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Sound for Monitor critical'),
+            html_print_div(
+                [
+                    'class'   => '',
+                    'content' => html_print_select(
+                        $sounds,
+                        'sound_critical',
+                        $config['sound_critical'],
+                        'replaySound(\'critical\');',
+                        '',
+                        '',
+                        true
+                    ).html_print_anchor(
+                        [
+                            'href'    => 'javascript:toggleButton(\'critical\')',
+                            'content' => html_print_image(
+                                'images/change-active.svg',
+                                true,
+                                [
+                                    'id'    => 'button_sound_critical',
+                                    'style' => 'vertical-align: middle; margin-left: 10px',
+                                    'width' => '16',
+                                    'title' => __('Play sound'),
+                                    'class' => 'invert_filter',
+                                ]
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            ),
+        );
 
-        $table->data[$i][0] = __('Ping path');
-        $table->data[$i++][1] = html_print_input_text('ping_path', $this->pathPing, '', 40, 255, true);
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Sound for Monitor warning'),
+            html_print_div(
+                [
+                    'class'   => '',
+                    'content' => html_print_select(
+                        $sounds,
+                        'sound_warning',
+                        $config['sound_warning'],
+                        'replaySound(\'warning\');',
+                        '',
+                        '',
+                        true
+                    ).html_print_anchor(
+                        [
+                            'href'    => 'javascript:toggleButton(\'warning\')',
+                            'content' => html_print_image(
+                                'images/change-active.svg',
+                                true,
+                                [
+                                    'id'    => 'button_sound_warning',
+                                    'style' => 'vertical-align: middle; margin-left: 10px',
+                                    'width' => '16',
+                                    'title' => __('Play sound'),
+                                    'class' => 'invert_filter',
+                                ]
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            ),
+        );
 
-        $table->data[$i][0] = __('Nmap path');
-        $table->data[$i++][1] = html_print_input_text('nmap_path', $this->pathNmap, '', 40, 255, true);
+        $table->data[$i][] = html_print_label_input_block(
+            __('Custom graphviz directory'),
+            html_print_input_text(
+                'graphviz_bin_dir',
+                $config['graphviz_bin_dir'],
+                '',
+                25,
+                255,
+                true
+            )
+        );
 
-        $table->data[$i][0] = __('Dig path');
-        $table->data[$i++][1] = html_print_input_text('dig_path', $this->pathDig, '', 40, 255, true);
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Snmpget path'),
+            html_print_input_text('snmpget_path', $this->pathSnmpget, '', 40, 255, true)
+        );
 
-        $table->data[$i][0] = __('Snmpget path');
-        $table->data[$i++][1] = html_print_input_text('snmpget_path', $this->pathSnmpget, '', 40, 255, true);
+        $table->data[$i][] = html_print_label_input_block(
+            __('Traceroute path'),
+            html_print_input_text('traceroute_path', $this->pathTraceroute, '', 40, 255, true)
+        );
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Ping path'),
+            html_print_input_text('ping_path', $this->pathPing, '', 40, 255, true)
+        );
+
+        $table->data[$i][] = html_print_label_input_block(
+            __('Nmap path'),
+            html_print_input_text('nmap_path', $this->pathNmap, '', 40, 255, true)
+        );
+        $table->data[$i++][] = html_print_label_input_block(
+            __('Dig path'),
+            html_print_input_text('dig_path', $this->pathDig, '', 40, 255, true)
+        );
 
         $table->data[$i][0] = html_print_div(
             [
                 'class'   => 'title_custom_commands bolder float-left',
-                'content' => __('Custom commands'),
+                'content' => '<label>'.__('Custom commands').'</label>',
             ],
             true
         );
@@ -336,13 +365,13 @@ class ExternalTools extends HTML
             [
                 'id'      => 'add_button_custom_command',
                 'content' => html_print_image(
-                    'images/add.png',
+                    'images/plus@svg.svg',
                     true,
                     [
                         'title'   => __('Add new custom command'),
                         'onclick' => 'manageCommandLines(event)',
                         'id'      => 'img_add_button_custom_command',
-                        'class'   => 'invert_filter',
+                        'class'   => 'main_menu_icon invert_filter',
 
                     ]
                 ),
@@ -350,8 +379,8 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->data[$i][0] = __('Command');
-        $table->data[$i++][1] = __('Parameters').ui_print_help_tip(__('Adding `_address_` macro will use agent\'s IP when perform the execution'), true);
+        $table->data[$i][0] = '<div><label>'.__('Command').'</label></div>';
+        $table->data[$i++][1] = '<div style="flex-direction: row;justify-content: flex-start;"><label>'.__('Parameters').'</label>'.ui_print_help_tip(__('Adding `_address_` macro will use agent\'s IP when perform the execution'), true, '', false, 'margin-top: 2px').'</div>';
 
         $y = 1;
         $iRow = $i;
@@ -378,29 +407,26 @@ class ExternalTools extends HTML
             }
         }
 
-        $form = '<form id="form_setup" method="post" >';
+        $form = '<form class="max_floating_element_size" id="form_setup" method="POST" >';
         $form .= '<fieldset>';
         $form .= '<legend>'.__('Options').'</legend>';
         $form .= html_print_input_hidden('update_paths', 1, true);
         $form .= html_print_table($table, true);
         $form .= '</fieldset>';
-        $form .= html_print_div(
-            [
-                'id'      => '',
-                'class'   => 'action-buttons',
-                'style'   => 'width: 100%',
-                'content' => html_print_submit_button(
-                    __('Update'),
-                    'update_button',
-                    false,
-                    [ 'icon' => 'update' ],
-                    true
-                ),
-            ],
-            true
-        );
-
         $form .= '</form>';
+
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Update'),
+                'update_button',
+                false,
+                [
+                    'icon' => 'update',
+                    'form' => 'form_setup',
+                ],
+                true
+            )
+        );
 
         echo $form;
     }
@@ -436,15 +462,14 @@ class ExternalTools extends HTML
                 $output = html_print_div(
                     [
                         'id'      => 'delete_button_custom_'.$index,
-                        'class'   => '',
                         'content' => html_print_image(
-                            'images/delete.png',
+                            'images/delete.svg',
                             true,
                             [
                                 'title'   => __('Delete this custom command'),
                                 'onclick' => 'manageCommandLines(event)',
                                 'id'      => 'img_delete_button_custom_'.$index,
-                                'class'   => 'invert_filter',
+                                'class'   => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],
@@ -528,77 +553,103 @@ class ExternalTools extends HTML
 
         // Form table.
         $table = new StdClass();
-        $table->class = 'fixed_filter_bar';
+        $table->class = 'fixed_filter_bar filter-table-adv pdd_15px';
         $table->id = 'externalToolTable';
-        $table->cellstyle['captions'][0] = 'width: 0';
-        $table->cellstyle['captions'][1] = 'width: 0';
-        $table->cellstyle['captions'][2] = 'width: 0';
+        $table->size[0] = '25%';
+        $table->size[1] = '25%';
+        $table->size[2] = '25%';
+        $table->size[3] = '25%';
+        $table->colspan = [];
+        $table->colspan[1][0] = 4;
+        // $table->cellclass[0][2] = 'snmpcolumn';
+        // $table->cellclass[0][2] = 'snmpcolumn';
+        // $table->cellclass[0][3] = 'snmpcolumn';
+        // $table->cellclass[0][3] = 'snmpcolumn';
         $table->data = [];
 
-        $table->data['captions'][0] = __('Operation');
-
-        $table->data['inputs'][0] = html_print_select(
-            $commandList,
-            'operation',
-            $this->operation,
-            'mostrarColumns(this.value)',
-            __('Please select'),
-            0,
-            true
+        $table->data[0][0] = html_print_label_input_block(
+            __('Operation'),
+            html_print_select(
+                $commandList,
+                'operation',
+                $this->operation,
+                'mostrarColumns(this.value)',
+                __('Please select'),
+                0,
+                true,
+                false,
+                true,
+                'w100p',
+                false,
+                'width: 100%;'
+            )
         );
 
-        $table->data['captions'][1] = __('IP Adress');
-        $table->data['inputs'][1] = html_print_select(
-            $ipsSelect,
-            'select_ips',
-            $principal_ip,
-            '',
-            '',
-            0,
-            true
+        $table->data[0][1] = html_print_label_input_block(
+            __('IP Adress'),
+            html_print_select(
+                $ipsSelect,
+                'select_ips',
+                $principal_ip,
+                '',
+                '',
+                0,
+                true,
+                false,
+                true,
+                'w100p',
+                false,
+                'width: 100%;'
+            )
         );
 
-        $table->cellclass['captions'][2] = 'snmpcolumn';
-        $table->cellclass['inputs'][2] = 'snmpcolumn';
-        $table->data['captions'][2] = __('SNMP Version');
-        $table->data['inputs'][2] = html_print_select(
+        $table->data[0][2] = html_print_label_input_block(
+            __('SNMP Version'),
+            html_print_select(
+                [
+                    '1'  => 'v1',
+                    '2c' => 'v2c',
+                ],
+                'select_version',
+                $this->snmp_version,
+                '',
+                '',
+                0,
+                true,
+                false,
+                true,
+                'w100p',
+                false,
+                'width: 100%;'
+            ),
+            ['div_class' => 'snmpcolumn']
+        );
+
+        $table->data[0][3] = html_print_label_input_block(
+            __('SNMP Community'),
+            html_print_input_text(
+                'community',
+                $this->community,
+                '',
+                50,
+                255,
+                true,
+                false,
+                false,
+                '',
+                'w100p'
+            ),
+            ['div_class' => 'snmpcolumn']
+        );
+
+        $table->data[1][0] = html_print_submit_button(
+            __('Execute'),
+            'submit',
+            false,
             [
-                '1'  => 'v1',
-                '2c' => 'v2c',
-            ],
-            'select_version',
-            $this->snmp_version,
-            '',
-            '',
-            0,
-            true
-        );
-
-        $table->cellclass['captions'][3] = 'snmpcolumn';
-        $table->cellclass['inputs'][3] = 'snmpcolumn';
-        $table->data['captions'][3] = __('SNMP Community');
-        $table->data['inputs'][3] = html_print_input_text(
-            'community',
-            $this->community,
-            '',
-            50,
-            255,
-            true
-        );
-
-        $table->data['inputs'][4] = html_print_div(
-            [
-                'class'   => 'action-buttons',
-                'content' => html_print_submit_button(
-                    __('Execute'),
-                    'submit',
-                    false,
-                    [
-                        'icon' => 'cog',
-                        'mode' => 'mini',
-                    ],
-                    true
-                ),
+                'icon'  => 'cog',
+                'mode'  => 'mini',
+                'class' => 'float-right mrgn_right_10px',
             ],
             true
         );
@@ -716,7 +767,7 @@ class ExternalTools extends HTML
      */
     private function performExecution(string $command='', string $caption='')
     {
-        $output = '';
+        $output = '<div class="white_box max_floating_element_size no_border">';
 
         try {
             // If caption is not added, don't show anything.
@@ -736,7 +787,7 @@ class ExternalTools extends HTML
                 $output .= __('Command not response');
             }
 
-            $output .= '</pre>';
+            $output .= '</pre></div>';
 
             if ($resultCode !== 0) {
                 throw new Exception(
@@ -773,6 +824,8 @@ class ExternalTools extends HTML
     public function externalToolsExecution($operation, string $ip, string $community, string $snmp_version)
     {
         $output = '';
+
+        echo '<div class="white_box max_floating_element_size no_border pdd_15px">';
 
         if (validate_address($ip) === false) {
             $output .= ui_print_error_message(
@@ -938,6 +991,7 @@ class ExternalTools extends HTML
             }
         }
 
+        echo '</div>';
         return $output;
 
     }

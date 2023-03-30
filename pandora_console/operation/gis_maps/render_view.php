@@ -116,33 +116,34 @@ $controls = [
 
 $layers = gis_get_layers($idMap);
 
-// Render map
+// Render map.
 $has_management_acl = check_acl_restricted_all($config['id_user'], $map['group_id'], 'MW')
     || check_acl_restricted_all($config['id_user'], $map['group_id'], 'MM');
 
 $buttons = [];
 
 $buttons['gis_maps_list'] = [
-    'text' => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
-        'images/list.png',
+    'active' => false,
+    'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
+        'images/logs@svg.svg',
         true,
         [
             'title' => __('GIS Maps list'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
 if ($config['pure'] == 0) {
-    $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
+    $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'&amp;pure=1">'.html_print_image('images/fullscreen@svg.svg', true, ['title' => __('Full screen mode'), 'class' => 'main_menu_icon invert_filter']).'</a>';
 } else {
-    $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'">'.html_print_image('images/normalscreen.png', true, ['title' => __('Back to normal mode'), 'class' => 'invert_filter']).'</a>';
+    $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'">'.html_print_image('images/exit_fullscreen@svg.svg', true, ['title' => __('Back to normal mode'), 'class' => 'main_menu_icon invert_filter']).'</a>';
 }
 
-if ($has_management_acl) {
+if ($has_management_acl === true) {
     $hash = md5($config['dbpass'].$idMap.$config['id_user']);
     $buttons['public_link']['text'] = '<a href="'.ui_get_full_url(
         'operation/gis_maps/public_console.php?hash='.$hash.'&map_id='.$idMap.'&id_user='.$config['id_user']
-    ).'" target="_blank">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public GIS map'), 'class' => 'invert_filter']).'</a>';
+    ).'" target="_blank">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public GIS map'), 'class' => 'main_menu_icon invert_filter']).'</a>';
 }
 
 $times = [
@@ -170,17 +171,28 @@ $status = [
 $buttons[]['text'] = "<div class='mrgn_top_6px'>".__('Filter by status').': '.html_print_select($status, 'show_status', 'all', 'changeShowStatus(this.value);', '', 0, true, false, false).'</div>';
 
 if ($has_management_acl) {
-    $buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='.$idMap.'">'.html_print_image('images/setup.png', true, ['title' => __('Setup'), 'class' => 'invert_filter']).'</a>';
+    $buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='.$idMap.'">'.html_print_image('images/configuration@svg.svg', true, ['title' => __('Setup'), 'class' => 'main_menu_icon invert_filter']).'</a>';
     $buttons['setup']['godmode'] = 1;
 }
 
-ui_print_page_header(
-    __('Map').' &raquo; '.__('Map').'&nbsp;'.$map['map_name'],
-    'images/op_gis.png',
+// Header.
+ui_print_standard_header(
+    __('Map').': '.$map['map_name'],
+    'images/op_snmp.png',
     false,
-    'render_view_tab',
+    '',
     false,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('GIS Maps'),
+        ],
+    ]
 );
 
 $map_inline_style = 'width: 100%; min-height:500px; height: calc(100vh - 80px);';
@@ -320,5 +332,8 @@ if ($layers != false) {
     $(document).ready(function() {
         var $map = $("#map");
         $map.css("height", "calc(100vh - " + $map.offset().top + "px - 20px)");
+
+        $('#select2-show_status-container').parent().parent().parent().removeClass('select2');
+        $('#select2-refresh_time-container').parent().parent().parent().removeClass('select2');
     });
 </script>

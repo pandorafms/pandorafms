@@ -115,11 +115,11 @@ function pandora_files_repo_godmode()
     }
 
     // Header tabs.
-    $godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'.html_print_image('images/setup.png', true, ['title' => __('Administration view'), 'class' => 'invert_filter']).'</a>';
+    $godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'.html_print_image('images/configuration@svg.svg', true, ['title' => __('Administration view'), 'class' => 'main_menu_icon invert_filter']).'</a>';
     $godmode['godmode'] = 1;
     $godmode['active'] = 1;
 
-    $operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'.html_print_image('images/eye_show.png', true, ['title' => __('Operation view'), 'class' => 'invert_filter']).'</a>';
+    $operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'.html_print_image('images/see-details@svg.svg', true, ['title' => __('Operation view'), 'class' => 'main_menu_icon invert_filter']).'</a>';
     $operation['operation'] = 1;
 
     $onheader = [
@@ -226,10 +226,10 @@ function pandora_files_repo_operation()
     // Header tabs.
     $onheader = [];
     if (check_acl($config['id_user'], 0, 'PM')) {
-        $godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'.html_print_image('images/setup.png', true, ['title' => __('Administration view'), 'class' => 'invert_filter']).'</a>';
+        $godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'.html_print_image('images/configuration@svg.svg', true, ['title' => __('Administration view'), 'class' => 'main_menu_icon invert_filter']).'</a>';
         $godmode['godmode'] = 1;
 
-        $operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'.html_print_image('images/eye_show.png', true, ['title' => __('Operation view'), 'class' => 'invert_filter']).'</a>';
+        $operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'.html_print_image('images/see-details@svg.svg', true, ['title' => __('Operation view'), 'class' => 'main_menu_icon invert_filter']).'</a>';
         $operation['operation'] = 1;
         $operation['active'] = 1;
 
@@ -240,7 +240,28 @@ function pandora_files_repo_operation()
     }
 
     // Header.
-    ui_print_page_header(__('Files repository'), 'images/extensions.png', false, '', false, $onheader);
+    ui_print_standard_header(
+        __('Files repository'),
+        'images/extensions.png',
+        false,
+        '',
+        false,
+        $onheader,
+        [
+            [
+                'link'  => '',
+                'label' => __('Admin tools'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Extension manager'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Files repository'),
+            ],
+        ]
+    );
 
     $full_extensions_dir = $config['homedir'].'/'.EXTENSIONS_DIR.'/';
     include_once $full_extensions_dir.'files_repo/functions_files_repo.php';

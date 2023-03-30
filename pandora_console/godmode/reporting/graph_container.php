@@ -71,11 +71,11 @@ $max_graph = $config['max_graph_container'];
 $buttons['graph_list'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
         [
             'title' => __('Graph list'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];

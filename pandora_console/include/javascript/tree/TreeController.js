@@ -637,7 +637,7 @@ var TreeController = {
           var $content = $("<div></div>");
 
           // Leaf icon
-          $leafIcon.addClass("leaf-icon invert_filter");
+          $leafIcon.addClass("leaf-icon");
 
           // Content
           $content.addClass("node-content");
@@ -655,9 +655,11 @@ var TreeController = {
                 $content.append(
                   '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    "images/" +
+                    (controller.baseURL.indexOf("meta") !== -1
+                      ? "../../images/"
+                      : "images/") +
                     element.icon +
-                    '" /></div></div>'
+                    '" class="invert_filter"/></div></div>'
                 );
               } else if (
                 typeof element.iconHTML != "undefined" &&
@@ -679,7 +681,10 @@ var TreeController = {
                 var $deleteBtn = $(
                   '<a style="float: right; margin-top: 5px;"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/delete.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/></a>'
+                    (controller.meta != undefined && controller.meta == 1
+                      ? "../../images/"
+                      : "images/") +
+                    'delete.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/></a>'
                 );
                 $deleteBtn.click(function(event) {
                   var ok_function = function() {
@@ -703,7 +708,10 @@ var TreeController = {
                 var $updateicon = $(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/edit.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/>'
+                    (controller.meta != undefined && controller.meta == 1
+                      ? "../../images/"
+                      : "images/") +
+                    'edit.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/>'
                 );
                 var $updatebtn = $(
                   '<a style="float: right; margin-top: 5px;" href = "' +
@@ -759,7 +767,7 @@ var TreeController = {
                         : "") +
                       'images/event.svg" /> '
                   );
-                  $eventImage.addClass("agent-alerts-fired");
+                  $eventImage.addClass("agent-alerts-fired invert_filter");
                   $eventImage
                     .click(function(e) {
                       e.preventDefault();
@@ -875,7 +883,7 @@ var TreeController = {
                 $content.append($statusImage);
               }
               var image_tooltip =
-                '<span><img class="invert_filter forced_title" data-title="' +
+                '<span class="reinvert_filter"><img class="invert_filter forced_title" data-title="' +
                 (element.title ? element.title : element.name) +
                 '" data-use_title_for_force_title="1" src="' +
                 (controller.baseURL.length > 0 ? controller.baseURL : "") +
@@ -1070,7 +1078,10 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/module-graph.svg" /> '
+                        (controller.baseURL.indexOf("meta") !== -1
+                          ? "../../images/"
+                          : "images/") +
+                        'module-graph.svg" /> '
                     );
                   }
 
@@ -1115,7 +1126,10 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/simple-value.svg" /> '
+                        (controller.baseURL.indexOf("meta") !== -1
+                          ? "../../images/"
+                          : "images/") +
+                        'simple-value.svg" /> '
                     );
                     $dataImage
                       .addClass("module-data")

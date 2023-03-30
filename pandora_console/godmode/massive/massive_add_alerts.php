@@ -293,7 +293,7 @@ $table->data[2][3] = '';
 echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_alerts">';
 html_print_table($table);
 
-attachActionButton('add', 'add', $table->width);
+attachActionButton('add', 'add', $table->width, false, $SelectAction);
 
 echo '</form>';
 

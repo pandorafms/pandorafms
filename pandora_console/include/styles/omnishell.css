@@ -555,3 +555,7 @@ ul.datatable_filter > li > div.action-buttons > button {
 .ui-dialog.ui-corner-all.ui-widget.ui-widget-content {
   z-index: 10000 !important;
 }
+
+.action_buttons_right_content {
+  z-index: 1 !important;
+}

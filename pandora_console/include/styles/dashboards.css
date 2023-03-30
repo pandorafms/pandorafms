@@ -127,6 +127,8 @@ h1 {
 .grid-stack-item .grid-stack-item-content .header-widget div:first-child {
   flex: 1;
   text-align: center;
+  font-family: "lato-bold";
+  font-size: 14px;
 }
 
 .grid-stack-item .grid-stack-item-content .header-widget div:not(:first-child) {
@@ -790,4 +792,62 @@ form.modal-dashboard
 
 .select2-selection__rendered {
   max-height: 75px !important;
+}
+
+.content-widget .info_table {
+  margin-bottom: 0px;
+}
+
+.div-state-agent {
+  width: 5px;
+  height: 20px;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+.dataTables_length > label > select {
+  height: 30px;
+  min-height: 30px;
+  margin: 5px;
+}
+
+.dataTables_paginate.paging_simple_numbers {
+  margin-top: 10px;
+  height: 40px;
+}
+
+.info_table.events tr > td {
+  height: 1em !important;
+  text-align: initial;
+}
+
+.event.flex-row.h100p.nowrap .mini-criticity {
+  margin-left: 7px;
+}
+
+.tree-controller-recipient {
+  width: -webkit-fill-available !important;
+}
+
+.services_table {
+  padding: 0px;
+  background-color: #fff;
+  border: 0px;
+  width: 90%;
+}
+
+div.widget-mrgn-0px > div.parent_graph {
+  margin: 0px;
+}
+
+div.widget-mrgn-0px > div.parent_graph > div[id^="graph_"] {
+  width: calc(100% + 14px) !important;
+}
+
+div.content-widget
+  > div.container-center
+  > div.centered.w90p
+  > div#container_show_stats
+  > canvas {
+  height: 310px;
 }

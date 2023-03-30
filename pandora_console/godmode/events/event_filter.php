@@ -59,6 +59,14 @@ if ($delete) {
     }
 
     if ($result !== false) {
+        db_process_sql_delete(
+            'tfavmenu_user',
+            [
+                'id_element' => $id_filter,
+                'section'    => 'Events',
+                'id_user'    => $config['id_user'],
+            ]
+        );
         $result = true;
     } else {
         $result = false;
@@ -186,7 +194,7 @@ foreach ($filters as $filter) {
     ) {
         $table->cellclass[][6] = 'table_action_buttons';
         $data[6] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;'href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter'].'&offset=0&pure='.$config['pure']."'>".html_print_image(
-            'images/cross.png',
+            'images/delete.svg',
             true,
             [
                 'title' => __('Delete'),

@@ -34,14 +34,26 @@ my %Opts;
 # Run as a daemon.
 my $DAEMON = 0;
 
+# Timeout for the HA DB lock.
+my $LOCK_TIMEOUT = 300;
+
 # Avoid retry old processing orders.
 my $First_Cleanup = 1;
+
+# List of known HA DB hosts.
+my @HA_DB_Hosts;
+
+# Current master node.
+my $DB_Host = '';
 
 # PID file.
 my $PID_FILE = '/var/run/pandora_ha.pid';
 
 # Server service handler.
 my $Pandora_Service;
+
+# Restart the Pandora FMS Server.
+my $Restart = 0;
 
 # Controlled exit
 my $Running = 0;
@@ -54,6 +66,10 @@ sub log_message($$$;$) {
 
   my $level = $verbosity_level;
   $level = 5 unless defined($level);
+
+  if ($source eq 'DEBUG' && !defined($ENV{'PANDORA_DEBUG'})) {
+  	return;
+  }
 
   if (ref($conf) eq "HASH") {
     logger($conf, 'HA (' . $source . ') ' . "$message", $level);
@@ -169,6 +185,17 @@ sub ha_keep_pandora_running($$) {
   my ($conf, $dbh) = @_;
   my $OSNAME = $^O;
   my $control_command;
+  $Pandora_Service = $conf->{'pandora_service_cmd'};
+
+  # A restart was requested.
+  if ($Restart == 1) {
+    $Restart = 0;
+    
+    log_message($conf, 'LOG', 'Restarting Pandora service');
+    $control_command = $^O eq "freebsd" ? "restart_server" : 'restart-server';
+    `$Pandora_Service $control_command $ENV{'PANDORA_DBHOST'} 2>/dev/null`;
+    return;
+  }
 
   # Check if all servers are running
   # Restart if crashed or keep interval is over.
@@ -185,14 +212,12 @@ sub ha_keep_pandora_running($$) {
 
   my $nservers = get_db_value ($dbh, 'SELECT count(*) FROM tserver where name = ?', $conf->{'servername'});
 
-  $Pandora_Service = $conf->{'pandora_service_cmd'};
-
   # Check if service is running
   $control_command = "status-server";
   if ($OSNAME eq "freebsd") {
     $control_command = "status_server";
   }
-  my $pid =  `$Pandora_Service $control_command | awk '{print \$NF*1}' | tr -d '\.'`;
+  my $pid =  `$Pandora_Service $control_command | grep -v /conf.d/ | awk '{print \$NF*1}' | tr -d '\.'`;
 
   if ( ($pid > 0) && ($component_last_contact > 0)) {
     # service running but not all components
@@ -308,6 +333,37 @@ sub ha_update_server($$) {
 
 }
 
+################################################################################
+# Dump the list of known databases to disk.
+################################################################################
+sub ha_dump_databases($) {
+    my ($conf) = @_;
+
+	# HA is not configured.
+    return unless defined($conf->{'ha_hosts'});
+
+    eval {
+        open(my $fh, '>', $conf->{'ha_hosts_file'});
+        print $fh $DB_Host; # The console only needs the master DB.
+        close($fh);
+        log_message($conf, 'DEBUG', "Dumped master database $DB_Host to disk");
+    };
+    log_message($conf, 'WARNING', $@) if ($@);
+}
+
+################################################################################
+# Read the list of known databases from disk.
+################################################################################
+sub ha_load_databases($) {
+    my ($conf) = @_;
+
+	# HA is not configured.
+    return unless defined($conf->{'ha_hosts'});
+
+    @HA_DB_Hosts = grep { !/^#/ } map { s/^\s+|\s+$//g; $_; } split(/,/, $conf->{'ha_hosts'});
+    log_message($conf, 'DEBUG', "Loaded databases from disk (@HA_DB_Hosts)");
+}
+
 ###############################################################################
 # Connect to ha database, falling back to direct connection to db.
 ###############################################################################
@@ -324,9 +380,111 @@ sub ha_database_connect($) {
 }
 
 ###############################################################################
-# Main
+# Connect to ha database, falling back to direct connection to db.
 ###############################################################################
-sub ha_main($) {
+sub ha_database_connect_pandora($) {
+	my $conf = shift;
+	my $dbhost = $conf->{'dbhost'};
+
+	# Load the list of HA databases.
+	ha_load_databases($conf);
+
+	# Select a new master database.
+	my ($dbh, $utimestamp, $max_utimestamp) = (undef, undef, -1);
+	foreach my $ha_dbhost (@HA_DB_Hosts) {
+
+		# Retry each database ha_connect_retries times.
+		for (my $i = 0; $i < $conf->{'ha_connect_retries'}; $i++) {
+			eval {
+				log_message($conf, 'DEBUG', "Trying database $ha_dbhost...");
+				$dbh= db_connect('mysql',
+								 $conf->{'dbname'},
+								 $ha_dbhost,
+								 $conf->{'dbport'},
+								 $conf->{'ha_dbuser'},
+								 $conf->{'ha_dbpass'});
+				log_message($conf, 'DEBUG', "Connected to database $ha_dbhost");
+			};
+			log_message($conf, 'WARNING', $@) if ($@);
+
+			# Connection successful.
+			last if defined($dbh);
+
+			# Wait for the next retry.
+			sleep($conf->{'ha_connect_delay'});
+		}
+
+		# No luck. Try the next database.
+		next unless defined($dbh);
+
+		eval {
+		   # Get the most recent utimestamp from the database.
+		   $utimestamp = get_db_value($dbh, 'SELECT UNIX_TIMESTAMP(MAX(keepalive)) FROM tserver');
+		   db_disconnect($dbh);
+
+		   # Did we find a more recent database?
+		   $utimestamp = 0 unless defined($utimestamp);
+		   if ($utimestamp > $max_utimestamp) {
+			   $dbhost = $ha_dbhost;
+			   $max_utimestamp = $utimestamp;
+		   }
+		};
+		log_message($conf, 'WARNING', $@) if ($@);
+	}
+
+	# Return a connection to the selected master.
+	eval {
+		log_message($conf, 'DEBUG', "Connecting to selected master $dbhost...");
+		$dbh = db_connect('mysql',
+						  $conf->{'dbname'},
+						  $dbhost,
+						  $conf->{'dbport'},
+						  $conf->{'ha_dbuser'},
+						  $conf->{'ha_dbpass'});
+
+		# Restart if a new master was selected.
+		if ($dbhost ne $DB_Host) {
+			log_message($conf, 'DEBUG', "Setting master database to $dbhost");
+			$DB_Host = $dbhost;
+			$Restart = 1;
+		}
+	};
+	log_message($conf, 'WARNING', $@) if ($@);
+
+	# Save the list of HA databases.
+	ha_dump_databases($conf);
+
+	return $dbh;
+}
+
+###############################################################################
+# Return 1 if the given DB is read-only, 0 otherwise.
+###############################################################################
+sub ha_read_only($$) {
+    my ($conf, $dbh) = @_;
+
+    my $read_only = get_db_value($dbh, 'SELECT @@global.read_only');
+    return 1 if (defined($read_only) && $read_only == 1);
+
+    return 0;
+}
+
+###############################################################################
+# Restart the Pandora FMS Server.
+###############################################################################
+sub ha_restart_pandora($) {
+    my ($config) = @_;
+
+    my $control_command = $^O eq 'freebsd' ?
+                          'restart_server' :
+                          'restart-server';
+    `$config->{'pandora_service_cmd'} $control_command 2>/dev/null`;
+}
+
+###############################################################################
+# Main (Pacemaker)
+###############################################################################
+sub ha_main_pacemaker($) {
   my ($conf) = @_;
 
   # Set the PID file.
@@ -404,6 +562,100 @@ sub ha_main($) {
   }
 }
 
+###############################################################################
+# Main (Pandora)
+###############################################################################
+sub ha_main_pandora($) {
+  my ($conf) = @_;
+
+  # Set the PID file.
+  $conf->{'PID'} = $PID_FILE;
+
+  # Log to a separate file if needed.
+  $conf->{'log_file'} = $conf->{'ha_log_file'} if defined ($conf->{'ha_log_file'});
+
+  # Run in the background.
+  ha_daemonize($conf) if ($DAEMON == 1);
+
+  # Main loop.
+  $Running = 1;
+  while ($Running) {
+    my $dbh = undef;
+    eval {
+
+      # Connect to a DB.
+      log_message($conf, 'LOG', "Looking for databases");
+      $dbh = ha_database_connect_pandora($conf);
+      if (!defined($dbh)) {
+        log_message($conf, 'LOG', 'No databases available');
+        return;
+      }
+
+      # Make the DB host available to the Pandora FMS Server.
+      $ENV{'PANDORA_DBHOST'} = $DB_Host;
+
+      # Needed for the Enterprise module.
+      $conf->{'dbhost'} = $DB_Host;
+
+      # Enterprise capabilities need access to the DB.
+      eval { 
+        local $SIG{__DIE__};
+        # Load enterprise components.
+        enterprise_load($conf, 1);
+
+        # Register Enterprise logger
+        enterprise_hook('pandoraha_logger', [\&log_message]);
+        log_message($conf, 'LOG', 'Enterprise capabilities loaded');
+
+      };
+      log_message($conf, 'LOG', "No enterprise capabilities: $@") if ($@);
+
+      log_message($conf, 'LOG', "Connected to database $DB_Host");
+      enterprise_hook('pandoraha_stop_slave', [$conf, $dbh]);
+
+      if (ha_read_only($conf, $dbh) == 1) {
+        log_message($conf, 'LOG', "The database is read-only.");
+        return;
+      }
+
+      # Check if there are updates pending.
+      ha_update_server($conf, $dbh);
+
+      # Keep pandora running
+      ha_keep_pandora_running($conf, $dbh);
+
+      # Keep Tentacle running
+      ha_keep_tentacle_running($conf, $dbh);
+    
+      # Are we the master?
+      pandora_set_master($conf, $dbh);
+      if (!pandora_is_master($conf)) {
+        log_message($conf, 'LOG', $conf->{'servername'} . ' is not the current master. Skipping DB-HA actions and monitoring.');
+        return;
+      }
+
+      # Check the status of slave databases.
+      enterprise_hook('pandoraha_check_slaves', [$conf, $dbh, $DB_Host, \@HA_DB_Hosts]);
+
+      # Update the status of HA databases.
+      enterprise_hook('pandoraha_update_dbs', [$conf, $dbh, $DB_Host, \@HA_DB_Hosts]);
+
+      # Execute resync actions.
+      enterprise_hook('pandoraha_resync_dbs', [$conf, $dbh, $DB_Host, \@HA_DB_Hosts]);
+    };
+    log_message($conf, 'WARNING', $@) if ($@);
+
+    # Cleanup.
+    eval {
+      db_disconnect($dbh) if defined($dbh);
+    };
+
+    # Go to sleep.
+    log_message($conf, 'LOG', "Sleep.");
+    sleep($conf->{'ha_interval'});
+  }
+}
+
 ################################################################################
 # Stop pandora server
 ################################################################################
@@ -429,7 +681,6 @@ END {
   stop();
 }
 
-
 $SIG{INT} = \&stop;
 $SIG{TERM} = \&stop;
 
@@ -440,6 +691,10 @@ ha_init_pandora(\%Conf);
 ha_load_pandora_conf (\%Conf);
 
 # Main
-ha_main(\%Conf);
+if (defined($Conf{'ha_mode'}) && lc($Conf{'ha_mode'}) eq 'pandora') {
+	ha_main_pandora(\%Conf);
+} else {
+	ha_main_pacemaker(\%Conf);
+}
 
 exit 0;

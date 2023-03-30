@@ -1216,7 +1216,7 @@ function delete_macro_local_component(prefix) {
 //Add a new module macro
 function add_macro() {
   var macro_count = parseInt($("#hidden-module_macro_count").val());
-  var delete_icon = '<?php html_print_image ("images/cross.png", false) ?>';
+  var delete_icon = '<?php html_print_image ("images/delete.svg", false) ?>';
 
   // Add inputs for the new macro
   $("#module_macros").append(

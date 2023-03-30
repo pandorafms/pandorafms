@@ -1022,8 +1022,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.769';
-use constant AGENT_BUILD => '230310';
+use constant AGENT_VERSION => '7.0NG.770';
+use constant AGENT_BUILD => '230330';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -3749,6 +3749,7 @@ sub module_plugin ($) {
 	
 	# Do not save the output if there was an error
 	if ($? != 0) {
+		log_message ('error', "plugin execution '". $command ."' exited with error code " . $?);
 		return ();
 	}
 

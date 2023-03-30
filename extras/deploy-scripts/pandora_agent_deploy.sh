@@ -42,7 +42,7 @@ check_cmd_status () {
         echo "Error installing Pandora FMS Agent for detailed error please check log: $LOGFILE"
         rm -rf $HOME/pandora_deploy_tmp/*.rpm* &>> $LOGFILE
         exit 1
-    else
+    else            
         echo -e "${green}OK${reset}"
         return 0
     fi
@@ -64,6 +64,12 @@ check_root_permissions () {
         echo -e "${green}OK${reset}"
     fi
 }
+
+install_tarball () {
+tar xvzf $1
+cd unix && ./pandora_agent_installer --install
+}
+
 
 install_autodiscover () {
     local arch=$1
@@ -145,14 +151,17 @@ if [[ $OS_RELEASE =~ 'rhel' ]] || [[ $OS_RELEASE =~ 'fedora' ]]; then
     $package_manager_cmd install -y http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm &>> $LOGFILE
     echo -en "${cyan}Installing Pandora FMS agent...${reset}"
     check_cmd_status 'Error installing Pandora FMS agent'
+    [[ $PANDORA_AGENT_SSL ]] && execute_cmd "$package_manager_cmd install -y perl-IO-Socket-SSL" "Installing SSL libraries for encrypted connection"
 
 fi
 
 if [[ $OS_RELEASE == 'debian' ]]; then
     execute_cmd "apt update" 'Updating repos'
     execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Installing agent dependencies' 
-    execute_cmd 'wget http://firefly.artica.es/pandorafms/latest/Debian_Ubuntu/pandorafms.agent_linux_7.0NG.deb' 'Downloading Pandora FMS agent dependencies'
-    execute_cmd 'apt install -y ./pandorafms.agent_linux_7.0NG.deb' 'Installing Pandora FMS agent'
+    execute_cmd 'wget http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz' 'Downloading Pandora FMS agent package'
+    execute_cmd 'install_tarball pandorafms_agent_linux-7.0NG.tar.gz' 'Installing Pandora FMS agent'
+    [[ $PANDORA_AGENT_SSL ]] && execute_cmd 'apt install -y libio-socket-ssl-perl' "Installing SSL libraries for encrypted connection"
+    cd $HOME/pandora_deploy_tmp
 fi
 
 # Configuring Agente
@@ -165,6 +174,7 @@ fi
 [[ $PANDORA_AGENT_ALIAS ]] && sed -i "s/^#agent_alias.*$/agent_alias $PANDORA_AGENT_ALIAS/g" $PANDORA_AGENT_CONF
 [[ $PANDORA_SECONDARY_GROUPS ]] && sed -i "s/^# secondary_groups.*$/secondary_groups $PANDORA_SECONDARY_GROUPS/g" $PANDORA_AGENT_CONF
 [[ $TIMEZONE ]] && ln -sfn /usr/share/zoneinfo/$TIMEZONE /etc/localtime
+[[ $PANDORA_AGENT_SSL ]] && sed -i "s/^#server_ssl.*$/server_ssl $PANDORA_AGENT_SSL/g" $PANDORA_AGENT_CONF 
 
 
 #installing autodiscover

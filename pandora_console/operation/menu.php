@@ -205,7 +205,7 @@ if ($access_console_node === true) {
             $sub['operation/inventory/inventory']['refr'] = 0;
         }
 
-        if ($config['activate_netflow']) {
+        if ($config['activate_netflow'] || $config['activate_sflow']) {
             $sub['network_traffic'] = [
                 'text'    => __('Network'),
                 'id'      => 'Network',
@@ -213,34 +213,20 @@ if ($access_console_node === true) {
                 'subtype' => 'nolink',
                 'refr'    => 0,
             ];
-
-            // Initialize the submenu.
-            $netflow_sub = [];
-
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/netflow/netflow_explorer' => [
-                        'text' => __('Netflow explorer'),
-                        'id'   => 'Netflow explorer',
-                    ],
-                    'operation/netflow/nf_live_view'     => [
-                        'text' => __('Netflow Live View'),
-                        'id'   => 'Netflow Live View',
-                    ],
-                ]
-            );
-
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/network/network_usage_map' => [
-                        'text' => __('Network usage map'),
-                        'id'   => 'Network usage map',
-                    ],
-                ]
-            );
-
+            $netflow_sub = [
+                'operation/netflow/netflow_explorer'  => [
+                    'text' => __('Netflow explorer'),
+                    'id'   => 'Netflow explorer',
+                ],
+                'operation/netflow/nf_live_view'      => [
+                    'text' => __('Netflow Live View'),
+                    'id'   => 'Netflow Live View',
+                ],
+                'operation/network/network_usage_map' => [
+                    'text' => __('Network usage map'),
+                    'id'   => 'Network usage map',
+                ],
+            ];
             $sub['network_traffic']['sub2'] = $netflow_sub;
         }
 
@@ -411,7 +397,7 @@ if ($access_console_node === true) {
         // INI GIS Maps.
         if ($config['activate_gis']) {
             $sub['gismaps']['text'] = __('GIS Maps');
-            $sub['gismaps']['id'] = 'GIS Maps';
+            $sub['gismaps']['id'] = 'GIS_Maps';
             $sub['gismaps']['type'] = 'direct';
             $sub['gismaps']['subtype'] = 'nolink';
             $sub2 = [];
@@ -605,6 +591,44 @@ if ($access_console_node === true) {
         $menu_operation['eventos']['sub'] = $sub;
     }
 }
+
+$favorite_menu = db_get_all_rows_sql(
+    sprintf(
+        'SELECT id_element, url, label, section
+        FROM tfavmenu_user
+        WHERE id_user = "%s"
+        ORDER BY section DESC',
+        $config['id_user']
+    )
+);
+// Favorite.
+if ($favorite_menu !== false) {
+    $menu_operation['favorite']['text'] = __('Favorite');
+    $menu_operation['favorite']['id'] = 'fav-menu';
+
+    $section = '';
+    $sub = [];
+    $sub2 = [];
+    foreach ($favorite_menu as $key => $row) {
+        if ($row['section'] !== $section) {
+            $section = $row['section'];
+            $sub2 = [];
+        }
+
+        $sub[$section]['text'] = __(str_replace('_', ' ', $section));
+        $sub[$section]['type'] = 'direct';
+        $sub[$section]['subtype'] = 'nolink';
+        $sub[$section]['id'] = $row['section'].'-fav-menu';
+
+        $sub2[$row['url']]['text'] = io_safe_output($row['label']);
+        $sub[$section]['sub2'] = $sub2;
+    }
+
+    $menu_operation['favorite']['sub'] = $sub;
+}
+
+
+
 
 // Workspace.
 $menu_operation['workspace']['text'] = __('Workspace');

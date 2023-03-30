@@ -489,10 +489,8 @@ function cron_list_table()
     }
 
     if ($defined_tasks !== false) {
-        echo '<h2>'.__('Scheduled jobs').'</h2>';
-
         $table = new stdClass();
-        $table->class = 'databox data';
+        $table->class = 'info_table';
         $table->width = '100%';
         $table->data = [];
         $table->head = [];
@@ -532,11 +530,11 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/target.png',
+                                    'images/change-active.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'main_menu_icon invert_filter',
                                     ]
                                 ),
                             ],
@@ -570,11 +568,11 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/target.png',
+                                    'images/change-active.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'main_menu_icon invert_filter',
                                     ]
                                 ),
                             ],
@@ -625,11 +623,11 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/target.png',
+                                    'images/change-active.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'main_menu_icon invert_filter',
                                     ]
                                 ),
                             ],
@@ -717,11 +715,11 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/target.png',
+                                    'images/change-active.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'main_menu_icon invert_filter',
                                     ]
                                 ),
                             ],
@@ -753,11 +751,11 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/target.png',
+                                    'images/change-active.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'main_menu_icon invert_filter',
                                     ]
                                 ),
                             ],
@@ -799,11 +797,11 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/target.png',
+                                    'images/change-active.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'main_menu_icon invert_filter',
                                     ]
                                 ),
                             ],
@@ -841,11 +839,11 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/target.png',
+                                    'images/change-active.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'main_menu_icon invert_filter',
                                     ]
                                 ),
                             ],
@@ -875,11 +873,11 @@ function cron_list_table()
                                     $task['id']
                                 ),
                                 'content' => html_print_image(
-                                    'images/target.png',
+                                    'images/change-active.svg',
                                     true,
                                     [
                                         'title' => __('Force run'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'main_menu_icon invert_filter',
                                     ]
                                 ),
                             ],
@@ -912,42 +910,39 @@ function cron_list_table()
 
             if ($function_name == 'cron_task_do_backup' || $function_name == 'cron_task_execute_custom_script') {
                 if ($manage_pandora) {
-                    $data[7]  = '<a href="'.$url;
-                    $data[7] .= 'edit_task=1&id='.$task['id'].'">';
+                    $data[7]  = '<a href="javascript:form_add_cron_task('.$task['id'].',1);">';
                     $data[7] .= html_print_image(
-                        'images/config.png',
+                        'images/edit.svg',
                         true,
                         [
                             'title' => __('Edit'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data[7] .= '</a>';
                 }
 
                 if ($manage_pandora) {
-                    $data[7] .= '<a href="'.$url;
-                    $data[7] .= 'delete_task=1&id_user_task='.$task['id'].'">';
+                    $data[7] .= '<a href="javascript:form_add_cron_task('.$task['id'].',1);">';
                     $data[7] .= html_print_image(
-                        'images/cross.png',
+                        'images/delete.svg',
                         true,
                         [
                             'title' => __('Delete'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data[7] .= '</a>';
                 }
             } else {
                 if ($write_perms || $manage_pandora) {
-                    $data[7] = '<a href="'.$url;
-                    $data[7] .= 'edit_task=1&id='.$task['id'].'">';
+                    $data[7] = '<a href="javascript:form_add_cron_task('.$task['id'].',1);">';
                     $data[7] .= html_print_image(
-                        'images/config.png',
+                        'images/edit.svg',
                         true,
                         [
                             'title' => __('Edit'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data[7] .= '</a>';
@@ -957,11 +952,11 @@ function cron_list_table()
                     $data[7] .= '<a href="'.$url;
                     $data[7] .= 'delete_task=1&id_user_task='.$task['id'].'">';
                     $data[7] .= html_print_image(
-                        'images/cross.png',
+                        'images/delete.svg',
                         true,
                         [
                             'title' => __('Delete'),
-                            'class' => 'invert_filter',
+                            'class' => 'main_menu_icon invert_filter',
                         ]
                     );
                     $data[7] .= '</a>';
@@ -982,7 +977,7 @@ function cron_list_table()
                             true,
                             [
                                 'title' => ((bool) $task['enabled'] === true) ? __('Disable task') : __('Enable task'),
-                                'class' => 'invert_filter',
+                                'class' => 'main_menu_icon invert_filter',
                             ]
                         ),
                     ],
@@ -994,5 +989,7 @@ function cron_list_table()
         }
 
         html_print_table($table);
+    } else {
+        ui_print_info_message(['no_close' => true, 'message' => __('There are no jobs') ]);
     }
 }

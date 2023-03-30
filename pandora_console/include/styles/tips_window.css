@@ -1,0 +1,223 @@
+#tips_window {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.308);
+  top: 0;
+  left: 0;
+  z-index: 2001;
+}
+#tips_window_modal,
+#tips_window_modal_preview {
+  padding: 0px;
+}
+.window {
+  background-image: white;
+  width: 640px;
+  width: 100%;
+  border-radius: 5px;
+}
+.ui-dialog .tips_header.ui-dialog-titlebar {
+  display: flex !important;
+  padding: 0px 20px;
+  justify-content: space-between;
+  height: fit-content;
+  background-color: white;
+  color: #161628;
+  border-top-left-radius: 25px !important;
+  border-top-right-radius: 25px !important;
+}
+.tips_header .title {
+  font-size: 15px;
+}
+.description {
+  padding: 0px 20px 20px 20px;
+  text-align: center;
+}
+.actions {
+  border-top: 1px solid #0000001a;
+  text-align: right;
+  padding: 20px;
+}
+.carousel {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 300px;
+  max-width: 464px;
+  text-align: center;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+.carousel .prev_step {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0px;
+  background: none;
+  font-size: 50px;
+  color: white;
+  cursor: pointer;
+  left: 0;
+}
+.carousel .next_step {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+  z-index: 1;
+  border: 0px;
+  background: none;
+  font-size: 50px;
+  color: white;
+  cursor: pointer;
+}
+.carousel .images {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  font-size: 0px;
+  height: 100%;
+}
+.carousel .images img {
+  width: 100%;
+  height: 100%;
+  max-height: 260px;
+}
+.dialog_tips .ui-dialog-buttonset {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+#tips_window_modal .ui-dialog-buttonset button.submit-cancel-tips,
+#tips_window_modal_preview .ui-dialog-buttonset button.submit-cancel-tips {
+  border-radius: 6px;
+  color: #14524f;
+  width: fit-content;
+  font-size: 15px;
+  border: 1px solid #14524f;
+  height: 35px;
+  margin: 0px;
+  background-color: #ffffff;
+  font-weight: 600;
+}
+#tips_window_modal .ui-dialog-buttonset button.submit-next-tips,
+#tips_window_modal_preview .ui-dialog-buttonset button.submit-next-tips {
+  border-radius: 6px;
+  color: #ffffff;
+  width: fit-content;
+  font-size: 15px;
+  border: 1px solid #14524f;
+  background-color: #14524f;
+  height: 35px;
+  font-weight: 600;
+}
+.dialog_tips {
+  border-radius: 10px !important;
+}
+.dialog_tips .ui-widget-header {
+  margin: 0px !important;
+}
+.dialog_tips .tips_header {
+  border-top-right-radius: 10px !important;
+  border-top-left-radius: 10px !important;
+}
+#tips_window_modal .ui-dialog-buttonset button,
+#tips_window_modal_preview .ui-dialog-buttonset button {
+  margin: 0px 20px !important;
+  margin-top: 10px !important;
+  min-width: fit-content;
+}
+.dialog_tips .ui-dialog-buttonset {
+  border-bottom-right-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  border-top: 1px solid #c1ccdc;
+}
+#title_tip {
+  font-size: 15px;
+  color: #161628;
+}
+#text_tip {
+  color: #161628;
+}
+#url_tip {
+  font-size: 13px;
+  color: #14524f;
+  font-weight: 600;
+}
+span.count-round-tip {
+  width: 6px !important;
+  height: 6px !important;
+  background: #dbdfe6;
+  border-radius: 10px;
+  margin: 0px 2px;
+}
+span.count-round-tip.active {
+  background-color: #1d7874;
+}
+.counter-tips {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+.arrow_counter {
+  width: 7px;
+  margin: 0px 5px;
+}
+.bx-viewport {
+  height: 260px !important;
+}
+.action_image {
+  margin: 10px 0px;
+}
+span.enable {
+  display: block;
+  width: 40px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: #82b92e;
+  margin: 0 auto;
+}
+span.disable {
+  display: block;
+  width: 40px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: #e63c52;
+  margin: 0 auto;
+}
+.buttons_actions {
+  text-align: center;
+  display: flex;
+}
+.image_tip {
+  display: flex;
+  align-items: center;
+  margin: 10px 0px;
+}
+.image_tip img {
+  max-width: 350px;
+}
+#notices_images {
+  color: #e63c52;
+}
+.remove-image {
+  max-width: 35px;
+  padding-top: 18px;
+}
+.buttons_actions input {
+  width: 32px;
+}
+.hide-button {
+  opacity: 0;
+  pointer-events: none;
+}
+#list_tips_windows .main_menu_icon {
+  padding: 0px;
+}
+#list_tips_windows .table_action_buttons {
+  text-align: center;
+}
+.button-add-image {
+  max-width: fit-content;
+}

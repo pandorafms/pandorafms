@@ -139,11 +139,11 @@ class Diagnostics extends Wizard
 
         $pdf_url = $this->url.'&pdf=true';
         $pdf_img = html_print_image(
-            'images/pdf.png',
+            'images/file-pdf.svg',
             true,
             [
                 'title'   => __('Export to PDF'),
-                'class'   => 'invert_filter',
+                'class'   => 'main_menu_icon invert_filter',
                 'onclick' => 'blockResubmit($(this))',
             ]
         );
@@ -1831,7 +1831,7 @@ class Diagnostics extends Wizard
 
                         if ($items[$key]['status'] === 2) {
                             $items[$key]['value'] = html_print_image(
-                                'images/icono-warning.png',
+                                'images/alert-yellow@svg.svg',
                                 true,
                                 [
                                     'title' => __('Warning'),
@@ -1840,7 +1840,7 @@ class Diagnostics extends Wizard
                             );
                         } else if ($items[$key]['status'] === 1) {
                             $items[$key]['value'] = html_print_image(
-                                'images/exito.png',
+                                'images/validate.svg',
                                 true,
                                 [
                                     'title' => __('Successfully'),
@@ -1849,7 +1849,7 @@ class Diagnostics extends Wizard
                             );
                         } else {
                             $items[$key]['value'] = html_print_image(
-                                'images/error_1.png',
+                                'images/fail@svg.svg',
                                 true,
                                 [
                                     'title' => __('Error'),

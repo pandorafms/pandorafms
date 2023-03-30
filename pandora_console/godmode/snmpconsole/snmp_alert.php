@@ -1885,7 +1885,7 @@ if ($create_alert || $update_alert) {
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->align = [];
 
     $table->head[0] = '<span title="'.__('Position').'">'.__('P.').'</span>';
@@ -1943,7 +1943,7 @@ if ($create_alert || $update_alert) {
                 $data[1] .= '<tr>';
                 $data[1] .= '<td>'.alerts_get_alert_action_name($action['alert_type']).'</td>';
                 $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
-                    'images/cross.png',
+                    'images/delete.svg',
                     true,
                     [
                         'border' => '0',
@@ -1978,11 +1978,12 @@ if ($create_alert || $update_alert) {
                             $row['id_as']
                         ),
                         'content' => html_print_image(
-                            'images/copy.png',
+                            'images/copy.svg',
                             true,
                             [
                                 'alt'   => __('Duplicate'),
                                 'title' => __('Duplicate'),
+                                'class' => 'main_menu_icon',
                             ]
                         ),
                     ],
@@ -1995,11 +1996,12 @@ if ($create_alert || $update_alert) {
                             $row['id_as']
                         ),
                         'content' => html_print_image(
-                            'images/config.png',
+                            'images/edit.svg',
                             true,
                             [
                                 'alt'    => __('Update'),
                                 'border' => 0,
+                                'class'  => 'main_menu_icon',
                             ]
                         ),
                     ],
@@ -2025,10 +2027,11 @@ if ($create_alert || $update_alert) {
                     [
                         'href'    => 'javascript: ',
                         'content' => html_print_image(
-                            'images/cross.png',
+                            'images/delete.svg',
                             true,
                             [
                                 'title' => __('Delete action'),
+                                'class' => 'main_menu_icon',
                             ]
                         ),
                         'onClick' => 'delete_snmp_alert('.$row['id_as'].')',

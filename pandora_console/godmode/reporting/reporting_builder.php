@@ -713,13 +713,14 @@ switch ($action) {
 
         $table_aux = new stdClass();
         $table_aux->width = '100%';
-        if (is_metaconsole()) {
-            $table_aux->class = 'databox filters';
+        $table_aux->class = 'filter-table-adv';
+        $table_aux->size[0] = '30%';
+        $table_aux->size[1] = '30%';
+        $table_aux->size[2] = '30%';
 
-            $table_aux->colspan[0][0] = 4;
-            $table_aux->data[0][0] = '<b>'.__('Group').'</b>';
-
-            $table_aux->data[0][1] = html_print_select_groups(
+        $table_aux->data[0][0] = html_print_label_input_block(
+            __('Group'),
+            html_print_select_groups(
                 false,
                 $access,
                 true,
@@ -737,116 +738,56 @@ switch ($action) {
                 false,
                 false,
                 'id_grupo'
-            ).'<br>';
+            )
+        );
 
-            $table_aux->data[0][2] = '<b>'.__('Free text for search: ');
-            $table_aux->data[0][2] .= ui_print_help_tip(
+        $table_aux->data[0][1] = html_print_label_input_block(
+            __('Free text for search: ').ui_print_help_tip(
                 __('Search by report name or description, list matches.'),
                 true
-            );
-            $table_aux->data[0][2] .= '</b>';
-            $table_aux->data[0][3] = html_print_input_text(
+            ),
+            html_print_input_text(
                 __('search'),
                 $search,
                 '',
                 30,
                 '',
                 true
-            );
-        } else {
-            $table_aux->class = 'filter-table-adv';
-            $table_aux->size[0] = '30%';
-            $table_aux->size[1] = '30%';
-            $table_aux->size[2] = '30%';
-
-            $table_aux->data[0][0] = html_print_label_input_block(
-                __('Group'),
-                html_print_select_groups(
-                    false,
-                    $access,
-                    true,
-                    'id_group',
-                    $id_group,
-                    '',
-                    '',
-                    '',
-                    true,
-                    false,
-                    true,
-                    '',
-                    false,
-                    '',
-                    false,
-                    false,
-                    'id_grupo'
-                )
-            );
-
-            $table_aux->data[0][1] = html_print_label_input_block(
-                __('Free text for search: ').ui_print_help_tip(
-                    __('Search by report name or description, list matches.'),
-                    true
-                ),
-                html_print_input_text(
-                    __('search'),
-                    $search,
-                    '',
-                    30,
-                    '',
-                    true
-                )
-            );
-        }
-
-        if (is_metaconsole()) {
-            $table_aux->data[0][6] = html_print_submit_button(
-                __('Search'),
-                'search_submit',
-                false,
-                'class="sub upd"',
-                true
-            );
-        }
+            )
+        );
 
         $url_rb = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
-        if (is_metaconsole()) {
-            $filter = '<form action="'.$url_rb.'&id_group='.$id_group.'&pure='.$pure.'" method="post">';
-            $filter .= html_print_table($table_aux, true);
-            $filter .= '</form>';
-            ui_toggle($filter, __('Show Option'));
-        } else {
-            $searchForm = '<form action="'.$url_rb.'&id_group='.$id_group.'&pure='.$pure.'" method="post">';
-            $searchForm .= html_print_table($table_aux, true);
-            $searchForm .= html_print_div(
-                [
-                    'class'   => 'action-buttons',
-                    'content' => html_print_submit_button(
-                        __('Filter'),
-                        'search_submit',
-                        false,
-                        [
-                            'mode' => 'mini',
-                            'icon' => 'search',
-                        ],
-                        true
-                    ),
-                ],
-                true
-            );
-            $searchForm .= '</form>';
+        $searchForm = '<form action="'.$url_rb.'&id_group='.$id_group.'&pure='.$pure.'" method="post">';
+        $searchForm .= html_print_table($table_aux, true);
+        $searchForm .= html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => html_print_submit_button(
+                    __('Filter'),
+                    'search_submit',
+                    false,
+                    [
+                        'mode' => 'mini',
+                        'icon' => 'search',
+                    ],
+                    true
+                ),
+            ],
+            true
+        );
+        $searchForm .= '</form>';
 
-            ui_toggle(
-                $searchForm,
-                '<span class="subsection_header_title">'.__('Filters').'</span>',
-                'filter_form',
-                '',
-                false,
-                false,
-                '',
-                'white-box-content',
-                'box-flat white_table_graph fixed_filter_bar'
-            );
-        }
+        ui_toggle(
+            $searchForm,
+            '<span class="subsection_header_title">'.__('Filters').'</span>',
+            'filter_form',
+            '',
+            false,
+            false,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph fixed_filter_bar'
+        );
 
         ui_require_jquery_file('pandora.controls');
         ui_require_jquery_file('ajaxqueue');
@@ -1656,11 +1597,13 @@ switch ($action) {
                                 $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
                                 $log_number = get_parameter('log_number', '');
 
                                 $es['source'] = $source;
                                 $es['id_agents'] = $agents_to_report;
                                 $es['search'] = $search;
+                                $es['full_text'] = $full_text;
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
@@ -2601,11 +2544,13 @@ switch ($action) {
                                 $agents_to_report = get_parameter('id_agents3');
                                 $source = get_parameter('source', '');
                                 $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
                                 $log_number = get_parameter('log_number', '');
 
                                 $es['source'] = $source;
                                 $es['id_agents'] = $agents_to_report;
                                 $es['search'] = $search;
+                                $es['full_text'] = $full_text;
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
@@ -3612,7 +3557,7 @@ switch ($action) {
             $buttons = [
                 'list_reports' => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'invert_filter']).'</a>',
+                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Reports list'), 'class' => 'invert_filter main_menu_icon']).'</a>',
                 ],
             ];
 
@@ -3680,21 +3625,21 @@ $buttons = [
             true,
             [
                 'title' => __('Reports list'),
-                'class' => 'invert_filter',
+                'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
     ],
     'main'         => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ],
     'list_items'   => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List items'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('List items'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ],
     'item_editor'  => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Item editor'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/edit.svg', true, ['title' => __('Item editor'), 'class' => 'main_menu_icon invert_filter']).'</a>',
     ],
 ];
 
@@ -3708,11 +3653,11 @@ if ($enterpriseEnable) {
 $buttons['view'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image(
-        'images/eye.png',
+        'images/see-details@svg.svg',
         true,
         [
             'title' => __('View report'),
-            'class' => 'invert_filter',
+            'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',
 ];
@@ -3727,7 +3672,7 @@ if ($idReport != 0) {
     $buttons = [
         'main' => [
             'active' => true,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'invert_filter']).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
         ],
     ];
     $textReportName = __('Create Custom Report');

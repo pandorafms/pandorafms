@@ -389,7 +389,7 @@ if (empty($create) === false || empty($view) === false) {
     $disabled = ($locked === true) ? 'readonly="readonly"' : '';
 
     if (empty($create) === true) {
-        $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&update_plugin=$plugin_id&pure='.$config['pure'];
+        $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&update_plugin='.$plugin_id.'&pure='.$config['pure'];
     } else {
         $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create_plugin=1&pure='.$config['pure'];
     }
@@ -403,69 +403,61 @@ if (empty($create) === false || empty($view) === false) {
 
     $table = new stdClass();
     $table->id = 'table-form';
-    $table->class = 'floating_form';
+    $table->class = 'filter-table-adv';
     $table->style = [];
     $table->data['plugin_name_captions'] = $data;
-    $table->style[0] = 'vertical-align: top';
-    $table->style[1] = 'vertical-align: top';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
 
     $table->data = [];
     // General title.
-    $generalTitleContent = [];
-    $generalTitleContent[] = html_print_div([ 'style' => 'width: 10px; flex: 0 0 auto; margin-right: 5px;}', 'class' => 'section_table_title_line' ], true);
-    $generalTitleContent[] = html_print_div([ 'class' => 'section_table_title', 'content' => __('General')], true);
-    $data[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $generalTitleContent) ], true);
+    $data[0] = html_print_div([ 'class' => 'section_table_title', 'content' => __('General')], true);
     $table->data['general_title'] = $data;
 
     $data = [];
-    $data[0] = __('Name');
+    $data[0] = html_print_label_input_block(
+        __('Name'),
+        html_print_input_text('form_name', $form_name, '', 100, 255, true, false, false, '')
+    );
     $table->data['plugin_name_captions'] = $data;
 
     $data = [];
-    $data[0] = html_print_input_text('form_name', $form_name, '', 100, 255, true, false, false, '', 'w100p');
-    $table->data['plugin_name_inputs'] = $data;
-    $table->colspan['plugin_name_inputs'][0] = 3;
 
+    $data[0] = html_print_label_input_block(
+        __('Plugin type'),
+        html_print_select($formPluginType, 'form_plugin_type', $form_plugin_type, '', '', 0, true, false, true, '', false, 'width: 100%')
+    );
 
-    $data = [];
-    $data[0] = __('Plugin type');
-    $data[1] = __('Max. timeout');
-    $table->data['plugin_type_timeout_captions'] = $data;
-    // $table->colspan['plugin_type'][1] = 3;
-    $data = [];
-    $data[0] = html_print_select($formPluginType, 'form_plugin_type', $form_plugin_type, '', '', 0, true);
     $timeoutContent = [];
     $timeoutContent[] = '<div>'.html_print_extended_select_for_time('form_max_timeout', $form_max_timeout, '', '', '0', false, true).'</div>';
     $timeoutContent[] = ui_print_input_placeholder(__('This value only will be applied if is minor than the server general configuration plugin timeout').'<br>'.__('If you set a 0 seconds timeout, the server plugin timeout will be used'), true);
-    $data[1] = html_print_div(
-        [
-            'class'   => 'flex flex_column',
-            'content' => implode('', $timeoutContent),
-        ],
-        true
+    $data[1] = html_print_label_input_block(
+        __('Max. timeout'),
+        html_print_div(
+            [
+                'class'   => 'flex flex_column',
+                'content' => implode('', $timeoutContent),
+            ],
+            true
+        )
     );
-    $table->data['plugin_type_timeout_inputs'] = $data;
+
+    $table->data['plugin_type_timeout'] = $data;
 
     $data = [];
-    $data[0] = __('Description');
-    $table->data['plugin_desc_captions'] = $data;
+    $data[0] = html_print_label_input_block(
+        __('Description'),
+        html_print_textarea('form_description', 4, 50, $form_description, '', true)
+    );
 
-    $data = [];
-    $data[0] = html_print_textarea('form_description', 4, 50, $form_description, '', true, 'w100p');
-    $table->colspan['plugin_desc_inputs'][0] = 3;
+    $table->colspan['plugin_desc_inputs'][0] = 2;
     $table->data['plugin_desc_inputs'] = $data;
 
-    // Command title.
-    $commandTitleContent = [];
-    $commandTitleContent[] = html_print_div([ 'style' => 'width: 10px; flex: 0 0 auto; margin-right: 5px;}', 'class' => 'section_table_title_line' ], true);
-    $commandTitleContent[] = html_print_div([ 'class' => 'section_table_title', 'content' => __('Command')], true);
-    $data = [];
-    $data[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $commandTitleContent) ], true);
-    $table->data['command_title'] = $data;
 
+    // Command title.
     $data = [];
-    $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
-    $table->data['plugin_command_caption'] = $data;
+    $data[0] = html_print_div([ 'class' => 'section_table_title', 'content' => __('Command')], true);
+    $table->data['command_title'] = $data;
 
     $data = [];
     $formExecuteContent = [];
@@ -480,45 +472,53 @@ if (empty($create) === false || empty($view) === false) {
         true
     );
 
-    $data[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $formExecuteContent)], true);
+    $data[0] = html_print_label_input_block(
+        __('Plugin command'),
+        html_print_div(['class' => 'flex-row-center', 'content' => implode('', $formExecuteContent)], true).ui_print_input_placeholder(
+            __('Specify interpreter and plugin path. The server needs permissions to run it.'),
+            true
+        )
+    );
+
+    // $data[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $formExecuteContent)], true);
     $table->data['plugin_command_inputs'] = $data;
     $table->colspan['plugin_command_inputs'][0] = 2;
 
     $data = [];
-    $data[0] = __('Plug-in parameters');
-    $table->data['plugin_parameters_caption'] = $data;
-
-    $data = [];
-    $data[0] = html_print_input_text(
-        'form_parameters',
-        $parameters,
-        '',
-        100,
-        255,
-        true,
-        false,
-        false,
-        '',
-        'command_component command_advanced_conf text_input w100p'
+    $data[0] = html_print_label_input_block(
+        __('Plug-in parameters'),
+        html_print_input_text(
+            'form_parameters',
+            $parameters,
+            '',
+            100,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'command_component command_advanced_conf text_input'
+        )
     );
+
     $table->data['plugin_parameters_inputs'] = $data;
     $table->colspan['plugin_parameters_inputs'][0] = 2;
 
     $data = [];
-    $data[0] = __('Command preview');
-    $table->data['plugin_preview_captions'] = $data;
-    $data = [];
-
-    $data[0] = html_print_div(['id' => 'command_preview', 'class' => 'mono'], true);
+    // $data[0] = __('Command preview');
+    // $table->data['plugin_preview_captions'] = $data;
+    // $data = [];
+    // $data[0] = html_print_div(['id' => 'command_preview', 'class' => 'mono'], true);
+    $data[0] = html_print_label_input_block(
+        __('Command preview'),
+        html_print_div(['id' => 'command_preview', 'class' => 'mono'], true)
+    );
     $table->data['plugin_preview_inputs'] = $data;
     $table->colspan['plugin_preview_inputs'][0] = 2;
 
     // Parameters macros title.
-    $macrosTitleContent = [];
-    $macrosTitleContent[] = html_print_div([ 'style' => 'width: 10px; flex: 0 0 auto; margin-right: 5px;}', 'class' => 'section_table_title_line' ], true);
-    $macrosTitleContent[] = html_print_div([ 'class' => 'section_table_title', 'content' => __('Parameters macros')], true);
     $data = [];
-    $data[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $macrosTitleContent) ], true);
+    $data[0] = html_print_div([ 'class' => 'section_table_title', 'content' => __('Parameters macros')], true);
     $table->data['parameters_macros_title'] = $data;
 
     $macros = json_decode($macros, true);
@@ -563,53 +563,59 @@ if (empty($create) === false || empty($view) === false) {
         }
 
         $datam = [];
-        $datam[0] = __('Description')."<span class='normal_weight'> ($macro_name)</span>";
+        $datam[0] = html_print_label_input_block(
+            __('Description').'<span class="normal_weight">('.$macro_name.')</span>',
+            html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, false, '', "class='command_macro text_input'", true)
+        );
         $datam[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
-        $datam[1] = html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, false, '', "class='command_macro text_input'", true);
 
-        $datam[2] = __('Default value')."<span class='normal_weight'> ($macro_name)</span>";
-        $datam[3] = html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component command_macro text_input'", true);
+        $datam[1] = html_print_label_input_block(
+            __('Default value').'<span class="normal_weight">('.$macro_name.')</span>',
+            html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component command_macro text_input'", true)
+        );
 
         $table->data['plugin_'.$next_name_number] = $datam;
 
         $next_name_number++;
 
-        $table->colspan['plugin_'.$next_name_number][1] = 3;
+        $table->colspan['plugin_'.$next_name_number][1] = 2;
 
         $datam = [];
-        $datam[0] = __('Hide value').ui_print_help_tip(
-            __('This field will show up as dots like a password'),
-            true
-        );
-        $datam[1] = html_print_checkbox_extended(
-            $macro_hide_value_name,
-            1,
-            $macro_hide_value_value,
-            0,
-            '',
-            ['class' => 'command_macro'],
-            true,
-            'checkbox-'.$macro_hide_value_name
+        $datam = html_print_label_input_block(
+            __('Hide value'),
+            html_print_checkbox_switch(
+                $macro_hide_value_name,
+                1,
+                $macro_hide_value_value,
+                0,
+                '',
+                ['class' => 'command_macro'],
+                true,
+                'checkbox-'.$macro_hide_value_name
+            ).ui_print_input_placeholder(
+                __('This field will show up as dots like a password'),
+                true
+            )
         );
 
         $table->data['plugin_'.$next_name_number] = $datam;
         $next_name_number++;
 
-        $table->colspan['plugin_'.$next_name_number][1] = 3;
-
+        // $table->colspan['plugin_'.$next_name_number][1] = 3;
         $datam = [];
-        $datam[0] = __('Help')."<span class='normal_weight'> ($macro_name)</span><br><br><br>";
-        $datam[1] = html_print_textarea(
-            $macro_help_name,
-            6,
-            100,
-            $macro_help_value,
-            'class="command_macro" class="w97p"',
-            true
+        $datam[0] = html_print_label_input_block(
+            __('Help').'<span class="normal_weight"> ('.$macro_name.')</span>',
+            html_print_textarea(
+                $macro_help_name,
+                6,
+                100,
+                $macro_help_value,
+                'class="command_macro" class="w97p"',
+                true
+            )
         );
 
-        $datam[1] .= '<br><br><br>';
-
+        $table->colspan['plugin_'.$next_name_number][0] = 2;
         $table->data['plugin_'.$next_name_number] = $datam;
         $next_name_number++;
         $i++;
@@ -617,7 +623,7 @@ if (empty($create) === false || empty($view) === false) {
 
     // Add/Delete buttons
     $datam = [];
-
+    $buttons = '';
     if (!$locked) {
         $datam[0] = '<a id="add_macro_btn" href="javascript:;">'.'<span class="bolder">'.__('Add macro').'</span>'.'&nbsp;'.html_print_image(
             'images/add.png',
@@ -627,20 +633,55 @@ if (empty($create) === false || empty($view) === false) {
         $datam[0] .= '<div id="next_macro" class="invisible">'.$i.'</div>';
         $datam[0] .= '<div id="next_row" class="invisible">'.$next_name_number.'</div>';
 
+        $buttons = html_print_anchor(
+            [
+                'id'      => 'add_macro_btn',
+                'href'    => 'javascript:;',
+                'content' => html_print_image(
+                    'images/plus@svg.svg',
+                    true,
+                    ['class' => 'invert_filter']
+                ),
+            ],
+            true
+        );
+
+        $buttons .= html_print_div(['id' => 'next_macro', 'class' => 'invisible', 'content' => $i], true);
+        $buttons .= html_print_div(['id' => 'next_row', 'class' => 'invisible', 'content' => $next_name_number], true);
+
         $delete_macro_style = '';
         if ($i <= 2) {
             $delete_macro_style = 'display:none;';
         }
 
-        $datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.'<a href="javascript:;">'.'<span class="bolder">'.__('Delete macro').'</span>'.'&nbsp;'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>'.'</div>';
+        // $datam[1] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.'<a href="javascript:;">'.'<span class="bolder">'.__('Delete macro').'</span>'.'&nbsp;'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>'.'</div>';
+        $buttons .= html_print_anchor(
+            [
+                'id'      => 'delete_macro_button',
+                'style'   => $delete_macro_style,
+                'href'    => 'javascript:;',
+                'content' => html_print_image(
+                    'images/delete.svg',
+                    true,
+                    ['class' => 'main_menu_icon invert_filter']
+                ),
+            ],
+            true
+        );
 
+        $datam[0] = html_print_div(
+            [
+                'style'   => 'flex-direction: row-reverse;justify-content: flex-start;',
+                'content' => $buttons,
+            ],
+            true
+        );
         $table->colspan['plugin_action'][0] = 2;
-        $table->colspan['plugin_action'][2] = 2;
     } else {
-        $table->colspan['plugin_action'][0] = 4;
+        // $table->colspan['plugin_action'][0] = 4;
     }
 
-    $table->rowstyle['plugin_action'] = 'text-align:center';
+    // $table->rowstyle['plugin_action'] = 'text-align:center';
     $table->data['plugin_action'] = $datam;
 
 

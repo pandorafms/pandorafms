@@ -230,10 +230,15 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
             'title' => __('Standby'),
             'text'  => __('Standby'),
         ],
+        [
+            'title' => __('Operations'),
+            'text'  => __('Operations'),
+        ],
     );
 
     $columns = array_merge(
         ['standby'],
+        ['force'],
         $columns
     );
 
@@ -270,7 +275,11 @@ if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) che
         $column_names,
         ['text' => 'Module'],
         ['text' => 'Template'],
-        ['text' => 'Operation'],
+        [
+            'title' => __('Action'),
+            'text'  => __('Action'),
+            'style' => 'min-width: 15%;',
+        ],
         ['text' => 'Last fired'],
         ['text' => 'Status']
     );
@@ -279,22 +288,9 @@ if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) che
         $columns,
         ['agent_module_name'],
         ['template_name'],
-        ['operation'],
+        ['action'],
         ['last_fired'],
         ['status']
-    );
-}
-
-
-if ($print_agent === true) {
-    array_push(
-        $column_names,
-        ['text' => 'Agent']
-    );
-
-    $columns = array_merge(
-        $columns,
-        ['agent_name']
     );
 }
 
@@ -315,22 +311,6 @@ if (is_metaconsole() === false) {
             $columns
         );
     }
-
-    if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
-        array_push(
-            $column_names,
-            [
-                'title' => __('Actions'),
-                'text'  => __('Actions'),
-                'style' => 'min-width: 15%;',
-            ]
-        );
-
-        $columns = array_merge(
-            $columns,
-            ['actions']
-        );
-    }
 }
 
 if (is_metaconsole() === true) {
@@ -346,14 +326,16 @@ if (is_metaconsole() === true) {
             1,
             2,
             3,
-            7,
+            -3,
+            -1,
         ];
     } else {
         $no_sortable_columns = [
             0,
             1,
             2,
-            6,
+            -3,
+            -1,
         ];
     }
 }
@@ -371,11 +353,12 @@ if ($agent_view_page === true) {
         [
             'id'                  => 'alerts_status_datatable',
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'no_sortable_columns' => $no_sortable_columns,
             'ajax_url'            => 'include/ajax/alert_list.ajax',
+            'dom_elements'        => 'pfrti',
             'ajax_data'           => [
                 'get_agent_alerts_datatable' => 1,
                 'id_agent'                   => $idAgent,
@@ -406,6 +389,7 @@ if ($agent_view_page === true) {
                     ],
                 ],
                 'no_toggle' => true,
+                'class'     => 'flex',
             ],
         ]
     );
@@ -495,9 +479,9 @@ if ($agent_view_page === true) {
                 !$alerts_defined,
                 false,
                 true,
-                'box-flat agent_details_col',
-                'white-box-content',
-                'width_available'
+                '',
+                '',
+                'box-flat white_table_graph w100p'
             ),
         ],
     );
@@ -545,7 +529,7 @@ function alerts_table_controls() {
     
     $(document).ready ( function () {
         alerts_table_controls();
-        $('#submit-alert_validate').on('click', function () {
+        $('#button-alert_validate').on('click', function () {
             validateAlerts();
         });
     });

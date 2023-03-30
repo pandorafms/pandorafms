@@ -741,8 +741,8 @@ $outputForm .= ui_toggle(
     false,
     true,
     '',
-    '',
-    'box-flat white_table_flex white_table_graph_fixed'
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph'
 );
 
 $outputForm .= ui_toggle(
@@ -753,8 +753,8 @@ $outputForm .= ui_toggle(
     true,
     true,
     '',
-    '',
-    'box-flat white_table_flex white_table_graph_fixed'
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph'
 );
 
 $outputForm .= ui_toggle(
@@ -765,8 +765,8 @@ $outputForm .= ui_toggle(
     true,
     true,
     '',
-    '',
-    'box-flat white_table_flex white_table_graph_fixed'
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph'
 );
 
 if ((int) $moduletype !== 13) {
@@ -784,8 +784,8 @@ if ((int) $moduletype !== 13) {
         true,
         true,
         '',
-        '',
-        'box-flat white_table_flex white_table_graph_fixed'
+        'white-box-content no_border',
+        'filter-datatable-main box-flat white_table_graph'
     );
 }
 

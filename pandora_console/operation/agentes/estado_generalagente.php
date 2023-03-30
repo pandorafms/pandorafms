@@ -164,8 +164,8 @@ $table_status->width = '100%';
 $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;
 $table_status->class = 'floating_form';
-$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter';
+$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
 
 $agentStatusGraph = html_print_div(
     [
@@ -386,8 +386,8 @@ $table_contact->width = '100%';
 $table_contact->cellspacing = 0;
 $table_contact->cellpadding = 0;
 $table_contact->class = 'floating_form';
-$table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter';
+$table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
 
 $agentContactCaption = html_print_div(
     [
@@ -483,8 +483,7 @@ $data[1] = ui_progress(
             'refresh_contact' => 1,
         ],
 
-    ],
-    'line-height: 13px;'
+    ]
 );
 $table_contact->data[] = $data;
 
@@ -541,11 +540,8 @@ $table_contact->data[] = $data;
 
 $data_opcional = new stdClass();
 $data_opcional->id = 'agent_data_main';
+$data_opcional->width = '100%';
 $data_opcional->class = 'floating_form';
-$data_opcional->cellspacing = 0;
-$data_opcional->cellpadding = 0;
-$data_opcional->style[0] = 'height: 46px; width: 25%; padding-right: 5px;text-align: end;';
-$data_opcional->style[1] = 'height: 46px; width: 75%; padding-left: 5px;';
 // Gis and url address.
 $agentAdditionalContent = '';
 // Position Information.
@@ -625,8 +621,6 @@ foreach ($fields as $field) {
         $data = [];
 
         $data[0] = '<b>'.$field['name'].ui_print_help_tip(__('Custom field'), true).'</b>';
-        $custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
-
         if ($custom_value[0]['is_password_type']) {
                 $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
         } else if ($field['is_link_enabled'] === '1') {
@@ -643,6 +637,7 @@ foreach ($fields as $field) {
 
             $data[1] = '<a href="'.$link_url.'">'.$link_text.'</a>';
         } else {
+            $custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
             $data[1] = $custom_value[0]['description'];
         }
 
@@ -710,7 +705,7 @@ if ((bool) $config['agentaccess'] === true && $access_agent > 0) {
 
     $agentAccessRate = html_print_div(
         [
-            'class'   => 'box-flat agent_details_col mrgn_lft_20px',
+            'class'   => 'box-flat agent_details_col mrgn_lft_20px w50p',
             'id'      => 'table_access_rate',
             'content' => $agentAccessRateHeader.$agentAccessRateContent,
         ],
@@ -1038,7 +1033,7 @@ $agentEventsGraph = html_print_div(
 
 $agentEvents = html_print_div(
     [
-        'class'   => 'box-flat agent_details_col',
+        'class'   => 'box-flat agent_details_col w50p',
         'content' => $agentEventsHeader.$agentEventsGraph,
     ],
     true
@@ -1057,19 +1052,13 @@ if (isset($data_opcional) === false || isset($data_opcional->data) === false || 
         false,
         false,
         true,
-        'box-flat agent_details_col agent_details_toggle agent_details_first_row w100p',
-        'mrgn_right_20px',
-        'w100p'
+        '',
+        'white-box-content',
+        'box-flat white_table_graph w100p'
     );
 }
 
 $agentIncidents = (isset($table_incident) === false) ? '' : html_print_table($table_incident, true);
-/*
-    echo '<div class="agent_details_first_row">
-    <div class="box-flat agent_details_col mrgn_lft_20px mrgn_right_20px">'.$table_agent.'</div>
-    <div class="box-flat agent_details_col mrgn_right_20px">'.$agent_contact.'</div>
-    </div>'.$agent_info;
-*/
 
 html_print_div(
     [

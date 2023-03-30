@@ -391,7 +391,7 @@ echo '<form method="POST" id="form-massive_plugin_edition"
 
 html_print_table($table);
 
-attachActionButton('update', 'update', $table->width);
+attachActionButton('update', 'update', $table->width, false, $SelectAction);
 
 echo '</form>';
 

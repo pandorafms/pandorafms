@@ -556,7 +556,7 @@ echo sprintf(
 );
 echo '</div>';
 
-attachActionButton('edit_users', 'update', '100%');
+attachActionButton('edit_users', 'update', '100%', false, $SelectAction);
 
 echo '</form>';
 

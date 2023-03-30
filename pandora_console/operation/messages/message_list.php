@@ -184,7 +184,7 @@ if (empty($messages) === true) {
     $table->size[3] = '80px';
     $table->size[4] = '60px';
 
-    $table->head[5] = html_print_checkbox('all_delete_messages', 0, false, true, false);
+    $table->head[5] = html_print_checkbox('all_delete_messages', 0, false, true, false, 'check_all_checkboxes()');
     $table->head[0] = __('Status');
     if ($show_sent === true) {
         $table->head[1] = __('Destination');
@@ -351,28 +351,14 @@ if (empty($messages) === false) {
 
 <script type="text/javascript">
 
-    $( document ).ready(function() {
+function check_all_checkboxes() {
+    if ($("input[name=all_delete_messages]").prop("checked")) {
+        $("[name^='delete_multiple']").prop("checked", true);
+    }
+    else {
+        $("[name^='delete_multiple']").prop("checked", false);
+    }
+}
 
-        $('[id^=checkbox-delete_multiple_messages]').change(function(){
-            if($(this).parent().parent().hasClass('checkselected')){
-                $(this).parent().parent().removeClass('checkselected');
-            }
-            else{
-                $(this).parent().parent().addClass('checkselected');                            
-            }
-        });
-
-        $('[id^=checkbox-all_delete_messages]').change(function(){    
-            if ($("#checkbox-all_delete_messages").prop("checked")) {
-                $('[id^=checkbox-delete_multiple_messages]').parent().parent().addClass('checkselected');
-                $(".check_delete_messages").prop("checked", true);
-            }
-            else{
-                $('[id^=checkbox-delete_multiple_messages]').parent().parent().removeClass('checkselected');
-                $(".check_delete_messages").prop("checked", false);
-            }    
-        });
-
-    });
 
 </script>

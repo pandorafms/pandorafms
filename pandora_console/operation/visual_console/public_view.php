@@ -37,7 +37,7 @@ ui_require_javascript_file('connection_check', 'include/javascript/', true);
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
@@ -62,7 +62,13 @@ require_once 'include/functions_visual_map.php';
 
 $hash = (string) get_parameter('hash');
 $visualConsoleId = (int) get_parameter('id_layout');
-$config['id_user'] = (string) get_parameter('id_user');
+$userAccessMaintenance = null;
+if (empty($config['id_user']) === true) {
+    $config['id_user'] = (string) get_parameter('id_user');
+} else {
+    $userAccessMaintenance = $config['id_user'];
+}
+
 $refr = (int) get_parameter('refr', ($config['refr'] ?? null));
 
 if (!isset($config['pure'])) {
@@ -179,6 +185,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
 
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
+    var user = "<?php echo $userAccessMaintenance; ?>";
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode(',', $visualConsoleItems).']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
@@ -282,7 +289,9 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     );
 
     if(props.maintenanceMode != null) {
-        visualConsoleManager.visualConsole.enableMaintenanceMode();
+        if(props.maintenanceMode.user !== user) {
+            visualConsoleManager.visualConsole.enableMaintenanceMode();
+        }
     }
 
     var controls = document.getElementById('vc-controls');

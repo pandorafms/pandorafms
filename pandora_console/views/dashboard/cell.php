@@ -54,6 +54,7 @@ if ($manageDashboards !== 0 || $writeDashboards !== 0) {
             [
                 'width' => '16px',
                 'title' => __('Configure widget'),
+                'class' => 'invert_filter',
             ]
         );
         $output .= '</a> ';
@@ -66,6 +67,7 @@ if ($manageDashboards !== 0 || $writeDashboards !== 0) {
         [
             'width' => '16px',
             'title' => __('Delete widget'),
+            'class' => 'invert_filter',
         ]
     );
     $output .= '</a>';

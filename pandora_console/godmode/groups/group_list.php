@@ -445,7 +445,7 @@ if ($is_management_allowed === true
             if ($aviable_name === true) {
                 $values = [
                     'nombre'      => $name,
-                    'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
+                    'icon'        => $icon,
                     'parent'      => $id_parent,
                     'disabled'    => $alerts_disabled,
                     'custom_id'   => $custom_id,
@@ -513,7 +513,7 @@ if ($is_management_allowed === true && $update_group === true) {
             if ($aviable_name === true) {
                 $values = [
                     'nombre'      => $name,
-                    'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
+                    'icon'        => $icon,
                     'parent'      => ($id_parent == -1) ? 0 : $id_parent,
                     'disabled'    => !$alerts_enabled,
                     'custom_id'   => $custom_id,
@@ -714,6 +714,14 @@ if ($is_management_allowed === true
             );
 
             if ($result && (!$usedGroup['return'])) {
+                db_process_sql_delete(
+                    'tfavmenu_user',
+                    [
+                        'id_element' => $id_group,
+                        'section'    => 'Groups',
+                        'id_user'    => $config['id_user'],
+                    ]
+                );
                 ui_print_success_message(__('Group successfully deleted'));
             } else {
                 ui_print_error_message(
@@ -733,12 +741,11 @@ if ($is_management_allowed === true
 
 // Credential store is loaded previously in this document to avoid
 // process group tree - list forms.
+ui_print_spinner(__('Loading'));
 if ($tab == 'tree') {
     /*
      * Group tree view.
      */
-
-    ui_print_spinner(__('Loading'));
     echo "<div id='tree-controller-recipient'></div>";
 } else {
     /*
@@ -898,7 +905,6 @@ if ($tab == 'tree') {
 
         foreach ($groups as $key => $group) {
             $url_edit = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
-            $url_tactical = 'index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$group['id_grupo'];
             if (is_metaconsole()) {
                 $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'].'&tab=groups';
             } else {
@@ -907,7 +913,7 @@ if ($tab == 'tree') {
 
             $table->data[$key][0] = $group['id_grupo'];
             if ($is_management_allowed === true) {
-                $table->data[$key][1] = '<a href="'.$url_tactical.'">'.$group['nombre'].'</a>';
+                $table->data[$key][1] = '<a href="'.$url_edit.'">'.$group['nombre'].'</a>';
             } else {
                 $table->data[$key][1] = $group['nombre'];
             }
@@ -918,7 +924,7 @@ if ($tab == 'tree') {
                     true,
                     [
                         'style' => '',
-                        'class' => 'bot',
+                        'class' => 'bot main_menu_icon invert_filter',
                         'alt'   => io_safe_input($group['nombre']),
                         'title' => io_safe_input($group['nombre']),
                     ],
@@ -979,7 +985,7 @@ if ($tab == 'tree') {
             true,
             'offset',
             false,
-            'pagination-bottom'
+            ''
         );
     } else {
         ui_print_info_message(
@@ -1031,6 +1037,7 @@ $tab = 'group_edition';
 
 <script type="text/javascript">
     var treeController = TreeController.getController();
+    treeController.meta = <?php echo (is_metaconsole() === true) ? 1 : 0; ?>;
 
     if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
             treeController.recipient.empty();

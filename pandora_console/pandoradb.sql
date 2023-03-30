@@ -1309,6 +1309,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `id_filter`  INT UNSIGNED NULL DEFAULT NULL,
   `session_time` INT signed NOT NULL DEFAULT 0,
   `default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
+  `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `autorefresh_white_list` TEXT ,
   `time_autorefresh` INT UNSIGNED NOT NULL DEFAULT 30,
   `default_custom_view` INT UNSIGNED NULL DEFAULT 0,
@@ -2633,9 +2634,17 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
   `action` TINYINT UNSIGNED DEFAULT 0,
   `ssh_key` TEXT,
   `ssh_pubkey` TEXT,
+  `ssh_status` TINYINT UNSIGNED DEFAULT 0,
   `last_error` TEXT,
+  `db_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_delay` BIGINT DEFAULT 0,
+  `master` TINYINT UNSIGNED DEFAULT 0,
+  `utimestamp` BIGINT DEFAULT 0,
+  `mysql_version` VARCHAR(10) DEFAULT '',
+  `pandora_version` VARCHAR(10) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
 -- Table `twidget`
@@ -3760,6 +3769,7 @@ CREATE TABLE IF NOT EXISTS `tuser_task_scheduled` (
   `flag_delete` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `id_grupo` INT UNSIGNED NOT NULL DEFAULT 0,
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `id_console` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4181,6 +4191,21 @@ CREATE TABLE IF NOT EXISTS `tmonitor_filter` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
+-- Table `tconsole`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tconsole` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_console` BIGINT NOT NULL DEFAULT 0,
+  `description` TEXT,
+  `version` TINYTEXT,
+  `last_execution` INT UNSIGNED NOT NULL DEFAULT 0,
+  `console_type` TINYINT NOT NULL DEFAULT 0,
+  `timezone` TINYTEXT,
+  `public_url` TEXT,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
 -- Table `tagent_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagent_filter` (
@@ -4198,6 +4223,7 @@ CREATE TABLE IF NOT EXISTS `tagent_filter` (
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
 -- Table `tevent_sound`
 -- ---------------------------------------------------------------------
 CREATE TABLE `tevent_sound` (
@@ -4220,3 +4246,40 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `user` TEXT NULL,
     PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `twelcome_tip` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_lang` VARCHAR(20) NULL,
+  `id_profile` INT NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `text` TEXT NOT NULL,
+  `url` VARCHAR(255) NULL,
+  `enable` TINYINT NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+
+CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `twelcome_tip_file` INT NOT NULL,
+  `filename` VARCHAR(255) NOT NULL,
+  `path` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `twelcome_tip_file`
+    FOREIGN KEY (`twelcome_tip_file`)
+    REFERENCES `twelcome_tip` (`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tfavmenu_user`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_user` VARCHAR(255) NOT NULL,
+  `id_element` TEXT,
+  `url` TEXT NOT NULL,
+  `label` VARCHAR(255) NOT NULL,
+  `section` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`));

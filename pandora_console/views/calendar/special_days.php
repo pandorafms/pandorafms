@@ -45,6 +45,10 @@ if (\is_metaconsole() === true) {
         [
             [
                 'link'  => '',
+                'label' => __('Alerts'),
+            ],
+            [
+                'link'  => '',
                 'label' => __('Special days'),
             ],
         ]
@@ -449,7 +453,7 @@ for ($month = 1; $month <= 12; $month++) {
                         $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&id='.$special_day['id'].'" title=';
                         $cal_table->data[$cal_line][$week] .= __('Edit');
                         $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
-                            'images/config.png',
+                            'images/edit.svg',
                             true,
                             ['class' => 'invert_filter']
                         ).'</a> &nbsp;';
@@ -461,7 +465,7 @@ for ($month = 1; $month <= 12; $month++) {
                         $cal_table->data[$cal_line][$week] .= __('Remove');
                         $cal_table->data[$cal_line][$week] .= '">';
                         $cal_table->data[$cal_line][$week] .= html_print_image(
-                            'images/cross.png',
+                            'images/delete.svg',
                             true,
                             ['class' => 'invert_filter']
                         ).'</a>';

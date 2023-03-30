@@ -672,14 +672,14 @@ foreach ($simple_alerts as $alert) {
         '[&hellip;]',
         ''
     );
-    $data[2] .= ' <a class="template_details patatas"
+    $data[2] .= ' <a class="template_details"
 		href="'.ui_get_full_url(false, false, false, false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">';
         $data[2] .= html_print_image(
-            'images/zoom.png',
+            'images/details.svg',
             true,
             [
                 'id'    => 'template-details-'.$alert['id_alert_template'],
-                'class' => 'img_help action_button_img invert_filter',
+                'class' => 'img_help main_menu_icon invert_filter',
             ]
         );
     $data[2] .= '</a> ';
@@ -753,11 +753,11 @@ foreach ($simple_alerts as $alert) {
                 'delete',
                 'images/delete.svg',
                 1,
-                'padding:0px; margin-left:5px; margin-right:5px;',
+                'padding:0px; margin-left:5px; margin-right:5px; width: 22px;',
                 true,
                 [
                     'title' => __('Delete action'),
-                    'class' => 'action_button_img invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[3] .= html_print_input_hidden('delete_action', 1, true);
@@ -766,13 +766,13 @@ foreach ($simple_alerts as $alert) {
             $data[3] .= '</form>';
             $data[3] .= html_print_input_image(
                 'update_action',
-                'images/config.png',
+                'images/edit.svg',
                 1,
                 'padding:0px;',
                 true,
                 [
                     'title'   => __('Update action'),
-                    'class'   => 'action_button_img invert_filter',
+                    'class'   => 'main_menu_icon invert_filter',
                     'onclick' => 'show_display_update_action(\''.$action['id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action_id.'\',\''.$alert['id_agent_module'].'\')',
                 ]
             );
@@ -913,7 +913,7 @@ foreach ($simple_alerts as $alert) {
             'enable',
             'images/lightbulb_off.png',
             1,
-            'padding:0px',
+            'padding:0px; width: 22px; height: 22px;',
             true,
             ['class' => 'filter_none main_menu_icon']
         );
@@ -923,7 +923,7 @@ foreach ($simple_alerts as $alert) {
             'disable',
             'images/lightbulb.png',
             1,
-            'padding:0px;',
+            'padding:0px; width: 22px; height: 22px;',
             true,
             ['class' => 'main_menu_icon']
         );
@@ -941,7 +941,7 @@ foreach ($simple_alerts as $alert) {
                 'standby_off',
                 'images/bell.png',
                 1,
-                'padding:0px;',
+                'padding:0px; width: 22px; height: 22px;',
                 true,
                 ['class' => 'invert_filter main_menu_icon']
             );
@@ -951,7 +951,7 @@ foreach ($simple_alerts as $alert) {
                 'standby_on',
                 'images/bell_pause.png',
                 1,
-                'padding:0px;',
+                'padding:0px; width: 22px; height: 22px;',
                 true,
                 ['class' => 'invert_filter main_menu_icon']
             );
@@ -967,17 +967,19 @@ foreach ($simple_alerts as $alert) {
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
             $module_linked = policies_is_module_linked($alert['id_agent_module']);
-            if (is_array($policyInfo) === false && $module_linked === false) {
+            if ((is_array($policyInfo) === false && $module_linked === false)
+                || (is_array($policyInfo) === false && $module_linked === '1')
+            ) {
                 $data[$index['policy']] = '';
             } else {
                 $module_linked = policies_is_module_linked($alert['id_agent_module']);
                 if ($module_linked === '0') {
                     $img = 'images/unlinkpolicy.png';
                 } else {
-                    $img = 'images/policies_mc.png';
+                    $img = 'images/policy@svg.svg';
                 }
 
-                $data[1] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[1] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
         }
     }
@@ -1053,7 +1055,7 @@ foreach ($simple_alerts as $alert) {
         $data[4] .= '<form class="view_alert_form display_in" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_view">';
         $data[4] .= html_print_input_image(
             'view_alert',
-            'images/operation.png',
+            'images/details.svg',
             1,
             '',
             true,

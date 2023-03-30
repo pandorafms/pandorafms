@@ -308,6 +308,13 @@ if ($access_console_node === true) {
             $sub['godmode/servers/modificar_server']['id'] = 'Manage_servers';
         }
 
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true
+            || is_user_admin($config['id_user']) === true
+        ) {
+            $sub['godmode/consoles/consoles']['text'] = __('Manage consoles');
+            $sub['godmode/consoles/consoles']['id'] = 'Manage consoles';
+        }
+
         // This subtabs are only for Pandora Admin.
         if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
             enterprise_hook('ha_cluster');
@@ -364,6 +371,11 @@ if ($access_console_node === true) {
                 $sub2['godmode/setup/setup&section=net']['text'] = __('Netflow');
                 $sub2['godmode/setup/setup&section=net']['refr'] = 0;
             }
+
+            if ((bool) $config['activate_sflow'] === true) {
+                $sub2['godmode/setup/setup&section=sflow']['text'] = __('Sflow');
+                $sub2['godmode/setup/setup&section=sflow']['refr'] = 0;
+            }
         }
 
         $sub2['godmode/setup/setup&section=ehorus']['text'] = __('eHorus');
@@ -382,6 +394,9 @@ if ($access_console_node === true) {
 
         $sub2['godmode/setup/setup&section=external_tools']['text'] = __('External Tools');
         $sub2['godmode/setup/setup&section=external_tools']['refr'] = 0;
+
+        $sub2['godmode/setup/setup&section=welcome_tips']['text'] = __('Welcome Tips');
+        $sub2['godmode/setup/setup&section=welcome_tips']['refr'] = 0;
 
         if ((bool) $config['activate_gis'] === true) {
             $sub2['godmode/setup/setup&section=gis']['text'] = __('Map conections GIS');

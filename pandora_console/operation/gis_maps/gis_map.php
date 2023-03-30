@@ -21,23 +21,36 @@ global $config;
 
 require_once 'include/functions_gis.php';
 
-// ui_require_javascript_file('openlayers.pandora');
 $buttons['gis_maps_list'] = [
     'active' => true,
     'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
-        'images/list.png',
+        'images/logs@svg.svg',
         true,
-        ['title' => __('GIS Maps list')]
+        [
+            'title' => __('GIS Maps list'),
+            'class' => 'main_menu_icon invert_filter',
+        ]
     ).'</a>',
 ];
 
-ui_print_page_header(
-    __('GIS Maps'),
+// Header.
+ui_print_standard_header(
+    __('List of GIS maps'),
     'images/op_gis.png',
     false,
     '',
     false,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('GIS Maps'),
+        ],
+    ]
 );
 
 $own_info = get_user_info($config['id_user']);
@@ -187,7 +200,7 @@ if ($maps !== false) {
             }
 
             $table->cellclass[]['op'] = 'table_action_buttons';
-            $data['op'] = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>'.'<a href="index.php?sec=godgismaps&amp;sec2=operation/gis_maps/gis_map&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+            $data['op'] = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">'.html_print_image('images/edit.svg', true, ['title' => __('Edit')]).'</a>'.'<a href="index.php?sec=godgismaps&amp;sec2=operation/gis_maps/gis_map&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">'.html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'invert_filter main_menu_icon']).'</a>';
         }
 
         array_push($table->data, $data);
@@ -201,12 +214,20 @@ if (!empty($table->data)) {
 }
 
 if ($edit_gis_maps) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form action="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map" method="post">';
     html_print_input_hidden('action', 'new_map');
-    html_print_submit_button(__('Create'), '', false, 'class="sub next"');
+    $ActionButton = html_print_submit_button(
+        __('Create'),
+        'create',
+        false,
+        [
+            'class' => 'sub ok submitButton',
+            'icon'  => 'next',
+        ],
+        true
+    );
+    echo '<div class="action-buttons">'.html_print_action_buttons($ActionButton, ['type' => 'form_action'], true).'</div>';
     echo '</form>';
-    echo '</div>';
 }
 
 unset($table);

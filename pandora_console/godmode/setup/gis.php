@@ -65,7 +65,7 @@ switch ($action) {
 
 $table = new stdClass();
 $table->class = 'info_table';
-$table->width = '98%';
+$table->width = '100%';
 $table->head[0] = __('Map connection name');
 $table->head[1] = __('Group');
 $table->head[3] = __('Delete');
@@ -84,7 +84,7 @@ if ($mapsConnections !== false) {
             '<a href="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2&amp;action=edit_connection_map&amp;id_connection_map='.$mapsConnection['id_tmap_connection'].'">'.$mapsConnection['conection_name'].'</a>',
             ui_print_group_icon($mapsConnection['group_id'], true),
             '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=gis&amp;id_connection_map='.$mapsConnection['id_tmap_connection'].'&amp;action=delete_connection"
-				onClick="javascript: if (!confirm(\''.__('Do you wan delete this connection?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>',
+				onClick="javascript: if (!confirm(\''.__('Do you wan delete this connection?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>',
         ];
         $table->cellclass[][2] = 'table_action_buttons';
     }
@@ -95,6 +95,14 @@ html_print_table($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2" method="post">';
 html_print_input_hidden('action', 'create_connection_map');
-html_print_submit_button(__('Create'), '', false, 'class="sub next"');
+html_print_action_buttons(
+    html_print_submit_button(
+        __('Create'),
+        '',
+        false,
+        ['icon' => 'wand'],
+        true
+    )
+);
 echo '</form>';
 echo '</div>';

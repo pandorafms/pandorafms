@@ -286,6 +286,9 @@ class FontVariables
 				"unbatang" => [/* Korean */
 					'R' => "UnBatang_0613.ttf",
 				],
+				"lato" => [/* lato */
+					'R' => 'Lato-Regular.ttf',
+				],
 			],
 
 			// Add fonts to this array if they contain characters in the SIP or SMP Unicode planes
@@ -296,6 +299,7 @@ class FontVariables
 				"dejavuserifcondensed",
 				"dejavuserif",
 				"dejavusansmono",
+				"lato",
 			],
 
 			// These next 3 arrays do two things:
@@ -321,6 +325,8 @@ class FontVariables
 			'mono_fonts' => ['dejavusansmono', 'mono', 'monospace', 'freemono', 'liberationmono', 'courier', 'ocrb', 'ocr-b', 'lucidaconsole',
 				'couriernew', 'monotypecorsiva'
 			],
+
+			'lato' => ['lato'],
 		];
 	}
 

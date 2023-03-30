@@ -63,7 +63,7 @@ if (empty($idVisualConsole) === true) {
     $idVisualConsole = get_parameter('id', 0);
 }
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $action_name_parameter = 'action';
 } else {
     $action_name_parameter = 'action2';
@@ -92,7 +92,6 @@ $activeTab = get_parameterBetweenListValues(
     ],
     'data'
 );
-
 
 // Visual console creation tab and actions.
 if (empty($idVisualConsole)) {
@@ -137,7 +136,6 @@ $refr = (int) get_parameter('refr', $config['vc_refr']);
 
 $id_layout = 0;
 
-
 // Save/Update data in DB
 global $statusProcessInDB;
 if (empty($statusProcessInDB)) {
@@ -165,7 +163,7 @@ switch ($activeTab) {
                 $background_color = (string) get_parameter('background_color');
                 $width = (int) get_parameter('width');
                 $height = (int) get_parameter('height');
-                $visualConsoleName = io_safe_input((string) get_parameter('name'));
+                $visualConsoleName = (string) get_parameter('name');
                 $is_favourite  = (int) get_parameter('is_favourite_sent');
                 $auto_adjust  = (int) get_parameter('auto_adjust_sent');
 
@@ -786,7 +784,7 @@ if (isset($config['vc_refr']) and $config['vc_refr'] != 0) {
     $view_refresh = '300';
 }
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $url_base = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action=';
     $url_view = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$idVisualConsole.'&refr='.$view_refresh;
 } else {
@@ -798,14 +796,18 @@ if (!defined('METACONSOLE')) {
 $hash = User::generatePublicHash();
 
 $buttons = [];
-
 $buttons['consoles_list'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Visual consoles list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['public_link'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public Visual Console'), 'class' => 'main_menu_icon invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url(
+        'operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user'],
+        false,
+        false,
+        false
+    ).'">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public Visual Console'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['data'] = [
     'active' => false,
@@ -839,7 +841,7 @@ $buttons['view'] = [
     'text'   => '<a href="'.$url_view.'">'.html_print_image('images/enable.svg', true, ['title' => __('View'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 
-if ($idVisualConsole === false) {
+if (empty($idVisualConsole) === true) {
     $buttons = ['data' => $buttons['data']];
     // Show only the data tab
     // If it is a fail try, reset the values
@@ -850,9 +852,8 @@ if ($idVisualConsole === false) {
 $buttons[$activeTab]['active'] = true;
 
 $tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
-
 ui_print_standard_header(
-    $visualConsoleName,
+    ($visualConsoleName ?? ''),
     'images/visual_console.png',
     false,
     $tab_builder,

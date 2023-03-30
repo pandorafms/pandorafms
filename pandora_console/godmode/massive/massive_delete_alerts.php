@@ -358,7 +358,7 @@ $table->data[2][3] = html_print_select([], 'module[]', '', false, '', '', true, 
 echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_alerts" >';
 html_print_table($table);
 
-attachActionButton('delete', 'delete', $table->width);
+attachActionButton('delete', 'delete', $table->width, false, $SelectAction);
 
 echo '</form>';
 

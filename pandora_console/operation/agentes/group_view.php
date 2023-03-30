@@ -192,7 +192,7 @@ echo '<table width="100%" class="info_table">';
             echo "<span id='sumary' class='yellow_background'>".$total_agent_warning.'%</span>';
             echo "<span id='sumary' class='green_background'>".$total_agent_ok.'%</span>';
             echo "<span id='sumary' class='bg_B2B2B2'>".$total_agent_unknown.'%</span>';
-            echo "<span id='sumary' class='blue'>".$total_not_init.'%</span>';
+            echo "<span id='sumary' class='bg_4a83f3'>".$total_not_init.'%</span>';
         echo '</td>';
         echo "<td align='center'>";
             echo "<span id='sumary' class='red_background'>".$total_critical.'%</span>';
@@ -295,7 +295,7 @@ if (empty($result_groups) === false) {
         echo "<td class='group_view_data center vertical_middle'>";
         if (!isset($data['_is_tag_']) && check_acl($config['id_user'], $data['_id_'], 'AW')) {
             echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$data['_id_'].'">'.html_print_image(
-                'images/change-active.svg',
+                'images/force@svg.svg',
                 true,
                 [
                     'border' => '0',
@@ -321,7 +321,11 @@ if (empty($result_groups) === false) {
             $link = "<a href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']."'>";
         } else {
             $deep = groups_get_group_deep($data['_id_']);
-            $link = "<a href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+            if ($data['_id_'] === '0') {
+                $link = "<a href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+            } else {
+                $link = "<a href='index.php?sec=view&sec2=godmode/groups/tactical&id_group=".$data['_id_']."'>";
+            }
         }
 
         $group_name = '<b><span>'.ui_print_truncate_text($data['_name_'], 50).'</span></b>';

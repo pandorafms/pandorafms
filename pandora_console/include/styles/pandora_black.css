@@ -1600,3 +1600,7 @@ a.pandora_pagination,
 .info_table > tbody > tr > td {
   border-bottom: 1px solid #3f3f3f;
 }
+
+.font-title-font {
+  color: #fff;
+}

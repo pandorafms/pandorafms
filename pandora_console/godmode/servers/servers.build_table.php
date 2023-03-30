@@ -208,7 +208,7 @@ foreach ($servers as $server) {
         if ($server['type'] === 'data') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server['id_server']).'">';
             $data[8] .= html_print_image(
-                'images/force@force.svg',
+                'images/force@svg.svg',
                 true,
                 [
                     'title' => __('Reset module status and fired alert counts'),
@@ -219,7 +219,7 @@ foreach ($servers as $server) {
         } else if ($server['type'] === 'enterprise snmp') {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_snmp_enterprise='.$server['id_server']).'">';
             $data[8] .= html_print_image(
-                'images/force@force.svg',
+                'images/force@svg.svg',
                 true,
                 [
                     'title' => __('Claim back SNMP modules'),

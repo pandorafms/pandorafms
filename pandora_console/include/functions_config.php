@@ -1540,10 +1540,6 @@ function config_update_config()
                         }
                     }
 
-                    if (config_update_value('netflow_interval', (int) get_parameter('netflow_interval'), true) === false) {
-                        $error_update[] = __('Daemon interval');
-                    }
-
                     if (config_update_value('netflow_daemon', get_parameter('netflow_daemon'), true) === false) {
                         $error_update[] = __('Daemon binary path');
                     }
@@ -2884,10 +2880,6 @@ function config_process_config()
         }
 
         config_update_value('netflow_path', $default);
-    }
-
-    if (!isset($config['netflow_interval'])) {
-        config_update_value('netflow_interval', SECONDS_10MINUTES);
     }
 
     if (!isset($config['netflow_daemon'])) {

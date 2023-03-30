@@ -11779,6 +11779,12 @@ span.help_icon_15px > img {
   z-index: 1116 !important;
 }
 
+.icon_connection_check {
+  width: 65px !important;
+  height: 65px !important;
+  margin-top: 10px;
+}
+
 /* ==== Spinner ==== */
 .spinner-fixed {
   position: fixed;

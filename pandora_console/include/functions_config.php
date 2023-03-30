@@ -386,6 +386,10 @@ function config_update_config()
                         $error_update[] = __('Enable console report');
                     }
 
+                    if (config_update_value('check_conexion_interval', get_parameter('check_conexion_interval'), true) === false) {
+                        $error_update[] = __('Check conexion interval');
+                    }
+
                     if (config_update_value('unique_ip', get_parameter('unique_ip'), true) === false) {
                         $error_update[] = __('Unique IP');
                     }
@@ -2357,6 +2361,10 @@ function config_process_config()
 
     if (!isset($config['reporting_console_enable'])) {
         config_update_value('reporting_console_enable', 0);
+    }
+
+    if (!isset($config['check_conexion_interval'])) {
+        config_update_value('check_conexion_interval', 180);
     }
 
     if (!isset($config['elasticsearch_ip'])) {

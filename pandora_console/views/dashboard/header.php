@@ -159,7 +159,7 @@ if ($public_dashboard_hash !== false) {
 }
 
 $comboRefreshCountdown['text'] = '<div class="dashboard-countdown display_in"></div>';
-$comboRefresh['text'] = '<form id="refr-form" method="post" class="mrgn_top_13px" action="'.$urlRefresh.'">';
+$comboRefresh['text'] = '<form id="refr-form" method="post" class="mrgn_top_13px"  action="'.$urlRefresh.'">';
 $comboRefresh['text'] .= __('Refresh').':';
 $comboRefresh['text'] .= html_print_select(
     \get_refresh_time_array(),
@@ -284,7 +284,7 @@ if (isset($config['public_dashboard']) === true
     }
 }
 
-if ($publicLink === false) {
+if ($config['pure'] === false) {
     ui_print_standard_header(
         $dashboardName,
         '',

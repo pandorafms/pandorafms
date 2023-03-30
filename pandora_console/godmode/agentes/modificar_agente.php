@@ -776,7 +776,7 @@ if ($agents !== false) {
         }
 
         if ((bool) $agent['disabled'] === true) {
-            $additionalDataAgentName[] = ui_print_help_tip(__('Disabled'));
+            $additionalDataAgentName[] = ui_print_help_tip(__('Disabled'), true);
         }
 
         if ((bool) $agent['quiet'] === true) {
@@ -903,12 +903,12 @@ if ($agents !== false) {
 
         if ((bool) $agent['disabled'] === true) {
             $agentDisableEnableTitle = __('Enable agent');
-            $agentDisableEnableAction = 'enable_agent';
+            $agentDisableEnableAction = 'enable';
             $agentDisableEnableCaption = __('You are going to enable a cluster agent. Are you sure?');
             $agentDisableEnableIcon = 'change-active.svg';
         } else {
             $agentDisableEnableTitle = __('Disable agent');
-            $agentDisableEnableAction = 'disable_agent';
+            $agentDisableEnableAction = 'disable';
             $agentDisableEnableCaption = __('You are going to disable a cluster agent. Are you sure?');
             $agentDisableEnableIcon = 'change-pause.svg';
         }
@@ -1001,7 +1001,7 @@ if ($agents !== false) {
         true,
         'offset',
         false,
-        'dataTables_paginate paging_simple_numbers'
+        'paging_simple_numbers'
     );
 
     /*

@@ -814,6 +814,10 @@ function get_data_basic_info_sql($params, $count=false)
         $where .= sprintf(' AND id_agente = %d', $params['id_agent']);
     }
 
+    if ($params['id_group'] > 0) {
+        $where .= sprintf(' AND id_grupo = %d', $params['id_group']);
+    }
+
     if ($params['search'] > 0) {
         $where .= sprintf(
             ' AND ( alias LIKE "%%%s%%" )',

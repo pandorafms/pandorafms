@@ -30,6 +30,26 @@ if (! check_acl($config['id_user'], 0, 'AR')
 $update = get_parameter('upd_button', '');
 $default = (int) get_parameter('default', 0);
 
+// Header.
+ui_print_standard_header(
+    __('Monitor detail').$subpage,
+    'images/agent.png',
+    false,
+    '',
+    true,
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Views'),
+        ],
+    ],
+    (empty($fav_menu) === true) ? [] : $fav_menu
+);
 
 if ($default != 0) {
     $fields_selected = explode(',', $config['status_monitor_fields']);
@@ -161,11 +181,11 @@ foreach ($fields_available as $key => $available) {
 
 // General title.
 $generalTitleContent = [];
-$generalTitleContent[] = html_print_div([ 'style' => 'width: 10px; flex: 0 0 auto; margin-right: 5px;}', 'class' => 'section_table_title_line' ], true);
+// $generalTitleContent[] = html_print_div([ 'style' => 'width: 10px; flex: 0 0 auto; margin-right: 5px;}', 'class' => 'section_table_title_line' ], true);
 $generalTitleContent[] = html_print_div([ 'class' => 'section_table_title', 'content' => __('Show monitor detail fields')], true);
 $titledata[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $generalTitleContent) ], true);
 $table->data['general_title'] = $titledata;
-$table->data[0][0] = '<b>'.__('Fields available').'</b>';
+$table->data[0][0] = '<span class="font-title-font">'.__('Fields available').'</span>';
 $table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     'images/darrowright.png',
@@ -187,7 +207,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
 ).'</a>';
 
 $table->data[0][1] = '';
-$table->data[0][2] = '<b>'.__('Fields selected').'</b>';
+$table->data[0][2] = '<span class="font-title-font">'.__('Fields selected').'</span>';
 $table->data[1][2] = html_print_select(
     $result_selected,
     'fields_selected[]',
@@ -203,7 +223,7 @@ $table->data[1][2] = html_print_select(
     'width: 300px'
 );
 
-echo '<form id="custom_status_monitor" method="post" action="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields&amp;pure='.$config['pure'].'">';
+echo '<form id="custom_status_monitor" method="post" action="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields&amp;pure='.$config['pure'].'" class="max_floating_element_size">';
 html_print_table($table);
 
 html_print_action_buttons(

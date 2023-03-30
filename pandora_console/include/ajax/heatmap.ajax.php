@@ -45,73 +45,101 @@ if (is_ajax() === true) {
         $group = get_parameter('group', true);
 
         echo '<form id="form_dialog" method="post">';
-            echo '<div class="div-dialog">';
-                echo '<p class="label-dialog">'.__('Refresh').'</p>';
-                echo html_print_select(
+                echo html_print_label_input_block(
+                    __('Refresh'),
+                    html_print_select(
+                        [
+                            '30'                      => __('30 seconds'),
+                            (string) SECONDS_1MINUTE  => __('1 minute'),
+                            '180'                     => __('3 minutes'),
+                            (string) SECONDS_5MINUTES => __('5 minutes'),
+                        ],
+                        'refresh',
+                        $refresh,
+                        '',
+                        '',
+                        0,
+                        true,
+                        false,
+                        false,
+                        '',
+                        false,
+                        'width: 100%; margin-top: 10px;'
+                    ),
                     [
-                        '30'                      => __('30 seconds'),
-                        (string) SECONDS_1MINUTE  => __('1 minute'),
-                        '180'                     => __('3 minutes'),
-                        (string) SECONDS_5MINUTES => __('5 minutes'),
-                    ],
-                    'refresh',
-                    $refresh,
-                    '',
-                    '',
-                    0,
-                    true,
-                    false,
-                    false,
-                    '',
-                    false,
-                    'margin-top: 3px;'
+                        'label_class' => 'font-title-font',
+                        'div_class'   => 'mrgn_top_10px',
+                    ]
                 );
-            echo '</div>';
 
-            echo '<div class="div-dialog">';
-                echo '<p class="label-dialog">'.__('Search').'</p>';
-                echo html_print_input_text('search', $search, '', 30, 255, true);
-            echo '</div>';
-
-            echo '<div class="div-dialog">';
-                echo '<p class="label-dialog">'.__('Type').'</p>';
-                echo html_print_select(
+                echo html_print_label_input_block(
+                    __('Search'),
+                    html_print_input_text(
+                        'search',
+                        $search,
+                        '',
+                        30,
+                        255,
+                        true,
+                        false,
+                        false,
+                        '',
+                        'w100p'
+                    ),
                     [
-                        0 => __('Group agents'),
-                        1 => __('Group modules by tag'),
-                        2 => __('Group modules by module group'),
-                        3 => __('Group modules by agents'),
-                    ],
-                    'type',
-                    $type,
-                    '',
-                    '',
-                    0,
-                    true,
-                    false,
-                    false,
-                    '',
-                    false,
-                    'margin-top: 3px;width:70%'
+                        'label_class' => 'font-title-font',
+                        'div_class'   => 'mrgn_top_10px',
+                    ]
                 );
-            echo '</div>';
 
-            echo '<div class="div-dialog">';
-                echo '<p class="label-dialog">'.__('Show groups').'</p>';
-                echo html_print_checkbox('group', 1, $group, true);
-            echo '</div>';
+                echo html_print_label_input_block(
+                    __('Type'),
+                    html_print_select(
+                        [
+                            0 => __('Group agents'),
+                            1 => __('Group modules by tag'),
+                            2 => __('Group modules by module group'),
+                            3 => __('Group modules by agents'),
+                        ],
+                        'type',
+                        $type,
+                        '',
+                        '',
+                        0,
+                        true,
+                        false,
+                        false,
+                        '',
+                        false,
+                        'width: 100%; margin-top: 10px;'
+                    ),
+                    [
+                        'label_class' => 'font-title-font',
+                        'div_class'   => 'mrgn_top_10px',
+                    ]
+                );
+
+                echo html_print_label_input_block(
+                    __('Show groups'),
+                    '<div class="w100p">'.html_print_checkbox('group', 1, $group, true).'</div>',
+                    [
+                        'label_class' => 'font-title-font',
+                        'div_class'   => 'mrgn_top_10px',
+                    ]
+                );
         echo '</form>';
     }
 
 
     if ($getFilterType === true) {
         $filter = get_parameter('filter', 0);
-        echo '<div id="filter_type" class="div-dialog">';
+        $label = ' ';
+
         switch ($type) {
             case 0:
             default:
-                echo '<p style="width:42%;font-weight: bold;">'.__('Group').'</p>';
-                echo html_print_input(
+                $label = __('Group');
+                $input = html_print_input(
                     [
                         'type'           => 'select_groups',
                         'returnAllGroup' => true,
@@ -126,9 +154,9 @@ if (is_ajax() === true) {
             break;
 
             case 1:
-                echo '<p class="label-dialog">'.__('Tag').'</p>';
+                $label = __('Tag');
                 if (tags_has_user_acl_tags($config['id_user']) === false) {
-                    echo html_print_select_from_sql(
+                    $input = html_print_select_from_sql(
                         'SELECT id_tag, name
                         FROM ttag
                         WHERE id_tag
@@ -142,7 +170,7 @@ if (is_ajax() === true) {
                         true,
                         false,
                         false,
-                        'width: 200px',
+                        'width: 100%',
                         '5'
                     );
                 } else {
@@ -150,7 +178,7 @@ if (is_ajax() === true) {
                     if (!empty($user_tags)) {
                         $id_user_tags = array_keys($user_tags);
 
-                        echo html_print_select_from_sql(
+                        $input = html_print_select_from_sql(
                             'SELECT id_tag, name
                             FROM ttag
                             WHERE id_tag IN ('.implode(',', $id_user_tags).')
@@ -164,11 +192,11 @@ if (is_ajax() === true) {
                             true,
                             false,
                             false,
-                            'width: 200px',
+                            'width: 100%',
                             '5'
                         );
                     } else {
-                        echo html_print_select_from_sql(
+                        $input = html_print_select_from_sql(
                             'SELECT id_tag, name
                             FROM ttag
                             WHERE id_tag
@@ -182,7 +210,7 @@ if (is_ajax() === true) {
                             true,
                             false,
                             false,
-                            'width: 200px',
+                            'width: 100%',
                             '5'
                         );
                     }
@@ -190,8 +218,8 @@ if (is_ajax() === true) {
             break;
 
             case 2:
-                echo '<p class="label-dialog">'.__('Module group').'</p>';
-                echo html_print_select_from_sql(
+                $label = __('Module group');
+                $input = html_print_select_from_sql(
                     'SELECT id_mg, name FROM tmodule_group ORDER BY name',
                     'filter[]',
                     $filter,
@@ -202,7 +230,7 @@ if (is_ajax() === true) {
                     true,
                     true,
                     false,
-                    'width: 200px',
+                    'width: 100%',
                     '5'
                 );
             break;
@@ -212,7 +240,14 @@ if (is_ajax() === true) {
             break;
         }
 
-        echo '</div>';
+        echo html_print_label_input_block(
+            $label,
+            $input,
+            [
+                'label_class' => 'font-title-font',
+                'div_class'   => 'mrgn_top_10px',
+            ]
+        );
     }
 
     if ($getInfo === true) {

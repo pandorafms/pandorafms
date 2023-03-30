@@ -771,7 +771,7 @@ class AgentsAlerts extends HTML
         $headerInputs = [];
 
         $headerInputs[] = [
-            'label'     => __('Group'),
+            'label'     => '<span class="font-title-font">'.__('Group').'</span>',
             'id'        => 'select-group-id',
             'arguments' => [
                 'name'        => 'group-id',
@@ -788,8 +788,9 @@ class AgentsAlerts extends HTML
         ];
 
         $headerInputs[] = [
-            'label'     => __('Show modules without alerts'),
+            'label'     => '<span class="font-title-font label-alert-agent">'.__('Show modules without alerts').'</span>',
             'id'        => 'txt-use-agent-ip',
+            'class'     => 'display-grid mrgn_lft_15px mrgn_btn_5px',
             'arguments' => [
                 'name'            => 'show-modules-without-alerts',
                 'checked'         => $this->showWithoutAlertModules,

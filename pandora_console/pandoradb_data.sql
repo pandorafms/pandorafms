@@ -54,7 +54,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('graph_color1', '#1c7973'),
 ('graph_color2', '#82b92f'),
 ('graph_color3', '#e82a2a'),
-('graph_color4', '#5c63a3'),
+('graph_color4', '#8577cf'),
 ('graph_color5', '#f5a623'),
 ('graph_color6', '#14524f'),
 ('graph_color7', '#024eff'),

@@ -524,7 +524,7 @@ class CustomNetScan extends Wizard
                 // Schedule.
                 $form['inputs'][] = [
                     'label'           => __('Interval').ui_print_help_tip(
-                        __('Manual interval means that it will be executed only On-demand'),
+                        __('Manual interval means that it will be executed only On-demand').', '.__('The minimum recomended interval for Recon Task is 5 minutes'),
                         true
                     ),
                     'class'           => 'input-interval',
@@ -549,9 +549,6 @@ class CustomNetScan extends Wizard
                         true,
                         false,
                         false
-                    ).ui_print_help_tip(
-                        __('The minimum recomended interval for Recon Task is 5 minutes'),
-                        true
                     ).'</span>',
                 ];
 

@@ -10129,10 +10129,6 @@ select:focus {
   border-color: #8a96a6;
 }
 
-.dataTables_length > label > select {
-  min-height: 42px;
-}
-
 .dataTables_length > label {
   font-size: 0px;
 }

@@ -3553,9 +3553,21 @@ sub pandora_create_module ($$$$$$$$$$) {
 ##########################################################################
 ## Delete a module given its id.
 ##########################################################################
-sub pandora_delete_module ($$;$) {
-	my ($dbh, $module_id, $conf) = @_;
+sub pandora_delete_module {
+	my $dbh = shift;
+	my $module_id = shift;
+	my $conf = shift if @_;
+	my $cascade = shift if @_;
 	
+	# Recursively delete descendants (delete in cascade)
+	if (defined($cascade) && $cascade eq 1) {
+		my @id_children_modules = get_db_rows($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE parent_module_id = ?', $module_id);
+
+		foreach my $id_child_module (@id_children_modules) {
+				pandora_delete_module($dbh, $id_child_module->{'id_agente_modulo'}, $conf, 1);
+		}
+	}
+
 	# Get module data
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=?', $module_id);
 	return unless defined ($module);

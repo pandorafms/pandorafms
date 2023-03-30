@@ -2933,7 +2933,7 @@ sub cli_delete_module() {
 				next;
 			}
 		
-			pandora_delete_module($dbh,$id_module,$conf);
+			pandora_delete_module($dbh, $id_module, $conf, 1);
 		}
 	} else {
 		print_log "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
@@ -2943,7 +2943,7 @@ sub cli_delete_module() {
 		my $id_module = get_agent_module_id($dbh,$module_name,$id_agent);
 		exist_check($id_module,'module',$module_name);
 		
-		pandora_delete_module($dbh,$id_module,$conf);
+		pandora_delete_module($dbh, $id_module, $conf, 1);
 	}
 }
 

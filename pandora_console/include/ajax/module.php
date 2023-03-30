@@ -1279,7 +1279,7 @@ if (check_login()) {
                     if ((int) $module['flag'] === 0) {
                         $additionalLinkAction = '&amp;flag=1';
                         $linkCaption = __('Force checks');
-                        $imgaction = 'images/target.png';
+                        $imgaction = 'images/force@svg.svg';
                     } else {
                         $additionalLinkAction = '';
                         $linkCaption = __('Refresh');

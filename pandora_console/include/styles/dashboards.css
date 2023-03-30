@@ -22,7 +22,7 @@
 }
 
 #menu_tab {
-  margin: 0px;
+  margin: 0;
 }
 
 #menu_tab li.nomn.tab_operation img,
@@ -426,12 +426,16 @@ li#search_input_widget {
   top: 2px;
 }
 
+.select2-search--dropdown .select2-search__field {
+  width: auto;
+}
+
 div#dashboard-controls {
   position: fixed;
   z-index: 1;
   top: 10px;
   right: 10px;
-  width: 800px;
+  width: 450px;
   height: 70px;
   display: flex;
   flex-direction: row;
@@ -444,7 +448,7 @@ div#dashboard-controls {
 }
 
 div#dashboard-controls div {
-  flex: 0.5;
+  margin-left: 10px;
   text-align: center;
 }
 

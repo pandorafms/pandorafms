@@ -216,7 +216,7 @@ $table_agent_header .= '<div class="icono_right">'.$status_img.'</div>';
 $table_agent_header .= '&nbsp;&nbsp;';
 $table_agent_header .= '<a href="'.$model->url.'&op=force&id='.$cluster->id();
 $table_agent_header .= '">'.html_print_image(
-    'images/change-active.svg',
+    'images/force@svg.svg',
     true,
     [
         'title' => __('Force cluster status calculation'),

@@ -238,7 +238,7 @@ execute_cmd "dnf module disable -y mysql" "Disabiling mysql module"
 
 if [ "$MYVER" -eq '80' ] ; then
     execute_cmd "percona-release setup ps80 -y" "Enabling mysql80 module"
-    execute_cmd "dnf install -y percona-server-server percona-xtrabackup-24" "Installing Percona Server 80"
+    execute_cmd "dnf install -y percona-server-server percona-xtrabackup-80" "Installing Percona Server 80"
 fi
 
 if [ "$MYVER" -ne '80' ] ; then

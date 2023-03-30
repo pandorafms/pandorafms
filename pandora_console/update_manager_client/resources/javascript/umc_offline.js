@@ -172,17 +172,20 @@ function form_upload(url, auth, current_package) {
         log_zone.html("<div>" + texts.uploadSuccess + "</div>");
         log_zone.append("<div>" + texts.uploadMessage + "</div>");
         log_zone.append("<div>" + texts.clickToStart + "</div>");
-        var file_list =
-          "<h2>" + texts.fileList + "</h2><div class='file_list'>";
 
-        if (res.files) {
-          res.files.forEach(function(e) {
-            file_list += "<div class='file_entry'>" + e + "</div>";
-          });
+        if (res.files !== null) {
+          var file_list =
+            "<h2>" + texts.fileList + "</h2><div class='file_list'>";
+
+          if (res.files) {
+            res.files.forEach(function(e) {
+              file_list += "<div class='file_entry'>" + e + "</div>";
+            });
+          }
+
+          file_list += "</div>";
+          log_zone.append(file_list);
         }
-
-        file_list += "</div>";
-        log_zone.append(file_list);
 
         // Show messages
         $("#log_zone").slideDown(400, function() {

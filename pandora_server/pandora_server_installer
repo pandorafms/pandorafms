@@ -26,6 +26,7 @@ PANDORA_SERVER=/etc/init.d/pandora_server
 TENTACLE_SERVER=/etc/init.d/tentacle_serverd
 PANDORA_CFG_FILE=$PANDORA_CFG_DIR/pandora_server.conf
 PANDORA_CFG_FILE_DIST=conf/pandora_server.conf.new
+PANDORA_CFG_FILE_DIST_SEC=conf/pandora_server_sec.conf.template
 PANDORA_INIT_SCRIPT=util/pandora_server
 TENTACLE_CFG_DIR=/etc/tentacle
 TENTACLE_CFG_FILE=$TENTACLE_CFG_DIR/tentacle_server.conf
@@ -349,6 +350,12 @@ install () {
 		cp $PANDORA_CFG_FILE_DIST $DESTDIR$PANDORA_CFG_FILE
 		chmod 770 $DESTDIR$PANDORA_CFG_FILE
 	fi
+
+	echo "Creating sec setup directory in $PANDORA_CFG_DIR/conf.d"
+	mkdir -p $DESTDIR$PANDORA_CFG_DIR/conf.d 2> /dev/null
+	echo cp $PANDORA_CFG_FILE_DIST_SEC $DESTDIR$PANDORA_CFG_DIR/conf.d/
+	cp $PANDORA_CFG_FILE_DIST_SEC $DESTDIR$PANDORA_CFG_DIR/conf.d/
+
 
 	echo "Installing Pandora Server manual"
 	[ -d $DESTDIR$MANDIR ] || mkdir -p $DESTDIR$MANDIR

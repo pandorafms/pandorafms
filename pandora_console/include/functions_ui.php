@@ -7860,3 +7860,122 @@ function ui_print_fav_menu($id_element, $url, $label, $section)
     $output .= '</div>';
     return $output;
 }
+
+
+function ui_print_tree(
+    $tree,
+    $id=0,
+    $depth=0,
+    $last=0,
+    $last_array=[],
+    $sufix=false,
+    $descriptive_ids=false,
+    $previous_id=''
+) {
+    static $url = false;
+    $output = '';
+
+    // Get the base URL for images.
+    if ($url === false) {
+        $url = ui_get_full_url('operation/tree', false, false, false);
+    }
+
+    // Leaf.
+    if (empty($tree['__LEAVES__'])) {
+        return '';
+    }
+
+    $count = 0;
+    $total = (count(array_keys($tree['__LEAVES__'])) - 1);
+    $last_array[$depth] = $last;
+    $class = 'item_'.$depth;
+
+    if ($depth > 0) {
+        $output .= '<ul id="ul_'.$id.'" class="mrgn_0px pdd_0px invisible">';
+    } else {
+        $output .= '<ul id="ul_'.$id.'" class="mrgn_0px pdd_0px">';
+    }
+
+    foreach ($tree['__LEAVES__'] as $level => $sub_level) {
+        // Id used to expand leafs.
+        $sub_id = time().rand(0, getrandmax());
+        // Display the branch.
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.' mrgn_0px pdd_0px">';
+
+        // Indent sub branches.
+        for ($i = 1; $i <= $depth; $i++) {
+            if ($last_array[$i] == 1) {
+                $output .= '<img src="'.$url.'/no_branch.png" class="vertical_middle">';
+            } else {
+                $output .= '<img src="'.$url.'/branch.png" class="vertical_middle">';
+            }
+        }
+
+        // Branch.
+        if (! empty($sub_level['sublevel']['__LEAVES__'])) {
+            $output .= "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
+            if ($depth == 0 && $count == 0) {
+                if ($count == $total) {
+                    $output .= '<img src="'.$url.'/one_closed.png" class="vertical_middle">';
+                } else {
+                    $output .= '<img src="'.$url.'/first_closed.png" class="vertical_middle">';
+                }
+            } else if ($count == $total) {
+                $output .= '<img src="'.$url.'/last_closed.png" class="vertical_middle">';
+            } else {
+                $output .= '<img src="'.$url.'/closed.png" class="vertical_middle">';
+            }
+
+            $output .= '</a>';
+        }
+
+        // Leave.
+        else {
+            if ($depth == 0 && $count == 0) {
+                if ($count == $total) {
+                    $output .= '<img src="'.$url.'/no_branch.png" class="vertical_middle">';
+                } else {
+                    $output .= '<img src="'.$url.'/first_leaf.png" class="vertical_middle">';
+                }
+            } else if ($count == $total) {
+                $output .= '<img src="'.$url.'/last_leaf.png" class="vertical_middle">';
+            } else {
+                $output .= '<img src="'.$url.'/leaf.png" class="vertical_middle">';
+            }
+        }
+
+        $checkbox_name_sufix = ($sufix === true) ? '_'.$level : '';
+        if ($descriptive_ids === true) {
+            $checkbox_name = 'create_'.$sub_id.$previous_id.$checkbox_name_sufix;
+        } else {
+            $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
+        }
+
+        $previous_id = $checkbox_name_sufix;
+        if ($sub_level['selectable'] === true) {
+            $output .= html_print_checkbox($sub_level['name'], $sub_level['value'], $sub_level['checked'], true, false, '');
+        }
+
+        $output .= '&nbsp;<span>'.$sub_level['label'].'</span>';
+
+        $output .= '</li>';
+
+        // Recursively print sub levels.
+        $output .= ui_print_tree(
+            $sub_level['sublevel'],
+            $sub_id,
+            ($depth + 1),
+            (($count == $total) ? 1 : 0),
+            $last_array,
+            $sufix,
+            $descriptive_ids,
+            $previous_id
+        );
+
+        $count++;
+    }
+
+    $output .= '</ul>';
+
+    return $output;
+}

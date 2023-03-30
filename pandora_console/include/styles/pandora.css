@@ -805,6 +805,11 @@ select:-internal-list-box {
   max-height: 400px;
 }
 
+.mx_height85 {
+  height: 85px !important;
+  max-height: 85px !important;
+}
+
 .no-text-imp {
   font-size: 0 !important;
 }
@@ -10124,10 +10129,6 @@ select:focus {
   border-color: #8a96a6;
 }
 
-.dataTables_length > label > select {
-  min-height: 42px;
-}
-
 .dataTables_length > label {
   font-size: 0px;
 }
@@ -11856,4 +11857,8 @@ li.input-interval .extra-container-input .select2 {
 
 .scale-0-8 {
   transform: scale(0.8);
+}
+
+label:has(span.label-alert-agent) {
+  margin-bottom: 10px;
 }

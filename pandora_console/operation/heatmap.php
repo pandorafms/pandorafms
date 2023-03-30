@@ -149,13 +149,13 @@ if ($is_ajax === false && $pure === false) {
 
 if ($is_ajax === false && $pure === true) {
     // Floating menu - Start.
-    echo '<div id="heatmap-controls" class="zindex999">';
+    echo '<div id="heatmap-controls" class="zindex999" style="max-height: 85px">';
 
     echo '<div id="menu_tab" method="post">';
     echo '<ul class="mn white-box-content box-shadow flex-row">';
 
     // Name.
-    echo '<li class="nomn">';
+    echo '<li class="nomn mx_height85">';
 
     html_print_div(
         [
@@ -167,7 +167,7 @@ if ($is_ajax === false && $pure === true) {
     echo '</li>';
 
     // Countdown.
-    echo '<li class="nomn">';
+    echo '<li class="nomn mx_height85">';
     echo '<div class="heatmap-refr">';
 
     echo '<div id="heatmap-refr-form">';
@@ -282,7 +282,7 @@ if ($is_ajax === true) {
                 draggable: false,
                 modal: true,
                 closeOnEscape: true,
-                height: 410,
+                height: 500,
                 width: 330,
                 title: '<?php echo __('Config'); ?>',
                 position: {

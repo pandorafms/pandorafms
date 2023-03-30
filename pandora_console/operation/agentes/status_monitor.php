@@ -907,6 +907,9 @@ $tableFilter->data['second_line'][1] = html_print_label_input_block(
         true,
         '',
         [],
+        true,
+        0,
+        '30',
         true
     )
 );

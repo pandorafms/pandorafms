@@ -434,35 +434,39 @@ if ($agent_view_page === true) {
     );
 }
 
-if (((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
-    if ($agent_view_page === true) {
-        html_print_div(
-            [
-                'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
-                'content' => html_print_submit_button(
+if (is_metaconsole() === false) {
+    if (((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
+        if ($agent_view_page === true) {
+            html_print_div(
+                [
+                    'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
+                    'content' => html_print_submit_button(
+                        __('Validate'),
+                        'alert_validate',
+                        false,
+                        [
+                            'icon' => 'wand',
+                            'mode' => 'secondary mini',
+                        ],
+                        true
+                    ),
+                ]
+            );
+        } else {
+            html_print_action_buttons(
+                html_print_submit_button(
                     __('Validate'),
                     'alert_validate',
                     false,
-                    [
-                        'icon' => 'wand',
-                        'mode' => 'secondary mini',
-                    ],
+                    [ 'icon' => 'wand' ],
                     true
                 ),
-            ]
-        );
-    } else {
-        html_print_action_buttons(
-            html_print_submit_button(
-                __('Validate'),
-                'alert_validate',
-                false,
-                [ 'icon' => 'wand' ],
-                true
-            ),
-            ['type' => 'form_action']
-        );
+                ['type' => 'form_action']
+            );
+        }
     }
+} else {
+    html_print_action_buttons('');
 }
 
 $html_content = ob_get_clean();

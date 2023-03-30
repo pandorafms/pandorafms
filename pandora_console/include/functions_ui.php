@@ -3628,6 +3628,11 @@ function ui_print_datatable(array $parameters)
         $parameters['csv'] = 1;
     }
 
+    $dom_elements = '"plfrtiB"';
+    if (isset($parameters['dom_elements'])) {
+        $dom_elements = '"'.$parameters['dom_elements'].'"';
+    }
+
     $filter = '';
     // Datatable filter.
     if (isset($parameters['form']) && is_array($parameters['form'])) {
@@ -3790,6 +3795,34 @@ function ui_print_datatable(array $parameters)
     }
 
     $table .= '</tr></thead>';
+
+    if (isset($parameters['data_element']) === true) {
+        $table .= '<tbody>';
+        foreach ($parameters['data_element'] as $row) {
+            $table .= '<tr>';
+            foreach ($row as $td_data) {
+                $table .= '<td>'.$td_data.'</td>';
+            }
+
+            $table .= '</tr>';
+        }
+
+        $table .= '</tbody>';
+
+        $js = '<script>
+            $.fn.dataTable.ext.classes.sPageButton = "pandora_pagination mini-pandora-pagination"
+            var table = $("#'.$table_id.'").DataTable({
+                "dom": "'.$parameters['dom_elements'].'"
+            });
+            $("div.spinner-fixed").hide();
+            $("table#'.$table_id.'").removeClass("invisible");
+            $("#'.$table_id.'_filter > label > input").addClass("mini-search-input");
+            if (table.page.info().pages == 1) {
+                $("#'.$table_id.'_paginate").hide();
+            }
+        </script>';
+    }
+
     $table .= '</table>';
 
     $pagination_class = 'pandora_pagination';
@@ -3813,278 +3846,275 @@ function ui_print_datatable(array $parameters)
         $export_columns = ',columns: \'th:not(:last-child)\'';
     }
 
-    if (isset($parameters['ajax_url'])) {
-        $type_data = 'ajax: {
-            url: "'.ui_get_full_url('ajax.php', false, false, false).'",
-            type: "POST",
-            dataSrc: function (json) {
-                if($("#'.$form_id.'_search_bt") != undefined) {
-                    $("#'.$form_id.'_loading").remove();
-                }
+    if (isset($parameters['data_element']) === false) {
+        if (isset($parameters['ajax_url'])) {
+            $type_data = 'ajax: {
+                url: "'.ui_get_full_url('ajax.php', false, false, false).'",
+                type: "POST",
+                dataSrc: function (json) {
+                    if($("#'.$form_id.'_search_bt") != undefined) {
+                        $("#'.$form_id.'_loading").remove();
+                    }
 
-                if (json.error) {
-                    console.error(json.error);
-                    $("#error-'.$table_id.'").html(json.error);
-                    $("#error-'.$table_id.'").dialog({
-                        title: "Filter failed",
-                        width: 630,
-                        resizable: true,
-                        draggable: true,
-                        modal: false,
-                        closeOnEscape: true,
-                        buttons: {
-                            "Ok" : function () {
-                                $(this).dialog("close");
+                    if (json.error) {
+                        console.error(json.error);
+                        $("#error-'.$table_id.'").html(json.error);
+                        $("#error-'.$table_id.'").dialog({
+                            title: "Filter failed",
+                            width: 630,
+                            resizable: true,
+                            draggable: true,
+                            modal: false,
+                            closeOnEscape: true,
+                            buttons: {
+                                "Ok" : function () {
+                                    $(this).dialog("close");
+                                }
                             }
-                        }
-                    }).parent().addClass("ui-state-error");
-                } else {';
+                        }).parent().addClass("ui-state-error");
+                    } else {';
 
-        if (isset($parameters['ajax_return_operation']) === true
-            && empty($parameters['ajax_return_operation']) === false
-            && isset($parameters['ajax_return_operation_function']) === true
-            && empty($parameters['ajax_return_operation_function']) === false
-        ) {
-            $type_data .= '
-        if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
-            '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
-        }
-    ';
-        }
+            if (isset($parameters['ajax_return_operation']) === true
+                && empty($parameters['ajax_return_operation']) === false
+                && isset($parameters['ajax_return_operation_function']) === true
+                && empty($parameters['ajax_return_operation_function']) === false
+            ) {
+                $type_data .= '
+            if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
+                '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
+            }
+        ';
+            }
 
-        if (isset($parameters['ajax_postprocess'])) {
+            if (isset($parameters['ajax_postprocess'])) {
+                $type_data .= '
+                    if (json.data) {
+                        json.data.forEach(function(item) {
+                            '.$parameters['ajax_postprocess'].'
+                        });
+                    } else {
+                        json.data = {};
+                    }';
+            }
+
             $type_data .= '
-                if (json.data) {
-                    json.data.forEach(function(item) {
-                        '.$parameters['ajax_postprocess'].'
+                        return json.data;
+                    }
+                },
+                data: function (data) {
+                    if($("#button-'.$form_id.'_search_bt") != undefined) {
+                        var loading = \''.html_print_image(
+                        'images/spinner.gif',
+                        true,
+                        [
+                            'id'    => $form_id.'_loading',
+                            'class' => 'loading-search-datatables-button',
+                        ]
+                    ).'\';
+                        $("#button-'.$form_id.'_search_bt").parent().append(loading);
+                    }
+
+                    inputs = $("#'.$form_id.' :input");
+
+                    values = {};
+                    inputs.each(function() {
+                        values[this.name] = $(this).val();
+                    })
+
+                    $.extend(data, {
+                        filter: values,'."\n";
+
+            if (is_array($parameters['ajax_data'])) {
+                foreach ($parameters['ajax_data'] as $k => $v) {
+                    $type_data .= $k.':'.json_encode($v).",\n";
+                }
+            }
+
+            $type_data .= 'page: "'.$parameters['ajax_url'].'"
                     });
-                } else {
-                    json.data = {};
-                }';
+
+                    return data;
+                }
+            },';
+        } else {
+            $type_data = 'data: '.json_encode($parameters['data_element']).',';
         }
 
-        $type_data .= '
-                    return json.data;
-                }
-            },
-            data: function (data) {
-                if($("#button-'.$form_id.'_search_bt") != undefined) {
-                    var loading = \''.html_print_image(
-                    'images/spinner.gif',
-                    true,
-                    [
-                        'id'    => $form_id.'_loading',
-                        'class' => 'loading-search-datatables-button',
-                    ]
-                ).'\';
-                    $("#button-'.$form_id.'_search_bt").parent().append(loading);
-                }
+        $serverside = 'true';
+        if (isset($parameters['data_element'])) {
+            $serverside = 'false';
+        }
 
-                inputs = $("#'.$form_id.' :input");
+        // Javascript controller.
+        $js = '<script type="text/javascript">
+        $(document).ready(function(){
+            $.fn.dataTable.ext.errMode = "none";
+            $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
 
-                values = {};
-                inputs.each(function() {
-                    values[this.name] = $(this).val();
-                })
+            var settings_datatable = {
+                drawCallback: function(settings) {';
 
-                $.extend(data, {
-                    filter: values,'."\n";
+        if (!isset($parameters['data_element'])) {
+            $js .= 'if (dt_'.$table_id.'.page.info().pages > 1) {
+                        $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
+                    } else {
+                        $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
+                    }';
+        }
 
-        if (is_array($parameters['ajax_data'])) {
-            foreach ($parameters['ajax_data'] as $k => $v) {
-                $type_data .= $k.':'.json_encode($v).",\n";
+        $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
+                    $(".datatable-msg-info-'.$table_id.'").show();
+                    $(".datatable-msg-info-'.$table_id.'").removeClass(\'invisible_important\');
+                    $("table#'.$table_id.'").hide();
+                    $("div.dataTables_paginate").hide();
+                    $("div.dataTables_info").hide();
+                    $("div.dataTables_length").hide();
+                    $("div.dt-buttons").hide();
+
+                    if (dt_'.$table_id.'.page.info().pages > 1) {
+                        $(".dataTables_paginate.paging_simple_numbers").show()
+                    }
+                } else {
+                    $(".datatable-msg-info-'.$table_id.'").hide();
+                    $("table#'.$table_id.'").show();
+                    $("div.dataTables_paginate").show();
+                    $("div.dataTables_info").show();
+                    $("div.dataTables_length").show();
+                    $("div.dt-buttons").show();
+
+                    if (dt_'.$table_id.'.page.info().pages == 1) {
+                        $(".dataTables_paginate.paging_simple_numbers").hide()
+                    }
+                }';
+
+        if (isset($parameters['drawCallback'])) {
+            $js .= $parameters['drawCallback'];
+        }
+
+        $searching = 'false';
+        if (isset($parameters['searching']) && $parameters['searching'] === true) {
+            $searching = 'true';
+        }
+
+        $ordering = 'true';
+        if (isset($parameters['ordering']) && $parameters['ordering'] === false) {
+            $ordering = 'false';
+        }
+
+        $js .= '},';
+
+        $languaje = substr(get_user_language(), 0, 2);
+
+        $js .= '
+                processing: true,
+                serverSide: '.$serverside.',
+                paging: '.$parameters['paging'].',
+                pageLength: '.$parameters['default_pagination'].',
+                searching: '.$searching.',
+                responsive: true,
+                dom: '.$dom_elements.',
+                language: {
+                    url: "/pandora_console/include/javascript/i18n/dataTables.'.$languaje.'.json",
+                    processing:"'.$processing.'",
+                    zeroRecords:"'.$zeroRecords.'",
+                    emptyTable:"'.$emptyTable.'",
+                },
+                buttons: '.$parameters['csv'].'== 1 ? [
+                    {
+                        extend: "csv",
+                        text : "'.__('Export current page to CSV').'",
+                        titleAttr: "'.__('Export current page to CSV').'",
+                        title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
+                        fieldSeparator: "'.$config['csv_divider'].'",
+                        action: function ( e, dt, node, config ) {
+                            blockResubmit(node);
+                            // Call the default csvHtml5 action method to create the CSV file
+                            $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
+                        },
+                        exportOptions : {
+                            modifier : {
+                                // DataTables core
+                                order : "current",
+                                page : "All",
+                                search : "applied"
+                            }'.$export_columns.'
+                        },
+                    }
+                ] : [],
+                lengthMenu: '.json_encode($pagination_options).',
+                columnDefs: [
+                    { className: "no-class", targets: "_all" },
+                    { bSortable: false, targets: '.$no_sortable_columns.' }
+                ],
+                ordering: '.$ordering.',
+                initComplete: function(settings, json) {
+                    // Move elements to table_action_buttons bar.
+                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
+                    $("div.spinner-fixed").hide();
+                },
+                columns: [';
+
+        foreach ($parameters['datacolumns'] as $data) {
+            if (is_array($data)) {
+                $js .= '{data : "'.$data['text'].'",className: "'.$data['class'].'"},';
+            } else {
+                $js .= '{data : "'.$data.'",className: "no-class"},';
             }
         }
 
-        $type_data .= 'page: "'.$parameters['ajax_url'].'"
-                });
+                $js .= '
+                ],
+                order: [[ '.$order.' ]],';
+                $js .= $type_data;
+                $js .= '
+            };
 
-                return data;
-            }
-        },';
-    } else {
-        $type_data = 'data: '.json_encode($parameters['data_element']).',';
-    }
+            dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
 
-    $serverside = 'true';
-    if (isset($parameters['data_element'])) {
-        $serverside = 'false';
-    }
+            $("#button-'.$form_id.'_search_bt").click(function (){
+                dt_'.$table_id.'.draw().page(0)
+            });
+            ';
 
-    // Javascript controller.
-    $js = '<script type="text/javascript">
-    $(document).ready(function(){
-        $.fn.dataTable.ext.errMode = "none";
-        $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
+        if (isset($parameters['caption']) === true
+            && empty($parameters['caption']) === false
+        ) {
+            $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
+            $js .= '$(".datatables_thead_tr").css("height", 0);';
+        }
 
-        var settings_datatable = {
-            drawCallback: function(settings) {';
+        if (isset($parameters['csv']) === true) {
+            $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
+                if ( indicator ) {
+                    console.log('a');
+                }
+                else {
+                    console.log('b');
+                }";
+        }
 
-    if (!isset($parameters['data_element'])) {
-        $js .= 'if (dt_'.$table_id.'.page.info().pages > 1) {
-                    $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
-                } else {
-                    $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
-                }';
-    }
-
-    $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
-                $(".datatable-msg-info-'.$table_id.'").show();
-                $(".datatable-msg-info-'.$table_id.'").removeClass(\'invisible_important\');
-                $("table#'.$table_id.'").hide();
-                $("div.dataTables_paginate").hide();
-                $("div.dataTables_info").hide();
+        $js .= '$("table#'.$table_id.'").removeClass("invisible");
+            });';
+        $js .= '
+        $(function() {
+            $(document).on("preInit.dt", function (ev, settings) {
                 $("div.dataTables_length").hide();
                 $("div.dt-buttons").hide();
-
-                if (dt_'.$table_id.'.page.info().pages > 1) {
-                    $(".dataTables_paginate.paging_simple_numbers").show()
-                }
-            } else {
-                $(".datatable-msg-info-'.$table_id.'").hide();
-                $("table#'.$table_id.'").show();
-                $("div.dataTables_paginate").show();
-                $("div.dataTables_info").show();
-                $("div.dataTables_length").show();
-                $("div.dt-buttons").show();
-
-                if (dt_'.$table_id.'.page.info().pages == 1) {
-                    $(".dataTables_paginate.paging_simple_numbers").hide()
-                }
-            }';
-
-    if (isset($parameters['drawCallback'])) {
-        $js .= $parameters['drawCallback'];
-    }
-
-    $dom_elements = '"plfrtiB"';
-    if (isset($parameters['dom_elements'])) {
-        $dom_elements = '"'.$parameters['dom_elements'].'"';
-    }
-
-    $searching = 'false';
-    if (isset($parameters['searching']) && $parameters['searching'] === true) {
-        $searching = 'true';
-    }
-
-    $ordering = 'true';
-    if (isset($parameters['ordering']) && $parameters['ordering'] === false) {
-        $ordering = 'false';
-    }
-
-    $js .= '},';
-
-    $languaje = substr(get_user_language(), 0, 2);
-
-    $js .= '
-            processing: true,
-            serverSide: '.$serverside.',
-            paging: '.$parameters['paging'].',
-            pageLength: '.$parameters['default_pagination'].',
-            searching: '.$searching.',
-            responsive: true,
-            dom: '.$dom_elements.',
-            language: {
-                url: "/pandora_console/include/javascript/i18n/dataTables.'.$languaje.'.json",
-                processing:"'.$processing.'",
-                zeroRecords:"'.$zeroRecords.'",
-                emptyTable:"'.$emptyTable.'",
-            },
-            buttons: '.$parameters['csv'].'== 1 ? [
-                {
-                    extend: "csv",
-                    text : "'.__('Export current page to CSV').'",
-                    titleAttr: "'.__('Export current page to CSV').'",
-                    title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
-                    fieldSeparator: "'.$config['csv_divider'].'",
-                    action: function ( e, dt, node, config ) {
-                        blockResubmit(node);
-                        // Call the default csvHtml5 action method to create the CSV file
-                        $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
-                    },
-                    exportOptions : {
-                        modifier : {
-                            // DataTables core
-                            order : "current",
-                            page : "All",
-                            search : "applied"
-                        }'.$export_columns.'
-                    },
-                }
-            ] : [],
-            lengthMenu: '.json_encode($pagination_options).',
-            columnDefs: [
-                { className: "no-class", targets: "_all" },
-                { bSortable: false, targets: '.$no_sortable_columns.' }
-            ],
-            ordering: '.$ordering.',
-            initComplete: function(settings, json) {
-                // Move elements to table_action_buttons bar.
-                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-
-                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
-                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
-                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
-                $("div.spinner-fixed").hide();
-            },
-            columns: [';
-
-    foreach ($parameters['datacolumns'] as $data) {
-        if (is_array($data)) {
-            $js .= '{data : "'.$data['text'].'",className: "'.$data['class'].'"},';
-        } else {
-            $js .= '{data : "'.$data.'",className: "no-class"},';
-        }
-    }
-
-            $js .= '
-            ],
-            order: [[ '.$order.' ]],';
-            $js .= $type_data;
-            $js .= '
-        };
-
-        dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
-
-        $("#button-'.$form_id.'_search_bt").click(function (){
-            dt_'.$table_id.'.draw().page(0)
+            });
         });
+
         ';
 
-    if (isset($parameters['caption']) === true
-        && empty($parameters['caption']) === false
-    ) {
-        $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
-        $js .= '$(".datatables_thead_tr").css("height", 0);';
+        $js .= '</script>';
     }
-
-    if (isset($parameters['csv']) === true) {
-        $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
-            if ( indicator ) {
-                console.log('a');
-            }
-            else {
-                console.log('b');
-            }";
-    }
-
-    $js .= '$("table#'.$table_id.'").removeClass("invisible");
-        });';
-    $js .= '
-    $(function() {
-        $(document).on("preInit.dt", function (ev, settings) {
-            $("div.dataTables_length").hide();
-            $("div.dt-buttons").hide();
-        });
-    });
-
-    ';
-
-    $js .= '</script>';
 
     // Order.
     $info_msg_arr = [];

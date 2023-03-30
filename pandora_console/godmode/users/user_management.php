@@ -764,10 +764,9 @@ html_print_table($userManagementTable);
 
 $vcard_data = [];
 $vcard_data['version'] = '3.0';
-$vcard_data['firstName'] = $user_info['firstname'];
-$vcard_data['lastName'] = $user_info['lastname'];
-$vcard_data['middleName'] = ($user_info['middlename'] === '1') ? '' : $user_info['middlename'];
-$vcard_data['nickname'] = $user_info['fullname'];
+$vcard_data['firstName'] = $user_info['fullname'];
+$vcard_data['lastName'] = '';
+$vcard_data['middleName'] = '';
 $vcard_data['workPhone'] = $user_info['phone'];
 $vcard_data['email'] = $user_info['email'];
 $vcard_data['organization'] = io_safe_output(get_product_name());

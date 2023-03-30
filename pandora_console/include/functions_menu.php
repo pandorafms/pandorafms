@@ -57,7 +57,7 @@ function menu_print_menu(&$menu)
     $sec = (string) get_parameter('sec');
     $sec2 = (string) get_parameter('sec2');
     if ($sec2 === 'operation/agentes/ver_agente') {
-        $sec2 = 'godmode/agentes/configurar_agente';
+        $sec2 = 'operation/agentes/estado_agente';
     } else if ($sec2 === 'godmode/alerts/configure_alert_template') {
         $sec2 = 'godmode/alerts/alert_templates';
     } else if ($sec2 === 'godmode/events/events') {

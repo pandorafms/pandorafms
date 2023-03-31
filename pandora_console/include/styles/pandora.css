@@ -931,6 +931,10 @@ select:-internal-list-box {
   justify-content: flex-start;
 }
 
+.flex-align-start {
+  align-items: start;
+}
+
 .flex-baseline {
   align-self: baseline;
 }
@@ -7404,6 +7408,10 @@ div.graph div.legend table {
 /*
 * PADDING RIGHT
 */
+.pdd_r_0px {
+  padding-right: 0px !important;
+}
+
 .pdd_r_2px {
   padding-right: 2px;
 }
@@ -7475,6 +7483,10 @@ div.graph div.legend table {
 /*
 * PADDING LEFT
 */
+.pdd_l_0px {
+  padding-left: 0px !important;
+}
+
 .pdd_l_4px {
   padding-left: 4px;
 }
@@ -7546,6 +7558,10 @@ div.graph div.legend table {
   padding-bottom: 10px;
 }
 
+.pdd_b_10px_important {
+  padding-bottom: 10px !important;
+}
+
 .pdd_b_20px {
   padding-bottom: 20px;
 }
@@ -7614,6 +7630,10 @@ div.graph div.legend table {
 
 .pdd_t_10px {
   padding-top: 10px;
+}
+
+.pdd_t_10px_important {
+  padding-top: 10px !important;
 }
 
 .pdd_t_15px {
@@ -11792,9 +11812,9 @@ span.help_icon_15px > img {
 
 /* ==== Spinner ==== */
 .spinner-fixed {
-  position: fixed;
-  left: 50%;
-  bottom: 50%;
+  position: absolute;
+  left: 40%;
+  top: 40%;
   z-index: 1;
   width: 100px;
   height: 100px;

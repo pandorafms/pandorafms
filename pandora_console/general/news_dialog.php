@@ -39,7 +39,6 @@ if (!empty($news)) {
 
 // Prints news dialog template
 echo '<div id="news_dialog" class="invisible">';
-
     echo '<div class="parent_new_dialog_tmplt">';
         echo '<span id="new_text"></span>';
         echo '<span id="new_author"></span>';
@@ -48,14 +47,22 @@ echo '<div id="news_dialog" class="invisible">';
 
     echo '<div id="div_btn_new_dialog">';
         echo '<div class="float-right w20p">';
-        html_print_submit_button('Ok', 'hide-news-help', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok w100px";"');
+        html_print_submit_button(
+            'Ok',
+            'hide-news-help',
+            false,
+            [
+                'mode' => 'ui-widget ok mini',
+                'icon' => 'wand',
+            ]
+        );
         echo '</div>';
-    echo '</div>';
+        echo '</div>';
 
-echo '</div>';
+        echo '</div>';
 
-ui_require_javascript_file('encode_decode_base64');
-?>
+        ui_require_javascript_file('encode_decode_base64');
+        ?>
 
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
@@ -82,22 +89,22 @@ $(document).ready (function () {
                     width: 630,
                     title: news[inew].subject,
                     overlay: {
-                            opacity: 0.5,
-                            background: "black"
-                        }
+                        opacity: 0.5,
+                        background: "black"
+                    }
                 });
                     
                 $('.ui-dialog-titlebar-close').hide();
             }
         }
         
-        $("#submit-hide-news-help").click (function () {
+        $("#button-hide-news-help").click (function () {
             $("#news_dialog" ).dialog('close');
             inew++;
-            show_new ();
+            show_new();
         });
         
-        show_new ();
+        show_new();
     }
 });
 

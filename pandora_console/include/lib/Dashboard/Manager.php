@@ -287,7 +287,7 @@ class Manager implements PublicLogin
 
             $this->dashboardId = (int) \get_parameter('dashboardId', 0);
             if ($this->slides === 1) {
-                $this->slidesIds = (array) \get_parameter('slidesIds', [get_user_dashboards($config['id_user'])[0]['id']]);
+                $this->slidesIds = (array) \get_parameter('slidesIds');
                 $this->cellModeSlides = (int) \get_parameter(
                     'cellModeSlides',
                     0

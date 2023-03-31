@@ -7953,7 +7953,15 @@ function ui_print_tree(
 
         $previous_id = $checkbox_name_sufix;
         if ($sub_level['selectable'] === true) {
-            $output .= html_print_checkbox($sub_level['name'], $sub_level['value'], $sub_level['checked'], true, false, '');
+            $output .= html_print_checkbox(
+                $sub_level['name'],
+                $sub_level['value'],
+                $sub_level['checked'],
+                true,
+                false,
+                '',
+                true
+            );
         }
 
         $output .= '&nbsp;<span>'.$sub_level['label'].'</span>';

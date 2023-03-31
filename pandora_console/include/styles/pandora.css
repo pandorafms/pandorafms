@@ -11888,3 +11888,7 @@ li.input-interval .extra-container-input .select2 {
 label:has(span.label-alert-agent) {
   margin-bottom: 10px;
 }
+
+.info_table.events > tbody > tr > td {
+    border-bottom: 1px solid #dedede !important;
+}

@@ -277,6 +277,8 @@ $table->data[5][1] .= '</form>';
 
 html_print_table($table);
 
+html_print_action_buttons('', ['right_content' => $SelectAction, 'class' => 'pdd_b_10px_important pdd_t_10px_important']);
+
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 ui_require_jquery_file('form');

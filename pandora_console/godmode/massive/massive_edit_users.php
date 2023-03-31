@@ -555,6 +555,7 @@ echo sprintf(
     $status
 );
 echo '</div>';
+echo '</div>';
 
 attachActionButton('edit_users', 'update', '100%', false, $SelectAction);
 

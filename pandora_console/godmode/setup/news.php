@@ -289,7 +289,7 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
             'text',
             25,
             100,
-            $text,
+            io_safe_output($text),
             '',
             true,
             'w100p'
@@ -442,9 +442,19 @@ ui_require_javascript_file('pandora');
             dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
             changeMonth: true,
             changeYear: true,
-            showAnim: "slideDown"});
+            showAnim: "slideDown"}
+        );
 
-    defineTinyMCE({"elements": "textarea_text",});
+        var added_config = {
+            "elements":"textarea_text",
+            "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+            "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
+            "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
+            "valid_children": "+body[style]",
+            "width": "90%",
+        }
+
+        defineTinyMCE(added_config);
         
         $("#checkbox-expire").click(function() {
             check_expire();

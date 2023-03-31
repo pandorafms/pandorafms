@@ -81,6 +81,7 @@ $inputs[] = [
         'return'   => true,
         'multiple' => true,
         'sort'     => false,
+        'required' => 'required',
     ],
 ];
 

@@ -386,6 +386,10 @@ function config_update_config()
                         $error_update[] = __('Enable console report');
                     }
 
+                    if (config_update_value('check_conexion_interval', get_parameter('check_conexion_interval'), true) === false) {
+                        $error_update[] = __('Check conexion interval');
+                    }
+
                     if (config_update_value('unique_ip', get_parameter('unique_ip'), true) === false) {
                         $error_update[] = __('Unique IP');
                     }
@@ -1536,10 +1540,6 @@ function config_update_config()
                         }
                     }
 
-                    if (config_update_value('netflow_interval', (int) get_parameter('netflow_interval'), true) === false) {
-                        $error_update[] = __('Daemon interval');
-                    }
-
                     if (config_update_value('netflow_daemon', get_parameter('netflow_daemon'), true) === false) {
                         $error_update[] = __('Daemon binary path');
                     }
@@ -2359,6 +2359,10 @@ function config_process_config()
         config_update_value('reporting_console_enable', 0);
     }
 
+    if (!isset($config['check_conexion_interval'])) {
+        config_update_value('check_conexion_interval', 180);
+    }
+
     if (!isset($config['elasticsearch_ip'])) {
         config_update_value('elasticsearch_ip', '');
     }
@@ -2876,10 +2880,6 @@ function config_process_config()
         }
 
         config_update_value('netflow_path', $default);
-    }
-
-    if (!isset($config['netflow_interval'])) {
-        config_update_value('netflow_interval', SECONDS_10MINUTES);
     }
 
     if (!isset($config['netflow_daemon'])) {

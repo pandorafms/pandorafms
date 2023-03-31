@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lateral Main Menu.
  *
@@ -233,13 +234,16 @@ echo '</div>';
         const id_selected = '<?php echo $menu1_selected; ?>';
         if (id_selected != '') {
             var menuType_val = localStorage.getItem("menuType");
-            if (menuType_val === 'classic') {
+            const closedMenuId = localStorage.getItem("closedMenuId");
+            if (menuType_val === 'classic' &&
+                (closedMenuId === '' || `icon_${id_selected}` !== closedMenuId)
+            ) {
                 $(`ul#subicon_${id_selected}`).show();
+                // Arrow.
+                $(`#icon_${id_selected}`).children().first().children().last().removeClass('arrow_menu_down');
+                $(`#icon_${id_selected}`).children().first().children().last().addClass('arrow_menu_up');
             }
 
-            // Arrow.
-            $(`#icon_${id_selected}`).children().first().children().last().removeClass('arrow_menu_down');
-            $(`#icon_${id_selected}`).children().first().children().last().addClass('arrow_menu_up');
             // Span.
             $(`#icon_${id_selected}`).children().first().children().eq(1).addClass('span_selected');
 
@@ -272,11 +276,11 @@ echo '</div>';
                 table_hover = $(this);
                 handsIn = 1;
                 openTime = new Date().getTime();
-                $("ul#sub"+table_hover[0].id).show();
+                $("ul#sub" + table_hover[0].id).show();
                 get_menu_items(table_hover);
                 if (typeof(table_noHover) != 'undefined') {
-                    if ("ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id ) {
-                        $("ul#sub"+table_noHover[0].id).hide();
+                    if ("ul#sub" + table_hover[0].id != "ul#sub" + table_noHover[0].id) {
+                        $("ul#sub" + table_noHover[0].id).hide();
                     }
                 }
             }
@@ -287,9 +291,9 @@ echo '</div>';
                 handsIn = 0;
                 setTimeout(function() {
                     opened = new Date().getTime() - openTime;
-                    if(opened > 2500 && handsIn == 0) {
+                    if (opened > 2500 && handsIn == 0) {
                         openTime = 4000;
-                        $("ul#sub"+table_noHover[0].id).hide();
+                        $("ul#sub" + table_noHover[0].id).hide();
                     }
                 }, 2500);
             }
@@ -301,10 +305,10 @@ echo '</div>';
                 table_hover2 = $(this);
                 handsIn2 = 1;
                 openTime2 = new Date().getTime();
-                $("#sub"+table_hover2[0].id).show();
-                if( typeof(table_noHover2) != 'undefined') {
-                    if ( "ul#sub"+table_hover2[0].id != "ul#sub"+table_noHover2[0].id ) {
-                        $("ul#sub"+table_noHover2[0].id).hide();
+                $("#sub" + table_hover2[0].id).show();
+                if (typeof(table_noHover2) != 'undefined') {
+                    if ("ul#sub" + table_hover2[0].id != "ul#sub" + table_noHover2[0].id) {
+                        $("ul#sub" + table_noHover2[0].id).hide();
                     }
                 }
             }
@@ -314,10 +318,10 @@ echo '</div>';
                 table_noHover2 = table_hover2;
                 handsIn2 = 0;
                 setTimeout(function() {
-                opened = new Date().getTime() - openTime2;
-                    if(opened >= 3000 && handsIn2 == 0) {
+                    opened = new Date().getTime() - openTime2;
+                    if (opened >= 3000 && handsIn2 == 0) {
                         openTime2 = 4000;
-                        $("ul#sub"+table_hover2[0].id).hide();
+                        $("ul#sub" + table_hover2[0].id).hide();
                     }
                 }, 3500);
             }
@@ -328,12 +332,12 @@ echo '</div>';
             if (!click_display && menuType_val === 'collapsed') {
 
                 openTime = 4000;
-                if( typeof(table_hover) != 'undefined') {
-                    $("ul#sub"+table_hover[0].id).hide();
+                if (typeof(table_hover) != 'undefined') {
+                    $("ul#sub" + table_hover[0].id).hide();
                 }
 
-                if( typeof(table_hover2) != 'undefined') {
-                    $("ul#sub"+table_hover2[0].id).hide();
+                if (typeof(table_hover2) != 'undefined') {
+                    $("ul#sub" + table_hover2[0].id).hide();
                 }
             }
         });
@@ -350,14 +354,22 @@ echo '</div>';
                 }
 
                 var menuType_val = localStorage.getItem("menuType");
+                const closedMenuId = localStorage.getItem("closedMenuId");
 
-                if (classes.includes('selected') === true) {
+                if (classes.includes('selected') === true
+                    && (closedMenuId === '' || closedMenuId !== id)
+                ) {
                     if (menuType_val === 'collapsed' && $(`ul#sub${id}`).is(':hidden')) {
                         $(`ul#sub${id}`).show();
                         get_menu_items(table_hover);
                     } else {
                         $(`#${id}`).removeClass('selected');
                         $(`ul#sub${id}`).hide();
+
+                        const liSelected = $(`ul#sub${id}`).find('.selected');
+                        if (liSelected.length > 0) {
+                            localStorage.setItem("closedMenuId", id);
+                        }
                         // Arrow.
                         table_hover.children().first().children().last().removeClass('arrow_menu_up');
                         table_hover.children().first().children().last().addClass('arrow_menu_down');
@@ -376,6 +388,12 @@ echo '</div>';
                     } else {
                         $(`ul#sub${id}`).show();
                         $(`#${id}`).addClass('selected');
+
+                        const liSelected = $(`ul#sub${id}`).find('.selected');
+                        if (liSelected.length > 0) {
+                            localStorage.setItem("closedMenuId", '');
+                        }
+
                         // Arrow.
                         $(this).children().last().removeClass('arrow_menu_down');
                         $(this).children().last().addClass('arrow_menu_up');
@@ -415,7 +433,7 @@ echo '</div>';
             }
         });
 
-        $('.sub_subMenu').click(function (event) {
+        $('.sub_subMenu').click(function(event) {
             event.stopPropagation();
         });
 
@@ -432,10 +450,10 @@ echo '</div>';
             var index = item.index();
 
             var top_submenu = menu_calculate_top(index, item_height);
-            top_submenu = top_submenu+'px';
-            $('#'+id_submenu+' ul.submenu').css('position', 'fixed');
-            $('#'+id_submenu+' ul.submenu').css('top', top_submenu);
-            $('#'+id_submenu+' ul.submenu').css('left', '60px');
+            top_submenu = top_submenu + 'px';
+            $('#' + id_submenu + ' ul.submenu').css('position', 'fixed');
+            $('#' + id_submenu + ' ul.submenu').css('top', top_submenu);
+            $('#' + id_submenu + ' ul.submenu').css('left', '60px');
         }
 
 

@@ -816,10 +816,6 @@ div[id^="auto-os-"] > img {
   height: 20px;
 }
 
-.dataTables_paginate {
-  margin-right: 10px;
-}
-
 .w22px {
   width: 22px;
 }
@@ -837,4 +833,14 @@ table#simple.floating_form tr[id^="simple-macro_field"] > td > input {
 td.FF-thresholds-pdd {
   padding: 0px !important;
   padding-left: 13px !important;
+}
+
+div.grid-stack-item-content a.pandora_pagination,
+a.mini-pandora-pagination {
+  padding: 7px;
+  font-size: 9pt;
+}
+
+input.mini-search-input {
+  height: 30px;
 }

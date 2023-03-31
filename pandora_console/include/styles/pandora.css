@@ -11804,9 +11804,9 @@ span.help_icon_15px > img {
 
 /* ==== Spinner ==== */
 .spinner-fixed {
-  position: fixed;
-  left: 50%;
-  bottom: 50%;
+  position: absolute;
+  left: 40%;
+  top: 40%;
   z-index: 1;
   width: 100px;
   height: 100px;

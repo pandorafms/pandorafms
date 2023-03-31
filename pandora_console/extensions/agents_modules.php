@@ -261,12 +261,11 @@ function agents_modules_load_js()
         }
 
         function select_selected () {
-            $('#id_agents2 option').each(function(){
-                if($(this).attr('selected') === 'selected'){
-                    $(this).prop('selected', true);
-                }
-            });
-
+            // $('#id_agents2 option').each(function(){
+            //     if($(this).attr('selected') === 'selected'){
+            //         $(this).prop('selected', true);
+            //     }
+            // });
         }
     </script>
     <?php

@@ -1287,38 +1287,44 @@ function ui_format_alert_row(
                 $additionUrl = '';
             }
 
-            $forceExecButtons[] = html_print_button(
-                $forceTitle,
-                'force_execution_'.$alert['id'],
-                false,
-                'window.location.assign("'.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl.'");',
-                [ 'mode' => 'link' ],
+            $forceExecButtons[] = html_print_anchor(
+                [
+                    'href'    => $url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl,
+                    'content' => html_print_image(
+                        'images/force@svg.svg',
+                        true,
+                        [
+                            'title' => $forceTitle,
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    ),
+                ],
                 true
             );
         }
 
-        $forceExecButtons[] = html_print_button(
-            __('View'),
-            'view_template_'.$alert['id'],
-            false,
-            '',
+        $forceExecButtons[] = html_print_anchor(
             [
-                'mode'  => 'link',
-                'class' => 'template_details',
-                'href'  => 'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'],
+                'href'    => 'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'],
+                'class'   => 'template_details',
+                'content' => html_print_image(
+                    'images/details.svg',
+                    true,
+                    ['class' => 'main_menu_icon invert_filter']
+                ),
             ],
             true
         );
     } else {
-        $forceExecButtons[] = html_print_button(
-            __('View'),
-            'view_template_'.$alert['id'],
-            false,
-            '',
+        $forceExecButtons[] = html_print_anchor(
             [
-                'mode'  => 'link',
-                'class' => 'template_details',
-                'href'  => ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'],
+                'href'    => ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'],
+                'class'   => 'template_details',
+                'content' => html_print_image(
+                    'images/details.svg',
+                    true,
+                    ['class' => 'main_menu_icon invert_filter']
+                ),
             ],
             true
         );
@@ -2034,7 +2040,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_css = ui_get_full_url($filename, false, false, false);
-        $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
+        $output .= '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'" type="text/css" />'."\n\t";
     }
 
     /*
@@ -2091,7 +2097,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_js = ui_get_full_url($filename, false, false, false);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+        $output .= '<script type="text/javascript" src="'.$url_js.'?v='.$config['current_package'].'"></script>'."\n\t";
     }
 
     /*
@@ -2136,7 +2142,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_js = ui_get_full_url($filename, false, false, false);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+        $output .= '<script type="text/javascript" src="'.$url_js.'?v='.$config['current_package'].'"></script>'."\n\t";
     }
 
     /*
@@ -4147,7 +4153,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
         // Load tables.css.
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
@@ -4156,7 +4162,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
         if (is_metaconsole() === true) {
             // Load meta_tables.css.
             $output .= '<link rel="stylesheet" href="';
@@ -4166,7 +4172,7 @@ function ui_print_datatable(array $parameters)
                 false,
                 false
             );
-            $output .= '"/>';
+            $output .= '?v='.$config['current_package'].'"/>';
         }
 
         // Load datatables.js.

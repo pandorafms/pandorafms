@@ -56,7 +56,7 @@ ob_start('ui_process_page_head');
 enterprise_include('index.php');
 
 $url_css = ui_get_full_url('include/styles/visual_maps.css', false, false, false);
-echo '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />';
+echo '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'" type="text/css" />';
 
 require_once 'include/functions_visual_map.php';
 

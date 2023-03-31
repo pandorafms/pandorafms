@@ -515,7 +515,7 @@ function html_print_select_groups(
             false,
             false
         );
-        $output .= '" type="text/javascript"></script>';
+        $output .= '?v='.$config['current_package'].'" type="text/javascript"></script>';
 
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
@@ -524,7 +524,7 @@ function html_print_select_groups(
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
     } else {
         ui_require_css_file($select2_css);
         ui_require_javascript_file('select2.min');
@@ -977,7 +977,7 @@ function html_print_select(
                 false,
                 false
             );
-            $output .= '" type="text/javascript"></script>';
+            $output .= '?v='.$config['current_package'].'" type="text/javascript"></script>';
 
             $output .= '<link rel="stylesheet" href="';
             $output .= ui_get_full_url(
@@ -986,7 +986,7 @@ function html_print_select(
                 false,
                 false
             );
-            $output .= '"/>';
+            $output .= '?v='.$config['current_package'].'"/>';
         } else {
             ui_require_css_file($select2);
             ui_require_javascript_file('select2.min');

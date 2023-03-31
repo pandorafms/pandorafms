@@ -25,7 +25,7 @@ echo __('%s help system', get_product_name());
 </title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 </head>
-<?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
+<?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css?v='.$config['current_package'].'" type="text/css">'; ?>
 <body class="height_100p bg_333">
 <?php
 $id = get_parameter('id');

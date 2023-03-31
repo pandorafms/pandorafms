@@ -2040,7 +2040,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_css = ui_get_full_url($filename, false, false, false);
-        $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
+        $output .= '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'" type="text/css" />'."\n\t";
     }
 
     /*
@@ -2097,7 +2097,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_js = ui_get_full_url($filename, false, false, false);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+        $output .= '<script type="text/javascript" src="'.$url_js.'?v='.$config['current_package'].'"></script>'."\n\t";
     }
 
     /*
@@ -2142,7 +2142,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_js = ui_get_full_url($filename, false, false, false);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+        $output .= '<script type="text/javascript" src="'.$url_js.'?v='.$config['current_package'].'"></script>'."\n\t";
     }
 
     /*
@@ -4153,7 +4153,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
         // Load tables.css.
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
@@ -4162,7 +4162,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
         if (is_metaconsole() === true) {
             // Load meta_tables.css.
             $output .= '<link rel="stylesheet" href="';
@@ -4172,7 +4172,7 @@ function ui_print_datatable(array $parameters)
                 false,
                 false
             );
-            $output .= '"/>';
+            $output .= '?v='.$config['current_package'].'"/>';
         }
 
         // Load datatables.js.

@@ -27,7 +27,7 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
-
+global $config;
 ?>
 <head>
 
@@ -39,12 +39,12 @@
             document.write('<script type="text/javascript" src="<?php echo $asset('resources/javascript/jquery.fileupload.js'); ?>"></'+'script>');
         }
     </script>
-    <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
-    <script src="<?php $asset('resources/javascript/umc_offline.js'); ?>" type="text/javascript"></script>
+    <script src="<?php $asset('resources/javascript/umc.js'); ?>?v=<?php echo $config['current_package']; ?>" type="text/javascript"></script>
+    <script src="<?php $asset('resources/javascript/umc_offline.js'); ?>?v=<?php echo $config['current_package']; ?>" type="text/javascript"></script>
     <script src="<?php $asset('resources/javascript/jquery.fileupload.js'); ?>" type="text/javascript"></script>
     <script src="<?php $asset('resources/javascript/jquery.iframe-transport.js'); ?>" type="text/javascript"></script>
     <script src="<?php $asset('resources/javascript/jquery.knob.js'); ?>" type="text/javascript"></script>
-    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
+    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>?v=<?php echo $config['current_package']; ?>">
 </head>
 
 <div id="box_offline">

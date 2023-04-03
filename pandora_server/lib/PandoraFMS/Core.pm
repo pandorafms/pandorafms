@@ -7269,8 +7269,11 @@ sub process_inventory_data ($$$$$$$) {
 				
 				# Empty list
 				next unless defined ($list->{'data'});
-				
+			
 				foreach my $data (@{$list->{'data'}}) {
+					#Empty data.
+					next if (ref($data) eq 'HASH');
+					
 					$data_list .= $data . "\n";
 				}
 			}

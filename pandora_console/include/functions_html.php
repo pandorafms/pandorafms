@@ -515,7 +515,7 @@ function html_print_select_groups(
             false,
             false
         );
-        $output .= '" type="text/javascript"></script>';
+        $output .= '?v='.$config['current_package'].'" type="text/javascript"></script>';
 
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
@@ -524,7 +524,7 @@ function html_print_select_groups(
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
     } else {
         ui_require_css_file($select2_css);
         ui_require_javascript_file('select2.min');
@@ -977,7 +977,7 @@ function html_print_select(
                 false,
                 false
             );
-            $output .= '" type="text/javascript"></script>';
+            $output .= '?v='.$config['current_package'].'" type="text/javascript"></script>';
 
             $output .= '<link rel="stylesheet" href="';
             $output .= ui_get_full_url(
@@ -986,7 +986,7 @@ function html_print_select(
                 false,
                 false
             );
-            $output .= '"/>';
+            $output .= '?v='.$config['current_package'].'"/>';
         } else {
             ui_require_css_file($select2);
             ui_require_javascript_file('select2.min');
@@ -1559,6 +1559,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
     $output .= html_print_input(
         [
             'label'          => __('Group'),
+            'label_class'    => 'font-title-font',
             'name'           => 'filtered-module-group-'.$uniqId,
             'returnAllGroup' => $return_all_group,
             'privilege'      => 'AR',
@@ -1572,14 +1573,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
     // Recursion.
     $output .= html_print_input(
         [
-            'label'    => __('Recursion'),
-            'type'     => 'switch',
-            'name'     => 'filtered-module-recursion-'.$uniqId,
-            'value'    => (empty($data['mRecursion']) === true) ? false : true,
-            'checked'  => (empty($data['mRecursion']) === true) ? false : true,
-            'return'   => true,
-            'id'       => 'filtered-module-recursion-'.$uniqId,
-            'onchange' => 'fmAgentChange(\''.$uniqId.'\')',
+            'label'       => __('Recursion'),
+            'label_class' => 'font-title-font',
+            'type'        => 'switch',
+            'name'        => 'filtered-module-recursion-'.$uniqId,
+            'value'       => (empty($data['mRecursion']) === true) ? false : true,
+            'checked'     => (empty($data['mRecursion']) === true) ? false : true,
+            'return'      => true,
+            'id'          => 'filtered-module-recursion-'.$uniqId,
+            'onchange'    => 'fmAgentChange(\''.$uniqId.'\')',
         ]
     );
 
@@ -1598,6 +1600,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
     $output .= html_print_input(
         [
             'label'         => __('Module group'),
+            'label_class'   => 'font-title-font',
             'type'          => 'select',
             'fields'        => $module_groups,
             'name'          => 'filtered-module-module-group-'.$uniqId,
@@ -1682,15 +1685,16 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= html_print_input(
         [
-            'label'    => __('Agents'),
-            'type'     => 'select',
-            'fields'   => $agents,
-            'name'     => 'filtered-module-agents-'.$uniqId,
-            'selected' => explode(',', $data['mAgents']),
-            'return'   => true,
-            'multiple' => true,
-            'style'    => 'min-width: 200px;max-width:200px;',
-            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            'label'       => __('Agents'),
+            'label_class' => 'font-title-font',
+            'type'        => 'select',
+            'fields'      => $agents,
+            'name'        => 'filtered-module-agents-'.$uniqId,
+            'selected'    => explode(',', $data['mAgents']),
+            'return'      => true,
+            'multiple'    => true,
+            'style'       => 'min-width: 200px;max-width:200px;',
+            'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
 
@@ -1701,14 +1705,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= html_print_input(
         [
-            'label'    => __('Only common modules'),
-            'type'     => 'switch',
-            'checked'  => $commonModules,
-            'value'    => $commonModules,
-            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
-            'id'       => 'filtered-module-show-common-modules-'.$uniqId,
-            'return'   => true,
-            'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            'label'       => __('Only common modules'),
+            'label_class' => 'font-title-font',
+            'type'        => 'switch',
+            'checked'     => $commonModules,
+            'value'       => $commonModules,
+            'name'        => 'filtered-module-show-common-modules-'.$uniqId,
+            'id'          => 'filtered-module-show-common-modules-'.$uniqId,
+            'return'      => true,
+            'onchange'    => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
 
@@ -1742,14 +1747,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= html_print_input(
         [
-            'label'    => __('Modules'),
-            'type'     => 'select',
-            'fields'   => $all_modules,
-            'name'     => 'filtered-module-modules-'.$uniqId,
-            'selected' => $result,
-            'return'   => true,
-            'multiple' => true,
-            'style'    => 'min-width: 200px;max-width:200px;',
+            'label'       => __('Modules'),
+            'label_class' => 'font-title-font',
+            'type'        => 'select',
+            'fields'      => $all_modules,
+            'name'        => 'filtered-module-modules-'.$uniqId,
+            'selected'    => $result,
+            'return'      => true,
+            'multiple'    => true,
+            'style'       => 'min-width: 200px;max-width:200px;',
         ]
     );
 

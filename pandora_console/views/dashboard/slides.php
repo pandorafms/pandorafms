@@ -28,7 +28,7 @@
 
 global $config;
 
-$output = '<div id="dashboard-controls">';
+$output = '<div id="dashboard-controls-slides">';
 
 // Normal view button.
 $output .= '<div>';

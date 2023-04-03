@@ -233,7 +233,7 @@ ob_start('ui_process_page_head');
 enterprise_include_once('index.php');
 
 // Load event.css to display the about section dialog with correct styles.
-echo '<link rel="stylesheet" href="'.ui_get_full_url('/include/styles/events.css', false, false, false).'" type="text/css" />';
+echo '<link rel="stylesheet" href="'.ui_get_full_url('/include/styles/events.css', false, false, false).'?v='.$config['current_package'].'" type="text/css" />';
 
 echo '<script type="text/javascript">';
 echo 'var dispositivo = navigator.userAgent.toLowerCase();';
@@ -1487,6 +1487,7 @@ echo html_print_div(
 );
 
 // Connection lost alert.
+set_js_value('check_conexion_interval', $config['check_conexion_interval']);
 ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');

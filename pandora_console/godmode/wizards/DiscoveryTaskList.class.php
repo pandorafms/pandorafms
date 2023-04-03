@@ -673,7 +673,7 @@ class DiscoveryTaskList extends HTML
 
                         $data[0] .= ');" >';
                         $data[0] .= html_print_image(
-                            'images/change-active.svg',
+                            'images/force@svg.svg',
                             true,
                             [
                                 'title' => __('Force'),

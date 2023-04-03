@@ -4132,10 +4132,10 @@ class AgentWizard extends HTML
             $table->width = '100%';
             $table->class = 'info_table';
             // Subheaders for Warning and Critical columns.
-            $subheaders = '<span class=\'wizard-colum-levels font_w300 mrgn_lft_0.8em\'>Min.</span>';
-            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_1.6em\'>Max.</span>';
-            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_2em\'>Inv.</span>';
-            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_2em\'>%.</span>';
+            $subheaders = '<span class=\'wizard-colum-levels font_w300 margin-left-1\'>Min.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 margin-left-1\'>Max.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 margin-left-1\'>Inv.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 margin-left-05\'>%.</span>';
 
             // Warning header.
             $warning_header = html_print_div(
@@ -4352,8 +4352,7 @@ class AgentWizard extends HTML
                 );
                 $data_warning .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels-check',
-                        'style'   => 'margin-top: 0.3em;',
+                        'class'   => 'wizard-column-levels-check mrgn_top_10px',
                         'content' => html_print_checkbox(
                             'module-warning-inv-'.$uniqueId,
                             $module['inv_warning'],
@@ -4369,8 +4368,7 @@ class AgentWizard extends HTML
                 );
                 $data_warning .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels-check',
-                        'style'   => 'margin-top: 0.3em;',
+                        'class'   => 'wizard-column-levels-check mrgn_top_10px',
                         'content' => html_print_checkbox(
                             'module-warning-perc-'.$uniqueId,
                             $module['perc_warning'],
@@ -4436,8 +4434,7 @@ class AgentWizard extends HTML
 
                 $data[4] .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels-check',
-                        'style'   => 'margin-top: 0.3em;',
+                        'class'   => 'wizard-column-levels-check mrgn_top_10px',
                         'content' => html_print_checkbox(
                             'module-critical-inv-'.$uniqueId,
                             $module['inv_critical'],
@@ -4454,8 +4451,7 @@ class AgentWizard extends HTML
 
                 $data[4] .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels-check',
-                        'style'   => 'margin-top: 0.3em;',
+                        'class'   => 'wizard-column-levels-check mrgn_top_10px',
                         'content' => html_print_checkbox(
                             'module-critical-perc-'.$uniqueId,
                             $module['perc_critical'],
@@ -4490,7 +4486,7 @@ class AgentWizard extends HTML
                         '',
                         true,
                         '',
-                        'pdd_0px'
+                        'pdd_0px mrgn_top-8px'
                     );
                 } else {
                     // WIP. Current value of this module.

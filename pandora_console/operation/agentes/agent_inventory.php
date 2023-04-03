@@ -109,44 +109,93 @@ $utimestampSelectValues = array_reduce(
 // Inventory module select.
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
 $table->size = [];
-$table->data = [];
+$table->size[0] = '33%';
+$table->size[1] = '33%';
+$table->size[2] = '33%';
+$table->class = 'filter-table-adv';
 
-$table->data[0][0] = __('Module');
-$table->data[0][1] = html_print_select_from_sql(
-    $sqlModuleInventoryAgentView,
-    'module_inventory_agent_view',
-    $module,
-    'javascript:this.form.submit();',
-    __('All'),
-    0,
+$table->data[0][0] = html_print_label_input_block(
+    __('Module'),
+    html_print_select_from_sql(
+        $sqlModuleInventoryAgentView,
+        'module_inventory_agent_view',
+        $module,
+        'javascript:this.form.submit();',
+        __('All'),
+        0,
+        true,
+        false,
+        true,
+        false,
+        'width:100%;'
+    )
+);
+
+$table->data[0][1] = html_print_label_input_block(
+    __('Date'),
+    html_print_select(
+        $utimestampSelectValues,
+        'utimestamp',
+        $utimestamp,
+        'javascript:this.form.submit();',
+        __('Now'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width:100%;'
+    )
+);
+
+$table->data[0][2] = html_print_label_input_block(
+    __('Search'),
+    html_print_input_text(
+        'search_string',
+        $search_string,
+        '',
+        25,
+        0,
+        true
+    )
+);
+
+$buttons = html_print_submit_button(
+    __('Filter'),
+    'search_button',
+    false,
+    [
+        'icon' => 'search',
+        'mode' => 'mini',
+    ],
     true
 );
 
-$table->data[0][2] = __('Date');
-$table->data[0][3] = html_print_select(
-    $utimestampSelectValues,
-    'utimestamp',
-    $utimestamp,
-    'javascript:this.form.submit();',
-    __('Now'),
-    0,
+$searchForm = '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">';
+$searchForm .= html_print_table($table, true);
+$searchForm .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $buttons,
+    ],
     true
 );
+$searchForm .= '</form>';
 
-$table->data[0][4] = __('Search');
-$table->data[0][5] = html_print_input_text('search_string', $search_string, '', 25, 0, true);
-$table->data[0][6] = html_print_submit_button(__('Search'), 'search_button', false, 'class="sub wand"', true);
-
-// Show filters table.
-echo sprintf(
-    '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente=%s">%s</form>',
-    $id_agente,
-    html_print_table($table, true)
+ui_toggle(
+    $searchForm,
+    '<span class="subsection_header_title">'.__('Filters').'</span>',
+    'filter_form',
+    '',
+    true,
+    false,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph fixed_filter_bar'
 );
 
-unset($table);
 
 $idModuleInventory = null;
 $rowTable = 1;
@@ -181,7 +230,7 @@ foreach ($rows as $row) {
         $table->align = [];
         $table->cellpadding = 4;
         $table->cellspacing = 4;
-        $table->class = 'databox filters';
+        $table->class = 'info_table';
         $table->head = [];
         $table->head[0] = $row['name'].' - ('.date($config['date_format'], $row['utimestamp']).')';
 
@@ -210,7 +259,7 @@ foreach ($rows as $row) {
 
         foreach ($subHeadTitles as $titleData) {
             $table->data[0][$iterator] = $titleData;
-            $table->cellstyle[0][$iterator] = 'background: #373737; color: #FFF;';
+            $table->cellstyle[0][$iterator] = 'background: var(--primary-color); color: #FFF;';
 
             $iterator++;
         }

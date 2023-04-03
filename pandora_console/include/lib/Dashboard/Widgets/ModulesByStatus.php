@@ -453,6 +453,7 @@ class ModulesByStatus extends Widget
                                 1000,
                             ],
                         ],
+                        'dom_elements'       => 'frtilp',
                     ]
                 );
             } catch (\Exception $e) {

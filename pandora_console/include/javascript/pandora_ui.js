@@ -351,11 +351,86 @@ function load_modal(settings) {
           AJAX_RUNNING = 0;
         }
       } else {
-        // No onsumbit configured. Directly close.
-        if (document.getElementById(settings.form) != undefined) {
-          document.getElementById(settings.form).submit();
+        if (Array.isArray(settings.form) === false) {
+          $("#" + settings.form + " :input").each(function() {
+            if (this.checkValidity() === false) {
+              var select2 = $(this).attr("data-select2-id");
+              if (typeof select2 !== typeof undefined && select2 !== false) {
+                $(this)
+                  .next()
+                  .attr("title", this.validationMessage);
+                $(this)
+                  .next()
+                  .tooltip({
+                    tooltipClass: "uitooltip",
+                    position: {
+                      my: "right bottom",
+                      at: "right top",
+                      using: function(position, feedback) {
+                        $(this).css(position);
+                        $("<div>")
+                          .addClass("arrow")
+                          .addClass(feedback.vertical)
+                          .addClass(feedback.horizontal)
+                          .appendTo(this);
+                      }
+                    }
+                  });
+                $(this)
+                  .next()
+                  .tooltip("open");
+
+                var element = $(this).next();
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+              } else {
+                $(this).attr("title", this.validationMessage);
+                $(this).tooltip({
+                  tooltipClass: "uitooltip",
+                  position: {
+                    my: "right bottom",
+                    at: "right top",
+                    using: function(position, feedback) {
+                      $(this).css(position);
+                      $("<div>")
+                        .addClass("arrow")
+                        .addClass(feedback.vertical)
+                        .addClass(feedback.horizontal)
+                        .appendTo(this);
+                    }
+                  }
+                });
+                $(this).tooltip("open");
+
+                var element = $(this);
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+              }
+
+              flagError = true;
+            }
+          });
         }
-        d.dialog("close");
+
+        if (!flagError) {
+          // No onsumbit configured. Directly close.
+          if (document.getElementById(settings.form) != undefined) {
+            document.getElementById(settings.form).submit();
+          }
+          d.dialog("close");
+        }
       }
     };
 

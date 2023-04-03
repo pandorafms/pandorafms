@@ -68,7 +68,7 @@ if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     ui_require_css_file('pandora_black', 'include/styles/', true);
 }
 
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+echo '<link rel="stylesheet" href="../../include/styles/pandora.css?v='.$config['current_package'].'" type="text/css"/>';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -83,13 +83,13 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
         ?>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title><?php echo __('%s Realtime Module Graph', get_product_name()); ?></title>
-        <link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-        <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
-        <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
-        <script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
-        <script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
-        <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
-        <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
+        <link rel="stylesheet" href="../../include/styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <script type='text/javascript' src='../../include/javascript/pandora.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/pandora_ui.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/jquery.current.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/jquery.pandora.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js?v=<?php echo $config['current_package']; ?>'></script>
         <?php
         // Include the javascript for the js charts library.
             require_once $config['homedir'].'/include/graphs/functions_flot.php';

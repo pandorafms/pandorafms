@@ -1564,6 +1564,8 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 				$params->{"id"} = get_agent_module_id($dbh, $module, $agent->{'id_agente'});
 			}
 
+			$params->{"other_mode"} = 'url_encode_separator_%7C';
+
 			if (! exists($module_graph_list->{$cid}) && defined $url) {
 				# Get the module graph image in base 64
 				my $response = $ua->post($url, $params);

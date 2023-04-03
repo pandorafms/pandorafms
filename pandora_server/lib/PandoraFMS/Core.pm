@@ -1521,8 +1521,9 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		# Check for _module_graph_Xh_ macros
 		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
 		my $module_graph_list = {};
-		my $macro_regexp = "_modulegraph_(\\d+)h_";
+		my $macro_regexp = "_modulegraph_(?!([\\w\\s-]+_\\d+h_))(\\d+)h_";
 		my $macro_regexp2 = "_modulegraphth_(\\d+)h_";
+		my $macro_regexp3 = "_modulegraph_([\\w\\s-]+)_(\\d+)h_";
 		
 		# API connection
 		my $ua = new LWP::UserAgent;
@@ -1548,6 +1549,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		my $subst_func = sub {
 			my $hours = shift;
 			my $threshold = shift;
+			my $module = shift if @_;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
 				$params->{"other"} = $period . '%7C1%7C0%7C225%7C%7C14';
@@ -1558,8 +1560,10 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
-			$params->{"other_mode"} = 'url_encode_separator_%7C';
-			
+			if (defined($module)) {
+				$params->{"id"} = get_agent_module_id($dbh, $module, $agent->{'id_agente'});
+			}
+
 			if (! exists($module_graph_list->{$cid}) && defined $url) {
 				# Get the module graph image in base 64
 				my $response = $ua->post($url, $params);
@@ -1578,10 +1582,11 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		eval {
 			no warnings;
 			local $SIG{__DIE__};
-			$field3 =~ s/$macro_regexp/$subst_func->($1, 0)/ige;
+			$field3 =~ s/$macro_regexp/$subst_func->($2, 0)/ige;
 			$field3 =~ s/$macro_regexp2/$subst_func->($1, 1)/ige;
+			$field3 =~ s/$macro_regexp3/$subst_func->($2, 0, $1)/ige;
 		};
-		
+
 		# Default content type
 		my $content_type = $field4 . '; charset="iso-8859-1"';
 		

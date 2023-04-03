@@ -2130,10 +2130,8 @@ function html_print_extended_select_for_time(
         $fields[$selected] = human_time_description_raw($selected, true);
     }
 
-    if (empty($nothing) === true
-        && (empty($selected) === true
-        || $selected === '0')
-    ) {
+    hd(is_int($selected));
+    if (empty($nothing) === true && (is_int($selected) === true)) {
             $selected = 300;
     }
 
@@ -2248,6 +2246,13 @@ function html_print_extended_select_for_time(
 			$('#".$uniq_name."_manual').show();
 			$('#".$uniq_name."_default').hide();
 		}
+
+        if ($('#text-".$uniq_name."_text').val() === '0') {
+            setTimeout(() => {
+                $('#".$uniq_name."_manual').hide();
+                $('#".$uniq_name."_default').show();
+            }, 100);
+        }
 	</script>";
     $returnString = ob_get_clean();
 

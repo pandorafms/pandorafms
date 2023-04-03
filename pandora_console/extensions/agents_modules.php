@@ -259,6 +259,14 @@ function agents_modules_load_js()
                 return results[1];
             }
         }
+
+        function select_selected () {
+            // $('#id_agents2 option').each(function(){
+            //     if($(this).attr('selected') === 'selected'){
+            //         $(this).prop('selected', true);
+            //     }
+            // });
+        }
     </script>
     <?php
 }
@@ -645,7 +653,7 @@ function mainAgentsModules()
     }
 
     if ($config['pure'] != 1) {
-        $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" class="w100p">';
+        $show_filters = '<form method="post" action="index.php?sec=view&sec2=extensions/agents_modules" class="w100p">';
         $show_filters .= '<table class="filter-table-adv w100p no-border" cellpadding="4" cellspacing="4">';
             $show_filters .= '<tr>';
                 $show_filters .= '<td width="33%">'.$filter_type.'</td>';
@@ -666,8 +674,9 @@ function mainAgentsModules()
                     'srcbutton',
                     false,
                     [
-                        'icon' => 'search',
-                        'mode' => 'mini',
+                        'icon'    => 'search',
+                        'mode'    => 'mini',
+                        'onclick' => 'select_selected()',
                     ],
                     true
                 ),
@@ -729,7 +738,7 @@ function mainAgentsModules()
         if (isset($modules_selected[0]) === true && $modules_selected[0]) {
             $all_modules = [];
             foreach ($modules_selected as $key => $value) {
-                if (is_int($value)) {
+                if ((int) $value > 0) {
                     $name = modules_get_agentmodule_name($value);
                     $sql = "SELECT id_agente_modulo
                             FROM tagente_modulo

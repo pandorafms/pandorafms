@@ -313,7 +313,7 @@ table.dataTable.info_table.no-footer {
 
 a.pandora_pagination {
   background-color: #f6f7fb;
-  padding: 11px;
+  padding: 9px;
   color: #000;
   border: 1px solid #cacaca;
   border-left: none;
@@ -362,7 +362,7 @@ a.pandora_pagination.current:hover {
   background-color: transparent;
   color: var(--primary-color);
   font-size: 20px;
-  height: 42px;
+  height: 38px;
   /* height: 32px; */
   width: 80px;
   margin-left: 10px;
@@ -816,14 +816,6 @@ div[id^="auto-os-"] > img {
   height: 20px;
 }
 
-.dataTables_paginate {
-  margin-right: 10px;
-}
-
-.dataTables_paginate.paging_simple_numbers {
-  margin-right: 0;
-}
-
 .w22px {
   width: 22px;
 }
@@ -841,4 +833,14 @@ table#simple.floating_form tr[id^="simple-macro_field"] > td > input {
 td.FF-thresholds-pdd {
   padding: 0px !important;
   padding-left: 13px !important;
+}
+
+div.grid-stack-item-content a.pandora_pagination,
+a.mini-pandora-pagination {
+  padding: 7px;
+  font-size: 9pt;
+}
+
+input.mini-search-input {
+  height: 30px;
 }

@@ -1257,11 +1257,11 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 
 html_print_input_hidden('id_agente', $id_agente);
 
+echo '</div>';
 attachActionButton('update_agents', 'update', $table->width, false, $SelectAction);
+echo '</form>';
 
 // Shown and hide div.
-echo '</div></form>';
-
 ui_require_jquery_file('form');
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');

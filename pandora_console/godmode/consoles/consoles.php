@@ -54,12 +54,6 @@ $results = db_get_all_rows_in_table('tconsole');
 
 $message = '';
 
-if ($results === false) {
-    $message = ui_print_info_message(
-        __('If you want to have your consoles registered, you must define them by editing config.php in each individual console and wait for cron to run in order to be registered.')
-    );
-}
-
 View::render(
     'consoles/list',
     [
@@ -67,3 +61,9 @@ View::render(
         'message'  => $message,
     ]
 );
+
+if ($results === false) {
+    $message = ui_print_info_message(
+        __('If you want to have your consoles registered, you must define them by editing config.php in each individual console and wait for cron to run in order to be registered.')
+    );
+}

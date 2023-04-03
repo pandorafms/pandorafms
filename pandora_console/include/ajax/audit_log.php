@@ -160,7 +160,7 @@ if ($load_filter_modal) {
         true,
         '',
         false,
-        'margin-left:5px; width:'.$filter_id_width.';'
+        'width:'.$filter_id_width.';'
     );
 
     $table->rowclass[] = 'display-grid';
@@ -169,8 +169,9 @@ if ($load_filter_modal) {
         'load_filter',
         false,
         [
-            'class'   => 'mini w25p',
-            'style'   => 'margin-left: 73%',
+            'class'   => 'mini w30p',
+            'icon'    => 'load',
+            'style'   => 'margin-left: 208px; width: 130px;',
             'onclick' => 'load_filter_values();',
         ],
         true
@@ -189,7 +190,7 @@ function show_filter() {
         draggable: true,
         modal: false,
         closeOnEscape: true,
-        width: 500
+        width: 380
     });
 }
 
@@ -293,8 +294,9 @@ if ($save_filter_modal) {
             'save_filter',
             false,
             [
-                'class'   => 'mini w25p',
-                'style'   => 'margin-left: 56%',
+                'class'   => 'mini ',
+                'icon'    => 'save',
+                'style'   => 'margin-left: 175px; width: 125px;',
                 'onclick' => 'save_new_filter();',
             ],
             true
@@ -330,8 +332,9 @@ if ($save_filter_modal) {
             'update_filter',
             false,
             [
-                'class'   => 'mini w25p',
-                'style'   => 'margin-left: 56%',
+                'class'   => 'mini ',
+                'icon'    => 'save',
+                'style'   => 'margin-left: 155px; width: 145px;',
                 'onclick' => 'save_update_filter();',
             ],
             true

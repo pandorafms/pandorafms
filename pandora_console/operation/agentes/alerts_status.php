@@ -233,6 +233,7 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
         [
             'title' => __('Operations'),
             'text'  => __('Operations'),
+            'class' => 'left pdd_l_0px pdd_r_0px w100p',
         ],
     );
 
@@ -317,6 +318,7 @@ if (is_metaconsole() === true) {
     $no_sortable_columns = [
         0,
         1,
+        2,
         5,
     ];
 } else {
@@ -434,35 +436,39 @@ if ($agent_view_page === true) {
     );
 }
 
-if (((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
-    if ($agent_view_page === true) {
-        html_print_div(
-            [
-                'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
-                'content' => html_print_submit_button(
+if (is_metaconsole() === false) {
+    if (((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
+        if ($agent_view_page === true) {
+            html_print_div(
+                [
+                    'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
+                    'content' => html_print_submit_button(
+                        __('Validate'),
+                        'alert_validate',
+                        false,
+                        [
+                            'icon' => 'wand',
+                            'mode' => 'secondary mini',
+                        ],
+                        true
+                    ),
+                ]
+            );
+        } else {
+            html_print_action_buttons(
+                html_print_submit_button(
                     __('Validate'),
                     'alert_validate',
                     false,
-                    [
-                        'icon' => 'wand',
-                        'mode' => 'secondary mini',
-                    ],
+                    [ 'icon' => 'wand' ],
                     true
                 ),
-            ]
-        );
-    } else {
-        html_print_action_buttons(
-            html_print_submit_button(
-                __('Validate'),
-                'alert_validate',
-                false,
-                [ 'icon' => 'wand' ],
-                true
-            ),
-            ['type' => 'form_action']
-        );
+                ['type' => 'form_action']
+            );
+        }
     }
+} else {
+    html_print_action_buttons('');
 }
 
 $html_content = ob_get_clean();
@@ -510,10 +516,14 @@ function alerts_table_controls() {
             attribute: 'href',
             cluetipClass: 'default'
         }).click (function () {
-            console.log('click aqui');
             return false;
         });
 
+        $("a.template_details").cluetip ({
+                    arrows: true,
+                    attribute: 'href',
+                    cluetipClass: 'default'
+                });
 
         $('[id^=checkbox-all_validate]').change(function(){    
             if ($("#checkbox-all_validate").prop("checked")) {

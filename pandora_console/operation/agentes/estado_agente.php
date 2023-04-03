@@ -1301,7 +1301,7 @@ if (empty($tableAgents->data) === false) {
         true,
         'offset',
         false,
-        'dataTables_paginate paging_simple_numbers'
+        'paging_simple_numbers'
     );
 
     unset($table);

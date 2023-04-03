@@ -4560,7 +4560,7 @@ function events_page_details($event, $server_id=0)
                 true,
                 [
                     'title' => __('Go to data overview'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             );
         } else {
@@ -4569,7 +4569,7 @@ function events_page_details($event, $server_id=0)
                 true,
                 [
                     'title' => __('Go to data overview'),
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                     'style' => 'opacity: .5',
                 ]
             );

@@ -27,20 +27,21 @@
  */
 
 // Header.
-\ui_print_page_header(
-    // Title.
+ui_print_standard_header(
     __('%s registered consoles', $config['rb_product_name']),
-    // Icon.
     '',
-    // Return.
     false,
-    // Help.
     '',
-    // Godmode.
     true,
-    // Options.
-    ''
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Servers'),
+        ],
+    ]
 );
+
 
 if (empty($message) === false) {
     echo $message;

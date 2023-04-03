@@ -340,3 +340,28 @@ div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitool
   top: auto;
 }
 /* END Tooltip message errors*/
+
+form.modal {
+  position: initial !important;
+  display: initial !important;
+}
+
+form#modal_form_feedback > ul > li {
+  visibility: initial !important;
+
+  display: initial !important;
+  flex-direction: initial !important;
+  width: initial !important;
+  margin: initial !important;
+  justify-items: initial !important;
+  align-items: initial !important;
+  flex-wrap: initial !important;
+}
+
+form#modal_form_feedback > ul > li > textarea {
+  width: 575px !important;
+}
+
+form#modal_form_feedback > ul > li:not(:first-child) > label {
+  margin-top: 20px !important;
+}

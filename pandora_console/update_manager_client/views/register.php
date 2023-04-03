@@ -28,6 +28,7 @@
  * ============================================================================
  */
 
+global $config;
 $product_name = get_product_name(); ?>
 <head>
 
@@ -39,8 +40,8 @@ $product_name = get_product_name(); ?>
         }
     </script>
     <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
-    <link rel="stylesheet" href="<?php $asset('resources/styles/jquery-ui.min.css'); ?>">
-    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
+    <link rel="stylesheet" href="<?php $asset('resources/styles/jquery-ui.min.css'); ?>?v=<?php echo $config['current_package']; ?>">
+    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>?v=<?php echo $config['current_package']; ?>">
 </head>
 
 <div id="registration_wizard" title="

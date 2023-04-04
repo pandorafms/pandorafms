@@ -1041,11 +1041,11 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         $table1->class = 'info_table';
 
         $table1->align = [];
-        $table1->align[0] = 'center';
+        $table1->align[0] = 'left';
         if ($item['show_summary_group']) {
-            $table1->align[3] = 'center';
+            $table1->align[3] = 'left';
         } else {
-            $table1->align[2] = 'center';
+            $table1->align[2] = 'left';
         }
 
         $table1->data = [];
@@ -1299,7 +1299,7 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                 $table1->class = 'info_table';
                 $table1->data = [];
                 $table1->head = [];
-                $table1->align = 'left';
+                $table1->align[0] = 'left';
 
                 if ($show_summary_group) {
                     $table1->head[0]  = __('Status');
@@ -1378,7 +1378,16 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                             $custom_data = json_decode($event['custom_data'], true);
                             $custom_data_text = '';
                             foreach ($custom_data as $key => $value) {
-                                $custom_data_text .= $key.' = '.$value.'<br>';
+                                if (is_array($value)) {
+                                    $custom_data_text .= $key.' = ';
+                                    foreach ($value as $action) {
+                                        $custom_data_text .= $action.', ';
+                                    }
+
+                                    $custom_data_text = rtrim($custom_data_text, ', ').'<br>';
+                                } else {
+                                    $custom_data_text .= $key.' = '.$value.'<br>';
+                                }
                             }
 
                             $data[6] = $custom_data_text;
@@ -2620,16 +2629,14 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         $table1->width = '99%';
         $table1->class = 'info_table';
         $table1->align = [];
-        $table1->align[0] = 'center';
-        $table1->align[1] = 'center';
-        $table1->align[3] = 'center';
-        if ((bool) $item['show_custom_data'] === true) {
-            if ($item['show_summary_group']) {
-                $table1->align[7] = 'left';
-            } else {
-                $table1->align[6] = 'left';
-            }
-        }
+        $table1->align[0] = 'left';
+        $table1->align[1] = 'left';
+        $table1->align[2] = 'left';
+        $table1->align[3] = 'left';
+        $table1->align[4] = 'left';
+        $table1->align[5] = 'left';
+        $table1->align[6] = 'left';
+        $table1->align[7] = 'left';
 
         $table1->data = [];
 
@@ -2705,16 +2712,25 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             }
 
             if ($item['show_summary_group']) {
-                $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp']).'</font>';
             } else {
-                $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp']).'</font>';
             }
 
             if ((bool) $item['show_custom_data'] === true) {
                 $custom_data = json_decode($event['custom_data'], true);
                 $custom_data_text = '';
                 foreach ($custom_data as $key => $value) {
-                    $custom_data_text .= $key.' = '.$value.'<br>';
+                    if (is_array($value)) {
+                        $custom_data_text .= $key.' = ';
+                        foreach ($value as $action) {
+                            $custom_data_text .= $action.', ';
+                        }
+
+                        $custom_data_text = rtrim($custom_data_text, ', ').'<br>';
+                    } else {
+                        $custom_data_text .= $key.' = '.$value.'<br>';
+                    }
                 }
 
                 $data[] = $custom_data_text;
@@ -4721,7 +4737,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 $table1->style[0] = 'overflow-wrap: break-word';
 
                 // Align percentage and checks resume.
-                $table1->align[2] = 'center';
+                $table1->align[2] = 'left';
                 $table1->data[$k_chart][0] = $chart['agent'];
                 $table1->data[$k_chart][0] .= '<br />';
                 $table1->data[$k_chart][0] .= $chart['module'];

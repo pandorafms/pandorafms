@@ -1195,6 +1195,8 @@ if ($update_agent) {
                 ]
             );
 
+            ui_update_name_fav_element($id_agente, 'Agents', $alias);
+
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
                 AUDIT_LOG_AGENT_MANAGEMENT,

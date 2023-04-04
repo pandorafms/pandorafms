@@ -255,13 +255,14 @@ div#heatmap-controls div.heatmap-refr > div {
 
 .title-dialog {
   width: 40%;
-  font-weight: bold;
+  font-weight: bold !important;
   padding-left: 20px;
 }
 
 .info-dialog {
   width: 60%;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
 }
 
 .polyline {
@@ -284,4 +285,40 @@ div#heatmap-controls div.heatmap-refr > div {
 
 .big-size {
   font-size: 0.4px;
+}
+
+.progress_main {
+  height: 2.5em;
+  border: 2px solid #82b92e;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  display: flex;
+  border-radius: 4px;
+  line-height: 9pt;
+  font-size: 9pt;
+}
+
+.progress_main_noborder {
+  height: 2.5em;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  display: flex;
+}
+
+.progress_main:before {
+  content: attr(data-label);
+  position: absolute;
+  text-align: center;
+  left: 0;
+  right: 0;
+  margin-top: 0.2em;
+}
+
+.progress {
+  width: 0%;
+  background: #82b92e;
+  height: 100%;
+  float: left;
 }

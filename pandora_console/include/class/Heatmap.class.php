@@ -282,7 +282,6 @@ class Heatmap
                                         while (cont <= limit) {
                                             if (typeof lista[cont] !== 'undefined') {
                                                 const rect = document.getElementsByName(`${lista[cont]['id']}`);
-                                                console.log(rect[0]);
                                                 $(`#${rect[0].id}`).removeClass();
                                                 $(`#${rect[0].id}`).addClass(`${lista[cont]['status']} hover`);
                                             }
@@ -938,10 +937,27 @@ class Heatmap
         if (users_is_admin() === false) {
             $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
             if (empty($user_groups) === false) {
+                if (empty($this->filter) === false && empty(current($this->filter)) === false) {
+                    $user_groups = array_intersect($this->filter, $user_groups);
+                    $id_user_groups = sprintf(
+                        'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                        AND a.id_grupo IN (%s)',
+                        implode(',', $user_groups)
+                    );
+                } else {
+                    $id_user_groups = sprintf(
+                        'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                        AND a.id_grupo IN (%s)',
+                        implode(',', $user_groups)
+                    );
+                }
+            }
+        } else {
+            if (empty($this->filter) === false && empty(current($this->filter)) === false) {
                 $id_user_groups = sprintf(
                     'INNER JOIN tagente a ON a.id_agente = ae.id_agente
                     AND a.id_grupo IN (%s)',
-                    implode(',', $user_groups)
+                    implode(',', $this->filter)
                 );
             }
         }
@@ -1292,13 +1308,31 @@ class Heatmap
                 const id = name.split('|')[0];
                 const server = name.split('|')[1];
 
+                let height = 400;
+                let width = 530;
+                switch (type) {
+                    case 0:
+                        height = 670;
+                        width = 460;
+                        break;
+
+                    case 2:
+                    case 3:
+                        height = 450;
+                        width = 460;
+                        break;
+
+                    default:
+                        break;
+                }
+
                 $("#info_dialog").dialog({
                     resizable: true,
                     draggable: true,
                     modal: true,
                     closeOnEscape: true,
-                    height: 400,
-                    width: 530,
+                    height: height,
+                    width: width,
                     title: '<?php echo __('Info'); ?>',
                     open: function() {
                         $.ajax({

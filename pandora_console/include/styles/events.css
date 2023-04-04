@@ -124,7 +124,6 @@ td > input[id^="checkbox-multi"] {
   padding-right: 9px;
   padding-top: 7px;
   padding-bottom: 7px;
-  border-bottom: 2px solid #dedede;
   word-break: break-all;
 }
 

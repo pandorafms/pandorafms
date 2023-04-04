@@ -11895,3 +11895,13 @@ td[id^="table_info_box"] a {
 .info_table.events > tbody > tr > td {
   border-bottom: 1px solid #dedede !important;
 }
+
+div.parent_graph > p.legend_background > table > tbody {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+div.parent_graph > p.legend_background > table > tbody > tr {
+  margin-right: 20px;
+}

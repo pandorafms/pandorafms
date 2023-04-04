@@ -272,6 +272,11 @@ function flot_area_graph(
 				style='	width: ".$params['width'].'px;
 				height: '.$params['height']."px;'></div>";
 
+    $legend_top = 10;
+    if (empty($params['show_legend']) === false) {
+        $legend_top = (int) $params['height'];
+    }
+
     if ($params['menu']) {
         $params['height'] = 100;
     } else {
@@ -280,13 +285,9 @@ function flot_area_graph(
 
     if ((bool) $params['vconsole'] === false) {
         $return .= '<div id="overview_'.$graph_id.'" class="overview_graph" style="margin:0px; margin-top:30px; margin-bottom:50px; width:'.$params['width'].'px; height: 200px;"></div>';
-        $legend_top = 10;
-        if (empty($params['show_legend']) === false) {
-            $legend_top = (20 + (count($legend) * 18));
-        }
 
         if ($water_mark != '' && (bool) $params['dashboard'] === false) {
-            $return .= '<div id="watermark_'.$graph_id.'" style="position:absolute; top: '.$legend_top.'px; left: calc(100% - 100px);">';
+            $return .= '<div id="watermark_'.$graph_id.'" style="position:absolute; bottom: '.$legend_top.'px; left: calc(100% - 100px);">';
             $return .= '<img id="watermark_image_'.$graph_id.'" src="'.$water_mark['url'].'">';
             $return .= '</div>';
         }

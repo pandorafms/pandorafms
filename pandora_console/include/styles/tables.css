@@ -857,3 +857,8 @@ td#home_screen_table-fields_homescreen-0,
 td#advanced-homescreen_table-0 {
   padding: 0px;
 }
+
+td.w75p#rightcolumn {
+  margin-right: 0%;
+  vertical-align: baseline;
+}

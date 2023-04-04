@@ -594,6 +594,10 @@ class DiscoveryTaskList extends HTML
                         implode(',', $filter)
                     )
                 );
+                if ($recon_tasks === false) {
+                    $recon_tasks = [];
+                }
+
                 $recon_tasks_discovery = db_get_all_rows_sql(
                     sprintf(
                         'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
@@ -603,9 +607,11 @@ class DiscoveryTaskList extends HTML
                         $extensionSection
                     )
                 );
-                if ($recon_tasks_discovery !== false) {
-                    $recon_tasks = array_merge($recon_tasks, $recon_tasks_discovery);
+                if ($recon_tasks_discovery === false) {
+                    $recon_tasks_discovery = [];
                 }
+
+                $recon_tasks = array_merge($recon_tasks, $recon_tasks_discovery);
             } else {
                 $user_groups = implode(
                     ',',
@@ -620,6 +626,10 @@ class DiscoveryTaskList extends HTML
                         implode(',', $filter)
                     )
                 );
+                if ($recon_tasks === false) {
+                    $recon_tasks = [];
+                }
+
                 $recon_tasks_discovery = db_get_all_rows_sql(
                     sprintf(
                         'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
@@ -630,9 +640,11 @@ class DiscoveryTaskList extends HTML
                         $user_groups
                     )
                 );
-                if ($recon_tasks_discovery !== false) {
-                    $recon_tasks = array_merge($recon_tasks, $recon_tasks_discovery);
+                if ($recon_tasks_discovery === false) {
+                    $recon_tasks_discovery = [];
                 }
+
+                $recon_tasks = array_merge($recon_tasks, $recon_tasks_discovery);
             }
 
             // Show network tasks for Recon Server.

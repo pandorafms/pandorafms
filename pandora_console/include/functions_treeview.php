@@ -321,16 +321,20 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $group_name = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
     $agent_name = db_get_value('nombre', 'tagente', 'id_agente', $module['id_agente']);
 
-    /*
-        if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
+    if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
         // Actions table
-        echo '<div class="actions_treeview" style="text-align: right">';
+        echo '<div class="actions_treeview flex flex-evenly">';
         echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
-            html_print_submit_button(__('Go to module edition'), 'upd_button', false, 'class="sub config"');
+        html_print_submit_button(
+            __('Go to module edition'),
+            'upd_button',
+            false,
+            ['class' => 'secondary mini']
+        );
         echo '</a>';
 
         echo '</div>';
-    }*/
+    }
 
     // id_module and id_agent hidden
     echo '<div id="ids" class="invisible">';
@@ -921,8 +925,49 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         '',
         'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
-        'white_table_flex margin-bottom-20'
+        'white_table_flex'
     );
+
+    if ($user_access_node && check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
+        $buttons_act = '<div style="text-align: right" class="margin-bottom-20 margin-top-20  flex flex-evenly">';
+
+        if ($agent['id_os'] == CLUSTER_OS_ID) {
+            $cluster = PandoraFMS\Cluster::loadFromAgentId(
+                $agent['id_agente']
+            );
+            $buttons_act .= '<a target=_blank href="'.$console_url.'index.php?sec=reporting&sec2=operation/cluster/cluster&op=update&id='.$cluster->id().'">';
+            $buttons_act .= html_print_submit_button(
+                __('Go to cluster edition'),
+                'upd_button',
+                false,
+                ['class' => 'secondary mini'],
+                true
+            );
+        } else {
+            $buttons_act .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'&tab=module">';
+            $buttons_act .= html_print_submit_button(
+                __('Go to module creation'),
+                'upd_button',
+                false,
+                ['class' => 'secondary mini'],
+                true
+            );
+
+            $buttons_act .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'">';
+            $buttons_act .= html_print_submit_button(
+                __('Go to agent edition'),
+                'upd_button',
+                false,
+                ['class' => 'secondary mini'],
+                true
+            );
+        }
+
+        $buttons_act .= '</a>';
+        $buttons_act .= '</div>';
+    }
+
+    echo $buttons_act;
 
     if (empty($server_data) === false && is_metaconsole() === true) {
         metaconsole_restore_db();

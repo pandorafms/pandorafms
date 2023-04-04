@@ -1045,6 +1045,22 @@ if (!$new_user) {
     );
 
     $user_id .= $apiTokenContent;
+
+    $CodeQRContent .= html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
+    $CodeQRContent .= html_print_anchor(
+        ['id' => 'qr_code_agent_view'],
+        true
+    );
+    $CodeQRContent .= '<br/>'.$custom_id_div;
+
+    // QR code div.
+    $CodeQRTable = html_print_div(
+        [
+            'class'   => 'agent_qr',
+            'content' => $CodeQRContent,
+        ],
+        true
+    );
 } else {
     $user_id = '<div class="label_select_simple">'.html_print_input_text_extended(
         'id_user',

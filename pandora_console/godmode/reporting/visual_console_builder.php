@@ -293,6 +293,7 @@ switch ($activeTab) {
                         }
 
                         if ($result !== false) {
+                            ui_update_name_fav_element($idVisualConsole, 'Visual_Console', $values['name']);
                             db_pandora_audit(
                                 AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
                                 sprintf('Update visual console #%s', $idVisualConsole)

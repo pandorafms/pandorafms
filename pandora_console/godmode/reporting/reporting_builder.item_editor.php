@@ -4964,7 +4964,7 @@ ui_require_javascript_file(
     ENTERPRISE_DIR.'/include/javascript/'
 );
 
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ui_require_javascript_file('pandora');
 ?>
 
@@ -5203,13 +5203,7 @@ $(document).ready (function () {
         });
     });
 
-    var added_config = {
-        "elements": "textarea_render_definition",
-        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
-        "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor"
-    }
-    defineTinyMCE(added_config);
+    defineTinyMCE('#textarea_render_definition');
 
     $("#checkbox-select_by_group").change(function () {
         var select_by_group  = $('#checkbox-select_by_group').prop('checked');

@@ -457,7 +457,7 @@ if ($is_management_allowed === true) {
 echo '</form>';
 
 ui_require_javascript_file('pandora_alerts');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ?>
 
 <script type="text/javascript">
@@ -809,18 +809,10 @@ $(document).ready (function () {
 
                     $('#field5_value').on('change', function() {
                         ajax_get_integria_custom_fields($(this).val());
-                    }); 
+                    });
                 }
 
-                var added_config = {
-                    "selector": "textarea.tiny-mce-editor",
-                    "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-                    "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
-                    "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-                    "valid_children": "+body[style]",
-                    "width": "90%",
-                }
-                defineTinyMCE(added_config);
+                defineTinyMCE('textarea.tiny-mce-editor');
 
                 render_command_preview(original_command);
                 render_command_recovery_preview(original_command);

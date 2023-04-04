@@ -2206,7 +2206,7 @@ if ($create_alert || $update_alert) {
 }
 
 ui_require_javascript_file('pandora', 'include/javascript/', true);
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -2328,19 +2328,7 @@ $(document).ready (function () {
         }
     });
 
-    var added_config = {
-        "selector": "textarea.tiny-mce-editor",
-        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        "theme_advanced_buttons1" : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
-        "theme_advanced_buttons2" : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-        "force_p_newlines": false,
-        "forced_root_block": '',
-        "inline_styles": true,
-        "valid_children": "+body[style]",
-        "element_format": "html",
-    }
-
-    defineTinyMCE(added_config);
+    defineTinyMCE('textarea.tiny-mce-editor');
 
     $('#button-button_back').on('click', function(){
         window.location = '<?php echo ui_get_full_url('index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert'); ?>';

@@ -417,8 +417,8 @@ ui_include_time_picker();
 
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 
-// Include tiny for wysiwyg editor
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+// Include tiny for wysiwyg editor.
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ui_require_javascript_file('pandora');
 
 ?>
@@ -435,9 +435,9 @@ ui_require_javascript_file('pandora');
                 secondText: '<?php echo __('Second'); ?>',
                 currentText: '<?php echo __('Now'); ?>',
                 closeText: '<?php echo __('Close'); ?>'});
-        
+
         $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
-        
+
         $("#text-expire_date").datepicker({
             dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
             changeMonth: true,
@@ -445,23 +445,14 @@ ui_require_javascript_file('pandora');
             showAnim: "slideDown"}
         );
 
-        var added_config = {
-            "elements":"textarea_text",
-            "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-            "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
-            "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-            "valid_children": "+body[style]",
-            "width": "90%",
-        }
+        defineTinyMCE('#textarea_text');
 
-        defineTinyMCE(added_config);
-        
         $("#checkbox-expire").click(function() {
             check_expire();
         });
-        
+
     });
-            
+
     check_expire();
 
     function check_expire() {

@@ -957,7 +957,7 @@ if ($step == 2) {
             '',
             false,
             (!$is_management_allowed | $disabled),
-            "removeTinyMCE('textarea_field".$i."')",
+            "UndefineTinyMCE('#textarea_field".$i."')",
             'style="height: 15px !important;"',
             true
         );
@@ -970,7 +970,7 @@ if ($step == 2) {
             '',
             true,
             (!$is_management_allowed | $disabled),
-            "addTinyMCE('textarea_field".$i."')",
+            "defineTinyMCE('#textarea_field".$i."')",
             'style="height: 15px !important;"',
             true
         );
@@ -1002,7 +1002,7 @@ if ($step == 2) {
             '',
             false,
             (!$is_management_allowed | $disabled),
-            "removeTinyMCE('textarea_field".$i."_recovery')",
+            "UndefineTinyMCE('#textarea_field".$i."_recovery')",
             'style="height: 15px !important;"',
             true
         );
@@ -1015,7 +1015,7 @@ if ($step == 2) {
             '',
             true,
             (!$is_management_allowed | $disabled),
-            "addTinyMCE('textarea_field".$i."_recovery')",
+            "defineTinyMCE('#textarea_field".$i."_recovery')",
             'style="height: 15px !important;"',
             true
         );
@@ -1255,7 +1255,7 @@ echo '</form>';
 ui_require_javascript_file('pandora_alerts');
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ui_require_css_file('main.min', 'include/javascript/fullcalendar/');
 ui_require_javascript_file('main.min', 'include/javascript/fullcalendar/');
 ui_require_javascript_file('pandora_fullcalendar');
@@ -1626,18 +1626,7 @@ if ($step == 2) {
         }
     });
 
-    var added_config = {
-        "selector": 'textarea.tiny-mce-editor',
-        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        "theme_advanced_buttons1": "bold,italic,underline,|,cut,copy,paste,|,justifyleft,justifycenter,justifyright,|,forecolor,backcolor,|,formatselect,fontselect,fontsizeselect",
-        "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview",
-        "force_p_newlines" : false,
-        "forced_root_block" : '',
-        "inline_styles": true,
-        "valid_children": "+body[style]",
-    }
-
-    defineTinyMCE(added_config);
+    defineTinyMCE('textarea.tiny-mce-editor');
 
     <?php
 }

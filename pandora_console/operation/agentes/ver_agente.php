@@ -30,7 +30,7 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 
 global $config;
 
-require_once $config['homedir'].'/include/functions_gis.php';
+require_once 'include/functions_gis.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
@@ -1442,12 +1442,21 @@ $alerttab['active'] = ($tab === 'alert');
 
 // Inventory.
 $inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
+$inventorytab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
+    'images/hardware-software-component@svg.svg',
+    true,
+    [
+        'class' => 'main_menu_icon invert_filter',
+        'title' => __('Inventory'),
+    ]
+).'</a>';
 
-$inventorytab = enterprise_hook('inventory_tab');
-
-if ($inventorytab === ENTERPRISE_NOT_HOOK || $inventoryCount === 0) {
-    $inventorytab = '';
+if ($tab == 'inventory') {
+    $inventorytab['active'] = true;
+} else {
+    $inventorytab['active'] = false;
 }
+
 
 // Collection.
 if ((int) $config['license_nms'] !== 1) {
@@ -1468,13 +1477,12 @@ if ($policyTab === ENTERPRISE_NOT_HOOK) {
 
 
 // Omnishell.
-if (function_exists('count_tasks_agent')) {
-    $tasks = count_tasks_agent($id_agente);
-    if ($tasks === true) {
-        $omnishellTab = enterprise_hook('omnishell_tab');
-        if ($omnishellTab == -1) {
-            $omnishellTab = '';
-        }
+$tasks = count_tasks_agent($id_agente);
+
+if ($tasks === true) {
+    $omnishellTab = enterprise_hook('omnishell_tab');
+    if ($omnishellTab == -1) {
+        $omnishellTab = '';
     }
 }
 
@@ -1579,7 +1587,7 @@ if (enterprise_installed() === true && (bool) $config['log_collector'] === true)
         $log_viewer_tab['text'] = html_print_menu_button(
             [
                 'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente,
-                'image' => 'images/gm_log@svg.svg',
+                'image' => 'images/gm_log.png',
                 'title' => __('Log Viewer'),
             ],
             true
@@ -1909,7 +1917,7 @@ switch ($tab) {
 
 if ((bool) $config['pure'] === false) {
     ui_print_standard_header(
-        __('Agent main view').' ( '.strtolower(agents_get_alias($id_agente)).' )',
+        __('Agent main view'),
         $icon,
         false,
         ($help_header ?? ''),
@@ -1928,12 +1936,6 @@ if ((bool) $config['pure'] === false) {
                 'link'  => '',
                 'label' => $tab_name,
             ],
-        ],
-        [
-            'id_element' => $id_agente,
-            'url'        => 'operation/agentes/ver_agente&id_agente='.$id_agente,
-            'label'      => agents_get_alias($id_agente),
-            'section'    => 'Agents',
         ]
     );
 }

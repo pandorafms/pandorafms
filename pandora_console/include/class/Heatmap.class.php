@@ -1359,13 +1359,23 @@ class Heatmap
         if (count($groups) > 1 && $this->group === 1 && $this->dashboard === false) {
             $x_back = 0;
             $y_back = 0;
+            $x_text_correction = 0.25;
 
-            if ($count_result <= 100) {
+            if ($count_result <= 10) {
                 $fontSize = 'small-size';
                 $stroke = 'small-stroke';
-            } else {
+            } else if ($count_result > 10 && $count_result <= 100) {
+                $fontSize = 'tiny-size';
+                $stroke = 'tiny-stroke';
+            } else if ($count_result > 100 && $count_result <= 1000) {
+                $fontSize = 'medium-size';
+                $stroke = 'medium-stroke';
+            } else if ($count_result > 1000 && $count_result <= 10000) {
                 $fontSize = 'big-size';
                 $stroke = 'big-stroke';
+            } else {
+                $fontSize = 'huge-size';
+                $stroke = 'huge-stroke';
             }
 
             echo '<polyline points="0,0 '.$Xaxis.',0" class="polyline '.$stroke.'" />';
@@ -1419,7 +1429,7 @@ class Heatmap
                     echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                     // Name.
-                    echo '<text x="'.((($x_position - $x_back) / 2) + $x_back).'" y="'.($y_position + 1).'"
+                    echo '<text x="'.((($x_position - $x_back) / 2) + $x_back - $x_text_correction).'" y="'.($y_position + 1 - 0.01).'"
                         class="'.$fontSize.'">'.$name.'</text>';
 
                     $x_back = $x_position;
@@ -1470,7 +1480,7 @@ class Heatmap
                         echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         // Name.
-                        echo '<text x="'.(($x_position) / 2).'" y="'.($y_position + 1).'"
+                        echo '<text x="'.(($x_position) / 2 - $x_text_correction).'" y="'.($y_position + 1 - 0.01).'"
                             class="'.$fontSize.'">'.$name.'</text>';
 
                         // Bottom-right of last line.
@@ -1527,7 +1537,7 @@ class Heatmap
                         echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         // Name.
-                        echo '<text x="'.(($x_position) / 2).'" y="'.($y_position + 1).'"
+                        echo '<text x="'.(($x_position) / 2 - $x_text_correction).'" y="'.($y_position + 1 - 0.02).'"
                             class="'.$fontSize.'">'.$name.'</text>';
 
                         // Bottom-top of last line.

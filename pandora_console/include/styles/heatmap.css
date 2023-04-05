@@ -185,8 +185,6 @@
 
 .hover:hover {
   filter: brightness(1.5);
-  stroke-width: 0.009;
-  stroke: black;
 }
 
 .group {
@@ -272,19 +270,43 @@ div#heatmap-controls div.heatmap-refr > div {
 }
 
 .small-stroke {
-  stroke-width: 0.03;
+  stroke-width: 0.005;
+}
+
+.tiny-stroke {
+  stroke-width: 0.01;
+}
+
+.medium-stroke {
+  stroke-width: 0.02;
 }
 
 .big-stroke {
-  stroke-width: 0.05;
+  stroke-width: 0.03;
+}
+
+.huge-stroke {
+  stroke-width: 0.04;
 }
 
 .small-size {
-  font-size: 0.2px;
+  font-size: 1%;
+}
+
+.tiny-size {
+  font-size: 2%;
+}
+
+.medium-size {
+  font-size: 4%;
 }
 
 .big-size {
-  font-size: 0.4px;
+  font-size: 6%;
+}
+
+.huge-size {
+  font-size: 8%;
 }
 
 .progress_main {

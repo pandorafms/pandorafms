@@ -1222,6 +1222,10 @@ function config_update_config()
                         $error_update[] = __('Mobile view not allow visual console orientation');
                     }
 
+                    if (config_update_value('display_item_frame', (int) get_parameter('display_item_frame'), true) === false) {
+                        $error_update[] = __('Display item frame on alert triggered');
+                    }
+
                     if (config_update_value('ser_menu_items', (int) get_parameter('ser_menu_items', 10), true) === false) {
                         $error_update[] = __('Default line menu items for the Services');
                     }
@@ -3415,6 +3419,10 @@ function config_process_config()
 
     if (isset($config['mobile_view_orientation_vc']) === false) {
         config_update_value('mobile_view_orientation_vc', 0);
+    }
+
+    if (isset($config['display_item_frame']) === false) {
+        config_update_value('display_item_frame', 1);
     }
 
     if (!isset($config['agent_size_text_small'])) {

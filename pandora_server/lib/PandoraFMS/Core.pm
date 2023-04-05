@@ -1495,6 +1495,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			my $_cid = '<img style="height: 150px;" src="cid:' . $cid_data . '"/>';
 
 			$field3 =~ s/_data_/$_cid/g;
+			$field3 =~ s/_moduledata_/$_cid/g;
 		}
 
 

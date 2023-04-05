@@ -239,6 +239,10 @@ class TreeViewWidget extends Widget
                     $values['agentStatus'] = AGENT_STATUS_UNKNOWN;
                 break;
 
+                case 4:
+                    $values['agentStatus'] = AGENT_STATUS_ALERT_FIRED;
+                break;
+
                 case 5:
                     $values['agentStatus'] = AGENT_STATUS_NOT_INIT;
                 break;
@@ -290,6 +294,10 @@ class TreeViewWidget extends Widget
 
                 case 6:
                     $values['moduleStatus'] = AGENT_MODULE_STATUS_NOT_NORMAL;
+                break;
+
+                case 'fired':
+                    $values['moduleStatus'] = 'fired';
                 break;
 
                 default:
@@ -389,13 +397,14 @@ class TreeViewWidget extends Widget
 
         // Agents status.
         $fields = [
-            AGENT_STATUS_ALL        => __('All'),
-            AGENT_STATUS_NORMAL     => __('Normal'),
-            AGENT_STATUS_WARNING    => __('Warning'),
-            AGENT_STATUS_CRITICAL   => __('Critical'),
-            AGENT_STATUS_UNKNOWN    => __('Unknown'),
-            AGENT_STATUS_NOT_INIT   => __('Not init'),
-            AGENT_STATUS_NOT_NORMAL => __('Not normal'),
+            AGENT_STATUS_ALL         => __('All'),
+            AGENT_STATUS_NORMAL      => __('Normal'),
+            AGENT_STATUS_WARNING     => __('Warning'),
+            AGENT_STATUS_CRITICAL    => __('Critical'),
+            AGENT_STATUS_UNKNOWN     => __('Unknown'),
+            AGENT_STATUS_NOT_INIT    => __('Not init'),
+            AGENT_STATUS_NOT_NORMAL  => __('Not normal'),
+            AGENT_STATUS_ALERT_FIRED => __('Fired alerts'),
         ];
 
         $inputs[] = [
@@ -430,6 +439,7 @@ class TreeViewWidget extends Widget
             AGENT_MODULE_STATUS_UNKNOWN      => __('Unknown'),
             AGENT_MODULE_STATUS_NOT_INIT     => __('Not init'),
             AGENT_MODULE_STATUS_NOT_NORMAL   => __('Not normal'),
+            'fired'                          => __('Fired alerts'),
         ];
 
         if (is_metaconsole() === false) {

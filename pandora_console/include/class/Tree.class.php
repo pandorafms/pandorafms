@@ -219,6 +219,10 @@ class Tree
                 $agent_status_filter = ' AND (ta.critical_count > 0
 											OR ta.warning_count > 0) ';
             break;
+
+            case AGENT_STATUS_ALERT_FIRED:
+                $agent_status_filter = ' AND ta.fired_count > 0 ';
+            break;
         }
 
         return $agent_status_filter;
@@ -292,6 +296,10 @@ class Tree
 
         if ((int) $this->filter['statusModule'] === 6) {
             return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)';
+        }
+
+        if ($this->filter['statusModule'] === 'fired') {
+            return ' AND ta.fired_count > 0';
         }
 
         $field_filter = modules_get_counter_by_states($this->filter['statusModule']);

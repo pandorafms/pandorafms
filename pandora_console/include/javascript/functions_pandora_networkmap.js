@@ -3886,6 +3886,9 @@ function draw_elements_graph() {
     .attr("node_id", function(d) {
       return d.id + networkmap_id;
     })
+    .attr("style", function(d) {
+      return d.id === 0 ? "filter: invert(0%)" : "";
+    })
     .attr("id", "image2995")
     .classed("dragable_node", true) //own dragable
     .on("mouseover", function(d) {

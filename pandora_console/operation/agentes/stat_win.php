@@ -265,7 +265,7 @@ ui_print_message_dialog(
             );
 
             $table->data[0][0] = __('Refresh time');
-            $table->data[0][1] = html_print_extended_select_for_time(
+            $table->data[0][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
                 'refresh',
                 $refresh,
                 '',
@@ -273,7 +273,7 @@ ui_print_message_dialog(
                 0,
                 7,
                 true
-            );
+            ).'</div>';
 
             $table->data[0][2] = __('Show events');
             $disabled = false;
@@ -293,7 +293,11 @@ ui_print_message_dialog(
                 '',
                 10,
                 20,
-                true
+                true,
+                false,
+                false,
+                '',
+                'small-input'
             );
 
             $table->data[1][2] = __('Show alerts');
@@ -311,7 +315,11 @@ ui_print_message_dialog(
                 '',
                 10,
                 10,
-                true
+                true,
+                false,
+                false,
+                '',
+                'small-input'
             );
 
             $table->data[2][2] = __('Show unknown graph');
@@ -323,7 +331,7 @@ ui_print_message_dialog(
             );
 
             $table->data[3][0] = __('Time range');
-            $table->data[3][1] = html_print_extended_select_for_time(
+            $table->data[3][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
                 'period',
                 $period,
                 '',
@@ -331,7 +339,7 @@ ui_print_message_dialog(
                 0,
                 7,
                 true
-            );
+            ).'</div>';
 
             $table->data[3][2] = '';
             $table->data[3][3] = '';
@@ -345,7 +353,7 @@ ui_print_message_dialog(
                 $options[3] = 'x3';
                 $options[4] = 'x4';
                 $options[5] = 'x5';
-                $table->data[4][1] = html_print_select(
+                $table->data[4][1] = '<div class="small-input-select2">'.html_print_select(
                     $options,
                     'zoom',
                     $zoom,
@@ -355,7 +363,7 @@ ui_print_message_dialog(
                     true,
                     false,
                     false
-                );
+                ).'</div>';
 
                 $table->data[4][2] = __('Show percentil');
                 $table->data[4][3] = html_print_checkbox_switch(

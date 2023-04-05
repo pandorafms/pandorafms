@@ -559,6 +559,8 @@ sub pandora_load_config {
 
 	$pa_config->{"unknown_block_size"} = 1000; # 7.0.769
 
+	$pa_config->{"netflowserver"} = 0; # 7.0.770
+	$pa_config->{"netflowserver_threads"} = 1; # 7.0.770
 	$pa_config->{"ha_mode"} = "pacemaker"; # 7.0.770
 	$pa_config->{"ha_file"} = undef; # 7.0.770
 	$pa_config->{"ha_hosts_file"} = '/var/spool/pandora/data_in/conf/pandora_ha_hosts.conf'; # 7.0.770
@@ -1364,6 +1366,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^dataserver_smart_queue\s([0-1])/i) {
 			$pa_config->{'dataserver_smart_queue'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^netflowserver\s([0-1])/i) {
+			$pa_config->{'netflowserver'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^netflowserver_threads\s+([0-9]*)/i) {
+			$pa_config->{'netflowserver_threads'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^ha_connect_retries\s+([0-9]*)/i) {
 			$pa_config->{'ha_connect_retries'} = clean_blank($1);

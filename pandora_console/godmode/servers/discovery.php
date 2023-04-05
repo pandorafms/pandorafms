@@ -53,6 +53,9 @@ function get_wiz_class($str)
         case 'deploymentCenter':
         return 'DeploymentCenter';
 
+        case 'magextensions':
+        return 'ManageExtensions';
+
         default:
             // Main, show header.
             ui_print_standard_header(

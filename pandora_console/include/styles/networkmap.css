@@ -37,3 +37,8 @@
 .holding_area_link {
   stroke-dasharray: 12, 3;
 }
+
+img.circle-relations {
+  width: 12px;
+  border-radius: 50%;
+}

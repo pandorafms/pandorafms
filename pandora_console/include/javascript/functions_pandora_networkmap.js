@@ -844,7 +844,7 @@ function edit_node(data_node, dblClick) {
       "update_fictional_node(" + node_selected.id_db + ");"
     );
 
-    $("#node_options-node_name-2 input").attr(
+    $("#button-upd_only_node").attr(
       "onclick",
       "update_node_name(" + node_selected.id_db + ");"
     );

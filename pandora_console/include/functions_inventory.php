@@ -756,8 +756,10 @@ function inventory_get_datatable(
         foreach ($rows as $row) {
             $data_rows = explode(PHP_EOL, $row['data']);
             foreach ($data_rows as $data_key => $data_value) {
-                $row['data'] = $data_value;
-                $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
+                if (empty($data_value) === false) {
+                    $row['data'] = $data_value;
+                    $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
+                }
             }
         }
 

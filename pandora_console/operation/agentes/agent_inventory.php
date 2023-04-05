@@ -219,7 +219,6 @@ foreach ($rows as $row) {
 
     if ($idModuleInventory != $row['id_module_inventory']) {
         if (isset($table) === true && $rowTable >= 1) {
-            html_print_table($table);
             unset($table);
             $rowTable = 1;
             $printedTables++;

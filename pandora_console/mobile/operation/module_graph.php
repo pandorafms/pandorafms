@@ -206,6 +206,7 @@ class ModuleGraph
 
                             $graph = grafico_modulo_sparse($params);
                             if ($this->draw_events) {
+                                $this->width = 100;
                                 $graph .= '<br>';
                                 $graph .= graphic_module_events(
                                     $this->id,

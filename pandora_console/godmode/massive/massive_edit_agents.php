@@ -285,7 +285,6 @@ if ($update_agents) {
     $result = [];
     foreach ($id_agents as $id_agent) {
         if (is_metaconsole() === true) {
-
             $array_id = explode('|', $id_agent);
             try {
                 $node = new Node((int) $array_id[0]);

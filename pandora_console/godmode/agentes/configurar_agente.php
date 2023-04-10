@@ -2457,7 +2457,13 @@ switch ($tab) {
                         }]
                     });
             }
-    });
+        });
+
+        $("#network_component").change(function (e) {
+            setTimeout(() => {
+                $('#snmp_version').trigger("change");
+            }, 100);
+        });
     });
 
     // Change description when edit port

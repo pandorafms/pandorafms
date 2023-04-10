@@ -1124,37 +1124,36 @@ $table->data[6][1] = html_print_select(
     true
 );
 
-if (is_metaconsole() === false) {
-    $table->data[7][0] = __('Safe operation mode').': '.ui_print_help_tip(
-        __(
-            'This mode allow %s to disable all modules of this agent while the selected module is on CRITICAL status',
-            get_product_name()
-        ),
-        true
-    );
-    $table->data[7][1] .= html_print_select(
-        [
-            1 => __('Enabled'),
-            0 => __('Disabled'),
-        ],
-        'safe_mode_change',
-        -1,
-        '',
-        __('No change'),
-        -1,
-        true
-    ).'&nbsp;';
-    $table->data[7][1] .= __('Module').'&nbsp;';
-    $table->data[7][1] .= html_print_select(
-        '',
-        'safe_mode_module',
-        '',
-        '',
-        __('Any'),
-        -1,
-        true
-    );
-}
+$table->data[7][0] = __('Safe operation mode').': '.ui_print_help_tip(
+    __(
+        'This mode allow %s to disable all modules of this agent while the selected module is on CRITICAL status',
+        get_product_name()
+    ),
+    true
+);
+$table->data[7][1] .= html_print_select(
+    [
+        1 => __('Enabled'),
+        0 => __('Disabled'),
+    ],
+    'safe_mode_change',
+    -1,
+    '',
+    __('No change'),
+    -1,
+    true
+).'&nbsp;';
+
+$table->data[7][1] .= __('Module').'&nbsp;';
+$table->data[7][1] .= html_print_select(
+    '',
+    'safe_mode_module',
+    '',
+    '',
+    __('Any'),
+    -1,
+    true
+);
 
 ui_toggle(html_print_table($table, true), __('Advanced options'));
 unset($table);

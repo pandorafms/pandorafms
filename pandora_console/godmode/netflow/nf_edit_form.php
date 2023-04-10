@@ -26,6 +26,17 @@
  * ============================================================================
  */
 
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 global $config;
 
 require_once $config['homedir'].'/include/functions_ui.php';
@@ -94,6 +105,11 @@ if ($id) {
     $src_port = $filter['src_port'];
     $aggregate = $filter['aggregate'];
     $advanced_filter = $filter['advanced_filter'];
+    $netflow_monitoring = $filter['netflow_monitoring'];
+    $traffic_max = $filter['traffic_max'];
+    $traffic_critical = $filter['traffic_critical'];
+    $traffic_warning = $filter['traffic_warning'];
+    $netflow_monitoring_interval = $filter['netflow_monitoring_interval'];
 } else {
     $name = '';
     $assign_group = '';
@@ -103,6 +119,11 @@ if ($id) {
     $src_port = '';
     $aggregate = 'dstip';
     $advanced_filter = '';
+    $netflow_monitoring = false;
+    $traffic_max = 0;
+    $traffic_critical = 0;
+    $traffic_warning = 0;
+    $netflow_monitoring_interval = 300;
 }
 
 if ($update) {
@@ -114,20 +135,31 @@ if ($update) {
     $dst_port = get_parameter('dst_port', '');
     $src_port = get_parameter('src_port', '');
     $advanced_filter = get_parameter('advanced_filter', '');
+    $netflow_monitoring = (bool) get_parameter('netflow_monitoring', false);
+    $traffic_max = get_parameter('traffic_max', 0);
+    $traffic_critical = get_parameter('traffic_critical', 0);
+    $traffic_warning = get_parameter('traffic_warning', 0);
+    $netflow_monitoring_interval = get_parameter('netflow_monitoring_interval', 300);
+
 
     if ($name == '') {
         ui_print_error_message(__('Not updated. Blank name'));
     } else {
         $values = [
-            'id_sg'           => $id,
-            'id_name'         => $name,
-            'id_group'        => $assign_group,
-            'aggregate'       => $aggregate,
-            'ip_dst'          => $ip_dst,
-            'ip_src'          => $ip_src,
-            'dst_port'        => $dst_port,
-            'src_port'        => $src_port,
-            'advanced_filter' => $advanced_filter,
+            'id_sg'                       => $id,
+            'id_name'                     => $name,
+            'id_group'                    => $assign_group,
+            'aggregate'                   => $aggregate,
+            'ip_dst'                      => $ip_dst,
+            'ip_src'                      => $ip_src,
+            'dst_port'                    => $dst_port,
+            'src_port'                    => $src_port,
+            'advanced_filter'             => $advanced_filter,
+            'netflow_monitoring'          => $netflow_monitoring,
+            'traffic_max'                 => $traffic_max,
+            'traffic_critical'            => $traffic_critical,
+            'traffic_warning'             => $traffic_warning,
+            'netflow_monitoring_interval' => $netflow_monitoring_interval,
         ];
 
         // Save filter args.
@@ -152,16 +184,27 @@ if ($create) {
     $dst_port = get_parameter('dst_port', '');
     $src_port = get_parameter('src_port', '');
     $advanced_filter = (string) get_parameter('advanced_filter', '');
+    $netflow_monitoring = (bool) get_parameter('netflow_monitoring', false);
+    $traffic_max = get_parameter('traffic_max', 0);
+    $traffic_critical = get_parameter('traffic_critical', 0);
+    $traffic_warning = get_parameter('traffic_warning', 0);
+    $netflow_monitoring_interval = get_parameter('netflow_monitoring_interval', 300);
 
     $values = [
-        'id_name'         => $name,
-        'id_group'        => $assign_group,
-        'ip_dst'          => $ip_dst,
-        'ip_src'          => $ip_src,
-        'dst_port'        => $dst_port,
-        'src_port'        => $src_port,
-        'aggregate'       => $aggregate,
-        'advanced_filter' => $advanced_filter,
+        'id_name'                     => $name,
+        'id_group'                    => $assign_group,
+        'ip_dst'                      => $ip_dst,
+        'ip_src'                      => $ip_src,
+        'dst_port'                    => $dst_port,
+        'src_port'                    => $src_port,
+        'aggregate'                   => $aggregate,
+        'advanced_filter'             => $advanced_filter,
+        'netflow_monitoring'          => $netflow_monitoring,
+        'traffic_max'                 => $traffic_max,
+        'traffic_critical'            => $traffic_critical,
+        'traffic_warning'             => $traffic_warning,
+        'netflow_monitoring_interval' => $netflow_monitoring_interval,
+
     ];
 
     // Save filter args
@@ -203,6 +246,8 @@ $table->data['first_line'][] = html_print_label_input_block(
         false,
         20,
         80,
+        true,
+        false,
         true
     )
 );
@@ -329,6 +374,77 @@ $table->data['advanced_filters'][] = html_print_label_input_block(
 );
 
 
+// Netflow server options.
+$table->colspan['netflow_monitoring'][] = 2;
+$table->data['netflow_monitoring'][] = html_print_label_input_block(
+    __('Enable Netflow monitoring'),
+    html_print_checkbox_switch(
+        'netflow_monitoring',
+        1,
+        (bool) $netflow_monitoring,
+        true,
+        false,
+        'displayMonitoringFilter()'
+    ).ui_print_input_placeholder(
+        __('Allows you to create an agent that monitors the traffic volume of this filter. It also creates a module that measures if the traffic of any IP of this filter exceeds a certain threshold. A text type module will be created with the traffic rate for each IP within this filter every five minutes (the 10 IP\'s with the most traffic). Only available for Enterprise version.'),
+        true
+    )
+);
+
+$table->data['netflow_server_filters'][] = html_print_label_input_block(
+    __('Netflow monitoring interval'),
+    html_print_input_number(
+        [
+            'step'  => 1,
+            'name'  => 'netflow_monitoring_interval',
+            'id'    => 'netflow_monitoring_interval',
+            'value' => $netflow_monitoring_interval,
+        ]
+    ).ui_print_input_placeholder(__('Netflow monitoring interval in secs.'), true)
+);
+
+$table->data['netflow_server_filters'][] = html_print_label_input_block(
+    __('Maximum traffic value of the filter'),
+    html_print_input_number(
+        [
+            'step'  => 1,
+            'name'  => 'traffic_max',
+            'id'    => 'traffic_max',
+            'value' => $traffic_max,
+        ]
+    ).ui_print_input_placeholder(__('Specifies the maximum rate (in bytes/sec) of traffic in the filter. It is then used to calculate the % of maximum traffic per IP.'), true)
+);
+
+$table->colspan['netflow_thresholds'][] = 1;
+
+$table->data['netflow_thresholds'][] = html_print_label_input_block(
+    __('CRITICAL threshold for the maximum % of traffic for an IP.'),
+    html_print_input_number(
+        [
+            'step'      => 0.01,
+            'name'      => 'traffic_critical',
+            'id'        => 'traffic_critical',
+            'value'     => $traffic_critical,
+            'size'      => 40,
+            'maxlength' => 80,
+        ]
+    ).ui_print_input_placeholder(__('If this % is exceeded by any IP within the filter, a CRITICAL status will be generated.'), true)
+);
+
+$table->data['netflow_thresholds'][] = html_print_label_input_block(
+    __('WARNING threshold for the maximum % of traffic for an IP.'),
+    html_print_input_number(
+        [
+            'step'      => 0.01,
+            'name'      => 'traffic_warning',
+            'id'        => 'traffic_warning',
+            'value'     => $traffic_warning,
+            'size'      => 40,
+            'maxlength' => 80,
+        ]
+    ).ui_print_input_placeholder(__('If this % is exceeded by any IP within the filter, a WARNING status will be generated.'), true)
+);
+
 $hiddens = '';
 if ($id) {
     $buttonTitle = __('Update');
@@ -368,10 +484,10 @@ html_print_action_buttons(
         else {
             displayAdvancedFilter ();
         }
+        displayMonitoringFilter();
     });
 
     function displayAdvancedFilter () {
-        console.log('papapa advanced filter');
         // Erase the normal filter
         document.getElementById("text-ip_dst").value = '';
         document.getElementById("text-ip_src").value = '';
@@ -391,9 +507,9 @@ html_print_action_buttons(
     };
     
     function displayNormalFilter () {
-        console.log('papapa normal filter');
         // Erase the advanced filter
         document.getElementById("textarea_advanced_filter").value = '';
+        
         // Hide the advanced filter
         //document.getElementById("table1-7").style.display = 'none';
         $("#table1-advanced_filters").css("display", "none");
@@ -406,5 +522,25 @@ html_print_action_buttons(
         document.getElementById("table1-5").style.display = '';
         document.getElementById("table1-6").style.display = '';
         */
+    };
+
+    function displayMonitoringFilter () {
+        var checked = $('#checkbox-netflow_monitoring').prop('checked');
+
+        if(checked == false) {
+            // Reset values.
+            $("#netflow_monitoring_interval").val(300);
+            $("#traffic_max").val(0);
+            $("#traffic_critical").val(0);
+            $("#traffic_warning").val(0);
+
+            // Hide filters.
+            $("#table1-netflow_server_filters").hide();        
+            $("#table1-netflow_thresholds").hide(); 
+        } else {
+            // Show filters.
+            $("#table1-netflow_server_filters").show();        
+            $("#table1-netflow_thresholds").show();
+        }
     };
 </script>

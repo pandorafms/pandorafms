@@ -6944,7 +6944,7 @@ function ui_get_favicon()
     global $config;
 
     if (empty($config['custom_favicon'])) {
-        return (!is_metaconsole()) ? 'images/pandora.ico' : 'enterprise/meta/images/favicon_meta.ico';
+        return (!is_metaconsole()) ? 'images/pandora.ico' : '/images/favicon_meta.ico';
     }
 
     return 'images/custom_favicon/'.$config['custom_favicon'];

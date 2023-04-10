@@ -2,7 +2,6 @@
 namespace Egulias\EmailValidator\Parser;
 
 use Egulias\EmailValidator\EmailLexer;
-use Egulias\EmailValidator\Parser\Parser;
 use Egulias\EmailValidator\Result\ValidEmail;
 use Egulias\EmailValidator\Result\InvalidEmail;
 use Egulias\EmailValidator\Warning\CFWSWithFWS;
@@ -19,18 +18,19 @@ class DoubleQuote extends PartParser
         $validQuotedString = $this->checkDQUOTE();
         if($validQuotedString->isInvalid()) return $validQuotedString;
 
-        $special = array(
+        $special = [
             EmailLexer::S_CR => true,
             EmailLexer::S_HTAB => true,
             EmailLexer::S_LF => true
-        );
+        ];
 
-        $invalid = array(
+        $invalid = [
             EmailLexer::C_NUL => true,
             EmailLexer::S_HTAB => true,
             EmailLexer::S_CR => true,
             EmailLexer::S_LF => true
-        );
+        ];
+        
         $setSpecialsWarning = true;
 
         $this->lexer->moveNext();

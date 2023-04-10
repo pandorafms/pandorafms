@@ -9,14 +9,14 @@
   ],
   "config": {
     "platform": {
-      "php": "8.0.0"
+      "php": "8.0.2"
     }
   },
   "require": {
     "mpdf/mpdf": "^8.0.15",
     "swiftmailer/swiftmailer": "^6.0",
     "amphp/parallel-functions": "^1.0",
-    "chrome-php/chrome": "^1.7.1",
+    "chrome-php/chrome": "^1.8.1",
     "artica/phpchartjs": "^1.0"
   },
   "repositories": {

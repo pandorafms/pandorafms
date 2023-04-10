@@ -1,10 +1,7 @@
-# parser
+# amphp/parser
 
-[![Build Status](https://img.shields.io/travis/amphp/parser/master.svg?style=flat-square)](https://travis-ci.org/amphp/parser)
-[![CoverageStatus](https://img.shields.io/coveralls/amphp/parser/master.svg?style=flat-square)](https://coveralls.io/github/amphp/parser?branch=master)
-![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)
-
-`amphp/parser` is a streaming generator parser.
+AMPHP is a collection of event-driven libraries for PHP designed with fibers and concurrency in mind.
+`amphp/parser` allows easily building streaming generator parsers.
 
 ## Installation
 
@@ -16,11 +13,42 @@ composer require amphp/parser
 
 ## Requirements
 
-- PHP 7.0+
+- PHP 7.4+
 
-## Documentation
+## Usage
 
-Documentation is bundled within this repository in the [`./docs`](./docs) directory.
+PHP's generators are a great way for building incremental parsers.
+
+## Example
+
+This simple parser parses a line delimited protocol and prints a message for each line. Instead of printing a message, you could also invoke a data callback.
+
+```php
+$parser = new Parser((function () {
+    while (true) {
+        $line = yield "\r\n";
+
+        if (trim($line) === "") {
+            continue;
+        }
+
+        print "New item: {$line}" . PHP_EOL;
+    }
+})());
+
+for ($i = 0; $i < 100; $i++) {
+    $parser->push("bar\r");
+    $parser->push("\nfoo");
+}
+```
+
+Furthere examples can be found in other AMPHP packages which this library to build streaming parsers.
+- [`ChannelParser`](https://github.com/amphp/byte-stream/blob/5c7eb399b746a582e9598935b26483b214250c34/src/Internal/ChannelParser.php#L28) in [`amphp/byte-stream`](https://github.com/amphp/byte-stream)
+- [`RespParser`](https://github.com/amphp/redis/blob/649cff6d5e6b4c579dcab1a20511a437cbe3d62a/src/Connection/RespParser.php#L31) in [`amphp/redis`](https://github.com/amphp/redis)
+
+## Yield Behavior
+
+You can either `yield` a `string` that's used as delimiter, an `integer` that's used as length, or `null` to flush any remaining buffer in the parser (if any) or await the next call to `Parser::push()`.
 
 ## Versioning
 

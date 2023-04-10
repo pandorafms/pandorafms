@@ -23,19 +23,20 @@
         }
     },
     "require": {
-        "php": ">=7",
-        "amphp/parallel": "^1.1",
+        "php": ">=7.4",
         "amphp/amp": "^2.0.3",
-        "opis/closure": "^3.0.7"
+        "amphp/parallel": "^1.4",
+        "amphp/serialization": "^1.0",
+        "laravel/serializable-closure": "^1.0"
     },
     "require-dev": {
-        "amphp/phpunit-util": "^1.0",
-        "friendsofphp/php-cs-fixer": "^2.9",
-        "phpunit/phpunit": "^6.5"
+        "amphp/php-cs-fixer-config": "v2.x-dev",
+        "amphp/phpunit-util": "^2.0",
+        "phpunit/phpunit": "^9.5.11"
     },
     "config": {
         "platform": {
-            "php": "7.0.0"
+            "php": "7.4"
         }
     },
     "scripts": {

@@ -3,10 +3,10 @@
 namespace Amp\ParallelFunctions;
 
 use Amp\MultiReasonException;
-use Amp\Parallel\Sync\SerializationException;
 use Amp\Parallel\Worker\Pool;
 use Amp\Promise;
-use Opis\Closure\SerializableClosure;
+use Amp\Serialization\SerializationException;
+use Laravel\SerializableClosure\SerializableClosure;
 use function Amp\call;
 use function Amp\Parallel\Worker\enqueue;
 use function Amp\Promise\any;
@@ -20,7 +20,8 @@ use function Amp\Promise\any;
  * @return callable Callable executing in another thread / process.
  * @throws SerializationException If the passed callable is not safely serializable.
  */
-function parallel(callable $callable, Pool $pool = null): callable {
+function parallel(callable $callable, Pool $pool = null): callable
+{
     if ($callable instanceof \Closure) {
         $callable = new SerializableClosure($callable);
     }
@@ -47,11 +48,12 @@ function parallel(callable $callable, Pool $pool = null): callable {
  * @return Promise Resolves to the result once the operation finished.
  * @throws \Error If the passed callable is not safely serializable.
  */
-function parallelMap(array $array, callable $callable, Pool $pool = null): Promise {
+function parallelMap(array $array, callable $callable, Pool $pool = null): Promise
+{
     return call(function () use ($array, $callable, $pool) {
         // Amp\Promise\any() guarantees that all operations finished prior to resolving. Amp\Promise\all() doesn't.
         // Additionally, we return all errors as a MultiReasonException instead of throwing on the first error.
-        list($errors, $results) = yield any(\array_map(parallel($callable, $pool), $array));
+        [$errors, $results] = yield any(\array_map(parallel($callable, $pool), $array));
 
         if ($errors) {
             throw new MultiReasonException($errors);
@@ -72,7 +74,8 @@ function parallelMap(array $array, callable $callable, Pool $pool = null): Promi
  * @return Promise
  * @throws \Error If the passed callable is not safely serializable.
  */
-function parallelFilter(array $array, callable $callable = null, int $flag = 0, Pool $pool = null): Promise {
+function parallelFilter(array $array, callable $callable = null, int $flag = 0, Pool $pool = null): Promise
+{
     return call(function () use ($array, $callable, $flag, $pool) {
         if ($callable === null) {
             if ($flag === \ARRAY_FILTER_USE_BOTH || $flag === \ARRAY_FILTER_USE_KEY) {
@@ -87,11 +90,11 @@ function parallelFilter(array $array, callable $callable = null, int $flag = 0, 
         // Amp\Promise\any() guarantees that all operations finished prior to resolving. Amp\Promise\all() doesn't.
         // Additionally, we return all errors as a MultiReasonException instead of throwing on the first error.
         if ($flag === \ARRAY_FILTER_USE_BOTH) {
-            list($errors, $results) = yield any(\array_map(parallel($callable, $pool), $array, \array_keys($array)));
+            [$errors, $results] = yield any(\array_map(parallel($callable, $pool), $array, \array_keys($array)));
         } elseif ($flag === \ARRAY_FILTER_USE_KEY) {
-            list($errors, $results) = yield any(\array_map(parallel($callable, $pool), \array_keys($array)));
+            [$errors, $results] = yield any(\array_map(parallel($callable, $pool), \array_keys($array)));
         } else {
-            list($errors, $results) = yield any(\array_map(parallel($callable, $pool), $array));
+            [$errors, $results] = yield any(\array_map(parallel($callable, $pool), $array));
         }
 
         if ($errors) {

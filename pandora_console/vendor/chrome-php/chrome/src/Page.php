@@ -857,8 +857,10 @@ class Page
      *
      * @throws CommunicationException
      */
-    public function setHtml(string $html, int $timeout = 3000): void
+    public function setHtml(string $html, int $timeout = 3000, string $eventName = self::LOAD): void
     {
+        $time = \hrtime(true) / 1000 / 1000;
+
         $this->getSession()->sendMessageSync(
             new Message(
                 'Page.setDocumentContent',
@@ -866,10 +868,13 @@ class Page
                     'frameId' => $this->getFrameManager()->getMainFrame()->getFrameId(),
                     'html' => $html,
                 ]
-            )
+            ),
+            $timeout
         );
 
-        $this->waitForReload(self::LOAD, $timeout, '');
+        $timeout -= (int) \floor((\hrtime(true) / 1000 / 1000) - $time);
+
+        $this->waitForReload($eventName, \max(0, $timeout), '');
     }
 
     /**

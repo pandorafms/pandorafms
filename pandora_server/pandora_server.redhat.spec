@@ -49,6 +49,7 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{_bindir}/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pandora/
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pandora/conf.d
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/tentacle/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/conf
@@ -90,8 +91,8 @@ if [ ! -f $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server ] ; then
    install -m 0644 util/pandora_server_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
 fi
 install -m 0640 conf/pandora_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/pandora/pandora_server.conf.new
-install -m 0640 conf/tentacle_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/tentacle/tentacle_server.conf.new
 install -m 0640 conf/pandora_server_sec.conf.template $RPM_BUILD_ROOT%{_sysconfdir}/pandora/conf.d/pandora_server_sec.conf.template
+install -m 0640 conf/tentacle_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/tentacle/tentacle_server.conf.new
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d
 chmod 0750 $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d

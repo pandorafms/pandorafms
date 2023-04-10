@@ -465,22 +465,19 @@ function event_comment(current_event) {
     return false;
   }
 
-  var params = [];
-  params.push("page=include/ajax/events");
-  params.push("add_comment=1");
-  if (event.event_rep > 0) {
-    params.push("event_id=" + event.max_id_evento);
-  } else {
-    params.push("event_id=" + event.id_evento);
-  }
-  params.push("comment=" + comment);
-  params.push("server_id=" + event.server_id);
+  var params = {
+    page: "include/ajax/events",
+    add_comment: 1,
+    event_id: event.event_rep > 0 ? event.max_id_evento : event.id_evento,
+    comment: comment,
+    server_id: event.server_id
+  };
 
   $("#button-comment_button").attr("disabled", "disabled");
   $("#response_loading").show();
 
   jQuery.ajax({
-    data: params.join("&"),
+    data: params,
     type: "POST",
     url: getUrlAjax(),
     dataType: "html",

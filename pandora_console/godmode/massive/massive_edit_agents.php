@@ -285,10 +285,28 @@ if ($update_agents) {
     $result = [];
     foreach ($id_agents as $id_agent) {
         if (is_metaconsole() === true) {
+
             $array_id = explode('|', $id_agent);
             try {
                 $node = new Node((int) $array_id[0]);
                 $node->connect();
+
+                $id_agent = (int) $array_id[1];
+
+                // Get the id_agente_modulo to update the 'safe_operation_mode' field.
+                if (isset($values['safe_mode_module']) === true
+                    && ($values['safe_mode_module'] != '0')
+                ) {
+                    $id_module_safe[$id_agent] = db_get_value_filter(
+                        'id_agente_modulo',
+                        'tagente_modulo',
+                        [
+                            'id_agente' => $id_agent,
+                            'nombre'    => $values['safe_mode_module'],
+                        ]
+                    );
+                }
+
                 $result[$id_agent] = edit_massive_agent(
                     (int) $array_id[1],
                     $values,
@@ -477,17 +495,17 @@ function edit_massive_agent(
         $agent = new Agent($id_agent);
         $disabled_old = $agent->disabled();
 
-        foreach ($values as $key => $value) {
-            $agent->{$key}($value);
-        }
-
-        if (is_metaconsole() === false) {
+        if (empty($id_module_safe) === false) {
             // Get the id_agent_module for this agent to update the 'safe_operation_mode' field.
             if (isset($values['safe_mode_module']) === true
                 && ($values['safe_mode_module'] != '0')
             ) {
                 $values['safe_mode_module'] = $id_module_safe[$id_agent];
             }
+        }
+
+        foreach ($values as $key => $value) {
+            $agent->{$key}($value);
         }
 
         $result['db'] = $agent->save();

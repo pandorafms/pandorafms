@@ -11895,3 +11895,7 @@ td[id^="table_info_box"] a {
 .info_table.events > tbody > tr > td {
   border-bottom: 1px solid #dedede !important;
 }
+
+.break-word {
+  word-wrap: break-word;
+}

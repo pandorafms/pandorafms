@@ -5272,7 +5272,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
                             '<b>%s %s %s%s</b>',
                             $c['action'],
                             __('by'),
-                            get_user_fullname($c['id_user']).' ('.$c['id_user'].')',
+                            get_user_fullname(io_safe_input($c['id_user'])).' ('.io_safe_input($c['id_user']).')',
                             $eventIdExplanation
                         );
 

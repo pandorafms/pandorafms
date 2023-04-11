@@ -666,16 +666,17 @@ class SnmpConsole extends HTML
             }
 
             if ($filters['filter_free_search'] !== '') {
+                $free_search_str = io_safe_output($filters['filter_free_search']);
                 $whereSubquery .= '
-                    AND (source LIKE "%'.$filters['filter_free_search'].'%" OR
-                    oid LIKE "%'.$filters['filter_free_search'].'%" OR
-                    oid_custom LIKE "%'.$filters['filter_free_search'].'%" OR
-                    type_custom LIKE "%'.$filters['filter_free_search'].'%" OR
-                    value LIKE "%'.$filters['filter_free_search'].'%" OR
-                    value_custom LIKE "%'.$filters['filter_free_search'].'%" OR
-                    id_usuario LIKE "%'.$filters['filter_free_search'].'%" OR
-                    text LIKE "%'.$filters['filter_free_search'].'%" OR
-                    description LIKE "%'.$filters['filter_free_search'].'%")';
+                    AND (source LIKE "%'.$free_search_str.'%" OR
+                    oid LIKE "%'.$free_search_str.'%" OR
+                    oid_custom LIKE "%'.$free_search_str.'%" OR
+                    type_custom LIKE "%'.$free_search_str.'%" OR
+                    value LIKE "%'.$free_search_str.'%" OR
+                    value_custom LIKE "%'.$free_search_str.'%" OR
+                    id_usuario LIKE "%'.$free_search_str.'%" OR
+                    text LIKE "%'.$free_search_str.'%" OR
+                    description LIKE "%'.$free_search_str.'%")';
             }
 
             if ($filters['filter_status'] != -1) {

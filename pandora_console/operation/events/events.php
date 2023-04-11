@@ -556,7 +556,7 @@ if (is_ajax() === true) {
                             $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
                             date_default_timezone_set($user_timezone);
                             $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = human_time_comparation(strtotime($tmp->timestamp), 'large');
+                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
                             $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
 

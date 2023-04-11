@@ -402,7 +402,7 @@ function process_user_login_remote($login, $pass, $api=false)
             $config['auth_error'] = __('User not found in database or incorrect password');
             return false;
         } else {
-            $user_info['fullname'] = io_safe_input(db_escape_string_sql($sr['cn'][0]));
+            $user_info['fullname'] = db_escape_string_sql(io_safe_input($sr['cn'][0]));
             $user_info['email'] = io_safe_input($sr['mail'][0]);
 
             // Create the user.

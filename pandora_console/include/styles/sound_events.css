@@ -231,10 +231,6 @@ div.container-button-play > button#button-start-search {
   border: 0;
 }
 
-button#button-start-search:hover {
-  background-position: 82px 14px !important;
-}
-
 .actions-sound-modal .buttons-sound-modal button.alerts,
 .actions-sound-modal .buttons-sound-modal input[type="button"].alerts {
   width: 154px;

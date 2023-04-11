@@ -947,8 +947,21 @@ function process_buffers(buffers) {
 }
 
 function openSoundEventModal(settings) {
-  settings = JSON.parse(atob(settings));
+  var win = open(
+    "http://172.16.0.2/pandora_console/operation/events/sound_events.php",
+    "day_123",
+    "width=600,height=500"
+  );
+  if (win) {
+    //Browser has allowed it to be opened
+    win.focus();
+  } else {
+    //Browser has blocked it
+    alert("Please allow popups for this website");
+  }
 
+  settings = JSON.parse(atob(settings));
+  console.log(settings);
   // Check modal exists and is open.
   if (
     $("#modal-sound").hasClass("ui-dialog-content") &&

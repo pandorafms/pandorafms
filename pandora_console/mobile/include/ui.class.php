@@ -511,8 +511,13 @@ class Ui
             $html .= "<label for='".$options['id']."'>".$options['label']."</label>\n";
         }
 
-        // Erase other options and only for the input
+        // Erase other options and only for the input.
         unset($options['label']);
+
+        if ($options['type'] === 'password') {
+            $html .= '<div class="relative container-div-input-password">';
+            $options['style'] .= 'background-image: url("'.ui_get_full_url('/').'/images/enable.svg");';
+        }
 
         $html .= '<input ';
         foreach ($options as $option => $value) {
@@ -520,6 +525,26 @@ class Ui
         }
 
         $html .= ">\n";
+
+        if ($options['type'] === 'password') {
+            $html .= '<div class="show-hide-pass" onclick="show_hide_password(event, \''.ui_get_full_url('/').'\')"></div>';
+            $html .= '</div>';
+            $html .= '
+            <script>
+                function show_hide_password(e, url) {
+                    let inputPass = e.target.previousElementSibling.firstChild;
+                    console.log(inputPass);
+                
+                    if (inputPass.type === "password") {
+                        inputPass.type = "text";
+                        inputPass.style.backgroundImage = "url(" + url + "/images/disable.svg)";
+                    } else {
+                        inputPass.type = "password";
+                        inputPass.style.backgroundImage = "url(" + url + "/images/enable.svg)";
+                    }
+                }
+            </script>';
+        }
 
         $html .= "</fieldset>\n";
         $html .= "</div>\n";

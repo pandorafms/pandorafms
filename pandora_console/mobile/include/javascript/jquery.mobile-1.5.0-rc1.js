@@ -13338,7 +13338,7 @@ $.widget( "mobile.textinput", {
 	},
 
 	_handleBlur: function() {
-		this._removeClass( this._outer, null, "ui-focus" );
+		// this._removeClass( this._outer, null, "ui-focus" );
 		if ( this.options.preventFocusZoom ) {
 			$.mobile.zoom.enable( true );
 		}
@@ -13351,7 +13351,7 @@ $.widget( "mobile.textinput", {
 		if ( this.options.preventFocusZoom ) {
 			$.mobile.zoom.disable( true );
 		}
-		this._addClass( this._outer, null, "ui-focus" );
+		// this._addClass( this._outer, null, "ui-focus" );
 	},
 
 	_setOptions: function( options ) {
@@ -15410,10 +15410,10 @@ var selectmenu = $.widget( "mobile.selectmenu", [ {
 				that.button.addClass( "ui-button-active" );
 			} )
 			.bind( "focus", function() {
-				that.button.addClass( "ui-focus" );
+				// that.button.addClass( "ui-focus" );
 			} )
 			.bind( "blur", function() {
-				that.button.removeClass( "ui-focus" );
+				// that.button.removeClass( "ui-focus" );
 			} )
 			.bind( "focus vmouseover", function() {
 				that.button.trigger( "vmouseover" );

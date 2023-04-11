@@ -366,6 +366,53 @@ class User
         $ui->showFooter(false);
         $ui->beginContent();
 
+        $ui->contentAddHtml(
+            '
+            <style>
+                div.ui-content {
+                    animation: container_login 2s ease;
+                }
+                
+                @keyframes container_login {
+                    0% {
+                        transform: scale(.93);
+                        opacity: 0.1;
+                    }
+                    
+                    100% {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                }
+
+                .ui-page-active {
+                    padding-top: 0px !important;
+                }
+
+                .ui-page-theme-a {
+                    background-color: transparent !important;
+                }
+
+                .ui-mobile {
+                    height: 100% !important;
+                }
+            </style>
+            <script>
+            $(document).ready(function () {
+                $(".ui-header.ui-bar-inherit.ui-header-fixed.slidedown").remove();
+                $("div#main_page").css({
+                    "display": "flex",
+                    "flex-direction": "column",
+                    "justify-content": "center"
+                });
+                $(".ui-overlay-a").addClass("login-background");
+                $(".ui-overlay-a").removeClass("ui-overlay-a");
+                $(".ui-page-theme-a").css({"background-color":"transparent !important"});
+            });
+            </script>
+        '
+        );
+
         $logo_image = html_print_image(
             ui_get_mobile_login_icon(),
             true,
@@ -389,14 +436,15 @@ class User
             'name'        => 'user',
             'value'       => $this->user,
             'placeholder' => __('user'),
-            'label'       => __('User'),
+            // 'autofocus'   => 'autofocus',
+            // 'label'       => __('User'),
         ];
         $ui->formAddInputText($options);
         $options = [
             'name'        => 'password',
             'value'       => '',
             'placeholder' => __('password'),
-            'label'       => __('Password'),
+            // 'label'       => __('Password'),
             'required'    => 'required',
         ];
         $ui->formAddInputPassword($options);
@@ -431,6 +479,7 @@ class User
         }
 
         $ui->contentAddHtml('</div>');
+        $ui->contentAddHtml('<div class="center" id="ver_num">'.$pandora_version.'</div>');
         $ui->endContent();
         $ui->showPage();
 
@@ -465,43 +514,78 @@ class User
         $ui->createHeader('', $left_button);
         $ui->showFooter(false);
         $ui->beginContent();
-            $ui->contentAddHtml(
-                '<div class="login_logo center">'.html_print_image(
-                    ui_get_mobile_login_icon(),
-                    true,
-                    [
-                        'alt'    => 'logo',
-                        'border' => 0,
-                    ],
-                    false,
-                    false,
-                    false,
-                    true
-                ).'</div>'
-            );
-            $ui->contentAddHtml('<div id="login_container">');
-            $ui->beginForm();
-            $ui->formAddHtml(html_print_input_hidden('action', 'double_auth', true));
-            $options = [
-                'name'        => 'auth_code',
-                'value'       => '',
-                'placeholder' => __('Authenticator code'),
-                'label'       => __('Authenticator code'),
-            ];
-            $ui->formAddInputPassword($options);
-            $options = [
-                'value'    => __('Check code'),
-                'icon'     => 'arrow-r',
-                'icon_pos' => 'right',
-                'name'     => 'auth_code_btn',
-            ];
-            $ui->formAddSubmitButton($options);
-            $ui->endForm();
-            $ui->contentAddHtml('</div>');
-            $ui->endContent();
-            $ui->showPage();
 
-            $this->errorDoubleAuth = false;
+        $ui->contentAddHtml(
+            '
+            <style>
+                .ui-page-active {
+                    padding-top: 0px !important;
+                }
+
+                .ui-page-theme-a {
+                    background-color: transparent !important;
+                }
+
+                .ui-mobile {
+                    height: 100% !important;
+                }
+            </style>
+            <script>
+            $(document).ready(function () {
+                // $(".ui-header.ui-bar-inherit.ui-header-fixed.slidedown").remove();
+                $(".ui-header.ui-bar-inherit.ui-header-fixed.slidedown").css({"background-color":"transparent"});
+                $("div#main_page").css({
+                    "display": "flex",
+                    "flex-direction": "column",
+                    "justify-content": "center"
+                });
+                $(".ui-overlay-a").addClass("login-background");
+                $(".ui-overlay-a").removeClass("ui-overlay-a");
+                $(".ui-page-theme-a").css({"background-color":"transparent !important"});
+            });
+            </script>
+        '
+        );
+
+        $ui->contentAddHtml(
+            '<div class="login_logo center">'.html_print_image(
+                ui_get_mobile_login_icon(),
+                true,
+                [
+                    'alt'    => 'logo',
+                    'border' => 0,
+                ],
+                false,
+                false,
+                false,
+                true
+            ).'</div>'
+        );
+        $ui->contentAddHtml('<div id="login_container">');
+        $ui->beginForm();
+        $ui->formAddHtml(html_print_input_hidden('action', 'double_auth', true));
+        $options = [
+            'name'        => 'auth_code',
+            'value'       => '',
+            'placeholder' => __('Authenticator code'),
+            'autofocus'   => 'autofocus',
+            // 'label'       => __('Authenticator code'),
+        ];
+        $ui->formAddInputPassword($options);
+        $options = [
+            'value'    => __('Check code'),
+            'icon'     => 'arrow-r',
+            'icon_pos' => 'right',
+            'name'     => 'auth_code_btn',
+        ];
+        $ui->formAddSubmitButton($options);
+        $ui->endForm();
+        $ui->contentAddHtml('</div>');
+        $ui->contentAddHtml('<div class="center" id="ver_num">'.$pandora_version.'</div>');
+        $ui->endContent();
+        $ui->showPage();
+
+        $this->errorDoubleAuth = false;
     }
 
 

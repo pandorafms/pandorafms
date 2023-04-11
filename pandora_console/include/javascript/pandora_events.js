@@ -961,7 +961,6 @@ function openSoundEventModal(settings) {
   }
 
   settings = JSON.parse(atob(settings));
-  console.log(settings);
   // Check modal exists and is open.
   if (
     $("#modal-sound").hasClass("ui-dialog-content") &&
@@ -969,102 +968,6 @@ function openSoundEventModal(settings) {
   ) {
     return;
   }
-
-  // Initialize modal.
-  $("#modal-sound")
-    .empty()
-    .dialog({
-      title: settings.title,
-      resizable: false,
-      modal: true,
-      position: { my: "right top", at: "right bottom", of: window },
-      overlay: {
-        opacity: 0.5,
-        background: "black"
-      },
-      width: 600,
-      height: 600,
-      open: function() {
-        $(".ui-widget-overlay")
-          .css("background", "black")
-          .css("opacity", 0.5);
-        $.ajax({
-          method: "post",
-          url: settings.url,
-          data: {
-            page: settings.page,
-            drawConsoleSound: 1
-          },
-          dataType: "html",
-          success: function(data) {
-            $("#modal-sound").append(data);
-            $("#tabs-sound-modal").tabs({
-              disabled: [1]
-            });
-
-            // Test sound.
-            $("#button-melody_sound").click(function() {
-              var sound = false;
-              if ($("#id_sound_event").length == 0) {
-                sound = true;
-              }
-
-              test_sound_button(sound, settings.urlSound);
-            });
-
-            // Play Stop.
-            $("#button-start-search").click(function() {
-              var mode = $("#hidden-mode_alert").val();
-              var action = false;
-              if (mode == 0) {
-                action = true;
-              }
-
-              action_events_sound(action, settings);
-            });
-
-            // Silence Alert.
-            $("#button-no-alerts").click(function() {
-              if ($("#button-no-alerts").hasClass("silence-alerts") === true) {
-                // Remove audio.
-                remove_audio();
-
-                // Clean events.
-                $("#tabs-sound-modal .elements-discovered-alerts ul").empty();
-                $("#tabs-sound-modal .empty-discovered-alerts").removeClass(
-                  "invisible_important"
-                );
-
-                // Clean progress.
-                $("#progressbar_time").empty();
-
-                // Change img button.
-                $("#button-no-alerts")
-                  .removeClass("silence-alerts")
-                  .addClass("alerts");
-                // Change value button.
-                $("#button-no-alerts").val(settings.noAlert);
-                $("#button-no-alerts > span").text(settings.noAlert);
-
-                // Background button.
-                $(".container-button-alert").removeClass("fired");
-
-                // New progress.
-                listen_event_sound(settings);
-              }
-            });
-          },
-          error: function(error) {
-            console.error(error);
-          }
-        });
-      },
-      close: function() {
-        remove_audio();
-        $(this).dialog("destroy");
-      }
-    })
-    .show();
 }
 
 function test_sound_button(test_sound, urlSound) {

@@ -136,7 +136,7 @@ function dbmgr_extension_main()
         __(
             "This is an advanced extension to interface with %s database directly from WEB console
             using native SQL sentences. Please note that <b>you can damage</b> your %s installation
-            if you don't know </b>exactly</b> what are you are doing,
+            if you don't know </b>exactly</b> what you are doing,
             this means that you can severily damage your setup using this extension.
             This extension is intended to be used <b>only by experienced users</b>
             with a depth knowledge of %s internals.",

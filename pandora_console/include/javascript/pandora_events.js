@@ -948,7 +948,7 @@ function process_buffers(buffers) {
 
 function openSoundEventModal(settings) {
   var win = open(
-    "http://172.16.0.2/pandora_console/operation/events/sound_events.php",
+    "operation/events/sound_events.php",
     "day_123",
     "width=600,height=500"
   );

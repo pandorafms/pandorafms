@@ -534,7 +534,6 @@ function check_event_sound() {
                 data.forEach(function(element) {
                 var li = document.createElement("li");
                 var b64 = btoa(JSON.stringify(element));
-                console.log(b64);
                 li.insertAdjacentHTML(
                     "beforeend",
                     '<div class="li-priority">' + element.priority + "</div>"
@@ -545,7 +544,7 @@ function check_event_sound() {
                 );
                 li.insertAdjacentHTML(
                     "beforeend",
-                    `<div class="li-title"><a href="javascript:" onclick="open_window_dialog(`+b64+`)">${element.message}</a></div>`
+                    `<div class="li-title"><a href="javascript:" onclick="open_window_dialog('`+b64+`')">${element.message}</a></div>`
                 );
                 li.insertAdjacentHTML(
                     "beforeend",
@@ -566,8 +565,7 @@ function check_event_sound() {
 }
 
 function open_window_dialog(data) {
-    console.log(data);
-    window.open('http://172.16.0.2/pandora_console/index.php?sec=eventos&sec2=operation/events/events&show_event_dialog='+data);
+    window.open(window.location.origin+'/pandora_console/index.php?sec=eventos&sec2=operation/events/events&show_event_dialog='+data);
     //show_event_dialog(data);
 }
 

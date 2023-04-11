@@ -7031,23 +7031,20 @@ function ui_print_comments($comments)
         }
     }
 
-    $last_comment = [];
-    foreach ($comments_array as $comm) {
-        // Show the comments more recent first.
-        if (is_array($comm)) {
-            $order_utimestamp = array_reduce(
-                $comm,
-                function ($carry, $item) {
-                    $carry[$item['utimestamp']] = $item;
-                    return $carry;
-                }
-            );
+    $order_utimestamp = array_reduce(
+        $comments_array,
+        function ($carry, $item) {
+            foreach ($item as $k => $v) {
+                $carry[$v['utimestamp']] = $v;
+            }
 
-            $key_max_utimestamp = max(array_keys($order_utimestamp));
-
-            $last_comment = $order_utimestamp[$key_max_utimestamp];
+            return $carry;
         }
-    }
+    );
+
+    $key_max_utimestamp = max(array_keys($order_utimestamp));
+
+    $last_comment = $order_utimestamp[$key_max_utimestamp];
 
     if (empty($last_comment) === true) {
         return '';

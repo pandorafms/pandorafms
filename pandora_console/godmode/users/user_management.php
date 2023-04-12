@@ -258,7 +258,7 @@ if (users_is_admin() === true) {
 
 // Password management.
 $passwordManageTable = new stdClass();
-$passwordManageTable->class = 'table_section full_section';
+$passwordManageTable->class = 'full_section';
 $passwordManageTable->id = 'password_manage';
 $passwordManageTable->style = [];
 $passwordManageTable->rowclass = [];
@@ -605,7 +605,7 @@ $userManagementTable->data['fields_blocksize_eventfilter'][1] = html_print_selec
 if (is_metaconsole() === false) {
     // Home screen table.
     $homeScreenTable = new stdClass();
-    $homeScreenTable->class = 'w100p table_section full_section';
+    $homeScreenTable->class = 'w100p full_section';
     $homeScreenTable->id = 'home_screen_table';
     $homeScreenTable->style = [];
     $homeScreenTable->rowclass = [];
@@ -732,22 +732,6 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
         'class'   => 'margin-top-10',
         'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
         'content' => implode('', $allowAllIpsContent),
-    ],
-    true
-);
-
-$CodeQRContent .= html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
-$CodeQRContent .= html_print_anchor(
-    ['id' => 'qr_code_agent_view'],
-    true
-);
-$CodeQRContent .= '<br/>'.$custom_id_div;
-
-// QR code div.
-$CodeQRTable = html_print_div(
-    [
-        'class'   => 'agent_qr',
-        'content' => $CodeQRContent,
     ],
     true
 );

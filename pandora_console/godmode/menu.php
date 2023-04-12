@@ -177,9 +177,8 @@ if ($access_console_node === true) {
         $sub2['godmode/modules/manage_module_templates']['text'] = __('Module templates');
         $sub2['godmode/modules/manage_module_templates']['id'] = 'module_templates';
         $sub2['godmode/modules/private_enterprise_numbers']['text'] = __('Private Enterprise Numbers');
+        enterprise_hook('local_components_menu');
         $sub2['godmode/modules/private_enterprise_numbers']['id'] = 'private_Enterprise_Numbers';
-        $sub2['enterprise/godmode/modules/local_components']['text'] = __('Local components');
-        $sub2['enterprise/godmode/modules/local_components']['id'] = 'local_components';
         $sub2['godmode/modules/manage_network_components']['text'] = __('Remote components');
         $sub2['godmode/modules/manage_network_components']['id'] = 'network_components';
         $sub['templates']['sub2'] = $sub2;

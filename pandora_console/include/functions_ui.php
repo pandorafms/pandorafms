@@ -6944,7 +6944,7 @@ function ui_get_favicon()
     global $config;
 
     if (empty($config['custom_favicon'])) {
-        return (!is_metaconsole()) ? 'images/pandora.ico' : 'enterprise/meta/images/favicon_meta.ico';
+        return (!is_metaconsole()) ? 'images/pandora.ico' : '/images/favicon_meta.ico';
     }
 
     return 'images/custom_favicon/'.$config['custom_favicon'];
@@ -8022,4 +8022,22 @@ function ui_print_tree(
     $output .= '</ul>';
 
     return $output;
+}
+
+
+function ui_update_name_fav_element($id_element, $section, $label)
+{
+    $label = io_safe_output($label);
+    if (strlen($label) > 18) {
+        $label = io_safe_input(substr($label, 0, 18).'...');
+    }
+
+    db_process_sql_update(
+        'tfavmenu_user',
+        ['label' => $label],
+        [
+            'section'    => $section,
+            'id_element' => $id_element,
+        ]
+    );
 }

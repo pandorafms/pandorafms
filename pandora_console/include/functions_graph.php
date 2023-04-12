@@ -4934,7 +4934,7 @@ function iterate_group_array($groups, &$data_agents)
             break;
         }
 
-        $tooltip_content = html_print_image('images/groups_small/'.$group['icon'].'.png', true).'&nbsp;'.__('Group').': <b>'.$group_aux['name'].'</b>';
+        $tooltip_content = html_print_image('images/'.$group['icon'], true).'&nbsp;'.__('Group').': <b>'.$group_aux['name'].'</b>';
         $group_aux['tooltip_content'] = $tooltip_content;
 
         $group_aux['children'] = [];
@@ -4975,10 +4975,10 @@ function graph_monitor_wheel($width=550, $height=600, $filter=false)
     if ($filter['group'] != 0) {
         $filter_subgroups = '';
         if (!$filter['dont_show_subgroups']) {
-            $filter_subgroups = ' || parent = '.$filter['group'];
+            $filter_subgroups = ' || parent IN ('.$filter['group'].')';
         }
 
-        $groups = db_get_all_rows_sql('SELECT * FROM tgrupo where id_grupo = '.$filter['group'].$filter_subgroups);
+        $groups = db_get_all_rows_sql('SELECT * FROM tgrupo where id_grupo IN ('.$filter['group'].') '.$filter_subgroups);
 
         $groups_ax = [];
         foreach ($groups as $g) {

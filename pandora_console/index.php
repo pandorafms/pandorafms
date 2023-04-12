@@ -1315,7 +1315,7 @@ if ($searchPage) {
                 true,
                 $sec2,
             ]
-        ) == false
+        ) === ENTERPRISE_NOT_HOOK
         ) {
             include 'general/noaccess.php';
         } else {

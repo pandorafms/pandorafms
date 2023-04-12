@@ -2065,6 +2065,7 @@ if (check_login()) {
         if ($result === false) {
             echo 'error';
         } else {
+            ui_update_name_fav_element($id, 'Modules', $values['ag_modulename']);
             echo 'ok';
         }
     }

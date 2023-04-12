@@ -213,8 +213,8 @@ class Agent
                 false,
                 false,
                 false,
-                false,
-                true
+                ['class' => 'invert_filter os-big-icon'],
+                false
             ).'</div>';
             $html .= '<div class="agent_list_ips">';
             $html .= $ip.' -  '.groups_get_name($this->agent['id_grupo'], true);

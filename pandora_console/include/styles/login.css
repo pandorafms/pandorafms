@@ -166,7 +166,7 @@ div.login_logo_icon {
 
 div.login_logo_icon img {
   margin: 0 auto;
-  max-height: 185px;
+  max-height: 150px;
   max-width: 300px;
 }
 
@@ -346,19 +346,21 @@ div.text_banner_login {
 span.span1 {
   display: block;
   max-width: 700px;
-  font-size: 80pt;
-  line-height: 80pt;
+  font-size: 6vw;
+  line-height: 6vw;
   font-family: "lato-bolder";
   color: #fff;
+  margin-right: 30px;
 }
 
 span.span2 {
   display: block;
   max-width: 700px;
-  font-size: 30pt;
-  line-height: 30pt;
+  font-size: 3vw;
+  line-height: 3vw;
   font-family: "lato-bolder";
   color: #fff;
+  margin-right: 30px;
 }
 
 div.img_banner_login img {
@@ -384,16 +386,16 @@ div.img_banner_login img {
   span.span1 {
     display: block;
     max-width: 500px;
-    font-size: 60pt;
-    line-height: 60pt;
+    font-size: 6vw;
+    line-height: 6vw;
     font-weight: bold;
     color: #fff;
   }
   span.span2 {
     display: block;
     max-width: 500px;
-    font-size: 20pt;
-    line-height: 20pt;
+    font-size: 3vw;
+    line-height: 3vw;
     font-family: "lato-bolder";
     color: #fff;
   }

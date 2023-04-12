@@ -117,12 +117,12 @@ if (empty($config['random_background']) === false) {
     unset($random_backgrounds[0], $random_backgrounds[1]);
     $random_background = array_rand($random_backgrounds);
     $background_url = 'images/backgrounds/random_backgrounds/'.$random_backgrounds[$random_background];
-    $background_100 = 'background-size: 100% 100% !important; ';
+    $background_100 = 'background-size: cover !important; background-position: center !important; ';
 }
 
 if (empty($config['login_background']) === false) {
     $background_url = 'images/backgrounds/'.$config['login_background'];
-    $background_100 = 'background-size: 100% 100% !important; ';
+    $background_100 = 'background-size: cover !important; background-position: center !important; ';
 }
 
 // Support for Internet Explorer and Microsoft Edge browsers

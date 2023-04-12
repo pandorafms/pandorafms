@@ -921,9 +921,18 @@ if ($tab == 'tree') {
 
             if ($group['icon'] != '') {
                 $extension = pathinfo($group['icon'], PATHINFO_EXTENSION);
-                $extension = (empty($extension) === true) ? '.png' : '';
+                if (empty($extension) === true) {
+                    $group['icon'] .= '.png';
+                }
+
+                if (empty($extension) === true || $extension === 'png') {
+                    $path = 'images/groups_small/'.$group['icon'];
+                } else {
+                    $path = 'images/'.$group['icon'];
+                }
+
                 $table->data[$key][2] = html_print_image(
-                    'images/'.$group['icon'].$extension,
+                    $path,
                     true,
                     [
                         'style' => '',

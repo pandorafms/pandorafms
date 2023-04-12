@@ -844,7 +844,7 @@ function edit_node(data_node, dblClick) {
       "update_fictional_node(" + node_selected.id_db + ");"
     );
 
-    $("#node_options-node_name-2 input").attr(
+    $("#button-upd_only_node").attr(
       "onclick",
       "update_node_name(" + node_selected.id_db + ");"
     );
@@ -3885,6 +3885,9 @@ function draw_elements_graph() {
     })
     .attr("node_id", function(d) {
       return d.id + networkmap_id;
+    })
+    .attr("style", function(d) {
+      return d.id === 0 ? "filter: invert(0%)" : "";
     })
     .attr("id", "image2995")
     .classed("dragable_node", true) //own dragable

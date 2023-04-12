@@ -1443,10 +1443,21 @@ $alerttab['active'] = ($tab === 'alert');
 // Inventory.
 $inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
 
-$inventorytab = enterprise_hook('inventory_tab');
+if ($inventoryCount > 0) {
+    $inventorytab['text'] = html_print_menu_button(
+        [
+            'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente,
+            'image' => 'images/hardware-software-component@svg.svg',
+            'title' => __('Inventory'),
+        ],
+        true
+    );
 
-if ($inventorytab === ENTERPRISE_NOT_HOOK || $inventoryCount === 0) {
-    $inventorytab = '';
+    if ($tab === 'inventory') {
+        $inventorytab['active'] = true;
+    } else {
+        $inventorytab['active'] = false;
+    }
 }
 
 // Collection.
@@ -1466,15 +1477,13 @@ if ($policyTab === ENTERPRISE_NOT_HOOK) {
     $policyTab = '';
 }
 
-
 // Omnishell.
-if (function_exists('count_tasks_agent')) {
-    $tasks = count_tasks_agent($id_agente);
-    if ($tasks === true) {
-        $omnishellTab = enterprise_hook('omnishell_tab');
-        if ($omnishellTab == -1) {
-            $omnishellTab = '';
-        }
+$tasks = enterprise_hook('count_tasks_agent', [$id_agente]);
+
+if ($tasks === true) {
+    $omnishellTab = enterprise_hook('omnishell_tab');
+    if ($omnishellTab == -1) {
+        $omnishellTab = '';
     }
 }
 

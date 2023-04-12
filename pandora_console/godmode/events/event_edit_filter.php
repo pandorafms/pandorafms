@@ -237,6 +237,8 @@ if ($update) {
             ['id_filter' => $id]
         );
 
+        ui_update_name_fav_element($id, 'Events', $id_name);
+
         ui_print_result_message(
             $result,
             __('Successfully updated'),

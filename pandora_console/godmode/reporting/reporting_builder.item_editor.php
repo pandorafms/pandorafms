@@ -1231,8 +1231,8 @@ $class = 'databox filters';
         ?>
 
         <?php
-        $servers_all_opt = array_merge(['all' => 'All nodes'], $servers);
-        if ($meta) {
+        if (is_metaconsole() === true) {
+            $servers_all_opt = array_merge(['all' => 'All nodes'], $servers);
             ?>
         <tr id="row_servers_all_opt"   class="datos">
             <td class="bolder"><?php echo __('Server'); ?></td>

@@ -6912,12 +6912,12 @@ function html_print_label_input_block(
 function html_print_go_top()
 {
     $output = '</div>';
-    $output .= '<div onclick="topFunction()" id="top_btn" title="Go to top">';
-    $output .= '<svg viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">';
-    $output .= '<title>Dark / 20 / arrow@svg</title>';
+    $output .= '<div onclick="topFunction()" id="top_btn" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    $output .= '<svg viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    // $output .= '<title>'.__('Go to top').'</title>';
     $output .= '<desc>Created with Sketch.</desc>';
-    $output .= '<g id="Dark-/-20-/-arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">';
-    $output .= '<path d="M3.41005051,6.39052429 C3.91472805,5.90987901 4.70885153,5.8729063 5.25805922,6.27960615 L5.38994949,6.39052429 L10,10.78 L14.6100505,6.39052429 C15.1147281,5.90987901 15.9088515,5.8729063 16.4580592,6.27960615 L16.5899495,6.39052429 C17.094627,6.87116957 17.1334484,7.62747765 16.7064135,8.15053259 L16.5899495,8.27614237 L10.9899495,13.6094757 C10.4852719,14.090121 9.69114847,14.1270937 9.14194078,13.7203939 L9.01005051,13.6094757 L3.41005051,8.27614237 C2.8633165,7.75544332 2.8633165,6.91122335 3.41005051,6.39052429 Z" id="Path-8" fill="#14524f" fill-rule="nonzero" transform="translate(10.000000, 10.000000) rotate(90.000000) translate(-10.000000, -10.000000) "></path>';
+    $output .= '<g id="Dark-/-20-/-arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    $output .= '<path d="M3.41005051,6.39052429 C3.91472805,5.90987901 4.70885153,5.8729063 5.25805922,6.27960615 L5.38994949,6.39052429 L10,10.78 L14.6100505,6.39052429 C15.1147281,5.90987901 15.9088515,5.8729063 16.4580592,6.27960615 L16.5899495,6.39052429 C17.094627,6.87116957 17.1334484,7.62747765 16.7064135,8.15053259 L16.5899495,8.27614237 L10.9899495,13.6094757 C10.4852719,14.090121 9.69114847,14.1270937 9.14194078,13.7203939 L9.01005051,13.6094757 L3.41005051,8.27614237 C2.8633165,7.75544332 2.8633165,6.91122335 3.41005051,6.39052429 Z" id="Path-8" fill="#14524f" fill-rule="nonzero" transform="translate(10.000000, 10.000000) rotate(90.000000) translate(-10.000000, -10.000000) " class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1"></path>';
     $output .= '</g>';
     $output .= '</svg>';
     $output .= '</div>';

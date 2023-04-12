@@ -1185,7 +1185,7 @@ html_print_div(
         });
 
         var show_dialog_create = "<?php echo get_parameter('show_dialog_create', 0); ?>";
-        if (show_dialog_create !== 0){
+        if (show_dialog_create !== '0'){
             $('#button-create_module').click();
         }
 

@@ -445,6 +445,15 @@ function groups_get_icon($id_group)
     } else {
         $icon = (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 
+        $extension = pathinfo($icon, PATHINFO_EXTENSION);
+        if (empty($extension) === true) {
+            $icon .= '.png';
+        }
+
+        if (empty($extension) === true || $extension === 'png') {
+            $icon = 'groups_small/'.$icon;
+        }
+
         if (empty($icon) === true) {
             $icon = 'unknown@groups.svg';
         }

@@ -241,7 +241,7 @@ table tbody tr td h4 {
 
 a {
   color: #3f3f3f;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 a:hover {

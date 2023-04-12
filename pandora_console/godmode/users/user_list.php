@@ -970,7 +970,7 @@ foreach ($info as $user_id => $user_info) {
                 */
                 $userListActionButtons[] = html_print_menu_button(
                     [
-                        'href'  => ui_get_full_url(
+                        'href'    => ui_get_full_url(
                             sprintf(
                                 'index.php?sec=%s&amp;sec2=godmode/users/user_list&user_del=1&pure=%s&delete_user=%s',
                                 $sec,
@@ -978,8 +978,9 @@ foreach ($info as $user_id => $user_info) {
                                 $user_info['id_user']
                             )
                         ),
-                        'image' => 'images/delete.svg',
-                        'title' => __('Delete'),
+                        'image'   => 'images/delete.svg',
+                        'title'   => __('Delete'),
+                        'onClick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
                     ],
                     true
                 );

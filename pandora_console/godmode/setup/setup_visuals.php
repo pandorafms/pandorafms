@@ -1119,8 +1119,13 @@ for ($i = 1; $i <= $graphColorAmount; $i++) {
     $row = ($i % 2 === 0) ? ($row + 1) : $row;
 }
 
+$tip = ui_print_help_tip(
+    __('Decimal data resolution setting for SLA and other reports is not available in the Community version.'),
+    true
+);
+
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Data precision'),
+    ($disabled_graph_precision) ? __('Data precision').$tip : __('Data precision'),
     html_print_input(
         [
             'type'                                        => 'number',
@@ -1138,7 +1143,7 @@ $table_chars->data[$row][] = html_print_label_input_block(
 );
 
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Data precision in graphs'),
+    ($disabled_graph_precision) ? __('Data precision in graphs').$tip : __('Data precision in graphs'),
     html_print_input(
         [
             'type'                                        => 'number',

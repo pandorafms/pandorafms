@@ -5986,8 +5986,14 @@ function reporting_get_events($data, $links=false)
         $table_events->size[2] = '10%';
         $table_events->size[3] = '10%';
 
-        $event_view = '<fieldset class="tactical_set">
-                    <legend>'.__('Important Events by Criticity').'</legend>'.html_print_table($table_events, true).'</fieldset>';
+        $tooltip = ui_print_help_tip(
+            __(
+                "Event count corresponds to events within the last hour"
+            ),
+            true
+        );
+
+        $event_view = '<fieldset class="tactical_set"><legend>'.__('Important Events by Criticity').$tooltip.'</legend>'.html_print_table($table_events, true).'</fieldset>';
     }
 
     return $event_view;

@@ -87,7 +87,7 @@ class ServerStatus
                 case 'get_server_status':
                     $this->getFilters();
                     $page = $system->getRequest('page', 0);
-                    $server_status = [];
+                    $servers = [];
                     $end = 1;
 
                     $listServers = $this->getListServers($page, true);
@@ -97,7 +97,6 @@ class ServerStatus
                         $servers = $listServers['servers'];
                     }
 
-                    hd(json_encode(['end' => $end, 'servers' => $servers]), true);
                     echo json_encode(['end' => $end, 'servers' => $servers]);
                 break;
             }
@@ -331,7 +330,6 @@ class ServerStatus
             $total = count(servers_get_info());
 
             foreach ($servers_info as $server_value) {
-                echo '<script>console.log('.json_encode($server_value).');</script>';
                 $image_status = ui_print_status_image(STATUS_SERVER_OK, '', true);
                 if ($server_value['status'] == -1) {
                     $image_status = ui_print_status_image(
@@ -422,8 +420,7 @@ class ServerStatus
                     if (load_more_rows) {
                         if ($(this).scrollTop() + $(this).height()
                         >= ($(document).height() - 100)) {
-							
-							load_more_rows = 0;
+                            load_more_rows = 0;
 							
 							postvars = {};
 							postvars[\"action\"] = \"ajax\";
@@ -432,21 +429,21 @@ class ServerStatus
 							postvars[\"page\"] = page;
 							page++;
 							
-							$.post(\"index.php\",
-                            postvars,
-                            function (data) {
-                                if (data.end) {
-                                    $(\"#loading_rows\").hide();
-                                }
-                                else {
-										$.each(data.server_status, function(key, server) {
-                                            console.log(1);
-											$(\"table#list_servers tbody\").append(\"<tr>\" +
-													\"<td class='cell_0'><b class='ui-table-cell-label'>".__('Status')."</b>\" + server['Status'] + \"</td>\" +
-													\"<td class='cell_1'><b class='ui-table-cell-label'>".__('Image')."</b>\" + server['Image'] + \"</td>\" +
-													\"<td class='cell_2'><b class='ui-table-cell-label'>".__('Name').'</b>" + server["Name"] + "</td>" +
-												"</tr>");
-											});
+                            $.post(
+                                \"index.php\",
+								postvars,
+								function (data) {
+									if (data.end) {
+										$(\"#loading_rows\").hide();
+									}
+									else {
+										$.each(data.servers, function(key, server) {;
+                                            $(\"table#list_servers tbody\").append(\"<tr>\" +
+                                                    \"<td class='cell_0'><b class='ui-table-cell-label'>".__('Status')."</b>\" + server['Status'] + \"</td>\" +
+                                                    \"<td class='cell_1'><b class='ui-table-cell-label'>".__('Image')."</b>\" + server['Image'] + \"</td>\" +
+                                                    \"<td class='cell_2'><b class='ui-table-cell-label'>".__('Name')."</b>\" + server['Name'] + \"</td>\" +
+                                                \"</tr>\");
+                                            });
 										
 										load_more_rows = 1;
 										refresh_link_listener_list_servers()
@@ -454,21 +451,24 @@ class ServerStatus
 									
 									
 								},
-								"json");
+								\"json\");
+
+                            
 						}
 					}
 				}
 				
 				$(document).ready(function() {
-					$(window).bind("scroll", function () {
+                    
+					$(window).bind(\"scroll\", function () {
 						custom_scroll();
 					});
 					
-					$(window).on("touchmove", function(event) {
+					$(window).on(\"touchmove\", function(event) {
 						custom_scroll();
 					});
 				});
-			</script>'
+			</script>"
         );
     }
 

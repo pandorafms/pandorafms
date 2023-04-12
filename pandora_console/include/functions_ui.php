@@ -7559,7 +7559,7 @@ function ui_get_inventory_module_add_form(
             'border' => '0',
             'title'  => __('Remove'),
             'style'  => 'cursor: pointer;',
-            'class'  => 'remove-custom-field invert_filter',
+            'class'  => 'remove-custom-field invert_filter main_menu_icon',
         ]
     );
 
@@ -7593,9 +7593,13 @@ function ui_get_inventory_module_add_form(
                     'custom_fields['.$i.'][value]',
                     $field['value'],
                     '',
-                    25,
+                    false,
                     40,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w90p'
                 );
             }
 
@@ -7607,7 +7611,7 @@ function ui_get_inventory_module_add_form(
                     'border' => '0',
                     'title'  => __('Remove'),
                     'style'  => 'cursor: pointer;',
-                    'class'  => 'remove-custom-field invert_filter',
+                    'class'  => 'remove-custom-field invert_filter main_menu_icon',
                 ]
             );
 
@@ -7670,10 +7674,12 @@ function ui_get_inventory_module_add_form(
             $("#inventory-module-form-userpass-row").hide();
             $("#inventory-module-form-custom-fields-row").show();
             $("tr[id^=inventory-module-form-custom-field-row-]").show();
+            $('#inventory-module-form-custom-fields-button').show();
         } else {
             $("#inventory-module-form-userpass-row").show();
             $("#inventory-module-form-custom-fields-row").hide();
             $("tr[id^=inventory-module-form-custom-field-row-]").hide();
+            $('#inventory-module-form-custom-fields-button').hide();
         }
     }
 

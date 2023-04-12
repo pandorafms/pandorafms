@@ -4070,6 +4070,20 @@ sub pandora_event {
 	
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
+		my $keep_in_process_status_extra_id = pandora_get_tconfig_token ($dbh, 'keep_in_process_status_extra_id', 0);
+
+		if ($keep_in_process_status_extra_id == 1) {
+			# Keep status if the latest event was In process 
+			logger($pa_config, "Checking status of latest event with extended id '$id_extra'.", 10);
+			my $id_extra_last_status = get_db_value_limit ($dbh, 'SELECT estado FROM tevento WHERE id_extra=? ORDER BY timestamp DESC', 1, $id_extra);
+
+			# Only when the event comes as New. Validated events are excluded
+			if (defined ($id_extra_last_status) && $id_extra_last_status == 2 && $event_status == 0) {
+				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
+				$event_status = 2;
+			}
+		}
+
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
 		db_do ($dbh, 'UPDATE tevento SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
 	}

@@ -13090,10 +13090,17 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento,estado FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
+
             if ($validation) {
                 foreach ($validation as $val) {
+                    if ((int) $val['estado'] === EVENT_STATUS_INPROCESS
+                        && (int) $values['status'] === 0
+                    ) {
+                        $values['status'] = 2;
+                    }
+                        
                     api_set_validate_event_by_id($val['id_evento']);
                 }
             }

@@ -704,7 +704,7 @@ $table->data[$i][] = html_print_label_input_block(
     )
 );
 
-$table->data[$i][] = html_print_label_input_block(
+$table->data[$i++][] = html_print_label_input_block(
     __('Check conexion interval'),
     html_print_input_number(
         [
@@ -712,6 +712,16 @@ $table->data[$i][] = html_print_label_input_block(
             'min'   => 90,
             'value' => $config['check_conexion_interval'],
         ]
+    )
+);
+
+$table->data[$i][] = html_print_label_input_block(
+    __('Keep In process status for new events with extra ID'),
+    html_print_checkbox_switch(
+        'keep_in_process_status_extra_id',
+        1,
+        $config['keep_in_process_status_extra_id'],
+        true
     )
 );
 

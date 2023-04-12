@@ -370,6 +370,10 @@ function config_update_config()
                         $error_update[] = __('alias_as_name');
                     }
 
+                    if (config_update_value('keep_in_process_status_extra_id', get_parameter('keep_in_process_status_extra_id'), true) === false) {
+                        $error_update[] = __('keep_in_process_status_extra_id');
+                    }
+
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -2341,6 +2345,10 @@ function config_process_config()
 
     if (!isset($config['alias_as_name'])) {
         config_update_value('alias_as_name', 0);
+    }
+
+    if (!isset($config['keep_in_process_status_extra_id'])) {
+        config_update_value('keep_in_process_status_extra_id', 0);
     }
 
     if (!isset($config['console_log_enabled'])) {

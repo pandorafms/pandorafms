@@ -91,6 +91,13 @@ class Home
             'icon'      => 'ui-icon-modules ui-widget-icon-floatbeginning',
         ];
 
+        $items['server_status'] = [
+            'name'      => __('Server status'),
+            'filename'  => 'server_status.php',
+            'menu_item' => true,
+            'icon'      => 'ui-icon- ui-widget-icon-floatbeginning',
+        ];
+
         // Not in home.
         $items['agent'] = [
             'name'      => __('Agent'),

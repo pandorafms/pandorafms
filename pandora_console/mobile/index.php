@@ -43,6 +43,7 @@ require_once 'operation/module_graph.php';
 require_once 'operation/agent.php';
 require_once 'operation/visualmaps.php';
 require_once 'operation/visualmap.php';
+require_once 'operation/server_status.php';
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 $enterpriseHook = enterprise_include('mobile/operation/home.php');
 
@@ -175,6 +176,11 @@ switch ($action) {
             case 'tactical':
                 $tactical = new Tactical();
                 $tactical->ajax($parameter2);
+            break;
+
+            case 'server_status':
+                $server_status = new ServerStatus();
+                $server_status->ajax($parameter2);
             break;
 
             default:
@@ -406,6 +412,11 @@ switch ($action) {
             case 'visualmap':
                 $vc = new Visualmap();
                 $vc->show();
+            break;
+
+            case 'server_status':
+                $server_status = new ServerStatus();
+                $server_status->show();
             break;
         }
     break;

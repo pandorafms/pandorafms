@@ -408,6 +408,13 @@ class User
                 $(".ui-overlay-a").addClass("login-background");
                 $(".ui-overlay-a").removeClass("ui-overlay-a");
                 $(".ui-page-theme-a").css({"background-color":"transparent !important"});
+
+                $("#text-login_btn").click(function (e) {
+                    $("#user-container").hide();
+                    $("#password-container").hide();
+                    $("#text-login_btn").hide();
+                    $("#spinner-login").show();
+                  });
             });
             </script>
         '
@@ -448,6 +455,17 @@ class User
             'required'    => 'required',
         ];
         $ui->formAddInputPassword($options);
+
+        $spinner = '
+        <div class="spinner invisible" id="spinner-login">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        ';
+        $ui->formAddHtml($spinner);
+
         $options = [
             'value'    => __('Login'),
             'icon'     => 'arrow-r',

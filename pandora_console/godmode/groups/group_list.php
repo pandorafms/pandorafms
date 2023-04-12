@@ -920,8 +920,10 @@ if ($tab == 'tree') {
             }
 
             if ($group['icon'] != '') {
+                $extension = pathinfo($group['icon'], PATHINFO_EXTENSION);
+                $extension = (empty($extension) === true) ? '.png' : '';
                 $table->data[$key][2] = html_print_image(
-                    'images/'.$group['icon'],
+                    'images/'.$group['icon'].$extension,
                     true,
                     [
                         'style' => '',

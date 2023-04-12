@@ -1209,17 +1209,17 @@ foreach ((array) $tags as $id_tag => $tag) {
     if (is_array($tag_with) === true
         && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
     ) {
-        $tags_select_with[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tags_select_with[$id_tag] = $tag;
     } else {
-        $tag_with_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tag_with_temp[$id_tag] = $tag;
     }
 
     if (is_array($tag_without) === true
         && ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null))
     ) {
-        $tags_select_without[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tags_select_without[$id_tag] = $tag;
     } else {
-        $tag_without_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tag_without_temp[$id_tag] = $tag;
     }
 }
 
@@ -1255,7 +1255,16 @@ $data[0] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 
 $data[1] = html_print_image(
@@ -1297,7 +1306,16 @@ $data[2] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 
 $tabletags_with->data[] = $data;
@@ -1330,7 +1348,16 @@ $data[0] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 $data[1] = html_print_image(
     'images/darrowright.png',
@@ -1368,7 +1395,16 @@ $data[2] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';

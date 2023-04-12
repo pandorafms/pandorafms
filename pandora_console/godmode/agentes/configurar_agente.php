@@ -228,7 +228,7 @@ if ($create_agent) {
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
 
-    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+    $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
     if ($fields === false) {
@@ -343,7 +343,7 @@ if ($create_agent) {
                 'agents_update_secondary_groups',
                 [
                     $id_agente,
-                    explode(',', $secondary_groups),
+                    $secondary_groups,
                     [],
                 ]
             );
@@ -992,7 +992,7 @@ if ($update_agent) {
     $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
-    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+    $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
 
@@ -1185,13 +1185,27 @@ if ($update_agent) {
 				"Quiet":"'.(int) $quiet.'",
 				"Cps":"'.(int) $cps.'"}';
 
+
+            $secondary_groups_selected = enterprise_hook(
+                'agents_get_secondary_groups',
+                [$id_agente]
+            );
+
+            $delete_secondary_groups = [];
+            foreach ($secondary_groups_selected['plain'] as $v_selected) {
+                if (in_array($v_selected, $secondary_groups) === false) {
+                    array_push($delete_secondary_groups, $v_selected);
+                }
+            }
+
             // Create the secondary groups.
             enterprise_hook(
                 'agents_update_secondary_groups',
                 [
                     $id_agente,
-                    explode(',', $secondary_groups),
-                    [],
+                    $secondary_groups,
+                    $delete_secondary_groups,
+                    true,
                 ]
             );
 

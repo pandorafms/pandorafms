@@ -6435,7 +6435,11 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         [$id_agente]
     );
 
-    $name = 'secondary_groups_selected'.$options['extra_id'];
+    if ($options['selected_post'] !== null) {
+        $secondary_groups_selected['plain'] = $options['selected_post'];
+    }
+
+    $name = 'secondary_groups_selected[]'.$options['extra_id'];
     if ($options['only_select'] === true) {
         $name = 'secondary_groups'.$options['extra_id'].'[]';
     }
@@ -6455,7 +6459,7 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         $name,
         // Selected.
         // No select any by default.
-        $secondary_groups_selected['for_select'],
+        $secondary_groups_selected['plain'],
         // Script.
         // Javascript onChange code.
         '',

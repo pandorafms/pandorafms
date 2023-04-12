@@ -1361,7 +1361,7 @@ class AgentWizard extends HTML
                         true,
                         [
                             'title' => __('Plugin server'),
-                            'class' => 'invert_filter',
+                            'class' => 'invert_filter main_menu_icon',
                         ]
                     );
                 } else {
@@ -1371,7 +1371,7 @@ class AgentWizard extends HTML
                             true,
                             [
                                 'title' => __('WMI server'),
-                                'class' => 'invert_filter',
+                                'class' => 'invert_filter main_menu_icon',
                             ]
                         );
                     } else {
@@ -1380,7 +1380,7 @@ class AgentWizard extends HTML
                             true,
                             [
                                 'title' => __('Network server'),
-                                'class' => 'invert_filter',
+                                'class' => 'invert_filter main_menu_icon',
                             ]
                         );
                     }
@@ -4096,16 +4096,16 @@ class AgentWizard extends HTML
                             'title' => __('Modules selected'),
                             'alt'   => __('Modules selected'),
                             'id'    => 'image-info-modules-'.$idBlock,
-                            'class' => 'hidden',
+                            'class' => 'hidden main_menu_icon',
                         ]
                     );
                     $blockTitle .= '</b>';
                 }
             } else {
                 $blockTitle = '<b>'.$block['name'];
-                $classImg = '';
+                $classImg = 'main_menu_icon ';
                 if ($activeModules === 0) {
-                    $classImg = 'hidden';
+                    $classImg .= 'hidden';
                 }
 
                 $blockTitle .= '&nbsp;&nbsp;';

@@ -876,6 +876,17 @@ function ui_print_os_icon(
     $no_in_meta = (is_metaconsole() === false);
 
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
+    $extension = pathinfo($icon, PATHINFO_EXTENSION);
+    if (empty($extension) === true) {
+        $icon .= '.png';
+    }
+
+    if (empty($extension) === true || $extension === 'png'
+        || $extension === 'jpg' || $extension === 'gif' && $subfolder === '.'
+    ) {
+        $subfolder = 'os_icons';
+    }
+
     $os_name = get_os_name($id_os);
     if (empty($icon) === true) {
         if ($only_src) {

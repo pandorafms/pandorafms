@@ -653,9 +653,6 @@ var TreeController = {
                 element.icon.length > 0
               ) {
                 var extension = element.icon.split(".").pop();
-                if (extension === element.icon) {
-                  element.icon = element.icon + ".png";
-                }
                 $content.append(
                   '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
@@ -665,7 +662,9 @@ var TreeController = {
                     (extension === "png" || extension === element.icon
                       ? "groups_small/"
                       : "") +
-                    element.icon +
+                    (extension === element.icon
+                      ? element.icon + ".png"
+                      : element.icon) +
                     '" class="invert_filter"/></div></div>'
                 );
               } else if (

@@ -713,6 +713,10 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
     $output = '';
 
     $icon = ($id_group > 0) ? (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group) : 'unknown@groups.svg';
+    $extension = pathinfo($icon, PATHINFO_EXTENSION);
+    if (empty($extension) === true) {
+        $icon .= '.png';
+    }
 
     // Don't show link in metaconsole.
     if (is_metaconsole() === true) {
@@ -756,10 +760,14 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
                 }
             }
 
-            $icon = (str_contains($icon, '.svg') === true) ? $icon : $icon.'.svg';
+            $icon = (str_contains($icon, '.svg') === true || str_contains($icon, '.png') === true) ? $icon : $icon.'.svg';
+            $folder = '';
+            if (str_contains($icon, '.png')) {
+                $folder = 'groups_small/';
+            }
 
             $output .= html_print_image(
-                'images/'.$icon,
+                'images/'.$folder.$icon,
                 true,
                 [
                     'style' => $style,

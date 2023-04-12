@@ -652,13 +652,19 @@ var TreeController = {
                 typeof element.icon != "undefined" &&
                 element.icon.length > 0
               ) {
+                var extension = element.icon.split(".").pop();
                 $content.append(
                   '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
                     (controller.baseURL.indexOf("meta") !== -1
                       ? "../../images/"
                       : "images/") +
-                    element.icon +
+                    (extension === "png" || extension === element.icon
+                      ? "groups_small/"
+                      : "") +
+                    (extension === element.icon
+                      ? element.icon + ".png"
+                      : element.icon) +
                     '" class="invert_filter"/></div></div>'
                 );
               } else if (

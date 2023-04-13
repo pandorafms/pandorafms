@@ -468,18 +468,14 @@ class ManageNetScanScripts extends Wizard
 
             echo "<form name=reconscript method='post' action='".$url."'>";
                 echo html_print_input_hidden('page', 1, true);
-                html_print_div(
-                    [
-                        'class'   => 'action-buttons',
-                        'content' => html_print_submit_button(
-                            __('Add'),
-                            'crtbutton',
-                            false,
-                            [ 'icon' => 'next' ],
-                            true
-                        ),
-                    ],
-                    true
+                html_print_action_buttons(
+                    html_print_submit_button(
+                        __('Add'),
+                        'crtbutton',
+                        false,
+                        [ 'icon' => 'next' ],
+                        true
+                    )
                 );
             echo '</form>';
         } else {

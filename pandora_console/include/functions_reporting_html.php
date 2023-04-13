@@ -1996,6 +1996,13 @@ function reporting_html_inventory($table, $item, $pdf=0)
             && is_array($type_modules) === true
         ) {
             foreach ($type_modules as $key_type_module => $type_module) {
+                $print_table = true;
+                foreach ($type_module as $key => $module) {
+                    if (count($module['data']) == 0) {
+                        unset($type_module[$key]);
+                    }
+                }
+
                 $table1 = new stdClass();
                 $table1->width = '99%';
                 $table1->class = 'info_table';
@@ -2006,57 +2013,62 @@ function reporting_html_inventory($table, $item, $pdf=0)
                 if (isset($type_module) === true
                     && is_array($type_module) === true
                 ) {
-                    foreach ($type_module as $key_type => $module) {
-                        if (isset($module['data']) === true
-                            && is_array($module['data']) === true
-                        ) {
-                            array_pop($module['data']);
-                            foreach ($module['data'] as $k_module => $v_module) {
-                                $str_key = $key_type_module.'-'.$key_type.'-'.$k_module;
-                                $table1->head[0] = __('Agent');
-                                $table1->head[1] = __('Module');
-                                $table1->head[2] = __('Date');
-                                $table1->headstyle[0] = 'text-align: left';
-                                $table1->headstyle[1] = 'text-align: left';
-                                $table1->headstyle[2] = 'text-align: left';
-                                $table1->cellstyle[$str_key][0] = 'text-align: left;';
-                                $table1->cellstyle[$str_key][1] = 'text-align: left;';
-                                $table1->cellstyle[$str_key][2] = 'text-align: left;';
-                                $table1->data[$str_key][0] = $module['agent_name'];
-                                $table1->data[$str_key][1] = $key_type_module;
-                                $dateModule = explode(' ', $module['timestamp']);
-                                $table1->data[$str_key][2] = $dateModule[0];
-                                if (isset($v_module) === true
-                                    && is_array($v_module) === true
-                                ) {
-                                    foreach ($v_module as $k => $v) {
-                                        $table1->head[$k] = $k;
-                                        $table1->headstyle[$k] = 'text-align: left';
-                                        $table1->cellstyle[$str_key][$k] = 'text-align: left;';
-                                        if ($pdf === 0) {
-                                            $table1->data[$str_key][$k] = $v;
-                                        } else {
-                                            // Workaround to prevent table columns from growing indefinitely in PDFs.
-                                            $table1->data[$str_key][$k] = preg_replace(
-                                                '/([^\s]{30})(?=[^\s])/',
-                                                '$1'.'<br>',
-                                                $v
-                                            );
+                    if (count($type_module) > 0) {
+                        foreach ($type_module as $key_type => $module) {
+                            if (isset($module['data']) === true
+                                && is_array($module['data']) === true
+                            ) {
+                                foreach ($module['data'] as $k_module => $v_module) {
+                                    $str_key = $key_type_module.'-'.$key_type.'-'.$k_module;
+                                    $table1->head[0] = __('Agent');
+                                    $table1->head[1] = __('Module');
+                                    $table1->head[2] = __('Date');
+                                    $table1->headstyle[0] = 'text-align: left';
+                                    $table1->headstyle[1] = 'text-align: left';
+                                    $table1->headstyle[2] = 'text-align: left';
+                                    $table1->cellstyle[$str_key][0] = 'text-align: left;';
+                                    $table1->cellstyle[$str_key][1] = 'text-align: left;';
+                                    $table1->cellstyle[$str_key][2] = 'text-align: left;';
+                                    $table1->data[$str_key][0] = $module['agent_name'];
+                                    $table1->data[$str_key][1] = $key_type_module;
+                                    $dateModule = explode(' ', $module['timestamp']);
+                                    $table1->data[$str_key][2] = $dateModule[0];
+                                    if (isset($v_module) === true
+                                        && is_array($v_module) === true
+                                    ) {
+                                        foreach ($v_module as $k => $v) {
+                                            $table1->head[$k] = $k;
+                                            $table1->headstyle[$k] = 'text-align: left';
+                                            $table1->cellstyle[$str_key][$k] = 'text-align: left;';
+                                            if ($pdf === 0) {
+                                                $table1->data[$str_key][$k] = $v;
+                                            } else {
+                                                // Workaround to prevent table columns from growing indefinitely in PDFs.
+                                                $table1->data[$str_key][$k] = preg_replace(
+                                                    '/([^\s]{30})(?=[^\s])/',
+                                                    '$1'.'<br>',
+                                                    $v
+                                                );
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                    } else {
+                        $print_table = false;
                     }
+                } else {
+                    $print_table = false;
                 }
 
-                if ($pdf === 0) {
+                if ($pdf === 0 && $print_table === true) {
                     $table->colspan[$key_type_module]['cell'] = 3;
                     $table->data[$key_type_module]['cell'] = html_print_table(
                         $table1,
                         true
                     );
-                } else {
+                } else if ($print_table === true) {
                     $return_pdf .= html_print_table(
                         $table1,
                         true
@@ -5988,7 +6000,7 @@ function reporting_get_events($data, $links=false)
 
         $tooltip = ui_print_help_tip(
             __(
-                "Event count corresponds to events within the last hour"
+                'Event count corresponds to events within the last hour'
             ),
             true
         );

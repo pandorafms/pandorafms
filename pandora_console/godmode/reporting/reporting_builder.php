@@ -1756,6 +1756,7 @@ switch ($action) {
                                 $es['inventory_modules'] = get_parameter(
                                     'inventory_modules'
                                 );
+                                $es['inventory_regular_expression'] = get_parameter('inventory_regular_expression', '');
                                 $description = get_parameter('description');
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
@@ -2538,6 +2539,7 @@ switch ($action) {
                                 $es['inventory_modules'] = get_parameter(
                                     'inventory_modules'
                                 );
+                                $es['inventory_regular_expression'] = get_parameter('inventory_regular_expression', '');
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
                             break;

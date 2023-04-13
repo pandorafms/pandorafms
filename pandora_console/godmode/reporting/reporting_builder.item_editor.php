@@ -4282,7 +4282,7 @@ function print_SLA_list($width, $action, $idItem=null)
                         echo '</td>';
                         echo '<td class="sla_list_action_col center">';
                         echo '<a href="javascript: deleteSLARow('.$item['id'].');">';
-                        echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter']);
+                        echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']);
                         echo '</a>';
                         echo '</td>';
                         echo '</tr>';
@@ -4325,7 +4325,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                     html_print_image(
                                         'images/delete.svg',
                                         false,
-                                        ['class' => 'invert_filter']
+                                        ['class' => 'invert_filter main_menu_icon']
                                     );
                                     ?>
                                 </a>
@@ -4749,7 +4749,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     <td>'.printSmallFont($nameAgentFailover).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModuleFailover).'</td>
                                     <td class="center">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
                                     </td>
                                 </tr>';
                             } else {
@@ -4757,7 +4757,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModule).'</td>
                                     <td class="center">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
                                     </td>
                                 </tr>';
                             }
@@ -4767,7 +4767,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 								<td>'.printSmallFont($nameModule).'</td>
 								<td>'.printSmallFont($operation[$item['operation']]).'</td>
 								<td class="center">
-									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
 								</td>
 							</tr>';
                         }
@@ -4807,7 +4807,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     html_print_image(
                                         'images/delete.svg',
                                         false,
-                                        ['class' => 'invert_filter']
+                                        ['class' => 'invert_filter main_menu_icon']
                                     );
                                     ?>
                                 </a>

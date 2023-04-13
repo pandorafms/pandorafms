@@ -40,7 +40,7 @@ class Home
 
         $items = [];
 
-        // In home
+        // In home.
         $items['tactical'] = [
             'name'      => __('Tactical view'),
             'filename'  => 'tactical.php',
@@ -95,8 +95,17 @@ class Home
             'name'      => __('Server status'),
             'filename'  => 'server_status.php',
             'menu_item' => true,
-            'icon'      => 'ui-icon- ui-widget-icon-floatbeginning',
+            'icon'      => 'ui-icon-server-status ui-widget-icon-floatbeginning',
         ];
+
+        if ((int) $system->getConfig('enterprise_installed', false) === 1) {
+            $items['services'] = [
+                'name'      => __('Services'),
+                'filename'  => 'services.php',
+                'menu_item' => true,
+                'icon'      => 'ui-icon-services ui-widget-icon-floatbeginning',
+            ];
+        }
 
         // Not in home.
         $items['agent'] = [

@@ -892,14 +892,16 @@ table.event_details td.cell_event_name {
     font-size: 12px !important;
   }
 
-  table#list_servers tr {
+  table#list_servers tr,
+  table[id^="service-table-"] tr {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
   }
 
-  table#list_servers b.ui-table-cell-label {
+  table#list_servers b.ui-table-cell-label,
+  table[id^="service-table-"] b.ui-table-cell-label {
     display: none;
   }
 
@@ -912,9 +914,20 @@ table.event_details td.cell_event_name {
   table#list_servers tr td.cell_2 {
     width: 80%;
   }
+
+  table[id^="service-table-"] tr td.cell_0 {
+    width: 10%;
+  }
+  table[id^="service-table-"] tr td.cell_1 {
+    width: 80%;
+  }
+  table[id^="service-table-"] tr td.cell_2 {
+    width: 10%;
+  }
 }
 
-table#list_servers tr td.cell_0 {
+table#list_servers tr td.cell_0,
+table[id^="service-table-"] td.cell_0 {
   border-top: 0px;
 }
 
@@ -1286,12 +1299,26 @@ table.tactical_bars {
   background-size: 18px 18px !important;
 }
 
+.ui-icon-server-status {
+  background-image: url(../../../images/server-status.menu.png) !important;
+  background-color: #333 !important;
+  background-size: 18px 18px !important;
+}
+
+.ui-icon-services {
+  background-image: url(../../../images/services.menu.png) !important;
+  background-color: #333 !important;
+  background-size: 18px 18px !important;
+}
+
 .ui-icon-tactical_view,
 .ui-icon-events,
 .ui-icon-groups,
 .ui-icon-alerts,
 .ui-icon-agents,
 .ui-icon-modules,
+.ui-icon-server-status,
+.ui-icon-services,
 .ui-icon-network_maps,
 .ui-icon-visual_console,
 .ui-icon-dashboard {
@@ -1323,6 +1350,8 @@ table.tactical_bars {
   .ui-icon-alerts,
   .ui-icon-agents,
   .ui-icon-modules,
+  .ui-icon-server-status,
+  .ui-icon-services,
   .ui-icon-network_maps,
   .ui-icon-visual_console,
   .ui-icon-dashboard {
@@ -1339,6 +1368,8 @@ table.tactical_bars {
   .ui-icon-alerts,
   .ui-icon-agents,
   .ui-icon-modules,
+  .ui-icon-server-status,
+  .ui-icon-services,
   .ui-icon-network_maps,
   .ui-icon-visual_console,
   .ui-icon-dashboard {
@@ -1775,4 +1806,36 @@ table#list_servers span.data a {
 span.agents-counter {
   float: right;
   margin-right: 15px;
+}
+
+span.agents-counter span {
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+div.border-collapsible
+  > h4.ui-collapsible-heading
+  + div.ui-collapsible-content {
+  border-width: 1px !important;
+  border-top: 0px !important;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+table[id^="service-table-"] {
+  width: 100%;
+}
+
+table[id^="service-table-"] > tbody > tr:nth-child(even) {
+  background-color: #ebebeb;
+}
+
+table[id^="service-table-"] a strong {
+  color: #000 !important;
+}
+
+.mt15px {
+  margin-top: 15px;
+  margin-bottom: 15px;
 }

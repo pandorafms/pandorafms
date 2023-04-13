@@ -903,10 +903,7 @@ foreach ($simple_alerts as $alert) {
         $data[3] .= '</div>';
     }
 
-    $table_alert_list->cellclass[] = [
-        1 => 'table_action_buttons',
-        4 => 'table_action_buttons',
-    ];
+    $table_alert_list->cellclass[] = [4 => 'table_action_buttons'];
     $data[4] = '<form class="disable_alert_form display_in" action="'.$url.'" method="post" >';
     if ($alert['disabled']) {
         $data[4] .= html_print_input_image(

@@ -429,6 +429,19 @@ $table->data[$i++][] = html_print_label_input_block(
     )
 );
 
+$table->data[$i++][] = html_print_label_input_block(
+    __('Enable Feedback'),
+    html_print_checkbox_switch_extended(
+        'activate_feedback',
+        1,
+        $config['activate_feedback'],
+        false,
+        '',
+        '',
+        true
+    )
+);
+
 $table->colspan[$i][] = 2;
 $table->data[$i++][] = html_print_label_input_block(
     __('Timezone setup'),

@@ -264,6 +264,10 @@ function config_update_config()
                         $error_update[] = __('Enable Sflow');
                     }
 
+                    if (config_update_value('activate_feedback', (bool) get_parameter('activate_feedback'), true) === false) {
+                        $error_update[] = __('Enable Feedback');
+                    }
+
                     if (config_update_value('general_network_path', get_parameter('general_network_path'), true) === false) {
                         $error_update[] = __('General network path');
                     } else {
@@ -3328,6 +3332,10 @@ function config_process_config()
 
     if (!isset($config['autoupdate'])) {
         config_update_value('autoupdate', 1);
+    }
+
+    if (!isset($config['activate_feedback'])) {
+        config_update_value('activate_feedback', 1);
     }
 
     if (!isset($config['api_password'])) {

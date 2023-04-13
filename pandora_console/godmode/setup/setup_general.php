@@ -431,7 +431,7 @@ $table->data[$i++][] = html_print_label_input_block(
 
 $table->colspan[$i][] = 2;
 $table->data[$i++][] = html_print_label_input_block(
-    __('Timezone setup'),
+    __('Server timezone setup'),
     html_print_div(
         [
             'class'   => '',

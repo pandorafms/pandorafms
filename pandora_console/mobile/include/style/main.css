@@ -510,6 +510,30 @@ table.event_details td.cell_event_name {
   font-weight: bold;
 }
 
+.color-red {
+  color: #c00 !important;
+}
+
+.color-green {
+  color: #5a8629 !important;
+}
+
+.color-orange {
+  color: #fd7304 !important;
+}
+
+.color-yellow {
+  color: #f3c500 !important;
+}
+
+.color-grey {
+  color: #808080 !important;
+}
+
+.color-blue {
+  color: #4a83f3 !important;
+}
+
 .green,
 .orange,
 .yellow,
@@ -1731,4 +1755,24 @@ body.login-background
   width: 12px;
   height: 12px;
   display: inline-block;
+}
+
+table#list_servers span.data a {
+  pointer-events: none;
+  color: inherit;
+  text-decoration: inherit;
+  font-weight: inherit;
+}
+
+.zindex10000 {
+  z-index: 10000;
+}
+
+.relative-mobile {
+  position: relative !important;
+}
+
+span.agents-counter {
+  float: right;
+  margin-right: 15px;
 }

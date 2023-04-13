@@ -77,7 +77,7 @@ function html_debug_print($var, $file='', $oneline=false)
         fprintf($f, '%s', $output);
         fclose($f);
     } else {
-        echo '<pre class="bg_white pdd_1em zindex10000">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
+        echo '<pre class="bg_white pdd_1em zindex10000 relative-mobile">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
         print_r($var);
         echo '</pre>';
     }

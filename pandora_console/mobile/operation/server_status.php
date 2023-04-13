@@ -354,6 +354,12 @@ class ServerStatus
             }
         }
 
+        echo "<script>
+            window.addEventListener('DOMContentLoaded', (event) => {
+                document.querySelector('table#list_servers span.data a').href = '#';
+            });
+        </script>";
+
         return [
             'servers' => $servers,
             'total'   => $total,

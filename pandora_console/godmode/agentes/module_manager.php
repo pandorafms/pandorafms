@@ -73,6 +73,7 @@ $filterTable->data[1][0] .= html_print_input_text(
     '',
     ''
 );
+
 $filterTable->data[0][0] .= html_print_input_hidden('search', 1, true);
 
 if ((bool) $policy_page === false) {

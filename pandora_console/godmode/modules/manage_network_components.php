@@ -340,14 +340,7 @@ if ($type >= MODULE_TYPE_REMOTE_SNMP && $type <= MODULE_TYPE_REMOTE_SNMP_PROC) {
 }
 
 if ($is_management_allowed === true && $create_component) {
-    $name_check = db_get_value(
-        'name',
-        'tnetwork_component',
-        'name',
-        $name
-    );
-
-    if ($name && !$name_check) {
+    if ($name) {
         $id = network_components_create_network_component(
             $name,
             $type,
@@ -427,14 +420,8 @@ if ($is_management_allowed === true && $create_component) {
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail try to create remote component'
         );
-
-        if ($name_check !== false) {
-            // If name exists, advice about it.
-            ui_print_error_message(__('Could not be created because the component exists'));
-        } else {
-            // Other cases.
-            ui_print_error_message(__('Could not be created'));
-        }
+        // Other cases.
+        ui_print_error_message(__('Could not be created'));
 
         include_once 'godmode/modules/manage_network_components_form.php';
         return;

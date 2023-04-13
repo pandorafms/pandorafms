@@ -3335,7 +3335,7 @@ function config_process_config()
     }
 
     if (!isset($config['activate_feedback'])) {
-        config_update_value('activate_feedback', 1);
+        config_update_value('activate_feedback', true);
     }
 
     if (!isset($config['api_password'])) {

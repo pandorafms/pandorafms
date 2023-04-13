@@ -704,7 +704,7 @@ class Group extends Entity
                     $agent['total_count'],
                     $agent['notinit_count']
                 );
-                $data[$key]['alias'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$agent['id_agente'].'"><b>'.$agent['alias'].'</b></a>';
+                $data[$key]['alias'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"><b>'.$agent['alias'].'</b></a>';
                 $data[$key]['status'] = $status_img;
                 $data[$key]['alerts'] = agents_tree_view_alert_img($agent['fired_count']);
             }

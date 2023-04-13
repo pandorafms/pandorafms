@@ -3170,6 +3170,7 @@ function reporting_inventory($report, $content, $type)
 
     $date = $es['date'];
     $description = $content['description'];
+    $inventory_regular_expression = $es['inventory_regular_expression'];
 
     switch ($type) {
         case 'data':
@@ -3179,7 +3180,11 @@ function reporting_inventory($report, $content, $type)
                 $date,
                 '',
                 false,
-                'csv'
+                'csv',
+                false,
+                '',
+                [],
+                $inventory_regular_expression
             );
         break;
 
@@ -3190,7 +3195,11 @@ function reporting_inventory($report, $content, $type)
                 $date,
                 '',
                 false,
-                'hash'
+                'hash',
+                false,
+                '',
+                [],
+                $inventory_regular_expression
             );
         break;
     }

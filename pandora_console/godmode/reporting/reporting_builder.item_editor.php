@@ -117,6 +117,7 @@ $period = SECONDS_1DAY;
 $search = '';
 $full_text = 0;
 $log_number = 1000;
+$inventory_regular_expression = '';
 // Added support for projection graphs.
 $period_pg = SECONDS_5DAY;
 $projection_period = SECONDS_5DAY;
@@ -940,6 +941,7 @@ switch ($action) {
                     $inventory_modules = $es['inventory_modules'];
                     $id_agents = $es['id_agents'];
                     $recursion = $item['recursion'];
+                    $inventory_regular_expression = $es['inventory_regular_expression'];
 
                     $idAgent = $es['id_agents'];
                     $idAgentModule = $inventory_modules;
@@ -2192,6 +2194,15 @@ $class = 'databox filters';
                     'inventory_modules_selected',
                     $array_inventory_modules
                 );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_regular_expression"   class="datos">
+            <td class="bolder"><?php echo __('Regular expression'); ?></td>
+            <td>
+                <?php
+                html_print_input_text('inventory_regular_expression', $inventory_regular_expression, '', false, 255, false, false, false, '', 'w50p');
                 ?>
             </td>
         </tr>
@@ -6445,6 +6456,7 @@ function chooseType() {
     $("#row_date").hide();
     $("#row_agent_multi").hide();
     $("#row_module_multi").hide();
+    $('#row_regular_expression').hide();
     $("#row_event_graphs").hide();
     $("#row_event_graph_by_agent").hide();
     $("#row_event_graph_by_user").hide();
@@ -7154,6 +7166,7 @@ function chooseType() {
             $("#row_group").show();
             $("#row_agent_multi").show();
             $("#row_module_multi").show();
+            $('#row_regular_expression').show();
             $("#row_date").show();
 
             $("#id_agents")

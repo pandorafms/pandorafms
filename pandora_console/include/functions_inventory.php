@@ -36,7 +36,8 @@ function inventory_get_data(
     $return_mode=false,
     $order_by_agent=false,
     $node='',
-    $pagination_url_parameters=[]
+    $pagination_url_parameters=[],
+    $regular_expression=''
 ) {
     global $config;
 
@@ -268,7 +269,15 @@ function inventory_get_data(
                         $i++;
                     }
 
-                    $data[] = $temp_row;
+                    if ($regular_expression !== '') {
+                        if (is_array(preg_grep('/'.$regular_expression.'/', $temp_row))) {
+                            if (count(preg_grep('/'.$regular_expression.'/', $temp_row)) > 0) {
+                                $data[] = $temp_row;
+                            }
+                        }
+                    } else {
+                        $data[] = $temp_row;
+                    }
                 }
             }
 

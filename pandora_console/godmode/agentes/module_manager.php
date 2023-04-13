@@ -47,8 +47,74 @@ if (isset($policy_page) === false) {
     $policy_page = false;
 }
 
-$checked = (bool) get_parameter('checked');
+$checked = (bool) get_parameter('status_hierachy_mode');
+$status_hierachy_mode = (bool) get_parameter('status_hierachy_mode');
 $sec2 = (string) get_parameter('sec2');
+// Table for filter bar.
+$filterTable = new stdClass();
+$filterTable->class = 'filter-table-adv w100p';
+$filterTable->size[0] = '20%';
+$filterTable->size[1] = '20%';
+$filterTable->size[2] = '20%';
+$filterTable->size[3] = '20%';
+$filterTable->size[4] = '20%';
+$filterTable->data = [];
+$filterTable->cellstyle[0][0] = 'width:0';
+$filterTable->data[0][0] = __('Search');
+$filterTable->data[1][0] .= html_print_input_text(
+    'search_string',
+    $search_string,
+    '',
+    30,
+    255,
+    true,
+    false,
+    false,
+    '',
+    ''
+);
+$filterTable->data[0][0] .= html_print_input_hidden('search', 1, true);
+
+if ((bool) $policy_page === false) {
+    $filterTable->data[0][1] = __('Show in hierachy mode');
+    $filterTable->data[1][1] = html_print_checkbox_switch(
+        'status_hierachy_mode',
+        ((string) $checked),
+        ((string) $checked),
+        true,
+        false,
+        'onChange=change_mod_filter();'
+    );
+}
+
+$filterTable->data[1][2] = html_print_submit_button(
+    __('Filter'),
+    'filter',
+    false,
+    [
+        'icon'  => 'search',
+        'class' => 'float-right',
+        'mode'  => 'secondary mini',
+    ],
+    true
+);
+
+// Print filter table.
+echo '<form id="create_module_type" method="post" action="'.$url.'">';
+ui_toggle(
+    html_print_table($filterTable, true).'</form>',
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'filter',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
+);
+echo '</form>';
+
+
 
 if (isset($id_agente) === false) {
     return;
@@ -1199,14 +1265,17 @@ html_print_div(
         if (/checked/.test(window.location)) {
             var url = window.location.toString();
             if (checked) {
-                window.location = url.replace("checked=false", "checked=true");
+                //window.location = url.replace("checked=0", "checked=1");
+                $("#checkbox-status_hierachy_mode").val('1');
             }
             else {
-                window.location = url.replace("checked=true", "checked=false");
+                //window.location = url.replace("checked=1", "checked=0");
+                $("#checkbox-status_hierachy_mode").val('0');
             }
         }
         else {
-            window.location = window.location + "&checked=true";
+            //window.location = window.location + "&checked=1";
+            $("#checkbox-status_hierachy_mode").val('1');
         }
     }
 

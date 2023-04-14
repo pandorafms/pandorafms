@@ -13095,7 +13095,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
             if ($validation) {
                 foreach ($validation as $val) {
-                    if ((int) $val['estado'] === EVENT_STATUS_INPROCESS
+                    if ((bool) $config['keep_in_process_status_extra_id'] === true
+                        && (int) $val['estado'] === EVENT_STATUS_INPROCESS
                         && (int) $values['status'] === 0
                     ) {
                         $values['status'] = 2;

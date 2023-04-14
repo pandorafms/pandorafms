@@ -4072,7 +4072,7 @@ sub pandora_event {
 	if (defined ($id_extra) && $id_extra ne '') {
 		my $keep_in_process_status_extra_id = pandora_get_tconfig_token ($dbh, 'keep_in_process_status_extra_id', 0);
 
-		if ($keep_in_process_status_extra_id == 1) {
+		if (defined ($keep_in_process_status_extra_id) && $keep_in_process_status_extra_id == 1) {
 			# Keep status if the latest event was In process 
 			logger($pa_config, "Checking status of latest event with extended id '$id_extra'.", 10);
 			my $id_extra_last_status = get_db_value_limit ($dbh, 'SELECT estado FROM tevento WHERE id_extra=? ORDER BY timestamp DESC', 1, $id_extra);

@@ -712,7 +712,14 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
 
     $output = '';
 
-    $icon = ($id_group > 0) ? (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group) : 'unknown@groups.svg';
+    $icon = 'world@svg.svg';
+    if ($id_group > 0) {
+        $icon = db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+        if (empty($icon) === true) {
+            $icon = 'unknown@groups.svg';
+        }
+    }
+
     $extension = pathinfo($icon, PATHINFO_EXTENSION);
     if (empty($extension) === true) {
         $icon .= '.png';

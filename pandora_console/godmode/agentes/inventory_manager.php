@@ -75,7 +75,7 @@ if ($add_inventory_module) {
             'interval'            => $interval,
             'username'            => $username,
             'password'            => $password,
-            'custom_fields'       => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode(io_safe_output($custom_fields))) : '',
+            'custom_fields'       => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode(io_safe_output($custom_fields), JSON_UNESCAPED_UNICODE)) : '',
         ];
 
         $result = db_process_sql_insert('tagent_module_inventory', $values);
@@ -119,7 +119,7 @@ if ($add_inventory_module) {
         'interval'      => $interval,
         'username'      => $username,
         'password'      => $password,
-        'custom_fields' => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode(io_safe_output($custom_fields))) : '',
+        'custom_fields' => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode(io_safe_output($custom_fields), JSON_UNESCAPED_UNICODE)) : '',
     ];
 
     $result = db_process_sql_update('tagent_module_inventory', $values, ['id_agent_module_inventory' => $id_agent_module_inventory, 'id_agente' => $id_agente]);

@@ -7537,59 +7537,45 @@ function ui_get_inventory_module_add_form(
     $table->data['userpass-row'] = $row;
 
     $row = [];
-    $row['hidden-title'] = '';
-    $row['hidden-input'] = html_print_input_hidden('hidden-custom-field-name', '', true);
-    $row['hidden-input'] .= html_print_input_hidden('hidden-custom-field-is-secure', 0, true);
-    $row['hidden-input'] .= html_print_input_text(
-        'hidden-custom-field-input',
-        '',
-        '',
-        25,
-        40,
-        true,
-        false,
-        false,
-        '',
-        'w93p'
-    );
-    $row['hidden-input'] .= html_print_image(
-        'images/delete.svg',
-        true,
-        [
-            'border' => '0',
-            'title'  => __('Remove'),
-            'style'  => 'cursor: pointer;',
-            'class'  => 'remove-custom-field invert_filter main_menu_icon',
-        ]
-    );
 
-    $table->data['hidden-custom-field-row'] = $row;
+    $table->data['hidden-custom-field-row'] = html_print_label_input_block(
+        '',
+        '<div class="agent_details_agent_data">'.html_print_input_hidden(
+            'hidden-custom-field-name',
+            '',
+            true
+        ).html_print_input_hidden(
+            'hidden-custom-field-is-secure',
+            0,
+            true
+        ).html_print_input_text(
+            'hidden-custom-field-input',
+            '',
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        ).html_print_image(
+            'images/delete.svg',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Remove'),
+                'style'  => 'cursor: pointer;',
+                'class'  => 'remove-custom-field invert_filter main_menu_icon',
+            ]
+        ).'</div>'
+    );
+    $table->colspan['hidden-custom-field-row'][0] = 2;
 
     if ($custom_fields_enabled) {
         foreach ($custom_fields as $i => $field) {
-            $row = [];
-            $row['title'] = '<b>'.$field['name'].'</b>';
-            $row['input'] = html_print_input_hidden(
-                'custom_fields['.$i.'][name]',
-                $field['name'],
-                true
-            );
-            $row['input'] .= html_print_input_hidden(
-                'custom_fields['.$i.'][secure]',
-                $field['secure'],
-                true
-            );
             if ($field['secure']) {
-                $row['input'] .= html_print_input_password(
-                    'custom_fields['.$i.'][value]',
-                    $field['value'],
-                    '',
-                    25,
-                    40,
-                    true
-                );
-            } else {
-                $row['input'] .= html_print_input_text(
+                $secure = html_print_input_password(
                     'custom_fields['.$i.'][value]',
                     $field['value'],
                     '',
@@ -7599,23 +7585,47 @@ function ui_get_inventory_module_add_form(
                     false,
                     false,
                     '',
-                    'w90p'
+                    'off',
+                    false,
+                    'w100p'
+                );
+            } else {
+                $secure = html_print_input_text(
+                    'custom_fields['.$i.'][value]',
+                    $field['value'],
+                    '',
+                    false,
+                    40,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w100p'
                 );
             }
 
-            $row['input'] .= '<span>&nbsp;</span>';
-            $row['input'] .= html_print_image(
-                'images/delete.svg',
-                true,
-                [
-                    'border' => '0',
-                    'title'  => __('Remove'),
-                    'style'  => 'cursor: pointer;',
-                    'class'  => 'remove-custom-field invert_filter main_menu_icon',
-                ]
+            $table->colspan['custom-field-row-'.$i][0] = 2;
+            $table->data['custom-field-row-'.$i] = html_print_label_input_block(
+                $field['name'],
+                '<div class="agent_details_agent_data">'.html_print_input_hidden(
+                    'custom_fields['.$i.'][name]',
+                    $field['name'],
+                    true
+                ).html_print_input_hidden(
+                    'custom_fields['.$i.'][secure]',
+                    $field['secure'],
+                    true
+                ).$secure.html_print_image(
+                    'images/delete.svg',
+                    true,
+                    [
+                        'border' => '0',
+                        'title'  => __('Remove'),
+                        'style'  => 'cursor: pointer;',
+                        'class'  => 'remove-custom-field invert_filter main_menu_icon',
+                    ]
+                ).'</div>'
             );
-
-            $table->data['custom-field-row-'.$i] = $row;
         }
     }
 
@@ -7684,38 +7694,40 @@ function ui_get_inventory_module_add_form(
     }
 
     function add_row_for_custom_field (fieldName, isSecure) {
-        var custom_fields_num = $("tr[id^=inventory-module-form-custom-field-row-]").length;
+        var custom_fields_num = $("tr[id^=inventory-module-form-custom-field-row-]").length+1;
         $("#inventory-module-form-hidden-custom-field-row")
-            .clone()
-            .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)
-            .children("#inventory-module-form-hidden-custom-field-row-hidden-title")
-                .prop("id", "inventory-module-form-custom-field-row-title-" + custom_fields_num)
-                .html("<b>" + fieldName + "</b>")
-                .parent()
-            .children("#inventory-module-form-hidden-custom-field-row-hidden-input")
-                .prop("id", "inventory-module-form-custom-field-row-input-" + custom_fields_num)
-                .prop("colspan", 2)
-                .children("input[name=hidden-custom-field-name]")
+        .clone()
+        .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)
+        .children("[id^='inventory-module-form-hidden-custom-field-row']") // go to TD
+            .prop("id", "inventory-module-form-hidden-custom-field-row-"+ custom_fields_num)
+                .children() // go to DIV
+                    .find('label')
+                        .html(fieldName)
+                .parent() // up to DIV padre
+                .find('div') //go to DIV no label
+                    .children("[id^=hidden-hidden-custom-field-name]")
                     .prop("id", "custom-field-name-" + custom_fields_num)
                     .prop("name", "custom_fields[" + custom_fields_num + "][name]")
-                    .val(fieldName)
+                    .prop("value", fieldName)
                     .parent()
-                .children("input[name=hidden-custom-field-is-secure]")
-                    .prop("id", "custom-field-is-secure-" + custom_fields_num)
-                    .prop("name", "custom_fields[" + custom_fields_num + "][secure]")
-                    .val(isSecure ? 1 : 0)
-                    .parent()
-                .children("input[name=hidden-custom-field-input]")
-                    .prop("id", "custom-field-input-" + custom_fields_num)
-                    .prop("type", isSecure ? "password" : "text")
-                    .prop("name", "custom_fields[" + custom_fields_num + "][value]")
-                    .parent()
-                .children("img.remove-custom-field")
-                    .click(remove_custom_field)
-                    .parent()
-                .parent()
-            .insertBefore($("#inventory-module-form-custom-fields-row"))
-            .show();
+                    .children("input[name=hidden-custom-field-is-secure]")
+                        .prop("id", "custom-field-is-secure-" + custom_fields_num)
+                        .prop("name", "custom_fields[" + custom_fields_num + "][secure]")
+                        .val(isSecure ? 1 : 0)
+                        .parent()
+                    .children("input[name=hidden-custom-field-input]")
+                        .prop("id", "custom-field-input-" + custom_fields_num)
+                        .prop("type", isSecure ? "password" : "text")
+                        .prop("name", "custom_fields[" + custom_fields_num + "][value]")
+                        .parent()
+                    .children("img.remove-custom-field")
+                        .click(remove_custom_field)
+                        .parent()
+                        .parent()
+                .parent() // up to TD
+            .parent() // up to TR
+        .insertBefore($("#inventory-module-form-custom-fields-row"))
+        .show();
     }
 
     function add_custom_field () {

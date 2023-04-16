@@ -37,6 +37,7 @@ require_once 'include/functions_ui.php';
 require_once 'include/functions_db.php';
 require_once 'include/functions_io.php';
 require_once 'include/functions.php';
+require_once $config['homedir'].'/include/class/HTML.class.php';
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('include/functions_metaconsole.php');
 

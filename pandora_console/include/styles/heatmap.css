@@ -185,8 +185,6 @@
 
 .hover:hover {
   filter: brightness(1.5);
-  stroke-width: 0.009;
-  stroke: black;
 }
 
 .group {
@@ -255,13 +253,14 @@ div#heatmap-controls div.heatmap-refr > div {
 
 .title-dialog {
   width: 40%;
-  font-weight: bold;
+  font-weight: bold !important;
   padding-left: 20px;
 }
 
 .info-dialog {
   width: 60%;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
 }
 
 .polyline {
@@ -271,17 +270,77 @@ div#heatmap-controls div.heatmap-refr > div {
 }
 
 .small-stroke {
-  stroke-width: 0.03;
+  stroke-width: 0.005;
+}
+
+.tiny-stroke {
+  stroke-width: 0.01;
+}
+
+.medium-stroke {
+  stroke-width: 0.02;
 }
 
 .big-stroke {
-  stroke-width: 0.05;
+  stroke-width: 0.03;
+}
+
+.huge-stroke {
+  stroke-width: 0.04;
 }
 
 .small-size {
-  font-size: 0.2px;
+  font-size: 1%;
+}
+
+.tiny-size {
+  font-size: 2%;
+}
+
+.medium-size {
+  font-size: 4%;
 }
 
 .big-size {
-  font-size: 0.4px;
+  font-size: 6%;
+}
+
+.huge-size {
+  font-size: 8%;
+}
+
+.progress_main {
+  height: 2.5em;
+  border: 2px solid #82b92e;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  display: flex;
+  border-radius: 4px;
+  line-height: 9pt;
+  font-size: 9pt;
+}
+
+.progress_main_noborder {
+  height: 2.5em;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  display: flex;
+}
+
+.progress_main:before {
+  content: attr(data-label);
+  position: absolute;
+  text-align: center;
+  left: 0;
+  right: 0;
+  margin-top: 0.2em;
+}
+
+.progress {
+  width: 0%;
+  background: #82b92e;
+  height: 100%;
+  float: left;
 }

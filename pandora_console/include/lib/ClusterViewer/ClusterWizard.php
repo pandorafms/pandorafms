@@ -764,6 +764,7 @@ class ClusterWizard extends \HTML
             'action' => $target_url,
             'method' => 'POST',
             'extra'  => 'autocomplete="false"',
+            'id'     => 'cluster-edit-'.($this->page + 1),
         ];
 
         if ($load_success === false && $this->page !== 0) {
@@ -1245,17 +1246,16 @@ class ClusterWizard extends \HTML
         }
 
         // Submit button.
-        $form['inputs'][] = [
-            'arguments' => [
-                'name'       => 'next',
-                'label'      => $str,
-                'type'       => 'submit',
-                'attributes' => [
-                    'icon' => 'wand',
-                    'mode' => 'primary',
-                ],
-                'return'     => true,
+        $form['submit-external-input'] = [
+            'name'       => 'next',
+            'label'      => $str,
+            'type'       => 'submit',
+            'attributes' => [
+                'icon' => 'wand',
+                'mode' => 'primary',
+                'form' => 'cluster-edit-'.($this->page + 1),
             ],
+            'return'     => true,
         ];
 
         return $form;

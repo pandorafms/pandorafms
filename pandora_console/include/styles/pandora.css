@@ -241,7 +241,7 @@ table tbody tr td h4 {
 
 a {
   color: #3f3f3f;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 a:hover {
@@ -11930,4 +11930,8 @@ td[id^="table_info_box"] a {
 .small-input-select2 .select2-selection__arrow,
 .small-input-select2 div .select2-selection__arrow {
   top: -1px !important;
+}
+
+.break-word {
+  word-wrap: break-word;
 }

@@ -538,22 +538,27 @@ if (is_ajax() === true) {
                         );
 
                         $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
-                        if (!$user_timezone) {
-                            $timezone = timezone_open(date_default_timezone_get());
-                            $datetime_eur = date_create('now', timezone_open($config['timezone']));
-                            $dif = timezone_offset_get($timezone, $datetime_eur);
-                            date($config['date_format'], $dif);
-                            if (!date('I')) {
-                                // For summer -3600sec.
-                                $dif -= 3600;
-                            }
+                        if (empty($user_timezone) === true) {
+                            if (date_default_timezone_get() !== $config['timezone']) {
+                                $timezone = timezone_open(date_default_timezone_get());
+                                $datetime_eur = date_create('now', timezone_open($config['timezone']));
+                                $dif = timezone_offset_get($timezone, $datetime_eur);
+                                date($config['date_format'], $dif);
+                                if (!date('I')) {
+                                    // For summer -3600sec.
+                                    $dif -= 3600;
+                                }
 
-                            $total_sec = strtotime($tmp->timestamp);
-                            $total_sec += $dif;
-                            $last_contact = date($config['date_format'], $total_sec);
-                            $last_contact_value = ui_print_timestamp($last_contact, true);
+                                $total_sec = strtotime($tmp->timestamp);
+                                $total_sec += $dif;
+                                $last_contact = date($config['date_format'], $total_sec);
+                                $last_contact_value = ui_print_timestamp($last_contact, true);
+                            } else {
+                                $title = date($config['date_format'], strtotime($tmp->timestamp));
+                                $value = human_time_comparation(strtotime($tmp->timestamp), 'large');
+                                $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
+                            }
                         } else {
-                            $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
                             date_default_timezone_set($user_timezone);
                             $title = date($config['date_format'], strtotime($tmp->timestamp));
                             $value = human_time_comparation(strtotime($tmp->timestamp), 'large');
@@ -1209,17 +1214,17 @@ foreach ((array) $tags as $id_tag => $tag) {
     if (is_array($tag_with) === true
         && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
     ) {
-        $tags_select_with[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tags_select_with[$id_tag] = $tag;
     } else {
-        $tag_with_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tag_with_temp[$id_tag] = $tag;
     }
 
     if (is_array($tag_without) === true
         && ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null))
     ) {
-        $tags_select_without[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tags_select_without[$id_tag] = $tag;
     } else {
-        $tag_without_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tag_without_temp[$id_tag] = $tag;
     }
 }
 
@@ -1255,7 +1260,16 @@ $data[0] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 
 $data[1] = html_print_image(
@@ -1297,7 +1311,16 @@ $data[2] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 
 $tabletags_with->data[] = $data;
@@ -1330,7 +1353,16 @@ $data[0] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 $data[1] = html_print_image(
     'images/darrowright.png',
@@ -1368,7 +1400,16 @@ $data[2] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';

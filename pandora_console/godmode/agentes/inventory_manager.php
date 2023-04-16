@@ -237,8 +237,9 @@ if (db_get_num_rows($sql) == 0) {
     $table->head[5] = __('Actions');
     $table->align = [];
     $table->align[5] = 'left';
-
+    $i = 0;
     foreach ($result as $row) {
+        $table->cellclass[$i++][5] = 'table_action_buttons';
         $data = [];
 
         $sql = sprintf('SELECT id_policy FROM tpolicy_modules_inventory WHERE id = %d', $row['id_policy_module_inventory']);

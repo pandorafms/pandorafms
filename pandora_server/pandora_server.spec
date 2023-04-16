@@ -4,7 +4,7 @@
 %global __os_install_post %{nil}
 %define name        pandorafms_server
 %define version     7.0NG.770
-%define release     230405
+%define release     230416
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -67,6 +67,7 @@ mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/trans
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/commands
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
+mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf.d/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/tentacle/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
@@ -78,6 +79,7 @@ cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/bin/
 
 cp -aRf conf/pandora_* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf conf/pandora_server.conf.new $RPM_BUILD_ROOT/etc/pandora/
+cp -aRf conf/pandora_server_sec.conf.template $RPM_BUILD_ROOT/etc/pandora/conf.d/pandora_server_sec.conf.template
 cp -aRf conf/tentacle_* $RPM_BUILD_ROOT%{prefix}/tentacle/conf/
 cp -aRf conf/tentacle_server.conf.new $RPM_BUILD_ROOT/etc/tentacle/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
@@ -202,6 +204,7 @@ rm -Rf %{prefix}pandora_server
 rm -Rf /var/log/pandora
 rm -Rf /usr/lib/perl5/PandoraFMS/
 rm -Rf /etc/pandora/pandora_server.conf*
+rm -Rf /etc/pandora/conf.d/*
 rm -Rf /etc/tentacle/tentacle_server.conf*
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 

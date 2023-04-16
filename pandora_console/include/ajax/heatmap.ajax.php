@@ -137,6 +137,7 @@ if (is_ajax() === true) {
 
         switch ($type) {
             case 0:
+            case 3:
             default:
                 $label = __('Group');
                 $input = html_print_input(
@@ -234,10 +235,6 @@ if (is_ajax() === true) {
                     '5'
                 );
             break;
-
-            case 3:
-                // Empty.
-            break;
         }
 
         echo html_print_label_input_block(
@@ -246,6 +243,7 @@ if (is_ajax() === true) {
             [
                 'label_class' => 'font-title-font',
                 'div_class'   => 'mrgn_top_10px',
+                'div_id'      => 'filter_type',
             ]
         );
     }
@@ -259,10 +257,19 @@ if (is_ajax() === true) {
             $nd->connect();
         }
 
+        echo '<div class="box-flat white_table_graph">';
+
         switch ($type) {
             case 3:
             case 2:
-                $data = db_get_row('tagente_modulo', 'id_agente_modulo', $id);
+                $sql = sprintf(
+                    'SELECT * FROM tagente_modulo ag
+                    INNER JOIN tagente_estado ae ON ag.id_agente_modulo = ae.id_agente_modulo
+                    WHERE ag.id_agente_modulo = %d',
+                    $id
+                );
+
+                $data = db_get_row_sql($sql);
 
                 // Nombre.
                 $link = sprintf(
@@ -297,6 +304,92 @@ if (is_ajax() === true) {
                 echo '<div class="div-dialog">';
                 echo '<p class="title-dialog">'.__('Module group').'</p>';
                 echo '<p class="info-dialog">'.$group.'</p>';
+                echo '</div>';
+
+                $graph_type = return_graphtype($data['module_type']);
+
+                $url = ui_get_full_url('operation/agentes/stat_win.php', false, false, false);
+                $handle = dechex(crc32($data['id_agente_modulo'].$data['module_name']));
+                $win_handle = 'day_'.$handle;
+
+                $graph_params = [
+                    'type'    => $graph_type,
+                    'period'  => SECONDS_1DAY,
+                    'id'      => $data['id_agente_modulo'],
+                    'refresh' => SECONDS_10MINUTES,
+                ];
+
+
+                $graph_params_str = http_build_query($graph_params);
+
+                $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
+                $img_graph = html_print_anchor(
+                    [
+                        'href'    => 'javascript:'.$link,
+                        'content' => html_print_image('images/module-graph.svg', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter main_menu_icon']),
+                    ],
+                    true
+                );
+
+
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Data').'</p>';
+                $data_module = '';
+                if (is_numeric($data['datos'])) {
+                    $data_module = remove_right_zeros(
+                        number_format(
+                            $data['datos'],
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            $config['thousand_separator']
+                        )
+                    );
+                    echo '<p class="info-dialog">'.$data_module.' '.$data['unit'].'&nbsp;&nbsp;&nbsp;'.$img_graph.'</p>';
+                } else {
+                    $data_module = $data['datos'];
+                    echo '<p class="info-dialog">'.$data['datos'].' '.$data['unit'].'&nbsp;&nbsp;&nbsp;'.$img_graph.'</p>';
+                }
+
+                echo '</div>';
+
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Date of last data').'</p>';
+                echo '<p class="info-dialog">'.date('Y-m-d H:i:s', $data['utimestamp']).'</p>';
+                echo '</div>';
+
+                $status = modules_get_agentmodule_status($id);
+                switch ($status) {
+                    case AGENT_MODULE_STATUS_NORMAL:
+                        $status = ui_print_status_image('module_ok.png', $data_module, true);
+                    break;
+
+                    case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                        $status = ui_print_status_image('module_critical.png', $data_module, false);
+                    break;
+
+                    case AGENT_MODULE_STATUS_WARNING:
+                        $status = ui_print_status_image('module_warning.png', $data_module, false);
+                    break;
+
+                    case AGENT_MODULE_STATUS_NORMAL_ALERT:
+                    case AGENT_MODULE_STATUS_WARNING_ALERT:
+                    case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+                        $status = ui_print_status_image('module_alertsfired.png', $data_module, false);
+                    break;
+
+                    case 4:
+                        $status = ui_print_status_image('module_no_data.png', $data_module, false);
+                    break;
+
+                    default:
+                    case AGENT_MODULE_STATUS_UNKNOWN:
+                        $status = ui_print_status_image('module_unknown.png', $data_module, false);
+                    break;
+                }
+
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Status').'</p>';
+                echo '<div class="status_rounded_rectangles">'.$status.'</div>';
                 echo '</div>';
             break;
 
@@ -381,6 +474,43 @@ if (is_ajax() === true) {
                 echo '<p class="info-dialog">'.$data['comentarios'].'</p>';
                 echo '</div>';
 
+                // Last contact.
+                $lastContactDate = ui_print_timestamp($data['ultimo_contacto'], true);
+                $remoteContactDate = ($data['ultimo_contacto_remoto'] === '01-01-1970 00:00:00') ? __('Never') : date_w_fixed_tz($data['ultimo_contacto_remoto']);
+                $lastAndRemoteContact = sprintf('%s / %s', $lastContactDate, $remoteContactDate);
+
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Last contact').' / '.__('Remote').'</p>';
+                echo '<p class="info-dialog">'.$lastAndRemoteContact.'</p>';
+                echo '</div>';
+
+
+                // Next contact progress.
+                $progress = agents_get_next_contact($id);
+                $tempTimeToShow = ($data['intervalo'] - (strtotime('now') - strtotime($data['ultimo_contacto'])));
+                $progressCaption = ($tempTimeToShow >= 0) ? sprintf('%d s', $tempTimeToShow) : __('Out of bounds');
+                $ajaxNextContactInterval = (empty($data['intervalo']) === true) ? 0 : (100 / $data['intervalo']);
+                echo '<div class="div-dialog">';
+                echo '<p class="title-dialog">'.__('Next contact').'</p>';
+                echo '<p class="info-dialog">'.ui_progress(
+                    $progress,
+                    '80%',
+                    '1.2',
+                    '#ececec',
+                    true,
+                    $progressCaption,
+                    [
+                        'page'     => 'operation/agentes/ver_agente',
+                        'interval' => $ajaxNextContactInterval,
+                        'data'     => [
+                            'id_agente'       => $id,
+                            'refresh_contact' => 1,
+                        ],
+
+                    ]
+                ).'</p>';
+                echo '</div>';
+
                 // Group.
                 $secondary_groups = '';
                 $secondary = enterprise_hook('agents_get_secondary_groups', [$data['id_agente']]);
@@ -394,6 +524,27 @@ if (is_ajax() === true) {
                 echo '<p class="info-dialog">'.groups_get_name($data['id_grupo']).$secondary_groups.'</p>';
                 echo '</div>';
 
+                echo '<div class="div-dialog">';
+                echo graph_agent_status(
+                    $id,
+                    150,
+                    150,
+                    true,
+                    false,
+                    false,
+                    true
+                );
+                echo '</div>';
+                echo '<div class="div-dialog" style="justify-content: center;">';
+                echo reporting_tiny_stats(
+                    $data,
+                    true,
+                    'agent',
+                    // Useless.
+                    ':',
+                    true
+                );
+                echo '</div>';
 
                 // Events.
                 $result_graph_event = enterprise_hook(
@@ -418,6 +569,8 @@ if (is_ajax() === true) {
                 }
             break;
         }
+
+        echo '</div>';
 
         if (empty($id_server) === false) {
             $nd->disconnect();

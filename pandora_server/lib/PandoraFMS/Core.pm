@@ -296,7 +296,7 @@ our @ServerTypes = qw (
 	dataserver
 	networkserver
 	snmpconsole
-	reconserver
+	discoveryserver
 	pluginserver
 	predictionserver
 	wmiserver
@@ -307,6 +307,7 @@ our @ServerTypes = qw (
 	icmpserver
 	snmpserver
 	satelliteserver
+	transactionalserver
 	mfserver
 	syncserver
 	wuxserver
@@ -315,6 +316,8 @@ our @ServerTypes = qw (
 	migrationserver
 	alertserver
 	correlationserver
+	ncmserver
+	netflowserver
 );
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 

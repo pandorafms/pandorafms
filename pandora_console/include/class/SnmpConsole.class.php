@@ -1443,7 +1443,7 @@ class SnmpConsole extends HTML
                                 binding_vars.forEach(function(oid) {
                                     string += oid+'<br/>';
                                 });
-                                variableBindings = `<td align="left" colspan="8">${string}</td>`;
+                                variableBindings = `<td align="left" colspan="8" class="break-word w200px">${string}</td>`;
                             }
 
                             tr.after(`<tr id="show_" role="row">${labelBindings}${variableBindings}</tr>`);

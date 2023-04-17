@@ -189,6 +189,12 @@ CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
   `section` VARCHAR(255) NOT NULL,
 PRIMARY KEY (`id`));
 
+ALTER TABLE `tnetflow_filter` ADD COLUMN `netflow_monitoring` TINYINT UNSIGNED NOT NULL default 0;
+ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_max` INTEGER NOT NULL default 0;
+ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_critical` float(20,2) NOT NULL default 0;
+ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_warning` float(20,2) NOT NULL default 0;
+ALTER TABLE `tnetflow_filter` ADD COLUMN `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `tnetflow_filter` ADD COLUMN `netflow_monitoring_interval` INT UNSIGNED NOT NULL DEFAULT 300;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('legacy_database_ha', 1);
 
 COMMIT;

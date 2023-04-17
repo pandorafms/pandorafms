@@ -15,7 +15,7 @@ LOGFILE="/tmp/deploy-ext-db-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ]       || TZ="Europe/Madrid"
-[ "$MYVER" ]    || MYVER=57
+[ "$MYVER" ]    || MYVER=80
 [ "$DBHOST" ]   || DBHOST=127.0.0.1
 [ "$DBNAME" ]   || DBNAME=pandora
 [ "$DBUSER" ]   || DBUSER=pandora
@@ -26,6 +26,7 @@ LOGFILE="/tmp/deploy-ext-db-$(date +%F).log"
 [ "$SKIP_DATABASE_INSTALL" ]     || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
 [ "$POOL_SIZE" ]    || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
+
 
 # Ansi color code variables
 red="\e[0;91m"

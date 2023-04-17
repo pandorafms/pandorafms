@@ -1571,16 +1571,12 @@ function type_change() {
   var type = document.getElementById("type").value;
 
   switch (type) {
-    case "3":
-      $("#li_tags").hide();
-      $("#li_groups").hide();
-      $("#li_module_groups").hide();
-      break;
     case "2":
       $("#li_tags").hide();
       $("#li_groups").hide();
       $("#li_module_groups").show();
       break;
+
     case "1":
       $("#li_tags").show();
       $("#li_groups").hide();
@@ -1588,6 +1584,7 @@ function type_change() {
       break;
 
     default:
+    case "3":
     case "0":
       $("#li_tags").hide();
       $("#li_groups").show();

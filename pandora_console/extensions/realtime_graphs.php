@@ -224,7 +224,7 @@ function pandora_realtime_graphs()
         false,
         '',
         'white-box-content',
-        'box-flat white_table_graph fixed_filter_bar'
+        'box-flat white_table_graph'
     );
 
     $chart[time()]['graph'] = '0';

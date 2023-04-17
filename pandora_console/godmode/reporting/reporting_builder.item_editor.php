@@ -117,6 +117,7 @@ $period = SECONDS_1DAY;
 $search = '';
 $full_text = 0;
 $log_number = 1000;
+$inventory_regular_expression = '';
 // Added support for projection graphs.
 $period_pg = SECONDS_5DAY;
 $projection_period = SECONDS_5DAY;
@@ -940,6 +941,7 @@ switch ($action) {
                     $inventory_modules = $es['inventory_modules'];
                     $id_agents = $es['id_agents'];
                     $recursion = $item['recursion'];
+                    $inventory_regular_expression = $es['inventory_regular_expression'];
 
                     $idAgent = $es['id_agents'];
                     $idAgentModule = $inventory_modules;
@@ -1231,8 +1233,8 @@ $class = 'databox filters';
         ?>
 
         <?php
-        $servers_all_opt = array_merge(['all' => 'All nodes'], $servers);
-        if ($meta) {
+        if (is_metaconsole() === true) {
+            $servers_all_opt = array_merge(['all' => 'All nodes'], $servers);
             ?>
         <tr id="row_servers_all_opt"   class="datos">
             <td class="bolder"><?php echo __('Server'); ?></td>
@@ -2192,6 +2194,15 @@ $class = 'databox filters';
                     'inventory_modules_selected',
                     $array_inventory_modules
                 );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_regular_expression"   class="datos">
+            <td class="bolder"><?php echo __('Regular expression'); ?></td>
+            <td>
+                <?php
+                html_print_input_text('inventory_regular_expression', $inventory_regular_expression, '', false, 255, false, false, false, '', 'w50p');
                 ?>
             </td>
         </tr>
@@ -4271,7 +4282,7 @@ function print_SLA_list($width, $action, $idItem=null)
                         echo '</td>';
                         echo '<td class="sla_list_action_col center">';
                         echo '<a href="javascript: deleteSLARow('.$item['id'].');">';
-                        echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter']);
+                        echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']);
                         echo '</a>';
                         echo '</td>';
                         echo '</tr>';
@@ -4314,7 +4325,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                     html_print_image(
                                         'images/delete.svg',
                                         false,
-                                        ['class' => 'invert_filter']
+                                        ['class' => 'invert_filter main_menu_icon']
                                     );
                                     ?>
                                 </a>
@@ -4738,7 +4749,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     <td>'.printSmallFont($nameAgentFailover).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModuleFailover).'</td>
                                     <td class="center">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
                                     </td>
                                 </tr>';
                             } else {
@@ -4746,7 +4757,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModule).'</td>
                                     <td class="center">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
                                     </td>
                                 </tr>';
                             }
@@ -4756,7 +4767,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 								<td>'.printSmallFont($nameModule).'</td>
 								<td>'.printSmallFont($operation[$item['operation']]).'</td>
 								<td class="center">
-									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
 								</td>
 							</tr>';
                         }
@@ -4796,7 +4807,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     html_print_image(
                                         'images/delete.svg',
                                         false,
-                                        ['class' => 'invert_filter']
+                                        ['class' => 'invert_filter main_menu_icon']
                                     );
                                     ?>
                                 </a>
@@ -6445,6 +6456,7 @@ function chooseType() {
     $("#row_date").hide();
     $("#row_agent_multi").hide();
     $("#row_module_multi").hide();
+    $('#row_regular_expression').hide();
     $("#row_event_graphs").hide();
     $("#row_event_graph_by_agent").hide();
     $("#row_event_graph_by_user").hide();
@@ -7154,6 +7166,7 @@ function chooseType() {
             $("#row_group").show();
             $("#row_agent_multi").show();
             $("#row_module_multi").show();
+            $('#row_regular_expression').show();
             $("#row_date").show();
 
             $("#id_agents")

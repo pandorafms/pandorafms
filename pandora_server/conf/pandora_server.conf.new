@@ -764,3 +764,10 @@ tentacle_service_watchdog 1
 # Enable (1) or disable (0) the parameter of mysql ssl certification (mysql_ssl_verify_server_cert) (enabled by default).
 
 verify_mysql_ssl_cert 1
+
+# Enable (1) or disable (0) the Pandora FMS Netflow Server (PANDORA FMS ENTERPRISE ONLY).
+netflowserver 0
+
+# Number of threads for the Pandora FMS Netflow Server (PANDORA FMS ENTERPRISE ONLY).
+netflowserver_threads 1
+

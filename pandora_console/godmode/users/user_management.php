@@ -374,7 +374,13 @@ if (users_is_admin() === true) {
     );
 }
 
-$userManagementTable->data['show_tips_startup'][0] = html_print_checkbox_switch('show_tips_startup', 1, ($user_info['show_tips_startup'] === null) ? true : $user_info['show_tips_startup'], true);
+$userManagementTable->data['show_tips_startup'][0] = html_print_checkbox_switch(
+    'show_tips_startup',
+    1,
+    (isset($user_info['show_tips_startup']) === false) ? true : $user_info['show_tips_startup'],
+    true
+);
+
 $userManagementTable->data['show_tips_startup'][1] = '<span>'.__('Show usage tips at startup').'</span>';
 
 // Session time input.
@@ -537,7 +543,7 @@ $userManagementTable->data['captions_autorefreshTime'][0] = __('Time for autoref
 $userManagementTable->data['fields_autorefreshTime'][0] = html_print_select(
     get_refresh_time_array(),
     'time_autorefresh',
-    $user_info['time_autorefresh'],
+    ($user_info['time_autorefresh'] ?? 0),
     '',
     '',
     '',
@@ -594,7 +600,7 @@ $userManagementTable->data['captions_blocksize_eventfilter'][1] = __('Event filt
 $userManagementTable->data['fields_blocksize_eventfilter'][1] = html_print_select(
     $event_filter,
     'default_event_filter',
-    $user_info['default_event_filter'],
+    ($user_info['default_event_filter'] ?? 0),
     '',
     '',
     __('None'),
@@ -700,7 +706,7 @@ $userManagementTable->data['fields_addSettings'][1] = html_print_div(
             'allowed_ip_list',
             5,
             65,
-            $user_info['allowed_ip_list'],
+            ($user_info['allowed_ip_list'] ?? ''),
             (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
             true
         ),
@@ -720,7 +726,7 @@ $allowAllIpsContent[] = html_print_div(
         'content' => html_print_checkbox_switch(
             'allowed_ip_active',
             0,
-            $user_info['allowed_ip_active'],
+            ($user_info['allowed_ip_active'] ?? 0),
             true
         ),
     ],
@@ -736,13 +742,15 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
     true
 );
 
-// QR Code and API Token advice.
-html_print_div(
-    [
-        'id'      => 'api_qrcode_display',
-        'content' => $CodeQRTable.$apiTokenContent,
-    ]
-);
+if (isset($CodeQRTable) === true || isset($apiTokenContent) === true) {
+    // QR Code and API Token advice.
+    html_print_div(
+        [
+            'id'      => 'api_qrcode_display',
+            'content' => $CodeQRTable.$apiTokenContent,
+        ]
+    );
+}
 
 html_print_table($userManagementTable);
 

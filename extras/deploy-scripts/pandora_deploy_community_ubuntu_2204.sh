@@ -17,7 +17,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='202302201'
+S_VERSION='202304111'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 
@@ -153,8 +153,8 @@ check_root_permissions
 
 #advicing BETA PROGRAM
 INSTALLING_VER="${green}RRR version enable using RRR PandoraFMS packages${reset}"
-[ "$PANDORA_BETA" -ne '0' ] && INSTALLING_VER="${red}BETA version enable using nightly PandoraFMS packages${reset}"
 [ "$PANDORA_LTS" -ne '0' ] && INSTALLING_VER="${green}LTS version enable using LTS PandoraFMS packages${reset}"
+[ "$PANDORA_BETA" -ne '0' ] && INSTALLING_VER="${red}BETA version enable using nightly PandoraFMS packages${reset}"
 echo -e $INSTALLING_VER
 
 # Connectivity
@@ -304,8 +304,9 @@ ln -s /usr/bin/fping /usr/sbin/fping &>> "$LOGFILE"
 
 # Chrome
 rm -f /usr/bin/chromium-browser &>> "$LOGFILE"
-execute_cmd "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" "Downloading google chrome"
-execute_cmd "apt install -y ./google-chrome-stable_current_amd64.deb" "Intalling google chrome"
+CHROME_VERSION=google-chrome-stable_110.0.5481.177-1_amd64.deb
+execute_cmd "wget https://dl.google.com/linux/deb/pool/main/g/google-chrome-stable/${CHROME_VERSION}" "Downloading google chrome"
+execute_cmd "apt install -y ./${CHROME_VERSION}" "Intalling google chrome"
 execute_cmd "ln -s /usr/bin/google-chrome /usr/bin/chromium-browser" "Creating /usr/bin/chromium-browser Symlink"
 
 # SDK VMware perl dependencies
@@ -466,9 +467,9 @@ elif [ "$PANDORA_LTS" -ne '1' ] ; then
 fi
 
 if [ "$PANDORA_BETA" -eq '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
+    PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
+    PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
+    PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
 fi
 
 # Downloading Pandora Packages

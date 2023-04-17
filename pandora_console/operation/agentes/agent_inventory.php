@@ -218,7 +218,7 @@ foreach ($rows as $row) {
     }
 
     if ($idModuleInventory != $row['id_module_inventory']) {
-        if (isset($table) === true && $rowTable >= 1) {
+        if (isset($table) === true && $rowTable > 1) {
             html_print_table($table);
             unset($table);
             $rowTable = 1;
@@ -310,17 +310,16 @@ foreach ($rows as $row) {
             $rowTable++;
         }
 
-        if ($iterator1 > 5) {
-            // PRINT COUNT TOTAL.
-            $table->data[$rowTable][0] = '<b>'.__('Total').': </b>'.$iterator1;
-            $rowTable++;
-        }
+        // PRINT COUNT TOTAL.
+        $table->colspan[$rowTable][0] = 10;
+        $table->data[$rowTable][0] = '<b>'.__('Total').': </b>'.$iterator1;
+        $rowTable++;
     }
 
     $idModuleInventory = $row['id_module_inventory'];
 }
 
-if (isset($table) === true && $rowTable >= 1) {
+if (isset($table) === true && $rowTable > 1) {
     html_print_table($table);
     $printedTables++;
 }

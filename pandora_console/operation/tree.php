@@ -210,6 +210,7 @@ $agent_status_arr[AGENT_STATUS_WARNING] = __('Warning');
 $agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
 $agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
+$agent_status_arr[AGENT_STATUS_ALERT_FIRED] = __('Fired alerts');
 
 $table->data['group_row'][] = html_print_label_input_block(
     __('Search group'),
@@ -271,7 +272,7 @@ $table->data['agent_row'][] = html_print_label_input_block(
         0,
         true,
         false,
-        true,
+        false,
         '',
         false,
         'width:100%'
@@ -300,6 +301,7 @@ if (is_metaconsole() === false) {
     $module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
     $module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
     $module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+    $module_status_arr['fired'] = __('Fired alerts');
 
     $table->data['last_row'][] = html_print_label_input_block(
         __('Search module'),
@@ -322,7 +324,7 @@ if (is_metaconsole() === false) {
             0,
             true,
             false,
-            true,
+            false,
             '',
             false,
             'width:100%'
@@ -380,7 +382,7 @@ html_print_div(
     ]
 );
 
-$infoHeadTitle = 'Sombra oscura';
+$infoHeadTitle = '';
 ?>
 
 <?php if (is_metaconsole() === false) { ?>

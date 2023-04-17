@@ -3245,7 +3245,7 @@ class NetworkMap
         $table->data['template_row']['node_target'] = '';
         $table->data['template_row']['edit'] = '';
 
-        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none">'.html_print_image('images/pixel_green.png', true, ['class' => 'main_menu_icon']).'</span><span class="edit_icon_fail" style="display: none" >'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress" style="display: none">'.html_print_image('images/spinner.gif', true).'</span>';
+        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none">'.html_print_image('images/pixel_green.png', true, ['class' => 'circle-relations']).'</span><span class="edit_icon_fail" style="display: none" >'.html_print_image('images/dot_red.png', true, ['class' => 'circle-relations']).'</span><span class="edit_icon_progress" style="display: none">'.html_print_image('images/spinner.gif', true, ['class' => 'circle-relations']).'</span>';
         // <span class="edit_icon"><a class="edit_icon_link" title="'.__('Update').'" href="#">'.html_print_image('images/edit.svg', true, ['class' => 'invert_filter']).'</a></span>';
         $table->data['template_row']['edit'] .= '<a class="delete_icon" href="#">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter', 'style' => 'padding: 10px']).'</a>';
 

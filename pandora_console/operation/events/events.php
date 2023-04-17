@@ -551,7 +551,7 @@ if (is_ajax() === true) {
                             $total_sec = strtotime($tmp->timestamp);
                             $total_sec += $dif;
                             $last_contact = date($config['date_format'], $total_sec);
-                            $last_contact_value = ui_print_timestamp($last_contact, true);
+                            $last_contact_value = ui_print_timestamp($tmp->timestamp, true);
                         } else {
                             $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
                             date_default_timezone_set($user_timezone);

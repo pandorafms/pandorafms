@@ -163,10 +163,7 @@ class DiscoveryTaskList extends HTML
         }
 
         if (is_reporting_console_node() === false) {
-            $ret2 = $this->showList(__('Host & devices tasks'), [0, 1]);
-            $ret2 .= $this->showList(__('Applications tasks'), [3, 4, 5, 10, 11, 12], 'app');
-            $ret2 .= $this->showList(__('Cloud tasks'), [6, 7, 8, 13, 14], 'cloud');
-            $ret2 .= $this->showList(__('Custom tasks'), [-1], 'custom');
+            $ret2 = $this->showList();
         }
 
         if ($ret === false && $ret2 === false) {
@@ -249,35 +246,19 @@ class DiscoveryTaskList extends HTML
         }
 
         $task = get_parameter('task', null);
-        $extension = get_parameter('extension', null);
 
         if ($task !== null) {
-            if ($extension !== null) {
-                $result = db_process_sql_delete(
-                    'tdiscovery_apps_tasks',
-                    ['id_task' => $task]
-                );
+            $result = db_process_sql_delete(
+                'trecon_task',
+                ['id_rt' => $task]
+            );
 
-                if ($result == 1) {
-                    return [
-                        'result' => 0,
-                        'msg'    => __('Task successfully deleted'),
-                        'id'     => false,
-                    ];
-                }
-            } else {
-                $result = db_process_sql_delete(
-                    'trecon_task',
-                    ['id_rt' => $task]
-                );
-
-                if ($result == 1) {
-                    return [
-                        'result' => 0,
-                        'msg'    => __('Task successfully deleted'),
-                        'id'     => false,
-                    ];
-                }
+            if ($result == 1) {
+                return [
+                    'result' => 0,
+                    'msg'    => __('Task successfully deleted'),
+                    'id'     => false,
+                ];
             }
 
             // Trick to avoid double execution.
@@ -453,37 +434,20 @@ class DiscoveryTaskList extends HTML
         }
 
         $task = get_parameter('task', null);
-        $extension = get_parameter('extension', null);
 
         if ($task !== null) {
-            if ($extension !== null) {
-                $result = db_process_sql_update(
-                    'tdiscovery_apps_tasks',
-                    ['disabled' => 1],
-                    ['id_task' => $task]
-                );
+            $result = db_process_sql_update(
+                'trecon_task',
+                ['disabled' => 1],
+                ['id_rt' => $task]
+            );
 
-                if ($result == 1) {
-                    return [
-                        'result' => 0,
-                        'msg'    => __('Task successfully disabled'),
-                        'id'     => false,
-                    ];
-                }
-            } else {
-                $result = db_process_sql_update(
-                    'trecon_task',
-                    ['disabled' => 1],
-                    ['id_rt' => $task]
-                );
-
-                if ($result == 1) {
-                    return [
-                        'result' => 0,
-                        'msg'    => __('Task successfully disabled'),
-                        'id'     => false,
-                    ];
-                }
+            if ($result == 1) {
+                return [
+                    'result' => 0,
+                    'msg'    => __('Task successfully disabled'),
+                    'id'     => false,
+                ];
             }
 
             // Trick to avoid double execution.
@@ -512,40 +476,23 @@ class DiscoveryTaskList extends HTML
         }
 
         $task = get_parameter('task', null);
-        $extension = get_parameter('extension', null);
 
         if ($task !== null) {
-            if ($extension !== null) {
-                $result = db_process_sql_update(
-                    'tdiscovery_apps_tasks',
-                    ['disabled' => 0],
-                    ['id_task' => $task]
-                );
+            $result = db_process_sql_update(
+                'trecon_task',
+                [
+                    'disabled' => 0,
+                    'status'   => 0,
+                ],
+                ['id_rt' => $task]
+            );
 
-                if ($result == 1) {
-                    return [
-                        'result' => 0,
-                        'msg'    => __('Task successfully enabled'),
-                        'id'     => false,
-                    ];
-                }
-            } else {
-                $result = db_process_sql_update(
-                    'trecon_task',
-                    [
-                        'disabled' => 0,
-                        'status'   => 0,
-                    ],
-                    ['id_rt' => $task]
-                );
-
-                if ($result == 1) {
-                    return [
-                        'result' => 0,
-                        'msg'    => __('Task successfully enabled'),
-                        'id'     => false,
-                    ];
-                }
+            if ($result == 1) {
+                return [
+                    'result' => 0,
+                    'msg'    => __('Task successfully enabled'),
+                    'id'     => false,
+                ];
             }
 
             // Trick to avoid double execution.
@@ -558,13 +505,9 @@ class DiscoveryTaskList extends HTML
     /**
      * Show complete list of running tasks.
      *
-     * @param string  $titleTable       Title of section.
-     * @param array   $filter           Ids array from apps for filter.
-     * @param boolean $extensionSection Extension to add in table.
-     *
      * @return boolean Success or not.
      */
-    public function showList($titleTable, $filter, $extensionSection=false)
+    public function showList()
     {
         global $config;
 
@@ -588,30 +531,7 @@ class DiscoveryTaskList extends HTML
             include_once $config['homedir'].'/include/functions_network_profiles.php';
 
             if (users_is_admin()) {
-                $recon_tasks = db_get_all_rows_sql(
-                    sprintf(
-                        'SELECT * FROM trecon_task WHERE type IN (%s)',
-                        implode(',', $filter)
-                    )
-                );
-                if ($recon_tasks === false) {
-                    $recon_tasks = [];
-                }
-
-                $recon_tasks_discovery = db_get_all_rows_sql(
-                    sprintf(
-                        'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
-                        FROM tdiscovery_apps_tasks tasks
-                        LEFT JOIN tdiscovery_apps apps ON tasks.id_app = apps.id_app
-                        WHERE section = "%s"',
-                        $extensionSection
-                    )
-                );
-                if ($recon_tasks_discovery === false) {
-                    $recon_tasks_discovery = [];
-                }
-
-                $recon_tasks = array_merge($recon_tasks, $recon_tasks_discovery);
+                $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
             } else {
                 $user_groups = implode(
                     ',',
@@ -620,31 +540,10 @@ class DiscoveryTaskList extends HTML
                 $recon_tasks = db_get_all_rows_sql(
                     sprintf(
                         'SELECT * FROM trecon_task
-                        WHERE id_group IN (%s) AND
-                        type IN (%s)',
-                        $user_groups,
-                        implode(',', $filter)
-                    )
-                );
-                if ($recon_tasks === false) {
-                    $recon_tasks = [];
-                }
-
-                $recon_tasks_discovery = db_get_all_rows_sql(
-                    sprintf(
-                        'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
-                        FROM tdiscovery_apps_tasks tasks
-                        LEFT JOIN tdiscovery_apps apps ON tasks.id_app = apps.id_app
-                        WHERE section = "%s" AND id_group IN (%s)',
-                        $extensionSection,
+                        WHERE id_group IN (%s)',
                         $user_groups
                     )
                 );
-                if ($recon_tasks_discovery === false) {
-                    $recon_tasks_discovery = [];
-                }
-
-                $recon_tasks = array_merge($recon_tasks, $recon_tasks_discovery);
             }
 
             // Show network tasks for Recon Server.
@@ -810,16 +709,10 @@ class DiscoveryTaskList extends HTML
 
                 $data[2] = $server_name;
 
-                if ($task['interval_sweep'] > 0 || $task['interval'] > 0) {
-                    if (empty($task['interval']) === false) {
-                        $data[3] = human_time_description_raw(
-                            $task['interval']
-                        );
-                    } else {
-                        $data[3] = human_time_description_raw(
-                            $task['interval_sweep']
-                        );
-                    }
+                if ($task['interval_sweep'] > 0) {
+                    $data[3] = human_time_description_raw(
+                        $task['interval_sweep']
+                    );
                 } else {
                     $data[3] = __('Manual');
                 }
@@ -952,7 +845,7 @@ class DiscoveryTaskList extends HTML
 
                     case DISCOVERY_HOSTDEVICES:
                     default:
-                        if (empty($task['id_recon_script']) === false && (int) $task['id_recon_script'] === 0) {
+                        if ($task['id_recon_script'] == 0) {
                             // Discovery NetScan.
                             $data[6] = html_print_image(
                                 'images/cluster@os.svg',
@@ -963,13 +856,6 @@ class DiscoveryTaskList extends HTML
                                 ]
                             ).'&nbsp;&nbsp;';
                             $data[6] .= __('Discovery.NetScan');
-                        } else if (empty($task['id_app']) === false) {
-                            $data[6] = html_print_image(
-                                'images/plugins@svg.svg',
-                                true,
-                                ['class' => 'main_menu_icon invert_filter']
-                            ).'&nbsp;&nbsp;';
-                            $data[6] .= $task['short_name'];
                         } else {
                             // APP or external script recon task.
                             $data[6] = html_print_image(
@@ -1035,18 +921,16 @@ class DiscoveryTaskList extends HTML
                             $data[9] .= '</a>';
                         }
 
-                        if (empty($task['id_app']) === true) {
-                            $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
-                            $data[9] .= html_print_image(
-                                'images/details.svg',
-                                true,
-                                [
-                                    'title' => __('View summary'),
-                                    'class' => 'main_menu_icon invert_filter',
-                                ]
-                            );
-                            $data[9] .= '</a>';
-                        }
+                        $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
+                        $data[9] .= html_print_image(
+                            'images/details.svg',
+                            true,
+                            [
+                                'title' => __('View summary'),
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        );
+                        $data[9] .= '</a>';
                     }
 
                     if ($task['disabled'] != 2 && $task['utimestamp'] > 0
@@ -1114,33 +998,6 @@ class DiscoveryTaskList extends HTML
                                     ]
                                 ).'</a>';
                             }
-                        } else if (empty($task['id_app']) === false) {
-                            // Check if is a H&D, Cloud or Application or IPAM.
-                            $data[9] .= '<a href="'.ui_get_full_url(
-                                sprintf(
-                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=%s&mode=%s&id_task=%s',
-                                    $task['section'],
-                                    $task['short_name'],
-                                    $task['id_task'],
-                                )
-                            ).'">'.html_print_image(
-                                'images/edit.svg',
-                                true,
-                                [
-                                    'title' => __('Edit task'),
-                                    'class' => 'main_menu_icon invert_filter',
-                                ]
-                            ).'</a>';
-                            $data[9] .= '<a href="'.ui_get_full_url(
-                                'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&extension=1&delete=1&task='.$task['id_task']
-                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-                                'images/delete.svg',
-                                true,
-                                [
-                                    'title' => __('Delete task'),
-                                    'class' => 'main_menu_icon invert_filter',
-                                ]
-                            ).'</a>';
                         } else {
                             // Check if is a H&D, Cloud or Application or IPAM.
                             $data[9] .= '<a href="'.ui_get_full_url(
@@ -1169,14 +1026,9 @@ class DiscoveryTaskList extends HTML
                             ).'</a>';
                         }
 
-                        $url_disabled = 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&task='.$task['id_rt'];
-                        if (empty($task['id_app']) === false) {
-                            $url_disabled = 'index.php?sec=gservers&sec2=godmode/servers/discovery&extension=1&wiz=tasklist&task='.$task['id_task'];
-                        }
-
                         if ($task['disabled'] == 1) {
                             $data[9] .= '<a href="'.ui_get_full_url(
-                                $url_disabled.'&enabled=1'
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&enabled=1&wiz=tasklist&task='.$task['id_rt']
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/lightbulb_off.png',
                                 true,
@@ -1187,7 +1039,7 @@ class DiscoveryTaskList extends HTML
                             ).'</a>';
                         } else if ($task['disabled'] == 0) {
                             $data[9] .= '<a href="'.ui_get_full_url(
-                                $url_disabled.'&disabled=1'
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&disabled=1&wiz=tasklist&task='.$task['id_rt']
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/lightbulb.png',
                                 true,
@@ -1217,7 +1069,7 @@ class DiscoveryTaskList extends HTML
                 $return = true;
             }
 
-            ui_toggle($content, $titleTable, '', '', false);
+            ui_toggle($content, __('Server Tasks'), '', '', false);
 
             // Div neccesary for modal map task.
             echo '<div id="map_task" class="invisible"></div>';

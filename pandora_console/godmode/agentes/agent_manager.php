@@ -636,7 +636,8 @@ $tableAdvancedAgent->data['secondary_groups'][] = html_print_label_input_block(
     __('Secondary groups'),
     html_print_select_agent_secondary(
         $agent,
-        $id_agente
+        $id_agente,
+        ['selected_post' => $secondary_groups]
     )
 );
 

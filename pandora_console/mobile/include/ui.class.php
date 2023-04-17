@@ -782,6 +782,10 @@ class Ui
         $dialogHtml .= "</div>\n";
         $dialogHtml .= "</div>\n";
 
+        if ($options['return_html_dialog'] === true) {
+            return $dialogHtml;
+        }
+
         $this->dialogs[$type][] = $dialogHtml;
     }
 

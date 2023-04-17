@@ -191,10 +191,7 @@ class Agent
             $address = $this->agent['direccion'];
             $ip .= (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address;
             $last_contact = '<b>'.__('Last contact').'</b>:&nbsp;';
-            $last_contact .= ui_print_timestamp(
-                $this->agent['ultimo_contacto'],
-                true
-            );
+            $last_contact .= human_time_comparation($this->agent['ultimo_contacto'], 'tiny');
 
             if (empty($agent['comentarios']) === true) {
                 $description .= '<i>'.__('N/A').'</i>';
@@ -213,7 +210,7 @@ class Agent
                 false,
                 false,
                 false,
-                ['class' => 'invert_filter os-big-icon'],
+                ['class' => 'invert_filter main_menu_icon'],
                 false
             ).'</div>';
             $html .= '<div class="agent_list_ips">';

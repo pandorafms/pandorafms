@@ -66,6 +66,18 @@ body {
   display: none;
 }
 
+.flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
 .ui-header .ui-title {
   font-size: 14px !important;
   min-height: 1.1em;
@@ -534,7 +546,7 @@ table.event_details td.cell_event_name {
   color: #4a83f3 !important;
 }
 
-.green,
+/* .green,
 .orange,
 .yellow,
 .red,
@@ -544,11 +556,11 @@ table.event_details td.cell_event_name {
   color: white !important;
   padding: 1px 3px;
   border-radius: 2px;
-}
+} */
 
-.agents_tiny_stats span {
+/* .agents_tiny_stats span {
   background: #222;
-}
+} */
 
 .agent_details {
   padding: 10px 0px 10px 0px;
@@ -677,7 +689,8 @@ table.event_details td.cell_event_name {
   #list_agents .cell_1,
   #list_agents .cell_2,
   #list_agents .cell_3,
-  #list_agents .cell_4 {
+  #list_agents .cell_4,
+  #list_agents .cell_7 {
     display: none !important;
   }
 
@@ -942,8 +955,8 @@ table[id^="service-table-"] td.cell_0 {
 
 #list_Modules td,
 #list_agent_Modules td {
-  height: 35px;
-  padding-top: 20px;
+  height: 25px;
+  vertical-align: middle;
 }
 
 #list_agent_Modules td.cell_0 > span.tiny {
@@ -952,6 +965,7 @@ table[id^="service-table-"] td.cell_0 {
 
 #list_Modules .cell_5 img {
   float: left;
+  margin-left: 5px;
 }
 
 #user_logged {
@@ -1012,10 +1026,10 @@ li.ui-btn {
   border-bottom: 0px solid white !important;
 }
 
-.cell_0 {
+/* .cell_0 {
   border-top: solid 1px #666;
   margin-top: 0px;
-}
+} */
 
 #list_events .cell_0 {
   border: 0px;
@@ -1423,9 +1437,9 @@ span.nobold * {
 }
 
 .status_rounded_rectangles.forced_title {
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
+  width: 30px;
+  height: 15px;
+  border-radius: 4px;
 }
 
 .status_small_rectangles {
@@ -1827,8 +1841,9 @@ table[id^="service-table-"] {
   width: 100%;
 }
 
+table > tbody > tr:nth-child(even),
 table[id^="service-table-"] > tbody > tr:nth-child(even) {
-  background-color: #ebebeb;
+  background-color: #e5e9ed;
 }
 
 table[id^="service-table-"] a strong {
@@ -1838,4 +1853,13 @@ table[id^="service-table-"] a strong {
 .mt15px {
   margin-top: 15px;
   margin-bottom: 15px;
+}
+
+.ml5px {
+  margin-left: 5px;
+}
+
+.close-button-dialog {
+  padding: 2px 7px !important;
+  margin-right: 5px !important;
 }

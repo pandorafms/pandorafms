@@ -345,7 +345,7 @@ class Alerts
             );
             $row[__('Last Fired')] = sprintf(
                 $disabled_style,
-                ui_print_timestamp($alert['last_fired'], true)
+                human_time_comparation($alert['last_fired'], 'tiny')
             );
             $row[__('Status')] = ui_print_status_image($status, $title, true);
 

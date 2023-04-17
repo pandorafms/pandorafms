@@ -97,6 +97,7 @@ class Agents
                             $agent[6] = '<b class="ui-table-cell-label">'.__('Status').'</b>'.$agent[6];
                             $agent[7] = '<b class="ui-table-cell-label">'.__('Alerts').'</b>'.$agent[7];
                             $agent[8] = '<b class="ui-table-cell-label">'.__('Last contact').'</b>'.$agent[8];
+                            $agent[9] = '<b class="ui-table-cell-label">'.__('Last status change').'</b>'.$agent[9];
 
                             $agents[$key] = $agent;
                         }
@@ -406,12 +407,12 @@ class Agents
             $row[5] = $row[__('Status')] = '<span class="show_collapside align-none-10p">'.__('S.').' </span>'.$img_status;
             $row[6] = $row[__('Alerts')] = '<span class="show_collapside align-none-10p">&nbsp;&nbsp;'.__('A.').' </span>'.$img_alert;
 
-            $row[7] = $row[__('Modules')] = '<span class="show_collapside align-none-0p">'.__('Modules').' </span>'.'<span class="agents_tiny_stats">'.reporting_tiny_stats($agent, true, 'agent', '&nbsp;').' </span>';
+            $row[7] = $row[__('Modules')] = '<span class="agents_tiny_stats">'.reporting_tiny_stats($agent, true, 'agent', ':').' </span>';
 
             $last_time = time_w_fixed_tz($agent['ultimo_contacto']);
             $now = get_system_time();
             $diferencia = ($now - $last_time);
-            $time = ui_print_timestamp($last_time, true, ['style' => 'font-size: 12px; margin-left: 20px;', 'units' => 'tiny']);
+            $time = human_time_comparation($agent['ultimo_contacto'], 'tiny');
             $style = '';
             if ($diferencia > ($agent['intervalo'] * 2)) {
                 $row[8] = $row[__('Last contact')] = '<b><span class="color_ff0">'.$time.'</span></b>';
@@ -419,7 +420,10 @@ class Agents
                 $row[8] = $row[__('Last contact')] = $time;
             }
 
-            $row[8] = $row[__('Last contact')] = '<span class="show_collapside align-none-0p">'.__('Last contact').' </span>'.'<span class="agents_last_contact">'.$row[__('Last contact')].'</span>';
+            $row[8] = $row[__('Last contact')] = '<span class="agents_last_contact">'.$row[__('Last contact')].'</span>';
+
+            $last_status_change = human_time_comparation(agents_get_last_status_change($agent['id_agente']), 'tiny');
+            $row[9] = $row[__('Last status change')] = '<span class="agents_last_contact">'.$last_status_change.'</span>';
 
             if (!$ajax) {
                 unset($row[0]);
@@ -431,6 +435,7 @@ class Agents
                 unset($row[6]);
                 unset($row[7]);
                 unset($row[8]);
+                unset($row[9]);
             }
 
             $agents[$agent['id_agente']] = $row;
@@ -513,6 +518,7 @@ class Agents
 														\"<td class='cell_4'>\" + agent[6] + \"</td>\" +
 														\"<td class='cell_5'>\" + agent[7] + \"</td>\" +
 														\"<td class='cell_6'>\" + agent[8] + \"</td>\" +
+														\"<td class='cell_7'>\" + agent[9] + \"</td>\" +
 													\"</tr>\");
 												});
 

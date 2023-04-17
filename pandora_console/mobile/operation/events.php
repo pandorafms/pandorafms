@@ -326,10 +326,7 @@ class Events
                             $event['clean_tags'] = events_clean_tags(
                                 $event['tags']
                             );
-                            $event['timestamp'] = date(
-                                $system->getConfig('date_format'),
-                                $event['utimestamp']
-                            );
+                            $event['timestamp'] = human_time_comparation($event['utimestamp'], 'tiny');
                             if (empty($event['owner_user']) === true) {
                                 $event['owner_user'] = '<i>'.__('N/A').'</i>';
                             } else {
@@ -380,30 +377,30 @@ class Events
                             switch ($event['criticity']) {
                                 default:
                                 case 0:
-                                    $img_sev = 'images/status_sets/default/severity_maintenance.png';
+                                    $img_sev = 'images/status_sets/default/severity_maintenance_rounded.png';
                                 break;
                                 case 1:
-                                    $img_sev = 'images/status_sets/default/severity_informational.png';
+                                    $img_sev = 'images/status_sets/default/severity_informational_rounded.png';
                                 break;
 
                                 case 2:
-                                    $img_sev = 'images/status_sets/default/severity_normal.png';
+                                    $img_sev = 'images/status_sets/default/severity_normal_rounded.png';
                                 break;
 
                                 case 3:
-                                    $img_sev = 'images/status_sets/default/severity_warning.png';
+                                    $img_sev = 'images/status_sets/default/severity_warning_rounded.png';
                                 break;
 
                                 case 4:
-                                    $img_sev = 'images/status_sets/default/severity_critical.png';
+                                    $img_sev = 'images/status_sets/default/severity_critical_rounded.png';
                                 break;
 
                                 case 5:
-                                    $img_sev = 'images/status_sets/default/severity_minor.png';
+                                    $img_sev = 'images/status_sets/default/severity_minor_rounded.png';
                                 break;
 
                                 case 6:
-                                    $img_sev = 'images/status_sets/default/severity_major.png';
+                                    $img_sev = 'images/status_sets/default/severity_major_rounded.png';
                                 break;
                             }
 
@@ -412,9 +409,8 @@ class Events
                                 $img_sev,
                                 true,
                                 [
-                                    'class'  => 'image_status',
-                                    'width'  => 12,
-                                    'height' => 12,
+                                    'width'  => 30,
+                                    'height' => 15,
                                     'title'  => $event_criticity,
                                 ],
                                 false,
@@ -879,7 +875,7 @@ class Events
         $options['content_text'] .= '<div id="validate_button_fail" class="invisible center">
 			<h3 class="color_ff0">'.__('Fail validate').'</h3></div>';
 
-        $options['button_close'] = false;
+        $options['button_close'] = true;
 
         return $options;
     }
@@ -1209,8 +1205,6 @@ class Events
 								if (data.correct) {
 									event = data.event;
 									//Fill the dialog
-									$("#detail_event_dialog h1.dialog_title")
-										.html(event["evento"]);
 									$("#detail_event_dialog .cell_event_name")
 										.html(event["evento"]);
 									$("#detail_event_dialog .cell_event_id")
@@ -1256,6 +1250,12 @@ class Events
 									$("#validate_button_correct").hide();
                                     $.mobile.loading( "hide" );
 									$("#detail_event_dialog_hook").click();
+
+                                    $("#detail_event_dialog-button_close").html("X");
+                                    $("#detail_event_dialog-button_close").addClass("close-button-dialog");
+                                    $(".dialog_title").addClass("ml5px");
+                                    $(".dialog_title").parent().addClass("flex align-items-center space-between");
+                                    $(".dialog_title").parent().append($("#detail_event_dialog-button_close"));
 								}
 								else {
                                     $.mobile.loading( "hide" );

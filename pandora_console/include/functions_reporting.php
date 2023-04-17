@@ -13302,32 +13302,32 @@ function reporting_tiny_stats(
     if ($modern === true) {
         $out .= '<div id="bullets_modules">';
         if (isset($fired_count) && $fired_count > 0) {
-            $out .= '<div><div id="fired_count_'.$uniq_id.'" class="forced_title bullet_modules orange_background"></div>';
+            $out .= '<div><div id="fired_count_'.$uniq_id.'" class="forced_title color-orange"></div>';
             $out .= '<span  class="font_12pt">'.$fired_count.'</span></div>';
         }
 
         if (isset($critical_count) && $critical_count > 0) {
-            $out .= '<div><div id="critical_count_'.$uniq_id.'" class="forced_title bullet_modules red_background"></div>';
+            $out .= '<div><div id="critical_count_'.$uniq_id.'" class="forced_title color-red"></div>';
             $out .= '<span  class="font_12pt">'.$critical_count.'</span></div>';
         }
 
         if (isset($warning_count) && $warning_count > 0) {
-            $out .= '<div><div id="warning_count_'.$uniq_id.'" class="forced_title bullet_modules yellow_background"></div>';
+            $out .= '<div><div id="warning_count_'.$uniq_id.'" class="forced_title color-yellow"></div>';
             $out .= '<span  class="font_12pt">'.$warning_count.'</span></div>';
         }
 
         if (isset($unknown_count) && $unknown_count > 0) {
-            $out .= '<div><div id="unknown_count_'.$uniq_id.'" class="forced_title bullet_modules grey_background"></div>';
+            $out .= '<div><div id="unknown_count_'.$uniq_id.'" class="forced_title color-grey"></div>';
             $out .= '<span  class="font_12pt">'.$unknown_count.'</span></div>';
         }
 
         if (isset($not_init_count) && $not_init_count > 0) {
-            $out .= '<div><div id="not_init_count_'.$uniq_id.'" class="forced_title bullet_modules blue_background"></div>';
+            $out .= '<div><div id="not_init_count_'.$uniq_id.'" class="forced_title color-blue"></div>';
             $out .= '<span  class="font_12pt">'.$not_init_count.'</span></div>';
         }
 
         if (isset($normal_count) && $normal_count > 0) {
-            $out .= '<div><div id="normal_count_'.$uniq_id.'" class="forced_title bullet_modules green_background"></div>';
+            $out .= '<div><div id="normal_count_'.$uniq_id.'" class="forced_title color-green"></div>';
             $out .= '<span  class="font_12pt">'.$normal_count.'</span></div>';
         }
 
@@ -13336,27 +13336,27 @@ function reporting_tiny_stats(
         // Classic ones.
         $out .= '<b><span id="total_count_'.$uniq_id.'" class="forced_title"  >'.$total_count.'</span>';
         if (isset($fired_count) && $fired_count > 0) {
-            $out .= ' '.$separator.' <span class="orange forced_title" id="fired_count_'.$uniq_id.'"  >'.$fired_count.'</span>';
+            $out .= ' '.$separator.' <span class="color-orange forced_title" id="fired_count_'.$uniq_id.'"  >'.$fired_count.'</span>';
         }
 
         if (isset($critical_count) && $critical_count > 0) {
-            $out .= ' '.$separator.' <span class="red forced_title" id="critical_count_'.$uniq_id.'"  >'.$critical_count.'</span>';
+            $out .= ' '.$separator.' <span class="color-red forced_title" id="critical_count_'.$uniq_id.'"  >'.$critical_count.'</span>';
         }
 
         if (isset($warning_count) && $warning_count > 0) {
-            $out .= ' '.$separator.' <span class="yellow forced_title" id="warning_count_'.$uniq_id.'"  >'.$warning_count.'</span>';
+            $out .= ' '.$separator.' <span class="color-yellow forced_title" id="warning_count_'.$uniq_id.'"  >'.$warning_count.'</span>';
         }
 
         if (isset($unknown_count) && $unknown_count > 0) {
-            $out .= ' '.$separator.' <span class="grey forced_title" id="unknown_count_'.$uniq_id.'"  >'.$unknown_count.'</span>';
+            $out .= ' '.$separator.' <span class="color-grey forced_title" id="unknown_count_'.$uniq_id.'"  >'.$unknown_count.'</span>';
         }
 
         if (isset($not_init_count) && $not_init_count > 0) {
-            $out .= ' '.$separator.' <span class="blue forced_title" id="not_init_count_'.$uniq_id.'"  >'.$not_init_count.'</span>';
+            $out .= ' '.$separator.' <span class="color-blue forced_title" id="not_init_count_'.$uniq_id.'"  >'.$not_init_count.'</span>';
         }
 
         if (isset($normal_count) && $normal_count > 0) {
-            $out .= ' '.$separator.' <span class="green forced_title" id="normal_count_'.$uniq_id.'"  >'.$normal_count.'</span>';
+            $out .= ' '.$separator.' <span class="color-green forced_title" id="normal_count_'.$uniq_id.'"  >'.$normal_count.'</span>';
         }
 
         $out .= '</b>';

@@ -17,10 +17,12 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 # define default variables
 [ "$TZ" ] || TZ="Europe/Madrid"
 [ "$DBHOST" ] || DBHOST=127.0.0.1
+[ "$MYVER" ]  || MYVER=80
 [ "$DBNAME" ] || DBNAME=pandora
 [ "$DBUSER" ] || DBUSER=pandora
 [ "$DBPASS" ] || DBPASS=pandora
 [ "$DBPORT" ] || DBPORT=3306
+[ "$DBROOTUSER" ] || DBROOTUSER=root
 [ "$DBROOTPASS" ] || DBROOTPASS=pandora
 [ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
 [ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
@@ -178,7 +180,15 @@ execute_cmd "yum-config-manager --enable remi-php80" "Configuring PHP"
 
 # Install percona Database
 #[ -f /etc/my.cnf ] && rm -rf /etc/my.cnf
-execute_cmd "yum install -y Percona-Server-server-57" "Installing Percona Server"
+
+if [ "$MYVER" -eq '80' ] ; then
+    execute_cmd "percona-release setup ps80 -y" "Enabling mysql80 module"
+    execute_cmd "yum install -y percona-server-server percona-xtrabackup-80" "Installing Percona Server 80"
+fi
+
+if [ "$MYVER" -ne '80' ] ; then
+    execute_cmd "yum install -y Percona-Server-server-57 percona-xtrabackup-24" "Installing Percona Server 57"
+fi
 
 # Console dependencies
 console_dependencies=" \
@@ -352,21 +362,32 @@ EO_CONFIG_TMP
 
 #Configuring Database
 if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
-execute_cmd "systemctl start mysqld" "Starting database engine"
-export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
-echo """
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
-    UNINSTALL PLUGIN validate_password;
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DBROOTPASS');
-    """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"
-fi
-export MYSQL_PWD=$DBROOTPASS
-echo -en "${cyan}Creating Pandora FMS database...${reset}"
-echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
-check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
+    execute_cmd "systemctl start mysqld" "Starting database engine"
+    export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
+    if [ "$MYVER" -eq '80' ] ; then
+        echo """
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = 'Pandor4!';
+        UNINSTALL COMPONENT 'file://component_validate_password';
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = '$DBROOTPASS';
+        """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"
+    fi
 
-echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%' identified by \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST
-export MYSQL_PWD=$DBPASS
+    if [ "$MYVER" -ne '80' ] ; then
+        echo """
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('Pandor4!');
+        UNINSTALL PLUGIN validate_password;
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('$DBROOTPASS');
+        """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"fi
+    fi
+
+    export MYSQL_PWD=$DBROOTPASS
+    echo -en "${cyan}Creating Pandora FMS database...${reset}"
+    echo "create database $DBNAME" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
+    check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
+
+    echo "CREATE USER  \"$DBUSER\"@'%' IDENTIFIED BY \"$DBPASS\";" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
+    echo "ALTER USER \"$DBUSER\"@'%' IDENTIFIED WITH mysql_native_password BY \"$DBPASS\"" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST        
+    echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%'" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
 
 #Generating my.cnf
 cat > /etc/my.cnf << EO_CONFIG_F
@@ -405,6 +426,8 @@ query_cache_size = 64M
 query_cache_min_res_unit = 2k
 query_cache_limit = 256K
 
+#skip-log-bin
+
 sql_mode=""
 
 [mysqld_safe]
@@ -413,7 +436,17 @@ pid-file=/var/run/mysqld/mysqld.pid
 
 EO_CONFIG_F
 
-execute_cmd "systemctl restart mysqld" "Configuring database engine"
+    if [ "$MYVER" -eq '80' ] ; then
+        sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
+        sed -i -e "s/#skip-log-bin/skip-log-bin/g" /etc/my.cnf
+        sed -i -e "s/character-set-server=utf8/character-set-server=utf8mb4/g" /etc/my.cnf
+
+    fi
+
+    execute_cmd "systemctl restart mysqld" "Configuring database engine"
+    execute_cmd "systemctl enable mysqld --now" "Enabling Database service"
+fi
+export MYSQL_PWD=$DBPASS
 
 #Define packages
 #Define packages

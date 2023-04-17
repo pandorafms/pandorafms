@@ -420,7 +420,11 @@ ui_print_message_dialog(
                 '',
                 10,
                 20,
-                true
+                true,
+                false,
+                false,
+                '',
+                'small-input'
             );
 
             $table->data[0][2] = __('Begin time');
@@ -430,11 +434,15 @@ ui_print_message_dialog(
                 '',
                 10,
                 10,
-                true
+                true,
+                false,
+                false,
+                '',
+                'small-input'
             );
 
             $table->data[1][0] = __('Time range');
-            $table->data[1][1] = html_print_extended_select_for_time(
+            $table->data[1][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
                 'period',
                 $period,
                 '',
@@ -442,7 +450,7 @@ ui_print_message_dialog(
                 0,
                 7,
                 true
-            );
+            ).'</div>';
 
             $table->data[1][2] = __('Time compare (Separated)');
             $table->data[1][3] = html_print_checkbox_switch(

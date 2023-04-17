@@ -56,6 +56,9 @@ function get_wiz_class($str)
         case 'magextensions':
         return 'ManageExtensions';
 
+        case 'custom':
+        return 'Custom';
+
         default:
             // Main, show header.
             ui_print_standard_header(
@@ -171,6 +174,12 @@ if ($classname_selected === null) {
 
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
+
+        if (method_exists($obj, 'isEmpty') === true) {
+            if ($obj->isEmpty() === true) {
+                continue;
+            }
+        }
 
         $button = $obj->load();
 

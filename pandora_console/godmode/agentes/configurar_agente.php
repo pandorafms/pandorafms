@@ -1970,10 +1970,10 @@ if ($create_module) {
 
 // MODULE ENABLE/DISABLE
 // =====================.
-if ($enable_module) {
+/*
+    if ($enable_module) {
     $result = modules_change_disabled($enable_module, 0);
     $module_name = modules_get_agentmodule_name($enable_module);
-
     // Write for conf disable if remote_config.
     $configuration_data = enterprise_hook(
         'config_agents_get_module_from_conf',
@@ -1987,10 +1987,8 @@ if ($enable_module) {
 
     // Force Update when disabled for save disabled in conf.
     $old_configuration_data = $configuration_data;
-
     // Successfull action.
     $success_action = $result;
-
     $success_action = $result;
     if ($result === NOERR) {
         db_pandora_audit(
@@ -2003,9 +2001,11 @@ if ($enable_module) {
             'Fail to enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
-}
+    }
 
-if ($disable_module) {
+    if ($disable_module) {
+
+    hd($disable_module, true);
     $result = modules_change_disabled($disable_module, 1);
     $module_name = modules_get_agentmodule_name($disable_module);
 
@@ -2029,18 +2029,20 @@ if ($disable_module) {
 
 
     if ($result === NOERR) {
+        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
+        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
-}
-
+    }
+*/
 // Fix to stop the module from being added to the agent's conf
 // when an error occurred while updating or inserting. or enable disable module.
 if ($update_module || $create_module

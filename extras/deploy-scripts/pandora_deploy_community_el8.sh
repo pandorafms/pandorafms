@@ -19,7 +19,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ]       || TZ="Europe/Madrid"
-[ "$MYVER" ]    || MYVER=57
+[ "$MYVER" ]    || MYVER=80
 [ "$PHPVER" ]   || PHPVER=8
 [ "$DBHOST" ]   || DBHOST=127.0.0.1
 [ "$DBNAME" ]   || DBNAME=pandora

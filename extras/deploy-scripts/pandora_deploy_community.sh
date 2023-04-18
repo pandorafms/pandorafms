@@ -11,22 +11,25 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2022050901'
+S_VERSION='202304111'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ] || TZ="Europe/Madrid"
 [ "$DBHOST" ] || DBHOST=127.0.0.1
+[ "$MYVER" ]  || MYVER=80
 [ "$DBNAME" ] || DBNAME=pandora
 [ "$DBUSER" ] || DBUSER=pandora
 [ "$DBPASS" ] || DBPASS=pandora
 [ "$DBPORT" ] || DBPORT=3306
+[ "$DBROOTUSER" ] || DBROOTUSER=root
 [ "$DBROOTPASS" ] || DBROOTPASS=pandora
 [ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
 [ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
 [ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 [ "$PANDORA_BETA" ] || PANDORA_BETA=0
+[ "$PANDORA_LTS" ]  || PANDORA_LTS=1
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -130,7 +133,10 @@ check_root_permissions
 [ "$SKIP_PRECHECK" == 1 ] || check_pre_pandora
 
 #advicing BETA PROGRAM
-[ "$PANDORA_BETA" -ne '0' ] && echo -e "${red}BETA version enable using nightly PandoraFMS packages${reset}"
+INSTALLING_VER="${green}RRR version enable using RRR PandoraFMS packages${reset}"
+[ "$PANDORA_LTS" -ne '0' ] && INSTALLING_VER="${green}LTS version enable using LTS PandoraFMS packages${reset}"
+[ "$PANDORA_BETA" -ne '0' ] && INSTALLING_VER="${red}BETA version enable using nightly PandoraFMS packages${reset}"
+echo -e $INSTALLING_VER
 
 # Connectivity
 check_repo_connection
@@ -174,7 +180,15 @@ execute_cmd "yum-config-manager --enable remi-php80" "Configuring PHP"
 
 # Install percona Database
 #[ -f /etc/my.cnf ] && rm -rf /etc/my.cnf
-execute_cmd "yum install -y Percona-Server-server-57" "Installing Percona Server"
+
+if [ "$MYVER" -eq '80' ] ; then
+    execute_cmd "percona-release setup ps80 -y" "Enabling mysql80 module"
+    execute_cmd "yum install -y percona-server-server percona-xtrabackup-80" "Installing Percona Server 80"
+fi
+
+if [ "$MYVER" -ne '80' ] ; then
+    execute_cmd "yum install -y Percona-Server-server-57 percona-xtrabackup-24" "Installing Percona Server 57"
+fi
 
 # Console dependencies
 console_dependencies=" \
@@ -348,21 +362,32 @@ EO_CONFIG_TMP
 
 #Configuring Database
 if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
-execute_cmd "systemctl start mysqld" "Starting database engine"
-export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
-echo """
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
-    UNINSTALL PLUGIN validate_password;
-    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DBROOTPASS');
-    """ | mysql --connect-expired-password -uroot &>> "$LOGFILE"
-fi
-export MYSQL_PWD=$DBROOTPASS
-echo -en "${cyan}Creating Pandora FMS database...${reset}"
-echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
-check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
+    execute_cmd "systemctl start mysqld" "Starting database engine"
+    export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
+    if [ "$MYVER" -eq '80' ] ; then
+        echo """
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = 'Pandor4!';
+        UNINSTALL COMPONENT 'file://component_validate_password';
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = '$DBROOTPASS';
+        """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"
+    fi
 
-echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%' identified by \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST
-export MYSQL_PWD=$DBPASS
+    if [ "$MYVER" -ne '80' ] ; then
+        echo """
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('Pandor4!');
+        UNINSTALL PLUGIN validate_password;
+        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('$DBROOTPASS');
+        """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"fi
+    fi
+
+    export MYSQL_PWD=$DBROOTPASS
+    echo -en "${cyan}Creating Pandora FMS database...${reset}"
+    echo "create database $DBNAME" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
+    check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
+
+    echo "CREATE USER  \"$DBUSER\"@'%' IDENTIFIED BY \"$DBPASS\";" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
+    echo "ALTER USER \"$DBUSER\"@'%' IDENTIFIED WITH mysql_native_password BY \"$DBPASS\"" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST        
+    echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%'" | mysql -u$DBROOTUSER -P$DBPORT -h$DBHOST
 
 #Generating my.cnf
 cat > /etc/my.cnf << EO_CONFIG_F
@@ -401,6 +426,8 @@ query_cache_size = 64M
 query_cache_min_res_unit = 2k
 query_cache_limit = 256K
 
+#skip-log-bin
+
 sql_mode=""
 
 [mysqld_safe]
@@ -409,17 +436,35 @@ pid-file=/var/run/mysqld/mysqld.pid
 
 EO_CONFIG_F
 
-execute_cmd "systemctl restart mysqld" "Configuring database engine"
+    if [ "$MYVER" -eq '80' ] ; then
+        sed -i -e "/query_cache.*/ s/^#*/#/g" /etc/my.cnf
+        sed -i -e "s/#skip-log-bin/skip-log-bin/g" /etc/my.cnf
+        sed -i -e "s/character-set-server=utf8/character-set-server=utf8mb4/g" /etc/my.cnf
+
+    fi
+
+    execute_cmd "systemctl restart mysqld" "Configuring database engine"
+    execute_cmd "systemctl enable mysqld --now" "Enabling Database service"
+fi
+export MYSQL_PWD=$DBPASS
 
 #Define packages
-if [ "$PANDORA_BETA" -eq '0' ] ; then
+#Define packages
+if [ "$PANDORA_LTS" -eq '1' ] ; then
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_server-7.0NG.noarch.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_console-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+elif [ "$PANDORA_LTS" -ne '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm"
     [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
-elif [ "$PANDORA_BETA" -ne '0' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://pandorafms.com/community/community-console-rpm-beta/"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+fi
+
+# if beta is enable
+if [ "$PANDORA_BETA" -eq '1' ] ; then
+    PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
+    PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.noarch.rpm"
+    PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # Downloading Pandora Packages
@@ -525,6 +570,13 @@ sed -i -e "s/^dbuser.*/dbuser $DBUSER/g" $PANDORA_SERVER_CONF
 sed -i -e "s|^dbpass.*|dbpass $DBPASS|g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbport.*/dbport $DBPORT/g" $PANDORA_SERVER_CONF
 sed -i -e "s/^#.mssql_driver.*/mssql_driver $MS_ID/g" $PANDORA_SERVER_CONF
+
+#check fping
+fping_bin=$(which fping)
+execute_cmd "[ $fping_bin ]" "Check fping location: $fping_bin"
+if [ "$fping_bin" != "" ]; then
+  sed -i -e "s|^fping.*|fping $fping_bin|g" $PANDORA_SERVER_CONF
+fi
 
 # Enable agent remote config
 sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF 

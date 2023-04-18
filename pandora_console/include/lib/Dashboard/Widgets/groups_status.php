@@ -302,9 +302,16 @@ class GroupsStatusWidget extends Widget
         );
         $data .= '</span>';
 
-        $url = $config['homeurl'];
-        $url .= 'index.php?sec=estado&sec2=operation/agentes/estado_agente';
-        $url .= '&refr=60&group_id='.$this->values['groupId'];
+        if (is_metaconsole() === true) {
+            $url = $config['homeurl'];
+            $url .= 'index.php?sec=monitoring&sec2=operation/tree&refr=0&tab=group&pure='.$config['pure'];
+            $url .= '&refr=60&searchGroup='.groups_get_name($this->values['groupId']);
+        } else {
+            $url = $config['homeurl'];
+            $url .= 'index.php?sec=estado&sec2=operation/agentes/estado_agente';
+            $url .= '&refr=60&group_id='.$this->values['groupId'];
+        }
+
         $data .= '<h1>';
         $data .= '<a href="'.$url.'">';
         $data .= groups_get_name($this->values['groupId']);

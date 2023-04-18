@@ -19,7 +19,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ]       || TZ="Europe/Madrid"
-[ "$MYVER" ]    || MYVER=57
+[ "$MYVER" ]    || MYVER=80
 [ "$PHPVER" ]   || PHPVER=8
 [ "$DBHOST" ]   || DBHOST=127.0.0.1
 [ "$DBNAME" ]   || DBNAME=pandora
@@ -334,8 +334,6 @@ console_dependencies=" \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
 execute_cmd "dnf install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
-
-
 # Server dependencies
 server_dependencies=" \
     perl \
@@ -408,6 +406,7 @@ MS_ID=$(head -1 /etc/odbcinst.ini | tr -d '[]') &>> "$LOGFILE"
 setenforce 0  &>> "$LOGFILE"
 sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/selinux/config  &>> "$LOGFILE"
 systemctl disable firewalld --now &>> "$LOGFILE"
+
 
 # Adding standar cnf for initial setup.
 cat > /etc/my.cnf << EO_CONFIG_TMP
@@ -632,6 +631,13 @@ sed -i -e "s/^dbuser.*/dbuser $DBUSER/g" $PANDORA_SERVER_CONF
 sed -i -e "s|^dbpass.*|dbpass $DBPASS|g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbport.*/dbport $DBPORT/g" $PANDORA_SERVER_CONF
 sed -i -e "s/^#.mssql_driver.*/mssql_driver $MS_ID/g" $PANDORA_SERVER_CONF
+
+#check fping
+fping_bin=$(which fping)
+execute_cmd "[ $fping_bin ]" "Check fping location: $fping_bin"
+if [ "$fping_bin" != "" ]; then
+  sed -i -e "s|^fping.*|fping $fping_bin|g" $PANDORA_SERVER_CONF
+fi
 
 # Enable agent remote config
 sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF 

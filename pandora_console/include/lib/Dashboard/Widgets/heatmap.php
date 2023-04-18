@@ -264,7 +264,7 @@ class HeatmapWidget extends Widget
         // Filters.
         $inputs[] = [
             'label'     => __('Groups'),
-            'style'     => ($values['type'] === '0') ? '' : 'display:none',
+            'style'     => ($values['type'] === '0' || $values['type'] === '3') ? '' : 'display:none',
             'id'        => 'li_groups',
             'arguments' => [
                 'type'           => 'select_groups',
@@ -363,6 +363,7 @@ class HeatmapWidget extends Widget
             break;
 
             case 0:
+            case 3:
                 $values['groups'] = \get_parameter('groups', 0);
             break;
 

@@ -133,6 +133,11 @@ class Tree
 
     protected function getEmptyModuleFilterStatus()
     {
+        if ($this->filter['statusModule'] === 'fired') {
+            $this->filter['statusModuleOriginal'] = $this->filter['statusModule'];
+            $this->filter['statusModule'] = -1;
+        }
+
         return (
             !isset($this->filter['statusModule']) ||
             $this->filter['statusModule'] == -1
@@ -219,6 +224,10 @@ class Tree
                 $agent_status_filter = ' AND (ta.critical_count > 0
 											OR ta.warning_count > 0) ';
             break;
+
+            case AGENT_STATUS_ALERT_FIRED:
+                $agent_status_filter = ' AND ta.fired_count > 0 ';
+            break;
         }
 
         return $agent_status_filter;
@@ -284,6 +293,11 @@ class Tree
 
     protected function getModuleStatusFilter()
     {
+        if ($this->filter['statusModule'] === 'fired') {
+            $this->filter['statusModuleOriginal'] = $this->filter['statusModule'];
+            $this->filter['statusModule'] = -1;
+        }
+
         $show_init_condition = ($this->filter['show_not_init_agents']) ? '' : ' AND ta.notinit_count <> ta.total_count';
 
         if ($this->getEmptyModuleFilterStatus()) {
@@ -292,6 +306,10 @@ class Tree
 
         if ((int) $this->filter['statusModule'] === 6) {
             return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)';
+        }
+
+        if ($this->filter['statusModule'] === 'fired') {
+            return ' AND ta.fired_count > 0';
         }
 
         $field_filter = modules_get_counter_by_states($this->filter['statusModule']);
@@ -333,6 +351,11 @@ class Tree
 
     protected function getModuleStatusFilterFromTestado($state=false, $without_ands=false)
     {
+        if ($this->filter['statusModule'] === 'fired') {
+            $this->filter['statusModuleOriginal'] = $this->filter['statusModule'];
+            $this->filter['statusModule'] = -1;
+        }
+
         $selected_status = ($state !== false && $state !== self::TV_DEFAULT_AGENT_STATUS) ? $state : $this->filter['statusModule'];
 
         $filter = [modules_get_state_condition($selected_status)];
@@ -811,6 +834,11 @@ class Tree
 
     protected function processAgent(&$agent, $server=false)
     {
+        if ($this->filter['statusModule'] === 'fired') {
+            $this->filter['statusModuleOriginal'] = $this->filter['statusModule'];
+            $this->filter['statusModule'] = -1;
+        }
+
         global $config;
 
         $agent['type'] = 'agent';

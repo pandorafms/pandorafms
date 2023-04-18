@@ -344,7 +344,7 @@ if ($new_user === true && (bool) $config['admin_can_add_user'] === true) {
         $user_info['metaconsole_access_node'] = 0;
     }
 
-    if ((bool) $config['ehorus_user_level_conf'] === true) {
+    if (isset($config['ehorus_user_level_conf']) === true && (bool) $config['ehorus_user_level_conf'] === true) {
         $user_info['ehorus_user_level_user'] = '';
         $user_info['ehorus_user_level_pass'] = '';
         $user_info['ehorus_user_level_enabled'] = true;
@@ -1247,7 +1247,7 @@ $allowedIP .= ui_print_help_tip(__('Add the source IPs that will allow console a
 $allowedIP .= html_print_checkbox_switch(
     'allowed_ip_active',
     0,
-    $user_info['allowed_ip_active'],
+    ($user_info['allowed_ip_active'] ?? 0),
     true
 );
 $allowedIP .= '</p>';
@@ -1255,7 +1255,7 @@ $allowedIP .= html_print_textarea(
     'allowed_ip_list',
     2,
     65,
-    $user_info['allowed_ip_list'],
+    ($user_info['allowed_ip_list'] ?? 0),
     (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
     true
 );
@@ -1323,20 +1323,6 @@ $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home
     true
 ).'</p>';
 
-/*
-    $home_screen .= html_print_select(
-    $values,
-    'section',
-    io_safe_output($user_info['section']),
-    'show_data_section();',
-    '',
-    -1,
-    true,
-    false,
-    false
-    ).'</div>';
-*/
-
 $dashboards = Manager::getDashboards(
     -1,
     -1,
@@ -1357,7 +1343,6 @@ if ($dashboards === false) {
 $home_screen .= '<div id="show_db" style="display: none; width: 100%;">';
 $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
 $home_screen .= '</div>';
-
 
 $layouts = visual_map_get_user_layouts($config['id_user'], true);
 $layouts_aux = [];
@@ -1459,7 +1444,7 @@ $default_event_filter = '<div class="label_select"><p class="edit_user_labels">'
 $default_event_filter .= html_print_select(
     $event_filter,
     'default_event_filter',
-    $user_info['default_event_filter'],
+    ($user_info['default_event_filter'] ?? 0),
     '',
     '',
     __('None'),
@@ -1661,14 +1646,12 @@ if ((bool) $config['admin_can_add_user'] === true) {
 }
 
 echo '</div>';
-if ($new_user === true) {
-    html_print_input_hidden('json_profile', $json_profile);
-}
+html_print_input_hidden('json_profile', $json_profile);
 
 echo '</form>';
 
 // User Profile definition table. (Only where user is not creating).
-if ($new_user === false && ((bool) check_acl($config['id_user'], 0, 'UM') === true)) {
+if ((bool) check_acl($config['id_user'], 0, 'UM') === true) {
     profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
 }
 
@@ -1720,7 +1703,7 @@ $delete_image = html_print_input_image(
     true,
     [
         'onclick' => 'delete_profile(event, this)',
-        'class'   => 'invert_filter',
+        'class'   => 'invert_filter main_menu_icon',
     ]
 );
 
@@ -1891,7 +1874,7 @@ if (is_metaconsole() === false) {
 
                 profile_text = `<a href="index.php?sec2=godmode/users/configure_profile&id=${profile}">${profile_text}</a>`;
                 group_img = `<img id="img_group_${aux}" src="" data-title="${group_text}" data-use_title_for_force_title="1" class="invert_filter main_menu_icon bot forced_title" alt="${group_text}"/>`;
-                group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img}${group_text}</a>`;
+                group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img} ${group_text}</a>`;
 
                 $('#table_profiles tr:last').before(
                     `<tr>

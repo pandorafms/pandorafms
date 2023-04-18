@@ -331,16 +331,7 @@ if ((bool) $has_remote_conf) {
     }
 }
 
-// $table_agent_count_modules .= ui_print_help_tip(__('Agent statuses are re-calculated by the server, they are not  shown in real time.'), true);
-/*
-    $table_agent = html_print_div(
-    [
-        'class'   => 'agent_details_header',
-        'content' => $table_agent_header,
-    ],
-    true
-    );
-*/
+
 $table_agent = $agentStatusHeader.'
     <div class="agent_details_content">
         <div class="agent_details_graph">
@@ -350,26 +341,6 @@ $table_agent = $agentStatusHeader.'
             '.$alive_animation.html_print_table($table_status, true).'
         </div>
     </div>';
-
-
-    /*
-        $table_agent = '
-        <div class="agent_details_header">
-        '.$table_agent_header.'
-        </div>
-        <div class="agent_details_content">
-        <div class="agent_details_graph">
-            '.$table_agent_graph.'
-            <div class="agent_details_bullets">
-                '.$table_agent_count_modules.'
-            </div>
-        </div>
-        <div class="agent_details_info">
-            '.$alive_animation.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
-        </div>
-        </div>';
-
-    */
 
 
 /*

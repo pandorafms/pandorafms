@@ -17,7 +17,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='202304111'
+S_VERSION='202304181'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 
@@ -274,6 +274,7 @@ server_dependencies=" \
     cron \
 	libgeo-ip-perl \
     arping \
+    snmp-mibs-downloader \
 	openjdk-8-jdk "
 execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 

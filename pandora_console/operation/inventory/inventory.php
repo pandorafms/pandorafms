@@ -1158,29 +1158,29 @@ if ($inventory_module !== 'basic') {
                     $id_table = 'id_'.$row['id_module_inventory'];
                 }
 
-                $table = ui_print_datatable(
-                    [
-                        'id'                  => $id_table,
-                        'class'               => 'info_table w100p',
-                        'style'               => 'width: 99%',
-                        'columns'             => $columns,
-                        'column_names'        => $columns,
-                        'no_sortable_columns' => [],
-                        'data_element'        => $data,
-                        'searching'           => true,
-                        'dom_elements'        => 'ftip',
-                        'order'               => [
-                            'field'     => $columns[0],
-                            'direction' => 'asc',
-                        ],
-                        'zeroRecords'         => __('No inventory found'),
-                        'emptyTable'          => __('No inventory found'),
-                        'return'              => true,
-                        'no_sortable_columns' => [],
-                    ]
-                );
-
                 if ($count_rows > 1) {
+                    $table = ui_print_datatable(
+                        [
+                            'id'                  => $id_table,
+                            'class'               => 'info_table w100p',
+                            'style'               => 'width: 99%',
+                            'columns'             => $columns,
+                            'column_names'        => $columns,
+                            'no_sortable_columns' => [],
+                            'data_element'        => $data,
+                            'searching'           => true,
+                            'dom_elements'        => 'ftip',
+                            'order'               => [
+                                'field'     => $columns[0],
+                                'direction' => 'asc',
+                            ],
+                            'zeroRecords'         => __('No inventory found'),
+                            'emptyTable'          => __('No inventory found'),
+                            'return'              => true,
+                            'no_sortable_columns' => [],
+                        ]
+                    );
+
                     ui_toggle(
                         $table,
                         array_shift($module_rows)['name'],
@@ -1190,7 +1190,25 @@ if ($inventory_module !== 'basic') {
                         false
                     );
                 } else {
-                    echo $table;
+                    ui_print_datatable(
+                        [
+                            'id'                          => $id_table,
+                            'class'                       => 'info_table w100p',
+                            'style'                       => 'width: 99%',
+                            'columns'                     => $columns,
+                            'column_names'                => $columns,
+                            'no_sortable_columns'         => [],
+                            'data_element'                => $data,
+                            'searching'                   => true,
+                            'order'                       => [
+                                'field'     => $columns[0],
+                                'direction' => 'asc',
+                            ],
+                            'zeroRecords'                 => __('No inventory found'),
+                            'emptyTable'                  => __('No inventory found'),
+                            'print_pagination_search_csv' => true,
+                        ]
+                    );
 
                     html_print_action_buttons(
                         '',

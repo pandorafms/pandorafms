@@ -555,13 +555,13 @@ if (is_ajax() === true) {
                                 $last_contact_value = ui_print_timestamp($last_contact, true);
                             } else {
                                 $title = date($config['date_format'], strtotime($tmp->timestamp));
-                                $value = human_time_comparation(strtotime($tmp->timestamp), 'large');
+                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
                                 $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                             }
                         } else {
                             date_default_timezone_set($user_timezone);
                             $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = human_time_comparation(strtotime($tmp->timestamp), 'large');
+                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
                             $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
 

@@ -3878,7 +3878,7 @@ function ui_print_datatable(array $parameters)
         $export_columns = ',columns: \'th:not(:last-child)\'';
     }
 
-    if (isset($parameters['data_element']) === false) {
+    if (isset($parameters['data_element']) === false || isset($parameters['print_pagination_search_csv'])) {
         if (isset($parameters['ajax_url'])) {
             $type_data = 'ajax: {
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",

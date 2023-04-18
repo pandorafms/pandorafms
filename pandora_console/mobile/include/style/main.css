@@ -56,8 +56,18 @@ body {
   font-family: "Lato" !important;
 }
 
+a {
+  text-decoration: underline !important;
+  text-decoration-color: var(--muted-color) !important;
+  color: var(--primary-color);
+}
+
 .small {
   font-size: 10px !important;
+}
+
+.font-10pt {
+  font-size: 10pt !important;
 }
 
 .center {
@@ -488,6 +498,7 @@ table.event_details td.cell_event_name {
 
 @media screen and (max-width: 35em) {
   /* Hide the title of event name */
+  #last_agent_events tbody tr.events td.cell_0 b.ui-table-cell-label,
   #list_events tbody tr.events td.cell_0 b.ui-table-cell-label {
     display: none;
   }
@@ -520,26 +531,36 @@ table.event_details td.cell_event_name {
   font-weight: bold;
 }
 
+.agents_tiny_stats span {
+  background-color: transparent !important;
+}
+
+.agents_tiny_stats .red,
 .color-red {
   color: #c00 !important;
 }
 
+.agents_tiny_stats .green,
 .color-green {
   color: #5a8629 !important;
 }
 
+.agents_tiny_stats .orange,
 .color-orange {
   color: #fd7304 !important;
 }
 
+.agents_tiny_stats .yellow,
 .color-yellow {
   color: #f3c500 !important;
 }
 
+.agents_tiny_stats .grey,
 .color-grey {
   color: #808080 !important;
 }
 
+.agents_tiny_stats .blue,
 .color-blue {
   color: #4a83f3 !important;
 }
@@ -903,6 +924,7 @@ table.event_details td.cell_event_name {
     font-size: 12px !important;
   }
 
+  table#list_module_data tr,
   table#list_servers tr,
   table[id^="service-table-"] tr {
     display: flex;
@@ -911,6 +933,7 @@ table.event_details td.cell_event_name {
     align-items: center;
   }
 
+  table#list_module_data b.ui-table-cell-label,
   table#list_servers b.ui-table-cell-label,
   table[id^="service-table-"] b.ui-table-cell-label {
     display: none;
@@ -2114,33 +2137,65 @@ table#last-activity > tbody > tr > td > b {
 }
 
 /* Events table */
+table#last_agent_events > tbody > tr.events > td.cell_0,
 table#list_events > tbody > tr.events > td.cell_0 {
   border-top-left-radius: 8px !important;
   border-top-right-radius: 8px !important;
 }
 
+table#last_agent_events > tbody > tr.events > td.vertical_middle,
 table#list_events > tbody > tr.events > td.vertical_middle {
   border-bottom-left-radius: 8px !important;
   border-bottom-right-radius: 8px !important;
   color: #4a4a4a;
 }
 
+table#last_agent_events > tbody > tr.events,
 table#list_events > tbody > tr.events {
   background-color: var(--secondary-color) !important;
 }
 
+table#last_agent_events > tbody > tr.events.datos_green > td,
 table#list_events > tbody > tr.events.datos_green > td {
   background-color: #81b92e40;
 }
+table#last_agent_events > tbody > tr.events.datos_red > td,
 table#list_events > tbody > tr.events.datos_red > td {
   background-color: #ed474a40;
 }
+table#last_agent_events > tbody > tr.events.datos_yellow > td,
 table#list_events > tbody > tr.events.datos_yellow > td {
   background-color: #fcab1040;
 }
+table#last_agent_events > tbody > tr.events.datos_blue > td,
 table#list_events > tbody > tr.events.datos_blue > td {
   background-color: #25a8ff40;
 }
+table#last_agent_events > tbody > tr.events.datos_grey > td,
 table#list_events > tbody > tr.events.datos_grey > td {
   background-color: #adadad40;
+}
+
+table#list_module_data > thead > tr > th {
+  display: initial;
+}
+
+h4[id^="service-"].ui-collapsible-heading
+  > a
+  > span.ui-icon.ui-collapsible-icon-right {
+  margin-top: 2px !important;
+}
+
+h4[id^="service-"].ui-collapsible-heading
+  > a.ui-collapsible-heading-toggle.ui-button.ui-button-a {
+  padding-left: 10px !important;
+}
+
+table[id^="service-table-"] {
+  padding: 0px !important;
+}
+
+table[id^="service-table-"] > tbody > tr {
+  padding: 0px 5px !important;
+  height: 48px !important;
 }

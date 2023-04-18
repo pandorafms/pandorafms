@@ -171,7 +171,8 @@ class Services
                 '
             );
             $ui->contentAddHtml('<div class="border-collapsible" data-collapsed-icon="group_'.$count.'" data-expanded-icon="group_'.$count.'" data-iconpos="right" data-role="collapsible" data-collapsed="true" data-content-theme="d">');
-            $ui->contentAddHtml('<h4 id="service-'.$service['id'].'" onclick="loadTable(\''.$service['id'].'\')">'.$group_icon.'&nbsp;'.$service['description'].'</h4>');
+            $arrow = '<span class="ui-icon ui-icon-arrow-d"></span>';
+            $ui->contentAddHtml('<h4 id="service-'.$service['id'].'" onclick="loadTable(\''.$service['id'].'\')">'.$arrow.$group_icon.'&nbsp;'.$service['description'].'</h4>');
 
             $spinner = '
                 <div class="spinner mt15px" id="spinner-'.$service['id'].'">
@@ -236,7 +237,6 @@ class Services
                                 }
                             }
 
-                            $name .= '<strong>';
                             if (is_metaconsole()
                                 && ((int) $item->id_server_meta()) !== 0
                             ) {
@@ -244,7 +244,6 @@ class Services
                             }
 
                             $name .= $item->agent()->alias();
-                            $name .= '</strong>';
                             $name .= '</a>';
 
                             if (((bool) $item->agent()->disabled()) === true) {
@@ -303,7 +302,6 @@ class Services
                                 }
                             }
 
-                            $name .= '<strong>';
                             if (is_metaconsole()
                                 && ((int) $item->id_server_meta()) !== 0
                             ) {
@@ -311,7 +309,6 @@ class Services
                             }
 
                             $name .= $item->service()->name();
-                            $name .= '</strong>';
                             $name .= '</a>';
 
                             if (((bool) $item->service()->disabled()) === true) {
@@ -340,7 +337,6 @@ class Services
                                 'index.php?sec=eventos&sec2=operation/events/events&event_view_hr=8&severity=4&id_agent='.$item->module()->id_agente().'&id_agent_module='.$item->id_agente_modulo()
                             );
                             $name = '<a target="_blank" href="'.$url.'">';
-                            $name .= '<strong>';
 
                             if (((bool) $item->module()->disabled()) === true) {
                                 $disabled_element = true;
@@ -367,7 +363,6 @@ class Services
                                 ).'</em>';
                             }
 
-                            $name .= '</strong>';
                             $name .= '</a>';
                         }
                     break;
@@ -527,6 +522,14 @@ class Services
                             $('h4#service-'+id+' + div.ui-collapsible-content').html(data);
                         },
                         \"html\");
+
+                    var arrow = document.querySelector('h4#service-'+id+' > a > span.ui-icon.ui-icon-arrow-d');
+                    
+                    if (arrow.style.transform == 'rotate(180deg)') {
+                        arrow.style.transform = '';
+                    } else {
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
 				}
 			</script>"
         );

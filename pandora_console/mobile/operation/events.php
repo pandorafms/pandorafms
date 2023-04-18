@@ -1201,7 +1201,7 @@ class Events
 						data: postvars,
 						success:
 							function (data) {
-								if (data.correct) {
+                                if (data.correct) {
 									event = data.event;
 									//Fill the dialog
 									$("#detail_event_dialog .cell_event_name")

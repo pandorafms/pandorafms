@@ -853,7 +853,7 @@ class Modules
                         '.__('Graph').'
                     </a>
 
-                    <a id="historical-option" href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow">
+                    <a id="historical-option" href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b"  data-transition="flow">
                         '.__('Historical data').'
                     </a>
                 </div>
@@ -927,11 +927,14 @@ class Modules
                     var historical = '';
                     if (serverId === 'node') {
                         graph = 'index.php?page=module_graph&id='+moduleId+'&id_agent='+agentId;
+                        historical = 'index.php?page=module_data&module_id='+moduleId;
                     } else {
                         graph = 'index.php?page=module_graph&id='+moduleId+'&id_agent='+agentId+'&server_id='+serverId;
+                        historical = 'index.php?page=module_data&module_id='+moduleId;
                     }
                     
                     $('#graph-option').attr('href', graph);
+                    $('#historical-option').attr('href', historical);
 
                     $('#module-dialog-button').click();
                 }

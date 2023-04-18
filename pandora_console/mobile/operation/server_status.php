@@ -354,12 +354,6 @@ class ServerStatus
             }
         }
 
-        echo "<script>
-            window.addEventListener('DOMContentLoaded', (event) => {
-                document.querySelector('table#list_servers span.data a').href = '#';
-            });
-        </script>";
-
         return [
             'servers' => $servers,
             'total'   => $total,
@@ -386,7 +380,20 @@ class ServerStatus
                 $table->id = 'list_servers';
                 $table->importFromHash($listServers['servers']);
 
+                $ui->contentAddHtml('<div class="white-card">');
                 $ui->contentAddHtml($table->getHTML());
+
+                if ($this->all_servers === true) {
+                    if ($system->getPageSize() < $listServers['total']) {
+                        $ui->contentAddHtml(
+                            '<br><div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
+                        );
+
+                        $this->addJavascriptAddBottom();
+                    }
+                }
+
+                $ui->contentAddHtml('</div>');
             } else {
                 $table = new Table();
                 $table->id = 'list_servers_status';
@@ -396,16 +403,6 @@ class ServerStatus
                 $html = $table->getHTML();
 
                 return $html;
-            }
-
-            if ($this->all_servers === true) {
-                if ($system->getPageSize() < $listServers['total']) {
-                    $ui->contentAddHtml(
-                        '<div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
-                    );
-
-                    $this->addJavascriptAddBottom();
-                }
             }
         }
 
@@ -454,12 +451,8 @@ class ServerStatus
 										load_more_rows = 1;
 										refresh_link_listener_list_servers()
 									}
-									
-									
 								},
 								\"json\");
-
-                            
 						}
 					}
 				}
@@ -473,6 +466,10 @@ class ServerStatus
 					$(window).on(\"touchmove\", function(event) {
 						custom_scroll();
 					});
+
+                    window.addEventListener('DOMContentLoaded', (event) => {
+                        document.querySelector('table#list_servers span.data a').href = '#';
+                    });
 				});
 			</script>"
         );

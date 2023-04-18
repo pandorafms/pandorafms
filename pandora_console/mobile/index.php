@@ -45,6 +45,7 @@ require_once 'operation/visualmaps.php';
 require_once 'operation/visualmap.php';
 require_once 'operation/server_status.php';
 require_once 'operation/services.php';
+require_once 'operation/module_data.php';
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 $enterpriseHook = enterprise_include('mobile/operation/home.php');
 
@@ -187,6 +188,11 @@ switch ($action) {
             case 'services':
                 $services = new Services();
                 $services->ajax($parameter2);
+            break;
+
+            case 'module_data':
+                $module_data = new ModuleData();
+                $module_data->ajax($parameter2);
             break;
 
             default:
@@ -428,6 +434,11 @@ switch ($action) {
             case 'services':
                 $services = new Services();
                 $services->show();
+            break;
+
+            case 'module_data':
+                $module_data = new ModuleData();
+                $module_data->show();
             break;
         }
     break;

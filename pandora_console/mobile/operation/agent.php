@@ -27,6 +27,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Event;
+
 // Begin.
 require_once '../include/functions_users.php';
 
@@ -130,8 +132,12 @@ class Agent
     {
         $ui = Ui::getInstance();
         $system = System::getInstance();
+        $eventObj = new Events;
 
         $ui->createPage();
+
+        $options = $eventObj->getEventDialogOptions();
+        $ui->addDialog($options);
 
         if ($this->id != 0) {
             $agent_alias = (string) $this->agent['alias'];

@@ -273,6 +273,10 @@ li#div-textarea label {
   width: 100%;
 }
 
+.container-center:has(div.parent_graph) {
+  display: initial;
+}
+
 .widget-groups-status {
   display: flex;
   flex-direction: row;

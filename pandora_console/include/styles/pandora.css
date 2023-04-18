@@ -11896,6 +11896,16 @@ td[id^="table_info_box"] a {
   border-bottom: 1px solid #dedede !important;
 }
 
+div.parent_graph > p.legend_background > table > tbody {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+div.parent_graph > p.legend_background > table > tbody > tr {
+  margin-right: 20px;
+}
+
 .small-input-select2 > div > input,
 .small-input-select2 > div > select,
 .small-input {

@@ -571,6 +571,13 @@ sed -i -e "s|^dbpass.*|dbpass $DBPASS|g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbport.*/dbport $DBPORT/g" $PANDORA_SERVER_CONF
 sed -i -e "s/^#.mssql_driver.*/mssql_driver $MS_ID/g" $PANDORA_SERVER_CONF
 
+#check fping
+fping_bin=$(which fping)
+execute_cmd "[ $fping_bin ]" "Check fping location: $fping_bin"
+if [ "$fping_bin" != "" ]; then
+  sed -i -e "s|^fping.*|fping $fping_bin|g" $PANDORA_SERVER_CONF
+fi
+
 # Enable agent remote config
 sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF 
 

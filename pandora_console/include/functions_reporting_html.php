@@ -2714,7 +2714,7 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             if ($item['show_summary_group']) {
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp']).'</font>';
             } else {
-                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp']).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
             }
 
             if ((bool) $item['show_custom_data'] === true) {

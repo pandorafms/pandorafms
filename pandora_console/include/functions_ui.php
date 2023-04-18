@@ -7436,13 +7436,20 @@ function ui_get_inventory_module_add_form(
                 0,
                 '',
                 __('Select inventory module'),
-                0,
+                '',
                 true,
                 false,
                 false,
                 'w100p',
                 false,
-                'width: 100%'
+                'width: 100%',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                true
             )
         );
     } else {

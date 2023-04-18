@@ -163,7 +163,12 @@ class DiscoveryTaskList extends HTML
         }
 
         if (is_reporting_console_node() === false) {
-            $ret2 = $this->showList();
+            $ret2 = $this->showList(__('Host & devices tasks'), [0, 1]);
+            if (enterprise_installed()) {
+                $ret2 .= $this->showList(__('Applications tasks'), [3, 4, 5, 10, 11, 12], 'app');
+                $ret2 .= $this->showList(__('Cloud tasks'), [6, 7, 8, 13, 14], 'cloud');
+                $ret2 .= $this->showList(__('Custom tasks'), [-1], 'custom');
+            }
         }
 
         if ($ret === false && $ret2 === false) {
@@ -505,9 +510,13 @@ class DiscoveryTaskList extends HTML
     /**
      * Show complete list of running tasks.
      *
+     * @param string  $titleTable        Title of section.
+     * @param array   $filter            Ids array from apps for filter.
+     * @param boolean $extension_section Extension to add in table.
+     *
      * @return boolean Success or not.
      */
-    public function showList()
+    public function showList($titleTable, $filter, $extension_section=false)
     {
         global $config;
 
@@ -531,7 +540,16 @@ class DiscoveryTaskList extends HTML
             include_once $config['homedir'].'/include/functions_network_profiles.php';
 
             if (users_is_admin()) {
-                $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
+                $recon_tasks = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
+                        FROM trecon_task tasks
+                        LEFT JOIN tdiscovery_apps apps ON tasks.id_app = apps.id_app
+                        WHERE type IN (%s) OR section = "%s"',
+                        implode(',', $filter),
+                        $extension_section
+                    )
+                );
             } else {
                 $user_groups = implode(
                     ',',
@@ -539,9 +557,14 @@ class DiscoveryTaskList extends HTML
                 );
                 $recon_tasks = db_get_all_rows_sql(
                     sprintf(
-                        'SELECT * FROM trecon_task
-                        WHERE id_group IN (%s)',
-                        $user_groups
+                        'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
+                        FROM trecon_task
+                        LEFT JOIN tdiscovery_apps apps ON tasks.id_app = apps.id_app
+                        WHERE id_group IN (%s) AND
+                        (type IN (%s) OR section = "%s")',
+                        $user_groups,
+                        implode(',', $filter),
+                        $extension_section
                     )
                 );
             }
@@ -843,6 +866,19 @@ class DiscoveryTaskList extends HTML
                         $data[6] .= __('Discovery.App.Microsoft SQL Server');
                     break;
 
+                    case DISCOVERY_EXTENSION:
+                        // Discovery NetScan.
+                        $data[6] = html_print_image(
+                            'images/cluster@os.svg',
+                            true,
+                            [
+                                'title' => $task['short_name'],
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= $task['short_name'];
+                    break;
+
                     case DISCOVERY_HOSTDEVICES:
                     default:
                         if ($task['id_recon_script'] == 0) {
@@ -999,13 +1035,24 @@ class DiscoveryTaskList extends HTML
                                 ).'</a>';
                             }
                         } else {
+                            $url_edit = sprintf(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
+                                $this->getTargetWiz($task, $recon_script_data),
+                                $task['id_rt']
+                            );
+
+                            if ((int) $task['type'] === DISCOVERY_EXTENSION) {
+                                $url_edit = sprintf(
+                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=%s&mode=%s&id_task=%s',
+                                    $task['section'],
+                                    $task['short_name'],
+                                    $task['id_rt'],
+                                );
+                            }
+
                             // Check if is a H&D, Cloud or Application or IPAM.
                             $data[9] .= '<a href="'.ui_get_full_url(
-                                sprintf(
-                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
-                                    $this->getTargetWiz($task, $recon_script_data),
-                                    $task['id_rt']
-                                )
+                                $url_edit
                             ).'">'.html_print_image(
                                 'images/edit.svg',
                                 true,
@@ -1069,7 +1116,7 @@ class DiscoveryTaskList extends HTML
                 $return = true;
             }
 
-            ui_toggle($content, __('Server Tasks'), '', '', false);
+            ui_toggle($content, $titleTable, '', '', false);
 
             // Div neccesary for modal map task.
             echo '<div id="map_task" class="invisible"></div>';

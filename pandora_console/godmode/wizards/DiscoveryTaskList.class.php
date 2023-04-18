@@ -957,16 +957,18 @@ class DiscoveryTaskList extends HTML
                             $data[9] .= '</a>';
                         }
 
-                        $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
-                        $data[9] .= html_print_image(
-                            'images/details.svg',
-                            true,
-                            [
-                                'title' => __('View summary'),
-                                'class' => 'main_menu_icon invert_filter',
-                            ]
-                        );
-                        $data[9] .= '</a>';
+                        if ((int) $task['type'] !== DISCOVERY_EXTENSION) {
+                            $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
+                            $data[9] .= html_print_image(
+                                'images/details.svg',
+                                true,
+                                [
+                                    'title' => __('View summary'),
+                                    'class' => 'main_menu_icon invert_filter',
+                                ]
+                            );
+                            $data[9] .= '</a>';
+                        }
                     }
 
                     if ($task['disabled'] != 2 && $task['utimestamp'] > 0
@@ -977,7 +979,7 @@ class DiscoveryTaskList extends HTML
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
                         && $task['type'] != DISCOVERY_CLOUD_AWS_S3
                     ) {
-                        if (check_acl($config['id_user'], 0, 'MR')) {
+                        if (check_acl($config['id_user'], 0, 'MR') && (int) $task['type'] !== 15) {
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                             $data[9] .= html_print_image(
                                 'images/web@groups.svg',

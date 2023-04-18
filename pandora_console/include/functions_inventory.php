@@ -741,15 +741,23 @@ function inventory_get_datatable(
         array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
     }
 
+    if ($utimestamp > 0) {
+        array_push($where, 'tagente_datos_inventory.utimestamp <= '.$utimestamp.' ');
+    }
+
     $sql = sprintf(
         'SELECT tmodule_inventory.*,
             tagent_module_inventory.*,
-            tagente.alias as name_agent
+            tagente.alias as name_agent,
+            tagente_datos_inventory.utimestamp as last_update,
+            tagente_datos_inventory.timestamp as last_update_timestamp
         FROM tmodule_inventory
         INNER JOIN tagent_module_inventory
             ON tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory
         LEFT JOIN tagente
             ON tagente.id_agente = tagent_module_inventory.id_agente
+        LEFT JOIN tagente_datos_inventory
+            ON tagent_module_inventory.id_agent_module_inventory = tagente_datos_inventory.id_agent_module_inventory
         WHERE %s
         ORDER BY tmodule_inventory.id_module_inventory 
         LIMIT %d, %d',
@@ -763,6 +771,10 @@ function inventory_get_datatable(
     if ($order_by_agent === false) {
         $modules = [];
         foreach ($rows as $row) {
+            if ($row['utimestamp'] !== $row['last_update']) {
+                $row['timestamp'] = $row['last_update_timestamp'];
+            }
+
             $data_rows = explode(PHP_EOL, $row['data']);
             foreach ($data_rows as $data_key => $data_value) {
                 if (empty($data_value) === false) {
@@ -894,16 +906,16 @@ function inventory_get_dates($module_inventory_name, $inventory_agent, $inventor
 			AND tagente_datos_inventory.id_agent_module_inventory = tagent_module_inventory.id_agent_module_inventory
 			AND tagente.id_agente = tagent_module_inventory.id_agente';
 
-    if ($inventory_agent != 0) {
+    if ($inventory_agent !== 'All') {
         $sql .= ' AND tagent_module_inventory.id_agente IN ('."'".implode(',', (array) $inventory_agent)."'".')';
     }
 
-    if ($inventory_id_group != 0) {
+    if ($inventory_id_group !== 0) {
         $sql .= " AND tagente.id_grupo = $inventory_id_group";
     }
 
     if (is_string($module_inventory_name) === true
-        && $module_inventory_name != 'all'
+        && $module_inventory_name !== '0'
     ) {
         $sql .= " AND tmodule_inventory.name IN ('".str_replace(',', "','", $module_inventory_name)."')";
     }

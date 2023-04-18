@@ -121,13 +121,14 @@ if ($update_tag && $id_tag != 0) {
     );
 }
 
-// Create tag: creates a new tag
+// Create tag: creates a new tag.
 if ($create_tag) {
     $return_create = true;
 
-    // Erase comma characters on tag name
+    // Erase comma characters and spaces on tag name.
     $name_tag = str_replace(',', '', $name_tag);
-    hd($name_tag, true);
+    $name_tag = str_replace('&#x20;', '', $name_tag);
+
     $data = [];
     $data['name'] = $name_tag;
     $data['description'] = $description_tag;

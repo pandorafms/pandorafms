@@ -3878,7 +3878,7 @@ function ui_print_datatable(array $parameters)
         $export_columns = ',columns: \'th:not(:last-child)\'';
     }
 
-    if (isset($parameters['data_element']) === false) {
+    if (isset($parameters['data_element']) === false || isset($parameters['print_pagination_search_csv'])) {
         if (isset($parameters['ajax_url'])) {
             $type_data = 'ajax: {
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",
@@ -7057,23 +7057,20 @@ function ui_print_comments($comments)
         }
     }
 
-    $last_comment = [];
-    foreach ($comments_array as $comm) {
-        // Show the comments more recent first.
-        if (is_array($comm)) {
-            $order_utimestamp = array_reduce(
-                $comm,
-                function ($carry, $item) {
-                    $carry[$item['utimestamp']] = $item;
-                    return $carry;
-                }
-            );
+    $order_utimestamp = array_reduce(
+        $comments_array,
+        function ($carry, $item) {
+            foreach ($item as $k => $v) {
+                $carry[$v['utimestamp']] = $v;
+            }
 
-            $key_max_utimestamp = max(array_keys($order_utimestamp));
-
-            $last_comment = $order_utimestamp[$key_max_utimestamp];
+            return $carry;
         }
-    }
+    );
+
+    $key_max_utimestamp = max(array_keys($order_utimestamp));
+
+    $last_comment = $order_utimestamp[$key_max_utimestamp];
 
     if (empty($last_comment) === true) {
         return '';

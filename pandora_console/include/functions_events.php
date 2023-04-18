@@ -2523,8 +2523,8 @@ function events_print_event_table(
         $i = 0;
 
         $table->head[$i] = '<span>'.__('Type').'</span>';
-        $table->headstyle[$i] = 'width: 3%;text-align: center;';
-        $table->style[$i++] = 'text-align: center;';
+        $table->headstyle[$i] = 'width: 3%;text-align: left;';
+        $table->style[$i++] = 'text-align: left;';
 
         $table->head[$i] = '<span>'.__('Event name').'</span>';
         $table->headstyle[$i] = '';
@@ -2541,12 +2541,12 @@ function events_print_event_table(
         $table->style[$i++] = 'padding: 0 5px;word-break: break-word;';
 
         $table->head[$i] = '<span>'.__('Status').'</span>';
-        $table->headstyle[$i] = 'width: 150px;text-align: center;';
-        $table->style[$i++] = 'padding: 0 5px;text-align: center;';
+        $table->headstyle[$i] = 'width: 150px;text-align: left;';
+        $table->style[$i++] = 'padding: 0 5px;text-align: left;';
 
         $table->head[$i] = "<span title='".__('Validated')."'>".__('V.').'</span>';
-        $table->headstyle[$i] = 'width: 1%;text-align: center;';
-        $table->style[$i++] = 'text-align: center;';
+        $table->headstyle[$i] = 'width: 1%;text-align: left;';
+        $table->style[$i++] = 'text-align: left;';
 
         $all_groups = [];
         if ($agent_id != 0) {
@@ -2730,7 +2730,7 @@ function events_print_type_img(
             [
                 'title' => events_print_type_description($type, true),
                 'class' => $style,
-                'style' => 'margin: 0 auto;'.((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
+                'style' => ((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
             ],
             true
         );
@@ -5122,7 +5122,7 @@ function events_page_general($event)
             && count($table_data[$i]) === 2
         ) {
             $table_general->colspan[$i][1] = 2;
-            $table_general->style[2] = 'text-align:center; width:10%;';
+            $table_general->style[2] = 'text-align:left; width:10%;';
         }
     }
 
@@ -5204,7 +5204,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
     $comments = (empty($groupedComments) === true) ? $event['user_comment'] : $groupedComments;
 
     if (empty($comments) === true) {
-        $table_comments->style[0] = 'text-align:center;';
+        $table_comments->style[0] = 'text-align:left;';
         $table_comments->colspan[0][0] = 2;
         $data = [];
         $data[0] = __('There are no comments');

@@ -760,6 +760,7 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_ok',
             'style' => 'display:'.$display_icons.';',
+            'width' => '40',
         ]
     ).html_print_image(
         $path_bad,
@@ -767,6 +768,7 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_bad',
             'style' => 'display:'.$display_icons.';',
+            'width' => '40',
         ]
     ).html_print_image(
         $path_warning,
@@ -774,6 +776,7 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_warning',
             'style' => 'display:'.$display_icons.';',
+            'width' => '40',
         ]
     )
 );

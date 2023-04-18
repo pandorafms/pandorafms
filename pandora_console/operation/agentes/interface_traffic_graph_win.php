@@ -167,7 +167,7 @@ $table->class = 'table_modal_alternate';
 
 $data = [];
 $data[0] = __('Refresh time');
-$data[1] = html_print_extended_select_for_time(
+$data[1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
     'refresh',
     $refresh,
     '',
@@ -175,7 +175,7 @@ $data[1] = html_print_extended_select_for_time(
     0,
     7,
     true
-);
+).'</div>';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -187,7 +187,11 @@ $data[1] = html_print_input_text(
     '',
     15,
     255,
-    true
+    true,
+    false,
+    false,
+    '',
+    'small-input'
 );
 $data[1] .= html_print_image(
     '/images/calendar_view_day.png',
@@ -196,6 +200,7 @@ $data[1] .= html_print_image(
         'onclick' => "scwShow(scwID('text-start_date'),this);",
         'style'   => 'vertical-align: bottom;',
         'class'   => 'invert_filter',
+        'style'   => 'vertical-align: middle;',
     ],
     false,
     false,
@@ -207,13 +212,24 @@ $table->rowclass[] = '';
 
 $data = [];
 $data[0] = __('Begin time');
-$data[1] = html_print_input_text('start_time', $start_time, '', 10, 10, true);
+$data[1] = html_print_input_text(
+    'start_time',
+    $start_time,
+    '',
+    10,
+    10,
+    true,
+    false,
+    false,
+    '',
+    'small-input'
+);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = [];
 $data[0] = __('Time range');
-$data[1] = html_print_extended_select_for_time(
+$data[1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
     'period',
     $period,
     '',
@@ -221,7 +237,7 @@ $data[1] = html_print_extended_select_for_time(
     0,
     7,
     true
-);
+).'</div>';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -278,7 +294,10 @@ $form_table .= html_print_submit_button(
     __('Reload'),
     'submit',
     false,
-    'class="sub upd"',
+    [
+        'class' => 'float-right mini',
+        'icon'  => 'upd',
+    ],
     true
 );
 $form_table .= '</div>';

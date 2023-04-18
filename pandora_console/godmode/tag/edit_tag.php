@@ -127,7 +127,7 @@ if ($create_tag) {
 
     // Erase comma characters on tag name
     $name_tag = str_replace(',', '', $name_tag);
-
+    hd($name_tag, true);
     $data = [];
     $data['name'] = $name_tag;
     $data['description'] = $description_tag;
@@ -155,11 +155,14 @@ if ($create_tag) {
         AUDIT_LOG_TAG_MANAGEMENT,
         $auditMessage
     );
-    ui_print_result_message(
-        $action === 'update',
-        __('Successfully created tag'),
-        __('Error creating tag')
-    );
+
+    if ($name_tag !== '') {
+        ui_print_result_message(
+            $action === 'update',
+            __('Successfully created tag'),
+            __('Error creating tag')
+        );
+    }
 }
 
 // Form fields are filled here

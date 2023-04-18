@@ -7577,7 +7577,7 @@ function ui_get_inventory_module_add_form(
             if ($field['secure']) {
                 $secure = html_print_input_password(
                     'custom_fields['.$i.'][value]',
-                    $field['value'],
+                    io_safe_input($field['value']),
                     '',
                     false,
                     40,
@@ -7592,7 +7592,7 @@ function ui_get_inventory_module_add_form(
             } else {
                 $secure = html_print_input_text(
                     'custom_fields['.$i.'][value]',
-                    $field['value'],
+                    io_safe_input($field['value']),
                     '',
                     false,
                     40,

@@ -195,15 +195,15 @@ class Events
 
                         switch ($event['estado']) {
                             case 0:
-                                $img_st = 'images/star_white.png';
+                                $img_st = 'images/star-dark.svg';
                             break;
 
                             case 1:
-                                $img_st = 'images/tick_white.png';
+                                $img_st = 'images/validate.svg';
                             break;
 
                             case 2:
-                                $img_st = 'images/hourglass_white.png';
+                                $img_st = 'images/clock.svg';
                             break;
 
                             default:
@@ -221,7 +221,7 @@ class Events
                         $status_icon = html_print_image(
                             $img_st,
                             true,
-                            false,
+                            ['class' => 'main_menu_icon'],
                             false,
                             false,
                             false,
@@ -264,11 +264,7 @@ class Events
 
                         $row_1 = '<span class="events_agent">'.$agent_name.'</span>';
                         $row_1 .= '<span class="events_timestamp">';
-                        $row_1 .= ui_print_timestamp(
-                            $event['timestamp_last'],
-                            true,
-                            ['units' => 'tiny']
-                        );
+                        $row_1 .= human_time_comparation($event['timestamp_last'], 'tiny');
                         $row_1 .= $status_icon;
                         $row_1 .= '</span>';
 
@@ -1008,7 +1004,10 @@ class Events
         $html = $ui->getEndForm();
         $ui->contentCollapsibleAddItem($html);
         $ui->contentEndCollapsible();
+        $ui->contentAddHtml('<div class="hr-full"></div>');
+        $ui->contentAddHtml('<div class="white-card">');
         $this->listEventsHtml();
+        $ui->contentAddHtml('</div>');
         $ui->endContent();
         $ui->showPage();
     }
@@ -1351,14 +1350,14 @@ class Events
 
 						$(\"table#\"+table_id+\" tbody\").append(new_rows);
 
-						load_more_rows = 0;
+						// load_more_rows = 0;
 						refresh_link_listener_list_events();
 					}
 				}
 
 				function ajax_load_rows() {
-					if (load_more_rows) {
-						load_more_rows = 0;
+                    if (load_more_rows) {
+						// load_more_rows = 0;
 						postvars = {};
 						postvars[\"action\"] = \"ajax\";
 						postvars[\"parameter1\"] = \"events\";
@@ -1383,7 +1382,7 @@ class Events
 									//Check if the end of the event list tables is in the client limits
 									var table_end = $('#list_events').offset().top + $('#list_events').height();
 									if (table_end < document.documentElement.clientHeight) {
-										ajax_load_rows();
+										// ajax_load_rows();
 									}
 								}
 

@@ -30,6 +30,7 @@
   --secondary-color: #ffffff;
   --body-color: #f6f7fb;
   --border-color: #e5e9ed;
+  --muted-color: #8a96a6;
 }
 
 @font-face {
@@ -80,7 +81,7 @@ body {
 }
 
 .ui-header .ui-title {
-  font-size: 14px !important;
+  font-size: 12pt !important;
   min-height: 1.1em;
   text-align: center;
   display: block;
@@ -90,7 +91,7 @@ body {
   overflow: hidden;
   white-space: nowrap;
   outline: 0 !important;
-  line-height: 25px;
+  line-height: 18pt;
 }
 
 .ui-btn-inner {
@@ -362,7 +363,7 @@ tr.group_view_data,
 .datos_green a,
 .datos_greenf9 a {
   background-color: #52a000;
-  color: #ffffff !important;
+  color: #000000 !important;
   text-shadow: none !important;
 }
 .datos_red,
@@ -370,7 +371,7 @@ tr.group_view_data,
 .datos_red a,
 .datos_redf9 a {
   background-color: #ff3e41;
-  color: #ffffff !important;
+  color: #000000 !important;
   text-shadow: none !important;
 }
 
@@ -416,7 +417,7 @@ tr.group_view_data,
 }
 
 tr.events {
-  border-bottom: 6px solid #f7f7f7 !important;
+  border-bottom: 6px solid var(--secondary-color) !important;
   font-size: 12px !important;
 }
 
@@ -1868,7 +1869,7 @@ table.tactical_bars > tbody > tr,
 }
 
 div#main_page {
-  background-color: var(--body-color) !important;
+  background-color: var(--body-color);
 }
 
 .ui-header.ui-bar-inherit.ui-header-fixed.slidedown {
@@ -1905,10 +1906,18 @@ div#main_page {
   align-items: center;
 }
 
+span#user_logged {
+  padding-right: 0px;
+  right: 20px;
+  line-height: 30px;
+  font-size: 10pt !important;
+}
+
 .ui-grid-a.ui-responsive {
   background-color: var(--secondary-color);
   border-radius: 8px;
   border: 1px solid var(--border-color);
+  margin-bottom: 10px;
 }
 
 .ui-button-icon-space {
@@ -1945,6 +1954,12 @@ div.hr {
   border-bottom: 1px solid var(--border-color);
   width: 100%;
   margin: 10px 0px;
+}
+
+div.hr-full {
+  border-bottom: 1px solid var(--border-color);
+  width: 200%;
+  margin: 10px -100px;
 }
 
 table,
@@ -2032,6 +2047,8 @@ div#tactical2 .tactical_set > table {
 .ui-collapsible.ui-collapsible-inset.ui-corner-all.ui-collapsible-themed-content.ui-collapsible-collapsed {
   border: 1px solid var(--border-color);
   border-radius: 8px;
+  margin-top: 0px;
+  margin-bottom: 10px;
 }
 
 .ui-collapsible-heading-toggle.ui-button.ui-button-a.ui-mini,
@@ -2065,13 +2082,15 @@ table#last-activity > tbody > tr > td.cell_0 {
   padding-bottom: 2px !important;
 }
 table#last-activity > tbody > tr > td.cell_1 {
-  width: 75%;
+  width: 70%;
   max-width: 75%;
   padding-bottom: 2px !important;
 }
 table#last-activity > tbody > tr > td.cell_2 {
-  width: 15%;
+  width: 20%;
   padding-bottom: 2px !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
 }
 table#last-activity > tbody > tr > td.cell_3 {
   width: 10%;
@@ -2084,5 +2103,44 @@ table#last-activity > tbody > tr > td > b {
 }
 
 .muted {
-  color: #8a96a6 !important;
+  color: var(--muted-color) !important;
+}
+
+.white-card {
+  background-color: var(--secondary-color);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+/* Events table */
+table#list_events > tbody > tr.events > td.cell_0 {
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
+table#list_events > tbody > tr.events > td.vertical_middle {
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  color: #4a4a4a;
+}
+
+table#list_events > tbody > tr.events {
+  background-color: var(--secondary-color) !important;
+}
+
+table#list_events > tbody > tr.events.datos_green > td {
+  background-color: #81b92e40;
+}
+table#list_events > tbody > tr.events.datos_red > td {
+  background-color: #ed474a40;
+}
+table#list_events > tbody > tr.events.datos_yellow > td {
+  background-color: #fcab1040;
+}
+table#list_events > tbody > tr.events.datos_blue > td {
+  background-color: #25a8ff40;
+}
+table#list_events > tbody > tr.events.datos_grey > td {
+  background-color: #adadad40;
 }

@@ -560,6 +560,7 @@ class User
                 $(".ui-overlay-a").addClass("login-background");
                 $(".ui-overlay-a").removeClass("ui-overlay-a");
                 $(".ui-page-theme-a").css({"background-color":"transparent !important"});
+                $("div.ui-page.ui-page-theme-a.ui-page-active#main_page").css({"background-color":"transparent !important"});
             });
             </script>
         '

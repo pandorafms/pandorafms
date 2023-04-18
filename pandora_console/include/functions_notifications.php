@@ -1118,7 +1118,7 @@ function notifications_print_dropdown_element($message_info)
         $message_info['id_mensaje'],
         messages_get_url($message_info['id_mensaje']),
         $target,
-        html_print_image('images/info.svg', true),
+        html_print_image('images/info.svg', true, ['style' => 'height: 40px;margin-left: -20px;margin-top: -40px;']),
         io_safe_output($message_info['subject']),
         $body_preview
     );

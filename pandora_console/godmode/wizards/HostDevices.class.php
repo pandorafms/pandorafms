@@ -825,12 +825,12 @@ class HostDevices extends Wizard
                         ],
                     ],
                 ];
-
+                $form['rows'][0]['style'] = 'style de row';
                 $form['rows'][0]['columns'][1] = [
                     'width'         => '40%',
-                    'padding-right' => '12%',
-                    'padding-left'  => '5%',
-                    'style'         => 'min-width: 350px',
+                    'padding-right' => '10%',
+                    'padding-left'  => '0%',
+                    'style'         => 'min-width: 230px',
                     'inputs'        => [
                         '0' => [
                             'label'     => '<b>'.__('Task name').':</b>',
@@ -927,26 +927,57 @@ class HostDevices extends Wizard
                 ];
 
                 // Group select (custom for this section).
-                $group_select = '<div class="label_select"><label>'.__('Group').':</label></div>';
+                // $group_select = '<b>'.__('Group').':</b>';
+                /*
+                    $group_select = $this->printInput(
 
-                $group_select .= $this->printInput(
-                    [
-                        'name'                    => 'id_group',
-                        'returnAllGroup'          => false,
-                        'privilege'               => $this->access,
-                        'type'                    => 'select_groups',
-                        'selected'                => $this->task['id_group'],
-                        'return'                  => true,
-                        'class'                   => 'discovery_list_input',
-                        'simple_multiple_options' => true,
-                        'required'                => true,
-                    ]
-                );
+                );*/
+
+                /*
+                    $form['rows'][0]['columns'][2] = [
+                    'width'         => '40%',
+                    'padding-right' => '12%',
+                    'padding-left'  => '5%',
+                    'style'         => 'min-width: 250px',
+                    'inputs'        => [
+                        '0' => [
+                            'label'     => '<b>'.__('Group').':</b>',
+                            'arguments' => [
+                                'name'                    => 'id_group',
+                                'returnAllGroup'          => false,
+                                'privilege'               => $this->access,
+                                'type'                    => 'select_groups',
+                                'selected'                => $this->task['id_group'],
+                                'return'                  => true,
+                                'class'                   => 'discovery_list_input',
+                                'simple_multiple_options' => true,
+                                'required'                => true,
+                            ],
+                        ],
+                    ],
+                ];*/
 
                 $form['rows'][0]['columns'][2] = [
-                    'width'  => '30%',
-                    'style'  => 'min-width: 250px',
-                    'inputs' => ['0' => $group_select],
+                    'width'         => '40%',
+                    'padding-right' => '12%',
+                    'padding-left'  => '0',
+                    'style'         => 'min-width: 210px',
+                    'inputs'        => [
+                        '0' => [
+                            'label'     => '<b>'.__('Group').':</b>',
+                            'arguments' => [
+                                'name'                    => 'id_group',
+                                'returnAllGroup'          => false,
+                                'privilege'               => $this->access,
+                                'type'                    => 'select_groups',
+                                'selected'                => $this->task['id_group'],
+                                'return'                  => true,
+                                'class'                   => 'discovery_textarea_input',
+                                'simple_multiple_options' => true,
+                                'required'                => true,
+                            ],
+                        ],
+                    ],
                 ];
 
                 $form['rows'][1]['style'] = 'style de row';

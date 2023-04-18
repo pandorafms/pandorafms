@@ -379,7 +379,8 @@ table.group_modules_status_box tr td > span {
   padding-left: 10px;
 }
 
-table.group_modules_status_box tr td div {
+table.group_modules_status_box tr td div,
+table.widget_groups_status tr td div {
   background-color: #82b92e;
   width: 90%;
   padding: 3px;

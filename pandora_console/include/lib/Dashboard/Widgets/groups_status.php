@@ -362,19 +362,22 @@ class GroupsStatusWidget extends Widget
             // Agent Critical.
             $table->data[1][0] = $this->getCellCounter(
                 $stats['agent_critical'],
-                '#e63c52'
+                '',
+                'bg_ff5'
             );
 
             // Agent Warning.
             $table->data[2][0] = $this->getCellCounter(
                 $stats['agent_warning'],
-                '#f3b200'
+                '',
+                'bg_ffd'
             );
 
             // Agent OK.
             $table->data[3][0] = $this->getCellCounter(
                 $stats['agent_ok'],
-                '#82b92e'
+                '',
+                'bg_82B92E'
             );
 
             // Agent Unknown.
@@ -436,19 +439,22 @@ class GroupsStatusWidget extends Widget
             // Modules Critical.
             $table->data[1][0] = $this->getCellCounter(
                 $stats['monitor_critical'],
-                '#e63c52'
+                '',
+                'bg_ff5'
             );
 
             // Modules Warning.
             $table->data[2][0] = $this->getCellCounter(
                 $stats['monitor_warning'],
-                '#f3b200'
+                '',
+                'bg_ffd'
             );
 
             // Modules OK.
             $table->data[3][0] = $this->getCellCounter(
                 $stats['monitor_ok'],
-                '#82b92e'
+                '',
+                'bg_82B92E'
             );
 
             // Modules Unknown.
@@ -490,10 +496,20 @@ class GroupsStatusWidget extends Widget
      *
      * @return string
      */
-    protected function getCellCounter(?int $count, string $color):string
+    protected function getCellCounter(?int $count, string $color='', string $div_class=''):string
     {
-        $output = '<div class= ""';
-        $output .= 'style= "background-color:'.$color.'">';
+        $output = '<div ';
+
+        if ($div_class !== '') {
+            $output .= 'class= "'.$div_class.'" ';
+        }
+
+        if ($color !== '') {
+            $output .= 'style= "background-color:'.$color.'" ';
+        }
+
+        $output .= '>';
+
         if (isset($count) === true
             && $count !== 0
         ) {

@@ -192,9 +192,7 @@ class AgentDeployWizard
     /**
      * Generates content of modal.
      *
-     * @param array $values Values or null.
-     *
-     * @return string Inputs.
+     * @return string Modal content.
      */
     public function getModalContent()
     {
@@ -671,14 +669,11 @@ class AgentDeployWizard
                 $('#config_page').hide();
                 $('#installer_page').show();
 
-
-
                 var os_val = $('input[name="os"]:checked').val();
                 var module_definition_val = $('input[name="module_definition"]:checked').val();
                 var server_addr_val = $('input[name="server_addr"]').val();
                 var group_val = $('[name="group"] option:selected').text();
                 
-                console.log(group_val);
 
                 var win_installer_command = `curl -k "https://firefly.artica.es/pandorafms/latest/Windows/Pandora%20FMS%20Windows%20Agent%20v7.0NG.x86_64.exe" -o PandoraFMS_Windows_Agent_7.0NG.x86_64.exe  ; ./PandoraFMS_Windows_Agent_7.0NG.x86_64.exe  /S  --ip ${server_addr_val} --group ${group_val}  --remote_config 1`;
                 var linux_installer_command = `export PANDORA_SERVER_IP='${server_addr_val}' && \\ \nexport PANDORA_REMOTE_CONFIG=1 && \\ \nexport PANDORA_GROUP='${group_val}' && \\ \ncurl -Ls https://pfms.me/agent-deploy | bash`;

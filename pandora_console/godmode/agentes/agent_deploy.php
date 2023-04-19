@@ -1,8 +1,8 @@
 <?php
 /**
- * Credentials management view.
+ * Agents deploy view.
  *
- * @category   Credentials management
+ * @category   Agents deploy
  * @package    Pandora FMS
  * @subpackage Opensource
  * @version    1.0.0

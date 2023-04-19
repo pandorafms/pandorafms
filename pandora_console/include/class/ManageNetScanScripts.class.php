@@ -564,7 +564,7 @@ class ManageNetScanScripts extends Wizard
 
         $data = [];
         $data[0] = __('Description');
-        $data[1] = '<textarea name="form_description" cols="50" rows="4">';
+        $data[1] = '<textarea name="form_description" cols="69" rows="5">';
         $data[1] .= $form_description;
         $data[1] .= '</textarea>';
         $table->data['recon_description'] = $data;

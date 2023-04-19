@@ -401,7 +401,7 @@ class Agents
 
             $serialized_filters_q_param = empty($this->serializedFilters) ? '' : '&agents_filter='.$this->serializedFilters;
 
-            $row[0] = $row[__('Agent')] = '<span class="tiny mrgn_right_5px">'.$img_status.'</span>'.'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id='.$agent['id_agente'].$serialized_filters_q_param.'">'.ui_print_truncate_text($agent['alias'], 30, false).'</a>';
+            $row[0] = $row[__('Agent')] = '<span class="tiny agent-status">'.$img_status.'</span>'.'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id='.$agent['id_agente'].$serialized_filters_q_param.'">'.ui_print_truncate_text($agent['alias'], 30, false).'</a>';
             $row[2] = $row[__('OS')] = ui_print_os_icon($agent['id_os'], false, true);
             $row[3] = $row[__('Group')] = ui_print_group_icon($agent['id_grupo'], true, 'groups_small', '', false);
             $row[5] = $row[__('Status')] = '<span class="show_collapside align-none-10p">'.__('S.').' </span>'.$img_status;
@@ -461,15 +461,19 @@ class Agents
             $table = new Table();
             $table->id = 'list_agents';
             $table->importFromHash($listAgents['agents']);
+
+            $ui->contentAddHtml('<div class="white-card p-lr-0px">');
             $ui->contentAddHtml($table->getHTML());
 
             if ($system->getPageSize() < $listAgents['total']) {
                 $ui->contentAddHtml(
-                    '<div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
+                    '<br><div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
                 );
 
                 $this->addJavascriptAddBottom();
             }
+
+            $ui->contentAddHtml('</div>');
         }
 
         $ui->contentAddLinkListener('list_agents');
@@ -528,7 +532,7 @@ class Agents
 									},
 									\"json\");
                                 // Clean
-                                $('#loading_rows').remove();
+                                // $('#loading_rows').remove();
 							}
 						}
 				}

@@ -250,7 +250,7 @@ class Modules
                 __('Filter Modules by %s'),
                 $this->filterEventsGetString()
             );
-            $ui->contentBeginCollapsible($filter_title);
+            $ui->contentBeginCollapsible($filter_title, 'filter-collapsible');
                 $ui->beginForm('index.php?page=modules');
                     $system = System::getInstance();
                     $groups = users_get_groups_for_select(
@@ -599,9 +599,9 @@ class Modules
                         $script = 'onclick="openDialog('.$module['id_agente_modulo'].', '.$this->id_agent.', \'node\');"';
                     }
 
-                    $row[0] = $row[__('Module name')] = '<span '.$script.'><span class="tiny mrgn_right_5px">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span></span>';
+                    $row[0] = $row[__('Module name')] = '<span '.$script.'><span class="tiny module-status">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span></span>';
                 } else {
-                    $row[0] = $row[__('Module name')] = '<span class="tiny mrgn_right_5px">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span>';
+                    $row[0] = $row[__('Module name')] = '<span class="tiny module-status">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span>';
                 }
 
                 if ($this->columns['agent']) {
@@ -730,9 +730,9 @@ class Modules
                             $row[7] = $row[__('Data')] = '<span class="nowrap">';
                             $row[7] = $row[__('Data')] .= '<span class="show_collapside invisible">';
                             $row[7] = $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
-                            $row[7] = $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
+                            $row[7] = $row[__('Data')] .= '<span data-ajax="false" class="ui-link" ';
                             $row[7] = $row[__('Data')] .= 'href="#">';
-                            $row[7] = $row[__('Data')] .= $output.'</a></span>';
+                            $row[7] = $row[__('Data')] .= $output.'</span></span>';
                             // Row 7.
                             $row[7] = $row[__('Data')];
                         } else {
@@ -740,9 +740,9 @@ class Modules
                             $row[7] = $row[__('Data')] = '<span class="nowrap">';
                             $row[7] = $row[__('Data')] .= '<span class="show_collapside invisible">';
                             $row[7] = $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
-                            $row[7] = $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
+                            $row[7] = $row[__('Data')] .= '<span data-ajax="false" class="ui-link" ';
                             $row[7] = $row[__('Data')] .= 'href="#">';
-                            $row[7] = $row[__('Data')] .= $output.'</a></span>';
+                            $row[7] = $row[__('Data')] .= $output.'</span></span>';
                         }
                     } else {
                         if ($system->getConfig('metaconsole')) {
@@ -813,7 +813,20 @@ class Modules
                 $table->id = 'list_Modules';
                 $table->importFromHash($listModules['modules']);
 
+                $ui->contentAddHtml('<div class="white-card p-lr-0px">');
                 $ui->contentAddHtml($table->getHTML());
+
+                if (!$this->all_modules) {
+                    if ($system->getPageSize() < $listModules['total']) {
+                        $ui->contentAddHtml(
+                            '<br><div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
+                        );
+
+                        $this->addJavascriptAddBottom();
+                    }
+                }
+
+                $ui->contentAddHtml('</div>');
             } else {
                 $table = new Table();
                 $table->id = 'list_agent_Modules';
@@ -824,16 +837,6 @@ class Modules
 
                 return $html;
             }
-
-            if (!$this->all_modules) {
-                if ($system->getPageSize() < $listModules['total']) {
-                    $ui->contentAddHtml(
-                        '<div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
-                    );
-
-                    $this->addJavascriptAddBottom();
-                }
-            }
         }
 
         $ui->contentAddHtml(
@@ -841,19 +844,18 @@ class Modules
             data-transition="pop" class="ui-btn ui-corner-all ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b">
             </a>
             
-            <div data-role="popup" id="module-dialog" data-overlay-theme="b" data-dismissible="false" style="max-width:100%; width: 100%;">
-                <div data-role="header" data-theme="a">
-                    <h1 style="margin-left: 10px;"> '.__('Choose option').'</h1>
+            <div data-role="popup" id="module-dialog" data-overlay-theme="b" data-dismissible="false">
+                <div data-role="header" data-theme="a" class="flex align-items-center space-between">
+                    <h1 style="margin-left: 10px;" class="font-10pt"> '.__('Choose option').'</h1>
+                    <a href="#" id="close-dialog-btn" data-role="button" class="ui-corner-all " data-rel="back">X</a>
                 </div>
                 
-                <div role="main" class="ui-content">
-                    <a href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b" data-rel="back">'.__('Cancel').'</a>
-                    
-                    <a id="graph-option" href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b">
+                <div role="main" class="ui-content">                    
+                    <a data-role="button" id="graph-option" href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b">
                         '.__('Graph').'
                     </a>
 
-                    <a id="historical-option" href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b"  data-transition="flow">
+                    <a data-role="button" id="historical-option" href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b">
                         '.__('Historical data').'
                     </a>
                 </div>

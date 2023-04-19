@@ -413,12 +413,13 @@ class Ui
     }
 
 
-    public function contentBeginCollapsible($title='&nbsp;')
+    public function contentBeginCollapsible($title='&nbsp;', $class='')
     {
         $this->endCollapsible = false;
         $this->collapsible = [];
         $this->collapsible['items'] = [];
         $this->collapsible['title'] = $title;
+        $this->collapsible['class'] = $class;
     }
 
 
@@ -432,7 +433,7 @@ class Ui
     {
         $this->endCollapsible = true;
 
-        $html = "<div data-role='collapsible' "." data-collapsed-icon='arrow-d' "." data-expanded-icon='arrow-u' data-mini='true' "." data-theme='a' data-content-theme='c'>\n";
+        $html = "<div class='".$this->collapsible['class']."' data-role='collapsible' "." data-collapsed-icon='arrow-d' "." data-expanded-icon='arrow-u' data-mini='true' "." data-theme='a' data-content-theme='c'>\n";
         $html .= '<h4>'.$this->collapsible['title']."</h4>\n";
 
         $html .= "<ul data-role='listview' data-theme='c'>\n";

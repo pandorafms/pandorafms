@@ -134,6 +134,12 @@ class Services
         $ui->showFooter(false);
         $ui->beginContent();
 
+        if (empty($this->services)) {
+            $ui->contentAddHtml(
+                '<span class="color-red">'.__('No services found').'</span>'
+            );
+        }
+
         $ui->contentAddHtml('<div class="list_services" data-role="collapsible-set" data-theme="a" data-content-theme="d">');
             $count = 0;
             $url_agent = 'index.php?page=agents&group=%s&status=%s';
@@ -331,7 +337,7 @@ class Services
                         );
 
                         if ($item->exists() !== true) {
-                            $name .= '<strong class="red">'.__('Nonexistent. This element should be deleted').'</strong>';
+                            $name .= '<strong class="color-red">'.__('Nonexistent. This element should be deleted').'</strong>';
                         } else {
                             $url = ui_get_full_url(
                                 'index.php?sec=eventos&sec2=operation/events/events&event_view_hr=8&severity=4&id_agent='.$item->module()->id_agente().'&id_agent_module='.$item->id_agente_modulo()

@@ -194,6 +194,8 @@ class Item extends CachedModel
      */
     protected function decode(array $data): array
     {
+        global $config;
+
         $decodedData = [
             'id'              => (int) $data['id'],
             'colorStatus'     => (string) COL_UNKNOWN,
@@ -209,8 +211,11 @@ class Item extends CachedModel
             'x'               => static::extractX($data),
             'y'               => static::extractY($data),
             'cacheExpiration' => static::extractCacheExpiration($data),
-            'alertOutline'    => static::checkLayoutAlertsRecursive($data),
         ];
+
+        if ((bool) $config['display_item_frame'] === true) {
+            $decodedData['alertOutline'] = static::checkLayoutAlertsRecursive($data);
+        }
 
         if (static::$useLinkedModule === true) {
             $decodedData = array_merge(

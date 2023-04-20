@@ -1421,6 +1421,17 @@ $table_vc->data[$row][] = html_print_label_input_block(
         true
     )
 );
+
+$table_vc->data[$row][] = html_print_label_input_block(
+    __('Display item frame on alert triggered'),
+    html_print_checkbox_switch(
+        'display_item_frame',
+        1,
+        (bool) $config['display_item_frame'],
+        true
+    )
+);
+
 $row++;
 
 

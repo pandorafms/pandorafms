@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons/Dark/20/checkbox-on@svg</title>
+    <g id="Icons/Dark/20/checkbox-on" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle-2" stroke="#14524F" stroke-width="2" x="1" y="1" width="18" height="18" rx="4"></rect>
+        <path d="M14.3713994,6.22237132 C14.8008905,5.87515972 15.4305323,5.94186038 15.7777439,6.37135141 C16.098247,6.76780467 16.0660673,7.33480068 15.7214138,7.69277628 L15.6287639,7.77769594 L8.20693177,13.7776959 C7.78987666,14.114854 7.18888164,14.0598005 6.83812914,13.672688 L6.76182606,13.5774872 L4.18365814,9.93238606 C3.86473931,9.48148781 3.97172977,8.85742777 4.42262802,8.53850895 C4.83884178,8.24412234 5.40260169,8.31264068 5.73770948,8.67956758 L5.81650513,8.77747883 L7.77861597,11.5510307 L14.3713994,6.22237132 Z" id="Path-10" fill="#14524F" fill-rule="nonzero"></path>
+    </g>
+</svg>

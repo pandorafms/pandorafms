@@ -199,7 +199,7 @@ class ModuleData
                 $agent_name = agents_get_name($agent_id);
                 $module_name = modules_get_agentmodule_name($this->moduleId);
                 $ui->contentAddHtml('<h1 class="center font-10pt">'.$module_name.'</h1>');
-                $ui->contentAddHtml('<p class="center"><span class="muted">'.$agent_name.'</span></p>');
+                $ui->contentAddHtml('<p class="center truncate muted">'.$agent_name.'</p>');
 
                 $ui->contentAddHtml($table->getHTML());
 

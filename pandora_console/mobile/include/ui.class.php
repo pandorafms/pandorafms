@@ -220,11 +220,11 @@ class Ui
         if ($left_button === false) {
             $left_button = $this->createHeaderButton(
                 [
-                    'icon'  => 'ui-icon-back',
+                    'icon'  => 'ui-icon-logout',
                     'pos'   => 'left',
                     'text'  => __('Logout'),
                     'href'  => 'index.php?action=logout',
-                    'class' => 'header-button-left',
+                    'class' => 'header-button-left logout-text',
                 ]
             );
         }

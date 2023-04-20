@@ -208,7 +208,7 @@ class Alerts
                 __('Filter Alerts by %s'),
                 $this->filterAlertsGetString()
             );
-            $ui->contentBeginCollapsible($filter_title);
+            $ui->contentBeginCollapsible($filter_title, 'filter-collapsible');
                 $ui->beginForm();
                     $options = [
                         'name'  => 'page',
@@ -371,6 +371,7 @@ class Alerts
             $tableHTML->id = 'list_alerts';
             $tableHTML->importFromHash($table);
             if (!$return) {
+                $ui->contentAddHtml('<div class="hr-full"></div>');
                 $ui->contentAddHtml('<div class="white-card p-lr-0px">');
                 $ui->contentAddHtml($tableHTML->getHTML());
                 $ui->contentAddHtml('</div>');

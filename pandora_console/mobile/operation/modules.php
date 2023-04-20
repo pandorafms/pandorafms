@@ -813,6 +813,7 @@ class Modules
                 $table->id = 'list_Modules';
                 $table->importFromHash($listModules['modules']);
 
+                $ui->contentAddHtml('<div class="hr-full"></div>');
                 $ui->contentAddHtml('<div class="white-card p-lr-0px">');
                 $ui->contentAddHtml($table->getHTML());
 
@@ -847,7 +848,7 @@ class Modules
             <div data-role="popup" id="module-dialog" data-overlay-theme="b" data-dismissible="false">
                 <div data-role="header" data-theme="a" class="flex align-items-center space-between">
                     <h1 style="margin-left: 10px;" class="font-10pt"> '.__('Choose option').'</h1>
-                    <a href="#" id="close-dialog-btn" data-role="button" class="ui-corner-all " data-rel="back">X</a>
+                    <a href="#" id="close-dialog-btn" data-role="button" class="ui-corner-all close-button-dialog" data-rel="back"></a>
                 </div>
                 
                 <div role="main" class="ui-content">                    

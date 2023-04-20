@@ -219,7 +219,7 @@ class Agents
                 __('Filter Agents by %s'),
                 $this->filterEventsGetString()
             );
-            $ui->contentBeginCollapsible($filter_title);
+            $ui->contentBeginCollapsible($filter_title, 'filter-collapsible');
                 $ui->beginForm('index.php?page=agents');
                     $system = System::getInstance();
                     $groups = users_get_groups_for_select(
@@ -462,6 +462,7 @@ class Agents
             $table->id = 'list_agents';
             $table->importFromHash($listAgents['agents']);
 
+            $ui->contentAddHtml('<div class="hr-full"></div>');
             $ui->contentAddHtml('<div class="white-card p-lr-0px">');
             $ui->contentAddHtml($table->getHTML());
 

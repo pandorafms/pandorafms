@@ -438,17 +438,17 @@ class Events
                             // Get Status.
                             switch ($event['estado']) {
                                 case 0:
-                                    $img_st = 'images/star_dark.png';
+                                    $img_st = 'images/star-dark.svg';
                                     $title_st = __('New event');
                                 break;
 
                                 case 1:
-                                    $img_st = 'images/tick.png';
+                                    $img_st = 'images/validate.svg';
                                     $title_st = __('Event validated');
                                 break;
 
                                 case 2:
-                                    $img_st = 'images/hourglass.png';
+                                    $img_st = 'images/clock.svg';
                                     $title_st = __('Event in process');
                                 break;
 
@@ -562,6 +562,43 @@ class Events
                         }
 
                         if (events_change_status($id_event, EVENT_VALIDATE) === true) {
+                            echo json_encode(['correct' => 1]);
+                        } else {
+                            echo json_encode(['correct' => 0]);
+                        }
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
+
+                        echo json_encode(['correct' => 0]);
+                    } finally {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
+                    }
+                break;
+
+                case 'process_event':
+                    $system = System::getInstance();
+
+                    $id_event = $system->getRequest('id_event', 0);
+                    $server_id = $system->getRequest('server_id', 0);
+
+                    try {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node = new Node($server_id);
+                            $node->connect();
+                        }
+
+                        if (events_change_status($id_event, EVENT_PROCESS) === true) {
                             echo json_encode(['correct' => 1]);
                         } else {
                             echo json_encode(['correct' => 0]);
@@ -783,7 +820,7 @@ class Events
         // Content.
         ob_start();
         ?>
-        <table class="pandora_responsive alternate event_details">
+        <table class="pandora_responsive event_details">
             <tbody>
                 <tr class="event_name">
                     <td class="cell_event_name" colspan="2"></td>
@@ -852,6 +889,14 @@ class Events
             'href' => 'javascript: validateEvent();',
         ];
         $options['content_text'] .= $ui->createButton($options_button);
+
+        $options_button = [
+            'text' => __('In process'),
+            'id'   => 'process_button',
+            'href' => 'javascript: processEvent();',
+        ];
+        $options['content_text'] .= $ui->createButton($options_button);
+
         $options_hidden = [
             'id'    => 'event_id',
             'value' => 0,
@@ -870,6 +915,13 @@ class Events
 			<h3>'.__('Sucessful validate').'</h3></div>';
         $options['content_text'] .= '<div id="validate_button_fail" class="invisible center">
 			<h3 class="color_ff0">'.__('Fail validate').'</h3></div>';
+
+        $options['content_text'] .= '<div id="process_button_loading" class="invisible center">
+			<img src="images/ajax-loader.gif" /></div>';
+        $options['content_text'] .= '<div id="process_button_correct" class="invisible center">
+			<h3>'.__('Sucessful in process').'</h3></div>';
+        $options['content_text'] .= '<div id="process_button_fail" class="invisible center">
+			<h3 class="color_ff0">'.__('Fail in process').'</h3></div>';
 
         $options['button_close'] = true;
 
@@ -914,7 +966,7 @@ class Events
         $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 
         $filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
-        $ui->contentBeginCollapsible($filter_title);
+        $ui->contentBeginCollapsible($filter_title, 'filter-collapsible');
         $ui->beginForm('index.php?page=events');
         $items = db_get_all_rows_in_table('tevent_filter');
         $items[] = [
@@ -1202,9 +1254,9 @@ class Events
 						success:
 							function (data) {
                                 if (data.correct) {
-									event = data.event;
+                                    event = data.event;
 									//Fill the dialog
-									$("#detail_event_dialog .cell_event_name")
+                                    $("#detail_event_dialog h1.dialog_title")
 										.html(event["evento"]);
 									$("#detail_event_dialog .cell_event_id")
 										.html(id_event);
@@ -1220,6 +1272,8 @@ class Events
 										.html(event["criticity"]);
 									$("#detail_event_dialog .cell_event_status")
 										.html(event["status"]);
+									$("#detail_event_dialog .cell_event_status img")
+										.addClass("main_menu_icon");
 									$("#detail_event_dialog .cell_event_acknowledged_by")
 										.html(event["acknowledged_by"]);
 									$("#detail_event_dialog .cell_event_group")
@@ -1244,15 +1298,19 @@ class Events
 										//The event is validated.
                                         $("#validate_button").hide();
 									}
+
+                                    if (event["status"].indexOf("clock") >= 0) {
+                                        $("#process_button").hide();
+                                    }
+
 									$("#validate_button_loading").hide();
 									$("#validate_button_fail").hide();
 									$("#validate_button_correct").hide();
                                     $.mobile.loading( "hide" );
 									$("#detail_event_dialog_hook").click();
 
-                                    $("#detail_event_dialog-button_close").html("X");
+                                    $("#detail_event_dialog-button_close").html("");
                                     $("#detail_event_dialog-button_close").addClass("close-button-dialog");
-                                    $(".dialog_title").addClass("ml5px");
                                     $(".dialog_title").parent().addClass("flex align-items-center space-between");
                                     $(".dialog_title").parent().append($("#detail_event_dialog-button_close"));
 								}
@@ -1310,6 +1368,53 @@ class Events
 							function (jqXHR, textStatus, errorThrown) {
 								$("#validate_button_loading").hide();
 								$("#validate_button_fail").show();
+								$("#detail_event_dialog div.ui-header a.ui-btn-right")
+									.show();
+							}
+					});
+				}
+
+				function processEvent() {
+					id_event = $("#event_id").val();
+                    server_id = $("#server_id").val();
+
+					$("#process_button").hide();
+					$("#process_button_loading").show();
+
+					//Hide the button to close
+					$("#detail_event_dialog div.ui-header a.ui-btn-right")
+						.hide();
+
+					postvars = {};
+					postvars["action"] = "ajax";
+					postvars["parameter1"] = "events";
+					postvars["parameter2"] = "process_event";
+					postvars["id_event"] = id_event;
+                    postvars["server_id"] = server_id;
+
+					$.ajax ({
+						type: "POST",
+						url: "index.php",
+						dataType: "json",
+						data: postvars,
+						success:
+							function (data) {
+								$("#process_button_loading").hide();
+
+								if (data.correct) {
+									$("#process_button_correct").show();
+								}
+								else {
+									$("#process_button_fail").show();
+								}
+
+								$("#detail_event_dialog div.ui-header a.ui-btn-right")
+									.show();
+							},
+						error:
+							function (jqXHR, textStatus, errorThrown) {
+								$("#process_button_loading").hide();
+								$("#process_button_fail").show();
 								$("#detail_event_dialog div.ui-header a.ui-btn-right")
 									.show();
 							}

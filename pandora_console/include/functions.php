@@ -3908,7 +3908,14 @@ function series_type_graph_array($data, $show_elements_graph)
         $type_graph = $show_elements_graph['type_graph'];
     }
 
-    $color_series = color_graph_array();
+    if (isset($show_elements_graph['array_colors']) === true
+        && empty($show_elements_graph['array_colors']) === false
+        && is_array($show_elements_graph['array_colors']) === true
+    ) {
+        $color_series = $show_elements_graph['array_colors'];
+    } else {
+        $color_series = color_graph_array();
+    }
 
     if ($show_elements_graph['id_widget_dashboard']) {
         $opcion = unserialize(

@@ -1366,7 +1366,7 @@ class CredentialStore extends Wizard
                 $('#li_snmp_2').show();
 
                 if ($('#li_snmp_1').length > 0) {
-                    $('#version').val('1');
+                    //$('#version').val('1');
                     $('#version').trigger('change');
                 } else {
                     const ul = $('#modal_form').children('ul')[0];

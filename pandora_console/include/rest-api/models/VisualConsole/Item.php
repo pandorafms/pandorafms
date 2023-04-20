@@ -1944,12 +1944,10 @@ class Item extends CachedModel
                 $inputs[] = [
                     'id'        => 'div-textarea-label',
                     'arguments' => [
-                        'type'    => 'textarea',
-                        'rows'    => 4,
-                        'columns' => 60,
-                        'name'    => 'label',
-                        'value'   => $values['label'],
-                        'return'  => true,
+                        'type'   => 'textarea',
+                        'name'   => 'label',
+                        'value'  => $values['label'],
+                        'return' => true,
                     ],
                 ];
 

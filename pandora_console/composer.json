@@ -17,7 +17,8 @@
     "swiftmailer/swiftmailer": "^6.0",
     "amphp/parallel-functions": "^1.0",
     "chrome-php/chrome": "^1.7.1",
-    "artica/phpchartjs": "^1.0"
+    "artica/phpchartjs": "^1.0",
+    "tinymce/tinymce": "^6.4"
   },
   "repositories": {
     "phpchartjs": {

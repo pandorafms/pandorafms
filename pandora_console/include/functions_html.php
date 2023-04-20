@@ -2130,10 +2130,7 @@ function html_print_extended_select_for_time(
         $fields[$selected] = human_time_description_raw($selected, true);
     }
 
-    if (empty($nothing) === true
-        && (empty($selected) === true
-        || $selected === '0')
-    ) {
+    if (empty($nothing) === true && (is_int($selected) === true)) {
             $selected = 300;
     }
 
@@ -2248,6 +2245,13 @@ function html_print_extended_select_for_time(
 			$('#".$uniq_name."_manual').show();
 			$('#".$uniq_name."_default').hide();
 		}
+
+        if ($('#text-".$uniq_name."_text').val() === '0') {
+            setTimeout(() => {
+                $('#".$uniq_name."_manual').hide();
+                $('#".$uniq_name."_default').show();
+            }, 100);
+        }
 	</script>";
     $returnString = ob_get_clean();
 
@@ -6435,7 +6439,11 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         [$id_agente]
     );
 
-    $name = 'secondary_groups_selected'.$options['extra_id'];
+    if ($options['selected_post'] !== null) {
+        $secondary_groups_selected['plain'] = $options['selected_post'];
+    }
+
+    $name = 'secondary_groups_selected[]'.$options['extra_id'];
     if ($options['only_select'] === true) {
         $name = 'secondary_groups'.$options['extra_id'].'[]';
     }
@@ -6455,7 +6463,7 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         $name,
         // Selected.
         // No select any by default.
-        $secondary_groups_selected['for_select'],
+        $secondary_groups_selected['plain'],
         // Script.
         // Javascript onChange code.
         '',

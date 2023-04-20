@@ -25,6 +25,11 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+:root {
+  --primary-color: #14524f;
+  --secondary-color: #ffffff;
+  --input-border: #c0ccdc;
+}
 
 @font-face {
   font-family: "lato";
@@ -1504,4 +1509,40 @@ div.nodata_container {
 
 .visual-console-container-dashboard a:visited {
   color: inherit !important;
+}
+
+/* SVG icons mask */
+.module_background_state {
+  mask: url(../../../images/modules@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../../images/modules@svg.svg) no-repeat center / contain;
+  margin: 0 auto;
+}
+
+.alert_background_state {
+  mask: url(../../../images/alert@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../../images/alert@svg.svg) no-repeat center / contain;
+  margin: 0 auto;
+}
+
+div.main_menu_icon,
+img.main_menu_icon[src$=".svg"] {
+  width: 18px;
+  height: 18px;
+}
+
+img.os-big-icon[src$=".svg"] {
+  width: 100px;
+  height: 100px;
+}
+
+div.noresizevc.graph.adapted_sparse
+  div.flot-x-axis.flot-x1-axis.xAxis.x1Axis
+  > div.flot-tick-label.tickLabel:nth-child(odd) {
+  visibility: hidden !important;
+}
+
+div.noresizevc.graph.adapted_sparse
+  div.flot-x-axis.flot-x1-axis.xAxis.x1Axis
+  > div.flot-tick-label.tickLabel:first-child {
+  visibility: visible !important;
 }

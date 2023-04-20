@@ -2140,8 +2140,7 @@ echo '</form>';
 
 ui_require_css_file('color-picker', 'include/styles/js/');
 ui_require_jquery_file('colorpicker');
-
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ui_require_javascript_file('pandora');
 
 ?>
@@ -2161,6 +2160,10 @@ $(document).ready(function(){
             $("#select_csv_divider").attr("src", editIcon);
         }
     })
+
+    defineTinyMCE('#textarea_custom_report_front_header');
+    defineTinyMCE('#textarea_custom_report_front_footer');
+    defineTinyMCE('#textarea_custom_report_front_firstpage');
 })
 
 // Juanma (07/05/2014) New feature: Custom front page for reports  
@@ -2216,17 +2219,6 @@ function change_servicetree_nodes_padding () {
     }
 }
 
-var added_config1 = {
-        "elements":"textarea_custom_report_front_header, textarea_custom_report_front_footer",
-    }
-
-    defineTinyMCE(added_config1);
-
-    var added_config2 = {
-        "elements":"textarea_custom_report_front_firstpage",
-    }
-
-    defineTinyMCE(added_config2);
 
 $(document).ready (function () {
 

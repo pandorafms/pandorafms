@@ -228,7 +228,7 @@ if ($create_agent) {
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
 
-    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+    $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
     if ($fields === false) {
@@ -343,7 +343,7 @@ if ($create_agent) {
                 'agents_update_secondary_groups',
                 [
                     $id_agente,
-                    explode(',', $secondary_groups),
+                    $secondary_groups,
                     [],
                 ]
             );
@@ -992,7 +992,7 @@ if ($update_agent) {
     $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
-    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+    $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
 
@@ -1185,13 +1185,27 @@ if ($update_agent) {
 				"Quiet":"'.(int) $quiet.'",
 				"Cps":"'.(int) $cps.'"}';
 
+
+            $secondary_groups_selected = enterprise_hook(
+                'agents_get_secondary_groups',
+                [$id_agente]
+            );
+
+            $delete_secondary_groups = [];
+            foreach ($secondary_groups_selected['plain'] as $v_selected) {
+                if (in_array($v_selected, $secondary_groups) === false) {
+                    array_push($delete_secondary_groups, $v_selected);
+                }
+            }
+
             // Create the secondary groups.
             enterprise_hook(
                 'agents_update_secondary_groups',
                 [
                     $id_agente,
-                    explode(',', $secondary_groups),
-                    [],
+                    $secondary_groups,
+                    $delete_secondary_groups,
+                    true,
                 ]
             );
 
@@ -1505,10 +1519,31 @@ if ($update_module === true || $create_module === true) {
     $critical_instructions = (string) get_parameter('critical_instructions');
     $warning_instructions = (string) get_parameter('warning_instructions');
     $unknown_instructions = (string) get_parameter('unknown_instructions');
-    $critical_inverse = (int) get_parameter('critical_inverse');
-    $warning_inverse = (int) get_parameter('warning_inverse');
-    $percentage_critical = (int) get_parameter('percentage_critical');
-    $percentage_warning = (int) get_parameter('percentage_warning');
+    // Warning thresholds
+    $warning_threshold_check_type = get_parameter('warning_thresholds_checks');
+    if ($warning_threshold_check_type === 'normal_warning') {
+        $percentage_warning = 0;
+        $warning_inverse = 0;
+    } else if ($warning_threshold_check_type === 'warning_inverse') {
+         $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
+         $percentage_warning = 0;
+    } else {
+        $percentage_warning = (int) get_parameter('warning_inverse_string_sent');
+        $warning_inverse = 0;
+    }
+
+    // Critical thresholds
+    $critical_threshold_check_type = get_parameter('critical_thresholds_checks');
+    if ($critical_threshold_check_type === 'normal_critical') {
+        $percentage_critical = 0;
+        $critical_inverse = 0;
+    } else if ($critical_threshold_check_type === 'critical_inverse') {
+         $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
+         $percentage_critical = 0;
+    } else {
+        $percentage_critical = (int) get_parameter('critical_inverse_string_sent');
+        $critical_inverse = 0;
+    }
 
     $id_category = (int) get_parameter('id_category');
 
@@ -2457,7 +2492,13 @@ switch ($tab) {
                         }]
                     });
             }
-    });
+        });
+
+        $("#network_component").change(function (e) {
+            setTimeout(() => {
+                $('#snmp_version').trigger("change");
+            }, 100);
+        });
     });
 
     // Change description when edit port

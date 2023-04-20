@@ -134,7 +134,7 @@ class AuditLog extends HTML
 
             ui_print_standard_header(
                 __('%s audit', get_product_name()).' &raquo; '.__('Review Logs'),
-                'images/gm_log.png',
+                'images/gm_log@svg.svg',
                 false,
                 '',
                 false,

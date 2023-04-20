@@ -358,5 +358,14 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'tinymce/tinymce' => array(
+            'pretty_version' => '6.4.1',
+            'version' => '6.4.1.0',
+            'reference' => 'b2327c03fba64f8c47ec030c1f3bce98da8f7596',
+            'type' => 'component',
+            'install_path' => __DIR__ . '/../tinymce/tinymce',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
     ),
 );

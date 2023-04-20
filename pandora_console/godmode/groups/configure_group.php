@@ -120,6 +120,16 @@ if (is_metaconsole() === true) {
 // Data before table.
 $files = list_files(((is_metaconsole() === true) ? '../../' : '').'images/', '@groups.svg', 1, 0);
 
+$files_old = list_files('images/groups_small/', 'png', 1, 0);
+foreach ($files_old as $key => $f) {
+    // Remove from the list the non-desired .png files.
+    if (strpos($f, '.bad.png') !== false || strpos($f, '.default.png') !== false || strpos($f, '.ok.png') !== false || strpos($f, '.warning.png') !== false) {
+        unset($files_old[$key]);
+    }
+}
+
+$files = array_merge($files, $files_old);
+
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filter-table-adv';
@@ -133,10 +143,19 @@ $table->data[0][0] = html_print_label_input_block(
     html_print_input_text('name', $name, '', 35, 100, true)
 );
 
+$extension = pathinfo($icon, PATHINFO_EXTENSION);
+if (empty($extension) === true) {
+    $icon .= '.png';
+}
+
 $input_icon = html_print_select($files, 'icon', $icon, '', 'None', '', true, false, true, '', false, 'width: 100%;');
 $input_icon .= ' <span id="icon_preview" class="mrgn_lft_05em">';
 if (empty($icon) === false) {
-    $input_icon .= html_print_image('images/'.$icon, true);
+    if (empty($extension) === true || $extension === 'png') {
+        $input_icon .= html_print_image('images/groups_small/'.$icon, true);
+    } else {
+        $input_icon .= html_print_image('images/'.$icon, true);
+    }
 }
 
 $input_icon .= '</span>';
@@ -304,12 +323,17 @@ echo '</form>';
 function icon_changed () {
     var inputs = [];
     var data = this.value;
+    var extension = data.split('.').pop();
     $('#icon_preview').fadeOut ('normal', function () {
         $('#icon_preview').empty ();
         if (data != "") {
             var params = [];
             params.push("get_image_path=1");
-            params.push("img_src=images/" + data);
+            if (extension === 'png') {
+                params.push("img_src=images/groups_small/" + data);
+            } else {
+                params.push("img_src=images/" + data);
+            }
             params.push("page=include/ajax/skins.ajax");
             params.push("only_src=1");
             jQuery.ajax ({

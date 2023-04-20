@@ -14,12 +14,12 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='202302201'
+S_VERSION='202304111'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ]       || TZ="Europe/Madrid"
-[ "$MYVER" ]    || MYVER=57
+[ "$MYVER" ]    || MYVER=80
 [ "$PHPVER" ]   || PHPVER=8
 [ "$DBHOST" ]   || DBHOST=127.0.0.1
 [ "$DBNAME" ]   || DBNAME=pandora
@@ -149,8 +149,8 @@ check_root_permissions
 
 #advicing BETA PROGRAM
 INSTALLING_VER="${green}RRR version enable using RRR PandoraFMS packages${reset}"
-[ "$PANDORA_BETA" -ne '0' ] && INSTALLING_VER="${red}BETA version enable using nightly PandoraFMS packages${reset}"
 [ "$PANDORA_LTS" -ne '0' ] && INSTALLING_VER="${green}LTS version enable using LTS PandoraFMS packages${reset}"
+[ "$PANDORA_BETA" -ne '0' ] && INSTALLING_VER="${red}BETA version enable using nightly PandoraFMS packages${reset}"
 echo -e $INSTALLING_VER
 
 # Connectivity
@@ -327,7 +327,8 @@ console_dependencies=" \
     mod_ssl \
     libzstd \
     openldap-clients \
-    chromium \
+    http://firefly.artica.es/centos8/chromium-110.0.5481.177-1.el7.x86_64.rpm \
+    http://firefly.artica.es/centos8/chromium-common-110.0.5481.177-1.el7.x86_64.rpm \
     http://firefly.artica.es/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
@@ -405,6 +406,7 @@ MS_ID=$(head -1 /etc/odbcinst.ini | tr -d '[]') &>> "$LOGFILE"
 setenforce 0  &>> "$LOGFILE"
 sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/selinux/config  &>> "$LOGFILE"
 systemctl disable firewalld --now &>> "$LOGFILE"
+
 
 # Adding standar cnf for initial setup.
 cat > /etc/my.cnf << EO_CONFIG_TMP
@@ -516,9 +518,9 @@ fi
 
 # if beta is enable
 if [ "$PANDORA_BETA" -eq '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://pandorafms.com/community/community-console-rpm-beta/"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
+    PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.noarch.rpm"
+    PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # Downloading Pandora Packages
@@ -629,6 +631,13 @@ sed -i -e "s/^dbuser.*/dbuser $DBUSER/g" $PANDORA_SERVER_CONF
 sed -i -e "s|^dbpass.*|dbpass $DBPASS|g" $PANDORA_SERVER_CONF
 sed -i -e "s/^dbport.*/dbport $DBPORT/g" $PANDORA_SERVER_CONF
 sed -i -e "s/^#.mssql_driver.*/mssql_driver $MS_ID/g" $PANDORA_SERVER_CONF
+
+#check fping
+fping_bin=$(which fping)
+execute_cmd "[ $fping_bin ]" "Check fping location: $fping_bin"
+if [ "$fping_bin" != "" ]; then
+  sed -i -e "s|^fping.*|fping $fping_bin|g" $PANDORA_SERVER_CONF
+fi
 
 # Enable agent remote config
 sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF 

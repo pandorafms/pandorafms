@@ -3908,7 +3908,14 @@ function series_type_graph_array($data, $show_elements_graph)
         $type_graph = $show_elements_graph['type_graph'];
     }
 
-    $color_series = color_graph_array();
+    if (isset($show_elements_graph['array_colors']) === true
+        && empty($show_elements_graph['array_colors']) === false
+        && is_array($show_elements_graph['array_colors']) === true
+    ) {
+        $color_series = $show_elements_graph['array_colors'];
+    } else {
+        $color_series = color_graph_array();
+    }
 
     if ($show_elements_graph['id_widget_dashboard']) {
         $opcion = unserialize(
@@ -4050,7 +4057,7 @@ function series_type_graph_array($data, $show_elements_graph)
                     $name_legend .= ' * '.$value['weight'].') ';
                 }
 
-                $data_return['legend'][$key] = $name_legend;
+                $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.$name_legend.'</span>';
                 if ((int) $value['min'] === PHP_INT_MAX) {
                     $value['min'] = 0;
                 }
@@ -4059,28 +4066,28 @@ function series_type_graph_array($data, $show_elements_graph)
                     $value['max'] = 0;
                 }
 
-                $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
+                $data_return['legend'][$key] .= '<span style="font-size: 9px;">'.__('Min').'</span><span style="font-weight: 600;">'.remove_right_zeros(
                     number_format(
                         $value['min'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '.__('Max:').remove_right_zeros(
+                ).'</span>&nbsp;<span style="font-size: 9px;">'.__('Max').'</span><span style="font-weight: 600;">'.remove_right_zeros(
                     number_format(
                         $value['max'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '._('Avg:').remove_right_zeros(
+                ).'</span>&nbsp;<span style="font-size: 9px;">'._('Avg').'</span><span style="font-weight: 600;">'.remove_right_zeros(
                     number_format(
                         $value['avg'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '.$str;
+                ).'</span>&nbsp;'.$str;
 
                 if ($show_elements_graph['compare'] == 'overlapped'
                     && $key == 'sum2'

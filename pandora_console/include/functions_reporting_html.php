@@ -1041,11 +1041,11 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
         $table1->class = 'info_table';
 
         $table1->align = [];
-        $table1->align[0] = 'center';
+        $table1->align[0] = 'left';
         if ($item['show_summary_group']) {
-            $table1->align[3] = 'center';
+            $table1->align[3] = 'left';
         } else {
-            $table1->align[2] = 'center';
+            $table1->align[2] = 'left';
         }
 
         $table1->data = [];
@@ -1299,7 +1299,7 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                 $table1->class = 'info_table';
                 $table1->data = [];
                 $table1->head = [];
-                $table1->align = 'left';
+                $table1->align[0] = 'left';
 
                 if ($show_summary_group) {
                     $table1->head[0]  = __('Status');
@@ -1378,7 +1378,16 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                             $custom_data = json_decode($event['custom_data'], true);
                             $custom_data_text = '';
                             foreach ($custom_data as $key => $value) {
-                                $custom_data_text .= $key.' = '.$value.'<br>';
+                                if (is_array($value)) {
+                                    $custom_data_text .= $key.' = ';
+                                    foreach ($value as $action) {
+                                        $custom_data_text .= $action.', ';
+                                    }
+
+                                    $custom_data_text = rtrim($custom_data_text, ', ').'<br>';
+                                } else {
+                                    $custom_data_text .= $key.' = '.$value.'<br>';
+                                }
                             }
 
                             $data[6] = $custom_data_text;
@@ -1996,6 +2005,13 @@ function reporting_html_inventory($table, $item, $pdf=0)
             && is_array($type_modules) === true
         ) {
             foreach ($type_modules as $key_type_module => $type_module) {
+                $print_table = true;
+                foreach ($type_module as $key => $module) {
+                    if (count($module['data']) == 0) {
+                        unset($type_module[$key]);
+                    }
+                }
+
                 $table1 = new stdClass();
                 $table1->width = '99%';
                 $table1->class = 'info_table';
@@ -2006,57 +2022,62 @@ function reporting_html_inventory($table, $item, $pdf=0)
                 if (isset($type_module) === true
                     && is_array($type_module) === true
                 ) {
-                    foreach ($type_module as $key_type => $module) {
-                        if (isset($module['data']) === true
-                            && is_array($module['data']) === true
-                        ) {
-                            array_pop($module['data']);
-                            foreach ($module['data'] as $k_module => $v_module) {
-                                $str_key = $key_type_module.'-'.$key_type.'-'.$k_module;
-                                $table1->head[0] = __('Agent');
-                                $table1->head[1] = __('Module');
-                                $table1->head[2] = __('Date');
-                                $table1->headstyle[0] = 'text-align: left';
-                                $table1->headstyle[1] = 'text-align: left';
-                                $table1->headstyle[2] = 'text-align: left';
-                                $table1->cellstyle[$str_key][0] = 'text-align: left;';
-                                $table1->cellstyle[$str_key][1] = 'text-align: left;';
-                                $table1->cellstyle[$str_key][2] = 'text-align: left;';
-                                $table1->data[$str_key][0] = $module['agent_name'];
-                                $table1->data[$str_key][1] = $key_type_module;
-                                $dateModule = explode(' ', $module['timestamp']);
-                                $table1->data[$str_key][2] = $dateModule[0];
-                                if (isset($v_module) === true
-                                    && is_array($v_module) === true
-                                ) {
-                                    foreach ($v_module as $k => $v) {
-                                        $table1->head[$k] = $k;
-                                        $table1->headstyle[$k] = 'text-align: left';
-                                        $table1->cellstyle[$str_key][$k] = 'text-align: left;';
-                                        if ($pdf === 0) {
-                                            $table1->data[$str_key][$k] = $v;
-                                        } else {
-                                            // Workaround to prevent table columns from growing indefinitely in PDFs.
-                                            $table1->data[$str_key][$k] = preg_replace(
-                                                '/([^\s]{30})(?=[^\s])/',
-                                                '$1'.'<br>',
-                                                $v
-                                            );
+                    if (count($type_module) > 0) {
+                        foreach ($type_module as $key_type => $module) {
+                            if (isset($module['data']) === true
+                                && is_array($module['data']) === true
+                            ) {
+                                foreach ($module['data'] as $k_module => $v_module) {
+                                    $str_key = $key_type_module.'-'.$key_type.'-'.$k_module;
+                                    $table1->head[0] = __('Agent');
+                                    $table1->head[1] = __('Module');
+                                    $table1->head[2] = __('Date');
+                                    $table1->headstyle[0] = 'text-align: left';
+                                    $table1->headstyle[1] = 'text-align: left';
+                                    $table1->headstyle[2] = 'text-align: left';
+                                    $table1->cellstyle[$str_key][0] = 'text-align: left;';
+                                    $table1->cellstyle[$str_key][1] = 'text-align: left;';
+                                    $table1->cellstyle[$str_key][2] = 'text-align: left;';
+                                    $table1->data[$str_key][0] = $module['agent_name'];
+                                    $table1->data[$str_key][1] = $key_type_module;
+                                    $dateModule = explode(' ', $module['timestamp']);
+                                    $table1->data[$str_key][2] = $dateModule[0];
+                                    if (isset($v_module) === true
+                                        && is_array($v_module) === true
+                                    ) {
+                                        foreach ($v_module as $k => $v) {
+                                            $table1->head[$k] = $k;
+                                            $table1->headstyle[$k] = 'text-align: left';
+                                            $table1->cellstyle[$str_key][$k] = 'text-align: left;';
+                                            if ($pdf === 0) {
+                                                $table1->data[$str_key][$k] = $v;
+                                            } else {
+                                                // Workaround to prevent table columns from growing indefinitely in PDFs.
+                                                $table1->data[$str_key][$k] = preg_replace(
+                                                    '/([^\s]{30})(?=[^\s])/',
+                                                    '$1'.'<br>',
+                                                    $v
+                                                );
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                    } else {
+                        $print_table = false;
                     }
+                } else {
+                    $print_table = false;
                 }
 
-                if ($pdf === 0) {
+                if ($pdf === 0 && $print_table === true) {
                     $table->colspan[$key_type_module]['cell'] = 3;
                     $table->data[$key_type_module]['cell'] = html_print_table(
                         $table1,
                         true
                     );
-                } else {
+                } else if ($print_table === true) {
                     $return_pdf .= html_print_table(
                         $table1,
                         true
@@ -2620,16 +2641,14 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
         $table1->width = '99%';
         $table1->class = 'info_table';
         $table1->align = [];
-        $table1->align[0] = 'center';
-        $table1->align[1] = 'center';
-        $table1->align[3] = 'center';
-        if ((bool) $item['show_custom_data'] === true) {
-            if ($item['show_summary_group']) {
-                $table1->align[7] = 'left';
-            } else {
-                $table1->align[6] = 'left';
-            }
-        }
+        $table1->align[0] = 'left';
+        $table1->align[1] = 'left';
+        $table1->align[2] = 'left';
+        $table1->align[3] = 'left';
+        $table1->align[4] = 'left';
+        $table1->align[5] = 'left';
+        $table1->align[6] = 'left';
+        $table1->align[7] = 'left';
 
         $table1->data = [];
 
@@ -2705,7 +2724,7 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             }
 
             if ($item['show_summary_group']) {
-                $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp']).'</font>';
             } else {
                 $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
             }
@@ -2714,7 +2733,16 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
                 $custom_data = json_decode($event['custom_data'], true);
                 $custom_data_text = '';
                 foreach ($custom_data as $key => $value) {
-                    $custom_data_text .= $key.' = '.$value.'<br>';
+                    if (is_array($value)) {
+                        $custom_data_text .= $key.' = ';
+                        foreach ($value as $action) {
+                            $custom_data_text .= $action.', ';
+                        }
+
+                        $custom_data_text = rtrim($custom_data_text, ', ').'<br>';
+                    } else {
+                        $custom_data_text .= $key.' = '.$value.'<br>';
+                    }
                 }
 
                 $data[] = $custom_data_text;
@@ -4721,7 +4749,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 $table1->style[0] = 'overflow-wrap: break-word';
 
                 // Align percentage and checks resume.
-                $table1->align[2] = 'center';
+                $table1->align[2] = 'left';
                 $table1->data[$k_chart][0] = $chart['agent'];
                 $table1->data[$k_chart][0] .= '<br />';
                 $table1->data[$k_chart][0] .= $chart['module'];
@@ -5986,8 +6014,14 @@ function reporting_get_events($data, $links=false)
         $table_events->size[2] = '10%';
         $table_events->size[3] = '10%';
 
-        $event_view = '<fieldset class="tactical_set">
-                    <legend>'.__('Important Events by Criticity').'</legend>'.html_print_table($table_events, true).'</fieldset>';
+        $tooltip = ui_print_help_tip(
+            __(
+                'Event count corresponds to events within the last hour'
+            ),
+            true
+        );
+
+        $event_view = '<fieldset class="tactical_set"><legend>'.__('Important Events by Criticity').$tooltip.'</legend>'.html_print_table($table_events, true).'</fieldset>';
     }
 
     return $event_view;

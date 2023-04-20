@@ -51,6 +51,7 @@ if (! check_acl($config['id_user'], $group, 'AR') || $module_id == 0) {
     return;
 }
 
+$table = new stdClass();
 $table->cellpadding = 3;
 $table->cellspacing = 3;
 $table->width = '98%';
@@ -183,6 +184,7 @@ if ($config['history_db_enabled'] == 1) {
 
 echo '</h4>';
 
+$formtable = new stdClass();
 $formtable->width = '98%';
 $formtable->class = 'databox';
 $formtable->data = [];

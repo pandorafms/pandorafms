@@ -944,12 +944,12 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                 true
             );
         } else {
-            $buttons_act .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'&tab=module">';
+            $buttons_act .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'&tab=module&show_dialog_create=1">';
             $buttons_act .= html_print_submit_button(
                 __('Go to module creation'),
                 'upd_button',
                 false,
-                ['class' => 'secondary mini'],
+                ['class' => 'secondary mini no_decoration'],
                 true
             );
 
@@ -958,7 +958,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                 __('Go to agent edition'),
                 'upd_button',
                 false,
-                ['class' => 'secondary mini'],
+                ['class' => 'secondary mini no_decoration'],
                 true
             );
         }

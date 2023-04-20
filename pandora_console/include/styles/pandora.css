@@ -241,7 +241,7 @@ table tbody tr td h4 {
 
 a {
   color: #3f3f3f;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 a:hover {
@@ -4863,6 +4863,7 @@ div#dialog_messages table th:last-child {
   width: 550px;
   margin-top: 55px;
   border-radius: 5px;
+  max-height: 530px;
 }
 
 #notification-wrapper::before {
@@ -4896,19 +4897,13 @@ div#dialog_messages table th:last-child {
 }
 
 .notification-item {
-  background: whitesmoke;
-  height: 100px;
-  margin: 7px;
-  border: #e4e4e4 solid 1px;
+  height: 95px;
+  margin-top: 15px;
+  border-bottom: #eaeaea solid 1px;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   padding: 5px;
-}
-
-.notification-item:hover {
-  border: #ccc solid 1px;
-  text-decoration: none;
 }
 
 .notification-item > * {
@@ -11894,4 +11889,54 @@ td[id^="table_info_box"] a {
 }
 .info_table.events > tbody > tr > td {
   border-bottom: 1px solid #dedede !important;
+}
+
+div.parent_graph > p.legend_background > table > tbody {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+div.parent_graph > p.legend_background > table > tbody > tr {
+  margin-right: 20px;
+}
+
+.small-input-select2 > div > input,
+.small-input-select2 > div > select,
+.small-input {
+  height: 30px;
+  border: 1px solid #8a96a6;
+  margin: 3px 2px;
+}
+
+.small-input-select2 > div > a > img {
+  padding-top: 5px !important;
+}
+
+.small-input-select2
+  .select2-container
+  .select2-selection--single
+  .select2-selection__rendered,
+.small-input-select2
+  div
+  .select2-container
+  .select2-selection--single
+  .select2-selection__rendered {
+  line-height: 30px !important;
+}
+
+.small-input-select2 .select2-container .select2-selection--single,
+.small-input-select2 div .select2-container .select2-selection--single {
+  height: 30px !important;
+  border: 1px solid #8a96a6 !important;
+  margin: 3px 2px;
+}
+
+.small-input-select2 .select2-selection__arrow,
+.small-input-select2 div .select2-selection__arrow {
+  top: -1px !important;
+}
+
+.break-word {
+  word-wrap: break-word;
 }

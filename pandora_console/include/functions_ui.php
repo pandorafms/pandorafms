@@ -7701,7 +7701,7 @@ function ui_get_inventory_module_add_form(
     }
 
     function add_row_for_custom_field (fieldName, isSecure) {
-        var custom_fields_num = $("tr[id^=inventory-module-form-custom-field-row-]").length+1;
+        var custom_fields_num = $("tr[id^=inventory-module-form-custom-field-row-]").length;
         $("#inventory-module-form-hidden-custom-field-row")
         .clone()
         .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)

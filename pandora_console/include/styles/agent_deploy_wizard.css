@@ -83,3 +83,15 @@
 .green-link:hover {
   color: #0d312f !important;
 }
+
+.custom-switch-radio-button > label {
+  color: #444 !important;
+}
+
+.custom-switch-radio-button input:checked + label img {
+  filter: brightness(100);
+}
+
+.svg-brightness-0 {
+  filter: brightness(0);
+}

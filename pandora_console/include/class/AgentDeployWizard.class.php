@@ -231,7 +231,7 @@ class AgentDeployWizard
         $tableConfiguration->rowspan = [];
 
         $windows_label_img = html_print_image(
-            '/images/windows@os.svg',
+            '/images/windows-grey@svg.svg',
             true,
             ['class' => 'installer-title-icon main_menu_icon']
         );
@@ -245,7 +245,7 @@ class AgentDeployWizard
         );
 
         $linux_label_img = html_print_image(
-            '/images/linux@os.svg',
+            '/images/linux-grey@svg.svg',
             true,
             ['class' => 'installer-title-icon main_menu_icon']
         );
@@ -259,7 +259,7 @@ class AgentDeployWizard
         );
 
         $mac_label_img = html_print_image(
-            '/images/apple@os.svg',
+            '/images/apple-grey@svg.svg',
             true,
             ['class' => 'installer-title-icon main_menu_icon']
         );
@@ -312,20 +312,12 @@ class AgentDeployWizard
             html_print_div(
                 [
                     'id'      => 'os_selector',
-                    'class'   => 'switch_radio_button',
+                    'class'   => 'switch_radio_button custom-switch-radio-button',
                     'content' => implode('', $switchButtons),
                 ],
                 true
             ).$sub_tip
         );
-
-        /*$stepper_container = html_print_div(
-            [
-                'class' => 'switch_radio_button',
-                'content'
-            ],
-            true
-        );*/
 
         $server_add_help_tip = ui_print_help_tip(
             __('Use your %s Data Server IP address here. It must be possible to establish a connection from the agent to port 41121/tcp of this address.', get_product_name()),
@@ -438,9 +430,9 @@ class AgentDeployWizard
 
         // Start of Unix / Linux installer section.
         $title = html_print_image(
-            '/images/linux@os.svg',
+            '/images/linux-grey@svg.svg',
             true,
-            ['class' => 'installer-title-icon main_menu_icon']
+            ['class' => 'installer-title-icon main_menu_icon svg-brightness-0']
         );
 
         $title .= '<span class="header_title">'.__('Linux agent').'</span>';
@@ -480,9 +472,9 @@ class AgentDeployWizard
 
         // Start of Windows installer section.
         $title = html_print_image(
-            '/images/windows@os.svg',
+            '/images/windows-grey@svg.svg',
             true,
-            ['class' => 'installer-title-icon main_menu_icon']
+            ['class' => 'installer-title-icon main_menu_icon svg-brightness-0']
         );
 
         $title .= '<span class="header_title">'.__('Windows agent').'</span>';
@@ -512,9 +504,9 @@ class AgentDeployWizard
 
         // Start of MacOS installer section.
         $title = html_print_image(
-            '/images/apple@os.svg',
+            '/images/apple-grey@svg.svg',
             true,
-            ['class' => 'installer-title-icon main_menu_icon']
+            ['class' => 'installer-title-icon main_menu_icon svg-brightness-0']
         );
 
         $title .= '<span class="header_title">'.__('Mac agent').'</span>';
@@ -670,10 +662,8 @@ class AgentDeployWizard
                 $('#installer_page').show();
 
                 var os_val = $('input[name="os"]:checked').val();
-                var module_definition_val = $('input[name="module_definition"]:checked').val();
                 var server_addr_val = $('input[name="server_addr"]').val();
                 var group_val = $('[name="group"] option:selected').text();
-                
 
                 var win_installer_command = `curl -k "https://firefly.artica.es/pandorafms/latest/Windows/Pandora%20FMS%20Windows%20Agent%20v7.0NG.x86_64.exe" -o PandoraFMS_Windows_Agent_7.0NG.x86_64.exe  ; ./PandoraFMS_Windows_Agent_7.0NG.x86_64.exe  /S  --ip ${server_addr_val} --group ${group_val}  --remote_config 1`;
                 var linux_installer_command = `export PANDORA_SERVER_IP='${server_addr_val}' && \\ \nexport PANDORA_REMOTE_CONFIG=1 && \\ \nexport PANDORA_GROUP='${group_val}' && \\ \ncurl -Ls https://pfms.me/agent-deploy | bash`;
@@ -743,13 +733,7 @@ class AgentDeployWizard
 
                         var stepper_container = $('#stepper_container');
                         var stepper = new Stepper(stepper_container, stepper_step_names);
-                        /*
-                        {
-                          1: 'Step One',
-                          2: 'Step Two',
-                          3: 'Step 3',
-                        }
-                        */
+
                         stepper.render();
 
                         // Initial step: 1.

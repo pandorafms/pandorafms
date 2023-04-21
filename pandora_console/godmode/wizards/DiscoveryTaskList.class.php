@@ -726,6 +726,17 @@ class DiscoveryTaskList extends HTML
                     $data[1] .= '<b>'.$task['name'].'</b>';
                 }
 
+                if ((int) $task['type'] === DISCOVERY_EXTENSION && (int) $task['setup_complete'] === 0) {
+                    $data[1] .= html_print_image(
+                        'images/alert-yellow@svg.svg',
+                        true,
+                        [
+                            'title' => __('Tasks without complete setup won\'t be run by server.'),
+                            'class' => 'main_menu_icon invert_filter margin-left-1',
+                        ]
+                    );
+                }
+
                 if ($task['disabled'] != 2) {
                     $data[1] .= '</span>';
                 }

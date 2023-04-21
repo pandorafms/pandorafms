@@ -1027,7 +1027,6 @@ sub pandora_execute_alert {
 		$threshold = $action->{'action_threshold'} if (defined ($action->{'action_threshold'}) && $action->{'action_threshold'} > 0);
 		$threshold = $action->{'module_action_threshold'} if (defined ($action->{'module_action_threshold'}) && $action->{'module_action_threshold'} > 0);
 		if (time () >= ($action->{'last_execution'} + $threshold)) {
-			print "Entro";
 			my $monitoring_event_custom_data = '';
 
 			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));

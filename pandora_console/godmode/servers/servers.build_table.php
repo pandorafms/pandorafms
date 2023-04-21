@@ -73,6 +73,8 @@ $table->headstyle[8] = 'text-align:right;width: 120px;';
 $table->titleclass = 'tabletitle';
 $table->titlestyle = 'text-transform:uppercase;';
 
+$table->style[6] = 'display: flex;align-items: center;';
+
 $table->head = [];
 $table->head[0] = __('Name');
 $table->head[1] = __('Status');
@@ -166,8 +168,16 @@ foreach ($servers as $server) {
     }
 
     $data[6] = $server['threads'].' : '.$server['queued_modules'];
-    if ($server['queued_modules'] > 200) {
-        $data[6] .= clippy_context_help('server_queued_modules');
+    if ($server['queued_modules'] > 500) {
+        $data[6] .= '&nbsp;&nbsp;<div class="inline"><a onclick="show_dialog();" >'.html_print_image(
+            'images/info-warning.svg',
+            true,
+            [
+                'width' => 16,
+                'heght' => 16,
+                'class' => 'pulsate clickable',
+            ]
+        ).'</a></div>';
     }
 
     $data[7] = ui_print_timestamp($server['keepalive'], true);
@@ -306,3 +316,26 @@ if ($tiny) {
 } else {
     html_print_table($table);
 }
+
+?>
+<script type="text/javascript">
+    function show_dialog() {
+        confirmDialog({
+            title: "<?php echo __('Excesive Queued.'); ?>",
+            message: "<?php echo __('You have too many items in the processing queue. This can happen if your server is overloaded and/or improperly configured. This could be something temporary, or a bottleneck. If it is associated with a delay in monitoring, with modules going to unknown, try increasing the number of threads.'); ?>",
+            strOKButton: "<?php echo __('Close'); ?>",
+            hideCancelButton: true,
+            size: 675,
+        });
+    }
+
+    function runIt() {
+        $('.pulsate').animate({
+            opacity: '1'
+        }, 1000);
+        $('.pulsate').animate({
+            opacity: '0.6'
+        }, 1000, runIt);
+    }
+    runIt();
+</script>

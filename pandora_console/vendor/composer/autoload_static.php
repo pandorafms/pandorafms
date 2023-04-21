@@ -131,8 +131,8 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         ),
         'Test\\' => 
         array (
-            0 => __DIR__ . '/..' . '/halfpastfouram/collection/test',
-            1 => __DIR__ . '/..' . '/artica/phpchartjs/test',
+            0 => __DIR__ . '/..' . '/artica/phpchartjs/test',
+            1 => __DIR__ . '/..' . '/halfpastfouram/collection/test',
         ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (

@@ -859,14 +859,26 @@ div.widget-mrgn-0px > div.parent_graph {
   margin: 0px;
 }
 
-div.widget-mrgn-0px > div.parent_graph > div[id^="graph_"] {
-  width: calc(100% + 14px) !important;
-}
-
 div.content-widget
   > div.container-center
   > div.centered.w90p
   > div#container_show_stats
   > canvas {
   height: 310px;
+}
+
+div.basic-chart-title {
+  position: absolute;
+  width: calc(100% - 20px);
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+}
+
+div.basic-chart-title span {
+  font-size: 20px;
+  font-weight: bold;
 }

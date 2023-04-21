@@ -10,7 +10,7 @@ return array(
     'Wrench\\' => array($vendorDir . '/chrome-php/wrench/src'),
     'UpdateManager\\' => array($baseDir . '/update_manager_client/lib/UpdateManager'),
     'Tests\\' => array($baseDir . '/tests'),
-    'Test\\' => array($vendorDir . '/halfpastfouram/collection/test', $vendorDir . '/artica/phpchartjs/test'),
+    'Test\\' => array($vendorDir . '/artica/phpchartjs/test', $vendorDir . '/halfpastfouram/collection/test'),
     'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
     'Symfony\\Polyfill\\Php72\\' => array($vendorDir . '/symfony/polyfill-php72'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),

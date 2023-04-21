@@ -859,7 +859,7 @@ ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
 ui_require_jquery_file('ajaxqueue');
 ui_require_jquery_file('bgiframe');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ?>
 
 <script type="text/javascript">
@@ -888,23 +888,8 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
             return false;
         });
 
-        var added_config = {
-            "selector": "#tinyMCE_editor",
-            "elements": "tinyMCE_editor",
-            "plugins": "noneditable",
-            "theme_advanced_buttons1": "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
-            "valid_children": "+body[style]",
-            "theme_advanced_font_sizes": "true",
-            "content_css": <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
-            "editor_deselector": "noselected",
-            "inline_styles": true,
-            "nowrap": true,
-            "width": "400",
-            "height": "200",
-            "body_class": "tinyMCEBody",
-        }
+        defineTinyMCE('#tinyMCE_editor');
 
-        defineTinyMCE(added_config);
         $("#dialog_label_editor").hide ()
             .dialog ({
                 title: "<?php echo __('Edit label'); ?>",

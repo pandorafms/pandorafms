@@ -833,6 +833,10 @@ function grafico_modulo_sparse($params)
         $params['basic_chart'] = false;
     }
 
+    if (isset($params['array_colors']) === false) {
+        $params['array_colors'] = false;
+    }
+
     // If is metaconsole set 10pt size value.
     if (is_metaconsole()) {
         $font_size = '10';

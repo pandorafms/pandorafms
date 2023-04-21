@@ -485,7 +485,7 @@ $basicThresholdsIntervalWarning = [];
 $basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
 $basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
     'warning_inverse_string',
-    1,
+    'warning_inverse_string',
     $warning_inverse,
     true,
     $disabledBecauseInPolicy
@@ -569,7 +569,7 @@ $basicThresholdsIntervalCritical = [];
 $basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
 $basicThresholdsIntervalCritical[] = html_print_checkbox_switch(
     'critical_inverse_string',
-    1,
+    'critical_inverse_string',
     $critical_inverse,
     true,
     $disabledBecauseInPolicy

@@ -181,7 +181,7 @@ class ModuleData
 
         $listData = $this->getListData($page);
         if ($listData['total'] == 0) {
-            $html = '<p class="empty_advice">'.__('No data').'</p>';
+            $html = '<p class="no-data">'.__('No data').'</p>';
             if (!$return) {
                 $ui->contentAddHtml($html);
             } else {

@@ -1188,7 +1188,7 @@ class Events
         $table = new Table();
         $table->id = $id_table;
 
-        $no_events = '<p id="empty_advice_events" class="empty_advice invisible" class="invisible">'.__('No events').'</p>';
+        $no_events = '<p id="empty_advice_events" class="no-data invisible" class="invisible">'.__('No events').'</p>';
 
         if (!$return) {
             $ui->contentAddHtml($table->getHTML());
@@ -1515,7 +1515,9 @@ class Events
 							if (data.events.length == 0) {
 								$('#last_agent_events').css('visibility', 'hidden');
 								$('#empty_advice_events').show();
-							}
+							} else {
+                                $('#empty_advice_events').hide();
+                            }
 						},
 						\"json\");
 				}

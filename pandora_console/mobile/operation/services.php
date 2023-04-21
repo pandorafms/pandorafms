@@ -136,7 +136,7 @@ class Services
 
         if (empty($this->services)) {
             $ui->contentAddHtml(
-                '<span class="color-red">'.__('No services found').'</span>'
+                '<span class="no-data">'.__('No services found').'</span>'
             );
         }
 
@@ -228,7 +228,7 @@ class Services
                         );
 
                         if ($item->exists() !== true) {
-                            $name .= '<strong class="red">'.__('Nonexistent. This element should be deleted').'</strong>';
+                            $name .= '<strong class="no-data">'.__('Nonexistent. This element should be deleted').'</strong>';
                         } else {
                             $url = ui_get_full_url(
                                 'index.php?sec=eventos&sec2=operation/events/events&event_view_hr=8&severity=4&id_agent='.$item->agent()->id_agente()
@@ -271,7 +271,7 @@ class Services
                             ]
                         );
                         if ($item->exists() !== true) {
-                            $name .= '<strong class="red">'.__('Nonexistent. This element should be deleted').'</strong>';
+                            $name .= '<strong class="no-data">'.__('Nonexistent. This element should be deleted').'</strong>';
                         } else {
                             if (is_metaconsole()
                                 && (((int) $item->id_server_meta()) !== 0 )
@@ -337,7 +337,7 @@ class Services
                         );
 
                         if ($item->exists() !== true) {
-                            $name .= '<strong class="color-red">'.__('Nonexistent. This element should be deleted').'</strong>';
+                            $name .= '<strong class="no-data">'.__('Nonexistent. This element should be deleted').'</strong>';
                         } else {
                             $url = ui_get_full_url(
                                 'index.php?sec=eventos&sec2=operation/events/events&event_view_hr=8&severity=4&id_agent='.$item->module()->id_agente().'&id_agent_module='.$item->id_agente_modulo()

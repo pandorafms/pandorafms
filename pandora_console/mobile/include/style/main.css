@@ -1311,6 +1311,7 @@ table.tactical_bars {
 
 /*END-----------Network maps styles---------------------------------------*/
 
+#error-dialog-button_close,
 #logout_dialog-button_close {
   display: flex;
   margin: 0 auto;
@@ -1909,6 +1910,10 @@ table.tactical_bars tbody tr {
   height: 20px;
 }
 
+table.tactical_bars * {
+  font-size: 16px;
+}
+
 .progress_main {
   height: 2.5em;
   border: 2px solid #82b92e;
@@ -2023,6 +2028,9 @@ table#last-activity > tbody > tr > td.cell_1 {
   width: 70%;
   max-width: 75%;
   padding-bottom: 2px !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 table#last-activity > tbody > tr > td.cell_2 {
   width: 20%;
@@ -2465,6 +2473,7 @@ a.ui-textinput-clear-button.ui-button-icon-only.ui-button-right.ui-widget.ui-but
   box-shadow: unset;
 }
 
+div#error-dialog a#error-dialog-button_close,
 div#logout_dialog a#logout_dialog-button_close,
 div#detail_event_dialog > div > div a#validate_button,
 div#detail_event_dialog > div > div a#process_button,
@@ -2489,15 +2498,19 @@ div#detail_event_dialog > div > div a#process_button {
   height: 22px;
 }
 
+div#error-dialog h1.dialog_title,
 div#logout_dialog h1.dialog_title {
   font-size: 11pt;
 }
 
+div#error-dialog
+  div.ui-page-dialog-contain.ui-overlay-shadow.ui-corner-all.ui-body-a,
 div#logout_dialog
   div.ui-page-dialog-contain.ui-overlay-shadow.ui-corner-all.ui-body-a {
   padding: 10px;
 }
 
+div#error-dialog a#error-dialog-button_close,
 div#logout_dialog a#logout_dialog-button_close {
   height: 30px;
 }
@@ -2868,6 +2881,32 @@ table#list_visualmaps tr:last-child td {
   border-bottom-right-radius: 8px;
   border-bottom: 0px;
 }
+
+table[id^="service-table-"] {
+  margin-top: -8px;
+}
+
+table[id^="service-table-"] tbody tr:nth-child(odd) {
+  background-color: var(--secondary-color) !important;
+}
+
+div.list_services h4 > a {
+  background-color: var(--secondary-color) !important;
+}
+
+div.agent-last-events ul li.ui-last-child {
+  border-top: 0px;
+  padding: 0px;
+}
+
+table#list_servers tbody td .status_small_squares {
+  margin-top: 5px;
+}
+table#list_servers tbody td span.data a {
+  text-decoration: none !important;
+  color: unset !important;
+}
+
 /* =============================================================== */
 /* ========================= For tablets ========================= */
 /* =============================================================== */
@@ -2975,5 +3014,262 @@ table#list_visualmaps tr:last-child td {
   table#list_agents > tbody > tr > td.cell_7 {
     width: 10%;
     margin-right: 5px;
+  }
+
+  table#list_Modules > thead > tr {
+    display: flex;
+  }
+  table#list_Modules > thead > tr > th {
+    display: initial !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding-left: 0px;
+    padding-right: 0px;
+    font-size: 10pt;
+  }
+  table#list_Modules > tbody > tr > td {
+    display: initial !important;
+    white-space: nowrap;
+    line-height: 48px;
+    height: 48px;
+    text-align: center;
+  }
+  table#list_Modules > tbody > tr > td * {
+    font-size: 10pt !important;
+  }
+  table#list_Modules > tbody > tr > td span.align-none-10p {
+    display: none;
+  }
+  table#list_Modules > tbody > tr > td .status_rounded_rectangles {
+    width: 30px;
+  }
+  table#list_Modules > tbody > tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+  table#list_Modules > thead > tr > th[data-colstart="1"],
+  table#list_Modules > tbody > tr > td.cell_0 {
+    width: 30%;
+    text-align: left;
+  }
+  table#list_Modules > thead > tr > th[data-colstart="2"],
+  table#list_Modules > tbody > tr > td.cell_1 {
+    width: 30%;
+  }
+  table#list_Modules > thead > tr > th[data-colstart="3"],
+  table#list_Modules > tbody > tr > td.cell_2 {
+    width: 10%;
+  }
+  table#list_Modules > thead > tr > th[data-colstart="4"],
+  table#list_Modules > tbody > tr > td.cell_3 {
+    width: 10%;
+  }
+  table#list_Modules > thead > tr > th[data-colstart="5"],
+  table#list_Modules > tbody > tr > td.cell_4 {
+    width: 10%;
+  }
+  table#list_Modules > thead > tr > th[data-colstart="6"],
+  table#list_Modules > tbody > tr > td.cell_5 {
+    width: 10%;
+  }
+
+  table#list_alerts > thead > tr {
+    display: flex;
+  }
+  table#list_alerts > thead > tr > th {
+    display: initial !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding-left: 0px;
+    padding-right: 0px;
+    font-size: 10pt;
+  }
+  table#list_alerts > tbody > tr > td {
+    display: initial !important;
+    white-space: nowrap;
+    line-height: 48px;
+    height: 48px;
+    text-align: center;
+  }
+  table#list_alerts > tbody > tr > td * {
+    font-size: 10pt !important;
+  }
+  table#list_alerts > tbody > tr > td span.align-none-10p {
+    display: none;
+  }
+  table#list_alerts > tbody > tr > td .status_rounded_rectangles {
+    width: 30px;
+    margin-top: 10px;
+  }
+  table#list_alerts > tbody > tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+  table#list_alerts > thead > tr > th[data-colstart="1"],
+  table#list_alerts > tbody > tr > td.cell_0 {
+    width: 10%;
+    text-align: left;
+  }
+  table#list_alerts > thead > tr > th[data-colstart="2"],
+  table#list_alerts > tbody > tr > td.cell_1 {
+    width: 60%;
+  }
+  table#list_alerts > thead > tr > th[data-colstart="3"],
+  table#list_alerts > tbody > tr > td.cell_2 {
+    width: 15%;
+  }
+  table#list_alerts > thead > tr > th[data-colstart="4"],
+  table#list_alerts > tbody > tr > td.cell_3 {
+    width: 15%;
+  }
+  table#list_alerts > tbody > tr > td.cell_1 > div {
+    flex-direction: row;
+  }
+  table#list_alerts > tbody > tr > td.cell_1 > div > span:first-child {
+    margin-right: 10px;
+  }
+
+  table#list_agent_Modules > tbody > tr,
+  table#list_agent_Modules > thead > tr {
+    display: flex;
+  }
+  table#list_agent_Modules > thead > tr > th {
+    display: initial !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding-left: 0px;
+    padding-right: 0px;
+    font-size: 10pt;
+  }
+  table#list_agent_Modules > tbody > tr > td {
+    display: initial !important;
+    white-space: nowrap;
+    line-height: 38px;
+    height: 48px;
+    text-align: center;
+  }
+  table#list_agent_Modules > tbody > tr > td * {
+    font-size: 10pt !important;
+  }
+  table#list_agent_Modules > tbody > tr > td span.align-none-10p {
+    display: none;
+  }
+  table#list_agent_Modules > tbody > tr > td .status_rounded_rectangles {
+    width: 30px;
+    margin-top: 12px;
+  }
+  table#list_agent_Modules > thead > tr > th[data-colstart="1"],
+  table#list_agent_Modules > tbody > tr > td.cell_0 {
+    width: 40%;
+    text-align: left;
+  }
+  table#list_agent_Modules > thead > tr > th[data-colstart="2"],
+  table#list_agent_Modules > tbody > tr > td.cell_1 {
+    width: 10%;
+  }
+  table#list_agent_Modules > thead > tr > th[data-colstart="3"],
+  table#list_agent_Modules > tbody > tr > td.cell_2 {
+    width: 15%;
+  }
+  table#list_agent_Modules > thead > tr > th[data-colstart="4"],
+  table#list_agent_Modules > tbody > tr > td.cell_3 {
+    width: 15%;
+  }
+  table#list_agent_Modules > thead > tr > th[data-colstart="5"],
+  table#list_agent_Modules > tbody > tr > td.cell_4 {
+    width: 20%;
+  }
+  table#list_agent_Modules > tbody > tr > td.cell_1 > div {
+    flex-direction: row;
+  }
+
+  div#module-dialog-popup {
+    height: 225px;
+  }
+  div#module-dialog div[role="main"] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  table#list_module_data > thead > tr {
+    display: flex;
+  }
+  table#list_module_data > thead > tr > th {
+    display: initial !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+    padding-left: 0px;
+    padding-right: 0px;
+    font-size: 10pt;
+  }
+  table#list_module_data > tbody > tr > td {
+    display: initial !important;
+    white-space: nowrap;
+  }
+  table#list_module_data > tbody > tr > td * {
+    font-size: 10pt !important;
+  }
+  table#list_module_data > tbody > tr > td span.align-none-10p {
+    display: none;
+  }
+  table#list_module_data > tbody > tr > td .status_rounded_rectangles {
+    width: 30px;
+  }
+  table#list_module_data > tbody > tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+  table#list_module_data > thead > tr > th[data-colstart="1"],
+  table#list_module_data > tbody > tr > td.cell_0 {
+    width: 50%;
+  }
+  table#list_module_data > thead > tr > th[data-colstart="2"],
+  table#list_module_data > tbody > tr > td.cell_1 {
+    width: 50%;
+  }
+
+  table#list_servers tbody td .status_small_squares {
+    margin-top: 5px;
+  }
+  table#list_servers tbody td span.data a {
+    text-decoration: none !important;
+    color: unset !important;
+  }
+
+  table[id^="service-table-"] {
+    border-collapse: collapse;
+  }
+  table[id^="service-table-"] tbody td {
+    padding: 0px;
+    /* border: 0px !important; */
+  }
+  table[id^="service-table-"] tbody td:first-child {
+    padding-left: 10px;
+    border-left: 1px solid var(--border-color);
+  }
+  table[id^="service-table-"] tbody td:last-child {
+    border-right: 1px solid var(--border-color);
+  }
+
+  table#list_visualmaps tbody td {
+    padding: 0px 10px;
+  }
+  table#list_visualmaps thead th {
+    display: none;
+  }
+
+  input[name="login_btn"] {
+    line-height: 38px;
   }
 }

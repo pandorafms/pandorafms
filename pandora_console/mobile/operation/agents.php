@@ -456,7 +456,7 @@ class Agents
         $listAgents = $this->getListAgents($page);
 
         if ($listAgents['total'] == 0) {
-            $ui->contentAddHtml('<p class="color_ff0">'.__('No agents').'</p>');
+            $ui->contentAddHtml('<p class="no-data">'.__('No agents').'</p>');
         } else {
             $table = new Table();
             $table->id = 'list_agents';

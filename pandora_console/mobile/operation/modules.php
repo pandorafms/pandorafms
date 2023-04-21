@@ -801,7 +801,7 @@ class Modules
 
         $listModules = $this->getListModules($page);
         if ($listModules['total'] == 0) {
-            $html = '<p class="empty_advice">'.__('No modules').'</p>';
+            $html = '<p class="no-data">'.__('No modules').'</p>';
             if (!$return) {
                 $ui->contentAddHtml($html);
             } else {
@@ -925,7 +925,6 @@ class Modules
 				}
 
                 function openDialog(moduleId, agentId, serverId) {
-                    console.log(1);
                     var graph = '';
                     var historical = '';
                     if (serverId === 'node') {

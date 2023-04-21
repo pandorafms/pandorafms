@@ -165,7 +165,7 @@ class Agent
         $ui->beginContent();
         if (empty($this->agent)) {
             $ui->contentAddHtml(
-                '<span class="red">'.__('No agent found').'</span>'
+                '<span class="no-data">'.__('No agent found').'</span>'
             );
         } else {
             $ui->contentBeginGrid();
@@ -369,7 +369,7 @@ class Agent
             $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
             $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 
-            $ui->contentBeginCollapsible(sprintf(__('Last %s Events'), $system->getPageSize()));
+            $ui->contentBeginCollapsible(sprintf(__('Last %s Events'), $system->getPageSize()), 'agent-last-events');
             $tabledata = $events->listEventsHtml(0, true, 'last_agent_events');
             $ui->contentCollapsibleAddItem($tabledata['table']);
             $ui->contentCollapsibleAddItem($events->putEventsTableJS($this->id));
@@ -441,7 +441,7 @@ class Agent
                         $.mobile.loading('hide');
                         var className = $('#list_agent_Modules').attr('class');
                         if (document.getElementById('list_agent_Modules') == null) {
-                            $($('p.empty_advice')[0]).parent().html(r);
+                            $($('p.no-data')[0]).parent().html(r);
                             className = 'ui-responsive table-stroke ui-table ui-table-reflow';
                         } else {
                             $('#list_agent_Modules').parent().html(r);

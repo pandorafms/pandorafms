@@ -195,6 +195,7 @@ class Home
             $this->loadButtons($ui);
 
             if (!empty($error)) {
+                $error['dialog_id'] = 'error-dialog';
                 $ui->addDialog($error);
             }
 

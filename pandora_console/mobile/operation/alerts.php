@@ -360,7 +360,7 @@ class Alerts
 
         $ui = UI::getInstance();
         if (empty($table)) {
-            $html = '<p class="empty_advice">'.__('No alerts').'</p>';
+            $html = '<p class="no-data">'.__('No alerts').'</p>';
             if (!$return) {
                 $ui->contentAddHtml($html);
             } else {

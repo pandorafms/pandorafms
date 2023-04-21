@@ -368,7 +368,7 @@ class ServerStatus
 
         $listServers = $this->getListServers($page);
         if ($listServers['total'] == 0) {
-            $html = '<p class="empty_advice">'.__('No servers').'</p>';
+            $html = '<p class="no-data">'.__('No servers').'</p>';
             if (!$return) {
                 $ui->contentAddHtml($html);
             } else {

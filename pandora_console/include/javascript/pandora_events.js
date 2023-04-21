@@ -947,11 +947,19 @@ function process_buffers(buffers) {
 }
 
 function openSoundEventModal(settings) {
-  var win = open(
-    "operation/events/sound_events.php",
-    "day_123",
-    "width=600,height=500"
-  );
+  if ($("#hidden-metaconsole_activated").val() === "1") {
+    var win = open(
+      "../../operation/events/sound_events.php",
+      "day_123",
+      "width=600,height=500"
+    );
+  } else {
+    var win = open(
+      "operation/events/sound_events.php",
+      "day_123",
+      "width=600,height=500"
+    );
+  }
   if (win) {
     //Browser has allowed it to be opened
     win.focus();

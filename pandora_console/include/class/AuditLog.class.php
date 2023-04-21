@@ -318,17 +318,29 @@ class AuditLog extends HTML
 
         $count = (int) db_get_value_sql(sprintf('SELECT COUNT(*) as "total" FROM tsesion WHERE %s', $filter));
 
-        $sql = sprintf(
-            'SELECT *
-			FROM tsesion
-			WHERE %s
-			ORDER BY %s
-            LIMIT %d, %d',
-            $filter,
-            $order,
-            $start,
-            $length
-        );
+        if ($length !== '-1') {
+            $sql = sprintf(
+                'SELECT *
+                FROM tsesion
+                WHERE %s
+                ORDER BY %s
+                LIMIT %d, %d',
+                $filter,
+                $order,
+                $start,
+                $length
+            );
+        } else {
+            $sql = sprintf(
+                'SELECT *
+                FROM tsesion
+                WHERE %s
+                ORDER BY %s',
+                $filter,
+                $order
+            );
+        }
+
         $data = db_get_all_rows_sql($sql);
 
         if (empty($data) === false) {

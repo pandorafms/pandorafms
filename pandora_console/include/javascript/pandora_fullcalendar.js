@@ -445,7 +445,12 @@ function save_data_input(calendar) {
 
 // eslint-disable-next-line no-unused-vars
 function loadEventBBDD(events) {
-  if (events == undefined || events === null || events === "") {
+  if (
+    events == undefined ||
+    events === null ||
+    events === "null" ||
+    events === ""
+  ) {
     $(".alert_schedule").show();
     return {};
   }
@@ -482,6 +487,7 @@ function loadEventBBDD(events) {
   });
 
   var result = [];
+  console.log(events);
   Object.entries(JSON.parse(events)).forEach(function(element) {
     var day_string = element[0];
     var events_day = element[1];

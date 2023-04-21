@@ -582,7 +582,7 @@ $(document).ready(function(){
             sound = true;
         }
         var urlSound = '../../include/sounds/'+$('#sound_id :selected').val();
-        console.log(urlSound);
+
         test_sound_button(sound, urlSound);
     });
 

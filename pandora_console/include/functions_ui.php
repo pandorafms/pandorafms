@@ -1744,7 +1744,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
 
     if (is_metaconsole()
         && (isset($config['requirements_use_base_url']) === false
-        || $config['requirements_use_base_url'] === false)
+        || $config['requirements_use_base_url'] === false) && $filename !== 'include/javascript/select2.min.js'
     ) {
         $config['js'][$name] = '../../'.$filename;
     } else {

@@ -397,7 +397,9 @@ $data[3] = html_print_input_password(
     true,
     $disabledBecauseInPolicy,
     false,
-    $largeclassdisabledBecauseInPolicy
+    $largeclassdisabledBecauseInPolicy,
+    'off',
+    true
 );
 $data[3] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_mmen', true);
 if ($snmp_version != 3) {
@@ -419,7 +421,9 @@ $data[3] = html_print_input_password(
     true,
     $disabledBecauseInPolicy,
     false,
-    $largeclassdisabledBecauseInPolicy
+    $largeclassdisabledBecauseInPolicy,
+    'off',
+    true
 );
 
 if ($snmp_version != 3) {

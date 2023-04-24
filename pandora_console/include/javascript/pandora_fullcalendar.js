@@ -487,7 +487,6 @@ function loadEventBBDD(events) {
   });
 
   var result = [];
-  console.log(events);
   Object.entries(JSON.parse(events)).forEach(function(element) {
     var day_string = element[0];
     var events_day = element[1];

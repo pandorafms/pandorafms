@@ -1956,7 +1956,11 @@ class DiscoveryTaskList extends HTML
             if ($task['status'] <= 0
                 && empty($task['summary']) === false
             ) {
-                $status = __('Done');
+                if ($task['status'] == -2) {
+                    $status = __('Failed');
+                } else {
+                    $status = __('Done');
+                }
             } else if ($task['utimestamp'] == 0
                 && empty($task['summary'])
             ) {

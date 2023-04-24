@@ -1470,6 +1470,13 @@ class DiscoveryTaskList extends HTML
                         $countSummary++;
                         $i++;
                         if (is_array($summary) === true) {
+                            if (empty($summary['summary']) === true && empty($summary['info']) === true) {
+                                $table->data[$i][0] = json_encode($summary, JSON_PRETTY_PRINT);
+                                $table->data[$i][1] = '';
+                                $i++;
+                                continue;
+                            }
+
                             foreach ($summary as $k2 => $v) {
                                 if (is_array($v) === true) {
                                     if ($k2 === 'summary') {
@@ -1479,17 +1486,17 @@ class DiscoveryTaskList extends HTML
                                             $i++;
                                         }
                                     } else {
-                                        $table->data[$i][0] = json_encode([$k2 => $v]);
+                                        $table->data[$i][0] = json_encode([$k2 => $v], JSON_PRETTY_PRINT);
                                         $table->data[$i][1] = '';
                                         $i++;
                                     }
                                 } else {
                                     if ($k2 === 'info') {
-                                        $table->data[$i][0] = '<i class="font_8pt">'.$v.'</i>';
+                                        $table->data[$i][0] = $v;
                                         $table->data[$i][1] = '';
                                         $i++;
                                     } else {
-                                        $table->data[$i][0] = json_encode([$k2 => $v]);
+                                        $table->data[$i][0] = json_encode([$k2 => $v], JSON_PRETTY_PRINT);
                                         $table->data[$i][1] = '';
                                         $i++;
                                     }

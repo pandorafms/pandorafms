@@ -237,7 +237,8 @@
 .table_action_buttons > img,
 .table_action_buttons > button,
 .table_action_buttons > form,
-.table_action_buttons > div {
+.table_action_buttons > div,
+.table_action_buttons .action_button_hidden {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -250,7 +251,8 @@
 .info_table > tbody > tr:hover .table_action_buttons > img,
 .info_table > tbody > tr:hover .table_action_buttons > button,
 .info_table > tbody > tr:hover .table_action_buttons > form,
-.info_table > tbody > tr:hover .table_action_buttons > div {
+.info_table > tbody > tr:hover .table_action_buttons > div,
+.info_table > tbody > tr:hover .table_action_buttons .action_button_hidden {
   visibility: visible;
 }
 

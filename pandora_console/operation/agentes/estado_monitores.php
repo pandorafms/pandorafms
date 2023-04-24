@@ -641,7 +641,7 @@ function print_form_filter_monitors(
         false,
         'reset_filter_modules();',
         [
-            'icon' => 'fail',
+            'icon' => 'force',
             'mode' => 'secondary mini',
         ],
         true

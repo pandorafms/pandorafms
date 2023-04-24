@@ -178,7 +178,7 @@ class Services
             );
             $ui->contentAddHtml('<div class="border-collapsible" data-collapsed-icon="group_'.$count.'" data-expanded-icon="group_'.$count.'" data-iconpos="right" data-role="collapsible" data-collapsed="true" data-content-theme="d">');
             $arrow = '<span class="ui-icon ui-icon-arrow-d"></span>';
-            $ui->contentAddHtml('<h4 id="service-'.$service['id'].'" onclick="loadTable(\''.$service['id'].'\')">'.$arrow.$group_icon.'&nbsp;'.$service['description'].'</h4>');
+            $ui->contentAddHtml('<h4 id="service-'.$service['id'].'" onclick="loadTable(\''.$service['id'].'\')">'.$arrow.$group_icon.'&nbsp;'.$service['name'].'</h4>');
 
             $spinner = '
                 <div class="spinner mt15px" id="spinner-'.$service['id'].'">
@@ -230,9 +230,7 @@ class Services
                         if ($item->exists() !== true) {
                             $name .= '<strong class="no-data">'.__('Nonexistent. This element should be deleted').'</strong>';
                         } else {
-                            $url = ui_get_full_url(
-                                'index.php?sec=eventos&sec2=operation/events/events&event_view_hr=8&severity=4&id_agent='.$item->agent()->id_agente()
-                            );
+                            $url = ui_get_full_url('mobile/index.php?page=agent&id='.$item->agent()->id_agente());
                             $name = '<a target="_blank" href="'.$url.'">';
                             if (((bool) $item->agent()->disabled()) === true) {
                                 $disabled_element = true;
@@ -339,9 +337,7 @@ class Services
                         if ($item->exists() !== true) {
                             $name .= '<strong class="no-data">'.__('Nonexistent. This element should be deleted').'</strong>';
                         } else {
-                            $url = ui_get_full_url(
-                                'index.php?sec=eventos&sec2=operation/events/events&event_view_hr=8&severity=4&id_agent='.$item->module()->id_agente().'&id_agent_module='.$item->id_agente_modulo()
-                            );
+                            $url = ui_get_full_url('mobile/index.php?page=agent&id='.$item->agent()->id_agente());
                             $name = '<a target="_blank" href="'.$url.'">';
 
                             if (((bool) $item->module()->disabled()) === true) {

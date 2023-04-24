@@ -592,16 +592,16 @@ class Modules
                 }
 
                 $script = '';
-                if ($system->getRequest('page') === 'modules') {
-                    if ($system->getConfig('metaconsole')) {
-                        $script = 'onclick="openDialog('.$module['id_agente_modulo'].', '.$this->id_agent.' ,'.$module['server_id'].');"';
-                    } else {
-                        $script = 'onclick="openDialog('.$module['id_agente_modulo'].', '.$this->id_agent.', \'node\');"';
-                    }
+                if ($system->getConfig('metaconsole')) {
+                    $script = 'onclick="openDialog('.$module['id_agente_modulo'].', '.$this->id_agent.' ,'.$module['server_id'].');"';
+                } else {
+                    $script = 'onclick="openDialog('.$module['id_agente_modulo'].', '.$this->id_agent.', \'node\');"';
+                }
 
+                if ($system->getRequest('page') === 'modules') {
                     $row[0] = $row[__('Module name')] = '<span '.$script.'><span class="tiny module-status">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span></span>';
                 } else {
-                    $row[0] = $row[__('Module name')] = '<span class="tiny module-status">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span>';
+                    $row[0] = $row[__('Module name')] = '<span class="tiny module-status">'.$image_status.'</span>'.'<span '.$script.' class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span>';
                 }
 
                 if ($this->columns['agent']) {
@@ -940,8 +940,28 @@ class Modules
 
                     $('#module-dialog-button').click();
                 }
-				
+
+                let intervalId;
+                let count = 0;
+                function getFreeSpace() {
+                    let headerHeight = $('div[data-role=\"header\"].ui-header').outerHeight();
+                    let contentHeight = $('div[data-role=\"content\"].ui-content').outerHeight();
+                    let windowHeight = $(window).height();
+
+                    let freeSpace = windowHeight - (headerHeight + contentHeight);
+
+                    if (freeSpace > 0 && count < 50) {
+                        custom_scroll();
+                    } else {
+                        clearInterval(intervalId);
+                    }
+
+                    count++;
+                }
+                
 				$(document).ready(function() {
+                    intervalId = setInterval(getFreeSpace, 500);
+
 					$(window).bind(\"scroll\", function () {
 						custom_scroll();
 					});

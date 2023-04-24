@@ -1522,21 +1522,40 @@ class Events
 						\"json\");
 				}
 
+                let intervalId;
+                let count = 0;
+                function getFreeSpace() {
+                    let headerHeight = $('div[data-role=\"header\"].ui-header').outerHeight();
+                    let contentHeight = $('div[data-role=\"content\"].ui-content').outerHeight();
+                    let windowHeight = $(window).height();
+
+                    let freeSpace = windowHeight - (headerHeight + contentHeight);
+
+                    if (freeSpace > 0 && count < 50) {
+                        custom_scroll();
+                    } else {
+                        clearInterval(intervalId);
+                    }
+
+                    count++;
+                }
+
 				$(document).ready(function() {
-						ajax_load_rows();
-						$(window).bind(\"scroll\", function () {
-							custom_scroll();
-						});
-						$(window).on(\"touchmove\", function(event) {
-							custom_scroll();
-						});
+                    intervalId = setInterval(getFreeSpace, 500);
+                    ajax_load_rows();
+                    $(window).bind(\"scroll\", function () {
+                        custom_scroll();
+                    });
+                    $(window).on(\"touchmove\", function(event) {
+                        custom_scroll();
+                    });
 				});
 
 				function custom_scroll() {
 					if ($(this).scrollTop() + $(this).height()
-							>= ($(document).height() - 100)) {
-							ajax_load_rows();
-						}
+                        >= ($(document).height() - 100)) {
+                        ajax_load_rows();
+                    }
 				}
 			</script>"
         );

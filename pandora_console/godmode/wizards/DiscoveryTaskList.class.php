@@ -968,18 +968,16 @@ class DiscoveryTaskList extends HTML
                             $data[9] .= '</a>';
                         }
 
-                        if ((int) $task['type'] !== DISCOVERY_EXTENSION) {
-                            $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
-                            $data[9] .= html_print_image(
-                                'images/details.svg',
-                                true,
-                                [
-                                    'title' => __('View summary'),
-                                    'class' => 'main_menu_icon invert_filter',
-                                ]
-                            );
-                            $data[9] .= '</a>';
-                        }
+                        $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
+                        $data[9] .= html_print_image(
+                            'images/details.svg',
+                            true,
+                            [
+                                'title' => __('View summary'),
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        );
+                        $data[9] .= '</a>';
                     }
 
                     if ($task['disabled'] != 2 && $task['utimestamp'] > 0
@@ -1462,6 +1460,48 @@ class DiscoveryTaskList extends HTML
                 $table->data[$i][1] = '<span id="alive">';
                 $table->data[$i][1] .= ($total - $agents);
                 $table->data[$i++][1] .= '</span>';
+            } else if ((int) $task['type'] === DISCOVERY_EXTENSION) {
+                // Content.
+                if (is_array($task['stats']) === true) {
+                    $countSummary = 1;
+                    foreach ($task['stats'] as $key => $summary) {
+                        $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
+                        $table->data[$i][1] = '';
+                        $i++;
+                        if (is_array($summary) === true) {
+                            foreach ($summary as $k2 => $v) {
+                                if (is_array($v) === true) {
+                                    if ($k2 === 'summary') {
+                                        $countSummary++;
+                                        foreach ($v as $k3 => $v2) {
+                                            $table->data[$i][0] = $k3;
+                                            $table->data[$i][1] = $v2;
+                                            $i++;
+                                        }
+                                    } else {
+                                        $table->data[$i][0] = json_encode([$k2 => $v]);
+                                        $table->data[$i][1] = '';
+                                        $i++;
+                                    }
+                                } else {
+                                    if ($k2 === 'info') {
+                                        $table->data[$i][0] = '<i class="font_8pt">'.$v.'</i>';
+                                        $table->data[$i][1] = '';
+                                        $i++;
+                                    } else {
+                                        $table->data[$i][0] = json_encode([$k2 => $v]);
+                                        $table->data[$i][1] = '';
+                                        $i++;
+                                    }
+                                }
+                            }
+                        } else {
+                            $table->data[$i][0] = $summary;
+                            $table->data[$i][1] = '';
+                            $i++;
+                        }
+                    }
+                }
             } else {
                 // Content.
                 if (is_array($task['stats']['summary']) === true) {

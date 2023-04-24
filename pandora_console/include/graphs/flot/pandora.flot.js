@@ -2062,7 +2062,8 @@ function pandoraFlotArea(
     yaxes: [
       {
         tickFormatter: yFormatter,
-        position: "left"
+        position: "left",
+        minTickSize: 0.5
       }
     ],
     legend: {

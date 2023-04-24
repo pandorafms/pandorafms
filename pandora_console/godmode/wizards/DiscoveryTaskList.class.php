@@ -1467,12 +1467,12 @@ class DiscoveryTaskList extends HTML
                     foreach ($task['stats'] as $key => $summary) {
                         $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
                         $table->data[$i][1] = '';
+                        $countSummary++;
                         $i++;
                         if (is_array($summary) === true) {
                             foreach ($summary as $k2 => $v) {
                                 if (is_array($v) === true) {
                                     if ($k2 === 'summary') {
-                                        $countSummary++;
                                         foreach ($v as $k3 => $v2) {
                                             $table->data[$i][0] = $k3;
                                             $table->data[$i][1] = $v2;

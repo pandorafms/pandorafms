@@ -208,7 +208,7 @@ class Alerts
                 __('Filter Alerts by %s'),
                 $this->filterAlertsGetString()
             );
-            $ui->contentBeginCollapsible($filter_title);
+            $ui->contentBeginCollapsible($filter_title, 'filter-collapsible');
                 $ui->beginForm();
                     $options = [
                         'name'  => 'page',
@@ -331,30 +331,36 @@ class Alerts
             }
 
             $row = [];
-            if (isset($this->columns['agent']) && $this->columns['agent']) {
-                $row[__('Agent')] = sprintf($disabled_style, io_safe_output($alert['agent_alias']));
-            }
+            $row[__('Status')] = ui_print_status_image($status, $title, true);
 
-            $row[__('Module')] = sprintf(
+            $row[__('Module/Agent')] = '<div class="flex flex-column"><span>';
+            $row[__('Module/Agent')] .= sprintf(
                 $disabled_style,
                 io_safe_output($alert['module_name'])
             );
+
+            $row[__('Module/Agent')] .= '</span><span class="muted">';
+            if (isset($this->columns['agent']) && $this->columns['agent']) {
+                $row[__('Module/Agent')] .= sprintf($disabled_style, io_safe_output($alert['agent_alias']));
+            }
+
+            $row[__('Module/Agent')] .= '</span></div>';
+
             $row[__('Template')] = sprintf(
                 $disabled_style,
                 io_safe_output($alert['template_name'])
             );
             $row[__('Last Fired')] = sprintf(
                 $disabled_style,
-                ui_print_timestamp($alert['last_fired'], true)
+                human_time_comparation($alert['last_fired'], 'tiny')
             );
-            $row[__('Status')] = ui_print_status_image($status, $title, true);
 
             $table[] = $row;
         }
 
         $ui = UI::getInstance();
         if (empty($table)) {
-            $html = '<p class="empty_advice">'.__('No alerts').'</p>';
+            $html = '<p class="no-data">'.__('No alerts').'</p>';
             if (!$return) {
                 $ui->contentAddHtml($html);
             } else {
@@ -365,7 +371,10 @@ class Alerts
             $tableHTML->id = 'list_alerts';
             $tableHTML->importFromHash($table);
             if (!$return) {
+                $ui->contentAddHtml('<div class="hr-full"></div>');
+                $ui->contentAddHtml('<div class="white-card p-lr-0px">');
                 $ui->contentAddHtml($tableHTML->getHTML());
+                $ui->contentAddHtml('</div>');
             } else {
                 return $tableHTML->getHTML();
             }

@@ -231,7 +231,7 @@ class Services
                             $name .= '<strong class="no-data">'.__('Nonexistent. This element should be deleted').'</strong>';
                         } else {
                             $url = ui_get_full_url('mobile/index.php?page=agent&id='.$item->agent()->id_agente());
-                            $name = '<a target="_blank" href="'.$url.'">';
+                            $name = '<a href="'.$url.'">';
                             if (((bool) $item->agent()->disabled()) === true) {
                                 $disabled_element = true;
                                 if (is_metaconsole() === true) {
@@ -296,7 +296,7 @@ class Services
                                 );
                             }
 
-                            $name = '<a target="_blank" href="'.$url.'">';
+                            $name = '<a href="'.$url.'">';
                             if (((bool) $item->service()->disabled()) === true) {
                                 $disabled_element = true;
                                 if (is_metaconsole() === true) {
@@ -338,7 +338,7 @@ class Services
                             $name .= '<strong class="no-data">'.__('Nonexistent. This element should be deleted').'</strong>';
                         } else {
                             $url = ui_get_full_url('mobile/index.php?page=agent&id='.$item->agent()->id_agente());
-                            $name = '<a target="_blank" href="'.$url.'">';
+                            $name = '<a href="'.$url.'">';
 
                             if (((bool) $item->module()->disabled()) === true) {
                                 $disabled_element = true;

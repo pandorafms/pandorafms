@@ -296,7 +296,8 @@ class Services
                                 );
                             }
 
-                            $name = '<a href="'.$url.'">';
+                            // $name = '<a target="_blank" href="'.$url.'">';
+                            $name = '';
                             if (((bool) $item->service()->disabled()) === true) {
                                 $disabled_element = true;
                                 if (is_metaconsole() === true) {
@@ -313,8 +314,7 @@ class Services
                             }
 
                             $name .= $item->service()->name();
-                            $name .= '</a>';
-
+                            // $name .= '</a>';
                             if (((bool) $item->service()->disabled()) === true) {
                                 $name .= ui_print_help_tip(
                                     __('This element does not affect service weigth because is disabled.'),

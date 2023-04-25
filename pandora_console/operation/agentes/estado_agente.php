@@ -278,7 +278,7 @@ $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $searchForm = '';
-$searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
+$searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente">';
 
 $table = new stdClass();
 $table->width = '100%';

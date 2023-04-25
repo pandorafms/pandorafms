@@ -53,9 +53,7 @@ class AgentDeployWizard
      *
      * @var array
      */
-    public $AJAXMethods = [
-        'loadModal',
-    ];
+    public $AJAXMethods = ['loadModal'];
 
 
     /**
@@ -419,7 +417,7 @@ class AgentDeployWizard
                     false,
                     [],
                     true,
-                )
+                ),
             ]
         );
         echo '</form>';
@@ -538,11 +536,7 @@ class AgentDeployWizard
         );
 
         // Footer.
-        html_print_div(
-            [
-                'id'   => 'footer_separator',
-            ]
-        );
+        html_print_div(['id' => 'footer_separator']);
 
         echo '</div>';
 
@@ -565,7 +559,7 @@ class AgentDeployWizard
                     '',
                     ['style' => 'min-width: 0;'],
                     true
-                )
+                ),
             ]
         );
 
@@ -665,7 +659,7 @@ class AgentDeployWizard
                 var server_addr_val = $('input[name="server_addr"]').val();
                 var group_val = $('[name="group"] option:selected').text();
 
-                var win_installer_command = `curl -k "https://firefly.artica.es/pandorafms/latest/Windows/Pandora%20FMS%20Windows%20Agent%20v7.0NG.x86_64.exe" -o PandoraFMS_Windows_Agent_7.0NG.x86_64.exe  ; ./PandoraFMS_Windows_Agent_7.0NG.x86_64.exe  /S  --ip ${server_addr_val} --group ${group_val}  --remote_config 1`;
+                var win_installer_command = `Invoke-WebRequest -Uri https://firefly.pandorafms.com/pandorafms/latest/Windows/Pandora%20FMS%20Windows%20Agent%20v7.0NG.x86_64.exe -OutFile \$\{env:tmp\}\\\pandora-agent-windows.exe; & \$\{env:tmp\}\\\pandora-agent-windows.exe /S  --ip ${server_addr_val} --group \"${group_val}\" --remote_config 1`;
                 var linux_installer_command = `export PANDORA_SERVER_IP='${server_addr_val}' && \\ \nexport PANDORA_REMOTE_CONFIG=1 && \\ \nexport PANDORA_GROUP='${group_val}' && \\ \ncurl -Ls https://pfms.me/agent-deploy | bash`;
                 var mac_installer_text = `To complete the installation process, please perform a manual installation and configure the server IP to ${server_addr_val} and specify the group as ${group_val}. Thank you for your cooperation`;
                 var linux_service_start = "/etc/init.d/pandora_agent_daemon start";

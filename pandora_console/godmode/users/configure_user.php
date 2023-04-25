@@ -57,6 +57,11 @@ if ($enterprise_include === true) {
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 $id = get_parameter('id', get_parameter('id_user', ''));
+
+if (empty($id) === true) {
+    $id = $config['id_user'];
+}
+
 // Check if we are the same user for edit or we have a proper profile for edit users.
 if ($id !== $config['id_user']) {
     if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {

@@ -2884,6 +2884,7 @@ function html_print_input_password(
     $class='',
     $autocomplete='off',
     $hide_div_eye=false,
+    $div_class=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2914,7 +2915,7 @@ function html_print_input_password(
         }
     }
 
-    return '<div class="relative container-div-input-password">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
+    return '<div class="relative container-div-input-password '.$div_class.'">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
 }
 
 

@@ -747,6 +747,10 @@ if ($update_user) {
                                     ]
                                 );
                                 $res3 = save_pass_history($id, $password_new);
+
+                                // Generate new API token.
+                                $newToken = api_token_generate();
+                                $res4 = update_user($id, ['api_token' => $newToken]);
                             }
 
                             ui_print_result_message(
@@ -771,6 +775,10 @@ if ($update_user) {
                                     'utimestamp'  => time(),
                                 ]
                             );
+
+                            // Generate new API token.
+                            $newToken = api_token_generate();
+                            $res4 = update_user($id, ['api_token' => $newToken]);
                         }
 
                         ui_print_result_message(

@@ -6584,6 +6584,17 @@ table.table_modal_alternate tr td:first-child {
   line-height: 1.3;
 }
 
+table#agent_interface_info .flot-text .flot-x-axis div {
+  word-break: unset;
+}
+
+table#agent_interface_info
+  .flot-text
+  .flot-x-axis
+  div.flot-tick-label.tickLabel {
+  max-width: 50px !important;
+}
+
 /*Font header feedback*/
 form#modal_form_feedback {
   padding: 10px;
@@ -9146,6 +9157,10 @@ div.steps_vsmap {
 
 .top_0px {
   top: 0px;
+}
+
+.top_0px_important {
+  top: 0px !important;
 }
 
 .top_10px {
@@ -11939,4 +11954,12 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .break-word {
   word-wrap: break-word;
+}
+
+.legend-font-small {
+  font-size: 7px !important;
+}
+
+.toggle-traffic-graph {
+  margin: 0px !important;
 }

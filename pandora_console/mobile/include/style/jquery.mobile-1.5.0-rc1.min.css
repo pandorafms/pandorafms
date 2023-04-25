@@ -2696,7 +2696,7 @@ li.ui-block-e {
   width: 100%;
   float: none;
 }
-@media (max-width: 35em) {
+@media (max-width: 480px) {
   .ui-responsive > .ui-block-a,
   .ui-responsive > .ui-block-b,
   .ui-responsive > .ui-block-c,
@@ -4387,7 +4387,7 @@ html .ui-popup .ui-field-contain > label + .ui-flipswitch {
     font-weight: 400;
   }
 }
-@media screen and (min-width: 35em), print {
+@media screen and (min-width: 480px), print {
   .ui-table-reflow.ui-responsive td,
   .ui-table-reflow.ui-responsive th,
   .ui-table-reflow.ui-responsive tbody th,
@@ -4401,7 +4401,7 @@ html .ui-popup .ui-field-contain > label + .ui-flipswitch {
     display: none;
   }
 }
-@media screen and (max-width: 35em) {
+@media screen and (max-width: 480px) {
   .ui-table-reflow.ui-responsive td,
   .ui-table-reflow.ui-responsive th {
     width: 100%;

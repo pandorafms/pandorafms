@@ -80,7 +80,7 @@ if (isset($_POST['template_id']) === true) {
             $values = [
                 'id_agente'             => $id_agente,
                 'id_tipo_modulo'        => $row2['type'],
-                'descripcion'           => __('Created by template ').$name_template.' . '.$row2['description'],
+                'descripcion'           => $row2['description'],
                 'max'                   => $row2['max'],
                 'min'                   => $row2['min'],
                 'module_interval'       => $row2['module_interval'],

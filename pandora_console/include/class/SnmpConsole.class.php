@@ -719,6 +719,7 @@ class SnmpConsole extends HTML
             }
 
             $sql = sprintf($sql, $whereSubquery, $start, $length);
+
             $sql_count = 'SELECT COUNT(id_trap) FROM ttrap
 			WHERE (
 				source IN ('.implode(',', $address_by_user_groups).") OR
@@ -908,7 +909,7 @@ class SnmpConsole extends HTML
                         ).'</a>';
 
                         if ($config['enterprise_installed']) {
-                            $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">';
+                            $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&id='.$tmp->id_trap.'&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">';
                             $tmp->action .= html_print_image(
                                 'images/edit.svg',
                                 true,

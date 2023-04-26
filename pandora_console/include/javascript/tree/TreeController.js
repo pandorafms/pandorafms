@@ -1559,7 +1559,10 @@ var TreeController = {
         this.reload();
       },
       init: function(data) {
-        if (data.filter.statusModule === "fired") {
+        if (
+          typeof data.filter !== "undefined" &&
+          data.filter.statusModule === "fired"
+        ) {
           const newData = {
             ajaxUrl: data.ajaxURL,
             baseURL: data.baseURL,

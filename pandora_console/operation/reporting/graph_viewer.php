@@ -344,7 +344,7 @@ if ($view_graph) {
     $searchForm .= "<td class='datos w30p'>";
     $searchForm .= html_print_label_input_block(
         __('Time range'),
-        html_print_extended_select_for_time('period', $period, '', '', '0', 10, true, 'width:100%')
+        html_print_extended_select_for_time('period', (string) $period, '', '', 0, 10, true, 'width:100%')
     );
     $searchForm .= '</td>';
     $searchForm .= '</tr><tr>';

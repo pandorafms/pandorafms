@@ -376,9 +376,9 @@ if ($view_graph) {
             false,
             '',
             false
-        )
+        ),
+        ['div_id' => 'thresholdDiv']
     );
-    $searchForm .= '</div>';
     $searchForm .= '</td>';
 
     $searchForm .= "<td class='datos w30p'>";

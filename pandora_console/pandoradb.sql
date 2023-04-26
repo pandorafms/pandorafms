@@ -893,6 +893,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `snmp_skip_non_enabled_ifs` TINYINT UNSIGNED DEFAULT 1,
   `id_app` int(10),
   `setup_complete` tinyint unsigned NOT NULL DEFAULT 0,
+  `executions_timeout` int unsigned NOT NULL DEFAULT 60,
   PRIMARY KEY  (`id_rt`),
   KEY `recon_task_daemon` (`id_recon_server`),
   FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE

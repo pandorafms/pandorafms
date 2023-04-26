@@ -1395,14 +1395,14 @@ class DiscoveryTaskList extends HTML
 
         $output = '';
 
-        if (is_array($task['stats']) === false) {
+        if (is_array($task['stats']) === false && (int) $task['type'] !== DISCOVERY_EXTENSION) {
             $task['stats'] = json_decode($task['summary'], true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return $task['summary'];
             }
         }
 
-        if (is_array($task['stats'])) {
+        if (is_array($task['stats']) || (int) $task['type'] === DISCOVERY_EXTENSION) {
             $i = 0;
             $table = new StdClasS();
             $table->class = 'databox data';
@@ -1462,8 +1462,8 @@ class DiscoveryTaskList extends HTML
                 $table->data[$i++][1] .= '</span>';
             } else if ((int) $task['type'] === DISCOVERY_EXTENSION) {
                 // Content.
+                $countSummary = 1;
                 if (is_array($task['stats']) === true) {
-                    $countSummary = 1;
                     foreach ($task['stats'] as $key => $summary) {
                         $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
                         $table->data[$i][1] = '';
@@ -1508,6 +1508,13 @@ class DiscoveryTaskList extends HTML
                             $i++;
                         }
                     }
+                } else {
+                    $table->data[$i][0] = '<b>'.__('Summary').'</b>';
+                    $table->data[$i][1] = '';
+                    $i++;
+                    $table->data[$i][0] = $task['summary'];
+                    $table->data[$i][1] = '';
+                    $i++;
                 }
             } else {
                 // Content.

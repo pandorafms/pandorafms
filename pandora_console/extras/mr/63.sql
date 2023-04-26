@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `tdiscovery_apps_tasks_macros` (
 ALTER TABLE `trecon_task`
   ADD COLUMN `id_app` int(10),
   ADD COLUMN `setup_complete` tinyint unsigned NOT NULL DEFAULT 0,
+  ADD COLUMN `executions_timeout` int unsigned NOT NULL DEFAULT 60,
   ADD FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 CREATE TABLE IF NOT EXISTS `tsesion_filter` (

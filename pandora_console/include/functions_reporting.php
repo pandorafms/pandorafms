@@ -12130,6 +12130,70 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
 }
 
 
+function reporting_get_stats_indicators_mobile($data, $width=280, $height=20, $html=true)
+{
+    $table_ind = html_get_predefined_table();
+
+    $servers = [];
+    $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+    $servers['up'] = (int) servers_check_status();
+    $servers['down'] = ($servers['all'] - $servers['up']);
+    if ($servers['all'] == 0) {
+        $servers['health'] = 0;
+    } else {
+        $servers['health'] = ($servers['up'] / ($servers['all'] / 100));
+    }
+
+    $return = [];
+
+    $color = get_color_progress_mobile($servers['health']);
+    $return['server_health'] = [
+        'title' => __('Server health'),
+        'graph' => ui_progress($servers['health'], '90%', '.8', $color, true, '&nbsp;', false),
+    ];
+
+    $color = get_color_progress_mobile($data['monitor_health']);
+    $return['monitor_health'] = [
+        'title' => __('Monitor health'),
+        'graph' => ui_progress($data['monitor_health'], '90%', '.8', $color, true, '&nbsp;', false),
+    ];
+
+    $color = get_color_progress_mobile($data['module_sanity']);
+    $return['module_sanity'] = [
+        'title' => __('Module sanity'),
+        'graph' => ui_progress($data['module_sanity'], '90%', '.8', $color, true, '&nbsp;', false),
+    ];
+
+    $color = get_color_progress_mobile($data['alert_level']);
+    $return['alert_level'] = [
+        'title' => __('Alert level'),
+        'graph' => ui_progress($data['alert_level'], '90%', '.8', $color, true, '&nbsp;', false),
+    ];
+
+    return $return;
+}
+
+
+function get_color_progress_mobile($value)
+{
+    $color = '';
+
+    if ((int) $value > 66) {
+        $color = '#82B92E';
+    }
+
+    if ((int) $value < 66) {
+        $color = '#FCAB10';
+    }
+
+    if ((int) $value < 33) {
+        $color = '#ED474A';
+    }
+
+    return $color;
+}
+
+
 function reporting_get_stats_alerts($data, $links=false)
 {
     global $config;

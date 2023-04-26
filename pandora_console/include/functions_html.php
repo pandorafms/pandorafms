@@ -77,7 +77,7 @@ function html_debug_print($var, $file='', $oneline=false)
         fprintf($f, '%s', $output);
         fclose($f);
     } else {
-        echo '<pre class="bg_white pdd_1em zindex10000">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
+        echo '<pre class="bg_white pdd_1em zindex10000 relative-mobile">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
         print_r($var);
         echo '</pre>';
     }
@@ -2130,10 +2130,7 @@ function html_print_extended_select_for_time(
         $fields[$selected] = human_time_description_raw($selected, true);
     }
 
-    if (empty($nothing) === true
-        && (empty($selected) === true
-        || $selected === '0')
-    ) {
+    if (empty($nothing) === true && (is_int($selected) === true)) {
             $selected = 300;
     }
 
@@ -2248,6 +2245,13 @@ function html_print_extended_select_for_time(
 			$('#".$uniq_name."_manual').show();
 			$('#".$uniq_name."_default').hide();
 		}
+
+        if ($('#text-".$uniq_name."_text').val() === '0') {
+            setTimeout(() => {
+                $('#".$uniq_name."_manual').hide();
+                $('#".$uniq_name."_default').show();
+            }, 100);
+        }
 	</script>";
     $returnString = ob_get_clean();
 
@@ -2880,6 +2884,7 @@ function html_print_input_password(
     $class='',
     $autocomplete='off',
     $hide_div_eye=false,
+    $div_class=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2910,7 +2915,7 @@ function html_print_input_password(
         }
     }
 
-    return '<div class="relative container-div-input-password">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
+    return '<div class="relative container-div-input-password '.$div_class.'">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
 }
 
 

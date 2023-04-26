@@ -241,7 +241,7 @@ class Visualmaps
                         'pos'   => 'right',
                         'text'  => __('All visual consoles'),
                         'href'  => 'index.php?page=visualmaps&favourite=0',
-                        'class' => '',
+                        'class' => 'visual-console-button',
                     ]
                 )
             );
@@ -253,14 +253,16 @@ class Visualmaps
                         'pos'   => 'right',
                         'text'  => __('Favourite visual consoles'),
                         'href'  => 'index.php?page=visualmaps&favourite=1',
-                        'class' => '',
+                        'class' => 'visual-console-button',
                     ]
                 )
             );
         }
 
+        $ui->contentAddHtml('<div class="hr-full"></div>');
+
         if (empty($visualmaps) === true) {
-            $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No maps defined').'</p>');
+            $ui->contentAddHtml('<p class="no-data">'.__('There are no favorite maps to show').'</p>');
         } else {
             $table = new Table();
             // Without header jquery.mobile crashes.
@@ -282,7 +284,9 @@ class Visualmaps
                 $table->addRow([ $map['id'].' flex-center' => $row]);
             }
 
+            $ui->contentAddHtml('<div class="white-card p-tb-0px p-lr-0px">');
             $ui->contentAddHtml($table->getHTML());
+            $ui->contentAddHtml('</div>');
             $ui->contentAddLinkListener('list_visualmaps');
         }
     }

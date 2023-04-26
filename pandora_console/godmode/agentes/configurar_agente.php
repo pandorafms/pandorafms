@@ -1519,10 +1519,50 @@ if ($update_module === true || $create_module === true) {
     $critical_instructions = (string) get_parameter('critical_instructions');
     $warning_instructions = (string) get_parameter('warning_instructions');
     $unknown_instructions = (string) get_parameter('unknown_instructions');
-    $critical_inverse = (int) get_parameter('critical_inverse');
-    $warning_inverse = (int) get_parameter('warning_inverse');
-    $percentage_critical = (int) get_parameter('percentage_critical');
-    $percentage_warning = (int) get_parameter('percentage_warning');
+    // Warning thresholds.
+    $warning_threshold_check_type = get_parameter('warning_thresholds_checks');
+    if ($warning_threshold_check_type === 'normal_warning') {
+        $percentage_warning = 0;
+        $warning_inverse = 0;
+    } else if ($warning_threshold_check_type === 'warning_inverse') {
+         $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
+         $percentage_warning = 0;
+    } else {
+        $percentage_warning = (int) get_parameter('warning_inverse_string_sent');
+        $warning_inverse = 0;
+    }
+
+    // Critical thresholds.
+    $critical_threshold_check_type = get_parameter('critical_thresholds_checks');
+    if ($critical_threshold_check_type === 'normal_critical') {
+        $percentage_critical = 0;
+        $critical_inverse = 0;
+    } else if ($critical_threshold_check_type === 'critical_inverse') {
+         $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
+         $percentage_critical = 0;
+    } else {
+        $percentage_critical = (int) get_parameter('critical_inverse_string_sent');
+        $critical_inverse = 0;
+    }
+
+    // Inverse string checkbox.
+    if ($id_module_type === MODULE_TYPE_GENERIC_DATA_STRING || $id_module_type === MODULE_TYPE_ASYNC_STRING) {
+        // Warning inverse string checkbox.
+        $warning_string_checkbox = get_parameter('warning_inverse_string');
+        if (!empty($warning_string_checkbox) && $warning_string_checkbox === 'warning_inverse_string') {
+            $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
+        } else {
+            $warning_inverse = 0;
+        }
+
+        // Critial inverse string checkbox.
+        $critical_string_checkbox = get_parameter('critical_inverse_string');
+        if (!empty($critical_string_checkbox) && $critical_string_checkbox === 'critical_inverse_string') {
+            $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
+        } else {
+            $critical_inverse = 0;
+        }
+    }
 
     $id_category = (int) get_parameter('id_category');
 
@@ -2471,7 +2511,13 @@ switch ($tab) {
                         }]
                     });
             }
-    });
+        });
+
+        $("#network_component").change(function (e) {
+            setTimeout(() => {
+                $('#snmp_version').trigger("change");
+            }, 100);
+        });
     });
 
     // Change description when edit port

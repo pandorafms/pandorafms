@@ -1,3 +1,5 @@
+START TRANSACTION;
+
 CREATE TABLE IF NOT EXISTS `tdiscovery_apps` (
   `id_app` int(10) auto_increment,
   `short_name` varchar(250) NOT NULL DEFAULT '',
@@ -40,3 +42,16 @@ ALTER TABLE `trecon_task`
   ADD COLUMN `id_app` int(10),
   ADD COLUMN `setup_complete` tinyint unsigned NOT NULL DEFAULT 0,
   ADD FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE TABLE IF NOT EXISTS `tsesion_filter` (
+    `id_filter` INT NOT NULL AUTO_INCREMENT,
+    `id_name` TEXT NULL,
+    `text` TEXT NULL,
+    `period` TEXT NULL,
+    `ip` TEXT NULL,
+    `type` TEXT NULL,
+    `user` TEXT NULL,
+    PRIMARY KEY (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+COMMIT;

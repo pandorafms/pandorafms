@@ -122,24 +122,28 @@ $sec = (is_metaconsole() === true) ? 'advanced' : 'galertas';
 // case delete_templete action is performed.
 if (!$delete_template) {
     // Header.
-    ui_print_standard_header(
-        __('Alerts'),
-        'images/gm_alerts.png',
-        false,
-        '',
-        true,
-        [],
-        [
+    if (defined('METACONSOLE')) {
+        alerts_meta_print_header();
+    } else {
+        ui_print_standard_header(
+            __('Alerts'),
+            'images/gm_alerts.png',
+            false,
+            '',
+            true,
+            [],
             [
-                'link'  => '',
-                'label' => __('Alerts'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Alert templates'),
-            ],
-        ]
-    );
+                [
+                    'link'  => '',
+                    'label' => __('Alerts'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Alert templates'),
+                ],
+            ]
+        );
+    }
 }
 
 if ($update_template) {

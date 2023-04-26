@@ -232,3 +232,97 @@ function os_get_icon($id_os)
 {
     return db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 }
+
+
+/**
+ * Transform the old icon url.
+ *
+ * @param string $url_icon Icon url .
+ *
+ * @return string
+ */
+function os_transform_url_icon($url_icon)
+{
+    $return = substr($url_icon, 0, strpos($url_icon, basename($url_icon)));
+    switch (basename($url_icon)) {
+        case 'android.png':
+            $return .= 'android@os.svg';
+        break;
+
+        case 'so_mac.png':
+            $return .= 'apple@os.svg';
+        break;
+
+        case 'so_cisco.png':
+            $return .= 'cisco@os.svg';
+        break;
+
+        case 'so_aix.png':
+            $return .= 'aix@os.svg';
+        break;
+
+        case 'so_win.png':
+            $return .= 'windows@os.svg';
+        break;
+
+        case 'so_vmware.png':
+            $return .= 'vmware@os.svg';
+        break;
+
+        case 'so_solaris.png':
+            $return .= 'solaris@os.svg';
+        break;
+
+        case 'so_linux.png':
+            $return .= 'linux@os.svg';
+        break;
+
+        case 'so_bsd.png':
+            $return .= 'freebsd@os.svg';
+        break;
+
+        case 'so_cluster.png':
+            $return .= 'cluster@os.svg';
+        break;
+
+        case 'so_other.png':
+            $return .= 'other-OS@os.svg';
+        break;
+
+        case 'so_switch.png':
+            $return .= 'switch@os.svg';
+        break;
+
+        case 'so_mainframe.png':
+            $return .= 'mainframe@os.svg';
+        break;
+
+        case 'so_hpux.png':
+        case 'server_hpux.png':
+            $return .= 'HP@os.svg';
+        break;
+
+        case 'so_router.png':
+        case 'router.png':
+            $return .= 'routers@os.svg';
+        break;
+
+        case 'embedded.png':
+            $return .= 'embedded@os.svg';
+        break;
+
+        case 'network.png':
+            $return .= 'network-server@os.svg';
+        break;
+
+        case 'satellite.png':
+            $return .= 'satellite@os.svg';
+        break;
+
+        default:
+            $return = $url_icon;
+        break;
+    }
+
+    return $return;
+}

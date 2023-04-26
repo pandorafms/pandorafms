@@ -2303,7 +2303,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 
 	# Generate alerts
-	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
+	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 &&
+		(pandora_cps_enabled($agent, $module) == 0 || enterprise_hook('pandora_inhibit_service_alerts', [$pa_config, $module, $dbh, 0]) == 0))
+	{		
 		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value);
 	}
 	else {
@@ -6289,7 +6291,9 @@ sub pandora_module_unknown ($$) {
 			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 			
 			# Generate alerts
-			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
+			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && 
+				(pandora_cps_enabled($agent, $module) == 0 || enterprise_hook('pandora_inhibit_service_alerts', [$pa_config, $module, $dbh, 0]) == 0)) 
+			{
 				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
 				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
 			}
@@ -6336,9 +6340,11 @@ sub pandora_module_unknown ($$) {
 			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 			
 			# Generate alerts
-			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
+			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 &&
+				(pandora_cps_enabled($agent, $module) == 0 || enterprise_hook('pandora_inhibit_service_alerts', [$pa_config, $module, $dbh, 0]) == 0)) 
+			{
 				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
-				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
+					pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
 			}
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);

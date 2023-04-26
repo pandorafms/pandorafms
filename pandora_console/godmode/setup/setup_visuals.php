@@ -1413,7 +1413,7 @@ $table_vc->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
-    __('Mobile view not allow visual console orientation'),
+    __('Lock screen orientation when viewing on mobile devices'),
     html_print_checkbox_switch(
         'mobile_view_orientation_vc',
         1,

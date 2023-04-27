@@ -1456,7 +1456,7 @@ class DiscoveryTaskList extends HTML
             } else if ((int) $task['type'] === DISCOVERY_EXTENSION) {
                 // Content.
                 $countSummary = 1;
-                if (is_array($task['stats']) === true) {
+                if (is_array($task['stats']) === true && array_key_first($task['stats']) === 0) {
                     foreach ($task['stats'] as $key => $summary) {
                         $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
                         $table->data[$i][1] = '';

@@ -1139,6 +1139,7 @@ function ui_format_alert_row(
                 'last_fired'      => 7,
                 'status'          => 8,
                 'validate'        => 9,
+                'actions'         => 10,
             ];
         } else {
             $index = [
@@ -1458,6 +1459,69 @@ function ui_format_alert_row(
     }
 
     $data[$index['status']] = ui_print_status_image($status, $title, true);
+    $data[$index['status']] .= '<div id="update_action-div-'.$alert['id'].'" class="invisible">';
+
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $connection = metaconsole_get_connection($agente['server_name']);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+
+        $action = db_get_all_rows_filter(
+            'talert_template_module_actions',
+            ['id_alert_template_module' => $alert['id']],
+            'id'
+        )[0];
+
+        if (is_metaconsole()) {
+            // Restore db connection.
+            metaconsole_restore_db();
+        }
+
+        // Edit.
+        $tableActionButtons[] = html_print_input_image(
+            'update_action',
+            '/images/edit.svg',
+            1,
+            'padding:0px;',
+            true,
+            [
+                'title'   => __('Update action'),
+                'class'   => 'main_menu_icon invert_filter',
+                'onclick' => 'show_display_update_action(\''.$action['id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action['id'].'\',\''.$alert['agent_name'].'\')',
+            ]
+        );
+        $tableActionButtons[] = html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
+        $tableActionButtons[] = '<form class="delete_alert_form display_in" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list" method="post" >';
+        $tableActionButtons[] = html_print_input_image(
+            'delete',
+            'images/delete.svg',
+            1,
+            '',
+            true,
+            [
+                'title' => __('Delete'),
+                'class' => 'invert_filter main_menu_icon',
+            ]
+        );
+        $tableActionButtons[] = html_print_input_hidden('delete_alert', 1, true);
+        $tableActionButtons[] = html_print_input_hidden('id_alert', $alert['id'], true);
+        $tableActionButtons[] = html_print_input_hidden('id_agent', $alert['agent_name'], true);
+        $tableActionButtons[] = '</form>';
+
+        $data[$index['actions']] = html_print_div(
+            [
+                'style'   => 'padding-top: 8px;',
+                'content' => implode('', $tableActionButtons),
+            ],
+            true
+        );
+    }
 
     return $data;
 }
@@ -3626,6 +3690,8 @@ function ui_print_datatable(array $parameters)
     } else {
         $pagination_options = [
             [
+                // There is a limit of (2^32)^2 (18446744073709551615) rows in a MyISAM table, show for show all use max nrows.
+                // -1 Retun error or only 1 row.
                 $parameters['default_pagination'],
                 5,
                 10,
@@ -3634,7 +3700,7 @@ function ui_print_datatable(array $parameters)
                 200,
                 500,
                 1000,
-                -1,
+                18446744073709551615,
             ],
             [
                 $parameters['default_pagination'],

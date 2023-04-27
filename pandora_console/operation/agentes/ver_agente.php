@@ -929,7 +929,12 @@ if (is_ajax()) {
 
         if (is_metaconsole() && !$force_local_modules) {
             if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+                if (empty($server_name)) {
+                    $server_name = explode(' ', io_safe_output($agentName))[0];
+                }
+
                 $connection = metaconsole_get_connection($server_name);
+
                 if ($server_id > 0) {
                     $connection = metaconsole_get_connection_by_id($server_id);
                 }

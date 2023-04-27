@@ -406,6 +406,19 @@ if ($get_actions_module) {
 }
 
 if ($show_update_action_menu) {
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_name = explode(' ', io_safe_output(get_parameter('id_agent')))[0];
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
@@ -436,7 +449,12 @@ if ($show_update_action_menu) {
         $id_action
     );
 
-    $data .= '<form id="update_action-'.$id_alert.'" method="post" style="height:85%;">';
+    if (is_metaconsole()) {
+        $data .= '<form id="update_action-'.$id_alert.'" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list">';
+    } else {
+        $data .= '<form id="update_action-'.$id_alert.'" method="post" style="height:85%;">';
+    }
+
     $data .= '<table class="w100p bg_color222" style="height:100%;">';
         $data .= html_print_input_hidden(
             'update_action',
@@ -451,6 +469,11 @@ if ($show_update_action_menu) {
         $data .= html_print_input_hidden(
             'id_module_action_ajax',
             $id_action,
+            true
+        );
+        $data .= html_print_input_hidden(
+            'id_agent',
+            $server_name,
             true
         );
     if (! $id_agente) {
@@ -571,6 +594,11 @@ if ($show_update_action_menu) {
         true
     );
     $data .= '</form>';
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+    }
+
     echo $data;
     return;
 }
@@ -933,6 +961,7 @@ if ($get_agent_alerts_datatable === true) {
                         $tmp->last_fired = $row[7];
                         $tmp->status = $row[8];
                         $tmp->validate = $row[9];
+                        $tmp->actions = $row[10];
                     } else {
                         // Open.
                         $tmp->standby = $row[0];

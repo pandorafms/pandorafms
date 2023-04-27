@@ -5241,7 +5241,7 @@ function graph_monitor_wheel($width=550, $height=600, $filter=false)
         'name'     => __('Main node'),
         'type'     => 'center_node',
         'children' => iterate_group_array($data_groups, $data_agents),
-        'color'    => '#3F3F3F',
+        'color'    => ($config['style'] === 'pandora_black') ? '#111' : '#FFF',
     ];
 
     if (empty($graph_data['children'])) {

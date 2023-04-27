@@ -4075,10 +4075,11 @@ sub pandora_event {
 		if (defined ($keep_in_process_status_extra_id) && $keep_in_process_status_extra_id == 1) {
 			# Keep status if the latest event was In process 
 			logger($pa_config, "Checking status of latest event with extended id '$id_extra'.", 10);
-			my $id_extra_last_status = get_db_value_limit ($dbh, 'SELECT estado FROM tevento WHERE id_extra=? ORDER BY timestamp DESC', 1, $id_extra);
+			# Check if there is a previous event with that extra ID and it is currently in "in process" state
+			my $id_extra_inprocess_count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 
 			# Only when the event comes as New. Validated events are excluded
-			if (defined ($id_extra_last_status) && $id_extra_last_status == 2 && $event_status == 0) {
+			if (defined($id_extra_inprocess_count) && $id_extra_inprocess_count > 0 && $event_status == 0) {
 				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
 				$event_status = 2;
 			}

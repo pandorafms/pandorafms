@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tnetwork_component` ADD COLUMN `target_ip` VARCHAR(255) NOT NULL DEFAULT '';
+
+COMMIT;

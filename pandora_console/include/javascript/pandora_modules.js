@@ -377,6 +377,10 @@ function configure_modules_form() {
         );
         $("#textarea_tcp_send").html(js_html_entity_decode(data["tcp_send"]));
         $("#textarea_tcp_rcv").html(js_html_entity_decode(data["tcp_rcv"]));
+        $("#text-ip_target").attr(
+          "value",
+          js_html_entity_decode(data["target_ip"])
+        );
         $("#text-snmp_community").attr(
           "value",
           js_html_entity_decode(data["snmp_community"])

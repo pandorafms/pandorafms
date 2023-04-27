@@ -524,6 +524,11 @@ $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
     true
 );
 
+// CHANGE TO CRITICAL STATUS
+$tableBasicThresholds->data['caption_warning_time'][0] .= __('Change to critical status after');
+$tableBasicThresholds->data['warning_time'][0] .= html_print_input_text('warning_time', $warning_time, '', 5, 15, true);
+$tableBasicThresholds->data['warning_time'][1] .= '&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>';
+
 // CRITICAL THRESHOLD.
 $tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
 $tableBasicThresholds->rowclass['critical_threshold'] = 'field_half_width';
@@ -607,7 +612,7 @@ $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 340px;width: 100%';
+$table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 400px;width: 100%';
 $table_simple->cellclass['thresholds_table'][0] = 'table_section half_section_left';
 $table_simple->data['thresholds_table'][0] = html_print_table($tableBasicThresholds, true);
 if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) {
@@ -1934,6 +1939,20 @@ $(document).ready (function () {
         }
     });
 
+    $('#text-warning_time').on ('input', function() {
+        if (!(isNaN($('#text-min_warning').val())) && !($('#text-min_warning').val() == "0")){
+            paint_graph_values();
+        }
+
+        if (!(isNaN($('#text-max_warning').val())) && !($('#text-max_warning').val() == "0")){
+            paint_graph_values();
+        }
+
+        if (isNaN($('#text-warning_time').val()) && !($('#text-warning_time').val() == "-")){
+            $('#text-warning_time').val(0);
+        }
+    });
+
     $('.switch_radio_button label').on('click', function(){
         var thisLabel = $(this).attr('for');
         $('#'+thisLabel).prop('checked', true);
@@ -2252,6 +2271,21 @@ function paint_graph_values(){
 
     var max_c = parseFloat($('#text-max_critical').val());
     if(max_c =='0.00' || isNaN(max_c)){ max_c = 0; }
+
+    var add_interval = parseFloat($('#text-warning_time').val());
+    if(add_interval == '0.00' || isNaN(add_interval)){ add_interval = 0; }
+
+    if(min_w !== 0 && add_interval !== 0 && max_w == 0){
+        min_c = min_w + add_interval;
+        $('#text-min_critical').val(min_c);
+    }
+
+    if(add_interval > 0 && max_w !== 0){
+        min_c = max_w;
+        max_c = min_c+ add_interval;
+        $('#text-min_critical').val(min_c);
+        $('#text-max_critical').val(max_c);
+    }
 
     var inverse_w = $('input:radio[value=warning_inverse]:checked').val();
     if(!inverse_w){ inverse_w = 0; }

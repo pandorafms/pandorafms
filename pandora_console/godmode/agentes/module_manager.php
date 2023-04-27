@@ -872,6 +872,10 @@ if ($modules !== false) {
             $title
         );
 
+        if (strlen($module['ip_target']) !== 0) {
+            $title .= '<br/>'.$module['ip_target'];
+        }
+
         // This module is initialized ? (has real data).
         if ($status === STATUS_MODULE_NO_DATA) {
             $data[2] .= html_print_image(

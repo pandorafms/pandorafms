@@ -681,7 +681,9 @@ class DiscoveryTaskList extends HTML
                     $recon_script_name = false;
                 }
 
-                if ($task['disabled'] == 0 && $server_name !== '') {
+                if (($task['disabled'] == 0 && $server_name !== '' && (int) $task['type'] !== DISCOVERY_EXTENSION)
+                    || ((int) $task['type'] === DISCOVERY_EXTENSION && (int) $task['setup_complete'] === 1)
+                ) {
                     if (check_acl($config['id_user'], 0, 'AW')) {
                         $data[0] = '<span class="link" onclick="force_task(\'';
                         $data[0] .= ui_get_full_url(
@@ -705,7 +707,9 @@ class DiscoveryTaskList extends HTML
                         );
                         $data[0] .= '</span>';
                     }
-                } else if ($task['disabled'] == 2) {
+                } else if ($task['disabled'] == 2
+                    || ((int) $task['type'] === DISCOVERY_EXTENSION && (int) $task['setup_complete'] === 0)
+                ) {
                     $data[0] = ui_print_help_tip(
                         __('This task has not been completely defined, please edit it'),
                         true
@@ -724,17 +728,6 @@ class DiscoveryTaskList extends HTML
                     $data[1] .= '<b><em>'.$task['name'].'</em></b>';
                 } else {
                     $data[1] .= '<b>'.$task['name'].'</b>';
-                }
-
-                if ((int) $task['type'] === DISCOVERY_EXTENSION && (int) $task['setup_complete'] === 0) {
-                    $data[1] .= html_print_image(
-                        'images/alert-yellow@svg.svg',
-                        true,
-                        [
-                            'title' => __('Tasks without complete setup won\'t be run by server.'),
-                            'class' => 'main_menu_icon invert_filter margin-left-1',
-                        ]
-                    );
                 }
 
                 if ($task['disabled'] != 2) {
@@ -1282,7 +1275,7 @@ class DiscoveryTaskList extends HTML
             ($task['status'] < 0) ? 100 : $task['status'],
             150,
             150,
-            '#3A3A3A',
+            '#14524f',
             '%',
             '',
             '#ececec',
@@ -1352,7 +1345,7 @@ class DiscoveryTaskList extends HTML
                 $task['stats']['c_network_percent'],
                 150,
                 150,
-                '#3A3A3A',
+                '#14524f',
                 '%',
                 '',
                 '#ececec',

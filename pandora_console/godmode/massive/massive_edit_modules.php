@@ -808,7 +808,7 @@ $table->data['edit1'][1] = '<table width="100%">';
                 1
             );
 
-            $table->data['edit3'][2] = __('SMNP community');
+            $table->data['edit3'][2] = __('SNMP community');
             $table->data['edit3'][3] = html_print_input_text(
                 'snmp_community',
                 '',

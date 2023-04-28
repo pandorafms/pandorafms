@@ -473,9 +473,9 @@ $tableBasicThresholds->data['warning_threshold'][1] .= html_print_input_text(
 
 $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_switch_radio_button(
     [
-        html_print_radio_button_extended('warning_thresholds_checks', 'normal_warning', __('Normal'), ($percentage_warning && $warning_inverse) === false, false, '', '', true, false, '', 'radius-normal_warning'),
-        html_print_radio_button_extended('warning_thresholds_checks', 'warning_inverse', __('Inverse interval'), $warning_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-warning_inverse'),
-        html_print_radio_button_extended('warning_thresholds_checks', 'percentage_warning', __('Percentage'), $percentage_warning, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_warning'),
+        html_print_radio_button_extended('warning_thresholds_checks', 'normal_warning', __('Normal'), ($percentage_warning && $warning_inverse) ? false : 'normal_warning', false, '', '', true, false, '', 'radius-normal_warning'),
+        html_print_radio_button_extended('warning_thresholds_checks', 'warning_inverse', __('Inverse interval'), ($warning_inverse) ? 'warning_inverse' : false, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-warning_inverse'),
+        html_print_radio_button_extended('warning_thresholds_checks', 'percentage_warning', __('Percentage'), ($percentage_warning) ? 'percentage_warning' : false, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_warning'),
     ],
     [ 'class' => 'margin-top-10' ],
     true
@@ -485,7 +485,7 @@ $basicThresholdsIntervalWarning = [];
 $basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
 $basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
     'warning_inverse_string',
-    1,
+    'warning_inverse_string',
     $warning_inverse,
     true,
     $disabledBecauseInPolicy
@@ -556,9 +556,9 @@ $tableBasicThresholds->data['critical_threshold'][1] .= html_print_input_text(
 
 $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_switch_radio_button(
     [
-        html_print_radio_button_extended('critical_thresholds_checks', 'normal_critical', __('Normal'), ($percentage_critical && $critical_inverse) === false, false, '', '', true, false, '', 'radius-normal_critical'),
-        html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), $critical_inverse, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
-        html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), $percentage_critical, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
+        html_print_radio_button_extended('critical_thresholds_checks', 'normal_critical', __('Normal'), ($percentage_critical && $critical_inverse) ? false : 'normal_critical', false, '', '', true, false, '', 'radius-normal_critical'),
+        html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), ($critical_inverse) ? 'critical_inverse' : false, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
+        html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), ($percentage_critical) ? 'percentage_critical' : false, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
     ],
     [ 'class' => 'margin-top-10' ],
     true
@@ -569,7 +569,7 @@ $basicThresholdsIntervalCritical = [];
 $basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
 $basicThresholdsIntervalCritical[] = html_print_checkbox_switch(
     'critical_inverse_string',
-    1,
+    'critical_inverse_string',
     $critical_inverse,
     true,
     $disabledBecauseInPolicy
@@ -694,6 +694,8 @@ if (isset($module['id_policy_module']) === true) {
 }
 
 $cps_array[-1] = __('Disabled');
+$cps_array[0] = __('Enabled');
+
 if ($cps_module > 0) {
     $cps_array[$cps_module] = __('Enabled');
 } else {
@@ -705,7 +707,9 @@ if ($cps_module > 0) {
         }
     }
 
-    $cps_array[$cps_inc] = __('Enabled');
+    if ($cps_inc > -1) {
+        $cps_array[$cps_inc] = __('Enabled');
+    }
 }
 
 // JS Scripts for ff thresholds.
@@ -1978,7 +1982,7 @@ $(document).ready (function () {
         }
     });
 
-    
+
 
 });
 

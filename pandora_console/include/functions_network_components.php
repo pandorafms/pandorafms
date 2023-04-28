@@ -570,7 +570,7 @@ function network_components_get_name($id_network_component)
         return false;
     }
 
-    return @db_get_value('name', 'tnetwork_component', 'id', $id_network_component);
+    return @db_get_value('name', 'tnetwork_component', 'id_nc', $id_network_component);
 }
 
 

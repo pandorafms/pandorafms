@@ -370,6 +370,10 @@ function config_update_config()
                         $error_update[] = __('alias_as_name');
                     }
 
+                    if (config_update_value('keep_in_process_status_extra_id', get_parameter('keep_in_process_status_extra_id'), true) === false) {
+                        $error_update[] = __('keep_in_process_status_extra_id');
+                    }
+
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -1220,6 +1224,10 @@ function config_update_config()
 
                     if (config_update_value('mobile_view_orientation_vc', (int) get_parameter('mobile_view_orientation_vc'), true) === false) {
                         $error_update[] = __('Mobile view not allow visual console orientation');
+                    }
+
+                    if (config_update_value('display_item_frame', (int) get_parameter('display_item_frame'), true) === false) {
+                        $error_update[] = __('Display item frame on alert triggered');
                     }
 
                     if (config_update_value('ser_menu_items', (int) get_parameter('ser_menu_items', 10), true) === false) {
@@ -2343,6 +2351,10 @@ function config_process_config()
         config_update_value('alias_as_name', 0);
     }
 
+    if (!isset($config['keep_in_process_status_extra_id'])) {
+        config_update_value('keep_in_process_status_extra_id', 0);
+    }
+
     if (!isset($config['console_log_enabled'])) {
         config_update_value('console_log_enabled', 0);
     }
@@ -3415,6 +3427,10 @@ function config_process_config()
 
     if (isset($config['mobile_view_orientation_vc']) === false) {
         config_update_value('mobile_view_orientation_vc', 0);
+    }
+
+    if (isset($config['display_item_frame']) === false) {
+        config_update_value('display_item_frame', 1);
     }
 
     if (!isset($config['agent_size_text_small'])) {

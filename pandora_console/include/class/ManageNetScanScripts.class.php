@@ -468,18 +468,14 @@ class ManageNetScanScripts extends Wizard
 
             echo "<form name=reconscript method='post' action='".$url."'>";
                 echo html_print_input_hidden('page', 1, true);
-                html_print_div(
-                    [
-                        'class'   => 'action-buttons',
-                        'content' => html_print_submit_button(
-                            __('Add'),
-                            'crtbutton',
-                            false,
-                            [ 'icon' => 'next' ],
-                            true
-                        ),
-                    ],
-                    true
+                html_print_action_buttons(
+                    html_print_submit_button(
+                        __('Add'),
+                        'crtbutton',
+                        false,
+                        [ 'icon' => 'next' ],
+                        true
+                    )
                 );
             echo '</form>';
         } else {
@@ -564,7 +560,7 @@ class ManageNetScanScripts extends Wizard
 
         $data = [];
         $data[0] = __('Description');
-        $data[1] = '<textarea name="form_description" cols="50" rows="4">';
+        $data[1] = '<textarea name="form_description" cols="69" rows="5">';
         $data[1] .= $form_description;
         $data[1] .= '</textarea>';
         $table->data['recon_description'] = $data;

@@ -918,26 +918,7 @@ html .ui-body-a .ui-accordion-content {
 html .ui-bar-a a,
 html .ui-body-a a,
 html body .ui-group-theme-a a {
-  color: #38c;
   font-weight: 700;
-}
-.ui-page-theme-a a:visited,
-html .ui-bar-a a:visited,
-html .ui-body-a a:visited,
-html body .ui-group-theme-a a:visited {
-  color: #38c;
-}
-.ui-page-theme-a a:hover,
-html .ui-bar-a a:hover,
-html .ui-body-a a:hover,
-html body .ui-group-theme-a a:hover {
-  color: #059;
-}
-.ui-page-theme-a a:active,
-html .ui-bar-a a:active,
-html .ui-body-a a:active,
-html body .ui-group-theme-a a:active {
-  color: #059;
 }
 .ui-page-theme-a .ui-button,
 html .ui-bar-a .ui-button,
@@ -1015,25 +996,7 @@ html body div.ui-slider-track.ui-body-a .ui-button-active,
 .ui-page-theme-a .ui-accordion-header.ui-state-active,
 html .ui-body-a .ui-accordion-header-active,
 html .ui-body-a .ui-accordion-header.ui-state-active {
-  background-color: #38c;
-  border-color: #38c;
   color: #fff;
-  text-shadow: 0 1px 0 #059;
-}
-.ui-page-theme-a .ui-button:focus,
-html .ui-bar-a .ui-button:focus,
-html .ui-body-a .ui-button:focus,
-html body .ui-group-theme-a .ui-button:focus,
-html head + body .ui-button.ui-button-a:focus,
-.ui-page-theme-a .ui-focus,
-html .ui-bar-a .ui-focus,
-html .ui-body-a .ui-focus,
-html body .ui-group-theme-a .ui-focus,
-html head + body .ui-button-a.ui-focus,
-html head + body .ui-body-a.ui-focus {
-  -webkit-box-shadow: 0 0 12px #38c;
-  -moz-box-shadow: 0 0 12px #38c;
-  box-shadow: 0 0 12px #38c;
 }
 .ui-bar-b,
 .ui-page-theme-b .ui-bar-inherit,
@@ -1078,26 +1041,7 @@ html .ui-body-b .ui-accordion-content {
 html .ui-bar-b a,
 html .ui-body-b a,
 html body .ui-group-theme-b a {
-  color: #2ad;
   font-weight: 700;
-}
-.ui-page-theme-b a:visited,
-html .ui-bar-b a:visited,
-html .ui-body-b a:visited,
-html body .ui-group-theme-b a:visited {
-  color: #2ad;
-}
-.ui-page-theme-b a:hover,
-html .ui-bar-b a:hover,
-html .ui-body-b a:hover,
-html body .ui-group-theme-b a:hover {
-  color: #08b;
-}
-.ui-page-theme-b a:active,
-html .ui-bar-b a:active,
-html .ui-body-b a:active,
-html body .ui-group-theme-b a:active {
-  color: #08b;
 }
 .ui-page-theme-b .ui-button,
 html .ui-bar-b .ui-button,
@@ -1175,25 +1119,7 @@ html body div.ui-slider-track.ui-body-b .ui-button-active,
 .ui-page-theme-b .ui-accordion-header.ui-state-active,
 html .ui-body-b .ui-accordion-header-active,
 html .ui-body-b .ui-accordion-header.ui-state-active {
-  background-color: #2ad;
-  border-color: #2ad;
   color: #fff;
-  text-shadow: 0 1px 0 #08b;
-}
-.ui-page-theme-b .ui-button:focus,
-html .ui-bar-b .ui-button:focus,
-html .ui-body-b .ui-button:focus,
-html body .ui-group-theme-b .ui-button:focus,
-html head + body .ui-button.ui-button-b:focus,
-.ui-page-theme-b .ui-focus,
-html .ui-bar-b .ui-focus,
-html .ui-body-b .ui-focus,
-html body .ui-group-theme-b .ui-focus,
-html head + body .ui-button-b.ui-focus,
-html head + body .ui-body-b.ui-focus {
-  -webkit-box-shadow: 0 0 12px #2ad;
-  -moz-box-shadow: 0 0 12px #2ad;
-  box-shadow: 0 0 12px #2ad;
 }
 .ui-disabled,
 .ui-state-disabled,
@@ -2770,7 +2696,7 @@ li.ui-block-e {
   width: 100%;
   float: none;
 }
-@media (max-width: 35em) {
+@media (max-width: 480px) {
   .ui-responsive > .ui-block-a,
   .ui-responsive > .ui-block-b,
   .ui-responsive > .ui-block-c,
@@ -4461,7 +4387,7 @@ html .ui-popup .ui-field-contain > label + .ui-flipswitch {
     font-weight: 400;
   }
 }
-@media screen and (min-width: 35em), print {
+@media screen and (min-width: 480px), print {
   .ui-table-reflow.ui-responsive td,
   .ui-table-reflow.ui-responsive th,
   .ui-table-reflow.ui-responsive tbody th,
@@ -4475,7 +4401,7 @@ html .ui-popup .ui-field-contain > label + .ui-flipswitch {
     display: none;
   }
 }
-@media screen and (max-width: 35em) {
+@media screen and (max-width: 480px) {
   .ui-table-reflow.ui-responsive td,
   .ui-table-reflow.ui-responsive th {
     width: 100%;

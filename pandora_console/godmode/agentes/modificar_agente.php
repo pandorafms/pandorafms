@@ -114,7 +114,7 @@ ui_print_standard_header(
 if (is_management_allowed() === false) {
     if (is_metaconsole() === false) {
         $url = '<a target="_blank" href="'.ui_get_meta_url(
-            'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
+            'index.php?sec=advanced&sec2=advanced/massive_operations&tab=massive_agents'
         ).'">'.__('metaconsole').'</a>';
     } else {
         $url = __('any node');

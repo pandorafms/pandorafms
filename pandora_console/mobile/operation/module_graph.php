@@ -404,7 +404,7 @@ class ModuleGraph
                 )
             );
             $title = sprintf(__('Options for %s : %s'), $agent_alias, $this->module['nombre']);
-            $ui->contentBeginCollapsible($title);
+            $ui->contentBeginCollapsible($title, 'filter-collapsible');
                 $ui->beginForm('index.php?page=module_graph&id='.$this->id.'&server_id='.$this->server_id);
                     $options = [
                         'name'    => 'draw_alerts',

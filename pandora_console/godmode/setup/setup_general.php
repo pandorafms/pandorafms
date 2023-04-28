@@ -431,7 +431,7 @@ $table->data[$i++][] = html_print_label_input_block(
 
 $table->colspan[$i][] = 2;
 $table->data[$i++][] = html_print_label_input_block(
-    __('Timezone setup'),
+    __('Server timezone setup'),
     html_print_div(
         [
             'class'   => '',
@@ -704,7 +704,7 @@ $table->data[$i][] = html_print_label_input_block(
     )
 );
 
-$table->data[$i][] = html_print_label_input_block(
+$table->data[$i++][] = html_print_label_input_block(
     __('Check conexion interval'),
     html_print_input_number(
         [
@@ -712,6 +712,21 @@ $table->data[$i][] = html_print_label_input_block(
             'min'   => 90,
             'value' => $config['check_conexion_interval'],
         ]
+    )
+);
+
+$help_tip = ui_print_help_tip(
+    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead.'),
+    true
+);
+
+$table->data[$i][] = html_print_label_input_block(
+    __('Keep In process status for new events with extra ID').$help_tip,
+    html_print_checkbox_switch(
+        'keep_in_process_status_extra_id',
+        1,
+        $config['keep_in_process_status_extra_id'],
+        true
     )
 );
 

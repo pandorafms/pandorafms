@@ -1470,6 +1470,7 @@ class DiscoveryTaskList extends HTML
                                 continue;
                             }
 
+                            $unknownJson = [];
                             foreach ($summary as $k2 => $v) {
                                 if (is_array($v) === true) {
                                     if ($k2 === 'summary') {
@@ -1488,8 +1489,11 @@ class DiscoveryTaskList extends HTML
                                         $table->data[$i][0] = $v;
                                         $table->data[$i][1] = '';
                                         $i++;
+                                    } else if ($k2 !== array_key_last($summary)) {
+                                        $unknownJson = array_merge($unknownJson, [$k2 => $v]);
                                     } else {
-                                        $table->data[$i][0] = json_encode([$k2 => $v], JSON_PRETTY_PRINT);
+                                        $unknownJson = array_merge($unknownJson, [$k2 => $v]);
+                                        $table->data[$i][0] = json_encode($unknownJson, JSON_PRETTY_PRINT);
                                         $table->data[$i][1] = '';
                                         $i++;
                                     }

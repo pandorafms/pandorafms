@@ -1504,6 +1504,13 @@ class DiscoveryTaskList extends HTML
                             $i++;
                         }
                     }
+                } else {
+                    $table->data[$i][0] = '<b>'.__('Summary').'</b>';
+                    $table->data[$i][1] = '';
+                    $i++;
+                    $table->data[$i][0] = $task['summary'];
+                    $table->data[$i][1] = '';
+                    $i++;
                 }
             } else {
                 // Content.

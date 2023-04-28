@@ -608,41 +608,41 @@ $userManagementTable->data['fields_blocksize_eventfilter'][1] = html_print_selec
     false,
     false
 );
-if (is_metaconsole() === false) {
-    // Home screen table.
-    $homeScreenTable = new stdClass();
-    $homeScreenTable->class = 'w100p full_section';
-    $homeScreenTable->id = 'home_screen_table';
-    $homeScreenTable->style = [];
-    $homeScreenTable->rowclass = [];
-    $homeScreenTable->data = [];
-    // Home screen.
-    $homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
-    $homeScreenTable->colspan['captions_homescreen'][0] = 2;
-    $homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
-    $homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
-    $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
-        $homeScreenValues,
-        'section',
-        io_safe_output($user_info['section']),
-        'show_data_section();',
-        '',
-        -1,
-        true,
-        false,
-        false
-    );
-    $homeScreenTable->data['fields_homescreen'][1] = html_print_div(
-        [
-            'class'   => 'w100p',
-            'content' => $customHomeScreenDataField,
-        ],
-        true
-    );
 
-    $userManagementTable->rowclass['homescreen_table'] = 'w100p';
-    $userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
-}
+// Home screen table.
+$homeScreenTable = new stdClass();
+$homeScreenTable->class = 'w100p full_section';
+$homeScreenTable->id = 'home_screen_table';
+$homeScreenTable->style = [];
+$homeScreenTable->rowclass = [];
+$homeScreenTable->data = [];
+// Home screen.
+$homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
+$homeScreenTable->colspan['captions_homescreen'][0] = 2;
+$homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
+$homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
+$homeScreenTable->data['fields_homescreen'][0] = html_print_select(
+    $homeScreenValues,
+    'section',
+    io_safe_output($user_info['section']),
+    'show_data_section();',
+    '',
+    -1,
+    true,
+    false,
+    false
+);
+$homeScreenTable->data['fields_homescreen'][1] = html_print_div(
+    [
+        'class'   => 'w100p',
+        'content' => $customHomeScreenDataField,
+    ],
+    true
+);
+
+$userManagementTable->rowclass['homescreen_table'] = 'w100p';
+$userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
+
 
 if (is_metaconsole() === true && users_is_admin() === true) {
     $userManagementTable->rowclass['search_custom1_looknfeel'] = 'field_half_width';

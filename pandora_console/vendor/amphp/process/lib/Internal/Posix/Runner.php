@@ -39,6 +39,8 @@ final class Runner implements ProcessRunner
         } else {
             $handle->joinDeferred->resolve((int) \rtrim(@\stream_get_contents($stream)));
         }
+
+        $handle->wait();
     }
 
     public static function onProcessStartExtraDataPipeReadable($watcher, $stream, $data)
@@ -101,6 +103,8 @@ final class Runner implements ProcessRunner
             \proc_close($handle->proc);
             throw new ProcessException("Could not get process status");
         }
+
+        $handle->shellPid = \proc_get_status($handle->proc)['pid'];
 
         $stdinDeferred = new Deferred;
         $handle->stdin = new ProcessOutputStream($stdinDeferred->promise());

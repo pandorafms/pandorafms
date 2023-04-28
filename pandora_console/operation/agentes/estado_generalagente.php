@@ -752,18 +752,7 @@ if (empty($network_interfaces) === false) {
     $table_interface->class = 'info_table';
     $table_interface->width = '100%';
     $table_interface->style = [];
-    $table_interface->style['interface_status'] = 'width: 30px;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_event_graph'] = 'width: 35%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->align['interface_event_graph'] = 'right';
-    $table_interface->style['interface_event_graph'] = 'width: 3%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_name'] = 'width: 30%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->align['interface_name'] = 'left';
-    $table_interface->align['interface_ip'] = 'left';
-    $table_interface->align['last_contact'] = 'left';
-    $table_interface->style['last_contact'] = 'width: 20%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_ip'] = 'width: 8%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_mac'] = 'width: 12%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['interface_event_graph'] = 'width: 35%;';
 
     $table_interface->head = [];
     $options = [
@@ -805,58 +794,22 @@ if (empty($network_interfaces) === false) {
             $graph_link = '';
         }
 
-        $events_limit = 5000;
-        $user_groups = users_get_groups($config['id_user'], 'ER');
-        $user_groups_ids = array_keys($user_groups);
-        if (empty($user_groups) === true) {
-            $groups_condition = ' 1 = 0 ';
-        } else {
-            $groups_condition = ' id_grupo IN ('.implode(',', $user_groups_ids).') ';
-        }
+        $content = [
+            'id_agent_module' => $interface['status_module_id'],
+            'id_group'        => $id_group,
+            'period'          => SECONDS_1DAY,
+            'time_from'       => '00:00:00',
+            'time_to'         => '00:00:00',
+            'sizeForTicks'    => 250,
+            'height_graph'    => 40,
+            [
+                ['id_agent_module' => $interface['status_module_id']],
+            ]
+        ];
 
-        if ((bool) check_acl($config['id_user'], 0, 'PM') === false) {
-            $groups_condition .= ' AND id_grupo != 0';
-        }
-
-        $status_condition = ' AND (estado = 0 OR estado = 1) ';
-        $unixtime = (get_system_time() - SECONDS_1DAY);
-        // Last hour.
-        $time_condition = 'AND (utimestamp > '.$unixtime.')';
-        // Tags ACLs.
-        if ($id_group > 0 && in_array(0, $user_groups_ids)) {
-            $group_array = (array) $id_group;
-        } else {
-            $group_array = $user_groups_ids;
-        }
-
-        $acl_tags = tags_get_acl_tags(
-            $config['id_user'],
-            $group_array,
-            'ER',
-            'event_condition',
-            'AND',
-            '',
-            true,
-            [],
-            true
-        );
-
-        $id_modules_array = [];
-        $id_modules_array[] = $interface['status_module_id'];
-
-        $unixtime = (get_system_time() - SECONDS_1DAY);
-        // Last hour.
-        $time_condition = 'WHERE (te.utimestamp > '.$unixtime.')';
-
-        $sqlEvents = sprintf(
-            'SELECT *
-			FROM tevento te
-			INNER JOIN tagente_estado tae
-				ON te.id_agentmodule = tae.id_agente_modulo
-					AND tae.id_agente_modulo IN (%s)
-			%s',
-            implode(',', $id_modules_array),
-            $time_condition
+        $e_graph = \reporting_module_histogram_graph(
+            ['datetime' => time()],
+            $content
         );
 
         $sqlLast_contact = sprintf(
@@ -870,21 +823,6 @@ if (empty($network_interfaces) === false) {
         $last_contact = array_shift($last_contact);
         $last_contact = array_shift($last_contact);
 
-        $events = db_get_all_rows_sql($sqlEvents);
-        $text_event_header = __('Events info (24hr.)');
-        if (!$events) {
-            $no_events = ['color' => ['criticity' => 2]];
-            $e_graph = reporting_get_event_histogram(
-                $no_events,
-                $text_event_header
-            );
-        } else {
-            $e_graph = reporting_get_event_histogram(
-                $events,
-                $text_event_header
-            );
-        }
-
         $data = [];
         $data['interface_name'] = '<strong>'.$interface_name.'</strong>';
         $data['interface_status'] = $interface['status_image'];
@@ -892,7 +830,7 @@ if (empty($network_interfaces) === false) {
         $data['interface_ip'] = $interface['ip'];
         $data['interface_mac'] = $interface['mac'];
         $data['last_contact'] = __('Last contact: ').$last_contact;
-        $data['interface_event_graph'] = $e_graph;
+        $data['interface_event_graph'] = $e_graph['chart'];
 
         $table_interface->data[] = $data;
     }

@@ -1498,6 +1498,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			my $_cid = '<img style="height: 150px;" src="cid:' . $cid_data . '"/>';
 
 			$field3 =~ s/_data_/$_cid/g;
+			$field3 =~ s/_moduledata_/$_cid/g;
 		}
 
 
@@ -2302,7 +2303,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 
 	# Generate alerts
-	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
+	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 &&
+		(pandora_cps_enabled($agent, $module) == 0 || enterprise_hook('pandora_inhibit_service_alerts', [$pa_config, $module, $dbh, 0]) == 0))
+	{		
 		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value);
 	}
 	else {
@@ -3556,9 +3559,21 @@ sub pandora_create_module ($$$$$$$$$$) {
 ##########################################################################
 ## Delete a module given its id.
 ##########################################################################
-sub pandora_delete_module ($$;$) {
-	my ($dbh, $module_id, $conf) = @_;
+sub pandora_delete_module {
+	my $dbh = shift;
+	my $module_id = shift;
+	my $conf = shift if @_;
+	my $cascade = shift if @_;
 	
+	# Recursively delete descendants (delete in cascade)
+	if (defined($cascade) && $cascade eq 1) {
+		my @id_children_modules = get_db_rows($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE parent_module_id = ?', $module_id);
+
+		foreach my $id_child_module (@id_children_modules) {
+				pandora_delete_module($dbh, $id_child_module->{'id_agente_modulo'}, $conf, 1);
+		}
+	}
+
 	# Get module data
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=?', $module_id);
 	return unless defined ($module);
@@ -4070,6 +4085,21 @@ sub pandora_event {
 	
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
+		my $keep_in_process_status_extra_id = pandora_get_tconfig_token ($dbh, 'keep_in_process_status_extra_id', 0);
+
+		if (defined ($keep_in_process_status_extra_id) && $keep_in_process_status_extra_id == 1) {
+			# Keep status if the latest event was In process 
+			logger($pa_config, "Checking status of latest event with extended id ".$id_extra, 10);
+			# Check if there is a previous event with that extra ID and it is currently in "in process" state
+			my $id_extra_inprocess_count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
+
+			# Only when the event comes as New. Validated events are excluded
+			if (defined($id_extra_inprocess_count) && $id_extra_inprocess_count > 0 && $event_status == 0) {
+				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
+				$event_status = 2;
+			}
+		}
+
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
 		db_do ($dbh, 'UPDATE tevento SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
 	}
@@ -6288,7 +6318,9 @@ sub pandora_module_unknown ($$) {
 			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 			
 			# Generate alerts
-			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
+			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && 
+				(pandora_cps_enabled($agent, $module) == 0 || enterprise_hook('pandora_inhibit_service_alerts', [$pa_config, $module, $dbh, 0]) == 0)) 
+			{
 				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
 				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
 			}
@@ -6335,9 +6367,11 @@ sub pandora_module_unknown ($$) {
 			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 			
 			# Generate alerts
-			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
+			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 &&
+				(pandora_cps_enabled($agent, $module) == 0 || enterprise_hook('pandora_inhibit_service_alerts', [$pa_config, $module, $dbh, 0]) == 0)) 
+			{
 				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
-				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
+					pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
 			}
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);

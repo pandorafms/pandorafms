@@ -3887,7 +3887,8 @@ function draw_elements_graph() {
       return d.id + networkmap_id;
     })
     .attr("style", function(d) {
-      return d.id === 0 ? "filter: invert(0%)" : "";
+      const extension = d.image_url.split(".").pop();
+      return extension !== "svg" || d.id === 0 ? "filter: invert(0%)" : "";
     })
     .attr("id", "image2995")
     .classed("dragable_node", true) //own dragable

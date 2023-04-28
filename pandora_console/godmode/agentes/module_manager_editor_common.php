@@ -485,7 +485,7 @@ $basicThresholdsIntervalWarning = [];
 $basicThresholdsIntervalWarning[] = '<span>'.__('Inverse interval').'</span>';
 $basicThresholdsIntervalWarning[] = html_print_checkbox_switch(
     'warning_inverse_string',
-    1,
+    'warning_inverse_string',
     $warning_inverse,
     true,
     $disabledBecauseInPolicy
@@ -569,7 +569,7 @@ $basicThresholdsIntervalCritical = [];
 $basicThresholdsIntervalCritical[] = '<span>'.__('Inverse interval').'</span>';
 $basicThresholdsIntervalCritical[] = html_print_checkbox_switch(
     'critical_inverse_string',
-    1,
+    'critical_inverse_string',
     $critical_inverse,
     true,
     $disabledBecauseInPolicy
@@ -694,6 +694,8 @@ if (isset($module['id_policy_module']) === true) {
 }
 
 $cps_array[-1] = __('Disabled');
+$cps_array[0] = __('Enabled');
+
 if ($cps_module > 0) {
     $cps_array[$cps_module] = __('Enabled');
 } else {
@@ -705,7 +707,9 @@ if ($cps_module > 0) {
         }
     }
 
-    $cps_array[$cps_inc] = __('Enabled');
+    if ($cps_inc > -1) {
+        $cps_array[$cps_inc] = __('Enabled');
+    }
 }
 
 // JS Scripts for ff thresholds.

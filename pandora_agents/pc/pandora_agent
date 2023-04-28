@@ -2018,7 +2018,7 @@ sub pandora_agent_run () {
 		$Xml = $xml_header . $Xml . "</agent_data>";
 
 		# Save XML data file
-		my $temp_file = $Conf{'temporal'} . '/' . $Conf{'agent_name'} . '.' . time () . '.data';
+		my $temp_file = $Conf{'temporal'} . '/' . md5($Conf{'agent_name'}) . '.' . time () . '.data';
 		if (-l $temp_file && !unlink($temp_file)) {
 			error ("File '$temp_file' already exists as a symlink and could not be removed: $!");
 			return 1;

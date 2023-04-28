@@ -263,7 +263,7 @@ sub prepare_tree {
     }
 
     my $speed = 0;
-    if (empty($config->{'max_interfaces'}) {
+    if (empty($config->{'max_interfaces'})) {
       $speed = snmp_get(\%speed);
       if (ref($speed) eq "HASH") {
         $speed = int $speed->{'data'};

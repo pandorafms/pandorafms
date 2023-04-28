@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -39,7 +39,7 @@ if (defined('_activeTab_') && _activeTab_ != '_activeTab_') {
     $tab = $activeTab;
 }
 
-// Networkmap id required
+// Networkmap id required.
 if (!isset($id)) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -49,7 +49,7 @@ if (!isset($id)) {
     exit;
 }
 
-// Get the group for ACL
+// Get the group for ACL.
 if (!isset($store_group)) {
     $store_group = db_get_value('id_group', 'tmap', 'id', $id);
     if ($store_group === false) {
@@ -62,7 +62,7 @@ if (!isset($store_group)) {
     }
 }
 
-// ACL for the networkmap permission
+// ACL for the networkmap permission.
 if (!isset($networkmap_read)) {
     $networkmap_read = check_acl($config['id_user'], $store_group, 'MR');
 }
@@ -91,12 +91,12 @@ $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_use
 $networkmap = db_get_row('tmap', 'id', $id);
 $pure = (int) get_parameter('pure', 0);
 
-// Main code
+// Main code.
 if ($pure == 1) {
     $buttons['screen'] = [
         'active' => false,
         'text'   => '<a href="index.php?sec=network&amp;'.'sec2=operation/agentes/networkmap.dinamic&amp;'.'activeTab=radial_dynamic&amp;id_networkmap='.$id.'">'.html_print_image(
-            'images/normal_screen.png',
+            'images/exit_fullscreen@svg.svg',
             true,
             [
                 'title' => __('Normal screen'),
@@ -109,7 +109,7 @@ if ($pure == 1) {
         $buttons['screen'] = [
             'active' => false,
             'text'   => '<a href="index.php?sec=network&amp;'.'sec2=operation/agentes/networkmap.dinamic&amp;'.'pure=1&amp;activeTab=radial_dynamic&amp;id_networkmap='.$id.'">'.html_print_image(
-                'images/full_screen.png',
+                'images/fullscreen@svg.svg',
                 true,
                 [
                     'title' => __('Full screen'),
@@ -120,7 +120,7 @@ if ($pure == 1) {
         $buttons['list'] = [
             'active' => false,
             'text'   => '<a href="index.php?sec=networkmapconsole&amp;'.'sec2=operation/agentes/pandora_networkmap">'.html_print_image(
-                'images/list.png',
+                'images/file-collection@svg.svg',
                 true,
                 [
                     'title' => __('List of networkmap'),
@@ -132,16 +132,24 @@ if ($pure == 1) {
 }
 
 if ($dashboard != 1) {
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         io_safe_output($networkmap['name']),
         'images/bricks.png',
         false,
         'network_map_enterprise_list',
         false,
         $buttons,
-        false,
-        '',
-        $config['item_title_size_text']
+        [
+            [
+                'link'  => '',
+                'label' => __('Topology maps'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Network maps'),
+            ],
+        ]
     );
 }
 
@@ -208,14 +216,14 @@ switch ($networkmap['generation_method']) {
     break;
 }
 
-// Set filter
+// Set filter.
 $filter = networkmap_get_filter($layout);
 
 if (!isset($text_filter)) {
     $text_filter = '';
 }
 
-// Generate dot file
+// Generate dot file.
 $graph = networkmap_generate_hash(
     __('Pandora FMS'),
     $group,

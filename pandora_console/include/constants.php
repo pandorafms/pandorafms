@@ -440,6 +440,7 @@ define('SERVER_TYPE_MIGRATION', 20);
 define('SERVER_TYPE_ALERT', 21);
 define('SERVER_TYPE_CORRELATION', 22);
 define('SERVER_TYPE_NCM', 23);
+define('SERVER_TYPE_NETFLOW', 24);
 
 // REPORTS.
 define('REPORT_TOP_N_MAX', 1);
@@ -812,6 +813,7 @@ define('AUDIT_LOG_SERVICE_MANAGEMENT', 'Service management');
 define('AUDIT_LOG_INCIDENT_MANAGEMENT', 'Incident management');
 define('AUDIT_LOG_UMC', 'Warp Manager');
 define('AUDIT_LOG_NMS_VIOLATION', 'NMS Violation');
+define('AUDIT_LOG_ENTERPRISE_VIOLATION', 'Enterprise Violation');
 
 // MIMEs.
 define(

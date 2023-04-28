@@ -27,6 +27,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Event;
+
 // Begin.
 require_once '../include/functions_users.php';
 
@@ -130,8 +132,12 @@ class Agent
     {
         $ui = Ui::getInstance();
         $system = System::getInstance();
+        $eventObj = new Events;
 
         $ui->createPage();
+
+        $options = $eventObj->getEventDialogOptions();
+        $ui->addDialog($options);
 
         if ($this->id != 0) {
             $agent_alias = (string) $this->agent['alias'];
@@ -159,7 +165,7 @@ class Agent
         $ui->beginContent();
         if (empty($this->agent)) {
             $ui->contentAddHtml(
-                '<span class="red">'.__('No agent found').'</span>'
+                '<span class="no-data">'.__('No agent found').'</span>'
             );
         } else {
             $ui->contentBeginGrid();
@@ -191,10 +197,7 @@ class Agent
             $address = $this->agent['direccion'];
             $ip .= (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address;
             $last_contact = '<b>'.__('Last contact').'</b>:&nbsp;';
-            $last_contact .= ui_print_timestamp(
-                $this->agent['ultimo_contacto'],
-                true
-            );
+            $last_contact .= human_time_comparation($this->agent['ultimo_contacto'], 'tiny');
 
             if (empty($agent['comentarios']) === true) {
                 $description .= '<i>'.__('N/A').'</i>';
@@ -213,8 +216,8 @@ class Agent
                 false,
                 false,
                 false,
-                false,
-                true
+                ['class' => 'invert_filter main_menu_icon'],
+                false
             ).'</div>';
             $html .= '<div class="agent_list_ips">';
             $html .= $ip.' -  '.groups_get_name($this->agent['id_grupo'], true);
@@ -366,7 +369,7 @@ class Agent
             $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
             $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 
-            $ui->contentBeginCollapsible(sprintf(__('Last %s Events'), $system->getPageSize()));
+            $ui->contentBeginCollapsible(sprintf(__('Last %s Events'), $system->getPageSize()), 'agent-last-events');
             $tabledata = $events->listEventsHtml(0, true, 'last_agent_events');
             $ui->contentCollapsibleAddItem($tabledata['table']);
             $ui->contentCollapsibleAddItem($events->putEventsTableJS($this->id));
@@ -438,7 +441,7 @@ class Agent
                         $.mobile.loading('hide');
                         var className = $('#list_agent_Modules').attr('class');
                         if (document.getElementById('list_agent_Modules') == null) {
-                            $($('p.empty_advice')[0]).parent().html(r);
+                            $($('p.no-data')[0]).parent().html(r);
                             className = 'ui-responsive table-stroke ui-table ui-table-reflow';
                         } else {
                             $('#list_agent_Modules').parent().html(r);

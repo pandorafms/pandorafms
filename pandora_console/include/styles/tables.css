@@ -844,3 +844,21 @@ a.mini-pandora-pagination {
 input.mini-search-input {
   height: 30px;
 }
+
+td#password_manage-captions_newpassword-0,
+td#password_manage-fields_newpassword-0,
+td#password_manage-captions_repeatpassword-0,
+td#password_manage-fields_repeatpassword-0,
+td#password_manage-captions_currentpassword-0,
+td#password_manage-fields_currentpassword-0,
+td#advanced-passwordManage_table-0,
+td#home_screen_table-captions_homescreen-0,
+td#home_screen_table-fields_homescreen-0,
+td#advanced-homescreen_table-0 {
+  padding: 0px;
+}
+
+td.w75p#rightcolumn {
+  margin-right: 0%;
+  vertical-align: baseline;
+}

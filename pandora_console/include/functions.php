@@ -3908,7 +3908,14 @@ function series_type_graph_array($data, $show_elements_graph)
         $type_graph = $show_elements_graph['type_graph'];
     }
 
-    $color_series = color_graph_array();
+    if (isset($show_elements_graph['array_colors']) === true
+        && empty($show_elements_graph['array_colors']) === false
+        && is_array($show_elements_graph['array_colors']) === true
+    ) {
+        $color_series = $show_elements_graph['array_colors'];
+    } else {
+        $color_series = color_graph_array();
+    }
 
     if ($show_elements_graph['id_widget_dashboard']) {
         $opcion = unserialize(
@@ -4050,7 +4057,7 @@ function series_type_graph_array($data, $show_elements_graph)
                     $name_legend .= ' * '.$value['weight'].') ';
                 }
 
-                $data_return['legend'][$key] = $name_legend;
+                $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.$name_legend.'</span>';
                 if ((int) $value['min'] === PHP_INT_MAX) {
                     $value['min'] = 0;
                 }
@@ -4059,28 +4066,28 @@ function series_type_graph_array($data, $show_elements_graph)
                     $value['max'] = 0;
                 }
 
-                $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
+                $data_return['legend'][$key] .= '<span class="legend-font-small">'.__('Min').' </span><span class="bolder">'.remove_right_zeros(
                     number_format(
                         $value['min'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '.__('Max:').remove_right_zeros(
+                ).' '.$value['unit'].'</span>&nbsp;<span class="legend-font-small">'.__('Max').' </span><span class="bolder">'.remove_right_zeros(
                     number_format(
                         $value['max'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '._('Avg:').remove_right_zeros(
+                ).' '.$value['unit'].'</span>&nbsp;<span class="legend-font-small">'._('Avg.').' </span><span class="bolder">'.remove_right_zeros(
                     number_format(
                         $value['avg'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '.$str;
+                ).' '.$value['unit'].'</span>&nbsp;'.$str;
 
                 if ($show_elements_graph['compare'] == 'overlapped'
                     && $key == 'sum2'
@@ -4122,9 +4129,9 @@ function series_type_graph_array($data, $show_elements_graph)
                     $name_legend .= $value['module_name'].': ';
                 }
 
-                $data_return['legend'][$key] = $name_legend;
+                $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.$name_legend.'</span>';
                 if ($show_elements_graph['type_mode_graph']) {
-                    $data_return['legend'][$key] .= __('Min:');
+                    $data_return['legend'][$key] .= '<span class="legend-font-small">'.__('Min:').' </span><span class="bolder">';
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['min'],
@@ -4132,8 +4139,8 @@ function series_type_graph_array($data, $show_elements_graph)
                             $config['decimal_separator'],
                             $config['thousand_separator']
                         )
-                    );
-                    $data_return['legend'][$key] .= ' '.__('Max:');
+                    ).' '.$value['unit'];
+                    $data_return['legend'][$key] .= '</span>&nbsp;<span class="legend-font-small">'.__('Max:').' </span><span class="bolder">';
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['max'],
@@ -4141,8 +4148,8 @@ function series_type_graph_array($data, $show_elements_graph)
                             $config['decimal_separator'],
                             $config['thousand_separator']
                         )
-                    );
-                    $data_return['legend'][$key] .= ' '._('Avg:');
+                    ).' '.$value['unit'];
+                    $data_return['legend'][$key] .= '</span>&nbsp;<span class="legend-font-small">'._('Avg:').' </span><span class="bolder">';
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['avg'],
@@ -4150,7 +4157,7 @@ function series_type_graph_array($data, $show_elements_graph)
                             $config['decimal_separator'],
                             $config['thousand_separator']
                         )
-                    ).' '.$str;
+                    ).' '.$value['unit'].' </span>&nbsp;'.$str;
                 }
 
                 if ($show_elements_graph['compare'] == 'overlapped'
@@ -4164,21 +4171,21 @@ function series_type_graph_array($data, $show_elements_graph)
             } else if (strpos($key, 'event') !== false) {
                 $data_return['series_type'][$key] = 'points';
                 if ($show_elements_graph['show_events']) {
-                    $data_return['legend'][$key] = __('Events').' '.$str;
+                    $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.__('Events').'</span>'.$str;
                 }
 
                 $data_return['color'][$key] = $color_series['event'];
             } else if (strpos($key, 'alert') !== false) {
                 $data_return['series_type'][$key] = 'points';
                 if ($show_elements_graph['show_alerts']) {
-                    $data_return['legend'][$key] = __('Alert').' '.$str;
+                    $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.__('Alert').'</span>'.$str;
                 }
 
                 $data_return['color'][$key] = $color_series['alert'];
             } else if (strpos($key, 'unknown') !== false) {
                 $data_return['series_type'][$key] = 'unknown';
                 if ($show_elements_graph['show_unknown']) {
-                    $data_return['legend'][$key] = __('Unknown').' '.$str;
+                    $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.__('Unknown').'</span>'.$str;
                 }
 
                 $data_return['color'][$key] = $color_series['unknown'];
@@ -4186,7 +4193,7 @@ function series_type_graph_array($data, $show_elements_graph)
                 $data_return['series_type'][$key] = 'percentil';
                 if ($show_elements_graph['percentil']) {
                     if ($show_elements_graph['unit']) {
-                        $name_legend = __('Percentil').' ';
+                        $name_legend = '<span style="font-size: 9pt; font-weight: bolder;">'.__('Percentil').'</span>';
                         $name_legend .= $config['percentil'].'º ';
                         $name_legend .= __('of module').' ';
                         $name_legend .= $value['agent_alias'].' / ';

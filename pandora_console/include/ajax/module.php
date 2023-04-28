@@ -583,7 +583,7 @@ if (check_login()) {
         }
 
         if (empty($table->data)) {
-            ui_print_error_message(__('No available data to showaaaa'));
+            ui_print_error_message(__('No available data to show'));
         } else {
             ui_pagination(
                 count($count),
@@ -2065,6 +2065,7 @@ if (check_login()) {
         if ($result === false) {
             echo 'error';
         } else {
+            ui_update_name_fav_element($id, 'Modules', $values['ag_modulename']);
             echo 'ok';
         }
     }

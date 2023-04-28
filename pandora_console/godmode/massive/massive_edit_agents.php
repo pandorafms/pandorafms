@@ -289,6 +289,23 @@ if ($update_agents) {
             try {
                 $node = new Node((int) $array_id[0]);
                 $node->connect();
+
+                $id_agent = (int) $array_id[1];
+
+                // Get the id_agente_modulo to update the 'safe_operation_mode' field.
+                if (isset($values['safe_mode_module']) === true
+                    && ($values['safe_mode_module'] != '0')
+                ) {
+                    $id_module_safe[$id_agent] = db_get_value_filter(
+                        'id_agente_modulo',
+                        'tagente_modulo',
+                        [
+                            'id_agente' => $id_agent,
+                            'nombre'    => $values['safe_mode_module'],
+                        ]
+                    );
+                }
+
                 $result[$id_agent] = edit_massive_agent(
                     (int) $array_id[1],
                     $values,
@@ -477,17 +494,17 @@ function edit_massive_agent(
         $agent = new Agent($id_agent);
         $disabled_old = $agent->disabled();
 
-        foreach ($values as $key => $value) {
-            $agent->{$key}($value);
-        }
-
-        if (is_metaconsole() === false) {
+        if (empty($id_module_safe) === false) {
             // Get the id_agent_module for this agent to update the 'safe_operation_mode' field.
             if (isset($values['safe_mode_module']) === true
                 && ($values['safe_mode_module'] != '0')
             ) {
                 $values['safe_mode_module'] = $id_module_safe[$id_agent];
             }
+        }
+
+        foreach ($values as $key => $value) {
+            $agent->{$key}($value);
         }
 
         $result['db'] = $agent->save();
@@ -1124,37 +1141,36 @@ $table->data[6][1] = html_print_select(
     true
 );
 
-if (is_metaconsole() === false) {
-    $table->data[7][0] = __('Safe operation mode').': '.ui_print_help_tip(
-        __(
-            'This mode allow %s to disable all modules of this agent while the selected module is on CRITICAL status',
-            get_product_name()
-        ),
-        true
-    );
-    $table->data[7][1] .= html_print_select(
-        [
-            1 => __('Enabled'),
-            0 => __('Disabled'),
-        ],
-        'safe_mode_change',
-        -1,
-        '',
-        __('No change'),
-        -1,
-        true
-    ).'&nbsp;';
-    $table->data[7][1] .= __('Module').'&nbsp;';
-    $table->data[7][1] .= html_print_select(
-        '',
-        'safe_mode_module',
-        '',
-        '',
-        __('Any'),
-        -1,
-        true
-    );
-}
+$table->data[7][0] = __('Safe operation mode').': '.ui_print_help_tip(
+    __(
+        'This mode allow %s to disable all modules of this agent while the selected module is on CRITICAL status',
+        get_product_name()
+    ),
+    true
+);
+$table->data[7][1] .= html_print_select(
+    [
+        1 => __('Enabled'),
+        0 => __('Disabled'),
+    ],
+    'safe_mode_change',
+    -1,
+    '',
+    __('No change'),
+    -1,
+    true
+).'&nbsp;';
+
+$table->data[7][1] .= __('Module').'&nbsp;';
+$table->data[7][1] .= html_print_select(
+    '',
+    'safe_mode_module',
+    '',
+    '',
+    __('Any'),
+    -1,
+    true
+);
 
 ui_toggle(html_print_table($table, true), __('Advanced options'));
 unset($table);

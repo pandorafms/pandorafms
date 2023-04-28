@@ -22,6 +22,9 @@ $searchModules = check_acl($config['id_user'], 0, 'AR');
 if (!$modules || !$searchModules) {
     echo "<br><div class='nf'>".__('Zero results found')."</div>\n";
 } else {
+    // Show the modal window of an module.
+    echo '<div id="module_details_dialog" class=""></div>';
+
     $table = new stdClass();
     $table->cellpadding = 4;
     $table->cellspacing = 4;
@@ -173,14 +176,16 @@ if (!$modules || !$searchModules) {
             $win_handle = dechex(crc32($module['id_agente_modulo'].$module['module_name']));
 
             $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&id='.$module['id_agente_modulo'].'&refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
+            $link_module_detail = 'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$module['id_agente'].', '."'', 0, ".SECONDS_1DAY.", '".$module['module_name']."')";
 
-            $graphCell = '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => 0, 'alt' => '']).'</a>';
-            $graphCell .= '&nbsp;'."<a href='index.php?".'sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$module['id_agente'].'&amp;tab=data_view&period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo']."'>".html_print_image(
-                'images/binary.png',
+            $graphCell = '<a href="javascript:'.$link.'">'.html_print_image('images/module-graph.svg', true, ['border' => 0, 'alt' => '', 'class' => 'main_menu_icon invert_filter' ]).'</a>';
+            $graphCell .= '&nbsp;<a href="javascript:'.$link_module_detail.'">'.html_print_image(
+                'images/simple-value.svg',
                 true,
                 [
                     'border' => '0',
                     'alt'    => '',
+                    'class'  => 'main_menu_icon invert_filter',
                 ]
             ).'</a>';
         }
@@ -258,3 +263,105 @@ if (!$modules || !$searchModules) {
         ]
     );
 }
+
+ui_include_time_picker();
+ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
+
+?>
+
+<script type="text/javascript">
+    function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
+
+        var server_name = '';
+        var extra_parameters = '';
+        if ($('input[name=selection_mode]:checked').val()) {
+
+            period = $('#period').val();
+
+            var selection_mode = $('input[name=selection_mode]:checked').val();
+            var date_from = $('#text-date_from').val();
+            var time_from = $('#text-time_from').val();
+            var date_to = $('#text-date_to').val();
+            var time_to = $('#text-time_to').val();
+
+            extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
+        }
+
+        // Get the free text in both options
+        var freesearch = $('#text-freesearch').val();
+        if (freesearch != null && freesearch !== '') {
+            var free_checkbox = $('input[name=free_checkbox]:checked').val();
+            extra_parameters += '&freesearch=' + freesearch;
+            if (free_checkbox == 1) {
+                extra_parameters += '&free_checkbox=1';
+            } else {
+                extra_parameters += '&free_checkbox=0';
+            }
+        }
+
+        title = <?php echo '"'.__('Module: ').'"'; ?>;
+        $.ajax({
+            type: "POST",
+            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            data: "page=include/ajax/module&get_module_detail=1&server_name=" + server_name + "&id_agent=" + id_agent + "&id_module=" + module_id + "&offset=" + offset + "&period=" + period + extra_parameters,
+            dataType: "html",
+            success: function(data) {
+                $("#module_details_dialog").hide()
+                    .empty()
+                    .append(data)
+                    .dialog({
+                        resizable: true,
+                        draggable: true,
+                        modal: true,
+                        title: title + module_name,
+                        overlay: {
+                            opacity: 0.5,
+                            background: "black"
+                        },
+                        width: 650,
+                        height: 500
+                    })
+                    .show();
+                refresh_pagination_callback(module_id, id_agent, "", module_name);
+                datetime_picker_callback();
+                forced_title_callback();
+            }
+        });
+    }
+
+    function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
+        $(".binary_dialog").click( function() {
+
+            var classes = $(this).attr('class');
+            classes = classes.split(' ');
+            var offset_class = classes[2];
+            offset_class = offset_class.split('_');
+            var offset = offset_class[1];
+
+            var period = $('#period').val();
+
+            show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
+            return false;
+        });
+    }
+
+    function datetime_picker_callback() {
+
+        $("#text-time_from, #text-time_to").timepicker({
+            showSecond: true,
+            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+            timeText: '<?php echo __('Time'); ?>',
+            hourText: '<?php echo __('Hour'); ?>',
+            minuteText: '<?php echo __('Minute'); ?>',
+            secondText: '<?php echo __('Second'); ?>',
+            currentText: '<?php echo __('Now'); ?>',
+            closeText: '<?php echo __('Close'); ?>'});
+
+        $("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+
+        $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+    }
+    datetime_picker_callback();
+
+</script>

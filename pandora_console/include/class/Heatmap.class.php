@@ -282,7 +282,6 @@ class Heatmap
                                         while (cont <= limit) {
                                             if (typeof lista[cont] !== 'undefined') {
                                                 const rect = document.getElementsByName(`${lista[cont]['id']}`);
-                                                console.log(rect[0]);
                                                 $(`#${rect[0].id}`).removeClass();
                                                 $(`#${rect[0].id}`).addClass(`${lista[cont]['status']} hover`);
                                             }
@@ -938,10 +937,27 @@ class Heatmap
         if (users_is_admin() === false) {
             $user_groups = array_keys(users_get_groups($config['user'], 'AR', false));
             if (empty($user_groups) === false) {
+                if (empty($this->filter) === false && empty(current($this->filter)) === false) {
+                    $user_groups = array_intersect($this->filter, $user_groups);
+                    $id_user_groups = sprintf(
+                        'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                        AND a.id_grupo IN (%s)',
+                        implode(',', $user_groups)
+                    );
+                } else {
+                    $id_user_groups = sprintf(
+                        'INNER JOIN tagente a ON a.id_agente = ae.id_agente
+                        AND a.id_grupo IN (%s)',
+                        implode(',', $user_groups)
+                    );
+                }
+            }
+        } else {
+            if (empty($this->filter) === false && empty(current($this->filter)) === false) {
                 $id_user_groups = sprintf(
                     'INNER JOIN tagente a ON a.id_agente = ae.id_agente
                     AND a.id_grupo IN (%s)',
-                    implode(',', $user_groups)
+                    implode(',', $this->filter)
                 );
             }
         }
@@ -1292,13 +1308,31 @@ class Heatmap
                 const id = name.split('|')[0];
                 const server = name.split('|')[1];
 
+                let height = 400;
+                let width = 530;
+                switch (type) {
+                    case 0:
+                        height = 670;
+                        width = 460;
+                        break;
+
+                    case 2:
+                    case 3:
+                        height = 450;
+                        width = 460;
+                        break;
+
+                    default:
+                        break;
+                }
+
                 $("#info_dialog").dialog({
                     resizable: true,
                     draggable: true,
                     modal: true,
                     closeOnEscape: true,
-                    height: 400,
-                    width: 530,
+                    height: height,
+                    width: width,
                     title: '<?php echo __('Info'); ?>',
                     open: function() {
                         $.ajax({
@@ -1325,13 +1359,23 @@ class Heatmap
         if (count($groups) > 1 && $this->group === 1 && $this->dashboard === false) {
             $x_back = 0;
             $y_back = 0;
+            $x_text_correction = 0.25;
 
-            if ($count_result <= 100) {
+            if ($count_result <= 10) {
                 $fontSize = 'small-size';
                 $stroke = 'small-stroke';
-            } else {
+            } else if ($count_result > 10 && $count_result <= 100) {
+                $fontSize = 'tiny-size';
+                $stroke = 'tiny-stroke';
+            } else if ($count_result > 100 && $count_result <= 1000) {
+                $fontSize = 'medium-size';
+                $stroke = 'medium-stroke';
+            } else if ($count_result > 1000 && $count_result <= 10000) {
                 $fontSize = 'big-size';
                 $stroke = 'big-stroke';
+            } else {
+                $fontSize = 'huge-size';
+                $stroke = 'huge-stroke';
             }
 
             echo '<polyline points="0,0 '.$Xaxis.',0" class="polyline '.$stroke.'" />';
@@ -1385,7 +1429,7 @@ class Heatmap
                     echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                     // Name.
-                    echo '<text x="'.((($x_position - $x_back) / 2) + $x_back).'" y="'.($y_position + 1).'"
+                    echo '<text x="'.((($x_position - $x_back) / 2) + $x_back - $x_text_correction).'" y="'.($y_position + 1 - 0.01).'"
                         class="'.$fontSize.'">'.$name.'</text>';
 
                     $x_back = $x_position;
@@ -1436,7 +1480,7 @@ class Heatmap
                         echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         // Name.
-                        echo '<text x="'.(($x_position) / 2).'" y="'.($y_position + 1).'"
+                        echo '<text x="'.(($x_position) / 2 - $x_text_correction).'" y="'.($y_position + 1 - 0.01).'"
                             class="'.$fontSize.'">'.$name.'</text>';
 
                         // Bottom-right of last line.
@@ -1493,7 +1537,7 @@ class Heatmap
                         echo '<polyline points="'.$points.'" class="polyline '.$stroke.'" />';
 
                         // Name.
-                        echo '<text x="'.(($x_position) / 2).'" y="'.($y_position + 1).'"
+                        echo '<text x="'.(($x_position) / 2 - $x_text_correction).'" y="'.($y_position + 1 - 0.02).'"
                             class="'.$fontSize.'">'.$name.'</text>';
 
                         // Bottom-top of last line.

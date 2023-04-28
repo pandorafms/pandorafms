@@ -123,7 +123,7 @@ foreach my $op (@operation){
 my $wmi_query = 'SELECT ' . $config->{'fieldsList'} . ' FROM ' . $config->{'wmiClass'} . ($config->{'queryFilter'} ? ' WHERE ' . $config->{'queryFilter'} : '');
 
 # Build wmic command
-my $wmi_command = $config->{'wmicPath'} . ' -U ' . $config->{'user'} . '%' . $config->{'pass'} . ($config->{'namespace'} ? ' --namespace="' . $config->{'namespace'} . '"' : '') . ' //' . $config->{'host'} . ' "' . $wmi_query . '"';
+my $wmi_command = $config->{'wmicPath'} . ' -U ' . "'" . $config->{'user'} . '%' . $config->{'pass'} . "'" . ($config->{'namespace'} ? ' --namespace="' . $config->{'namespace'} . '"' : '') . ' //' . $config->{'host'} . ' "' . $wmi_query . '"';
 
 # Run wmic and parse output
 my $output = `$wmi_command 2>/dev/null`;

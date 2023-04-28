@@ -821,11 +821,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     prevProps: Props | null = null,
     prevMeta: ItemMeta | null = null
   ): void {
-    if (
-      prevProps &&
-      (prevProps.type == ItemType.LINE_ITEM ||
-        prevProps.type == ItemType.NETWORK_LINK)
-    ) {
+    if (prevProps) {
       this.updateDomElement(this.childElementRef);
     }
     // Move box.

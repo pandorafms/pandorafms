@@ -457,7 +457,7 @@ if ($is_management_allowed === true) {
 echo '</form>';
 
 ui_require_javascript_file('pandora_alerts');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ?>
 
 <script type="text/javascript">
@@ -712,7 +712,6 @@ $(document).ready (function () {
                         old_recovery_value =
                             $("[name=field" + i + "_recovery_value]").val();
                     }
-                    
                     // Replace the old column with the new
                     $table_macros_field.replaceWith(field_row);
                     if (old_value != '' || old_recovery_value != '') {
@@ -720,12 +719,14 @@ $(document).ready (function () {
                         if (inputType == 'radio') {
                             if(old_value == 'text/plain'){
                                 if ($("[name=field" + i + "_value]").val() == 'text/plain') {
-                                    $("[name=field" + i + "_value]").attr('checked','checked');
+                                    $("[name=field" + i + "_value][value='text/plain']").attr('checked','checked');
+                                    $("[name=field" + i + "_value][value='text/html']").removeAttr("checked")
                                 }
                             }
                             else{
-                                if($("[name=field" + i + "_value]").val() == 'text/html') {
-                                    $("[name=field" + i + "_value]").attr('checked','checked');
+                                $("[name=field" + i + "_value]").val()
+                                if ($("[name=field" + i + "_value]").val() == 'text/html') {
+                                    $("[name=field" + i + "_value][value='text/html']").attr('checked','checked');
                                 }
                             }
                             if(old_recovery_value == 'text/plain'){
@@ -809,18 +810,10 @@ $(document).ready (function () {
 
                     $('#field5_value').on('change', function() {
                         ajax_get_integria_custom_fields($(this).val());
-                    }); 
+                    });
                 }
 
-                var added_config = {
-                    "selector": "textarea.tiny-mce-editor",
-                    "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-                    "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
-                    "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-                    "valid_children": "+body[style]",
-                    "width": "90%",
-                }
-                defineTinyMCE(added_config);
+                defineTinyMCE('textarea.tiny-mce-editor');
 
                 render_command_preview(original_command);
                 render_command_recovery_preview(original_command);

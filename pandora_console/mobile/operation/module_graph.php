@@ -206,6 +206,7 @@ class ModuleGraph
 
                             $graph = grafico_modulo_sparse($params);
                             if ($this->draw_events) {
+                                $this->width = 100;
                                 $graph .= '<br>';
                                 $graph .= graphic_module_events(
                                     $this->id,
@@ -403,7 +404,7 @@ class ModuleGraph
                 )
             );
             $title = sprintf(__('Options for %s : %s'), $agent_alias, $this->module['nombre']);
-            $ui->contentBeginCollapsible($title);
+            $ui->contentBeginCollapsible($title, 'filter-collapsible');
                 $ui->beginForm('index.php?page=module_graph&id='.$this->id.'&server_id='.$this->server_id);
                     $options = [
                         'name'    => 'draw_alerts',

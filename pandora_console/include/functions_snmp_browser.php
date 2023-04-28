@@ -1302,9 +1302,10 @@ function snmp_browser_create_modules_snmp(
             $snmp3_auth_pass = $snmp_values['snmp3_browser_auth_pass'];
         }
 
-        if (isset($snmp_values['snmp3_privacy_method']) === true) {
-            $snmp3_privacy_method = $snmp_values['snmp3_privacy_method'];
+        if (isset($snmp_values['snmp3_browser_privacy_method']) === true) {
+            $snmp3_privacy_method = $snmp_values['snmp3_browser_privacy_method'];
         };
+
         if (isset($snmp_values['snmp3_browser_privacy_pass']) === true) {
             $snmp3_privacy_pass = $snmp_values['snmp3_browser_privacy_pass'];
         }
@@ -1376,9 +1377,9 @@ function snmp_browser_create_modules_snmp(
                         'id_module_group'       => 3,
                         'id_modulo'             => 2,
                         'id_plugin'             => 0,
-                        'plugin_user'           => '',
-                        'plugin_pass'           => '',
-                        'plugin_parameter'      => '',
+                        'plugin_user'           => $snmp3_auth_user,
+                        'plugin_pass'           => $snmp3_auth_pass,
+                        'plugin_parameter'      => $snmp3_auth_method,
                         'macros'                => '',
                         'max_timeout'           => 0,
                         'max_retries'           => 0,
@@ -1394,9 +1395,9 @@ function snmp_browser_create_modules_snmp(
                         'max_critical'          => 0,
                         'str_critical'          => '',
                         'min_ff_event'          => 0,
-                        'custom_string_1'       => '',
-                        'custom_string_2'       => '',
-                        'custom_string_3'       => '',
+                        'custom_string_1'       => $snmp3_privacy_method,
+                        'custom_string_2'       => $snmp3_privacy_pass,
+                        'custom_string_3'       => $snmp3_security_level,
                         'post_process'          => 0,
                         'unit'                  => '',
                         'wizard_level'          => 'nowizard',
@@ -1435,9 +1436,9 @@ function snmp_browser_create_modules_snmp(
                     'id_module_group'       => 3,
                     'id_modulo'             => 2,
                     'id_plugin'             => 0,
-                    'plugin_user'           => '',
-                    'plugin_pass'           => '',
-                    'plugin_parameter'      => '',
+                    'plugin_user'           => $snmp3_auth_user,
+                    'plugin_pass'           => $snmp3_auth_pass,
+                    'plugin_parameter'      => $snmp3_auth_method,
                     'macros'                => '',
                     'max_timeout'           => 0,
                     'max_retries'           => 0,
@@ -1453,9 +1454,9 @@ function snmp_browser_create_modules_snmp(
                     'max_critical'          => 0,
                     'str_critical'          => '',
                     'min_ff_event'          => 0,
-                    'custom_string_1'       => '',
-                    'custom_string_2'       => '',
-                    'custom_string_3'       => '',
+                    'custom_string_1'       => $snmp3_privacy_method,
+                    'custom_string_2'       => $snmp3_privacy_pass,
+                    'custom_string_3'       => $snmp3_security_level,
                     'post_process'          => 0,
                     'unit'                  => '',
                     'wizard_level'          => 'nowizard',
@@ -1496,9 +1497,9 @@ function snmp_browser_create_modules_snmp(
                     'snmp_community'        => $community,
                     'id_module_group'       => 3,
                     'id_plugin'             => 0,
-                    'plugin_user'           => '',
-                    'plugin_pass'           => '',
-                    'plugin_parameter'      => '',
+                    'plugin_user'           => $snmp3_auth_user,
+                    'plugin_pass'           => $snmp3_auth_pass,
+                    'plugin_parameter'      => $snmp3_auth_method,
                     'macros'                => '',
                     'max_timeout'           => 0,
                     'max_retries'           => 0,
@@ -1514,9 +1515,9 @@ function snmp_browser_create_modules_snmp(
                     'max_critical'          => 0,
                     'str_critical'          => '',
                     'min_ff_event'          => 0,
-                    'custom_string_1'       => '',
-                    'custom_string_2'       => '',
-                    'custom_string_3'       => '',
+                    'custom_string_1'       => $snmp3_privacy_method,
+                    'custom_string_2'       => $snmp3_privacy_pass,
+                    'custom_string_3'       => $snmp3_security_level,
                     'post_process'          => 0,
                     'unit'                  => '',
                     'macros'                => '',

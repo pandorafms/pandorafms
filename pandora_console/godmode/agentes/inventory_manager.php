@@ -46,7 +46,7 @@ $custom_fields = array_map(
     function ($field) {
         $field['secure'] = (bool) $field['secure'];
         if ($field['secure']) {
-            $field['value'] = io_input_password($field['value']);
+            $field['value'] = io_input_password(io_safe_output($field['value']));
         }
 
         return $field;
@@ -75,7 +75,7 @@ if ($add_inventory_module) {
             'interval'            => $interval,
             'username'            => $username,
             'password'            => $password,
-            'custom_fields'       => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode($custom_fields)) : '',
+            'custom_fields'       => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode(io_safe_output($custom_fields), JSON_UNESCAPED_UNICODE)) : '',
         ];
 
         $result = db_process_sql_insert('tagent_module_inventory', $values);
@@ -119,7 +119,7 @@ if ($add_inventory_module) {
         'interval'      => $interval,
         'username'      => $username,
         'password'      => $password,
-        'custom_fields' => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode($custom_fields)) : '',
+        'custom_fields' => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode(io_safe_output($custom_fields, true), JSON_UNESCAPED_UNICODE)) : '',
     ];
 
     $result = db_process_sql_update('tagent_module_inventory', $values, ['id_agent_module_inventory' => $id_agent_module_inventory, 'id_agente' => $id_agente]);
@@ -237,8 +237,9 @@ if (db_get_num_rows($sql) == 0) {
     $table->head[5] = __('Actions');
     $table->align = [];
     $table->align[5] = 'left';
-
+    $i = 0;
     foreach ($result as $row) {
+        $table->cellclass[$i++][5] = 'table_action_buttons';
         $data = [];
 
         $sql = sprintf('SELECT id_policy FROM tpolicy_modules_inventory WHERE id = %d', $row['id_policy_module_inventory']);

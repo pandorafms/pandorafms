@@ -37,6 +37,7 @@ require_once 'include/functions_ui.php';
 require_once 'include/functions_db.php';
 require_once 'include/functions_io.php';
 require_once 'include/functions.php';
+require_once $config['homedir'].'/include/class/HTML.class.php';
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('include/functions_metaconsole.php');
 
@@ -2405,7 +2406,7 @@ if ($drawConsoleSound === true) {
                 'Star_Trek_emergency_simulation.wav' => 'StarTrek emergency simulation',
             ];
 
-            $eventsounds = mysql_db_get_all_rows_sql('SELECT * FROM tevent_sound WHERE active = 1');
+            $eventsounds = db_get_all_rows_sql('SELECT * FROM tevent_sound WHERE active = 1');
             foreach ($eventsounds as $key => $row) {
                 $sounds[$row['sound']] = $row['name'];
             }

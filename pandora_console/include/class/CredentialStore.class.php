@@ -1294,6 +1294,7 @@ class CredentialStore extends Wizard
                 $('#div-extra_1').append(
                     $('<input type="text" name="extra_1" id="text-extra_1" size="50" value="'+val+'"></input>')
                 );
+                hideSNMP();
             }
 
             if ($('#product :selected').val() == "CUSTOM") {
@@ -1303,6 +1304,7 @@ class CredentialStore extends Wizard
                 $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
+                hideSNMP();
             } else if ($('#product :selected').val() == "AWS") {
                 $('#div-username label').text('<?php echo __('Access key ID'); ?>');
                 $('#div-password label').text('<?php echo __('Secret access key'); ?>');
@@ -1310,6 +1312,7 @@ class CredentialStore extends Wizard
                 $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
+                hideSNMP();
             } else if ($('#product :selected').val() == "AZURE") {
                 $('#div-username label').text('<?php echo __('Client ID'); ?>');
                 $('#div-password label').text('<?php echo __('Application secret'); ?>');
@@ -1319,6 +1322,7 @@ class CredentialStore extends Wizard
                 $('#div-password').show();
                 $('#div-extra_1').show();
                 $('#div-extra_2').show();
+                hideSNMP();
             } else if ($('#product :selected').val() == "SAP") {
                 $('#div-username label').text('<?php echo __('Account ID.'); ?>');
                 $('#div-password label').text('<?php echo __('Password'); ?>');
@@ -1326,6 +1330,7 @@ class CredentialStore extends Wizard
                 $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
+                hideSNMP();
             } else if ($('#product :selected').val() == "GOOGLE") {
                 $('#div-username').hide();
                 $('#div-password').hide();
@@ -1341,6 +1346,7 @@ class CredentialStore extends Wizard
                     $('<textarea name="extra_1" id="text-extra_1">'+val+'</textarea>')
                 );
                 $('#div-extra_1').show();
+                hideSNMP();
             } else if ($('#product :selected').val() == "WMI") {
                 $('#div-username label').text('<?php echo __('Username'); ?>');
                 $('#div-password label').text('<?php echo __('Password'); ?>');
@@ -1349,16 +1355,19 @@ class CredentialStore extends Wizard
                 $('#div-password').show();
                 $('#div-extra_1').show();
                 $('#div-extra_2').hide();
+                hideSNMP();
             } else if ($('#product :selected').val() == "SNMP") {
                 $('#div-username').hide();
                 $('#div-password').hide();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
 
+                $('#li_snmp_1').show();
+                $('#li_snmp_2').show();
+
                 if ($('#li_snmp_1').length > 0) {
-                    console.log($('#li_snmp_1').length);
-                    const test = '<?php echo $json_values; ?>';
-                    console.log(test);
+                    $('#version').val('1');
+                    $('#version').trigger('change');
                 } else {
                     const ul = $('#modal_form').children('ul')[0];
 

@@ -156,7 +156,6 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
 $userRequest = (bool) get_parameter('uptbutton');
 if ($userRequest === false) {
     $autosearch = true;
-    $status = AGENT_MODULE_STATUS_NOT_NORMAL;
 }
 
 if (is_metaconsole() === false) {

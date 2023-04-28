@@ -712,7 +712,18 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
 
     $output = '';
 
-    $icon = ($id_group > 0) ? (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group) : 'unknown@groups.svg';
+    $icon = 'world@svg.svg';
+    if ($id_group > 0) {
+        $icon = db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+        if (empty($icon) === true) {
+            $icon = 'unknown@groups.svg';
+        }
+    }
+
+    $extension = pathinfo($icon, PATHINFO_EXTENSION);
+    if (empty($extension) === true) {
+        $icon .= '.png';
+    }
 
     // Don't show link in metaconsole.
     if (is_metaconsole() === true) {
@@ -756,10 +767,14 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
                 }
             }
 
-            $icon = (str_contains($icon, '.svg') === true) ? $icon : $icon.'.svg';
+            $icon = (str_contains($icon, '.svg') === true || str_contains($icon, '.png') === true) ? $icon : $icon.'.svg';
+            $folder = '';
+            if (str_contains($icon, '.png')) {
+                $folder = 'groups_small/';
+            }
 
             $output .= html_print_image(
-                'images/'.$icon,
+                'images/'.$folder.$icon,
                 true,
                 [
                     'style' => $style,
@@ -876,6 +891,17 @@ function ui_print_os_icon(
     $no_in_meta = (is_metaconsole() === false);
 
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
+    $extension = pathinfo($icon, PATHINFO_EXTENSION);
+    if (empty($extension) === true) {
+        $icon .= '.png';
+    }
+
+    if (empty($extension) === true || $extension === 'png'
+        || $extension === 'jpg' || $extension === 'gif' && $subfolder === '.'
+    ) {
+        $subfolder = 'os_icons';
+    }
+
     $os_name = get_os_name($id_os);
     if (empty($icon) === true) {
         if ($only_src) {
@@ -1744,7 +1770,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
 
     if (is_metaconsole()
         && (isset($config['requirements_use_base_url']) === false
-        || $config['requirements_use_base_url'] === false)
+        || $config['requirements_use_base_url'] === false) && $filename !== 'include/javascript/select2.min.js'
     ) {
         $config['js'][$name] = '../../'.$filename;
     } else {
@@ -3852,7 +3878,7 @@ function ui_print_datatable(array $parameters)
         $export_columns = ',columns: \'th:not(:last-child)\'';
     }
 
-    if (isset($parameters['data_element']) === false) {
+    if (isset($parameters['data_element']) === false || isset($parameters['print_pagination_search_csv'])) {
         if (isset($parameters['ajax_url'])) {
             $type_data = 'ajax: {
                 url: "'.ui_get_full_url('ajax.php', false, false, false).'",
@@ -6944,7 +6970,7 @@ function ui_get_favicon()
     global $config;
 
     if (empty($config['custom_favicon'])) {
-        return (!is_metaconsole()) ? 'images/pandora.ico' : 'enterprise/meta/images/favicon_meta.ico';
+        return (!is_metaconsole()) ? 'images/pandora.ico' : '/images/custom_favicon/favicon_meta.ico';
     }
 
     return 'images/custom_favicon/'.$config['custom_favicon'];
@@ -7031,23 +7057,20 @@ function ui_print_comments($comments)
         }
     }
 
-    $last_comment = [];
-    foreach ($comments_array as $comm) {
-        // Show the comments more recent first.
-        if (is_array($comm)) {
-            $order_utimestamp = array_reduce(
-                $comm,
-                function ($carry, $item) {
-                    $carry[$item['utimestamp']] = $item;
-                    return $carry;
-                }
-            );
+    $order_utimestamp = array_reduce(
+        $comments_array,
+        function ($carry, $item) {
+            foreach ($item as $k => $v) {
+                $carry[$v['utimestamp']] = $v;
+            }
 
-            $key_max_utimestamp = max(array_keys($order_utimestamp));
-
-            $last_comment = $order_utimestamp[$key_max_utimestamp];
+            return $carry;
         }
-    }
+    );
+
+    $key_max_utimestamp = max(array_keys($order_utimestamp));
+
+    $last_comment = $order_utimestamp[$key_max_utimestamp];
 
     if (empty($last_comment) === true) {
         return '';
@@ -7436,13 +7459,20 @@ function ui_get_inventory_module_add_form(
                 0,
                 '',
                 __('Select inventory module'),
-                0,
+                '',
                 true,
                 false,
                 false,
                 'w100p',
                 false,
-                'width: 100%'
+                'width: 100%',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                true
             )
         );
     } else {
@@ -7537,81 +7567,95 @@ function ui_get_inventory_module_add_form(
     $table->data['userpass-row'] = $row;
 
     $row = [];
-    $row['hidden-title'] = '';
-    $row['hidden-input'] = html_print_input_hidden('hidden-custom-field-name', '', true);
-    $row['hidden-input'] .= html_print_input_hidden('hidden-custom-field-is-secure', 0, true);
-    $row['hidden-input'] .= html_print_input_text(
-        'hidden-custom-field-input',
-        '',
-        '',
-        25,
-        40,
-        true,
-        false,
-        false,
-        '',
-        'w93p'
-    );
-    $row['hidden-input'] .= html_print_image(
-        'images/delete.svg',
-        true,
-        [
-            'border' => '0',
-            'title'  => __('Remove'),
-            'style'  => 'cursor: pointer;',
-            'class'  => 'remove-custom-field invert_filter',
-        ]
-    );
 
-    $table->data['hidden-custom-field-row'] = $row;
+    $table->data['hidden-custom-field-row'] = html_print_label_input_block(
+        '',
+        '<div class="agent_details_agent_data">'.html_print_input_hidden(
+            'hidden-custom-field-name',
+            '',
+            true
+        ).html_print_input_hidden(
+            'hidden-custom-field-is-secure',
+            0,
+            true
+        ).html_print_input_text(
+            'hidden-custom-field-input',
+            '',
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        ).html_print_image(
+            'images/delete.svg',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Remove'),
+                'style'  => 'cursor: pointer;',
+                'class'  => 'remove-custom-field invert_filter main_menu_icon',
+            ]
+        ).'</div>'
+    );
+    $table->colspan['hidden-custom-field-row'][0] = 2;
 
     if ($custom_fields_enabled) {
         foreach ($custom_fields as $i => $field) {
-            $row = [];
-            $row['title'] = '<b>'.$field['name'].'</b>';
-            $row['input'] = html_print_input_hidden(
-                'custom_fields['.$i.'][name]',
-                $field['name'],
-                true
-            );
-            $row['input'] .= html_print_input_hidden(
-                'custom_fields['.$i.'][secure]',
-                $field['secure'],
-                true
-            );
             if ($field['secure']) {
-                $row['input'] .= html_print_input_password(
+                $secure = html_print_input_password(
                     'custom_fields['.$i.'][value]',
-                    $field['value'],
+                    io_safe_input($field['value']),
                     '',
-                    25,
+                    false,
                     40,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'off',
+                    false,
+                    'w100p'
                 );
             } else {
-                $row['input'] .= html_print_input_text(
+                $secure = html_print_input_text(
                     'custom_fields['.$i.'][value]',
-                    $field['value'],
+                    io_safe_input($field['value']),
                     '',
-                    25,
+                    false,
                     40,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w100p'
                 );
             }
 
-            $row['input'] .= '<span>&nbsp;</span>';
-            $row['input'] .= html_print_image(
-                'images/delete.svg',
-                true,
-                [
-                    'border' => '0',
-                    'title'  => __('Remove'),
-                    'style'  => 'cursor: pointer;',
-                    'class'  => 'remove-custom-field invert_filter',
-                ]
+            $table->colspan['custom-field-row-'.$i][0] = 2;
+            $table->data['custom-field-row-'.$i] = html_print_label_input_block(
+                $field['name'],
+                '<div class="agent_details_agent_data">'.html_print_input_hidden(
+                    'custom_fields['.$i.'][name]',
+                    $field['name'],
+                    true
+                ).html_print_input_hidden(
+                    'custom_fields['.$i.'][secure]',
+                    $field['secure'],
+                    true
+                ).$secure.html_print_image(
+                    'images/delete.svg',
+                    true,
+                    [
+                        'border' => '0',
+                        'title'  => __('Remove'),
+                        'style'  => 'cursor: pointer;',
+                        'class'  => 'remove-custom-field invert_filter main_menu_icon',
+                    ]
+                ).'</div>'
             );
-
-            $table->data['custom-field-row-'.$i] = $row;
         }
     }
 
@@ -7670,46 +7714,50 @@ function ui_get_inventory_module_add_form(
             $("#inventory-module-form-userpass-row").hide();
             $("#inventory-module-form-custom-fields-row").show();
             $("tr[id^=inventory-module-form-custom-field-row-]").show();
+            $('#inventory-module-form-custom-fields-button').show();
         } else {
             $("#inventory-module-form-userpass-row").show();
             $("#inventory-module-form-custom-fields-row").hide();
             $("tr[id^=inventory-module-form-custom-field-row-]").hide();
+            $('#inventory-module-form-custom-fields-button').hide();
         }
     }
 
     function add_row_for_custom_field (fieldName, isSecure) {
         var custom_fields_num = $("tr[id^=inventory-module-form-custom-field-row-]").length;
         $("#inventory-module-form-hidden-custom-field-row")
-            .clone()
-            .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)
-            .children("#inventory-module-form-hidden-custom-field-row-hidden-title")
-                .prop("id", "inventory-module-form-custom-field-row-title-" + custom_fields_num)
-                .html("<b>" + fieldName + "</b>")
-                .parent()
-            .children("#inventory-module-form-hidden-custom-field-row-hidden-input")
-                .prop("id", "inventory-module-form-custom-field-row-input-" + custom_fields_num)
-                .prop("colspan", 2)
-                .children("input[name=hidden-custom-field-name]")
+        .clone()
+        .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)
+        .children("[id^='inventory-module-form-hidden-custom-field-row']") // go to TD
+            .prop("id", "inventory-module-form-hidden-custom-field-row-"+ custom_fields_num)
+                .children() // go to DIV
+                    .find('label')
+                        .html(fieldName)
+                .parent() // up to DIV padre
+                .find('div') //go to DIV no label
+                    .children("[id^=hidden-hidden-custom-field-name]")
                     .prop("id", "custom-field-name-" + custom_fields_num)
                     .prop("name", "custom_fields[" + custom_fields_num + "][name]")
-                    .val(fieldName)
+                    .prop("value", fieldName)
                     .parent()
-                .children("input[name=hidden-custom-field-is-secure]")
-                    .prop("id", "custom-field-is-secure-" + custom_fields_num)
-                    .prop("name", "custom_fields[" + custom_fields_num + "][secure]")
-                    .val(isSecure ? 1 : 0)
-                    .parent()
-                .children("input[name=hidden-custom-field-input]")
-                    .prop("id", "custom-field-input-" + custom_fields_num)
-                    .prop("type", isSecure ? "password" : "text")
-                    .prop("name", "custom_fields[" + custom_fields_num + "][value]")
-                    .parent()
-                .children("img.remove-custom-field")
-                    .click(remove_custom_field)
-                    .parent()
-                .parent()
-            .insertBefore($("#inventory-module-form-custom-fields-row"))
-            .show();
+                    .children("input[name=hidden-custom-field-is-secure]")
+                        .prop("id", "custom-field-is-secure-" + custom_fields_num)
+                        .prop("name", "custom_fields[" + custom_fields_num + "][secure]")
+                        .val(isSecure ? 1 : 0)
+                        .parent()
+                    .children("input[name=hidden-custom-field-input]")
+                        .prop("id", "custom-field-input-" + custom_fields_num)
+                        .prop("type", isSecure ? "password" : "text")
+                        .prop("name", "custom_fields[" + custom_fields_num + "][value]")
+                        .parent()
+                    .children("img.remove-custom-field")
+                        .click(remove_custom_field)
+                        .parent()
+                        .parent()
+                .parent() // up to TD
+            .parent() // up to TR
+        .insertBefore($("#inventory-module-form-custom-fields-row"))
+        .show();
     }
 
     function add_custom_field () {
@@ -7895,4 +7943,22 @@ function ui_print_fav_menu($id_element, $url, $label, $section)
     $output .= html_print_input_text('label_fav_menu', '', '', 25, 255, true, false, true);
     $output .= '</div>';
     return $output;
+}
+
+
+function ui_update_name_fav_element($id_element, $section, $label)
+{
+    $label = io_safe_output($label);
+    if (strlen($label) > 18) {
+        $label = io_safe_input(substr($label, 0, 18).'...');
+    }
+
+    db_process_sql_update(
+        'tfavmenu_user',
+        ['label' => $label],
+        [
+            'section'    => $section,
+            'id_element' => $id_element,
+        ]
+    );
 }

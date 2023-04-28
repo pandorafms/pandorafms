@@ -77,7 +77,7 @@ function html_debug_print($var, $file='', $oneline=false)
         fprintf($f, '%s', $output);
         fclose($f);
     } else {
-        echo '<pre class="bg_white pdd_1em zindex10000">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
+        echo '<pre class="bg_white pdd_1em zindex10000 relative-mobile">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
         print_r($var);
         echo '</pre>';
     }
@@ -2130,10 +2130,7 @@ function html_print_extended_select_for_time(
         $fields[$selected] = human_time_description_raw($selected, true);
     }
 
-    if (empty($nothing) === true
-        && (empty($selected) === true
-        || $selected === '0')
-    ) {
+    if (empty($nothing) === true && (is_int($selected) === true)) {
             $selected = 300;
     }
 
@@ -2248,6 +2245,13 @@ function html_print_extended_select_for_time(
 			$('#".$uniq_name."_manual').show();
 			$('#".$uniq_name."_default').hide();
 		}
+
+        if ($('#text-".$uniq_name."_text').val() === '0') {
+            setTimeout(() => {
+                $('#".$uniq_name."_manual').hide();
+                $('#".$uniq_name."_default').show();
+            }, 100);
+        }
 	</script>";
     $returnString = ob_get_clean();
 
@@ -2880,6 +2884,7 @@ function html_print_input_password(
     $class='',
     $autocomplete='off',
     $hide_div_eye=false,
+    $div_class=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2910,7 +2915,7 @@ function html_print_input_password(
         }
     }
 
-    return '<div class="relative container-div-input-password">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
+    return '<div class="relative container-div-input-password '.$div_class.'">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
 }
 
 
@@ -6435,7 +6440,11 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         [$id_agente]
     );
 
-    $name = 'secondary_groups_selected'.$options['extra_id'];
+    if ($options['selected_post'] !== null) {
+        $secondary_groups_selected['plain'] = $options['selected_post'];
+    }
+
+    $name = 'secondary_groups_selected[]'.$options['extra_id'];
     if ($options['only_select'] === true) {
         $name = 'secondary_groups'.$options['extra_id'].'[]';
     }
@@ -6455,7 +6464,7 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         $name,
         // Selected.
         // No select any by default.
-        $secondary_groups_selected['for_select'],
+        $secondary_groups_selected['plain'],
         // Script.
         // Javascript onChange code.
         '',
@@ -6912,12 +6921,12 @@ function html_print_label_input_block(
 function html_print_go_top()
 {
     $output = '</div>';
-    $output .= '<div onclick="topFunction()" id="top_btn" title="Go to top">';
-    $output .= '<svg viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">';
-    $output .= '<title>Dark / 20 / arrow@svg</title>';
+    $output .= '<div onclick="topFunction()" id="top_btn" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    $output .= '<svg viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    // $output .= '<title>'.__('Go to top').'</title>';
     $output .= '<desc>Created with Sketch.</desc>';
-    $output .= '<g id="Dark-/-20-/-arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">';
-    $output .= '<path d="M3.41005051,6.39052429 C3.91472805,5.90987901 4.70885153,5.8729063 5.25805922,6.27960615 L5.38994949,6.39052429 L10,10.78 L14.6100505,6.39052429 C15.1147281,5.90987901 15.9088515,5.8729063 16.4580592,6.27960615 L16.5899495,6.39052429 C17.094627,6.87116957 17.1334484,7.62747765 16.7064135,8.15053259 L16.5899495,8.27614237 L10.9899495,13.6094757 C10.4852719,14.090121 9.69114847,14.1270937 9.14194078,13.7203939 L9.01005051,13.6094757 L3.41005051,8.27614237 C2.8633165,7.75544332 2.8633165,6.91122335 3.41005051,6.39052429 Z" id="Path-8" fill="#14524f" fill-rule="nonzero" transform="translate(10.000000, 10.000000) rotate(90.000000) translate(-10.000000, -10.000000) "></path>';
+    $output .= '<g id="Dark-/-20-/-arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    $output .= '<path d="M3.41005051,6.39052429 C3.91472805,5.90987901 4.70885153,5.8729063 5.25805922,6.27960615 L5.38994949,6.39052429 L10,10.78 L14.6100505,6.39052429 C15.1147281,5.90987901 15.9088515,5.8729063 16.4580592,6.27960615 L16.5899495,6.39052429 C17.094627,6.87116957 17.1334484,7.62747765 16.7064135,8.15053259 L16.5899495,8.27614237 L10.9899495,13.6094757 C10.4852719,14.090121 9.69114847,14.1270937 9.14194078,13.7203939 L9.01005051,13.6094757 L3.41005051,8.27614237 C2.8633165,7.75544332 2.8633165,6.91122335 3.41005051,6.39052429 Z" id="Path-8" fill="#14524f" fill-rule="nonzero" transform="translate(10.000000, 10.000000) rotate(90.000000) translate(-10.000000, -10.000000) " class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1"></path>';
     $output .= '</g>';
     $output .= '</svg>';
     $output .= '</div>';

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>B6EE5BBF-2CE4-4EFF-9E46-50036986C7F3</title>
+    <g id="Consola-mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="0a-Menu" transform="translate(-35.000000, -236.000000)" fill="#3F3F3F">
+            <g id="Conmutador" transform="translate(20.000000, 122.000000)">
+                <g id="Elemento" transform="translate(0.000000, 114.000000)">
+                    <g id="Mobile-groups" transform="translate(15.000000, 0.000000)">
+                        <path d="M15,0 C23.1075582,0 30,2.39269081 30,8.09172156 L30,16 C30,14.8954305 29.1045695,14 28,14 L24,14 L24,22.25 C24,23.2164983 23.2164983,24 22.25,24 L14,24 L14,28 C14,29.044389 14.8005167,29.9018074 15.821432,29.992137 C15.5493714,29.9972395 15.2753866,30 15,30 C6.89244177,30 0,27.6073092 0,21.9082784 L0,8.09172156 C0,2.39269081 6.89244177,0 15,0 Z M19.375,8 L9.625,8 C8.72753728,8 8,8.72753728 8,9.625 L8,19.375 C8,20.2724627 8.72753728,21 9.625,21 L19.375,21 C20.2724627,21 21,20.2724627 21,19.375 L21,9.625 C21,8.72753728 20.2724627,8 19.375,8 Z" id="Mask"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

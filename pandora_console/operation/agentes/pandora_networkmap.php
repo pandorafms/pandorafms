@@ -507,6 +507,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
                 $values,
                 ['id' => $id]
             );
+            ui_update_name_fav_element($id, 'Network_map', $name);
         }
 
         $result_txt = ui_print_result_message(

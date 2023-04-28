@@ -792,7 +792,7 @@ class HostDevices extends Wizard
 
                 $form['rows'][0]['columns'][0] = [
                     'width'  => '30%',
-                    'style'  => 'padding: 9px;min-width: 250px;',
+                    'style'  => 'padding: 9px;min-width: 188px;',
                     'inputs' => [
                         '1' => '<div class="height_50p mrgn_btn_35px">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close')], false).'</div>',
                         '2' => [
@@ -825,12 +825,11 @@ class HostDevices extends Wizard
                         ],
                     ],
                 ];
-
                 $form['rows'][0]['columns'][1] = [
                     'width'         => '40%',
-                    'padding-right' => '12%',
-                    'padding-left'  => '5%',
-                    'style'         => 'min-width: 350px',
+                    'padding-right' => '8%',
+                    'padding-left'  => '0%',
+                    'style'         => 'min-width: 230px',
                     'inputs'        => [
                         '0' => [
                             'label'     => '<b>'.__('Task name').':</b>',
@@ -926,27 +925,27 @@ class HostDevices extends Wizard
                     ],
                 ];
 
-                // Group select (custom for this section).
-                $group_select = '<div class="label_select"><label>'.__('Group').':</label></div>';
-
-                $group_select .= $this->printInput(
-                    [
-                        'name'                    => 'id_group',
-                        'returnAllGroup'          => false,
-                        'privilege'               => $this->access,
-                        'type'                    => 'select_groups',
-                        'selected'                => $this->task['id_group'],
-                        'return'                  => true,
-                        'class'                   => 'discovery_list_input',
-                        'simple_multiple_options' => true,
-                        'required'                => true,
-                    ]
-                );
-
                 $form['rows'][0]['columns'][2] = [
-                    'width'  => '30%',
-                    'style'  => 'min-width: 250px',
-                    'inputs' => ['0' => $group_select],
+                    'width'         => '40%',
+                    'padding-right' => '5%',
+                    'padding-left'  => '0',
+                    'style'         => 'min-width: 144px;',
+                    'inputs'        => [
+                        '0' => [
+                            'label'     => '<b>'.__('Group').':</b>',
+                            'arguments' => [
+                                'name'                    => 'id_group',
+                                'returnAllGroup'          => false,
+                                'privilege'               => $this->access,
+                                'type'                    => 'select_groups',
+                                'selected'                => $this->task['id_group'],
+                                'return'                  => true,
+                                'class'                   => 'discovery_list_input',
+                                'simple_multiple_options' => true,
+                                'required'                => true,
+                            ],
+                        ],
+                    ],
                 ];
 
                 $form['rows'][1]['style'] = 'style de row';
@@ -1585,6 +1584,10 @@ class HostDevices extends Wizard
 
                 $(function() {
                     SNMPExtraShow($("#snmp_version").val());
+                });
+
+                $("#id_network_profile").select2({
+                    placeholder: "'.__('Please select...').'"
                 });
             ';
 

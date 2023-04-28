@@ -164,8 +164,8 @@ class Tactical
 
                 $data['mobile'] = true;
 
-                $formatted_data = reporting_get_stats_indicators($data, 100, 10, false);
-                $formatted_data_untiny = reporting_get_stats_indicators($data, 140, 15, false);
+                $formatted_data = reporting_get_stats_indicators_mobile($data, 100, 10, false);
+                $formatted_data_untiny = reporting_get_stats_indicators_mobile($data, 140, 15, false);
 
                 $overview = '<table class="tactical_bars">
 						<tr>
@@ -193,8 +193,8 @@ class Tactical
                 $agents_monitors = reporting_get_stats_agents_monitors($data);
                 $alerts_stats = reporting_get_stats_alerts($data);
 
-                $overview .= "<br />\n".$agents_monitors;
-                $overview .= "<br />\n".$alerts_stats;
+                $overview .= "<div class='hr'></div>\n".$agents_monitors;
+                $overview .= "<div class='hr'></div>\n".$alerts_stats;
 
                 $ui->contentGridAddCell($overview, 'tactical1');
 
@@ -216,6 +216,7 @@ class Tactical
             $ui->contentBeginCollapsible(__('Last activity'));
 
                 $table = new Table();
+                $table->id = 'last-activity';
                 $table->importFromHash($this->getLastActivity());
                 $ui->contentCollapsibleAddItem($table->getHTML());
             $ui->contentEndCollapsible();
@@ -236,7 +237,7 @@ class Tactical
 				}
 				
 				function ajax_load_status_pie() {
-					$('#status_pie').html('<div class=\"center\"> ".__('Loading...')."<br /><img src=\"images/ajax-loader.gif\" /></div>');
+					$('#status_pie').html('<div class=\"center\"> ".__('Loading...')."<br><img src=\"images/ajax-loader.gif\" /></div>');
 					
 					var pie_width = $('#tactical2').width() * 0.9;
 
@@ -346,10 +347,9 @@ class Tactical
             }
 
             $data[__('Action')] = ui_print_session_action_icon($session['accion'], true);
-            $data[__('User')] = $session_id_usuario;
-            $data[__('Date')] = human_time_comparation($session['utimestamp'], 'tiny');
-            $data[__('Source IP')] = $session_ip_origen;
-            $data[__('Description')] = io_safe_output($session['descripcion']);
+            $data[__('User')] = $session_id_usuario.' - '.ui_print_truncate_text(io_safe_output($session['descripcion']), 40, false);
+            $data[__('Date')] = '<span class="muted">'.human_time_comparation($session['utimestamp'], 'tiny').'</span>';
+            $data[__('Source IP')] = '<span class="muted">'.$session_ip_origen.'</span>';
 
             $return[] = $data;
         }

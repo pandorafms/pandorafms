@@ -68,6 +68,8 @@ function menu_print_menu(&$menu)
         $sec2 = 'godmode/alerts/alert_commands';
     } else if ($sec2 === 'enterprise/godmode/setup/edit_skin') {
         $sec2 = 'enterprise/godmode/setup/setup_skins';
+    } else if ($sec2 === 'operation/agentes/networkmap.dinamic') {
+        $sec2 = 'operation/agentes/pandora_networkmap';
     } else if ($sec2 === 'godmode/gis_maps/configure_gis_map') {
         $map_id = (string) get_parameter('map_id');
         if (empty($map_id) === false) {
@@ -583,7 +585,9 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=wizard']['text'] = __('Templates wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=new']['text'] = __('New custom reports');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=edit']['text'] = __('Edit custom reports');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=delete_report']['text'] = __('Remove custom reports');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=list_items&action=edit']['text'] = __('List items');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=item_editor&action=new']['text'] = __('Edit item');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=edit']['text'] = __('Wizard');

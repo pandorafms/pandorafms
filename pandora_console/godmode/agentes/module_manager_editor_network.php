@@ -348,8 +348,8 @@ push_table_simple($data, 'tcp_send_receive');
 
 if ($id_module_type < 8 || $id_module_type > 11) {
     // NOT TCP.
-    $table_simple->rowstyle['tcp_send'] = 'display: none;';
-    $table_simple->rowstyle['tcp_receive'] = 'display: none;';
+    $table_simple->rowstyle['caption_tcp_send_receive'] = 'display: none;';
+    $table_simple->rowstyle['tcp_send_receive'] = 'display: none;';
 }
 
 if ($id_module_type < 15 || $id_module_type > 18) {

@@ -116,6 +116,22 @@ function get_list_os_icons_dir()
         }
     }
 
+    $items2 = scandir($config['homedir'].'/images/os_icons');
+
+    foreach ($items2 as $item2) {
+        if (strstr($item2, '_small.png') || strstr($item2, '_small.gif')
+            || strstr($item2, '_small.jpg')
+        ) {
+            continue;
+        }
+
+        if (strstr($item2, '.png') || strstr($item2, '.gif')
+            || strstr($item2, '.jpg')
+        ) {
+            $return[$item2] = $item2;
+        }
+    }
+
     return $return;
 }
 
@@ -124,10 +140,15 @@ function get_list_os_icons_dir()
 <script type="text/javascript">
 
 function show_icon_OS() {
+    var extension = $("#icon").val().split('.').pop();
 
     var params = [];
     params.push("get_image_path=1");
-    params.push('img_src=images/' + $("#icon").val());
+    if (extension !== 'svg') {
+        params.push('img_src=images/os_icons/' + $("#icon").val());
+    } else {
+        params.push('img_src=images/' + $("#icon").val());
+    }
     params.push("page=include/ajax/skins.ajax");
     jQuery.ajax ({
         data: params.join ("&"),

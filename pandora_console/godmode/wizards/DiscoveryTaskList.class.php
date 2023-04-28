@@ -1456,7 +1456,7 @@ class DiscoveryTaskList extends HTML
             } else if ((int) $task['type'] === DISCOVERY_EXTENSION) {
                 // Content.
                 $countSummary = 1;
-                if (is_array($task['stats']) === true && array_key_first($task['stats']) === 0) {
+                if (is_array($task['stats']) === true && count(array_filter(array_keys($task['stats']), 'is_numeric')) === count($task['stats'])) {
                     foreach ($task['stats'] as $key => $summary) {
                         $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
                         $table->data[$i][1] = '';
@@ -1470,7 +1470,7 @@ class DiscoveryTaskList extends HTML
                                 continue;
                             }
 
-                            $unknownJson = [];
+                            $unknownJson = $summary;
                             foreach ($summary as $k2 => $v) {
                                 if (is_array($v) === true) {
                                     if ($k2 === 'summary') {
@@ -1479,25 +1479,24 @@ class DiscoveryTaskList extends HTML
                                             $table->data[$i][1] = $v2;
                                             $i++;
                                         }
-                                    } else {
-                                        $table->data[$i][0] = json_encode([$k2 => $v], JSON_PRETTY_PRINT);
-                                        $table->data[$i][1] = '';
-                                        $i++;
+
+                                        unset($unknownJson[$k2]);
                                     }
                                 } else {
                                     if ($k2 === 'info') {
                                         $table->data[$i][0] = $v;
                                         $table->data[$i][1] = '';
                                         $i++;
-                                    } else if ($k2 !== array_key_last($summary)) {
-                                        $unknownJson = array_merge($unknownJson, [$k2 => $v]);
-                                    } else {
-                                        $unknownJson = array_merge($unknownJson, [$k2 => $v]);
-                                        $table->data[$i][0] = json_encode($unknownJson, JSON_PRETTY_PRINT);
-                                        $table->data[$i][1] = '';
-                                        $i++;
+
+                                        unset($unknownJson[$k2]);
                                     }
                                 }
+                            }
+
+                            if (empty($unknownJson) === false) {
+                                $table->data[$i][0] = json_encode($unknownJson, JSON_PRETTY_PRINT);
+                                $table->data[$i][1] = '';
+                                $i++;
                             }
                         } else {
                             $table->data[$i][0] = $summary;
@@ -1505,13 +1504,6 @@ class DiscoveryTaskList extends HTML
                             $i++;
                         }
                     }
-                } else {
-                    $table->data[$i][0] = '<b>'.__('Summary').'</b>';
-                    $table->data[$i][1] = '';
-                    $i++;
-                    $table->data[$i][0] = $task['summary'];
-                    $table->data[$i][1] = '';
-                    $i++;
                 }
             } else {
                 // Content.

@@ -452,7 +452,8 @@ function reporting_make_reporting_data(
             case 'sql':
                 $report['contents'][] = reporting_sql(
                     $report,
-                    $content
+                    $content,
+                    $pdf
                 );
             break;
 
@@ -7538,7 +7539,7 @@ function reporting_text($report, $content)
  *
  * @return array
  */
-function reporting_sql($report, $content)
+function reporting_sql($report, $content, $pdf=false)
 {
     global $config;
 
@@ -7570,7 +7571,7 @@ function reporting_sql($report, $content)
             function ($node) use ($report, $content) {
                 try {
                     $node->connect();
-                    $rs = reporting_sql_auxiliary($report, $content);
+                    $rs = reporting_sql_auxiliary($report, $content, $pdf);
                     $node->disconnect();
                 } catch (Exception $e) {
                     return [
@@ -7620,7 +7621,7 @@ function reporting_sql($report, $content)
                 $node->connect();
             }
 
-            $query_result = reporting_sql_auxiliary($report, $content);
+            $query_result = reporting_sql_auxiliary($report, $content, $pdf);
             $return = array_merge($return, $query_result);
 
             if (is_metaconsole() === true && $id_server > 0) {
@@ -7645,7 +7646,7 @@ function reporting_sql($report, $content)
  *
  * @return array
  */
-function reporting_sql_auxiliary($report, $content)
+function reporting_sql_auxiliary($report, $content, $pdf=false)
 {
     global $config;
 
@@ -7661,7 +7662,7 @@ function reporting_sql_auxiliary($report, $content)
         $sql = $content['external_source'];
     }
 
-    if (isset($config['limit_sql_pdf']) === true && $config['limit_sql_pdf'] > 0) {
+    if ($pdf === true && isset($config['limit_sql_pdf']) === true && $config['limit_sql_pdf'] > 0) {
         $pattern = '/\sLIMIT\s+(\d+)(\s*,\s*(\d+))?\s*(;+|(\\G)+)?$/i';
         if (preg_match($pattern, $sql, $matches)) {
             // Item query contains a LIMIT clause.

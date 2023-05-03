@@ -212,7 +212,8 @@ $filter['limit'] = (int) $config['block_size'];
 // Statements for pagination.
 $url = 'index.php?sec=gusuarios&sec2=godmode/tag/tag';
 $total_tags = tags_get_tag_count($filter);
-$offset_delete = ($offset >= ($total_tags - 1)) ? ($offset - $config['block_size']) : $offset;
+$offset_delete = ($offset >= $total_tags ) ? ($offset - $config['block_size']) : 0;
+
 $result = tags_search_tag(false, $filter);
 
 // Filter form.

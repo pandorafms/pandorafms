@@ -944,6 +944,10 @@ function config_update_config()
                         $error_update[] = __('Max execution event response');
                     }
 
+                    if (config_update_value('limit_sql_pdf', get_parameter('limit_sql_pdf'), true) === false) {
+                        $error_update[] = __('Rows limit for SQL report item PDF');
+                    }
+
                     if (config_update_value('row_limit_csv', get_parameter('row_limit_csv'), true) === false) {
                         $error_update[] = __('Row limit in csv log');
                     }
@@ -2199,6 +2203,10 @@ function config_process_config()
 
     if (!isset($config['max_execution_event_response'])) {
         config_update_value('max_execution_event_response', 10);
+    }
+
+    if (!isset($config['limit_sql_pdf'])) {
+        config_update_value('limit_sql_pdf', 5000);
     }
 
     if (!isset($config['max_number_of_events_per_node'])) {

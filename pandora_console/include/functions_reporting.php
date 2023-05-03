@@ -7647,6 +7647,8 @@ function reporting_sql($report, $content)
  */
 function reporting_sql_auxiliary($report, $content)
 {
+    global $config;
+
     if ($content['treport_custom_sql_id'] != 0) {
         $sql = io_safe_output(
             db_get_value_filter(
@@ -7657,6 +7659,46 @@ function reporting_sql_auxiliary($report, $content)
         );
     } else {
         $sql = $content['external_source'];
+    }
+
+    if (isset($config['limit_sql_pdf']) === true && $config['limit_sql_pdf'] > 0) {
+        $pattern = '/\sLIMIT\s+(\d+)(\s*,\s*(\d+))?\s*(;+|(\\G)+)?$/i';
+        if (preg_match($pattern, $sql, $matches)) {
+            // Item query contains a LIMIT clause.
+            $limit_size = $limit1 = (int) $matches[1];
+
+            if (isset($matches[3]) === true && $matches[3] !== '') {
+                // The LIMIT clause is a range LIMIT.
+                $limit2 = (int) $matches[3];
+                $range_size = abs($limit2 - $limit1) + 1;
+                if ($range_size > $config['limit_sql_pdf']) {
+                    // Set new LIMIT only if it is more restrictive than the LIMIT size specified in the item query.
+                    $new_limit2 = ($limit1 + $config['limit_sql_pdf']);
+                    $new_limit = "$limit1, $new_limit2";
+                    // Replace item query limit by new calculated limit.
+                    $sql = preg_replace($pattern, " LIMIT $new_limit", $sql);
+                }
+            } else {
+                // The LIMIT clause is a simple LIMIT.
+                if ($limit_size > $config['limit_sql_pdf']) {
+                    // Set new LIMIT only if it is more restrictive than the LIMIT specified in the item query.
+                    $new_limit = $config['limit_sql_pdf'];
+                    $sql = preg_replace($pattern, " LIMIT $new_limit", $sql);
+                }
+            }
+        } else {
+            $limit_str = ' LIMIT '.$config['limit_sql_pdf'];
+            // Check if SQL ends with semicolon or "\G".
+            if (substr(trim($sql), -1) === ';') {
+                $sql = str_replace(';', '', trim($sql));
+                $sql .= $limit_str.';';
+            } else if (substr(trim($sql), -2) === '\\G') {
+                $sql = str_replace('\G', '', trim($sql));
+                $sql .= $limit_str.'\G';
+            } else {
+                $sql .= $limit_str;
+            }
+        }
     }
 
     // Check if SQL macro exists.
@@ -7711,7 +7753,7 @@ function reporting_sql_auxiliary($report, $content)
         }
     } else {
         $return['correct'] = 0;
-        $return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
+        $return['error'] = __('Illegal query: Due to security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
     }
 
     return $return;

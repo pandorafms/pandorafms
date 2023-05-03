@@ -833,6 +833,10 @@ function grafico_modulo_sparse($params)
         $params['basic_chart'] = false;
     }
 
+    if (isset($params['array_colors']) === false) {
+        $params['array_colors'] = false;
+    }
+
     // If is metaconsole set 10pt size value.
     if (is_metaconsole()) {
         $font_size = '10';
@@ -5237,7 +5241,7 @@ function graph_monitor_wheel($width=550, $height=600, $filter=false)
         'name'     => __('Main node'),
         'type'     => 'center_node',
         'children' => iterate_group_array($data_groups, $data_agents),
-        'color'    => '#3F3F3F',
+        'color'    => ($config['style'] === 'pandora_black') ? '#111' : '#FFF',
     ];
 
     if (empty($graph_data['children'])) {

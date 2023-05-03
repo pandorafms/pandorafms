@@ -522,7 +522,7 @@ function servers_get_rate($avg_interval, $num_modules)
  *
  * @return mixed False in case the server doesn't exist or an array with info.
  */
-function servers_get_info($id_server=-1)
+function servers_get_info($id_server=-1, $sql_limit=-1)
 {
     global $config;
 
@@ -538,6 +538,14 @@ function servers_get_info($id_server=-1)
 		SELECT *
 		FROM tserver '.$select_id.'
 		ORDER BY server_type';
+
+    if ($sql_limit !== -1) {
+        $sql = '
+		SELECT *
+		FROM tserver '.$select_id.'
+		ORDER BY server_type'.$sql_limit;
+    }
+
     $result = db_get_all_rows_sql($sql);
     $time = get_system_time();
 
@@ -996,12 +1004,14 @@ function servers_get_info($id_server=-1)
                     'SELECT UNIX_TIMESTAMP() - utimestamp
                     FROM trecon_task
                     WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep)
+                    AND interval_sweep > 0
                     AND id_recon_server = '.$server['id_server']
                 );
                 $server['module_lag'] = db_get_sql(
                     'SELECT COUNT(id_rt)
                     FROM trecon_task
                     WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep)
+                    AND interval_sweep > 0
                     AND id_recon_server = '.$server['id_server']
                 );
             } else {

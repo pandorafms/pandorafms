@@ -636,7 +636,8 @@ $tableAdvancedAgent->data['secondary_groups'][] = html_print_label_input_block(
     __('Secondary groups'),
     html_print_select_agent_secondary(
         $agent,
-        $id_agente
+        $id_agente,
+        ['selected_post' => $secondary_groups]
     )
 );
 
@@ -759,6 +760,7 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_ok',
             'style' => 'display:'.$display_icons.';',
+            'width' => '40',
         ]
     ).html_print_image(
         $path_bad,
@@ -766,6 +768,7 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_bad',
             'style' => 'display:'.$display_icons.';',
+            'width' => '40',
         ]
     ).html_print_image(
         $path_warning,
@@ -773,6 +776,7 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_warning',
             'style' => 'display:'.$display_icons.';',
+            'width' => '40',
         ]
     )
 );

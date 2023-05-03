@@ -509,7 +509,7 @@ unknown_events 1
 global_alert_timeout 15
 
 # If set to 1 allows PandoraFMS Server to be configured via the web console (Only Enterprise version) 
-remote_config 0
+remote_config 1
 
 # Remote address to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
 remote_config_address localhost

@@ -1350,24 +1350,14 @@ function createOrUpdateVisualConsoleItem(
     onshow: {
       page: "include/rest-api/index",
       method: "loadTabs",
-      maxHeight: 600,
+      maxHeight: 900,
       minHeight: 400
     },
     onsubmit: {
       page: "include/rest-api/index",
       method: "processForm",
       preaction: function() {
-        if (
-          tinyMCE != undefined &&
-          tinyMCE.editors.length > 0 &&
-          item.itemProps.type != 12 &&
-          item.itemProps.type != 13 &&
-          item.itemProps.type != 21
-        ) {
-          // Content tiny.
-          var label = tinyMCE.activeEditor.getContent();
-          $("#textarea_label").val(label);
-        }
+        UndefineTinyMCE("#textarea_label");
         if (item.itemProps.id) {
           item.setMeta({ isUpdating: true });
         } else {
@@ -1387,11 +1377,7 @@ function createOrUpdateVisualConsoleItem(
         }
       }
     },
-    onsubmitClose: 1,
-    beforeClose: function() {
-      tinyMCE.remove("#textarea_label");
-      tinyMCE.execCommand("mceRemoveControl", true, "textarea_label");
-    }
+    onsubmitClose: 1
   });
 }
 

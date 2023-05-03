@@ -538,25 +538,30 @@ if (is_ajax() === true) {
                         );
 
                         $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
-                        if (!$user_timezone) {
-                            $timezone = timezone_open(date_default_timezone_get());
-                            $datetime_eur = date_create('now', timezone_open($config['timezone']));
-                            $dif = timezone_offset_get($timezone, $datetime_eur);
-                            date($config['date_format'], $dif);
-                            if (!date('I')) {
-                                // For summer -3600sec.
-                                $dif -= 3600;
-                            }
+                        if (empty($user_timezone) === true) {
+                            if (date_default_timezone_get() !== $config['timezone']) {
+                                $timezone = timezone_open(date_default_timezone_get());
+                                $datetime_eur = date_create('now', timezone_open($config['timezone']));
+                                $dif = timezone_offset_get($timezone, $datetime_eur);
+                                date($config['date_format'], $dif);
+                                if (!date('I')) {
+                                    // For summer -3600sec.
+                                    $dif -= 3600;
+                                }
 
-                            $total_sec = strtotime($tmp->timestamp);
-                            $total_sec += $dif;
-                            $last_contact = date($config['date_format'], $total_sec);
-                            $last_contact_value = ui_print_timestamp($last_contact, true);
+                                $total_sec = strtotime($tmp->timestamp);
+                                $total_sec += $dif;
+                                $last_contact = date($config['date_format'], $total_sec);
+                                $last_contact_value = ui_print_timestamp($last_contact, true);
+                            } else {
+                                $title = date($config['date_format'], strtotime($tmp->timestamp));
+                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
+                                $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
+                            }
                         } else {
-                            $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
                             date_default_timezone_set($user_timezone);
                             $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = human_time_comparation(strtotime($tmp->timestamp), 'large');
+                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
                             $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
 
@@ -1209,17 +1214,17 @@ foreach ((array) $tags as $id_tag => $tag) {
     if (is_array($tag_with) === true
         && ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null))
     ) {
-        $tags_select_with[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tags_select_with[$id_tag] = $tag;
     } else {
-        $tag_with_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tag_with_temp[$id_tag] = $tag;
     }
 
     if (is_array($tag_without) === true
         && ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null))
     ) {
-        $tags_select_without[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tags_select_without[$id_tag] = $tag;
     } else {
-        $tag_without_temp[$id_tag] = ui_print_truncate_text($tag, 50, true);
+        $tag_without_temp[$id_tag] = $tag;
     }
 }
 
@@ -1255,7 +1260,16 @@ $data[0] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 
 $data[1] = html_print_image(
@@ -1297,7 +1311,16 @@ $data[2] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 
 $tabletags_with->data[] = $data;
@@ -1330,7 +1353,16 @@ $data[0] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 $data[1] = html_print_image(
     'images/darrowright.png',
@@ -1368,7 +1400,16 @@ $data[2] = html_print_select(
     true,
     true,
     'select_tags',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    25
 );
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
@@ -3006,6 +3047,11 @@ $(document).ready( function() {
 
     });
 
+    var show_event_dialog = "<?php echo get_parameter('show_event_dialog', ''); ?>";
+    if (show_event_dialog !== ''){
+        show_event_dialo(show_event_dialog);
+    }
+
     /* Multi select handler */
     $('#checkbox-all_validate_box').on('change', function() {
         if($('#checkbox-all_validate_box').is(":checked")) {
@@ -3250,4 +3296,105 @@ $(document).ready(function () {
 
     $('.white_table_graph_header').first().append($('.filter_summary'));
 });
+
+// Show the modal window of an event
+function show_event_dialo(event, dialog_page) {
+    var ajax_file = getUrlAjax();
+
+    var view = ``;
+
+    if ($("#event_details_window").length) {
+        view = "#event_details_window";
+    } else if ($("#sound_event_details_window").length) {
+        view = "#sound_event_details_window";
+    }
+
+    if (dialog_page == undefined) {
+        dialog_page = "general";
+    }
+
+    try {
+        event = event.replaceAll("&#x20;", "+");
+        event = JSON.parse(atob(event), true);
+    } catch (e) {
+        console.error(e);
+        return;
+    }
+
+    var inputs = $("#events_form :input");
+    var values = {};
+    inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+
+    // Metaconsole mode flag
+    var meta = $("#hidden-meta").val();
+
+    // History mode flag
+    var history = $("#hidden-history").val();
+
+    jQuery.post(
+        ajax_file,
+        {
+        page: "include/ajax/events",
+        get_extended_event: 1,
+        dialog_page: dialog_page,
+        event: event,
+        meta: meta,
+        history: history,
+        filter: values
+        },
+        function(data) {
+        $(view)
+            .hide()
+            .empty()
+            .append(data)
+            .dialog({
+            title: event.evento,
+            resizable: true,
+            draggable: true,
+            modal: true,
+            minWidth: 875,
+            minHeight: 600,
+            close: function() {
+                $("#refrcounter").countdown("resume");
+                $("div.vc-countdown").countdown("resume");
+            },
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 710,
+            height: 650,
+            autoOpen: true,
+            open: function() {
+                if (
+                $.ui &&
+                $.ui.dialog &&
+                $.ui.dialog.prototype._allowInteraction
+                ) {
+                var ui_dialog_interaction =
+                    $.ui.dialog.prototype._allowInteraction;
+                $.ui.dialog.prototype._allowInteraction = function(e) {
+                    if ($(e.target).closest(".select2-dropdown").length)
+                    return true;
+                    return ui_dialog_interaction.apply(this, arguments);
+                };
+                }
+            },
+            _allowInteraction: function(event) {
+                return !!$(event.target).is(".select2-input") || this._super(event);
+            }
+            })
+            .show();
+
+        $("#refrcounter").countdown("pause");
+        $("div.vc-countdown").countdown("pause");
+
+        forced_title_callback();
+        },
+        "html"
+    );
+    return false;
+}
 </script>

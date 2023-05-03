@@ -10,21 +10,20 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         'e8aa6e4b5a1db2f56ae794f1505391a8' => __DIR__ . '/..' . '/amphp/amp/lib/functions.php',
         '76cd0796156622033397994f25b0d8fc' => __DIR__ . '/..' . '/amphp/amp/lib/Internal/functions.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '6cd5651c4fef5ed6b63e8d8b8ffbf3cc' => __DIR__ . '/..' . '/amphp/byte-stream/lib/functions.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
+        '3da389f428d8ee50333e4391c3f45046' => __DIR__ . '/..' . '/amphp/serialization/src/functions.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '8dc56fe697ca93c4b40d876df1c94584' => __DIR__ . '/..' . '/amphp/process/lib/functions.php',
-        '3da389f428d8ee50333e4391c3f45046' => __DIR__ . '/..' . '/amphp/serialization/src/functions.php',
         'bcb7d4fc55f4b1a7e10f5806723e9892' => __DIR__ . '/..' . '/amphp/sync/src/functions.php',
         'e187e371b30897d6dc51cac6a8c94ff6' => __DIR__ . '/..' . '/amphp/sync/src/ConcurrentIterator/functions.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '430de19db8b7ee88fdbe5c545d82d33d' => __DIR__ . '/..' . '/amphp/parallel/lib/Context/functions.php',
         '888e1afeed2e8d13ef5a662692091e6e' => __DIR__ . '/..' . '/amphp/parallel/lib/Sync/functions.php',
         '384cf4f2eb4d2f896db72315a76066ad' => __DIR__ . '/..' . '/amphp/parallel/lib/Worker/functions.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
         'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '861372841bb4b8ba9fdd215894666f40' => __DIR__ . '/..' . '/amphp/parallel-functions/src/functions.php',
@@ -66,12 +65,9 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         'P' => 
         array (
             'Psr\\Log\\' => 8,
+            'Psr\\Http\\Message\\' => 17,
             'PandoraFMS\\Enterprise\\' => 22,
             'PandoraFMS\\' => 11,
-        ),
-        'O' => 
-        array (
-            'Opis\\Closure\\' => 13,
         ),
         'M' => 
         array (
@@ -81,10 +77,12 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         ),
         'L' => 
         array (
+            'Laravel\\SerializableClosure\\' => 28,
             'Laminas\\Json\\' => 13,
         ),
         'H' => 
         array (
+            'Http\\Message\\' => 13,
             'HeadlessChromium\\' => 17,
             'Halfpastfour\\Collection\\' => 24,
         ),
@@ -95,6 +93,7 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         ),
         'D' => 
         array (
+            'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'DeepCopy\\' => 9,
         ),
@@ -131,8 +130,8 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         ),
         'Test\\' => 
         array (
-            0 => __DIR__ . '/..' . '/halfpastfouram/collection/test',
-            1 => __DIR__ . '/..' . '/artica/phpchartjs/test',
+            0 => __DIR__ . '/..' . '/artica/phpchartjs/test',
+            1 => __DIR__ . '/..' . '/halfpastfouram/collection/test',
         ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (
@@ -178,6 +177,10 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
         'PandoraFMS\\Enterprise\\' => 
         array (
             0 => __DIR__ . '/../..' . '/enterprise/include/lib',
@@ -185,10 +188,6 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         'PandoraFMS\\' => 
         array (
             0 => __DIR__ . '/../..' . '/include/lib',
-        ),
-        'Opis\\Closure\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/opis/closure/src',
         ),
         'Mpdf\\' => 
         array (
@@ -202,9 +201,17 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         array (
             0 => __DIR__ . '/../..' . '/include/rest-api/models',
         ),
+        'Laravel\\SerializableClosure\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laravel/serializable-closure/src',
+        ),
         'Laminas\\Json\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-json/src',
+        ),
+        'Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-http/message-factory/src',
         ),
         'HeadlessChromium\\' => 
         array (
@@ -222,9 +229,13 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         array (
             0 => __DIR__ . '/..' . '/egulias/email-validator/src',
         ),
+        'Doctrine\\Deprecations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
+        ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
-            0 => __DIR__ . '/..' . '/doctrine/lexer/lib/Doctrine/Common/Lexer',
+            0 => __DIR__ . '/..' . '/doctrine/lexer/src',
         ),
         'DeepCopy\\' => 
         array (
@@ -248,7 +259,7 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         ),
         'Amp\\Parser\\' => 
         array (
-            0 => __DIR__ . '/..' . '/amphp/parser/lib',
+            0 => __DIR__ . '/..' . '/amphp/parser/src',
         ),
         'Amp\\Parallel\\' => 
         array (

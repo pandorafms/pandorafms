@@ -1723,6 +1723,12 @@ class NetworkMap
             $item['image_width'] = 0;
             $item['image_height'] = 0;
             if (empty($node['style']['image']) === false) {
+                if (strpos($node['style']['image'], '.svg') === false) {
+                    $node['style']['image'] = os_transform_url_icon(
+                        $node['style']['image']
+                    );
+                }
+
                 $item['image_url'] = ui_get_full_url(
                     $node['style']['image'],
                     false,

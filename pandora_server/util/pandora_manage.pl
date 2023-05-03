@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.770 Build 230413";
+my $version = "7.0NG.770 Build 230503";
 
 # save program name for logging
 my $progname = basename($0);
@@ -2933,7 +2933,7 @@ sub cli_delete_module() {
 				next;
 			}
 		
-			pandora_delete_module($dbh,$id_module,$conf);
+			pandora_delete_module($dbh, $id_module, $conf, 1);
 		}
 	} else {
 		print_log "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
@@ -2943,7 +2943,7 @@ sub cli_delete_module() {
 		my $id_module = get_agent_module_id($dbh,$module_name,$id_agent);
 		exist_check($id_module,'module',$module_name);
 		
-		pandora_delete_module($dbh,$id_module,$conf);
+		pandora_delete_module($dbh, $id_module, $conf, 1);
 	}
 }
 

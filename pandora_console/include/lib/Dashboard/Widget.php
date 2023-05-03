@@ -423,6 +423,7 @@ class Widget
                 case 'EventCardboard':
                 case 'ModulesByStatus':
                 case 'AvgSumMaxMinModule':
+                case 'BasicChart':
                     $className .= '\\'.$name;
                 break;
 

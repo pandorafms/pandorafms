@@ -114,8 +114,10 @@ if ($update) {
 
             foreach ($agents_ as $id_agent) {
                 $filter = [
-                    'id_agente'      => $id_agent,
-                    'delete_pending' => 0,
+                    'id_agente'        => $id_agent,
+                    'delete_pending'   => 0,
+                    'id_policy_module' => 0,
+                    'policy_linked'    => 0,
                 ];
                 if ($module_type != 0) {
                     $filter['id_tipo_modulo'] = $module_type;
@@ -141,8 +143,10 @@ if ($update) {
 
             foreach ($agents_ as $id_agent) {
                 $filter = [
-                    'id_agente'      => $id_agent,
-                    'delete_pending' => 0,
+                    'id_agente'        => $id_agent,
+                    'delete_pending'   => 0,
+                    'id_policy_module' => 0,
+                    'policy_linked'    => 0,
                 ];
                 $module_name = db_get_all_rows_filter('tagente_modulo', $filter, 'nombre');
                 if ($module_name === false) {
@@ -1262,6 +1266,8 @@ $table->data['edit1'][1] = '<table width="100%">';
                 $preload
             );
 
+            $table->data['exclude_policy_modules'][0] = html_print_input_hidden('exclude_policy_modules', 1);
+
             echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
             html_print_table($table);
 
@@ -1399,7 +1405,8 @@ $(document).ready (function () {
             "truncate_module_names": 1,
             "get_distinct_name" : 1,
             "indexed" : 0,
-            "safe_name" : 1
+            "safe_name" : 1,
+            "exclude_policy_modules" : 1
         };
 
         if (this.value != '0')
@@ -2248,7 +2255,11 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             // Any module.
             $modules = db_get_all_rows_filter(
                 'tagente_modulo',
-                ['id_agente' => $agents_select],
+                [
+                    'id_agente'        => $agents_select,
+                    'id_policy_module' => 0,
+                    'policy_linked'    => 0,
+                ],
                 [
                     'id_agente_modulo',
                     'id_tipo_modulo',

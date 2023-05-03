@@ -483,6 +483,7 @@ if (is_ajax()) {
         $status_modulo = (int) get_parameter('status_module', -1);
         $id_group_selected = (int) get_parameter('id_group', 0);
         $metaconsole_server_name = null;
+        $exclude_policy_modules = (bool) get_parameter('exclude_policy_modules', false);
         if (!empty($id_server)) {
             $metaconsole_server_name = db_get_value(
                 'server_name',
@@ -767,6 +768,10 @@ if (is_ajax()) {
                 }
             }
 
+            if ($exclude_policy_modules === true) {
+                $sql .= ' AND t1.id_policy_module = 0 AND t1.policy_linked = 0';
+            }
+
             $sql .= ' ORDER BY nombre';
             $nameModules = db_get_all_rows_sql($sql);
             if ($tags != null) {
@@ -835,6 +840,8 @@ if (is_ajax()) {
         $safe_name = (bool) get_parameter('safe_name', false);
 
         $truncate_module_names = (bool) get_parameter('truncate_module_names');
+
+        $exclude_policy_modules = (bool) get_parameter('exclude_policy_modules', false);
 
         // Filter.
         $filter = [];
@@ -925,6 +932,11 @@ if (is_ajax()) {
         $force_tags = !empty($tags);
         if ($force_tags) {
             $filter['ttag_module.id_tag IN '] = '('.implode(',', $tags).')';
+        }
+
+        if ($exclude_policy_modules === true) {
+            $filter['id_policy_module'] = 0;
+            $filter['policy_linked'] = 0;
         }
 
         if (is_metaconsole() && !$force_local_modules) {

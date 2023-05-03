@@ -479,3 +479,7 @@ div.label strong span {
   margin: 0;
   padding: 0;
 }
+
+.select2-search__field {
+  width: 95% !important;
+}

@@ -300,7 +300,6 @@ server_dependencies=" \
     bind-utils \
     whois \
     cpanminus \
-    http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.artica.es/centos7/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "yum install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -328,7 +327,6 @@ execute_cmd "yum install -y $oracle_dependencies || yum reinstall -y $oracle_dep
 
 #ipam dependencies
 ipam_dependencies=" \
-    http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     perl(NetAddr::IP) \
     perl(Sys::Syslog) \
     perl(DBI) \

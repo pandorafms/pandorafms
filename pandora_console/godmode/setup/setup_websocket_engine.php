@@ -181,6 +181,7 @@ $handle_test_js = "var handleTest = function (event) {
         changeTestMessage(errorMessage);
         hideLoadingImage();
         showMessage();
+        ws.close();
     };
       
     ws.onopen = () => {
@@ -188,6 +189,7 @@ $handle_test_js = "var handleTest = function (event) {
         showSuccessImage();
         hideLoadingImage();
         hideMessage();   
+        ws.close();
     };
 
     ws.onclose = (event) => {

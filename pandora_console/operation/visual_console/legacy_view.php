@@ -192,37 +192,37 @@ $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual
 ).'</a>';
 $options['view']['active'] = true;
 
+if (!$config['pure']) {
+    $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image(
+        'images/full_screen.png',
+        true,
+        [
+            'title' => __('Full screen mode'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
+
+    ui_print_standard_header(
+        $layout_name,
+        'images/visual_console.png',
+        false,
+        'visual_console_view',
+        false,
+        $options,
+        [
+            [
+                'link'  => '',
+                'label' => __('Topology maps'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Visual console'),
+            ],
+        ]
+    );
+}
+
 if (!is_metaconsole()) {
-    if (!$config['pure']) {
-        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image(
-            'images/full_screen.png',
-            true,
-            [
-                'title' => __('Full screen mode'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
-
-        ui_print_standard_header(
-            $layout_name,
-            'images/visual_console.png',
-            false,
-            'visual_console_view',
-            false,
-            $options,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Topology maps'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('Visual console'),
-                ],
-            ]
-        );
-    }
-
     // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 0);
 } else {

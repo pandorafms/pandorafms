@@ -4403,9 +4403,13 @@ span.log_zone_line_error {
   border: 1px solid red;
 }
 
-#toolbox > input {
-  border-width: 0px 1px 0px 0px;
-  border-color: lightgray;
+/* VISUAL MAP */
+#toolbox {
+  padding-top: 10px;
+}
+
+#toolbox button {
+  margin: 0px 10px;
 }
 
 #toolbox > input.service_min {
@@ -10422,10 +10426,22 @@ button.submitButton.onlyIcon.delete_item {
   -webkit-mask: url(../../images/delete.svg) no-repeat right / contain;
 }
 
+button.buttonButton.onlyIcon.edit_item,
+button.submitButton.onlyIcon.edit_item {
+  mask: url(../../images/edit.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/edit.svg) no-repeat right / contain;
+}
+
 button.buttonButton.onlyIcon.copy_item,
 button.submitButton.onlyIcon.copy_item {
   mask: url(../../images/copy.svg) no-repeat right / contain;
   -webkit-mask: url(../../images/copy.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.show_grid,
+button.submitButton.onlyIcon.show_grid {
+  mask: url(../../images/WMI@svg.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/WMI@svg.svg) no-repeat right / contain;
 }
 
 button.buttonButton.link-create-item,

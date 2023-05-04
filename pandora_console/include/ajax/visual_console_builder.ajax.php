@@ -34,7 +34,7 @@ if ($get_image_path_status) {
 $id_visual_console = get_parameter('id_visual_console', null);
 
 // WARNING: CHECK THE ENTIRE FUNCTIONALITY
-// Visual console id required
+// Visual console id required.
 if (empty($id_visual_console)) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -1774,7 +1774,7 @@ switch ($action) {
     break;
 }
 
-// visual map element status check
+// Visual map element status check.
 if ($get_element_status) {
     $layoutData = db_get_row_filter(
         'tlayout_data',

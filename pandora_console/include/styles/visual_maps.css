@@ -99,15 +99,6 @@ div#vc-controls img.vc-qr {
   flex: inherit;
 }
 
-input.vs_button_ghost {
-  background-color: transparent;
-  border: 1px solid #82b92e;
-  color: #82b92e;
-  text-align: center;
-  padding: 4px 12px;
-  font-weight: bold;
-}
-
 #toolbox #auto_save {
   padding-top: 5px;
 }

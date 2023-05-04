@@ -561,7 +561,6 @@ class BasicChart extends Widget
         global $config;
 
         $size = parent::getSize();
-        hd($size, true);
 
         include_once $config['homedir'].'/include/functions_graph.php';
         include_once $config['homedir'].'/include/functions_agents.php';

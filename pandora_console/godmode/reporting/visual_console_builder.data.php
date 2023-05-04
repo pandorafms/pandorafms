@@ -408,7 +408,6 @@ $(document).ready (function () {
     });
     
     $( "button[type=submit]" ).click(function( event ) {
-        console.log('aaaaaaaaaaa');
         if (parseInt($('input[name=width]').val()) < 1024){
             alert('Default width is '+$('input[name=width]').val()+'px, smaller than minimum -> 1024px');
             $('input[name=width]').val('1024');

@@ -1058,8 +1058,8 @@ if (check_login()) {
                     $policyInfo = policies_info_module_policy($module['id_policy_module']);
                     $adopt = policies_is_module_adopt($module['id_agente_modulo']);
 
-                    if ($linked === true) {
-                        if ($adopt === true) {
+                    if ((bool) $linked === true) {
+                        if ((bool) $adopt === true) {
                             $img = 'images/policies_brick.png';
                             $title = '('.__('Adopted').') '.$name_policy;
                         } else {
@@ -1067,7 +1067,7 @@ if (check_login()) {
                             $title = $name_policy;
                         }
                     } else {
-                        if ($adopt === true) {
+                        if ((bool) $adopt === true) {
                             $img = 'images/policies_not_brick.png';
                             $title = '('.__('Unlinked').') ('.__('Adopted').') '.$name_policy;
                         } else {

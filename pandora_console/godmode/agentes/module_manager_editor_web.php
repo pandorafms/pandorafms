@@ -34,6 +34,7 @@ $disabledTextBecauseInPolicy = '';
 $classdisabledBecauseInPolicy = '';
 $page             = get_parameter('page', '');
 $id_policy_module = (int) get_parameter('id_policy_module');
+$id_agent_module  = (int) get_parameter('id_agent_module');
 
 if (strstr($page, 'policy_modules') === false) {
     if ((bool) $config['enterprise_installed'] === true) {
@@ -102,6 +103,9 @@ if (isset($id_agent_module) === true && $id_agent_module !== 0) {
 
 if ($id_policy_module > 0) {
     $module = enterprise_hook('policies_get_module', [$id_policy_module]);
+    $plugin_parameter = $module['plugin_parameter'];
+} else if ($id_agent_module > 0) {
+    $module = modules_get_agentmodule($id_agent_module);
     $plugin_parameter = $module['plugin_parameter'];
 } else {
     $plugin_parameter = '';

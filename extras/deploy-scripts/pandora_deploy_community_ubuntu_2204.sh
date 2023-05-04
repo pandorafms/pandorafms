@@ -253,7 +253,6 @@ server_dependencies=" \
 	openssh-client \
 	postfix \
 	unzip \
-	xprobe \
 	coreutils \
 	libio-compress-perl \
 	libmoosex-role-timer-perl \
@@ -358,7 +357,6 @@ source '/root/.profile' &>> "$LOGFILE"
 
 #ipam dependencies
 ipam_dependencies=" \
-    xprobe \
     libnetaddr-ip-perl \
     coreutils \
     libdbd-mysql-perl \

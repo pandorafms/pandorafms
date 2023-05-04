@@ -6671,40 +6671,40 @@ sub pandora_get_os ($$) {
 		return 10;
 	}
 	
-	if ($os =~ m/Windows/i) {
+	if ($os =~ m/Windows.*?(?=\(\d+%\))/i) {
 		return 9;
 	}
-	if ($os =~ m/Cisco/i) {
+	if ($os =~ m/Cisco.*?(?=\(\d+%\))/i) {
 		return 7;
 	}
-	if ($os =~ m/SunOS/i || $os =~ m/Solaris/i) {
+	if ($os =~ m/SunOS.*?(?=\(\d+%\))/i || $os =~ m/Solaris.*?(?=\(\d+%\))/i) {
 		return 2;
 	}
-	if ($os =~ m/AIX/i) {
+	if ($os =~ m/AIX.*?(?=\(\d+%\))/i) {
 		return 3;
 	}
-	if ($os =~ m/HP\-UX/i) {
+	if ($os =~ m/HP\-UX.*?(?=\(\d+%\))/i) {
 		return 5;
 	}
-	if ($os =~ m/Apple/i || $os =~ m/Darwin/i) {
+	if ($os =~ m/Apple.*?(?=\(\d+%\))/i || $os =~ m/Darwin.*?(?=\(\d+%\))/i) {
 		return 8;
 	}
-	if ($os =~ m/Linux/i) {
+	if ($os =~ m/Linux.*?(?=\(\d+%\))/i) {
 		return 1;
 	}
-	if ($os =~ m/Enterasys/i || $os =~ m/3com/i) {
+	if ($os =~ m/Enterasys.*?(?=\(\d+%\))/i || $os =~ m/3com.*?(?=\(\d+%\))/i) {
 		return 11;
 	}
-	if ($os =~ m/Octopods/i) {
+	if ($os =~ m/Octopods.*?(?=\(\d+%\))/i) {
 		return 13;
 	}
-	if ($os =~ m/embedded/i) {
+	if ($os =~ m/embedded.*?(?=\(\d+%\))/i) {
 		return 14;
 	}
-	if ($os =~ m/android/i) {
+	if ($os =~ m/android.*?(?=\(\d+%\))/i) {
 		return 15;
 	}
-	if ($os =~ m/BSD/i) {
+	if ($os =~ m/BSD.*?(?=\(\d+%\))/i) {
 		return 4;
 	}
 		

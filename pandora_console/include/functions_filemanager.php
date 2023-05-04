@@ -487,6 +487,10 @@ function filemanager_file_explorer(
     $allowCreateText = (isset($options['all']) === true) || ((isset($options['allowCreateText']) === true) && ($options['allowCreateText'] === true));
     $allowCreateFolder = (isset($options['allowCreateFolder'])) ? false : true;
 
+    if ($options['denyCreateText'] === true) {
+        $allowCreateText = false;
+    }
+
     if ($homedir_filemanager === false) {
         $homedir_filemanager = $config['homedir'];
     }
@@ -820,8 +824,9 @@ function filemanager_file_explorer(
     if ($readOnly === false) {
         if (is_writable($real_directory) === true) {
             // The buttons to make actions.
+            $tabs_dialog = '<ul id="file_table_modal">';
             if ($allowCreateFolder === true) {
-                $tabs_dialog = '<ul id="file_table_modal">
+                $tabs_dialog .= '
                 <li class="create_folder">
                     <a href="javascript: show_form_create_folder();">'.html_print_image(
                     'images/create_directory.png',

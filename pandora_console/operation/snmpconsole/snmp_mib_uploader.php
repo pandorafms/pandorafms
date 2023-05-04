@@ -109,5 +109,9 @@ filemanager_file_explorer(
     false,
     '',
     false,
-    ['allowCreateFolder' => true]
+    [
+        'all'               => true,
+        'denyCreateText'    => true,
+        'allowCreateFolder' => true,
+    ]
 );

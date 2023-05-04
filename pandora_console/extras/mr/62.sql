@@ -1,3 +1,4 @@
+-- Active: 1653046769261@@172.16.0.2@3306@pandora
 START TRANSACTION;
 
 CREATE TABLE IF NOT EXISTS `tconsole` (
@@ -196,5 +197,8 @@ ALTER TABLE `tnetflow_filter` ADD COLUMN `traffic_warning` float(20,2) NOT NULL 
 ALTER TABLE `tnetflow_filter` ADD COLUMN `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE `tnetflow_filter` ADD COLUMN `netflow_monitoring_interval` INT UNSIGNED NOT NULL DEFAULT 300;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('legacy_database_ha', 1);
+
+ALTER TABLE `talert_template_module_actions` ADD COLUMN `recovered` TINYINT NOT NULL DEFAULT 0;
+
 
 COMMIT;

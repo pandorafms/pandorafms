@@ -80,6 +80,31 @@ $t->data[1][] = html_print_label_input_block(
 );
 
 html_print_input_hidden('update_config', 1);
+
+// Test.
+$row = [];
+$test_start = '<span id="test-gotty-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+$test_start .= '<span id="test-gotty-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+$test_start .= '<span id="test-gotty-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$test_start .= '&nbsp;<span id="test-gotty-message" class="invisible"></span>';
+$row['gotty_test'] = html_print_label_input_block(
+    __('Test'),
+    html_print_button(
+        __('Start'),
+        'test-gotty',
+        false,
+        'handleTest()',
+        [
+            'icon'  => 'cog',
+            'mode'  => 'secondary mini',
+            'style' => 'width: 115px;',
+        ],
+        true
+    ).$test_start
+);
+
+$t->data['gotty_test'] = $row;
+
 html_print_table($t);
 
 echo '</fieldset>';
@@ -99,3 +124,81 @@ html_print_action_buttons(
 );
 
 echo '</form>';
+
+echo '<script>';
+echo 'var server_addr = "'.$_SERVER['SERVER_ADDR'].'";';
+$handle_test_js = "var handleTest = function (event) {
+    
+    var ws_proxy_url = $('input#text-ws_proxy_url').val();
+    var ws_port = $('input#text-ws_port').val();
+    var httpsEnabled = window.location.protocol == 'https' ? true : false;
+    if (ws_proxy_url == '') {
+        ws_url = (httpsEnabled ? 'wss://' : 'ws://')  + window.location.host + ':' + ws_port;    
+    } else {
+        ws_url = ws_proxy_url;
+    }
+
+    var hideLoadingImage = function () {
+        $('span#test-gotty-spinner').hide();
+    }
+    var showLoadingImage = function () {
+        $('span#test-gotty-spinner').show();
+    }
+    var hideSuccessImage = function () {
+        $('span#test-gotty-success').hide();
+    }
+    var showSuccessImage = function () {
+        $('span#test-gotty-success').show();
+    }
+    var hideFailureImage = function () {
+        $('span#test-gotty-failure').hide();
+    }
+    var showFailureImage = function () {
+        $('span#test-gotty-failure').show();
+    }
+    var hideMessage = function () {
+        $('span#test-gotty-message').hide();
+    }
+    var showMessage = function () {
+        $('span#test-gotty-message').show();
+    }
+    var changeTestMessage = function (message) {
+        $('span#test-gotty-message').text(message);
+    }
+
+    var errorMessage = '".__('WebService engine has not been started, please check documentation.')."';
+
+    hideSuccessImage();
+    hideFailureImage();
+    hideMessage();
+    
+    showLoadingImage();
+    
+    var ws = new WebSocket(ws_url);
+    // Catch errors.
+
+    ws.onerror = () => {
+        changeTestMessage(errorMessage);
+        hideLoadingImage();
+        showMessage();
+    };
+      
+    ws.onopen = () => {
+        console.log('SSH connected');
+        showSuccessImage();
+        hideLoadingImage();
+        hideMessage();   
+    };
+
+    ws.onclose = (event) => {
+        changeTestMessage(errorMessage);
+        hideLoadingImage();
+        showMessage();
+    };
+}
+
+
+$('#button-test-ehorus').click(handleTest);";
+
+echo $handle_test_js;
+echo '</script>';

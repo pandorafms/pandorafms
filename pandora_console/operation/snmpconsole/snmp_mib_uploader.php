@@ -109,5 +109,5 @@ filemanager_file_explorer(
     false,
     '',
     false,
-    ['all' => true]
+    ['allowCreateFolder' => true]
 );

@@ -93,7 +93,9 @@ ui_print_standard_header(
 );
 
 // SNMP tree container.
-snmp_browser_print_container(false, '100%', '60%', '', true, true);
+if (!isset($_GET['tab'])) {
+    snmp_browser_print_container(false, '100%', '60%', '', true, true);
+}
 
 // Div for modal.
 echo '<div id="modal" style="display:none"></div>';
@@ -668,7 +670,7 @@ function show_add_module() {
                                         
                                         $("#snmp_create_module").append(input);
                                     });
-
+console.log(input);
                                     //Submit form to agent module url.
                                     $("#snmp_create_module").attr(
                                         "action",

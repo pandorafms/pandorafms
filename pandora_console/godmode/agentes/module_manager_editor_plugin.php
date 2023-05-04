@@ -141,7 +141,7 @@ foreach ($password_fields as $k => $p) {
 ?>
 <script type="text/javascript">
     function changePluginSelect() {
-        if (flag_load_plugin_component) {
+        if (typeof flag_load_plugin_component !== 'undefined' && flag_load_plugin_component) {
             flag_load_plugin_component = false;
             
             return;
@@ -155,4 +155,8 @@ foreach ($password_fields as $k => $p) {
 
         $('select#id_plugin').select2('close');
     }
+
+    $(document).ready(function () {
+        changePluginSelect();
+    });
 </script>

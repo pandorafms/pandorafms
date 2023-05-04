@@ -5534,47 +5534,6 @@ sub pandora_cps_enabled($$) {
 }
 
 ##########################################################################
-# Returns 1 if alerts for the given agent should be inhibited, 0 otherwise.
-##########################################################################
-#sub pandora_inhibit_alerts ($$$$) {
-sub pandora_inhibit_service_alerts {
-	my ($pa_config, $module, $dbh, $depth) = @_;
-
-	return 0 if (pandora_cps_enabled($agent, $module) !== 0);
-
-	# Are any of the parent's critical alerts fired?	
-	my $count = 0;
-
-	$service = get_db_value(
-		$dbh,
-		'SELECT id_service FROM tservice_element WHERE id_agente_modulo = ?',
-		$id_element
-	);
-
-	return 0 unless defined($id_service);
-
-	$count = get_db_value (
-		$dbh,
-		'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
-		WHERE tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
-		AND tagente_modulo.disabled = 0
-		AND talert_template_modules.id_alert_template = talert_templates.id
-		AND talert_template_modules.times_fired > 0
-		AND talert_templates.priority = 4
-		AND id_agente_modulo.custom_integer_1 = ?',
-		$id_service
-	);
-
-	return 1 if (defined($count) && $count > 0);
-	
-	# Check the parent's parent next
-	$service = get_db_single_row ($dbh, 'SELECT * FROM tservice WHERE id_agente = ?', $agent->{'id_parent'});
-	return 0 unless defined ($agent);
-
-	return pandora_inhibit_alerts ($pa_config, $agent, $dbh, $depth + 1);
-}
-
-##########################################################################
 =head2 C<< save_agent_position (I<$pa_config>, I<$current_longitude>, I<$current_latitude>, 
 		 I<$current_altitude>, I<$agent_id>, I<$dbh>, [I<$start_timestamp>], [I<$description>]) >>
 

@@ -1040,12 +1040,15 @@ sub pandora_execute_alert {
 				$monitoring_event_custom_data = $custom_data;
 			}
 
+			# Reset action thresholds
+			if($alert_mode == RECOVERED_ALERT) {
+					db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+			}
+
 			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
 		} else {
 			if($alert_mode == RECOVERED_ALERT) {
-				# Reset action thresholds
 				if (defined ($alert->{'id_template_module'})) {
-					db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
 					if (defined ($module)) {
 						logger ($pa_config, "Skipping recover action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
 					} else {
@@ -5531,6 +5534,47 @@ sub pandora_cps_enabled($$) {
 }
 
 ##########################################################################
+# Returns 1 if alerts for the given agent should be inhibited, 0 otherwise.
+##########################################################################
+#sub pandora_inhibit_alerts ($$$$) {
+sub pandora_inhibit_service_alerts {
+	my ($pa_config, $module, $dbh, $depth) = @_;
+
+	return 0 if (pandora_cps_enabled($agent, $module) !== 0);
+
+	# Are any of the parent's critical alerts fired?	
+	my $count = 0;
+
+	$service = get_db_value(
+		$dbh,
+		'SELECT id_service FROM tservice_element WHERE id_agente_modulo = ?',
+		$id_element
+	);
+
+	return 0 unless defined($id_service);
+
+	$count = get_db_value (
+		$dbh,
+		'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+		WHERE tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+		AND tagente_modulo.disabled = 0
+		AND talert_template_modules.id_alert_template = talert_templates.id
+		AND talert_template_modules.times_fired > 0
+		AND talert_templates.priority = 4
+		AND id_agente_modulo.custom_integer_1 = ?',
+		$id_service
+	);
+
+	return 1 if (defined($count) && $count > 0);
+	
+	# Check the parent's parent next
+	$service = get_db_single_row ($dbh, 'SELECT * FROM tservice WHERE id_agente = ?', $agent->{'id_parent'});
+	return 0 unless defined ($agent);
+
+	return pandora_inhibit_alerts ($pa_config, $agent, $dbh, $depth + 1);
+}
+
+##########################################################################
 =head2 C<< save_agent_position (I<$pa_config>, I<$current_longitude>, I<$current_latitude>, 
 		 I<$current_altitude>, I<$agent_id>, I<$dbh>, [I<$start_timestamp>], [I<$description>]) >>
 
@@ -6679,40 +6723,40 @@ sub pandora_get_os ($$) {
 		return 10;
 	}
 	
-	if ($os =~ m/Windows.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Windows/i) {
 		return 9;
 	}
-	if ($os =~ m/Cisco.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Cisco/i) {
 		return 7;
 	}
-	if ($os =~ m/SunOS.*?(?=\(\d+%\))/i || $os =~ m/Solaris.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/SunOS/i || $os =~ m/Solaris/i) {
 		return 2;
 	}
-	if ($os =~ m/AIX.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/AIX/i) {
 		return 3;
 	}
-	if ($os =~ m/HP\-UX.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/HP\-UX/i) {
 		return 5;
 	}
-	if ($os =~ m/Apple.*?(?=\(\d+%\))/i || $os =~ m/Darwin.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Apple/i || $os =~ m/Darwin/i) {
 		return 8;
 	}
-	if ($os =~ m/Linux.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Linux/i) {
 		return 1;
 	}
-	if ($os =~ m/Enterasys.*?(?=\(\d+%\))/i || $os =~ m/3com.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Enterasys/i || $os =~ m/3com/i) {
 		return 11;
 	}
-	if ($os =~ m/Octopods.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Octopods/i) {
 		return 13;
 	}
-	if ($os =~ m/embedded.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/embedded/i) {
 		return 14;
 	}
-	if ($os =~ m/android.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/android/i) {
 		return 15;
 	}
-	if ($os =~ m/BSD.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/BSD/i) {
 		return 4;
 	}
 		

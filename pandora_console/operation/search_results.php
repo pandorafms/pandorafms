@@ -205,7 +205,7 @@ ui_print_standard_header(
 );
 
 $only_count = false;
-hd($searchTab);
+
 switch ($searchTab) {
     case 'main':
         $only_count = true;

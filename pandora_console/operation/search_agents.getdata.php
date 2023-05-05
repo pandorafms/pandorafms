@@ -136,7 +136,13 @@ if ($searchAgents) {
 
     $select = 'SELECT DISTINCT(t1.id_agente), t1.ultimo_contacto, t1.nombre, t1.comentarios, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias, t1.quiet';
     if (is_array($order)) {
-        $limit = ' ORDER BY '.$order['field'].' '.$order['direction'];
+        // Datatables offset, limit.
+        $start = get_parameter('start', 0);
+        $length = get_parameter(
+            'length',
+            $config['block_size']
+        );
+        $limit = ' ORDER BY '.$order['field'].' '.$order['direction'].' LIMIT '.$length.' OFFSET '.$start;
     }
 
     $query = $select.$sql;

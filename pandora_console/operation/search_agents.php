@@ -64,6 +64,11 @@ try {
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
         ]
     );
+
+    html_print_action_buttons(
+        '',
+        [ 'type' => 'data_table' ]
+    );
 } catch (Exception $e) {
     echo $e->getMessage();
 }

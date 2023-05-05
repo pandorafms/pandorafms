@@ -76,14 +76,10 @@ if (enterprise_installed()) {
 
 html_print_table($table);
 
-if ($searchAgents && $totalAgents > 0) {
+if ($searchAgents) {
     echo $list_agents;
 
-    echo "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(
-        __('Show %s of %s. View all matches'),
-        $count_agents_main,
-        $totalAgents
-    ).'</a>';
+    echo "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".__('View all matches').'</a>';
 }
 
 

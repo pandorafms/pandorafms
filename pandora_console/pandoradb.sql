@@ -572,6 +572,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   `fires_max` INT UNSIGNED DEFAULT 0,
   `module_action_threshold` INT NOT NULL DEFAULT 0,
   `last_execution` BIGINT NOT NULL DEFAULT 0,
+  `recovered` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
@@ -2610,7 +2611,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`)
         ON DELETE CASCADE ON UPDATE CASCADE		
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
@@ -4237,7 +4238,7 @@ CREATE TABLE `tevent_sound` (
     `name` TEXT NULL,
     `sound` TEXT NULL,
     `active` TINYINT NOT NULL DEFAULT '1',
-PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tsesion_filter`
@@ -4251,7 +4252,7 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `type` TEXT NULL,
     `user` TEXT NULL,
     PRIMARY KEY (`id_filter`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 
 CREATE TABLE IF NOT EXISTS `twelcome_tip` (

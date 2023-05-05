@@ -55,15 +55,24 @@ if (check_acl($config['id_user'], 0, 'ER') === false
     return;
 }
 
-ob_start('ui_process_page_head');
-ob_start();
 echo '<html>';
 echo '<head>';
-
-echo '<title>'.__('Accoustic console').'</title>';
-ui_require_css_file('wizard');
-ui_require_css_file('discovery');
 ?>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title><?php echo __('Accoustic console'); ?>)</title>
+<link rel="stylesheet" href="../../include/styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/select2.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/wizard.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/discovery.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<script type='text/javascript' src='../../include/javascript/pandora_ui.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/jquery.current.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/jquery.pandora.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/jquery-ui.min.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/select2.min.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/pandora.js?v=<?php echo $config['current_package']; ?>'></script>
+
 <style type='text/css'>
     * {
         margin: 0;

@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.770";
-my $pandora_build = "230428";
+my $pandora_build = "230505";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -371,9 +371,6 @@ sub pandora_load_config {
 
 	# SNMP enterprise retries (for braa)
 	$pa_config->{"braa_retries"} = 3; # 5.0
-	
-	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
-	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 
 	# Winexe allows to exec commands on remote windows systems (optional)
 	$pa_config->{"winexe"} = "/usr/bin/winexe";
@@ -926,9 +923,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^braa_retries\s+([0-9]*)/i) {
 			$pa_config->{"braa_retries"} = clean_blank($1);
-		}
-		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
-			$pa_config->{'xprobe2'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^winexe\s(.*)/i) {
 			$pa_config->{'winexe'}= clean_blank($1);

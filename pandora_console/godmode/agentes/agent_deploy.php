@@ -1,10 +1,10 @@
 <?php
 /**
- * Static page to lock access to console
+ * Agents deploy view.
  *
- * @category   Wizard
+ * @category   Agents deploy
  * @package    Pandora FMS
- * @subpackage Applications.VMware
+ * @subpackage Opensource
  * @version    1.0.0
  * @license    See below
  *
@@ -27,47 +27,45 @@
  */
 
 // Begin.
-ui_require_css_file('maintenance');
-?>
-<html>
-<body>
+global $config;
 
-    <div class="responsive center padding-6">
-        <p><?php echo __('Maintenance tasks in progress'); ?></p>
-        <br>
-        <br>
+require_once $config['homedir'].'/include/class/AgentDeployWizard.class.php';
 
-        <?php
-        html_print_image(
-            'images/pandora_tinylogo.png',
-            false,
-            ['class' => 'responsive flex margn']
-        );
-        html_print_image(
-            'images/maintenance.png',
-            false,
-            [
-                'class' => 'responsive',
-                'width' => 800,
-            ]
-        );
-        ?>
+$ajaxPage = 'godmode/agentes/agent_deploy';
 
-        <br>
-        <br>
-        <p><?php echo __('You will be automatically redirected when all tasks finish'); ?></p>
-    </div>
-</body>
+// Control call flow.
+try {
+    // User access and validation is being processed on class constructor.
+    $adw = new AgentDeployWizard($ajaxPage);
+} catch (Exception $e) {
+    if (is_ajax()) {
+        echo json_encode(['error' => '[AgentDeployWizard]'.$e->getMessage() ]);
+        exit;
+    } else {
+        echo '[AgentDeployWizard]'.$e->getMessage();
+    }
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        setTimeout(
-            function() {
-                location.reload();
-            },
-            10000
-        );
-    })
-</script>
+    // Stop this execution, but continue 'globally'.
+    return;
+}
 
-</html>
+// AJAX controller.
+if (is_ajax()) {
+    $method = get_parameter('method');
+
+    if (method_exists($adw, $method) === true) {
+        if ($adw->ajaxMethod($method) === true) {
+            $adw->{$method}();
+        } else {
+            $adw->error('Unavailable method.');
+        }
+    } else {
+        $adw->error('Method not found. ['.$method.']');
+    }
+
+    // Stop any execution.
+    exit;
+} else {
+    // Run.
+    $adw->run();
+}

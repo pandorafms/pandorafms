@@ -357,7 +357,6 @@ server_dependencies=" \
     java \
     bind-utils \
     whois \
-    http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.artica.es/centos8/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -385,7 +384,6 @@ execute_cmd "dnf install -y $oracle_dependencies" "Installing Oracle Instant cli
 
 #ipam dependencies
 ipam_dependencies=" \
-    http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     perl(NetAddr::IP) \
     perl(Sys::Syslog) \
     perl(DBI) \

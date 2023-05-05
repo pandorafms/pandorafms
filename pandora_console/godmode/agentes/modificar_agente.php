@@ -419,6 +419,9 @@ ui_toggle(
     'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
 );
 
+
+require_once 'godmode/agentes/agent_deploy.php';
+
 // Data table.
 $selected = true;
 $selectNameUp = false;
@@ -1025,23 +1028,35 @@ if ($agents !== false) {
 
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Create agent button.
-    echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+    echo '<form id="create-agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente"></form>';
+
+    $buttons = html_print_button(
+        __('Create agent'),
+        'crt-2',
+        false,
+        '',
+        [
+            'icon'    => 'next',
+            'onClick' => "document.getElementById('create-agent').submit();",
+        ],
+        true
+    ).html_print_button(
+        __('Deploy agent'),
+        'modal_deploy_agent',
+        false,
+        '',
+        [],
+        true
+    );
 
     html_print_action_buttons(
-        html_print_submit_button(
-            __('Create agent'),
-            'crt-2',
-            false,
-            [ 'icon' => 'next' ],
-            true
-        ),
+        $buttons,
         [
             'type'          => 'data_table',
             'class'         => 'fixed_action_buttons',
             'right_content' => $tablePagination,
         ]
     );
-    echo '</form>';
 }
 
 ?>

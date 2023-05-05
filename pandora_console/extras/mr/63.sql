@@ -1,5 +1,8 @@
 START TRANSACTION;
 
+ALTER TABLE tpolicy_group_agents CONVERT TO CHARACTER SET UTF8MB4;
+ALTER TABLE tevent_sound CONVERT TO CHARACTER SET UTF8MB4;
+ALTER TABLE tsesion_filter CONVERT TO CHARACTER SET UTF8MB4;
 CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `id_filter` INT NOT NULL AUTO_INCREMENT,
     `id_name` TEXT NULL,
@@ -34,5 +37,7 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
     `graph_type` INT NULL,
     PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+ALTER TABLE `talert_template_module_actions` ADD COLUMN `recovered` TINYINT NOT NULL DEFAULT 0;
 
 COMMIT;

@@ -14,4 +14,6 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+ALTER TABLE `talert_template_module_actions` ADD COLUMN `recovered` TINYINT NOT NULL DEFAULT 0;
+
 COMMIT;

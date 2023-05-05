@@ -4010,7 +4010,7 @@ function ui_print_datatable(array $parameters)
                     $(".datatable-msg-info-'.$table_id.'").hide();
                     $("table#'.$table_id.'").show();
                     $("div.dataTables_paginate").show();
-                    $("div.dataTables_info").show();
+                    $("div.dataTables_info").hide();
                     $("div.dataTables_length").show();
                     $("div.dt-buttons").show();
 

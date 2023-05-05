@@ -1043,7 +1043,7 @@ sub get_db_rows_node ($$$;@) {
 														$pa_config->{'dbuser'},
 														$pa_config->{'dbpass'});
 														
-			my $msg = "Cannot connect to node database: ".$node->{'dbhost'}.": ".$@;
+			my $msg = "Cannot connect to node database: ".$node->{'dbhost'}.". Please check node credentials.";
 			logger ($pa_config, "[ERROR] ".$msg, 3);
 			PandoraFMS::Core::pandora_event ($pa_config, $msg, 0, 0, 4, 0, 0, 'error', 0, $dbh);			
 			db_disconnect($dbh) if defined($dbh);

@@ -322,9 +322,50 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $agent_name = db_get_value('nombre', 'tagente', 'id_agente', $module['id_agente']);
 
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
-        // Actions table
         echo '<div class="actions_treeview flex flex-evenly">';
-        echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
+
+        if (is_metaconsole() === true) {
+            echo "<form id='module-table-redirection' method='POST' action='".$console_url."index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module'>";
+
+            parse_str($url_hash, $url_hash_array);
+
+            html_print_input_hidden(
+                'id_agente',
+                $module['id_agente'],
+                false
+            );
+            html_print_input_hidden(
+                'edit_module',
+                1,
+                false
+            );
+            html_print_input_hidden(
+                'id_agent_module',
+                $module['id_agente_modulo'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash',
+                $url_hash_array['loginhash'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash_data',
+                $url_hash_array['loginhash_data'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash_user',
+                $url_hash_array['loginhash_user'],
+                false
+            );
+
+            echo '</form>';
+            echo "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"module-table-redirection\").submit();' href='#'>";
+        } else {
+            echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
+        }
+
         html_print_submit_button(
             __('Go to module edition'),
             'upd_button',

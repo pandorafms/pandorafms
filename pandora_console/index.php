@@ -755,7 +755,7 @@ if (isset($config['id_user']) === false) {
         header('Location: '.ui_get_full_url('index.php'.$redirect_url));
         exit;
         // Always exit after sending location headers.
-    } else if (isset($_GET['loginhash']) === true) {
+    } else if (isset($_GET['loginhash']) === true || isset($_POST['loginhash']) === true) {
         // Hash login process.
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));

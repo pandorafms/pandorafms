@@ -1301,8 +1301,7 @@ if (is_ajax()) {
 }
 
 $id_agente = (int) get_parameter('id_agente', 0);
-hd("idagente", true);
-hd($id_agent, true);
+
 if (empty($id_agente)) {
     return;
 }

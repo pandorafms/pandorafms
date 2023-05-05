@@ -84,8 +84,6 @@ html_print_input_hidden('update_config', 1);
 // Test.
 $row = [];
 $test_start = '<span id="test-gotty-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$test_start .= '<span id="test-gotty-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$test_start .= '<span id="test-gotty-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
 $test_start .= '&nbsp;<span id="test-gotty-message" class="invisible"></span>';
 $row['gotty_test'] = html_print_label_input_block(
     __('Test'),
@@ -100,7 +98,8 @@ $row['gotty_test'] = html_print_label_input_block(
             'style' => 'width: 115px;',
         ],
         true
-    ).$test_start
+    ).$test_start,
+    ['div_class' => 'inline_flex row']
 );
 
 $t->data['gotty_test'] = $row;
@@ -138,24 +137,18 @@ $handle_test_js = "var handleTest = function (event) {
         ws_url = ws_proxy_url;
     }
 
-    var hideLoadingImage = function () {
-        $('span#test-gotty-spinner').hide();
-    }
     var showLoadingImage = function () {
-        $('span#test-gotty-spinner').show();
+        $('#button-test-gotty').children('div').attr('class', 'subIcon cog rotation secondary mini');
     }
-    var hideSuccessImage = function () {
-        $('span#test-gotty-success').hide();
-    }
+
     var showSuccessImage = function () {
-        $('span#test-gotty-success').show();
+        $('#button-test-gotty').children('div').attr('class', 'subIcon tick secondary mini');
     }
-    var hideFailureImage = function () {
-        $('span#test-gotty-failure').hide();
-    }
+
     var showFailureImage = function () {
-        $('span#test-gotty-failure').show();
+        $('#button-test-gotty').children('div').attr('class', 'subIcon fail secondary mini');
     }
+
     var hideMessage = function () {
         $('span#test-gotty-message').hide();
     }
@@ -168,26 +161,22 @@ $handle_test_js = "var handleTest = function (event) {
 
     var errorMessage = '".__('WebService engine has not been started, please check documentation.')."';
 
-    hideSuccessImage();
-    hideFailureImage();
+
     hideMessage();
-    
     showLoadingImage();
     
     var ws = new WebSocket(ws_url);
     // Catch errors.
 
     ws.onerror = () => {
+        showFailureImage();
         changeTestMessage(errorMessage);
-        hideLoadingImage();
         showMessage();
         ws.close();
     };
       
     ws.onopen = () => {
-        console.log('SSH connected');
         showSuccessImage();
-        hideLoadingImage();
         hideMessage();   
         ws.close();
     };

@@ -311,7 +311,7 @@ $data[2] .= html_print_button(
     __('SNMP Walk'),
     'snmp_walk',
     false,
-    'snmpBrowserWindow()',
+    'snmpBrowserWindow('.$id_agente.')',
     [ 'mode' => 'link' ],
     true
 );

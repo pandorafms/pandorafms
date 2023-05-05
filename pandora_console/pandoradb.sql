@@ -572,6 +572,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   `fires_max` INT UNSIGNED DEFAULT 0,
   `module_action_threshold` INT NOT NULL DEFAULT 0,
   `last_execution` BIGINT NOT NULL DEFAULT 0,
+  `recovered` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,

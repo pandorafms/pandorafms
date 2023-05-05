@@ -804,11 +804,6 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
 				 internal_counter = 0 WHERE id = ?', $id);
 
-		# Reset action thresholds
-		if (defined ($alert->{'id_template_module'})) {
-			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
-		}
-
 		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
 				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
@@ -919,7 +914,7 @@ sub pandora_execute_alert {
 			@actions = get_db_rows ($dbh,
 				'SELECT taa.name as action_name, taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
 					tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
-					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
+					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution, tatma.recovered
 				FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
 				WHERE tatma.id_alert_action = taa.id
 					AND taa.id_alert_command = tac.id
@@ -1030,10 +1025,13 @@ sub pandora_execute_alert {
 		
 		# Check the action threshold (template_action_threshold takes precedence over action_threshold)
 		my $threshold = 0;
-		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});
+		my $recovered = 0;
+		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});	
+		$action->{'recovered'} = 0 unless defined ($action->{'recovered'});
+
 		$threshold = $action->{'action_threshold'} if (defined ($action->{'action_threshold'}) && $action->{'action_threshold'} > 0);
 		$threshold = $action->{'module_action_threshold'} if (defined ($action->{'module_action_threshold'}) && $action->{'module_action_threshold'} > 0);
-		if (time () >= ($action->{'last_execution'} + $threshold)) {
+		if ((time () >= ($action->{'last_execution'} + $threshold)) || ($alert_mode == RECOVERED_ALERT && $action->{'recovered'} == 0)) {
 			my $monitoring_event_custom_data = '';
 
 			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));
@@ -1043,13 +1041,33 @@ sub pandora_execute_alert {
 				$event_generated = 1;
 				$monitoring_event_custom_data = $custom_data;
 			}
+			
+				pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
 
-			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
-		} else {
-			if (defined ($module)) {
-				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
+			if($alert_mode == RECOVERED_ALERT) {
+				# Reset action thresholds and set recovered
+				if (defined ($alert->{'id_template_module'})) {
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+				}
 			} else {
-				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "'.", 10);
+					# Action executed again, set recovered to 0.
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+			}
+		} else {
+			if($alert_mode == RECOVERED_ALERT) {
+				if (defined ($alert->{'id_template_module'})) {
+					if (defined ($module)) {
+						logger ($pa_config, "Skipping recover action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
+					} else {
+						logger ($pa_config, "Skipping recover action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "'.", 10);
+					}
+				}
+			} else {		
+				if (defined ($module)) {
+					logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
+				} else {
+					logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "'.", 10);
+				}
 			}
 		}
 	}
@@ -6707,6 +6725,7 @@ sub pandora_get_os ($$) {
 	if ($os =~ m/BSD.*?(?=\(\d+%\))/i) {
 		return 4;
 	}
+		
 		
 	# Search for a custom OS
 	my $os_id = get_db_value ($dbh, 'SELECT id_os FROM tconfig_os WHERE name LIKE ?', '%' . $os . '%');

@@ -4296,6 +4296,7 @@ CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
 CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
   `id_filter` INT NOT NULL AUTO_INCREMENT,
   `id_name` TEXT NULL,
+  `id_group_filter` TEXT NULL,
   `id_search_mode` INT NULL,
   `order` VARCHAR(45) NULL,
   `search` VARCHAR(255) NULL,

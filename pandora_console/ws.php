@@ -116,7 +116,7 @@ if (substr($os, 0, 3) !== 'win') {
 
         // Common.
         $base_cmd = 'nohup "'.$config['gotty'].'" '.$gotty_creds;
-        $base_cmd .= ' --permit-arguments -a 127.0.0.1 -w ';
+        $base_cmd .= ' --permit-arguments -a '.$config['gotty_host'].' -w ';
 
         // Launch gotty - SSH.
         $cmd = $base_cmd.' --port '.$config['gotty_ssh_port'];

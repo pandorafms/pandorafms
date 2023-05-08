@@ -301,7 +301,7 @@ class WSManager extends WebSocketServer
         \db_pandora_audit(
             AUDIT_LOG_WEB_SOCKETS,
             'WebSocket connection started',
-            $user->account->idUser
+            'N/A'
         );
         $this->stderr('ONLINE '.$user->address.'('.$user->account->idUser.')');
 
@@ -424,7 +424,7 @@ class WSManager extends WebSocketServer
             \db_pandora_audit(
                 AUDIT_LOG_WEB_SOCKETS,
                 'WebSocket connection finished',
-                $user->account->idUser
+                'N/A'
             );
 
             $this->stderr('OFFLINE '.$user->address.'('.$user->account->idUser.')');

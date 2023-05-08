@@ -202,7 +202,7 @@ if ($searchAgents) {
         [
             'data'            => ($agents ?? []),
             'recordsTotal'    => $totalAgents,
-            'recordsFiltered' => count($agents),
+            'recordsFiltered' => $totalAgents,
         ]
     );
 }

@@ -54,7 +54,6 @@ try {
             'columns'             => $columns,
             'column_names'        => $column_names,
             'ajax_url'            => 'operation/search_agents.getdata',
-            'ajax_postprocces'    => 'process_datatables_item(item)',
             'ajax_data'           => ['search_agents' => 1],
             'order'               => [
                 'field'     => 'alias',
@@ -65,10 +64,7 @@ try {
         ]
     );
 
-    html_print_action_buttons(
-        '',
-        [ 'type' => 'data_table' ]
-    );
+    html_print_action_buttons('');
 } catch (Exception $e) {
     echo $e->getMessage();
 }

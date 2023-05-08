@@ -6933,3 +6933,38 @@ function html_print_go_top()
 
     return $output;
 }
+
+/**
+ * Render a code picker fragment with default Pandora styles.
+ *
+ * @param string  $id,
+ * @param string  $content      Content.
+ * @param string  $classes      Classes for code picker.
+ * @param boolean $single_line  If true, code picker will be displayed as a single line of code.
+ * @param boolean $return       Return output if set to true.
+ *
+ * @return string
+ */
+function html_print_code_picker(
+    string $id,
+    string $content='',
+    string $classes='',
+    bool $single_line=false,
+    bool $return=false
+) {
+    $single_line_class = '';
+
+    if ($single_line === true) {
+        $single_line_class = 'single-line ';
+    }
+
+    $output = '<div class="code-fragment '.$single_line_class.$classes.'">';
+    $output .= '<pre style="margin: 0;"><code class="code-font" id="'.$id.'" style="display: block; white-space: pre-wrap;">'.$content.'</code></pre>';
+    $output .= '</div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}

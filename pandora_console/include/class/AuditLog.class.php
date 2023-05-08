@@ -178,7 +178,7 @@ class AuditLog extends HTML
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 99%',
+                    'style'               => 'width: 100%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,

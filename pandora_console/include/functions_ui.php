@@ -3461,28 +3461,71 @@ function ui_progress_extend(
  * Generate needed code to print a datatables jquery plugin.
  *
  * @param array $parameters All desired data using following format:
- * [
- *   'print' => true (by default printed)
- *   'id' => datatable id.
- *   'class' => datatable class.
- *   'style' => datatable style.
- *   'order' => [
- *      'field' => column name
- *      'direction' => asc or desc
- *    ],
- *   'default_pagination' => integer, default pagination is set to block_size
- *   'ajax_url' => 'include/ajax.php'  ajax_url.
- *   'ajax_data' => [ operation => 1 ] extra info to be sent.
- *   'ajax_postprocess' => a javscript function to postprocess data received
- *                         by ajax call. It is applied foreach row and must
- *                         use following format:
- * * [code]
- * * function (item) {
- * *       // Process received item, for instance, name:
- * *       tmp = '<span class=label>' + item.name + '</span>';
- * *       item.name = tmp;
- * *   }
- * * [/code]
+ *
+ * ```php
+ * $parameters = [
+ * // JS Parameters
+ * 'serverside' => true,
+ * 'paging' => true,
+ * 'default_pagination' => $config['block_size'],
+ * 'searching' => false,
+ * 'dom_elements' => "plfrtiB",
+ * 'pagination_options' => [default_pagination, 5, 10, 20, 100, 200, 500, 1000, "All"],
+ * 'ordering' => true,
+ * 'order' => [[0, "asc"]], //['field' => 'column_name', 'direction' => 'asc/desc']
+ * 'zeroRecords' => "No matching records found",
+ * 'emptyTable' => "No data available in table",
+ * 'no_sortable_columns' => [], //Allows the column name (db) from "columns" parameter
+ * 'csv_field_separator' => ",",
+ * 'csv_header' => true,
+ * 'mini_csv' => false,
+ * 'mini_pagination' => false,
+ * 'mini_search' => false,
+ * 'drawCallback' => undefined, //'console.log(123),'
+ * 'data_element' => undefined, //Rows processed
+ * 'ajax_postprocess' => undefined, //'process_datatables_item(item)'
+ * 'ajax_data' => undefined, //Extra data to be sent ['field1' => 1, 'field2 => 0]
+ * 'ajax_url' => undefined,
+ * 'caption' => undefined,
+ *
+ * // PHP Parameters
+ * 'id' => undefined, //Used for table and form id,
+ * 'columns' =>,
+ * 'column_names' =>,
+ * 'filter_main_class' =>,
+ * 'toggle_collapsed' =>true,
+ * 'search_button_class' => 'sub filter',
+ * 'csv' =>=1,
+ * 'form' =>
+ * ..[
+ * ....'id'            => $form_id,
+ * ....'class'         => 'flex-row',
+ * ....'style'         => 'width: 100%,',
+ * ....'js'            => '',
+ * ....'html'          => $filter,
+ * ....'inputs'        => [],
+ * ....'extra_buttons' => $buttons,
+ * ..],
+ * 'no_toggle'     => false,
+ * 'form_html' => undefined,
+ * 'toggle_collapsed' => true,
+ * 'class' => "", //Datatable class.
+ * 'style' => "" ,//Datatable style.
+ * 'return' => false,
+ * 'print' => true,
+ * ]
+ *
+ * ```
+ *
+ * ```php
+ * ajax_postprocess => a javscript function to postprocess data received
+ *                        by ajax call. It is applied foreach row and must
+ *                        use following format:
+ * function (item) {
+ *       // Process received item, for instance, name:
+ *       tmp = '<span class=label>' + item.name + '</span>';
+ *       item.name = tmp;
+ *   }
  *   'columns_names' => [
  *      'column1'  :: Used as th text. Direct text entry. It could be array:
  *      OR
@@ -3499,7 +3542,6 @@ function ui_progress_extend(
  *      'column2',
  *      ...
  *   ],
- *   'no_sortable_columns' => [ indexes ] 1,2... -1 etc. Avoid sorting.
  *   'form' => [
  *      'html' => 'html code' a directly defined inputs in HTML.
  *      'extra_buttons' => [
@@ -3531,12 +3573,7 @@ function ui_progress_extend(
  *      ]
  *   ],
  *   'extra_html' => HTML content to be placed after 'filter' section.
- *   'drawCallback' => function to be called after draw. Sample in:
- *            https://datatables.net/examples/advanced_init/row_grouping.html
- * ]
- *   'zeroRecords' => Message when zero records obtained from filter.(Leave blank for default).
- *   'emptyTable' => Message when table data empty.(Leave blank for default).
- * End.
+ * ```
  *
  * @return string HTML code with datatable.
  * @throws Exception On error.
@@ -3552,6 +3589,9 @@ function ui_print_datatable(array $parameters)
         $table_id = uniqid('datatable_');
         $form_id = uniqid('datatable_filter_');
     }
+
+    $parameters['table_id'] = $table_id;
+    $parameters['form_id'] = $form_id;
 
     if (!isset($parameters['columns']) || !is_array($parameters['columns'])) {
         throw new Exception('[ui_print_datatable]: You must define columns for datatable');
@@ -3572,10 +3612,6 @@ function ui_print_datatable(array $parameters)
         $parameters['default_pagination'] = $config['block_size'];
     }
 
-    if (!isset($parameters['paging'])) {
-        $parameters['paging'] = true;
-    }
-
     if (!isset($parameters['filter_main_class'])) {
         $parameters['filter_main_class'] = '';
     }
@@ -3584,13 +3620,9 @@ function ui_print_datatable(array $parameters)
         $parameters['toggle_collapsed'] = true;
     }
 
-    $no_sortable_columns = json_encode([]);
-    if (isset($parameters['no_sortable_columns'])) {
-        $no_sortable_columns = json_encode($parameters['no_sortable_columns']);
-    }
-
     if (!is_array($parameters['order'])) {
-        $order = '0, "asc"';
+        $order = 0;
+        $direction = 'asc';
     } else {
         if (!isset($parameters['order']['direction'])) {
             $direction = 'asc';
@@ -3609,45 +3641,35 @@ function ui_print_datatable(array $parameters)
             }
         }
 
-        $order .= ', "'.$parameters['order']['direction'].'"';
+        $direction = $parameters['order']['direction'];
     }
 
-    if (!isset($parameters['ajax_data'])) {
-        $parameters['ajax_data'] = '';
+    $parameters['order']['order'] = $order;
+    $parameters['order']['direction'] = $direction;
+
+    foreach ($parameters['no_sortable_columns'] as $key => $find) {
+        $found = array_search(
+            $parameters['no_sortable_columns'][$key],
+            $parameters['columns']
+        );
+
+        if ($found !== false) {
+            unset($parameters['no_sortable_columns'][$key]);
+            array_push($parameters['no_sortable_columns'], $found);
+        }
+
+        if (is_int($parameters['no_sortable_columns'][$key]) === false) {
+            unset($parameters['no_sortable_columns'][$key]);
+        }
     }
 
-    $search_button_class = 'sub filter';
+    $parameters['csvTextInfo'] = __('Export current page to CSV');
+    $parameters['csvFileTitle'] = sprintf(__('export_%s_current_page_%s'), $table_id, date('Y-m-d'));
+
     if (isset($parameters['search_button_class'])) {
         $search_button_class = $parameters['search_button_class'];
-    }
-
-    if (isset($parameters['pagination_options'])) {
-        $pagination_options = $parameters['pagination_options'];
     } else {
-        $pagination_options = [
-            [
-                $parameters['default_pagination'],
-                5,
-                10,
-                25,
-                100,
-                200,
-                500,
-                1000,
-                -1,
-            ],
-            [
-                $parameters['default_pagination'],
-                5,
-                10,
-                25,
-                100,
-                200,
-                500,
-                1000,
-                'All',
-            ],
-        ];
+        $search_button_class = 'sub filter';
     }
 
     if (isset($parameters['datacolumns']) === false
@@ -3660,16 +3682,12 @@ function ui_print_datatable(array $parameters)
         $parameters['csv'] = 1;
     }
 
-    $dom_elements = '"plfrtiB"';
-    if (isset($parameters['dom_elements'])) {
-        $dom_elements = '"'.$parameters['dom_elements'].'"';
-    }
-
     $filter = '';
     // Datatable filter.
     if (isset($parameters['form']) && is_array($parameters['form'])) {
         if (isset($parameters['form']['id'])) {
             $form_id = $parameters['form']['id'];
+            $parameters['form_id'] = $form_id;
         }
 
         if (isset($parameters['form']['class'])) {
@@ -3787,10 +3805,13 @@ function ui_print_datatable(array $parameters)
         )
     );
     $processing .= '</div>';
+    $parameters['processing'] = $processing;
 
     $zeroRecords = isset($parameters['zeroRecords']) === true ? $parameters['zeroRecords'] : __('No matching records found');
     $emptyTable = isset($parameters['emptyTable']) === true ? $parameters['emptyTable'] : __('No data available in table');
 
+    $parameters['zeroRecords'] = $zeroRecords;
+    $parameters['emptyTable'] = $emptyTable;
     // Extra html.
     $extra = '';
     if (isset($parameters['extra_html']) && !empty($parameters['extra_html'])) {
@@ -3799,8 +3820,8 @@ function ui_print_datatable(array $parameters)
 
     // Base table.
     $table = '<table id="'.$table_id.'" ';
-    $table .= 'class="'.$parameters['class'].' invisible"';
-    $table .= 'style="'.$parameters['style'].'">';
+    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'style="box-sizing: border-box;'.$parameters['style'].'">';
     $table .= '<thead><tr class="datatables_thead_tr">';
 
     if (isset($parameters['column_names'])
@@ -3827,335 +3848,60 @@ function ui_print_datatable(array $parameters)
     }
 
     $table .= '</tr></thead>';
-
-    if (isset($parameters['data_element']) === true) {
-        $table .= '<tbody>';
-        foreach ($parameters['data_element'] as $row) {
-            $table .= '<tr>';
-            foreach ($row as $td_data) {
-                $table .= '<td>'.$td_data.'</td>';
-            }
-
-            $table .= '</tr>';
-        }
-
-        $table .= '</tbody>';
-
-        $js = '<script>
-            $.fn.dataTable.ext.classes.sPageButton = "pandora_pagination mini-pandora-pagination"
-            var table = $("#'.$table_id.'").DataTable({
-                "dom": "'.$parameters['dom_elements'].'"
-            });
-            $("div.spinner-fixed").hide();
-            $("table#'.$table_id.'").removeClass("invisible");
-            $("#'.$table_id.'_filter > label > input").addClass("mini-search-input");
-            if (table.page.info().pages == 1) {
-                $("#'.$table_id.'_paginate").hide();
-            }
-        </script>';
-    }
-
     $table .= '</table>';
 
-    $pagination_class = 'pandora_pagination';
-    if (!empty($parameters['pagination_class'])) {
-        $pagination_class = $parameters['pagination_class'];
+    $parameters['ajax_url_full'] = ui_get_full_url('ajax.php', false, false, false);
+
+    $parameters['spinnerLoading'] = html_print_image(
+        'images/spinner.gif',
+        true,
+        [
+            'id'    => $form_id.'_loading',
+            'class' => 'loading-search-datatables-button',
+        ]
+    );
+
+    $language = substr(get_user_language(), 0, 2);
+    if (is_metaconsole() === false) {
+        $parameters['language'] = 'include/javascript/i18n/dataTables.'.$language.'.json';
+    } else {
+        $parameters['language'] = '../../include/javascript/i18n/dataTables.'.$language.'.json';
     }
 
-    $columns = '';
-    for ($i = 1; $i <= (count($parameters['columns']) - 3); $i++) {
-        if ($i != (count($parameters['columns']) - 3)) {
-            $columns .= $i.',';
-        } else {
-            $columns .= $i;
-        }
+    $parameters['phpDate'] = date('Y-m-d');
+    $parameters['dataElements'] = json_encode($parameters['data_element']);
+
+    // * START JAVASCRIPT.
+    if (is_metaconsole() === false) {
+        $file_path = ui_get_full_url('include/javascript/datatablesFunction.js');
+    } else {
+        $file_path = ui_get_full_url('../../include/javascript/datatablesFunction.js');
     }
 
-    $export_columns = '';
-    if (isset($parameters['csv_exclude_latest']) === true
-        && $parameters['csv_exclude_latest'] === true
-    ) {
-        $export_columns = ',columns: \'th:not(:last-child)\'';
-    }
+    $file_content = file_get_contents($file_path);
+    $json_data = json_encode($parameters);
+    $json_config = json_encode($config);
 
-    if (isset($parameters['data_element']) === false || isset($parameters['print_pagination_search_csv'])) {
-        if (isset($parameters['ajax_url'])) {
-            $type_data = 'ajax: {
-                url: "'.ui_get_full_url('ajax.php', false, false, false).'",
-                type: "POST",
-                dataSrc: function (json) {
-                    if($("#'.$form_id.'_search_bt") != undefined) {
-                        $("#'.$form_id.'_loading").remove();
-                    }
+    $js = '<script>';
+    $js .= 'var dt = '.$json_data.';';
+    $js .= 'var config = '.$json_config.';';
+    $js .= '</script>';
 
-                    if (json.error) {
-                        console.error(json.error);
-                        $("#error-'.$table_id.'").html(json.error);
-                        $("#error-'.$table_id.'").dialog({
-                            title: "Filter failed",
-                            width: 630,
-                            resizable: true,
-                            draggable: true,
-                            modal: false,
-                            closeOnEscape: true,
-                            buttons: {
-                                "Ok" : function () {
-                                    $(this).dialog("close");
-                                }
-                            }
-                        }).parent().addClass("ui-state-error");
-                    } else {';
-
-            if (isset($parameters['ajax_return_operation']) === true
-                && empty($parameters['ajax_return_operation']) === false
-                && isset($parameters['ajax_return_operation_function']) === true
-                && empty($parameters['ajax_return_operation_function']) === false
-            ) {
-                $type_data .= '
-            if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
-                '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
-            }
-        ';
-            }
-
-            if (isset($parameters['ajax_postprocess'])) {
-                $type_data .= '
-                    if (json.data) {
-                        json.data.forEach(function(item) {
-                            '.$parameters['ajax_postprocess'].'
-                        });
-                    } else {
-                        json.data = {};
-                    }';
-            }
-
-            $type_data .= '
-                        return json.data;
-                    }
-                },
-                data: function (data) {
-                    if($("#button-'.$form_id.'_search_bt") != undefined) {
-                        var loading = \''.html_print_image(
-                        'images/spinner.gif',
-                        true,
-                        [
-                            'id'    => $form_id.'_loading',
-                            'class' => 'loading-search-datatables-button',
-                        ]
-                    ).'\';
-                        $("#button-'.$form_id.'_search_bt").parent().append(loading);
-                    }
-
-                    inputs = $("#'.$form_id.' :input");
-
-                    values = {};
-                    inputs.each(function() {
-                        values[this.name] = $(this).val();
-                    })
-
-                    $.extend(data, {
-                        filter: values,'."\n";
-
-            if (is_array($parameters['ajax_data'])) {
-                foreach ($parameters['ajax_data'] as $k => $v) {
-                    $type_data .= $k.':'.json_encode($v).",\n";
-                }
-            }
-
-            $type_data .= 'page: "'.$parameters['ajax_url'].'"
-                    });
-
-                    return data;
-                }
-            },';
-        } else {
-            $type_data = 'data: '.json_encode($parameters['data_element']).',';
-        }
-
-        $serverside = 'true';
-        if (isset($parameters['data_element'])) {
-            $serverside = 'false';
-        }
-
-        // Javascript controller.
-        $js = '<script type="text/javascript">
-        $(document).ready(function(){
-            $.fn.dataTable.ext.errMode = "none";
-            $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
-
-            var settings_datatable = {
-                drawCallback: function(settings) {';
-
-        if (!isset($parameters['data_element'])) {
-            $js .= 'if (dt_'.$table_id.'.page.info().pages > 1) {
-                        $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
-                    } else {
-                        $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
-                    }';
-        }
-
-        $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
-                    $(".datatable-msg-info-'.$table_id.'").show();
-                    $(".datatable-msg-info-'.$table_id.'").removeClass(\'invisible_important\');
-                    $("table#'.$table_id.'").hide();
-                    $("div.dataTables_paginate").hide();
-                    $("div.dataTables_info").hide();
-                    $("div.dataTables_length").hide();
-                    $("div.dt-buttons").hide();
-
-                    if (dt_'.$table_id.'.page.info().pages > 1) {
-                        $(".dataTables_paginate.paging_simple_numbers").show()
-                    }
-                } else {
-                    $(".datatable-msg-info-'.$table_id.'").hide();
-                    $("table#'.$table_id.'").show();
-                    $("div.dataTables_paginate").show();
-                    $("div.dataTables_info").show();
-                    $("div.dataTables_length").show();
-                    $("div.dt-buttons").show();
-
-                    if (dt_'.$table_id.'.page.info().pages == 1) {
-                        $(".dataTables_paginate.paging_simple_numbers").hide()
-                    }
-                }';
-
-        if (isset($parameters['drawCallback'])) {
-            $js .= $parameters['drawCallback'];
-        }
-
-        $searching = 'false';
-        if (isset($parameters['searching']) && $parameters['searching'] === true) {
-            $searching = 'true';
-        }
-
-        $ordering = 'true';
-        if (isset($parameters['ordering']) && $parameters['ordering'] === false) {
-            $ordering = 'false';
-        }
-
-        $js .= '},';
-
-        $languaje = substr(get_user_language(), 0, 2);
-
-        $js .= '
-                processing: true,
-                serverSide: '.$serverside.',
-                paging: '.$parameters['paging'].',
-                pageLength: '.$parameters['default_pagination'].',
-                searching: '.$searching.',
-                responsive: true,
-                dom: '.$dom_elements.',
-                language: {
-                    url: "/pandora_console/include/javascript/i18n/dataTables.'.$languaje.'.json",
-                    processing:"'.$processing.'",
-                    zeroRecords:"'.$zeroRecords.'",
-                    emptyTable:"'.$emptyTable.'",
-                },
-                buttons: '.$parameters['csv'].'== 1 ? [
-                    {
-                        extend: "csv",
-                        text : "'.__('Export current page to CSV').'",
-                        titleAttr: "'.__('Export current page to CSV').'",
-                        title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
-                        fieldSeparator: "'.$config['csv_divider'].'",
-                        action: function ( e, dt, node, config ) {
-                            blockResubmit(node);
-                            // Call the default csvHtml5 action method to create the CSV file
-                            $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
-                        },
-                        exportOptions : {
-                            modifier : {
-                                // DataTables core
-                                order : "current",
-                                page : "All",
-                                search : "applied"
-                            }'.$export_columns.'
-                        },
-                    }
-                ] : [],
-                lengthMenu: '.json_encode($pagination_options).',
-                columnDefs: [
-                    { className: "no-class", targets: "_all" },
-                    { bSortable: false, targets: '.$no_sortable_columns.' }
-                ],
-                ordering: '.$ordering.',
-                initComplete: function(settings, json) {
-                    // Move elements to table_action_buttons bar.
-                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-
-                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
-                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
-                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
-                    $("div.spinner-fixed").hide();
-                },
-                columns: [';
-
-        foreach ($parameters['datacolumns'] as $data) {
-            if (is_array($data)) {
-                $js .= '{data : "'.$data['text'].'",className: "'.$data['class'].'"},';
-            } else {
-                $js .= '{data : "'.$data.'",className: "no-class"},';
-            }
-        }
-
-                $js .= '
-                ],
-                order: [[ '.$order.' ]],';
-                $js .= $type_data;
-                $js .= '
-            };
-
-            dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
-
-            $("#button-'.$form_id.'_search_bt").click(function (){
-                dt_'.$table_id.'.draw().page(0)
-            });
-            ';
-
-        if (isset($parameters['caption']) === true
-            && empty($parameters['caption']) === false
-        ) {
-            $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
-            $js .= '$(".datatables_thead_tr").css("height", 0);';
-        }
-
-        if (isset($parameters['csv']) === true) {
-            $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
-                if ( indicator ) {
-                    console.log('a');
-                }
-                else {
-                    console.log('b');
-                }";
-        }
-
-        $js .= '$("table#'.$table_id.'").removeClass("invisible");
-            });';
-        $js .= '
-        $(function() {
-            $(document).on("preInit.dt", function (ev, settings) {
-                $("div.dataTables_length").hide();
-                $("div.dt-buttons").hide();
-            });
-        });
-
-        ';
-
-        $js .= '</script>';
-    }
-
-    // Order.
+    $js .= '<script>';
+    $js .= 'function '.$table_id.'(dt, config) {  ';
+    $js .= $file_content;
+    $js .= '}';
+    $js .= $table_id.'(dt, config)';
+    $js .= '</script>';
+    // * END JAVASCRIPT.
     $info_msg_arr = [];
     $info_msg_arr['message'] = $emptyTable;
     $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
 
-    $spinner = '<div class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
+    $spinner = '<div id="'.$table_id.'-spinner" class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
+
     $err_msg = '<div id="error-'.$table_id.'"></div>';
     $output = $info_msg.$err_msg.$filter.$extra.$spinner.$table.$js;
     if (is_ajax() === false) {
@@ -4179,7 +3925,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '?v='.$config['current_package'].'"/>';
+        $output .= '"/>';
         // Load tables.css.
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(

@@ -452,7 +452,7 @@ class TipsWindow
                 [
                     'id'                  => 'list_tips_windows',
                     'class'               => 'info_table',
-                    'style'               => 'width: 99%',
+                    'style'               => 'width: 100%',
                     'dom_elements'        => 'lpfti',
                     'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
                     'columns'             => $columns,

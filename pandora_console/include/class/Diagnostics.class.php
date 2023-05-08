@@ -1579,7 +1579,7 @@ class Diagnostics extends Wizard
                         [
                             'id'                  => $tableId,
                             'class'               => 'info_table caption_table',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columnNames,
                             'ajax_data'           => [
@@ -1591,6 +1591,7 @@ class Diagnostics extends Wizard
                             'no_sortable_columns' => [-1],
                             'caption'             => $title,
                             'print'               => true,
+                            'mini_csv'            => true,
                         ]
                     );
                 } else {

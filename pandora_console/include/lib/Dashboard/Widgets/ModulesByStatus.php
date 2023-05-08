@@ -416,7 +416,7 @@ class ModulesByStatus extends Widget
                     [
                         'id'                 => $tableId,
                         'class'              => 'info_table align-left-important',
-                        'style'              => 'width: 99%',
+                        'style'              => 'width: 100%',
                         'columns'            => $columns,
                         'column_names'       => $column_names,
                         'ajax_url'           => 'include/ajax/module',

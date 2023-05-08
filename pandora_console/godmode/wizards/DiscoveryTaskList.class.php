@@ -1389,7 +1389,7 @@ class DiscoveryTaskList extends HTML
         $output = '';
 
         if (is_array($task['stats']) === false && (int) $task['type'] !== DISCOVERY_EXTENSION) {
-            $task['stats'] = json_decode($task['summary'], true);
+            $task['stats'] = json_decode(io_safe_output($task['summary']), true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return $task['summary'];
             }
@@ -1573,7 +1573,7 @@ class DiscoveryTaskList extends HTML
         }
 
         $task = db_get_row('trecon_task', 'id_rt', $id_task);
-        $task['stats'] = json_decode($task['summary'], true);
+        $task['stats'] = json_decode(io_safe_output($task['summary']), true);
         $summary = $this->progressTaskSummary($task);
 
         $output = '';

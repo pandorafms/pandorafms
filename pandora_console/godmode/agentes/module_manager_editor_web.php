@@ -34,7 +34,6 @@ $disabledTextBecauseInPolicy = '';
 $classdisabledBecauseInPolicy = '';
 $page             = get_parameter('page', '');
 $id_policy_module = (int) get_parameter('id_policy_module');
-$id_agent_module  = (int) get_parameter('id_agent_module');
 
 if (strstr($page, 'policy_modules') === false) {
     if ((bool) $config['enterprise_installed'] === true) {

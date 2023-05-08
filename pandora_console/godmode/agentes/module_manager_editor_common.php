@@ -509,7 +509,7 @@ $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
     10,
     1024,
     true,
-    $disabledBecauseInPolicy || $edit === false,
+    $disabledBecauseInPolicy,
     false,
     '',
     $classdisabledBecauseInPolicy

@@ -86,9 +86,9 @@ $row = [];
 $test_start = '<span id="test-gotty-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
 $test_start .= '&nbsp;<span id="test-gotty-message" class="invisible"></span>';
 $row['gotty_test'] = html_print_label_input_block(
-    __('Test'),
+    __('Test connection'),
     html_print_button(
-        __('Start'),
+        __('Test'),
         'test-gotty',
         false,
         'handleTest()',

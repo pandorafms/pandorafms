@@ -6934,14 +6934,15 @@ function html_print_go_top()
     return $output;
 }
 
+
 /**
  * Render a code picker fragment with default Pandora styles.
  *
  * @param string  $id,
- * @param string  $content      Content.
- * @param string  $classes      Classes for code picker.
- * @param boolean $single_line  If true, code picker will be displayed as a single line of code.
- * @param boolean $return       Return output if set to true.
+ * @param string  $content     Content.
+ * @param string  $classes     Classes for code picker.
+ * @param boolean $single_line If true, code picker will be displayed as a single line of code.
+ * @param boolean $return      Return output if set to true.
  *
  * @return string
  */

@@ -13101,7 +13101,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                     ) {
                         $values['status'] = 2;
                     }
-                        
+
                     api_set_validate_event_by_id($val['id_evento']);
                 }
             }

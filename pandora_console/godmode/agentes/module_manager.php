@@ -873,7 +873,7 @@ if ($modules !== false) {
         );
 
         if (strlen($module['ip_target']) !== 0) {
-            $title .= '<br/>'.$module['ip_target'];
+            $title .= '<br/>IP: '.$module['ip_target'];
         }
 
         // This module is initialized ? (has real data).

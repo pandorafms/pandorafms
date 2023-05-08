@@ -1777,7 +1777,6 @@ if (is_metaconsole() === false) {
         });
 
         $("#button-uptbutton").click (function () {
-            console.log('aaaaaaaaaaaaa');
             if($("#autorefresh_list option").length > 0) {
                 $('#autorefresh_list option').prop('selected', true);
             }

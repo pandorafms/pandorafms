@@ -79,92 +79,6 @@ if (is_ajax() === true) {
     $delete_profile = (bool) get_parameter('delete_profile');
     $get_user_profile = (bool) get_parameter('get_user_profile');
 
-    if ($delete_profile === true) {
-        $id2 = (string) get_parameter('id_user');
-        $id_up = (int) get_parameter('id_user_profile');
-
-        $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
-        $id_perfil = $perfilUser['id_perfil'];
-        $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
-
-        db_pandora_audit(
-            AUDIT_LOG_USER_MANAGEMENT,
-            'Deleted profile for user '.io_safe_output($id2),
-            false,
-            false,
-            'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
-        );
-
-        $return = profile_delete_user_profile($id2, $id_up);
-        ui_print_result_message(
-            $return,
-            __('Successfully deleted'),
-            __('Could not be deleted')
-        );
-
-
-        $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
-        $user_is_global_admin = users_is_admin($id2);
-
-        if ($has_profile === false && $user_is_global_admin === false) {
-            $result = delete_user($id2);
-
-            if ($result === true) {
-                db_pandora_audit(
-                    AUDIT_LOG_USER_MANAGEMENT,
-                    __('Deleted user %s', io_safe_output($id_user))
-                );
-            }
-
-            ui_print_result_message(
-                $result,
-                __('Successfully deleted'),
-                __('There was a problem deleting the user')
-            );
-
-            // Delete the user in all the consoles.
-            if (is_metaconsole() === true) {
-                $servers = metaconsole_get_servers();
-                foreach ($servers as $server) {
-                    // Connect to the remote console.
-                    metaconsole_connect($server);
-
-                    // Delete the user.
-                    $result = delete_user($id_user);
-                    if ($result === true) {
-                        db_pandora_audit(
-                            AUDIT_LOG_USER_MANAGEMENT,
-                            __('Deleted user %s from metaconsole', io_safe_output($id_user))
-                        );
-                    }
-
-                    // Restore the db connection.
-                    metaconsole_restore_db();
-
-                    // Log to the metaconsole too.
-                    if ($result === true) {
-                        db_pandora_audit(
-                            AUDIT_LOG_USER_MANAGEMENT,
-                            __(
-                                'Deleted user %s from %s',
-                                io_safe_input($id_user),
-                                io_safe_input($server['server_name'])
-                            )
-                        );
-                    }
-
-                    ui_print_result_message(
-                        $result,
-                        __('Successfully deleted from %s', io_safe_input($server['server_name'])),
-                        __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
-                    );
-                }
-            }
-        }
-
-        return;
-    }
-
     if ($get_user_profile === true) {
         $profile_id = (int) get_parameter('profile_id');
         $group_id = (int) get_parameter('group_id', -1);
@@ -296,7 +210,7 @@ if ((bool) $config['user_can_update_info'] === true) {
     $view_mode = true;
 }
 
-$delete_profile = (is_ajax() === true) ? (bool) get_parameter('delete_profile') : false;
+$delete_profile = (bool) get_parameter('delete_profile');
 $new_user = (bool) get_parameter('new_user');
 $create_user = (bool) get_parameter('create_user');
 $add_profile = (bool) get_parameter('add_profile');
@@ -883,6 +797,89 @@ if ($update_user) {
     }
 
     $user_info = $values;
+}
+
+if ($delete_profile) {
+    $id2 = (string) get_parameter('id_user');
+    $id_up = (int) get_parameter('id_user_profile');
+    $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
+    $id_perfil = $perfilUser['id_perfil'];
+    $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
+
+    db_pandora_audit(
+        AUDIT_LOG_USER_MANAGEMENT,
+        'Deleted profile for user '.io_safe_output($id2),
+        false,
+        false,
+        'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
+    );
+
+    $return = profile_delete_user_profile($id2, $id_up);
+    ui_print_result_message(
+        $return,
+        __('Successfully deleted'),
+        __('Could not be deleted')
+    );
+
+
+    $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
+    $user_is_global_admin = users_is_admin($id2);
+
+    if ($has_profile === false && $user_is_global_admin === false) {
+        $result = delete_user($id2);
+
+        if ($result === true) {
+            db_pandora_audit(
+                AUDIT_LOG_USER_MANAGEMENT,
+                __('Deleted user %s', io_safe_output($id_user))
+            );
+        }
+
+        ui_print_result_message(
+            $result,
+            __('Successfully deleted'),
+            __('There was a problem deleting the user')
+        );
+
+        // Delete the user in all the consoles.
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            foreach ($servers as $server) {
+                // Connect to the remote console.
+                metaconsole_connect($server);
+
+                // Delete the user.
+                $result = delete_user($id_user);
+                if ($result === true) {
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_MANAGEMENT,
+                        __('Deleted user %s from metaconsole', io_safe_output($id_user))
+                    );
+                }
+
+                // Restore the db connection.
+                metaconsole_restore_db();
+
+                // Log to the metaconsole too.
+                if ($result === true) {
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_MANAGEMENT,
+                        __(
+                            'Deleted user %s from %s',
+                            io_safe_input($id_user),
+                            io_safe_input($server['server_name'])
+                        )
+                    );
+                }
+
+                ui_print_result_message(
+                    $result,
+                    __('Successfully deleted from %s', io_safe_input($server['server_name'])),
+                    __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
+                );
+            }
+        }
+    }
 }
 
 if ((int) $status !== -1) {

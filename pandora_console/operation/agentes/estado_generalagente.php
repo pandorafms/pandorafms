@@ -517,14 +517,13 @@ $data_opcional->class = 'floating_form';
 $agentAdditionalContent = '';
 // Position Information.
 if ((bool) $config['activate_gis'] === true) {
-    $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
     $dataPositionAgent = gis_get_data_last_position_agent(
         $agent['id_agente']
     );
 
-    if ($dataPositionAgent === false) {
-        $data_opcional->data['agent_position'][1] = __('There is no GIS data.');
-    } else {
+    if ($dataPositionAgent === true) {
+        $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
+
         $dataOptionalOutput = html_print_anchor(
             [
                 'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente,

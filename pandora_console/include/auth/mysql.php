@@ -801,6 +801,12 @@ function update_user(string $id_user, array $values)
         return false;
     }
 
+    if (is_metaconsole() === true) {
+        unset($values['id_skin']);
+        unset($values['section']);
+        unset($values['default_event_filter']);
+    }
+
     $output = db_process_sql_update('tusuario', $values, ['id_user' => $id_user]);
 
     if (isset($values['is_admin']) === true && (bool) $values['is_admin'] === true) {

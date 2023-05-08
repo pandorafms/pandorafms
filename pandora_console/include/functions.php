@@ -6458,3 +6458,22 @@ function nms_check_api()
         return true;
     }
 }
+
+
+/**
+ * Simply return a string enclosed in quote delimiter to be used in csv exports.
+ *
+ * @param string $str String to be formatted.
+ *
+ * @return string Formatted string.
+ */
+function csv_format_delimiter(?string $str)
+{
+    if ($str === null) {
+        return $str;
+    }
+
+    // Due to the ticket requirements, double quote is used as fixed string delimiter.
+    // TODO: a setup option that enables user to choose a delimiter character would probably be desirable in the future.
+    return '"'.$str.'"';
+}

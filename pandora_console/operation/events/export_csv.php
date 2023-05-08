@@ -166,11 +166,11 @@ try {
 
     // Dump headers.
     foreach ($names as $n) {
-        echo io_safe_output($n).$config['csv_divider'];
+        echo csv_format_delimiter(io_safe_output($n)).$config['csv_divider'];
     }
 
     if (is_metaconsole() === true) {
-        echo 'server_id'.$config['csv_divider'];
+        echo csv_format_delimiter('server_id').$config['csv_divider'];
     }
 
     echo chr(13);
@@ -203,21 +203,21 @@ try {
 
                 switch ($key) {
                     case 'module_status':
-                        echo events_translate_module_status(
+                        echo csv_format_delimiter(events_translate_module_status(
                             $row[$key]
-                        );
+                        ));
                     break;
 
                     case 'event_type':
-                        echo events_translate_event_type(
+                        echo csv_format_delimiter(events_translate_event_type(
                             $row[$key]
-                        );
+                        ));
                     break;
 
                     case 'criticity':
-                        echo events_translate_event_criticity(
+                        echo csv_format_delimiter(events_translate_event_criticity(
                             $row[$key]
-                        );
+                        ));
                     break;
 
                     case 'custom_data':
@@ -244,11 +244,11 @@ try {
                             $custom_data = implode($separator, $custom_data_array);
                         }
 
-                        echo io_safe_output($custom_data);
+                        echo csv_format_delimiter(io_safe_output($custom_data));
                     break;
 
                     default:
-                        echo io_safe_output($row[$key]);
+                        echo csv_format_delimiter(io_safe_output($row[$key]));
                     break;
                 }
 
@@ -256,7 +256,7 @@ try {
             }
 
             if (is_metaconsole() === true) {
-                echo $row['server_id'].$config['csv_divider'];
+                echo csv_format_delimiter($row['server_id']).$config['csv_divider'];
             }
 
             echo chr(13);

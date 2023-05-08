@@ -988,7 +988,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/satellite@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1000,7 +1003,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/network-server@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1012,7 +1018,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/data-server@svg.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,

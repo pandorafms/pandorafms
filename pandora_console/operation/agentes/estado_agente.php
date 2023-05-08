@@ -1039,9 +1039,10 @@ $tableAgents->head[2] = '<span>'.__('OS').'</span>';
 $tableAgents->head[2] .= ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
 $tableAgents->size[2] = '5%';
 
-$tableAgents->head[3] = '<span>'.__('Interval').'</span>';
-$tableAgents->head[3] .= ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
-$tableAgents->size[3] = '7%';
+/*
+    $tableAgents->head[3] = '<span>'.__('Interval').'</span>';
+    $tableAgents->head[3] .= ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
+$tableAgents->size[3] = '7%';*/
 
 $tableAgents->head[4] = '<span>'.__('Group').'</span>';
 $tableAgents->head[4] .= ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
@@ -1073,7 +1074,7 @@ $tableAgents->size[11] = '6%';
 $tableAgents->align = [];
 
 $tableAgents->align[2] = 'left';
-$tableAgents->align[3] = 'left';
+// $tableAgents->align[3] = 'left';
 $tableAgents->align[4] = 'left';
 $tableAgents->align[5] = 'left';
 $tableAgents->align[6] = 'left';
@@ -1166,7 +1167,7 @@ foreach ($agents as $agent) {
 
     $data[0] .= '</div>';
 
-    $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]').'</span>';
+    $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]', 'font-size:6.5pt').'</span>';
 
     $data[2] = '';
 
@@ -1177,9 +1178,10 @@ foreach ($agents as $agent) {
         true
     );
 
-    $data[3] = '<span>'.human_time_description_raw(
+    /*
+        $data[3] = '<span>'.human_time_description_raw(
         $agent['intervalo']
-    ).'</span>';
+    ).'</span>';*/
     $data[4] = '<a href="'.$config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent['id_grupo'].'">';
     $data[4] .= ui_print_group_icon(
         $agent['id_grupo'],

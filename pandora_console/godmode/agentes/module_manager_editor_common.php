@@ -1939,25 +1939,11 @@ $(document).ready (function () {
         }
     });
 
-    $('#text-warning_time').on ('input', function() {
-        if (!(isNaN($('#text-min_warning').val())) && !($('#text-min_warning').val() == "0")){
-            paint_graph_values();
-        }
-
-        if (!(isNaN($('#text-max_warning').val())) && !($('#text-max_warning').val() == "0")){
-            paint_graph_values();
-        }
-
-        if (isNaN($('#text-warning_time').val()) && !($('#text-warning_time').val() == "-")){
-            $('#text-warning_time').val(0);
-        }
-    });
-
     $('.switch_radio_button label').on('click', function(){
         var thisLabel = $(this).attr('for');
         $('#'+thisLabel).prop('checked', true);
         $('#'+thisLabel).siblings().prop('checked', false);
-        
+
         if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true) {
             $("#svg_dinamic").hide();
         } else {
@@ -2271,21 +2257,6 @@ function paint_graph_values(){
 
     var max_c = parseFloat($('#text-max_critical').val());
     if(max_c =='0.00' || isNaN(max_c)){ max_c = 0; }
-
-    var add_interval = parseFloat($('#text-warning_time').val());
-    if(add_interval == '0.00' || isNaN(add_interval)){ add_interval = 0; }
-
-    if(min_w !== 0 && add_interval !== 0 && max_w == 0){
-        min_c = min_w + add_interval;
-        $('#text-min_critical').val(min_c);
-    }
-
-    if(add_interval > 0 && max_w !== 0){
-        min_c = max_w;
-        max_c = min_c+ add_interval;
-        $('#text-min_critical').val(min_c);
-        $('#text-max_critical').val(max_c);
-    }
 
     var inverse_w = $('input:radio[value=warning_inverse]:checked').val();
     if(!inverse_w){ inverse_w = 0; }

@@ -706,6 +706,10 @@ final class Group extends Item
             ];
 
             if ((int) $values['type'] === GROUP_ITEM) {
+                if (isset($values['recursiveGroup']) === false) {
+                    $values['recursiveGroup'] = true;
+                }
+
                 // Recursive group.
                 $inputs[] = [
                     'label'     => __('Recursive'),

@@ -4,7 +4,7 @@
 
 # define variables
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
-S_VERSION='2022052301'
+S_VERSION='2023050901'
 LOGFILE="/tmp/pandora-agent-deploy-$(date +%F).log"
 
 # Ansi color code variables
@@ -49,7 +49,7 @@ check_cmd_status () {
 }
 
 check_repo_connection () {
-    execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
+    execute_cmd "ping -c 2 firefly.pandorafms.com" "Checking Community repo"
 }
 
 check_root_permissions () {
@@ -73,7 +73,7 @@ cd unix && ./pandora_agent_installer --install
 
 install_autodiscover () {
     local arch=$1
-    wget http://firefly.artica.es/projects/autodiscover-linux.zip
+    wget http://firefly.pandorafms.com/projects/autodiscover-linux.zip
     unzip autodiscover-linux.zip
     chmod +x $arch/autodiscover 
     mv -f $arch/autodiscover /etc/pandora/plugins/autodiscover
@@ -148,7 +148,7 @@ if [[ $OS_RELEASE =~ 'rhel' ]] || [[ $OS_RELEASE =~ 'fedora' ]]; then
     echo -e "${cyan}Installing agent dependencies...${reset}" ${green}OK${reset}
     
     # Insatall pandora agent  
-    $package_manager_cmd install -y http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm &>> $LOGFILE
+    $package_manager_cmd install -y http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm &>> $LOGFILE
     echo -en "${cyan}Installing Pandora FMS agent...${reset}"
     check_cmd_status 'Error installing Pandora FMS agent'
     [[ $PANDORA_AGENT_SSL ]] && execute_cmd "$package_manager_cmd install -y perl-IO-Socket-SSL" "Installing SSL libraries for encrypted connection"
@@ -158,7 +158,7 @@ fi
 if [[ $OS_RELEASE == 'debian' ]]; then
     execute_cmd "apt update" 'Updating repos'
     execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Installing agent dependencies' 
-    execute_cmd 'wget http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz' 'Downloading Pandora FMS agent package'
+    execute_cmd 'wget http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz' 'Downloading Pandora FMS agent package'
     execute_cmd 'install_tarball pandorafms_agent_linux-7.0NG.tar.gz' 'Installing Pandora FMS agent'
     [[ $PANDORA_AGENT_SSL ]] && execute_cmd 'apt install -y libio-socket-ssl-perl' "Installing SSL libraries for encrypted connection"
     cd $HOME/pandora_deploy_tmp

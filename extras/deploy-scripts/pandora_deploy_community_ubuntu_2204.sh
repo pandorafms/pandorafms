@@ -17,7 +17,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='202304181'
+S_VERSION='2023050901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 
@@ -90,7 +90,7 @@ check_pre_pandora () {
 }
 
 check_repo_connection () {
-    execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
+    execute_cmd "ping -c 2 firefly.pandorafms.com" "Checking Community repo"
     execute_cmd "ping -c 2 support.pandorafms.com" "Checking Enterprise repo"
 }
 
@@ -253,6 +253,7 @@ server_dependencies=" \
 	openssh-client \
 	postfix \
 	unzip \
+	xprobe \
 	coreutils \
 	libio-compress-perl \
 	libmoosex-role-timer-perl \
@@ -280,8 +281,8 @@ execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server
 execute_cmd "installing_docker" "Installing Docker for debug"
 
 # wmic and pandorawmic
-execute_cmd "curl -O https://firefly.artica.es/pandorafms/utils/bin/wmic" "Downloading wmic"
-execute_cmd "curl -O https://firefly.artica.es/pandorafms/utils/bin/pandorawmic" "Downloading pandorawmic"
+execute_cmd "curl -O https://firefly.pandorafms.com/pandorafms/utils/bin/wmic" "Downloading wmic"
+execute_cmd "curl -O https://firefly.pandorafms.com/pandorafms/utils/bin/pandorawmic" "Downloading pandorawmic"
 echo -en "${cyan}Installing wmic and pandorawmic...${reset}"
     chmod +x pandorawmic wmic &>> "$LOGFILE" && \
     cp -a wmic /usr/bin/ &>> "$LOGFILE" && \
@@ -292,7 +293,7 @@ check_cmd_status "Error Installing phanromjs"
 echo -en "${cyan}Installing phantomjs...${reset}"
     export PHANTOM_JS="phantomjs-2.1.1-linux-x86_64"
     export OPENSSL_CONF=/etc/ssl
-    curl -LSs -O "https://firefly.artica.es/pandorafms/utils/$PHANTOM_JS.tar.bz2" &>> "$LOGFILE" && \
+    curl -LSs -O "https://firefly.pandorafms.com/pandorafms/utils/$PHANTOM_JS.tar.bz2" &>> "$LOGFILE" && \
     tar xvjf "$PHANTOM_JS.tar.bz2" &>> "$LOGFILE" && \
     mv $PHANTOM_JS/bin/phantomjs /usr/bin &>> "$LOGFILE" && \
     /usr/bin/phantomjs --version &>> "$LOGFILE" 
@@ -322,7 +323,7 @@ vmware_dependencies="\
     libsoap-lite-perl \
     libmodule-build-perl"
 execute_cmd "apt install -y $vmware_dependencies" "Installing VMware SDK dependencies"
-execute_cmd "wget https://firefly.artica.es/pandorafms/utils/VMware-vSphere-Perl-SDK-7.0.0-16453907.x86_64.tar.gz" "Downloading VMware SDK"
+execute_cmd "wget https://firefly.pandorafms.com/pandorafms/utils/VMware-vSphere-Perl-SDK-7.0.0-16453907.x86_64.tar.gz" "Downloading VMware SDK"
 echo -en "${cyan}Installing VMware SDK...${reset}"
     tar xvzf VMware-vSphere-Perl-SDK-7.0.0-16453907.x86_64.tar.gz &>> "$LOGFILE"
     cd vmware-vsphere-cli-distrib/ &>> "$LOGFILE"
@@ -357,6 +358,7 @@ source '/root/.profile' &>> "$LOGFILE"
 
 #ipam dependencies
 ipam_dependencies=" \
+    xprobe \
     libnetaddr-ip-perl \
     coreutils \
     libdbd-mysql-perl \
@@ -456,19 +458,19 @@ execute_cmd "systemctl restart mysql" "Configuring and restarting database engin
 
 #Define packages
 if [ "$PANDORA_LTS" -eq '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_server-7.0NG.tar.gz"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_console-7.0NG.tar.gz"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/LTS/pandorafms_agent_linux-7.0NG.tar.gz"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/LTS/pandorafms_server-7.0NG.tar.gz"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/LTS/pandorafms_console-7.0NG.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/LTS/pandorafms_agent_linux-7.0NG.tar.gz"
 elif [ "$PANDORA_LTS" -ne '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_server-7.0NG.tar.gz"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_console-7.0NG.tar.gz"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_server-7.0NG.tar.gz"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_console-7.0NG.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
 fi
 
 if [ "$PANDORA_BETA" -eq '1' ] ; then
-    PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
-    PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
-    PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
+    PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
+    PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
+    PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
 fi
 
 # Downloading Pandora Packages
@@ -776,7 +778,7 @@ cat > /etc/issue.net << EOF_banner
 
 Welcome to Pandora FMS appliance on Ubuntu
 ------------------------------------------
-Go to Public http://$ipplublic/pandora_console$to to login web console
+Go to Public http://$ipplublic/pandora_console to login web console
 $(ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v "172.17.0.1" | awk '{print $2}' | awk -F '/' '{print "Go to Local http://"$1"/pandora_console to login web console"}')
 
 You can find more information at http://pandorafms.com

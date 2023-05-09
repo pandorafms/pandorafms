@@ -35,6 +35,13 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$PANDORA_LTS" ]  || PANDORA_LTS=1
 [ "$PANDORA_BETA" ] || PANDORA_BETA=0
 
+#Check if possible to get os version
+if [ ! -e /etc/os-release ]; then
+    echo ' > Imposible to determinate the OS version for this machine, please make sure you are intalling in a compatible OS'
+    echo ' > More info: https://pandorafms.com/manual/en/documentation/02_installation/01_installing#minimum_software_requirements'
+    exit -1
+fi
+
 # Ansi color code variables
 red="\e[0;91m"
 green="\e[0;92m"
@@ -121,6 +128,12 @@ installing_docker () {
 ## Main
 echo "Starting PandoraFMS Community deployment EL8 ver. $S_VERSION"
 
+#check tools
+if ! grep --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+if ! sed --version &>> $LOGFILE ; then echo 'Error sed is not detected on the system, sed tool is needed for installation.'; exit -1 ;fi 
+if ! curl --version &>> $LOGFILE ; then echo 'Error curl is not detected on the system, curl tool is needed for installation.'; exit -1 ;fi 
+if ! ping -V &>> $LOGFILE ; then echo 'Error ping is not detected on the system, ping tool is needed for installation.'; exit -1 ;fi 
+
 # Centos Version
 if [ ! "$(grep -Ei 'centos|rocky|Almalinux|Red Hat Enterprise' /etc/redhat-release)" ]; then
          printf "\n ${red}Error this is not a Centos/Rocky/Almalinux Base system, this installer is compatible with RHEL/Almalinux/Centos/Rockylinux systems only${reset}\n"
@@ -129,7 +142,7 @@ fi
 
 
 echo -en "${cyan}Check Centos Version...${reset}"
-[ $(sed -nr 's/VERSION_ID+=\s*"([0-9]).*"$/\1/p' /etc/os-release) -eq '8' ]
+[[ $(sed -nr 's/VERSION_ID+=\s*"([0-9]).*"$/\1/p' /etc/os-release) -eq '8' ]]
 check_cmd_status 'Error OS version, RHEL/Almalinux/Centos/Rockylinux 8.x is expected'
 
 #Detect OS

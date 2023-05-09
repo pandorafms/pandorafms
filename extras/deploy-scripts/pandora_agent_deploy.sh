@@ -1,11 +1,18 @@
 #!/bin/bash
 
-#export PANDORA_SERVER_IP='newdemos.artica.es' && curl -sSL http://firefly.artica.es/projects/pandora_deploy_agent.sh | bash
+#export PANDORA_SERVER_IP='newdemos.artica.es' && curl -sSL http://firefly.pandorafms.com/projects/pandora_deploy_agent.sh | bash
 
 # define variables
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 S_VERSION='2023050901'
 LOGFILE="/tmp/pandora-agent-deploy-$(date +%F).log"
+
+#Check if possible to get os version
+if [ ! -e /etc/os-release ]; then
+    echo ' > Imposible to determinate the OS version for this machine, please make sure you are intalling in a compatible OS'
+    echo ' > More info: https://pandorafms.com/manual/en/documentation/02_installation/01_installing#minimum_software_requirements'
+    exit -1
+fi
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -83,6 +90,9 @@ install_autodiscover () {
 echo "Starting PandoraFMS Agent deployment ver. $S_VERSION"
 
 execute_cmd  "[ $PANDORA_SERVER_IP ]" 'Check Server IP Address' 'Please define env variable PANDORA_SERVER_IP'
+
+if ! grep --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+if ! sed --version &>> $LOGFILE ; then echo 'Error sed is not detected on the system, sed tool is needed for installation.'; exit -1 ;fi 
 
 #Detect OS
 os_name=$(grep ^PRETTY_NAME= /etc/os-release | cut -d '=' -f2 | tr -d '"')

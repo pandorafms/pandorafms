@@ -11,7 +11,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='202304111'
+S_VERSION='2023050901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -30,6 +30,13 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 [ "$PANDORA_BETA" ] || PANDORA_BETA=0
 [ "$PANDORA_LTS" ]  || PANDORA_LTS=1
+
+#Check if possible to get os version
+if [ ! -e /etc/os-release ]; then
+    echo ' > Imposible to determinate the OS version for this machine, please make sure you are intalling in a compatible OS'
+    echo ' > More info: https://pandorafms.com/manual/en/documentation/02_installation/01_installing#minimum_software_requirements'
+    exit -1
+fi
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -105,6 +112,12 @@ check_root_permissions () {
 ## Main
 echo "Starting PandoraFMS Community deployment ver. $S_VERSION"
 
+#check tools
+if ! grep --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+if ! sed --version &>> $LOGFILE ; then echo 'Error sed is not detected on the system, sed tool is needed for installation.'; exit -1 ;fi 
+if ! curl --version &>> $LOGFILE ; then echo 'Error curl is not detected on the system, curl tool is needed for installation.'; exit -1 ;fi 
+if ! ping -V &>> $LOGFILE ; then echo 'Error ping is not detected on the system, ping tool is needed for installation.'; exit -1 ;fi 
+
 # Centos Version
 if [ ! "$(grep -i centos /etc/redhat-release)" ]; then
          printf "${red}Error this is not a Centos Base system, this installer is compatible with Centos systems only${reset}\n"
@@ -118,7 +131,7 @@ os_name=$(grep ^PRETTY_NAME= /etc/os-release | cut -d '=' -f2 | tr -d '"')
 execute_cmd "echo $os_name" "OS detected: ${os_name}"
 
 echo -en "${cyan}Check Centos Version...${reset}"
-[ $(sed -nr 's/VERSION_ID+=\s*"([0-9])"$/\1/p' /etc/os-release) -eq '7' ]
+[[ $(sed -nr 's/VERSION_ID+=\s*"([0-9])"$/\1/p' /etc/os-release) -eq '7' ]]
 check_cmd_status 'Error OS version, Centos 7 is expected'
 
 # initialice logfile

@@ -107,6 +107,8 @@ if (is_ajax() === true) {
         // Ids of agents to be include in the SQL clause as id_agent IN ().
         $filter_agents_json = (string) get_parameter('filter_agents_json', '');
         $status_agents = (int) get_parameter('status_agents', AGENT_STATUS_ALL);
+        $os_agent = (int) get_parameter('os_agent', 0);
+        $os_agent_version = (string) get_parameter('os_agent_version', '');
         // Juanma (22/05/2014) Fix: If setted remove void agents from result
         // (by default and for compatibility show void agents).
         $show_void_agents = (int) get_parameter('show_void_agents', 1);
@@ -150,6 +152,14 @@ if (is_ajax() === true) {
 
         if ($status_agents != AGENT_STATUS_ALL) {
             $filter['status'] = $status_agents;
+        }
+
+        if ($os_agent !== 0) {
+            $filter['id_os'] = $os_agent;
+        }
+
+        if ($os_agent_version !== '') {
+            $filter['os_version'] = $os_agent_version;
         }
 
         if ($id_os !== 0) {

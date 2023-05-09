@@ -11640,7 +11640,7 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11664,7 +11664,7 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], $group, 'PM')) {
+    if (!check_acl($config['id_user'], $group, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11699,7 +11699,7 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11723,7 +11723,7 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], $group, 'PM')) {
+    if (!check_acl($config['id_user'], $group, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11756,7 +11756,7 @@ function api_get_user_profiles_info($thrash1, $thrash2, $thrash3, $returnType)
 {
     global $config;
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -16969,7 +16969,7 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
-    if (!check_acl($config['id_user'], 0, 'AW')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }

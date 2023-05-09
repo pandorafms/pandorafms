@@ -46,6 +46,7 @@ fi
 red="\e[0;91m"
 green="\e[0;92m"
 cyan="\e[0;36m"
+yellow="\e[33m"
 reset="\e[0m"
 
 # Functions
@@ -667,6 +668,9 @@ EOF_ENV
 # Kernel optimization
 
 if [ "$SKIP_KERNEL_OPTIMIZATIONS" -eq '0' ] ; then
+
+old_sysctl_file=$(cat /etc/sysctl.conf)
+
 cat >> /etc/sysctl.conf <<EO_KO
 # Pandora FMS Optimization
 
@@ -693,7 +697,17 @@ net.core.optmem_max = 81920
 
 EO_KO
 
-[ -d /dev/lxd/ ] || execute_cmd "sysctl --system" "Applying Kernel optimization"
+    echo -en "${cyan}Applying Kernel optimization... ${reset}"
+    sysctl --system &>> $LOGFILE
+    if [ $? -ne 0 ]; then
+        echo -e "${red}Fail${reset}"
+        echo -e "${yellow}Your kernel could not be optimized, you may be running this script in a virtualized environment with no support for accessing the kernel.${reset}"
+        echo -e "${yellow}This system can be used for testing but is not recommended for a production environment.${reset}"
+        echo "$old_sysctl_file" >  old_sysctl_file
+    else
+        echo -e "${green}OK${reset}"
+    fi
+
 fi
 
 # Fix pandora_server.{log,error} permissions to allow Console check them

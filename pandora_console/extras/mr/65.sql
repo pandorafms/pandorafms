@@ -1,0 +1,6 @@
+START TRANSACTION;
+
+ALTER TABLE `tlayout_data`
+ADD COLUMN `recursive_group` TINYINT NOT NULL DEFAULT '0' AFTER `fill_color`;
+
+COMMIT;

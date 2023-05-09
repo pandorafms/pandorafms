@@ -35,6 +35,25 @@ final class Group extends Item
 
 
     /**
+     * Get the "recursive Group" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed If the recursive should be true or not.
+     */
+    private static function getRecursiveGroup(array $data)
+    {
+        return static::issetInArray(
+            $data,
+            [
+                'recursiveGroup',
+                'recursive_group',
+            ]
+        );
+    }
+
+
+    /**
      * Get the "show statistics" switch value.
      *
      * @param array $data Unknown input data structure.
@@ -87,6 +106,11 @@ final class Group extends Item
             $return['id_group'] = $id_group;
         }
 
+        $recursive_group = static::getRecursiveGroup($data);
+        if ($recursive_group !== null) {
+            $return['recursive_group'] = static::parseBool($recursive_group);
+        }
+
         $show_statistics = static::getShowStatistics($data);
         if ($show_statistics !== null) {
             $return['show_statistics'] = static::parseBool($show_statistics);
@@ -112,6 +136,7 @@ final class Group extends Item
         $return['groupId'] = static::extractGroupId($data);
         $return['imageSrc'] = static::extractImageSrc($data);
         $return['statusImageSrc'] = static::extractStatusImageSrc($data);
+        $return['recursiveGroup'] = static::extractRecursiveGroup($data);
         $return['showStatistics'] = static::extractShowStatistics($data);
 
         return $return;
@@ -184,6 +209,21 @@ final class Group extends Item
      *
      * @return boolean If the statistics should be shown or not.
      */
+    private static function extractRecursiveGroup(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['recursiveGroup', 'recursive_group'])
+        );
+    }
+
+
+    /**
+     * Extract the "show statistics" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean If the statistics should be shown or not.
+     */
     private static function extractShowStatistics(array $data): bool
     {
         return static::parseBool(
@@ -227,63 +267,147 @@ final class Group extends Item
         }
 
         $groupId = static::extractGroupId($data);
+        $recursiveGroup = static::extractrecursiveGroup($data);
         $showStatistics = static::extractShowStatistics($data);
 
         if ($showStatistics === true) {
             $isMetaconsole = \is_metaconsole();
+            if ($recursiveGroup) {
+                $childers_id = groups_get_children_ids($groupId);
+            }
+
             // Retrieve the agent stats.
-            $agentsCritical = \agents_get_agents(
-                [
-                    'id_grupo' => $groupId,
-                    'status'   => AGENT_STATUS_CRITICAL,
-                ],
-                ['COUNT(*) AS total'],
-                'AR',
-                false,
-                false,
-                true,
-                $isMetaconsole
-            );
-            $numCritical = $agentsCritical[0]['total'];
-            $agentsWarning = \agents_get_agents(
-                [
-                    'id_grupo' => $groupId,
-                    'status'   => AGENT_STATUS_WARNING,
-                ],
-                ['COUNT(*) AS total'],
-                'AR',
-                false,
-                false,
-                true,
-                $isMetaconsole
-            );
-            $numWarning = $agentsWarning[0]['total'];
-            $agentsUnknown = \agents_get_agents(
-                [
-                    'id_grupo' => $groupId,
-                    'status'   => AGENT_STATUS_UNKNOWN,
-                ],
-                ['COUNT(*) AS total'],
-                'AR',
-                false,
-                false,
-                true,
-                $isMetaconsole
-            );
-            $numUnknown = $agentsUnknown[0]['total'];
-            $agentsOk = \agents_get_agents(
-                [
-                    'id_grupo' => $groupId,
-                    'status'   => AGENT_STATUS_NORMAL,
-                ],
-                ['COUNT(*) AS total'],
-                'AR',
-                false,
-                false,
-                true,
-                $isMetaconsole
-            );
-            $numNormal = $agentsOk[0]['total'];
+            if ($recursiveGroup) {
+                $numCritical = 0;
+                foreach ($childers_id as $id_group) {
+                    $agentsCritical = \agents_get_agents(
+                        [
+                            'id_grupo' => $id_group,
+                            'status'   => AGENT_STATUS_CRITICAL,
+                        ],
+                        ['COUNT(*) AS total'],
+                        'AR',
+                        false,
+                        false,
+                        true,
+                        $isMetaconsole
+                    );
+                    $numCritical += $agentsCritical[0]['total'];
+                }
+            } else {
+                $agentsCritical = \agents_get_agents(
+                    [
+                        'id_grupo' => $groupId,
+                        'status'   => AGENT_STATUS_CRITICAL,
+                    ],
+                    ['COUNT(*) AS total'],
+                    'AR',
+                    false,
+                    false,
+                    true,
+                    $isMetaconsole
+                );
+                $numCritical = $agentsCritical[0]['total'];
+            }
+
+            if ($recursiveGroup) {
+                $numWarning = 0;
+                foreach ($childers_id as $id_group) {
+                    $agentsWarning = \agents_get_agents(
+                        [
+                            'id_grupo' => $id_group,
+                            'status'   => AGENT_STATUS_WARNING,
+                        ],
+                        ['COUNT(*) AS total'],
+                        'AR',
+                        false,
+                        false,
+                        true,
+                        $isMetaconsole
+                    );
+                    $numWarning += $agentsWarning[0]['total'];
+                }
+            } else {
+                $agentsWarning = \agents_get_agents(
+                    [
+                        'id_grupo' => $groupId,
+                        'status'   => AGENT_STATUS_WARNING,
+                    ],
+                    ['COUNT(*) AS total'],
+                    'AR',
+                    false,
+                    false,
+                    true,
+                    $isMetaconsole
+                );
+                $numWarning = $agentsWarning[0]['total'];
+            }
+
+            if ($recursiveGroup) {
+                $numUnknown = 0;
+                foreach ($childers_id as $id_group) {
+                    $agentsUnknown = \agents_get_agents(
+                        [
+                            'id_grupo' => $id_group,
+                            'status'   => AGENT_STATUS_UNKNOWN,
+                        ],
+                        ['COUNT(*) AS total'],
+                        'AR',
+                        false,
+                        false,
+                        true,
+                        $isMetaconsole
+                    );
+                    $numUnknown += $agentsUnknown[0]['total'];
+                }
+            } else {
+                $agentsUnknown = \agents_get_agents(
+                    [
+                        'id_grupo' => $groupId,
+                        'status'   => AGENT_STATUS_UNKNOWN,
+                    ],
+                    ['COUNT(*) AS total'],
+                    'AR',
+                    false,
+                    false,
+                    true,
+                    $isMetaconsole
+                );
+                $numUnknown = $agentsUnknown[0]['total'];
+            }
+
+            if ($recursiveGroup) {
+                $numNormal = 0;
+                foreach ($childers_id as $id_group) {
+                    $agentsOk = \agents_get_agents(
+                        [
+                            'id_grupo' => $id_group,
+                            'status'   => AGENT_STATUS_NORMAL,
+                        ],
+                        ['COUNT(*) AS total'],
+                        'AR',
+                        false,
+                        false,
+                        true,
+                        $isMetaconsole
+                    );
+                    $numNormal += $agentsOk[0]['total'];
+                }
+            } else {
+                $agentsOk = \agents_get_agents(
+                    [
+                        'id_grupo' => $groupId,
+                        'status'   => AGENT_STATUS_NORMAL,
+                    ],
+                    ['COUNT(*) AS total'],
+                    'AR',
+                    false,
+                    false,
+                    true,
+                    $isMetaconsole
+                );
+                $numNormal = $agentsOk[0]['total'];
+            }
 
             $numTotal = ($numCritical + $numWarning + $numUnknown + $numNormal);
 
@@ -327,6 +451,11 @@ final class Group extends Item
                         ',',
                         array_keys(\users_get_groups())
                     );
+
+                    if ($recursiveGroup === true) {
+                        $childers_id = groups_get_children_ids($groupId);
+                        $groupFilter .= ','.implode(',', $childers_id);
+                    }
                 }
 
                 $sql = sprintf(
@@ -356,8 +485,25 @@ final class Group extends Item
                     $status = AGENT_STATUS_NORMAL;
                 }
             } else {
-                // Get the status img src.
-                $status = \groups_get_status($groupId, true);
+                if ($recursiveGroup === true) {
+                    $childers_id = groups_get_children_ids($groupId);
+                    $flag_stop_foreach = false;
+                    foreach ($childers_id as $id_children) {
+                        if ($flag_stop_foreach === true) {
+                            // Stop if some child is not normal.
+                            break;
+                        }
+
+                        // Get the status img src from all modules childs.
+                        $status = \groups_get_status($id_children, true);
+                        if ($status !== AGENT_STATUS_NORMAL) {
+                            $flag_stop_foreach = true;
+                        }
+                    }
+                } else {
+                    // Get the status img src.
+                    $status = \groups_get_status($groupId, true);
+                }
             }
 
             $imagePath = \visual_map_get_image_status_element($data, $status);
@@ -558,6 +704,19 @@ final class Group extends Item
                     'return'         => true,
                 ],
             ];
+
+            if ((int) $values['type'] === GROUP_ITEM) {
+                // Recursive group.
+                $inputs[] = [
+                    'label'     => __('Recursive'),
+                    'arguments' => [
+                        'name'  => 'recursiveGroup',
+                        'id'    => 'recursiveGroup',
+                        'type'  => 'switch',
+                        'value' => $values['recursiveGroup'],
+                    ],
+                ];
+            }
 
             // Show statistics.
             $inputs[] = [

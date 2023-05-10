@@ -96,7 +96,6 @@ ui_print_standard_header(
 );
 
 if ($id) {
-    hd('id', true);
     $filter = netflow_filter_get_filter($id);
     $assign_group = $filter['id_group'];
     $name = $filter['id_name'];
@@ -112,7 +111,6 @@ if ($id) {
     $traffic_warning = $filter['traffic_warning'];
     $netflow_monitoring_interval = $filter['netflow_monitoring_interval'];
 } else {
-    hd('no id', true);
     $name = '';
     $assign_group = '';
     $ip_dst = '';
@@ -129,7 +127,6 @@ if ($id) {
 }
 
 if ($update) {
-    hd('update', true);
     $name = (string) get_parameter('name');
     $assign_group = (int) get_parameter('assign_group');
     $aggregate = get_parameter('aggregate', '');
@@ -179,7 +176,6 @@ if ($update) {
 }
 
 if ($create) {
-    hd('create', true);
     $name = (string) get_parameter('name');
     $assign_group = (int) get_parameter('assign_group');
     $aggregate = get_parameter('aggregate', 'dstip');

@@ -1134,11 +1134,11 @@ function ui_format_alert_row(
                 'agent_name'      => 3,
                 'module_name'     => 4,
                 'description'     => 5,
-                'template'        => 5,
-                'action'          => 6,
-                'last_fired'      => 7,
-                'status'          => 8,
-                'validate'        => 9,
+                'template'        => 6,
+                'action'          => 7,
+                'last_fired'      => 8,
+                'status'          => 9,
+                'validate'        => 10,
             ];
         } else {
             $index = [
@@ -1146,13 +1146,13 @@ function ui_format_alert_row(
                 'standby'         => 1,
                 'force_execution' => 2,
                 'agent_name'      => 3,
-                'module_name'     => 3,
-                'description'     => 4,
-                'template'        => 4,
-                'action'          => 5,
-                'last_fired'      => 6,
-                'status'          => 7,
-                'validate'        => 8,
+                'module_name'     => 4,
+                'description'     => 5,
+                'template'        => 6,
+                'action'          => 7,
+                'last_fired'      => 8,
+                'status'          => 9,
+                'validate'        => 10,
             ];
         }
     } else {
@@ -1163,24 +1163,24 @@ function ui_format_alert_row(
                 'agent_name'      => 2,
                 'module_name'     => 3,
                 'description'     => 4,
-                'template'        => 4,
-                'action'          => 5,
-                'last_fired'      => 6,
-                'status'          => 7,
-                'validate'        => 8,
+                'template'        => 5,
+                'action'          => 6,
+                'last_fired'      => 7,
+                'status'          => 8,
+                'validate'        => 9,
             ];
         } else {
             $index = [
                 'standby'         => 0,
                 'force_execution' => 1,
                 'agent_name'      => 2,
-                'module_name'     => 2,
-                'description'     => 3,
-                'template'        => 3,
-                'action'          => 4,
-                'last_fired'      => 5,
-                'status'          => 6,
-                'validate'        => 7,
+                'module_name'     => 3,
+                'description'     => 4,
+                'template'        => 5,
+                'action'          => 6,
+                'last_fired'      => 7,
+                'status'          => 8,
+                'validate'        => 9,
             ];
         }
     }
@@ -1313,7 +1313,7 @@ function ui_format_alert_row(
                 $additionUrl = '';
             }
 
-            $forceExecButtons[] = html_print_anchor(
+            $forceExecButtons['force_check'] = html_print_anchor(
                 [
                     'href'    => $url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl,
                     'content' => html_print_image(
@@ -1329,9 +1329,10 @@ function ui_format_alert_row(
             );
         }
 
-        $forceExecButtons[] = html_print_anchor(
+        $forceExecButtons['template'] = html_print_anchor(
             [
                 'href'    => 'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'],
+                'style'   => 'margin-left: 5px;',
                 'class'   => 'template_details',
                 'content' => html_print_image(
                     'images/details.svg',
@@ -1342,9 +1343,10 @@ function ui_format_alert_row(
             true
         );
     } else {
-        $forceExecButtons[] = html_print_anchor(
+        $forceExecButtons['template'] = html_print_anchor(
             [
                 'href'    => ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'],
+                'style'   => 'margin-left: 5px;',
                 'class'   => 'template_details',
                 'content' => html_print_image(
                     'images/details.svg',
@@ -1356,13 +1358,19 @@ function ui_format_alert_row(
         );
     }
 
-    $data[$index['force_execution']] = html_print_div(
-        [
-            'class'   => 'table_action_buttons flex',
-            'content' => implode('', $forceExecButtons),
-        ],
-        true
-    );
+    if (isset($forceExecButtons['force_check'])) {
+        $data[$index['force_execution']] = html_print_div(
+            [
+                'class'   => 'table_action_buttons flex',
+                'content' => $forceExecButtons['force_check'],
+            ],
+            true
+        );
+    }
+
+    if (isset($forceExecButtons['template'])) {
+        $data[$index['template']] = $forceExecButtons['template'];
+    }
 
     $data[$index['agent_name']] = $disabledHtmlStart;
     if ($agent == 0) {

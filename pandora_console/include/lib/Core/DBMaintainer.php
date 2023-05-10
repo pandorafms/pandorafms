@@ -156,6 +156,9 @@ final class DBMaintainer
             return true;
         }
 
+        // Problem with php 8.1.
+        mysqli_report(MYSQLI_REPORT_OFF);
+
         $link = mysqli_init();
         $link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 2);
         $rc = mysqli_real_connect(

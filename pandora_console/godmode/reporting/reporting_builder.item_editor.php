@@ -321,6 +321,19 @@ switch ($action) {
                     $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
                 break;
 
+                case 'event_report_log_table':
+                    $period = $item['period'];
+                    $period_range = $item['period_range'];
+                    $description = $item['description'];
+
+                    $es = json_decode($item['external_source'], true);
+                    $id_agents = $es['id_agents'];
+                    $source = $es['source'];
+                    $search = $es['search'];
+                    $log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
+                    $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
+                break;
+
                 case 'simple_graph':
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
                     $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
@@ -1025,6 +1038,7 @@ switch ($action) {
                 case 'prediction_date':
                 case 'simple_baseline_graph':
                 case 'event_report_log':
+                case 'event_report_log_table':
                 case 'increment':
                     $label = (isset($style['label'])) ? $style['label'] : '';
                 break;
@@ -1404,6 +1418,29 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period',
                     $period,
+                    '',
+                    '',
+                    '0',
+                    10
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_range"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Period range');
+                ui_print_help_tip(
+                    __('This is the time range in which the files are grouped. For example, 1 day will group the files by day and will count them.')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_extended_select_for_time(
+                    'period_range',
+                    $period_range,
                     '',
                     '',
                     '0',
@@ -5297,6 +5334,12 @@ $(document).ready (function () {
                     return false;
                 }
                 break;
+            case 'event_report_log_table':
+                if ($("#id_agents3").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
                 case 'permissions_report':
                 if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
                     dialog_message('#message_no_group');
@@ -6387,6 +6430,7 @@ function chooseType() {
     $("#row_description").hide();
     $("#row_label").hide();
     $("#row_period").hide();
+    $("#row_period_range").hide();
     $("#row_agent").hide();
     $("#row_module").hide();
     $("#row_period").hide();
@@ -6561,7 +6605,22 @@ function chooseType() {
 
             loadLogAgents();
 
-            break;
+        break;
+
+        case 'event_report_log_table':
+            $("#log_help_tip").css("visibility", "visible");
+            $("#row_description").show();
+            $("#row_period").show();
+            $("#row_period_range").show();
+            $("#row_search").show();
+            $("#row_log_number").show();
+            $("#agents_row").show();
+            $("#row_source").show();
+            $("#row_historical_db_check").hide();
+
+            loadLogAgents();
+
+        break;
 
         case 'increment':
             $("#row_description").show();

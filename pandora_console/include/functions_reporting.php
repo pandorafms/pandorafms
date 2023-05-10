@@ -412,6 +412,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'event_report_log_table':
+                $report['contents'][] = reporting_log_table(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'increment':
                 $report['contents'][] = reporting_increment(
                     $report,

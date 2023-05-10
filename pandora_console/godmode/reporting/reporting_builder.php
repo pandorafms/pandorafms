@@ -120,6 +120,8 @@ require_once $config['homedir'].'/include/functions_reports.php';
 // Load enterprise extensions.
 enterprise_include('operation/reporting/custom_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
+enterprise_include_once('include/functions_tasklist.php');
+enterprise_include_once('include/functions_cron.php');
 
 
 
@@ -782,7 +784,7 @@ switch ($action) {
             '<span class="subsection_header_title">'.__('Filters').'</span>',
             'filter_form',
             '',
-            false,
+            true,
             false,
             '',
             'white-box-content',
@@ -1251,7 +1253,12 @@ switch ($action) {
                 array_push($table->data, $data);
             }
 
-            html_print_table($table);
+            $reports_table = '<div class="white_box">';
+            $reports_table .= '<span class="white_table_graph_header">'.__('Reports').'</span>';
+            $reports_table .= html_print_table($table, true);
+            $reports_table .= '<br></div>';
+            echo $reports_table;
+
             $tablePagination = ui_pagination(
                 $total_reports,
                 $url,
@@ -1259,7 +1266,7 @@ switch ($action) {
                 $pagination,
                 true,
                 'offset',
-                false,
+                false
             );
         } else {
             ui_print_info_message(
@@ -1268,6 +1275,19 @@ switch ($action) {
                     'message'  => __('No data found.'),
                 ]
             );
+        }
+
+        $report_task_data = enterprise_hook('tasklist_showListConsoleTask', [$object, true]);
+        if (is_array($report_task_data) === true || strpos($report_task_data, 'class="nf"') === false) {
+            $task_table = '<div class="mrgn_top_15px white_box">';
+            $task_table .= '<span class="white_table_graph_header">'.__('Report tasks');
+            $task_table .= ui_print_help_tip(__('To schedule a report, do it from the editing view of each report.'), true);
+            $task_table .= '</span><div>';
+            $task_table .= $report_task_data;
+            $task_table .= '</div></div>';
+            echo $task_table;
+        } else {
+            ui_print_info_message($report_task_data.__('To schedule a report, do it from the editing view of each report.'));
         }
 
         if (check_acl($config['id_user'], 0, 'RW')

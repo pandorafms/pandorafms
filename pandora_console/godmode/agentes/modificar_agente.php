@@ -765,7 +765,9 @@ if ($agents !== false) {
         }
 
         if (empty($agent['alias']) === true) {
-            $agent['alias'] = $agent['nombre'];
+            $agent['alias'] = io_safe_output($agent['nombre']);
+        } else {
+            $agent['alias'] = io_safe_output($agent['alias']);
         }
 
         $additionalDataAgentName = [];

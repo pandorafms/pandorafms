@@ -7232,10 +7232,8 @@ function ui_query_result_editor($name='default')
         ]
     );
 
-    $buttons = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
-    html_print_action_buttons(
-        $buttons
-    );
+    html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update']);
+
 }
 
 

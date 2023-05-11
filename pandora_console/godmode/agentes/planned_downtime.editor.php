@@ -1576,14 +1576,12 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     } else {
         // If is selected 'Any', get all the agents.
         if (count($agents) === 1 && (int) $agents[0] === -2) {
-            if ($recursion === true) {
-                $filter_group = groups_get_children_ids(
-                    $filter_group,
-                    false,
-                    true,
-                    'AW'
-                );
-            };
+            $filter_group = groups_get_children_ids(
+                $filter_group,
+                false,
+                true,
+                'AW'
+            );
 
             $agents = db_get_all_rows_filter(
                 'tagente',

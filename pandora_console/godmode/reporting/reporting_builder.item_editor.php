@@ -7577,9 +7577,68 @@ function dialog_message(message_id) {
       }
     });
 }
-
+function control_period_range() {
+    let value_period_range = $('#row_period_range #hidden-period_range').val();
+    let current_value = $('#row_period #hidden-period').val();
+    let min_range = (current_value/12);
+        if(min_range > value_period_range) {
+            $('#row_period_range div:nth-child(2) select option').removeAttr("selected");
+            $('#row_period_range div:nth-child(1)').hide();
+            $('#row_period_range div:nth-child(2)').show();
+            setTimeout(() => {
+                if(min_range >= 2592000) {
+                    $('#row_period_range input').val(Math.round((min_range/2592000) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="2592000"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(2592000);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 604800) {
+                    $('#row_period_range input').val(Math.round((min_range/604800) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="604800"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(604800);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 86400) {
+                    $('#row_period_range input').val(Math.round((min_range/86400) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="86400"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(86400);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 3600) {
+                    $('#row_period_range input').val(Math.round((min_range/3600) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="3600"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(3600);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 60) {
+                    $('#row_period_range input').val(Math.round((min_range/60) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="60"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select option[value="60"]').val(60);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+            }, 800);
+        }
+}
 $(document).ready(function () {
     $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
+
+    $('#row_period input').change(function(e){
+        control_period_range();
+    });
+    $('#row_period select').change(function(e){
+        control_period_range();
+    });
+    $('#row_period_range input').change(function(e){
+        control_period_range();
+    });
+    $('#row_period_range select').change(function(e){
+        control_period_range();
+    });
 });
 
 </script>

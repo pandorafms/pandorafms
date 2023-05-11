@@ -1005,7 +1005,7 @@ if ($modules !== false) {
             $data[8] .= html_print_menu_button(
                 [
                     'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'],
-                    'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'onClick' => 'javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;',
                     'image'   => 'images/delete.svg',
                     'title'   => __('Delete'),
                 ],

@@ -4504,7 +4504,7 @@ sub cli_create_event() {
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), $tags, safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 		}
 	} else {
 		if (! $agent_name) {
@@ -4551,7 +4551,7 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), $tags, safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 
 	}
 }

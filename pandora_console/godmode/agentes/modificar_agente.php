@@ -229,7 +229,7 @@ if ($enable_agent > 0) {
     );
 }
 
-if ($disable_agent > 0) {
+if ($disable_agent > 0 && $agent_to_delete === 0) {
     $result = db_process_sql_update('tagente', ['disabled' => 1], ['id_agente' => $disable_agent]);
     $alias = io_safe_output(agents_get_alias($disable_agent));
 

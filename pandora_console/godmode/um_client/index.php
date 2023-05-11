@@ -33,6 +33,7 @@
 
 // Begin.
 global $config;
+global $pandora_version;
 
 require_once $config['homedir'].'/vendor/autoload.php';
 require_once $config['homedir'].'/include/functions_update_manager.php';
@@ -215,7 +216,7 @@ if (is_ajax() !== true) {
                     __(
                         'Master server version %s does not match console version %s.',
                         (float) $matches[1],
-                        (float) $current_package
+                        $pandora_version
                     )
                 );
             }

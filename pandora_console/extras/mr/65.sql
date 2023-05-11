@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `treport_content`  ADD COLUMN `period_range` INT NULL DEFAULT 0 AFTER `period`;
+
+COMMIT;

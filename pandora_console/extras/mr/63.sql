@@ -40,6 +40,4 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
 
 ALTER TABLE `talert_template_module_actions` ADD COLUMN `recovered` TINYINT NOT NULL DEFAULT 0;
 
-ALTER TABLE `treport_content`  ADD COLUMN `period_range` INT NULL DEFAULT 0 AFTER `period`;
-
 COMMIT;

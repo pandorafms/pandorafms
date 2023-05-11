@@ -303,15 +303,13 @@ function clippy_context_help($help=null)
         <script type="text/javascript">
         
         function show_'.$id.'() {
-            if (intro_'.$id.'.started()) {
-                started = 1;
-            }
-            else {
-                started = 0;
-            }
-            
-            if (started == 0)
-                intro_'.$id.'.start();
+            confirmDialog({
+                title: "'.__('You have unknown modules in this agent.').'",
+                message: "'.('Unknown modules are modules which receive data normally at least in one occassion, but at this time are not receving data. Please check our troubleshoot help page to help you determine why you have unknown modules.').'",
+                strOKButton: "'.__('Close').'",
+                hideCancelButton: true,
+                size: 675,
+            });
         }
         
         $(document).ready(function() {

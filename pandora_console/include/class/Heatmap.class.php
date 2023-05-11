@@ -1090,6 +1090,7 @@ class Heatmap
                     case 3:
                         $status = 'unknown';
                     break;
+                    case AGENT_MODULE_STATUS_NO_DATA:
                     case AGENT_MODULE_STATUS_NOT_INIT:
                     case 5:
                         $status = 'notinit';

@@ -11597,8 +11597,8 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: absolute;
-  right: 12px;
+  position: relative;
+  right: 40px;
   top: 4px;
   border: 0;
   outline: none;

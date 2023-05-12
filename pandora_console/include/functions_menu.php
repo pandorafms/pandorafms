@@ -868,6 +868,7 @@ if (is_ajax()) {
         global $pandora_version;
         global $build_version;
         $product_name = io_safe_output(get_product_name());
+        $license_expiry_date = substr($config['license_expiry_date'], 0, 4).'/'.substr($config['license_expiry_date'], 4, 2).'/'.substr($config['license_expiry_date'], 6, 2);
 
         include_once $config['homedir'].'/include/class/Diagnostics.class.php';
         $d = new Diagnostics;
@@ -957,7 +958,7 @@ if (is_ajax()) {
                                     <p><span>'.__('Version').' '.$pandora_version.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
                                     <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
                                     <p><span>'.__('Build').'</span> '.$build_version.'</p>
-                                    <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span> 2023/04/26</p>';
+                                    <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';
 
         if (((bool) check_acl($config['id_user'], 0, 'PM') === true) && (is_metaconsole() === false)) {
             $dialogButtons = [];

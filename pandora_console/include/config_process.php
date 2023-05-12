@@ -220,7 +220,7 @@ if (!isset($config['inventory_changes_blacklist'])) {
 if (!isset($config['url_update_manager'])) {
     config_update_value(
         'url_update_manager',
-        'https://licensing.artica.es/pandoraupdate7/server.php'
+        'https://licensing.pandorafms.com/pandoraupdate7/server.php'
     );
 }
 

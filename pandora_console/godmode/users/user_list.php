@@ -413,10 +413,11 @@ if ($delete_user === true) {
     );
 } else if ($disable_user !== false) {
     // CSRF Validator.
-    if (html_print_csrf_error()) {
+    /*
+        if (html_print_csrf_error()) {
         return;
-    }
-
+        }
+    */
     // Disable_user.
     $id_user = get_parameter('id', 0);
 

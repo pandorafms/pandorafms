@@ -2439,7 +2439,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $anchorHref = 'javascript: ".$script_modified.";';
+            $anchorHref = 'javascript: '.$script_modified.';';
         } else {
             $anchorHref = $url.'&amp;'.$offset_name.'='.$offset_page;
         }
@@ -2484,7 +2484,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $nextHref = 'javascript: ".$script_modified.";';
+            $nextHref = 'javascript: '.$script_modified.';';
         } else {
             $nextHref = $url.'&amp;'.$offset_name.'='.$offset_next_page;
         }
@@ -2516,7 +2516,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $lastHref = 'javascript: ".$script_modified.";';
+            $lastHref = 'javascript: '.$script_modified.';';
         } else {
             $lastHref = $url.'&amp;'.$offset_name.'='.$offset_lastpage;
         }

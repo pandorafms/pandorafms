@@ -9006,6 +9006,8 @@ div.graph div.legend table {
 
 .pre-wrap {
   white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
 }
 
 .reporting_ulr_img {

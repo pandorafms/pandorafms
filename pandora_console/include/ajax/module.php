@@ -1152,6 +1152,10 @@ if (check_login()) {
                 $title
             );
 
+            if (strlen($module['ip_target']) !== 0) {
+                $title .= '<br/>IP: '.$module['ip_target'];
+            }
+
             $last_status_change_text = __('Time elapsed since last status change: ');
             $last_status_change_text .= (empty($module['last_status_change']) === false) ? human_time_comparation($module['last_status_change']) : __('N/A');
 

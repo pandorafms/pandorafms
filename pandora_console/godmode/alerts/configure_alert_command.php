@@ -413,18 +413,18 @@ $(document).ready (function () {
     $(".hide_inputs").each(function(index) {
         var $input_in_row = $(this).closest('tr').find('.field_value');
         if($(this).is(':checked')) {
-            $input_in_row.prop('style', '-webkit-text-security: disc;');
+            $input_in_row.prop('style', '-webkit-text-security: disc; font-family: text-security-disc;');
         } else {
             $input_in_row.prop('style', '');
         }
     });
-
+    
     $(".hide_inputs").click(function() {
         var $input_in_row = $(this).closest('tr').find('.field_value');
         if($(this).is(':checked')) {
-            $input_in_row.prop('type', 'password');
+            $input_in_row.prop('style', '-webkit-text-security: disc; font-family: text-security-disc;');
         } else {
-            $input_in_row.prop('type', 'text')
+            $input_in_row.prop('style', '');
         }
     });
 });

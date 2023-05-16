@@ -4273,22 +4273,22 @@ function html_print_checkbox_extended(
 
     if (is_array($attributes) === true) {
         $tmpAttributes = [];
-        foreach ($attributes as $key => $val) {
+        foreach ($attributes as $key => $value) {
             switch ($key) {
                 case 'input_class':
-                    $inputClass .= ' '.$val;
+                    $inputClass .= ' '.$value;
                 break;
 
                 case 'label_class':
-                    $labelClass .= ' '.$val;
+                    $labelClass .= ' '.$value;
                 break;
 
                 case 'label_style':
-                    $labelStyle .= 'style="'.$val.'"';
+                    $labelStyle .= 'style="'.$value.'"';
                 break;
 
                 default:
-                    $tmpAttributes[] = $key.'="'.$val.'"';
+                    $tmpAttributes[] = $key.'="'.$value.'"';
                 break;
             }
         }

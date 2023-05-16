@@ -149,7 +149,7 @@ if (is_ajax() === true) {
                         $tmp->alias .= $server['server_name'].' &raquo; ';
                     }
 
-                    $id = $agent['id_agente'];
+                    $id = !empty($agent['id_agente']) ? $agent['id_agente'] : $agent['id_agent'];
 
                     $tmp->alias .= $agent['alias'];
                     $ip = '<em>'.__('N/A').'</em>';
@@ -198,7 +198,7 @@ if (is_ajax() === true) {
                     $interval = human_time_description_raw($agent['intervalo'], false, 'large');
                     $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true);
                     // $last_contact .= ' / '.date_w_fixed_tz($agent['ultimo_contacto_remoto']);
-                    $last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
+                    $last_status_change_agent = agents_get_last_status_change($id);
                     $time_elapsed = !empty($last_status_change_agent) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
 
                     $sql_fields = 'SELECT tcf.name, tcd.description, tcf.is_password_type

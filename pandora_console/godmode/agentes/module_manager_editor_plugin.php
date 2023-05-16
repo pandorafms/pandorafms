@@ -146,10 +146,12 @@ foreach ($password_fields as $k => $p) {
             
             return;
         }
+
+        const moduleId = <?php echo $id_agent_module; ?>;
         
         load_plugin_description($("#id_plugin").val());
         
-        load_plugin_macros_fields('simple-macro');
+        load_plugin_macros_fields('simple-macro', moduleId);
         
         forced_title_callback();
 

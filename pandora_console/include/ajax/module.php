@@ -38,6 +38,7 @@ if (check_login()) {
     enterprise_include_once('include/functions_metaconsole.php');
 
     $get_plugin_macros = get_parameter('get_plugin_macros');
+    $get_module_macros = get_parameter('get_module_macros');
     $search_modules = get_parameter('search_modules');
     $get_module_detail = get_parameter('get_module_detail', 0);
     $get_module_autocomplete_input = (bool) get_parameter(
@@ -113,6 +114,28 @@ if (check_login()) {
         $macros = [];
         $macros['base64'] = base64_encode($plugin_macros);
         $macros['array'] = json_decode($plugin_macros, true);
+
+        echo json_encode($macros);
+        return;
+    }
+
+    if ($get_module_macros && $get_module_macros > 0) {
+        if (https_is_running()) {
+            header('Content-type: application/json');
+        }
+
+        $module_id = $get_module_macros;
+
+        $module_macros = db_get_value(
+            'macros',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $module_id
+        );
+
+        $macros = [];
+        $macros['base64'] = base64_encode($module_macros);
+        $macros['array'] = json_decode($module_macros, true);
 
         echo json_encode($macros);
         return;

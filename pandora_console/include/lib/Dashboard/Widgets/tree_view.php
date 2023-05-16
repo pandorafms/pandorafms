@@ -540,7 +540,7 @@ class TreeViewWidget extends Widget
 
         $searchAgent = '';
         if (empty($this->values['filterAgent']) === false) {
-            $searchAgent = $this->values['filterAgent'];
+            $searchAgent = io_safe_output($this->values['filterAgent']);
         }
 
         $statusModule = -1;

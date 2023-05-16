@@ -179,7 +179,7 @@ try {
         __('Alias'),
         __('Status'),
         __('Alerts'),
-        __('Ultimo contacto remoto'),
+        __('Last remote contact'),
     ];
 
     // Load datatables user interface.

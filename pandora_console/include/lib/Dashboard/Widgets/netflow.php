@@ -396,7 +396,7 @@ class Netflow extends Widget
                         }, 500);
                     }
                 });
-                if(this.value === "usage_map") {
+                if($("#chart_type").val() === "usage_map") {
                     $("#data_to_show").show();
                     $("#aggregated").hide();
                 } else {

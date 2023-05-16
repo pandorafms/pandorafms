@@ -520,8 +520,7 @@ if ((bool) $config['activate_gis'] === true) {
     $dataPositionAgent = gis_get_data_last_position_agent(
         $agent['id_agente']
     );
-
-    if ($dataPositionAgent === true) {
+    if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_longitude'] !== '') {
         $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
 
         $dataOptionalOutput = html_print_anchor(

@@ -4273,7 +4273,7 @@ function html_print_checkbox_extended(
 
     if (is_array($attributes) === true) {
         $tmpAttributes = [];
-        foreach ($attributes as $key => $value) {
+        foreach ($attributes as $key => $val) {
             switch ($key) {
                 case 'input_class':
                     $inputClass .= ' '.$val;

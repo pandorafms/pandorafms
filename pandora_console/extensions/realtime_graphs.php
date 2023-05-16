@@ -186,10 +186,6 @@ function pandora_realtime_graphs()
 
     $table->data[] = $data;
 
-    if ($graph == 'snmp_interface' || $graph == 'snmp_module') {
-        echo snmp_browser_print_container(true, '100%', '60%', 'none');
-    }
-
     // Print the relative path to AJAX calls.
     html_print_input_hidden('rel_path', get_parameter('rel_path', ''));
 
@@ -224,7 +220,7 @@ function pandora_realtime_graphs()
         false,
         '',
         'white-box-content',
-        'box-flat white_table_graph'
+        'box-flat white_table_graph fixed_filter_bar'
     );
 
     $chart[time()]['graph'] = '0';
@@ -265,6 +261,16 @@ function pandora_realtime_graphs()
             'content' => $canvas,
         ]
     );
+
+    if ($graph == 'snmp_interface' || $graph == 'snmp_module') {
+        html_print_div(
+            [
+                'class'   => 'white_box',
+                'id'      => 'graph_snmp_interface',
+                'content' => snmp_browser_print_container(true, '100%', '60%', '', false, false),
+            ]
+        );
+    }
 
     // echo $canvas;
     // Define a custom action to save

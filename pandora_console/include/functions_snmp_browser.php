@@ -1122,7 +1122,7 @@ function snmp_browser_print_container(
 
     if ($toggle === false) {
         // This extra div that can be handled by jquery's dialog.
-        $output .= '<div id="snmp_browser_container" style="display:none">';
+        $output .= '<div id="snmp_browser_container" style="'.$display.'">';
         $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
         $output .= '<div class="w100p">';
         $output .= '<form onsubmit="snmpBrowse(); return false;">';

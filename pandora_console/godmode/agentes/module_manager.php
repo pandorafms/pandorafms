@@ -1105,7 +1105,7 @@ $createModuleTable->data[0][] = html_print_label_input_block(
         false,
         '',
         false,
-        'max-width:300px;'
+        'width:250px;'
     )
 );
 

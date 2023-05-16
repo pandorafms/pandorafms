@@ -54,6 +54,18 @@ if ($enterprise_include === true) {
     enterprise_include_once('meta/include/functions_users_meta.php');
 }
 
+$homeScreenValues = [
+    HOME_SCREEN_DEFAULT        => __('Default'),
+    HOME_SCREEN_VISUAL_CONSOLE => __('Visual console'),
+    HOME_SCREEN_EVENT_LIST     => __('Event list'),
+    HOME_SCREEN_GROUP_VIEW     => __('Group view'),
+    HOME_SCREEN_TACTICAL_VIEW  => __('Tactical view'),
+    HOME_SCREEN_ALERT_DETAIL   => __('Alert detail'),
+    HOME_SCREEN_EXTERNAL_LINK  => __('External link'),
+    HOME_SCREEN_OTHER          => __('Other'),
+    HOME_SCREEN_DASHBOARD      => __('Dashboard'),
+];
+
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 $id = get_parameter('id', get_parameter('id_user', ''));
@@ -414,6 +426,8 @@ if ($create_user === true) {
         $values['data_section'] = get_parameter('data_section');
     }
 
+    $values['section'] = $homeScreenValues[$values['section']];
+
     if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;
         $values['last_pass_change'] = date('Y/m/d H:i:s', get_system_time());
@@ -695,6 +709,8 @@ if ($update_user) {
     } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
         $values['data_section'] = get_parameter('data_section');
     }
+
+    $values['section'] = $homeScreenValues[$values['section']];
 
     if (enterprise_installed() === true && is_metaconsole() === true) {
         $values['metaconsole_access'] = get_parameter('metaconsole_access');

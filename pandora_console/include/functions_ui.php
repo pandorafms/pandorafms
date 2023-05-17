@@ -988,7 +988,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/satellite@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1000,7 +1003,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/network-server@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1012,7 +1018,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/data-server@svg.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -2439,7 +2448,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $anchorHref = 'javascript: ".$script_modified.";';
+            $anchorHref = 'javascript: '.$script_modified.';';
         } else {
             $anchorHref = $url.'&amp;'.$offset_name.'='.$offset_page;
         }
@@ -2484,7 +2493,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $nextHref = 'javascript: ".$script_modified.";';
+            $nextHref = 'javascript: '.$script_modified.';';
         } else {
             $nextHref = $url.'&amp;'.$offset_name.'='.$offset_next_page;
         }
@@ -2516,7 +2525,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $lastHref = 'javascript: ".$script_modified.";';
+            $lastHref = 'javascript: '.$script_modified.';';
         } else {
             $lastHref = $url.'&amp;'.$offset_name.'='.$offset_lastpage;
         }
@@ -4010,7 +4019,7 @@ function ui_print_datatable(array $parameters)
                     $(".datatable-msg-info-'.$table_id.'").hide();
                     $("table#'.$table_id.'").show();
                     $("div.dataTables_paginate").show();
-                    $("div.dataTables_info").show();
+                    $("div.dataTables_info").hide();
                     $("div.dataTables_length").show();
                     $("div.dt-buttons").show();
 

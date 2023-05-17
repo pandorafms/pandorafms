@@ -109,7 +109,7 @@ sub data_producer ($) {
 	} else {
 		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, tagente_estado.current_interval + tagente_estado.last_execution_try AS time_left, last_execution_try
 			FROM tagente, tagente_modulo, tagente_estado, tserver
-			WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status <> 1 AND server_type = ?)))
+			WHERE ((server_name = ?) OR (server_name NOT IN (SELECT name FROM tserver WHERE status = 1 AND server_type = ?)))
 			AND tagente_modulo.id_agente = tagente.id_agente
 			AND tagente.disabled = 0
 			AND tagente_modulo.disabled = 0
@@ -135,8 +135,9 @@ sub data_producer ($) {
 ###############################################################################
 # Data consumer.
 ###############################################################################
-sub data_consumer ($$) {
-	my ($self, $module_id) = @_;
+#sub data_consumer ($$;$) {
+sub data_consumer {
+	my ($self, $module_id, $none) = @_;
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
 	
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $module_id);
@@ -245,6 +246,14 @@ sub data_consumer ($$) {
 			no warnings;
 			$module_data = ($module_data =~ /$filter/) ? 1 : 0;
 		};
+	}
+
+	# Every once in a while a WMI module seems to return None and we don't know the
+	# cause yet. Calling data_consumer again is not the most efficient way to retry the module,
+	# but it reduces the complexity of the function and this should only happen on rare occasions.
+	if ($module_data eq 'None' && !defined($none)) {
+		data_consumer($self, $module_id, 'None');
+		return;
 	}
 
 	my $utimestamp = time ();

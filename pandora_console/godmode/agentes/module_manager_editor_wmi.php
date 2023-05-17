@@ -148,7 +148,7 @@ $data[2] = html_print_label_input_block(
     __('Password'),
     html_print_input_password(
         'plugin_pass',
-        '',
+        $plugin_pass,
         '',
         15,
         60,

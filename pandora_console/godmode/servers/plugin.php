@@ -389,9 +389,9 @@ if (empty($create) === false || empty($view) === false) {
     $disabled = ($locked === true) ? 'readonly="readonly"' : '';
 
     if (empty($create) === true) {
-        $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&update_plugin='.$plugin_id.'&pure='.$config['pure'];
+        $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab='.$tab.'&update_plugin='.$plugin_id.'&pure='.$config['pure'];
     } else {
-        $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create_plugin=1&pure='.$config['pure'];
+        $formAction = 'index.php?sec=gservers&sec2=godmode/servers/plugin&tab='.$tab.'&create_plugin=1&pure='.$config['pure'];
     }
 
     $formPluginType = [
@@ -403,7 +403,7 @@ if (empty($create) === false || empty($view) === false) {
 
     $table = new stdClass();
     $table->id = 'table-form';
-    $table->class = 'filter-table-adv';
+    $table->class = 'databox filter-table-adv';
     $table->style = [];
     $table->data['plugin_name_captions'] = $data;
     $table->size[0] = '50%';
@@ -625,22 +625,14 @@ if (empty($create) === false || empty($view) === false) {
     $datam = [];
     $buttons = '';
     if (!$locked) {
-        $datam[0] = '<a id="add_macro_btn" href="javascript:;">'.'<span class="bolder">'.__('Add macro').'</span>'.'&nbsp;'.html_print_image(
-            'images/add.png',
-            true,
-            ['class' => 'invert_filter']
-        ).'</a>';
-        $datam[0] .= '<div id="next_macro" class="invisible">'.$i.'</div>';
-        $datam[0] .= '<div id="next_row" class="invisible">'.$next_name_number.'</div>';
-
         $buttons = html_print_anchor(
             [
                 'id'      => 'add_macro_btn',
                 'href'    => 'javascript:;',
-                'content' => html_print_image(
+                'content' => '<span>'.__('Add macro').'</span>'.html_print_image(
                     'images/plus@svg.svg',
                     true,
-                    ['class' => 'invert_filter']
+                    ['class' => 'invert_filter main_menu_icon']
                 ),
             ],
             true
@@ -660,10 +652,10 @@ if (empty($create) === false || empty($view) === false) {
                 'id'      => 'delete_macro_button',
                 'style'   => $delete_macro_style,
                 'href'    => 'javascript:;',
-                'content' => html_print_image(
+                'content' => '<span>'.__('Remove macro').'</span>'.html_print_image(
                     'images/delete.svg',
                     true,
-                    ['class' => 'main_menu_icon invert_filter']
+                    ['class' => 'main_menu_icon invert_filter mrgn_right_10px']
                 ),
             ],
             true
@@ -1097,7 +1089,7 @@ if (empty($create) === false || empty($view) === false) {
     }
 
     if ($management_allowed === true) {
-        echo '<form name="plugin" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure='.$config['pure'].'">';
+        echo '<form name="plugin" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/plugin&tab='.$tab.'&create=1&pure='.$config['pure'].'">';
 
         html_print_action_buttons(
             html_print_submit_button(
@@ -1207,7 +1199,7 @@ ui_require_javascript_file('pandora_modules');
             delete_macro_form('table-form-plugin_');
             update_preview();
         }
-        $('div#delete_macro_button>a').click(delete_macro_click_event);
+        $('a#delete_macro_button').click(delete_macro_click_event);
 
         update_preview();
 

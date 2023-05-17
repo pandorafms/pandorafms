@@ -503,15 +503,23 @@ class ColorModuleTabs extends Widget
             if (isset($this->values['formatData']) === true
                 && (bool) $this->values['formatData'] === true
             ) {
-                $output .= format_for_graph(
-                    $data['data'],
-                    $config['graph_precision']
-                );
+                if (is_numeric($data['data']) === true) {
+                    $output .= format_for_graph(
+                        $data['data'],
+                        $config['graph_precision']
+                    );
+                } else {
+                    $output .= ui_print_truncate_text($data['data'], 20);
+                }
             } else {
-                $output .= sla_truncate(
-                    $data['data'],
-                    $config['graph_precision']
-                );
+                if (is_numeric($data['data']) === true) {
+                    $output .= sla_truncate(
+                        $data['data'],
+                        $config['graph_precision']
+                    );
+                } else {
+                    $output .= ui_print_truncate_text($data['data'], 20);
+                }
             }
         } else {
             $output .= '--';

@@ -978,6 +978,12 @@ sub get_db_nodes ($$) {
 	# Look for additional nodes.
 	my @nodes = get_db_rows($dbh, 'SELECT * FROM tmetaconsole_setup WHERE disabled = 0');
 	foreach my $node (@nodes) {
+		# Check and decrypy passwords if necessary.
+		if (defined($pa_config->{'encryption_passphrase'})) {
+			$pa_config->{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [$pa_config, $pa_config->{'encryption_passphrase'}]);
+			$node->{'dbpass'} = PandoraFMS::Core::pandora_output_password($pa_config, $node->{'dbpass'});
+		}
+		
 		push(@{$dbh_nodes},
 		     {'dbengine' => $pa_config->{'dbengine'},
 		      'dbname'   => $node->{'dbname'},
@@ -1014,8 +1020,8 @@ sub get_db_rows ($$;@) {
 ##########################################################################
 ## Connect to the given node and run get_db_rows.
 ##########################################################################
-sub get_db_rows_node ($$;@) {
-	my ($node, $query, @values) = @_;
+sub get_db_rows_node ($$$;@) {
+	my ($pa_config, $node, $query, @values) = @_;
 	my $dbh;
 	my @rows;
 
@@ -1028,6 +1034,22 @@ sub get_db_rows_node ($$;@) {
 		                  $node->{'dbpass'});
 		@rows = get_db_rows($dbh, $query, @values);
 	};
+	if($@) {
+		# Reconnect to meta db.
+			my $dbh = db_connect ($pa_config->{'dbengine'},
+														$pa_config->{'dbname'},
+														$pa_config->{'dbhost'},
+														$pa_config->{'dbport'},
+														$pa_config->{'dbuser'},
+														$pa_config->{'dbpass'});
+														
+			my $msg = "Cannot connect to node database: ".$node->{'dbhost'}.". Please check node credentials.";
+			logger ($pa_config, "[ERROR] ".$msg, 3);
+			PandoraFMS::Core::pandora_event ($pa_config, $msg, 0, 0, 4, 0, 0, 'error', 0, $dbh);			
+			db_disconnect($dbh) if defined($dbh);
+
+			exit 0;
+	}
 
 	db_disconnect($dbh) if defined($dbh);
 
@@ -1037,8 +1059,8 @@ sub get_db_rows_node ($$;@) {
 ##########################################################################
 ## Run get_db_rows on all known Pandora FMS nodes in parallel.
 ##########################################################################
-sub get_db_rows_parallel ($$;@) {
-	my ($nodes, $query, @values) = @_;
+sub get_db_rows_parallel ($$$;@) {
+	my ($pa_config, $nodes, $query, @values) = @_;
 
 	# Launch the queries.
 	my @threads;
@@ -1051,7 +1073,7 @@ sub get_db_rows_parallel ($$;@) {
 
 		# Query the nodes.
 		foreach my $node (@{$nodes}) {
-			my $thr = threads->create(\&get_db_rows_node, $node, $query, @values);
+			my $thr = threads->create(\&get_db_rows_node, $pa_config, $node, $query, @values);
 			push(@threads, $thr) if defined($thr);
 		}
 	}

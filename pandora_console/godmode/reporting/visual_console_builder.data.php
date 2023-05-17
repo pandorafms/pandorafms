@@ -208,7 +208,7 @@ $table->data[2][] = html_print_label_input_block(
 if ($action === 'new') {
     $backgroundColorInput = html_print_input_color(
         'background_color',
-        'white',
+        '#FFFFFF',
         'background_color',
         false,
         true

@@ -103,7 +103,19 @@ if (!empty($macros)) {
         }
 
         if ($m_hide) {
-            $data[1] = html_print_input_password($m['macro'], '', '', 100, 1024, true);
+            $data[1] = html_print_input_password(
+                $m['macro'],
+                io_output_password($m['value']),
+                '',
+                100,
+                1024,
+                true,
+                false,
+                false,
+                '',
+                'off',
+                true
+            );
             array_push($password_fields, $m);
         } else {
             $data[1] = html_print_input_text(

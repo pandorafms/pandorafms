@@ -462,7 +462,7 @@ $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
 $skin = '';
-if (!$meta) {
+
     $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true).'</p>';
     $values = [
         'Default'        => __('Default'),
@@ -520,163 +520,151 @@ if (!$meta) {
             $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
         }
     }
-} else {
-    $home_screen = '';
-    // User only can change skins if has more than one group.
-    if (function_exists('skins_print_select')) {
-        if (count($usr_groups) > 1) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Theme').ui_print_help_tip(
-                __('This change will only apply to nodes'),
-                true
-            ).'</p>';
-            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+
+
+    $timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';
+    $timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
+
+    // Double auth.
+    $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
+
+    if ((bool) $config['double_auth_enabled'] === true) {
+        $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
+        if (($config['2FA_all_users'] == '' && !$double_auth_enabled)
+            || ($config['2FA_all_users'] != '' && !$double_auth_enabled)
+            || ($config['double_auth_enabled'] == '' && $double_auth_enabled)
+            || check_acl($config['id_user'], 0, 'PM')
+        ) {
+            $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+        }
+
+        // Dialog.
+        $double_authentication .= '<div id="dialog-double_auth"class="invisible"><div id="dialog-double_auth-container"></div></div>';
+    }
+
+    if ($double_auth_enabled && $config['double_auth_enabled']) {
+        $double_authentication .= html_print_button(
+            __('Show information'),
+            'show_info',
+            false,
+            'show_double_auth_info();',
+            [ 'icon' => 'camera' ],
+            '',
+            true
+        );
+    }
+
+    if (isset($double_authentication) === true) {
+        $double_authentication .= '</div>';
+    }
+
+    if ((bool) check_acl($config['id_user'], 0, 'ER') === true) {
+        $event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Event filter').'</p>';
+        $user_groups = implode(',', array_keys((users_get_groups($config['id_user'], 'AR', true))));
+        $event_filter .= html_print_select_from_sql(
+            'SELECT id_filter, id_name FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')',
+            'event_filter',
+            $user_info['default_event_filter'],
+            '',
+            __('None'),
+            null,
+            true
+        ).'</div>';
+    }
+
+    $autorefresh_list_out = [];
+    if (is_metaconsole() === false || is_centralized() === true) {
+        $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
+        $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
+        $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
+        $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
+        $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
+        $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
+
+        if (enterprise_installed()) {
+            $autorefresh_list_out['general/sap_view'] = 'SAP view';
         }
     }
-}
 
-$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';
-$timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
+    $autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
+    $autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
+    $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
+    $autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
+    $autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
 
-// Double auth.
-$double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
+    $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
+    $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
+    $autorefresh_list_out['operation/events/events'] = 'Events';
 
-if ((bool) $config['double_auth_enabled'] === true) {
-    $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
-    if (($config['2FA_all_users'] == '' && !$double_auth_enabled)
-        || ($config['2FA_all_users'] != '' && !$double_auth_enabled)
-        || ($config['double_auth_enabled'] == '' && $double_auth_enabled)
-        || check_acl($config['id_user'], 0, 'PM')
-    ) {
-        $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+
+    if (!isset($autorefresh_list)) {
+        $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
+        $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+        if ($autorefresh_list === null) {
+            $autorefresh_list[0] = __('None');
+        } else {
+            $aux = [];
+            $count_autorefresh_list = count($autorefresh_list);
+            for ($i = 0; $i < $count_autorefresh_list; $i++) {
+                $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
+                unset($autorefresh_list_out[$autorefresh_list[$i]]);
+                $autorefresh_list[$i] = $aux;
+            }
+
+            $autorefresh_list = $aux;
+        }
+    } else {
+        if (is_array($autorefresh_list) === false || empty($autorefresh_list[0]) === true || $autorefresh_list[0] === '0') {
+            $autorefresh_list = [];
+            $autorefresh_list[0] = __('None');
+        } else {
+            $aux = [];
+            $count_autorefresh_list = count($autorefresh_list);
+            for ($i = 0; $i < $count_autorefresh_list; $i++) {
+                $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
+                unset($autorefresh_list_out[$autorefresh_list[$i]]);
+                $autorefresh_list[$i] = $aux;
+            }
+
+            $autorefresh_list = $aux;
+        }
     }
 
-    // Dialog.
-    $double_authentication .= '<div id="dialog-double_auth"class="invisible"><div id="dialog-double_auth-container"></div></div>';
-}
-
-if ($double_auth_enabled && $config['double_auth_enabled']) {
-    $double_authentication .= html_print_button(
-        __('Show information'),
-        'show_info',
+    $autorefresh_show = '<p class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
+        __('This will activate autorefresh in selected pages'),
+        true
+    ).'</p>';
+    $select_out = html_print_select(
+        $autorefresh_list_out,
+        'autorefresh_list_out[]',
+        '',
+        '',
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
         false,
-        'show_double_auth_info();',
-        [ 'icon' => 'camera' ],
-        '',
-        true
+        'width:100%'
     );
-}
-
-if (isset($double_authentication) === true) {
-    $double_authentication .= '</div>';
-}
-
-if ((bool) check_acl($config['id_user'], 0, 'ER') === true) {
-    $event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Event filter').'</p>';
-    $user_groups = implode(',', array_keys((users_get_groups($config['id_user'], 'AR', true))));
-    $event_filter .= html_print_select_from_sql(
-        'SELECT id_filter, id_name FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')',
-        'event_filter',
-        $user_info['default_event_filter'],
+    $arrows = ' ';
+    $select_in = html_print_select(
+        $autorefresh_list,
+        'autorefresh_list[]',
         '',
-        __('None'),
-        null,
-        true
-    ).'</div>';
-}
+        '',
+        '',
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width:100%'
+    );
 
-$autorefresh_list_out = [];
-if (is_metaconsole() === false || is_centralized() === true) {
-    $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
-    $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
-    $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
-    $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
-    $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
-    $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
-
-    if (enterprise_installed()) {
-        $autorefresh_list_out['general/sap_view'] = 'SAP view';
-    }
-}
-
-$autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
-$autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
-$autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
-$autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
-$autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
-
-$autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
-$autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
-$autorefresh_list_out['operation/events/events'] = 'Events';
-
-
-if (!isset($autorefresh_list)) {
-    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
-    $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
-    if ($autorefresh_list === null) {
-        $autorefresh_list[0] = __('None');
-    } else {
-        $aux = [];
-        $count_autorefresh_list = count($autorefresh_list);
-        for ($i = 0; $i < $count_autorefresh_list; $i++) {
-            $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
-            unset($autorefresh_list_out[$autorefresh_list[$i]]);
-            $autorefresh_list[$i] = $aux;
-        }
-
-        $autorefresh_list = $aux;
-    }
-} else {
-    if (is_array($autorefresh_list) === false || empty($autorefresh_list[0]) === true || $autorefresh_list[0] === '0') {
-        $autorefresh_list = [];
-        $autorefresh_list[0] = __('None');
-    } else {
-        $aux = [];
-        $count_autorefresh_list = count($autorefresh_list);
-        for ($i = 0; $i < $count_autorefresh_list; $i++) {
-            $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
-            unset($autorefresh_list_out[$autorefresh_list[$i]]);
-            $autorefresh_list[$i] = $aux;
-        }
-
-        $autorefresh_list = $aux;
-    }
-}
-
-$autorefresh_show = '<p class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
-    __('This will activate autorefresh in selected pages'),
-    true
-).'</p>';
-$select_out = html_print_select(
-    $autorefresh_list_out,
-    'autorefresh_list_out[]',
-    '',
-    '',
-    '',
-    '',
-    true,
-    true,
-    true,
-    '',
-    false,
-    'width:100%'
-);
-$arrows = ' ';
-$select_in = html_print_select(
-    $autorefresh_list,
-    'autorefresh_list[]',
-    '',
-    '',
-    '',
-    '',
-    true,
-    true,
-    true,
-    '',
-    false,
-    'width:100%'
-);
-
-$table_ichanges = '<div class="autorefresh_select">
+    $table_ichanges = '<div class="autorefresh_select">
                         <div class="autorefresh_select_list_out">
                             <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
                             <div>'.$select_out.'</div>
@@ -707,28 +695,26 @@ $table_ichanges = '<div class="autorefresh_select">
                         </div>
                     </div>';
 
-$autorefresh_show .= $table_ichanges;
+    $autorefresh_show .= $table_ichanges;
 
-// Time autorefresh.
-$times = get_refresh_time_array();
-$time_autorefresh = '<div class="label_select"><p class="edit_user_labels">'.__('Time autorefresh');
-$time_autorefresh .= ui_print_help_tip(
-    __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
-    true
-).'</p>';
-$time_autorefresh .= html_print_select(
-    $times,
-    'time_autorefresh',
-    $user_info['time_autorefresh'],
-    '',
-    '',
-    '',
-    true,
-    false,
-    false
-).'</div>';
-
-
+    // Time autorefresh.
+    $times = get_refresh_time_array();
+    $time_autorefresh = '<div class="label_select"><p class="edit_user_labels">'.__('Time autorefresh');
+    $time_autorefresh .= ui_print_help_tip(
+        __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
+        true
+    ).'</p>';
+    $time_autorefresh .= html_print_select(
+        $times,
+        'time_autorefresh',
+        $user_info['time_autorefresh'],
+        '',
+        '',
+        '',
+        true,
+        false,
+        false
+    ).'</div>';
 
 
 
@@ -740,61 +726,63 @@ $time_autorefresh .= html_print_select(
 
 
 
-$comments = '<p class="edit_user_labels">'.__('Comments').': </p>';
-$comments .= html_print_textarea(
-    'comments',
-    2,
-    60,
-    $user_info['comments'],
-    (($view_mode) ? 'readonly="readonly"' : ''),
-    true
-);
-$comments .= html_print_input_hidden('quick_language_change', 1, true);
-
-$allowedIP = '<p class="edit_user_labels">';
-$allowedIP .= __('Login allowed IP list').'&nbsp;';
-$allowedIP .= ui_print_help_tip(__('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'), true).'&nbsp;';
-$allowedIP .= html_print_checkbox_switch(
-    'allowed_ip_active',
-    0,
-    $user_info['allowed_ip_active'],
-    true
-);
-$allowedIP .= '</p>';
-$allowedIP .= html_print_textarea(
-    'allowed_ip_list',
-    2,
-    65,
-    $user_info['allowed_ip_list'],
-    ($view_mode ? 'readonly="readonly"' : ''),
-    true
-);
 
 
+    $comments = '<p class="edit_user_labels">'.__('Comments').': </p>';
+    $comments .= html_print_textarea(
+        'comments',
+        2,
+        60,
+        $user_info['comments'],
+        (($view_mode) ? 'readonly="readonly"' : ''),
+        true
+    );
+    $comments .= html_print_input_hidden('quick_language_change', 1, true);
 
-foreach ($timezones as $timezone_name => $tz) {
-    if ($timezone_name == 'America/Montreal') {
-        $timezone_name = 'America/Toronto';
-    } else if ($timezone_name == 'Asia/Chongqing') {
-        $timezone_name = 'Asia/Shanghai';
+    $allowedIP = '<p class="edit_user_labels">';
+    $allowedIP .= __('Login allowed IP list').'&nbsp;';
+    $allowedIP .= ui_print_help_tip(__('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'), true).'&nbsp;';
+    $allowedIP .= html_print_checkbox_switch(
+        'allowed_ip_active',
+        0,
+        $user_info['allowed_ip_active'],
+        true
+    );
+    $allowedIP .= '</p>';
+    $allowedIP .= html_print_textarea(
+        'allowed_ip_list',
+        2,
+        65,
+        $user_info['allowed_ip_list'],
+        ($view_mode ? 'readonly="readonly"' : ''),
+        true
+    );
+
+
+
+    foreach ($timezones as $timezone_name => $tz) {
+        if ($timezone_name == 'America/Montreal') {
+            $timezone_name = 'America/Toronto';
+        } else if ($timezone_name == 'Asia/Chongqing') {
+            $timezone_name = 'Asia/Shanghai';
+        }
+
+        $area_data_timezone_polys .= '';
+        foreach ($tz['polys'] as $coords) {
+            $area_data_timezone_polys .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="poly" coords="'.implode(',', $coords).'" />';
+        }
+
+        $area_data_timezone_rects .= '';
+        foreach ($tz['rects'] as $coords) {
+            $area_data_timezone_rects .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="rect" coords="'.implode(',', $coords).'" />';
+        }
     }
 
-    $area_data_timezone_polys .= '';
-    foreach ($tz['polys'] as $coords) {
-        $area_data_timezone_polys .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="poly" coords="'.implode(',', $coords).'" />';
+    if (is_metaconsole() === true) {
+        echo '<form id="user_profile_form" name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
+    } else {
+        echo '<form id="user_profile_form" name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
     }
-
-    $area_data_timezone_rects .= '';
-    foreach ($tz['rects'] as $coords) {
-        $area_data_timezone_rects .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="rect" coords="'.implode(',', $coords).'" />';
-    }
-}
-
-if (is_metaconsole() === true) {
-    echo '<form id="user_profile_form" name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
-} else {
-    echo '<form id="user_profile_form" name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
-}
 
     html_print_input_hidden('id', $id, false, false, false, 'id');
 
@@ -812,13 +800,13 @@ if (is_metaconsole() === true) {
 
 
 
-if (is_metaconsole() === false) {
-    echo '<div id="timezone-picker">
+    if (is_metaconsole() === false) {
+        echo '<div id="timezone-picker">
                         <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
                         <img class="timezone-pin pdd_t_4px" src="include/javascript/timezonepicker/images/pin.png" />
                         <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
                     </div>';
-}
+    }
 
                 echo '</div>
             </div>
@@ -831,216 +819,216 @@ if (is_metaconsole() === false) {
             </div>
         </div>';
 
-if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
-    // EHorus user remote login.
-    $table_remote = new StdClass();
-    $table_remote->data = [];
-    $table_remote->width = '100%';
-    $table_remote->id = 'ehorus-remote-setup';
-    $table_remote->class = 'white_box';
-    $table_remote->size['name'] = '30%';
-    $table_remote->style['name'] = 'font-weight: bold';
+    if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
+        // EHorus user remote login.
+        $table_remote = new StdClass();
+        $table_remote->data = [];
+        $table_remote->width = '100%';
+        $table_remote->id = 'ehorus-remote-setup';
+        $table_remote->class = 'white_box';
+        $table_remote->size['name'] = '30%';
+        $table_remote->style['name'] = 'font-weight: bold';
 
-    // Title.
-    $row = [];
-    $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
-    $table_remote->data['ehorus_user_level_conf'] = $row;
+        // Title.
+        $row = [];
+        $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
+        $table_remote->data['ehorus_user_level_conf'] = $row;
 
-    // Enable/disable eHorus for this user.
-    $row = [];
-    $row['name'] = __('eHorus user acces enabled');
-    $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
-    $table_remote->data['ehorus_user_level_enabled'] = $row;
+        // Enable/disable eHorus for this user.
+        $row = [];
+        $row['name'] = __('eHorus user acces enabled');
+        $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
+        $table_remote->data['ehorus_user_level_enabled'] = $row;
 
-    // User.
-    $row = [];
-    $row['name'] = __('User');
-    $row['control'] = html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 30, 100, true);
-    $table_remote->data['ehorus_user_level_user'] = $row;
+        // User.
+        $row = [];
+        $row['name'] = __('User');
+        $row['control'] = html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 30, 100, true);
+        $table_remote->data['ehorus_user_level_user'] = $row;
 
-    // Pass.
-    $row = [];
-    $row['name'] = __('Password');
-    $row['control'] = html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 30, 100, true);
-    $table_remote->data['ehorus_user_level_pass'] = $row;
+        // Pass.
+        $row = [];
+        $row['name'] = __('Password');
+        $row['control'] = html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 30, 100, true);
+        $table_remote->data['ehorus_user_level_pass'] = $row;
 
-    // Test.
-    $ehorus_port = db_get_value('value', 'tconfig', 'token', 'ehorus_port');
-    $ehorus_host = db_get_value('value', 'tconfig', 'token', 'ehorus_hostname');
+        // Test.
+        $ehorus_port = db_get_value('value', 'tconfig', 'token', 'ehorus_port');
+        $ehorus_host = db_get_value('value', 'tconfig', 'token', 'ehorus_hostname');
 
-    $row = [];
-    $row['name'] = __('Test');
-    $row['control'] = html_print_button(
-        __('Start'),
-        'test-ehorus',
-        false,
-        'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')',
-        [ 'icon' => 'next' ],
-        true
-    );
-    $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-    $row['control'] .= '<span id="test-ehorus-message" class="invisible"></span>';
-    $table_remote->data['ehorus_test'] = $row;
-
-    echo '<div class="ehorus_user_conf user_edit_fourth_row">';
-    html_print_table($table_remote);
-     echo '</div>';
-}
-
-if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
-    // Integria IMS user remote login.
-    $table_remote = new StdClass();
-    $table_remote->data = [];
-    $table_remote->width = '100%';
-    $table_remote->id = 'integria-remote-setup';
-    $table_remote->class = 'white_box';
-    $table_remote->size['name'] = '30%';
-    $table_remote->style['name'] = 'font-weight: bold';
-
-    // Integria IMS user level authentication.
-    // Title.
-    $row = [];
-    $row['control'] = '<p class="edit_user_labels">'.__('Integria user configuration').': </p>';
-    $table_remote->data['integria_user_level_conf'] = $row;
-
-    // Integria IMS user.
-    $row = [];
-    $row['name'] = __('User');
-    $row['control'] = html_print_input_text('integria_user_level_user', $user_info['integria_user_level_user'], '', 30, 100, true);
-    $table_remote->data['integria_user_level_user'] = $row;
-
-    // Integria IMS pass.
-    $row = [];
-    $row['name'] = __('Password');
-    $row['control'] = html_print_input_password('integria_user_level_pass', io_output_password($user_info['integria_user_level_pass']), '', 30, 100, true);
-    $table_remote->data['integria_user_level_pass'] = $row;
-
-    // Test.
-    $integria_host = db_get_value('value', 'tconfig', 'token', 'integria_hostname');
-    $integria_api_pass = db_get_value('value', 'tconfig', 'token', 'integria_api_pass');
-
-    $row = [];
-    $row['name'] = __('Test');
-    $row['control'] = html_print_button(
-        __('Start'),
-        'test-integria',
-        false,
-        'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')',
-        [ 'icon' => 'next' ],
-        true
-    );
-    $row['control'] .= '&nbsp;<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-    $row['control'] .= '<span id="test-integria-message" class="invisible"></span>';
-    $table_remote->data['integria_test'] = $row;
-
-    echo '<div class="integria_user_conf">';
-    html_print_table($table_remote);
-    echo '</div>';
-}
-
-
-if ($is_management_allowed === true) {
-    if ((bool) $config['user_can_update_info'] === false) {
-        $outputButton = '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
-    } else {
-        $outputButton = html_print_submit_button(
-            __('Update'),
-            'uptbutton',
-            $view_mode,
-            [ 'icon' => 'update' ],
+        $row = [];
+        $row['name'] = __('Test');
+        $row['control'] = html_print_button(
+            __('Start'),
+            'test-ehorus',
+            false,
+            'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')',
+            [ 'icon' => 'next' ],
             true
         );
-        $outputButton .= html_print_csrf_hidden(true);
+        $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+        $row['control'] .= '&nbsp;<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+        $row['control'] .= '&nbsp;<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+        $row['control'] .= '<span id="test-ehorus-message" class="invisible"></span>';
+        $table_remote->data['ehorus_test'] = $row;
+
+        echo '<div class="ehorus_user_conf user_edit_fourth_row">';
+        html_print_table($table_remote);
+         echo '</div>';
     }
 
-    html_print_div(
-        [
-            'class'   => 'action-buttons',
-            'content' => $outputButton,
-        ]
-    );
-}
+    if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
+        // Integria IMS user remote login.
+        $table_remote = new StdClass();
+        $table_remote->data = [];
+        $table_remote->width = '100%';
+        $table_remote->id = 'integria-remote-setup';
+        $table_remote->class = 'white_box';
+        $table_remote->size['name'] = '30%';
+        $table_remote->style['name'] = 'font-weight: bold';
 
-echo '</form>';
+        // Integria IMS user level authentication.
+        // Title.
+        $row = [];
+        $row['control'] = '<p class="edit_user_labels">'.__('Integria user configuration').': </p>';
+        $table_remote->data['integria_user_level_conf'] = $row;
 
-echo '<div id="edit_user_profiles" class="white_box">';
-if (is_metaconsole() === false) {
-    echo '<p class="edit_user_labels">'.__('Profiles/Groups assigned to this user').'</p>';
-}
+        // Integria IMS user.
+        $row = [];
+        $row['name'] = __('User');
+        $row['control'] = html_print_input_text('integria_user_level_user', $user_info['integria_user_level_user'], '', 30, 100, true);
+        $table_remote->data['integria_user_level_user'] = $row;
 
-$table = new stdClass();
-$table->width = '100%';
-$table->class = 'info_table';
-if (is_metaconsole() === true) {
+        // Integria IMS pass.
+        $row = [];
+        $row['name'] = __('Password');
+        $row['control'] = html_print_input_password('integria_user_level_pass', io_output_password($user_info['integria_user_level_pass']), '', 30, 100, true);
+        $table_remote->data['integria_user_level_pass'] = $row;
+
+        // Test.
+        $integria_host = db_get_value('value', 'tconfig', 'token', 'integria_hostname');
+        $integria_api_pass = db_get_value('value', 'tconfig', 'token', 'integria_api_pass');
+
+        $row = [];
+        $row['name'] = __('Test');
+        $row['control'] = html_print_button(
+            __('Start'),
+            'test-integria',
+            false,
+            'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')',
+            [ 'icon' => 'next' ],
+            true
+        );
+        $row['control'] .= '&nbsp;<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+        $row['control'] .= '&nbsp;<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+        $row['control'] .= '&nbsp;<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+        $row['control'] .= '<span id="test-integria-message" class="invisible"></span>';
+        $table_remote->data['integria_test'] = $row;
+
+        echo '<div class="integria_user_conf">';
+        html_print_table($table_remote);
+        echo '</div>';
+    }
+
+
+    if ($is_management_allowed === true) {
+        if ((bool) $config['user_can_update_info'] === false) {
+            $outputButton = '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
+        } else {
+            $outputButton = html_print_submit_button(
+                __('Update'),
+                'uptbutton',
+                $view_mode,
+                [ 'icon' => 'update' ],
+                true
+            );
+            $outputButton .= html_print_csrf_hidden(true);
+        }
+
+        html_print_div(
+            [
+                'class'   => 'action-buttons',
+                'content' => $outputButton,
+            ]
+        );
+    }
+
+    echo '</form>';
+
+    echo '<div id="edit_user_profiles" class="white_box">';
+    if (is_metaconsole() === false) {
+        echo '<p class="edit_user_labels">'.__('Profiles/Groups assigned to this user').'</p>';
+    }
+
+    $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox data';
-    $table->title = __('Profiles/Groups assigned to this user');
-    $table->head_colspan[0] = 0;
-    $table->headstyle[] = 'background-color: #82B93C';
-    $table->headstyle[] = 'background-color: #82B93C';
-    $table->headstyle[] = 'background-color: #82B93C';
-}
-
-$table->data = [];
-$table->head = [];
-$table->align = [];
-$table->style = [];
-
-if (is_metaconsole() === false) {
-    $table->style[0] = 'font-weight: bold';
-    $table->style[1] = 'font-weight: bold';
-}
-
-$table->head[0] = __('Profile name');
-$table->head[1] = __('Group');
-$table->head[2] = __('Tags');
-$table->align = [];
-$table->align[1] = 'left';
-
-$table->data = [];
-
-$result = db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $id);
-if ($result === false) {
-    $result = [];
-}
-
-foreach ($result as $profile) {
-    $data[0] = '<b>'.profile_get_name($profile['id_perfil']).'</b>';
-    if ($config['show_group_name']) {
-        $data[1] = ui_print_group_icon(
-            $profile['id_grupo'],
-            true
-        ).'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">&nbsp;</a>';
-    } else {
-        $data[1] = ui_print_group_icon(
-            $profile['id_grupo'],
-            true
-        ).'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">&nbsp;'.ui_print_truncate_text(groups_get_name($profile['id_grupo'], true), GENERIC_SIZE_TEXT).'</a>';
+    $table->class = 'info_table';
+    if (is_metaconsole() === true) {
+        $table->width = '100%';
+        $table->class = 'databox data';
+        $table->title = __('Profiles/Groups assigned to this user');
+        $table->head_colspan[0] = 0;
+        $table->headstyle[] = 'background-color: #82B93C';
+        $table->headstyle[] = 'background-color: #82B93C';
+        $table->headstyle[] = 'background-color: #82B93C';
     }
 
-    $tags_ids = explode(',', $profile['tags']);
-    $tags = tags_get_tags($tags_ids);
+    $table->data = [];
+    $table->head = [];
+    $table->align = [];
+    $table->style = [];
 
-    $data[2] = tags_get_tags_formatted($tags);
+    if (is_metaconsole() === false) {
+        $table->style[0] = 'font-weight: bold';
+        $table->style[1] = 'font-weight: bold';
+    }
 
-    array_push($table->data, $data);
-}
+    $table->head[0] = __('Profile name');
+    $table->head[1] = __('Group');
+    $table->head[2] = __('Tags');
+    $table->align = [];
+    $table->align[1] = 'left';
 
-if (!empty($table->data)) {
-    html_print_table($table);
-} else {
-    ui_print_info_message(['no_close' => true, 'message' => __('This user doesn\'t have any assigned profile/group.') ]);
-}
+    $table->data = [];
 
-// Close edit_user_profiles.
-echo '</div>';
+    $result = db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $id);
+    if ($result === false) {
+        $result = [];
+    }
 
-if (is_metaconsole() === false) {
-    ?>
+    foreach ($result as $profile) {
+        $data[0] = '<b>'.profile_get_name($profile['id_perfil']).'</b>';
+        if ($config['show_group_name']) {
+            $data[1] = ui_print_group_icon(
+                $profile['id_grupo'],
+                true
+            ).'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">&nbsp;</a>';
+        } else {
+            $data[1] = ui_print_group_icon(
+                $profile['id_grupo'],
+                true
+            ).'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">&nbsp;'.ui_print_truncate_text(groups_get_name($profile['id_grupo'], true), GENERIC_SIZE_TEXT).'</a>';
+        }
+
+        $tags_ids = explode(',', $profile['tags']);
+        $tags = tags_get_tags($tags_ids);
+
+        $data[2] = tags_get_tags_formatted($tags);
+
+        array_push($table->data, $data);
+    }
+
+    if (!empty($table->data)) {
+        html_print_table($table);
+    } else {
+        ui_print_info_message(['no_close' => true, 'message' => __('This user doesn\'t have any assigned profile/group.') ]);
+    }
+
+    // Close edit_user_profiles.
+    echo '</div>';
+
+    if (is_metaconsole() === false) {
+        ?>
 
     <style>
         /* Styles for timezone map */
@@ -1062,14 +1050,14 @@ if (is_metaconsole() === false) {
             });
         });
     </script>
-    <?php
-    // Include OpenLayers and timezone user map library.
-    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.timezone-picker.min.js').'"></script>'."\n\t";
-    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
-    // Closes no meta condition.
-}
+        <?php
+        // Include OpenLayers and timezone user map library.
+        echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.timezone-picker.min.js').'"></script>'."\n\t";
+        echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/timezonepicker/lib/jquery.maphilight.min.js').'"></script>'."\n\t";
+        // Closes no meta condition.
+    }
 
-?>
+    ?>
 
 <script language="javascript" type="text/javascript">
 

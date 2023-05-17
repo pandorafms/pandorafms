@@ -390,14 +390,16 @@ $data[1] = html_print_input_text(
 $data[2] = __('Auth password').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_auth_pass',
-    '',
+    $snmp3_auth_pass,
     '',
     15,
     60,
     true,
     $disabledBecauseInPolicy,
     false,
-    $largeclassdisabledBecauseInPolicy
+    $largeclassdisabledBecauseInPolicy,
+    'off',
+    true
 );
 $data[3] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_mmen', true);
 if ($snmp_version != 3) {
@@ -412,14 +414,16 @@ $data[1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_pr
 $data[2] = __('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_privacy_pass',
-    '',
+    $snmp3_privacy_pass,
     '',
     15,
     60,
     true,
     $disabledBecauseInPolicy,
     false,
-    $largeclassdisabledBecauseInPolicy
+    $largeclassdisabledBecauseInPolicy,
+    'off',
+    true
 );
 
 if ($snmp_version != 3) {
@@ -731,12 +735,6 @@ $(document).ready (function () {
             $("#text-custom_ip_target").hide();
         }
     });
-
-    // Add input password values with js to hide it in browser inspector.
-    $('#password-snmp3_auth_pass').val('<?php echo $snmp3_auth_pass; ?>');
-    $('#password-snmp3_privacy_pass').val('<?php echo $snmp3_privacy_pass; ?>');
-
-    observerInputPassword();
 });
 
 

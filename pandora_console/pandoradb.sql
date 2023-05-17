@@ -572,6 +572,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   `fires_max` INT UNSIGNED DEFAULT 0,
   `module_action_threshold` INT NOT NULL DEFAULT 0,
   `last_execution` BIGINT NOT NULL DEFAULT 0,
+  `recovered` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
@@ -2611,7 +2612,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`)
         ON DELETE CASCADE ON UPDATE CASCADE		
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
@@ -4238,7 +4239,7 @@ CREATE TABLE `tevent_sound` (
     `name` TEXT NULL,
     `sound` TEXT NULL,
     `active` TINYINT NOT NULL DEFAULT '1',
-PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tsesion_filter`
@@ -4252,7 +4253,7 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `type` TEXT NULL,
     `user` TEXT NULL,
     PRIMARY KEY (`id_filter`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 
 CREATE TABLE IF NOT EXISTS `twelcome_tip` (
@@ -4290,3 +4291,30 @@ CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
   `label` VARCHAR(255) NOT NULL,
   `section` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`));
+
+-- ---------------------------------------------------------------------
+-- Table `tsesion_filter_log_viewer`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
+  `id_filter` INT NOT NULL AUTO_INCREMENT,
+  `id_name` TEXT NULL,
+  `id_group_filter` TEXT NULL,
+  `id_search_mode` INT NULL,
+  `order` VARCHAR(45) NULL,
+  `search` VARCHAR(255) NULL,
+  `group_id` INT NULL,
+  `date_range` TINYINT NULL,
+  `start_date_defined` VARCHAR(45) NULL,
+  `start_date_time` VARCHAR(45) NULL,
+  `start_date_date` VARCHAR(45) NULL,
+  `start_date_date_range` VARCHAR(45) NULL,
+  `start_date_time_range` VARCHAR(45) NULL,
+  `end_date_date_range` VARCHAR(45) NULL,
+  `end_date_time_range` VARCHAR(45) NULL,
+  `agent` VARCHAR(255) NULL,
+  `source` VARCHAR(255) NULL,
+  `display_mode` INT NULL,
+  `capture_model` INT NULL,
+  `graph_type` INT NULL,
+  PRIMARY KEY (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

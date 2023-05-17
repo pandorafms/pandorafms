@@ -769,7 +769,17 @@ if ($modules !== false) {
         }
 
         if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
-            $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+            if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+                $linked = policies_is_module_linked($module['id_agente_modulo']);
+                $adopt = policies_is_module_adopt($module['id_agente_modulo']);
+                if ($linked !== false && $adopt === false) {
+                    $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'&id_policy_module='.$module['id_policy_module'].'">';
+                } else {
+                    $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+                }
+            } else {
+                $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+            }
         }
 
         if ((bool) $module['disabled'] === true) {
@@ -871,6 +881,10 @@ if ($modules !== false) {
             $status,
             $title
         );
+
+        if (strlen($module['ip_target']) !== 0) {
+            $title .= '<br/>IP: '.$module['ip_target'];
+        }
 
         // This module is initialized ? (has real data).
         if ($status === STATUS_MODULE_NO_DATA) {
@@ -1091,7 +1105,7 @@ $createModuleTable->data[0][] = html_print_label_input_block(
         false,
         '',
         false,
-        'max-width:300px;'
+        'width:250px;'
     )
 );
 

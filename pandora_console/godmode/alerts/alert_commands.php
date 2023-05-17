@@ -133,7 +133,7 @@ if (is_ajax()) {
                 }
             }
 
-            $style = ((int) $field_hidden === 1) ? '-webkit-text-security: disc;' : '';
+            $style = ((int) $field_hidden === 1) ? '-webkit-text-security: disc; font-family: text-security-disc;' : '';
 
             if (!empty($field_value)) {
                 $field_value = io_safe_output($field_value);

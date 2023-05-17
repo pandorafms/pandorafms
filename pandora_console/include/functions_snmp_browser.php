@@ -1126,6 +1126,14 @@ function snmp_browser_print_container(
         $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
         $output .= '<div class="w100p">';
         $output .= '<form onsubmit="snmpBrowse(); return false;">';
+        $output .= html_print_input_hidden(
+            'id_agent_module',
+            0,
+            true,
+            false,
+            false,
+            'id_agent_module'
+        );
         $output .= html_print_table($table, true);
         $output .= html_print_div(
             [

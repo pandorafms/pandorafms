@@ -28,6 +28,7 @@
 
 global $config;
 require_once $config['homedir'].'/include/class/CredentialStore.class.php';
+require_once $config['homedir'].'/operation/snmpconsole/snmp_browser.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
 $snmp_browser_path = (is_metaconsole() === true) ? '../../' : '';
 $snmp_browser_path .= 'include/javascript/pandora_snmp_browser.js';
@@ -310,7 +311,7 @@ $data[2] .= html_print_button(
     __('SNMP Walk'),
     'snmp_walk',
     false,
-    'snmpBrowserWindow()',
+    'snmpBrowserWindow('.$id_agente.')',
     [ 'mode' => 'link' ],
     true
 );

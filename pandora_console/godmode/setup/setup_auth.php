@@ -24,7 +24,7 @@ global $config;
 
 check_login();
 
-if ((bool) check_acl($config['id_user'], 0, 'PM') === true && is_user_admin($config['id_user']) === false) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === false && is_user_admin($config['id_user']) === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access Setup Management'

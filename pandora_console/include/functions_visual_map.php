@@ -3173,7 +3173,12 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 
     if ($layoutData['type'] == 5) {
         // ICON ELEMENT.
-        $img .= '.png';
+        $url = parse_url($layoutData['image']);
+        if (isset($url['scheme']) === false) {
+            $img .= '.png';
+        } else {
+            $img = $layoutData['image'];
+        }
     } else {
         if ($status === false) {
             $status = visual_map_get_status_element($layoutData);

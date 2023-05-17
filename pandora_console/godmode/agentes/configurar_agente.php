@@ -2525,10 +2525,10 @@ switch ($tab) {
     });
 
     // Change description when edit port
-    $( "#text-tcp_port" ).change(function() {
+    /*$( "#text-tcp_port" ).change(function() {
         $( "#textarea_description" ).text(`Checks port ${$( "#text-tcp_port" ).val()} is opened`);
-    });
-    
+    });*/
+
     // Set the position and width of the subtab
     /*
     function agent_wizard_tab_setup() {        

@@ -842,7 +842,7 @@ if ($modules !== false) {
 
                 if ($linked !== false) {
                     if ($adopt === true) {
-                        $img = 'images/policies_brick.png';
+                        $img = 'images/policies_not_brick.png';
                         $title = '('.__('Adopted').') '.$policyInfo['name_policy'];
                     } else {
                         $img = 'images/policies_mc.png';

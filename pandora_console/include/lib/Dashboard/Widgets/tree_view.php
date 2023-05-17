@@ -552,7 +552,7 @@ class TreeViewWidget extends Widget
 
         $searchModule = '';
         if (empty($this->values['filterModule']) === false) {
-            $searchModule = $this->values['filterModule'];
+            $searchModule = io_safe_output($this->values['filterModule']);
         }
 
         $searchGroup = 0;

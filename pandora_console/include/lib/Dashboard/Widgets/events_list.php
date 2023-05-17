@@ -658,6 +658,10 @@ class EventsListWidget extends Widget
 
         $table_id = 'dashboard_list_events_'.$this->cellId;
 
+        // Public dashboard.
+        $hash = get_parameter('auth_hash', '');
+        $id_user = get_parameter('id_user', '');
+
         // Print datatable.
         $output .= ui_print_datatable(
             [
@@ -671,6 +675,9 @@ class EventsListWidget extends Widget
                     'filter'         => $filter,
                     'length'         => $this->values['limit'],
                     'groupRecursion' => (bool) $this->values['groupRecursion'],
+                    'auth_hash'      => $hash,
+                    'auth_class'     => 'PandoraFMS\Dashboard\Manager',
+                    'id_user'        => $id_user,
                 ],
                 'default_pagination'             => $this->values['limit'],
                 'pagination_options'             => [

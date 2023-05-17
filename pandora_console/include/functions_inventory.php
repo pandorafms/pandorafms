@@ -834,12 +834,80 @@ function get_data_basic_info_sql($params, $count=false)
         );
     }
 
+    if ($params['order'] > 0) {
+        $str_split = explode(' ', $params['order']);
+        switch ($str_split[0]) {
+            case 'alias':
+                $params['order'] = 'alias '.$str_split[1];
+            break;
+
+            case 'ip':
+                $params['order'] = 'direccion '.$str_split[1];
+            break;
+
+            case 'secondoaryIp':
+                $params['order'] = 'fixed_ip '.$str_split[1];
+            break;
+
+            case 'group':
+                $params['order'] = 'id_grupo '.$str_split[1];
+            break;
+
+            case 'secondaryGroups':
+                $params['order'] = 'tagent_secondary_group.id_group '.$str_split[1];
+            break;
+
+            case 'description':
+                $params['order'] = 'comentarios '.$str_split[1];
+            break;
+
+            case 'os':
+                $params['order'] = 'id_os '.$str_split[1];
+            break;
+
+            case 'interval':
+                $params['order'] = 'intervalo '.$str_split[1];
+            break;
+
+            case 'lastContact':
+                $params['order'] = 'ultimo_contacto '.$str_split[1];
+            break;
+
+            case 'lastStatusChange':
+                $params['order'] = 'tagente_estado.last_status_change '.$str_split[1];
+            break;
+
+            case 'customFields':
+                $params['order'] = 'tagent_custom_data.id_field '.$str_split[1];
+            break;
+
+            case 'valuesCustomFields':
+                $params['order'] = 'tagent_custom_data.description '.$str_split[1];
+            break;
+
+            default:
+                $params['order'] = 'alias '.$str_split[1];
+            break;
+        }
+    }
+
     $limit_condition = '';
     $order_condition = '';
     $fields = 'count(*)';
+    $innerjoin = '';
+    $groupby = '';
+
+    $table = 'tagente';
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_agent';
+    }
+
     if ($count !== true) {
         $fields = '*';
-
+        $innerjoin = 'LEFT JOIN tagente_estado ON '.$table.'.id_agente = tagente_estado.id_agente ';
+        $innerjoin .= 'LEFT JOIN tagent_secondary_group ON '.$table.'.id_agente = tagent_secondary_group.id_agent ';
+        $innerjoin .= 'LEFT JOIN tagent_custom_data ON '.$table.'.id_agente = tagent_custom_data.id_agent ';
+        $groupby = 'GROUP BY '.$table.'.id_agente';
         $limit_condition = sprintf(
             'LIMIT %d, %d',
             $params['start'],
@@ -849,20 +917,19 @@ function get_data_basic_info_sql($params, $count=false)
         $order_condition = sprintf('ORDER BY %s', $params['order']);
     }
 
-    $table = 'tagente';
-    if (is_metaconsole() === true) {
-        $table = 'tmetaconsole_agent';
-    }
-
     $sql = sprintf(
         'SELECT %s
         FROM %s
         %s
         %s
+        %s
+        %s
         %s',
         $fields,
         $table,
+        $innerjoin,
         $where,
+        $groupby,
         $order_condition,
         $limit_condition
     );

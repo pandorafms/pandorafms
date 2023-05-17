@@ -4622,6 +4622,14 @@ function html_print_image(
             $output .= 'data-use_title_for_force_title="1" ';
         }
 
+        if (isset($options['main_menu_icon']) && $options['main_menu_icon'] != '') {
+            if (isset($options['class'])) {
+                $options['class'] .= ' main_menu_icon';
+            } else {
+                $options['class'] = 'main_menu_icon';
+            }
+        }
+
         // Valid attributes (invalid attributes get skipped).
         $attrs = [
             'height',

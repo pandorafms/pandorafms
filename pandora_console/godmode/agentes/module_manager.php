@@ -882,6 +882,10 @@ if ($modules !== false) {
             $title
         );
 
+        if (strlen($module['ip_target']) !== 0) {
+            $title .= '<br/>IP: '.$module['ip_target'];
+        }
+
         // This module is initialized ? (has real data).
         if ($status === STATUS_MODULE_NO_DATA) {
             $data[2] .= html_print_image(
@@ -1101,7 +1105,7 @@ $createModuleTable->data[0][] = html_print_label_input_block(
         false,
         '',
         false,
-        'max-width:300px;'
+        'width:250px;'
     )
 );
 

@@ -826,7 +826,7 @@ function sunburst(recipient, data, width, height, tooltip = true) {
     height = width;
   }
 
-  var radius = Math.min(width, height) / 2;
+  var radius = Math.min(width, height) / 2 - 40;
 
   var x = d3.scale.linear().range([0, 2 * Math.PI]);
 

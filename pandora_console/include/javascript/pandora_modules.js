@@ -997,13 +997,18 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
   $("#" + row_id).show();
 }
 
-function load_plugin_macros_fields(row_model_id) {
+function load_plugin_macros_fields(row_model_id, moduleId = 0) {
   // Get plugin macros when selected and load macros fields
   var id_plugin = $("#id_plugin").val();
 
   var params = [];
   params.push("page=include/ajax/module");
-  params.push("get_plugin_macros=1");
+
+  if (moduleId > 0) {
+    params.push("get_module_macros=" + moduleId);
+  } else {
+    params.push("get_plugin_macros=1");
+  }
   params.push("id_plugin=" + id_plugin);
 
   jQuery.ajax({

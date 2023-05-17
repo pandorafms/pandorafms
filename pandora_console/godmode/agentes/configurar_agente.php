@@ -1546,7 +1546,11 @@ if ($update_module === true || $create_module === true) {
     }
 
     // Inverse string checkbox.
-    if ($id_module_type === MODULE_TYPE_GENERIC_DATA_STRING || $id_module_type === MODULE_TYPE_ASYNC_STRING) {
+    if ($id_module_type === MODULE_TYPE_GENERIC_DATA_STRING
+        || $id_module_type === MODULE_TYPE_ASYNC_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_TCP_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_CMD_STRING
+    ) {
         // Warning inverse string checkbox.
         $warning_string_checkbox = get_parameter('warning_inverse_string');
         if (!empty($warning_string_checkbox) && $warning_string_checkbox === 'warning_inverse_string') {

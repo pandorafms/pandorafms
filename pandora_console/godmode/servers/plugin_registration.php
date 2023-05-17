@@ -93,10 +93,6 @@ if (is_metaconsole() === true) {
     }
 }
 
-$str = 'This extension makes registering server plugins an easier task.';
-$str .= ' Here you can upload a server plugin in .pspz zipped format.';
-$str .= ' Please refer to the official documentation on how to obtain and use Server Plugins.';
-
 $output = '<div class="new_task">';
 $output .= '<div class="image_task">';
 $output .= html_print_image(
@@ -108,7 +104,7 @@ $output .= '</div>';
 $output .= '<div class="text_task">';
 $output .= '<h3>'.__('Plugin registration').'</h3>';
 $output .= '<p id="description_task">';
-$output .= __($str);
+$output .= __('This extension makes registering server plugins an easier task. Here you can upload a server plugin in .pspz zipped format. Please refer to the official documentation on how to obtain and use Server Plugins.');
 $output .= '<br><br>';
 $output .= __('You can get more plugins in our');
 $output .= '<a href="https://pandorafms.com/Library/Library/">';

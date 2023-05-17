@@ -272,7 +272,7 @@ $passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_exte
     'password_new',
     '',
     '25',
-    '45',
+    '150',
     $view_mode,
     '',
     [
@@ -291,7 +291,7 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     'password_conf',
     '',
     '20',
-    '45',
+    '150',
     $view_mode,
     '',
     [
@@ -311,7 +311,7 @@ if ($new_user === false) {
         'own_password_confirm',
         '',
         '20',
-        '45',
+        '150',
         $view_mode,
         '',
         [

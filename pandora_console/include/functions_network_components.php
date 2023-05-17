@@ -594,3 +594,26 @@ function network_components_duplicate_network_component($id_local_component)
 
     return network_components_create_network_component($name, $network['type'], $network['id_group'], $network);
 }
+
+
+/**
+ * Return all children groups recursive include parent.
+ *
+ * @param integer $id_parent Id of parent.
+ * @param array   $groups    NO setting, array for recursive.
+ *
+ * @return array $groups All children ids include first parent.
+ */
+function network_component_get_groups_recursive($id_parent, $groups=[])
+{
+    $groups[] = $id_parent;
+    $ids = db_get_all_rows_filter('tnetwork_component_group', ['parent' => $id_parent], 'id_sg');
+
+    if ($ids !== false) {
+        foreach ($ids as $key => $id) {
+            $groups = network_component_get_groups_recursive($id['id_sg'], $groups);
+        }
+    }
+
+    return $groups;
+}

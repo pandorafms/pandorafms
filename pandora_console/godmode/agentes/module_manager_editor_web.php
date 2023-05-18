@@ -193,7 +193,7 @@ $actionButtons .= html_print_button(
     __('Debug'),
     'btn_debugModule',
     $disableDebug,
-    'loadDebugWindow()',
+    '',
     [
         'icon' => 'cog',
         'mode' => 'mini secondary ',

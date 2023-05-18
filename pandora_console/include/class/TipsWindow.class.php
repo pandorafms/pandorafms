@@ -270,6 +270,7 @@ class TipsWindow
         }
 
         $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
+        $sql .= sprintf(' AND id_lang = "%s"', $language);
 
         $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
 
@@ -320,6 +321,7 @@ class TipsWindow
                 WHERE enable = "1" ';
 
         $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
+        $sql .= sprintf(' AND id_lang = "%s"', $config['language']);
 
         $sql .= ' ORDER BY CASE WHEN id_lang = "'.$config['language'].'" THEN id_lang END DESC, RAND()';
 

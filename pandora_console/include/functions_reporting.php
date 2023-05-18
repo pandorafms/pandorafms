@@ -12095,7 +12095,7 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-                        <legend>'.__('Module sanityX').ui_print_help_tip(sprintf(__('%d Not inited monitors'), (int) $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
+                        <legend>'.__('Module sanity').ui_print_help_tip(sprintf(__('%d Not inited monitors'), (int) $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 

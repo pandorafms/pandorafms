@@ -4512,7 +4512,7 @@ function ui_toggle(
 
     // Link to toggle.
     $output = '<div class="'.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
-    $output .= '<div class="'.$header_class.'" '.(($disableToggle === false) ? 'style="cursor: pointer;" ' : '').' id="tgl_ctrl_'.$uniqid.'">';
+    $output .= '<div class="'.$header_class.'" '.(($disableToggle === true) ? 'style="cursor: pointer;" ' : '').' id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
             if (empty($switch_name) === true) {
@@ -4602,7 +4602,7 @@ function ui_toggle(
         $output .= '	/* <![CDATA[ */'."\n";
         $output .= "	$(document).ready (function () {\n";
         $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-        // $output .= '            if (is_metaconsole == 0) {';
+        $output .= '            if (is_metaconsole == 0) {';
         $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
         $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
         $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
@@ -4613,9 +4613,9 @@ function ui_toggle(
         $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
         $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
         $output .= "			    }\n";
-        // $output .= "            }\n";
+        $output .= "            }\n";
         $output .= "		});\n";
-        $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
+        $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
         $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
         $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
         $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";

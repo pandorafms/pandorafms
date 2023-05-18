@@ -34,6 +34,7 @@ div#vc-controls {
 
 div#vc-controls div#menu_tab {
   margin: 0px;
+  height: 100% !important;
 }
 
 div#vc-controls ul.white-box-content {
@@ -163,6 +164,14 @@ div.label strong span {
 
 .zindex999 {
   z-index: 999;
+}
+
+.vc-btn-no-fullscreen {
+  padding: 0 !important;
+}
+
+.vc-btn-no-fullscreen img {
+  margin-top: 0 !important;
 }
 
 .visual_font_size_4pt,

@@ -584,10 +584,12 @@ final class NetworkLink extends Model
                         $inOctets = sprintf('%0.3f %s', $inOctets, $unitIn);
 
                         $labelStart = $interface_name;
-                        $labelStart .= ' (in): '.$inOctets;
+                        $inOctets = explode(' ', $inOctets);
+                        $labelStart .= ' (in): '.format_for_graph($inOctets[0]).' '.$inOctets[1];
 
                         $labelStart .= '<br>'.$interface_name;
-                        $labelStart .= ' (out): '.$outOctets;
+                        $outOctets = explode(' ', $outOctets);
+                        $labelStart .= ' (out): '.format_for_graph($outOctets[0]).' '.$outOctets[1];
                     }
 
                     if (isset($links['start']['id_metaconsole']) === true
@@ -665,10 +667,12 @@ final class NetworkLink extends Model
                         $inOctets = sprintf('%0.3f %s', $inOctets, $unitIn);
 
                         $labelEnd = $interface_name;
-                        $labelEnd .= ' (in): '.$inOctets;
+                        $inOctets = explode(' ', $inOctets);
+                        $labelEnd .= ' (in): '.format_for_graph($inOctets[0]).' '.$inOctets[1];
 
                         $labelEnd .= '<br>'.$interface_name;
-                        $labelEnd .= ' (out): '.$outOctets;
+                        $outOctets = explode(' ', $outOctets);
+                        $labelEnd .= ' (out): '.format_for_graph($outOctets[0]).' '.$outOctets[1];
                     }
 
                     if (isset($links['end']['id_metaconsole']) === true

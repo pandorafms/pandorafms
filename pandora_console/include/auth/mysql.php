@@ -805,6 +805,9 @@ function update_user(string $id_user, array $values)
         unset($values['id_skin']);
         unset($values['section']);
         unset($values['default_event_filter']);
+        $update_user_metaconsole = true;
+    } else {
+        $update_user_metaconsole = false;
     }
 
     $output = db_process_sql_update('tusuario', $values, ['id_user' => $id_user]);
@@ -842,6 +845,10 @@ function update_user(string $id_user, array $values)
                 );
             }
         }
+    }
+
+    if ($update_user_metaconsole === true) {
+        $output = 1;
     }
 
     return $output;

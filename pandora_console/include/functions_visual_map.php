@@ -2846,8 +2846,11 @@ function get_donut_module_data($id_module)
 
     $values_to_return = [];
     foreach ($values as $val) {
-        $data = explode(',', $val);
+        if (empty($val) === true) {
+            continue;
+        }
 
+        $data = explode(',', $val);
         if ($data[0] === $val) {
             continue;
         }

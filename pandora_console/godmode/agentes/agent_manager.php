@@ -754,13 +754,14 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         false,
         true,
         'w540px'
-    ).html_print_image(
+    ).'<div class="flex mrgn_top_6px mrgn_btn_5px">'.html_print_image(
         $path_ok,
         true,
         [
             'id'    => 'icon_ok',
             'style' => 'display:'.$display_icons.';',
-            'width' => '40',
+            'width' => '30',
+            'class' => 'mrgn_right_5px',
         ]
     ).html_print_image(
         $path_bad,
@@ -768,7 +769,8 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_bad',
             'style' => 'display:'.$display_icons.';',
-            'width' => '40',
+            'width' => '30',
+            'class' => 'mrgn_right_5px',
         ]
     ).html_print_image(
         $path_warning,
@@ -776,9 +778,10 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_warning',
             'style' => 'display:'.$display_icons.';',
-            'width' => '40',
+            'width' => '30',
+            'class' => 'mrgn_right_5px',
         ]
-    )
+    ).'</div>'
 );
 
 // Url address.

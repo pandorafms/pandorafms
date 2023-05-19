@@ -1430,10 +1430,10 @@ ui_print_spinner('Loading');
 $table = new stdClass();
 $table->id = 'editor';
 $table->width = '100%';
-$table->colspan['module'][1] = '5';
+$table->colspan['module'][1] = '6';
 $table->data = [];
 $table->data['module'] = [];
-$table->data['module'][0] = '';
+// $table->data['module'][0] = '';
 $table->data['module'][1] = '<h4>'.__('Modules').'</h4>';
 
 // List of modules, empty, it is populated by javascript.
@@ -1457,7 +1457,7 @@ $table->data['module'][1] = "
                             [
                                 'border' => '0',
                                 'alt'    => __('Delete'),
-                                'class'  => 'invert_filter',
+                                'class'  => 'main_menu_icon invert_filter',
                             ]
 ).'</a>'."</td>
             </tr>
@@ -1576,14 +1576,12 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     } else {
         // If is selected 'Any', get all the agents.
         if (count($agents) === 1 && (int) $agents[0] === -2) {
-            if ($recursion === true) {
-                $filter_group = groups_get_children_ids(
-                    $filter_group,
-                    false,
-                    true,
-                    'AW'
-                );
-            };
+            $filter_group = groups_get_children_ids(
+                $filter_group,
+                false,
+                true,
+                'AW'
+            );
 
             $agents = db_get_all_rows_filter(
                 'tagente',
@@ -1781,7 +1779,6 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         //Avoid freak states.
         if (action_in_progress)
             return;
-        
         //Check if the row editor module exists 
         if ($('#loading_' + id_agent).length > 0) {
             //The row exists
@@ -1791,7 +1788,6 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
             if ($('#module_editor_' + id_agent).length == 0) {
                 $("#list-agent_" + id_agent).after(
                     $("#loading-loading").clone().attr('id', 'loading_' + id_agent));
-                
                 jQuery.post ('ajax.php', 
                     {"page": "include/ajax/planned_downtime.ajax",
                     "get_modules_downtime": 1,
@@ -1801,15 +1797,15 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                     function (data) {
                         if (data['correct']) {
                             //Check if the row editor module exists 
-                            if ($('#loading_' + id_agent).length > 0) {
+                            if ($('#list-agent_' + id_agent).length > 0) {
                                 //The row exists
-                                $('#loading_' + id_agent).remove();
-                                
+                                //$('#loading_' + id_agent).remove();
+
                                 $("#list-agent_" + id_agent).after(
                                     $("#editor-module").clone()
                                         .attr('id', 'module_editor_' + id_agent)
                                         .hide());
-                                
+
                                 fill_row_editor(id_agent, data);
                             }
                         }
@@ -2041,7 +2037,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         var datetime_from = <?php echo json_encode(strtotime($once_date_from.' '.$once_time_from)); ?>;
         var datetime_now = <?php echo json_encode($utimestamp); ?>;
         var create = <?php echo json_encode($create); ?>;
-        if (!create && (type_execution == 'periodically' || (type_execution == 'once' && datetime_from < datetime_now))) {
+        if (!create && (type_execution == 'periodically' && (type_execution == 'once' && datetime_from < datetime_now))) {
             $("input#submit-updbutton, input#submit-add_item, table#list a").click(function (e) {
                 if (!confirm("<?php echo __('WARNING: If you edit this scheduled downtime, the data of future SLA reports may be altered'); ?>")) {
                     e.preventDefault();

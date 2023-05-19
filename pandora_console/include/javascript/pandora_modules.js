@@ -779,21 +779,21 @@ function new_macro(prefix, callback) {
   $row1.insertAfter("#" + prefix + nrow3);
 
   // Change labels
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i <= 1; i++) {
     var label1 = $("#" + prefix + nrow4 + "-" + i).html();
     var exp_reg = new RegExp("field" + current_number, "g");
     label1 = label1.replace(exp_reg, "field" + next_number);
     $("#" + prefix + nrow4 + "-" + i).html(label1);
   }
 
-  for (i = 0; i <= 1; i++) {
+  for (i = 0; i <= 0; i++) {
     var label2 = $("#" + prefix + nrow5 + "-" + i).html();
     var exp_reg = new RegExp("field" + current_number, "g");
     label2 = label2.replace(exp_reg, "field" + next_number);
     $("#" + prefix + nrow5 + "-" + i).html(label2);
   }
 
-  for (i = 0; i <= 1; i++) {
+  for (i = 0; i <= 0; i++) {
     var label3 = $("#" + prefix + nrow6 + "-" + i).html();
     var exp_reg = new RegExp("field" + current_number, "g");
     label3 = label3.replace(exp_reg, "field" + next_number);
@@ -997,13 +997,18 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
   $("#" + row_id).show();
 }
 
-function load_plugin_macros_fields(row_model_id) {
+function load_plugin_macros_fields(row_model_id, moduleId = 0) {
   // Get plugin macros when selected and load macros fields
   var id_plugin = $("#id_plugin").val();
 
   var params = [];
   params.push("page=include/ajax/module");
-  params.push("get_plugin_macros=1");
+
+  if (moduleId > 0) {
+    params.push("get_module_macros=" + moduleId);
+  } else {
+    params.push("get_plugin_macros=1");
+  }
   params.push("id_plugin=" + id_plugin);
 
   jQuery.ajax({

@@ -441,8 +441,12 @@ class HeatmapWidget extends Widget
             $filter = explode(',', $values['module_groups'][0]);
         }
 
+        // Public dashboard.
+        $auth_hash = get_parameter('auth_hash', '');
+        $public_user = get_parameter('id_user', '');
+
         // Control call flow.
-        $heatmap = new Heatmap($type, $filter, null, 300, 400, 200, $search, 0, true);
+        $heatmap = new Heatmap($type, $filter, null, 300, 400, 200, $search, 0, true, $auth_hash, $public_user);
         // AJAX controller.
         if (is_ajax() === true) {
             $method = get_parameter('method');

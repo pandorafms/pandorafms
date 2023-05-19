@@ -132,13 +132,13 @@ $table_remote->data['ehorus_req_timeout'] = $row;
 // Test.
 $row = [];
 $test_start = '<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$test_start .= '<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$test_start .= '<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$test_start .= '<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'&nbsp;'.__('Connection its OK').'</span>';
+$test_start .= '<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'&nbsp;'.__('Connection failed').'</span>';
 $test_start .= '&nbsp;<span id="test-ehorus-message" class="invisible"></span>';
 $row['ehorus_test'] = html_print_label_input_block(
-    __('Test'),
+    __('Test connection'),
     html_print_button(
-        __('Start'),
+        __('Test'),
         'test-ehorus',
         false,
         '',

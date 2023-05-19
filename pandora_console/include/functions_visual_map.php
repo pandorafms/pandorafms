@@ -2846,8 +2846,11 @@ function get_donut_module_data($id_module)
 
     $values_to_return = [];
     foreach ($values as $val) {
-        $data = explode(',', $val);
+        if (empty($val) === true) {
+            continue;
+        }
 
+        $data = explode(',', $val);
         if ($data[0] === $val) {
             continue;
         }
@@ -3173,7 +3176,12 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 
     if ($layoutData['type'] == 5) {
         // ICON ELEMENT.
-        $img .= '.png';
+        $url = parse_url($layoutData['image']);
+        if (isset($url['scheme']) === false) {
+            $img .= '.png';
+        } else {
+            $img = $layoutData['image'];
+        }
     } else {
         if ($status === false) {
             $status = visual_map_get_status_element($layoutData);

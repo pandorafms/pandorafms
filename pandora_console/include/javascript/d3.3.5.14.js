@@ -1395,6 +1395,76 @@
       duration = +_;
       return zoom;
     };
+    zoom.setTranslate = function(v) {
+      translate = v;
+    };
+    zoom.convertLevelsToScale = function(i) {
+      min =  Math.pow(2, (-360 * i) * .002) * 1;
+      max =  Math.pow(2, (360 * i) * .002) * 1;
+      
+      return [min, max];
+    };
+    zoom.getZoomLevel = function(x, y) {
+      if (typeof(x) == 'undefined') {
+        x = 0;
+        //Get center
+      }
+      if (typeof(y) == 'undefined') {
+        y = 0;
+        //Get center
+      }
+      
+      var zoom_levels = [];
+      
+      if (!translate0)
+        translate0 = location([x, y]);
+      
+      var old_scale = scale;
+      var old_translate = [translate[0], translate[1]];
+      
+      var count = 0;
+      
+      
+      scale = 1;
+      high_levels = [];
+      high_levels.push({'scale': scale, 'translate': [translate[0], translate[1]]});
+      do {
+        scaleTo(Math.pow(2, 360 * .002) * scale);
+        translateTo([x, y], translate0);
+        
+        high_levels.push({'scale': scale, 'translate': [translate[0], translate[1]]});
+        
+        if (count > 30) {
+          break;
+        }
+        count++;
+      }
+      while (scale < scaleExtent[1]);
+      scale = 1;
+      count = 0;
+      do {
+        scaleTo(Math.pow(2, -360 * .002) * scale);
+        translateTo([x, y], translate0);
+        
+        zoom_levels.push({'scale': scale, 'translate': [translate[0], translate[1]]});
+        
+        if (count > 30) {
+          break;
+        }
+        count++;
+      }
+      while (scale > scaleExtent[0]);
+      
+      zoom_levels.reverse();
+      high_levels.forEach(function(v, i) {
+        zoom_levels.push(v);
+      });
+
+      scale = old_scale;
+      translate = old_translate;
+      
+      return zoom_levels;
+    };
     zoom.x = function(z) {
       if (!arguments.length) return x1;
       x1 = z;

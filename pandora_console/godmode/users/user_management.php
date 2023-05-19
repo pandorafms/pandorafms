@@ -272,7 +272,7 @@ $passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_exte
     'password_new',
     '',
     '25',
-    '45',
+    '150',
     $view_mode,
     '',
     [
@@ -291,7 +291,7 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     'password_conf',
     '',
     '20',
-    '45',
+    '150',
     $view_mode,
     '',
     [
@@ -311,7 +311,7 @@ if ($new_user === false) {
         'own_password_confirm',
         '',
         '20',
-        '45',
+        '150',
         $view_mode,
         '',
         [
@@ -621,14 +621,28 @@ $homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
 $homeScreenTable->colspan['captions_homescreen'][0] = 2;
 $homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
 $homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
+$homeScreenTable->data['fields_homescreen'][0] = html_print_select(
+    $homeScreenValues,
+    'section',
+    array_search($user_info['section'], $homeScreenValues),
+    'show_data_section();',
+    '',
+    -1,
+    true,
+    false,
+    false
+);
+$homeScreenTable->data['fields_homescreen'][1] = html_print_div(
+    [
+        'class'   => 'w100p',
+        'content' => $customHomeScreenDataField,
+    ],
+    true
+);
 
-$selected_homescreen = $user_info['section'];
-foreach ($homeScreenValues as $key => $value) {
-    if ($value === $selected_homescreen) {
-            $selected_homescreen = $key;
-            break;
-    }
-}
+$userManagementTable->rowclass['homescreen_table'] = 'w100p';
+$userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
+
 
 $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
     $homeScreenValues,

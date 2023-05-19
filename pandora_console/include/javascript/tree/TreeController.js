@@ -920,7 +920,8 @@ var TreeController = {
 
                 if (
                   typeof element.elementDescription !== "undefined" &&
-                  element.elementDescription != ""
+                  element.elementDescription != "" &&
+                  element.elementDescription != null
                 ) {
                   $content.append(
                     '<span class="node-service-name" style="">' +

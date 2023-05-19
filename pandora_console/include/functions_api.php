@@ -9612,6 +9612,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
     $values['metaconsole_access_node'] = $other['data'][13];
+    $values['api_token'] = api_token_generate();
 
     if (empty($password) === true) {
         returnError('Password cannot be empty.');
@@ -9708,6 +9709,8 @@ function api_set_update_user($id, $thrash2, $other, $thrash3)
         if (!update_user_password($id, $other['data'][4])) {
             returnError('The user could not be updated. Password info incorrect.');
             return;
+        } else {
+            $values['api_token'] = api_token_generate();
         }
     }
 

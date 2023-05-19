@@ -21,7 +21,10 @@ function parse_alert_command(command, classs) {
           "[RECOVER]" + $($(".fields")[nfield - 1]).val()
         );
       }
-    } else if ($(this).css("-webkit-text-security") == "disc") {
+    } else if (
+      $(this).css("-webkit-text-security") == "disc" ||
+      $(this).css("font-family") == "text-security-disc"
+    ) {
       var hidden_character = "*";
       var hidden_string = hidden_character.repeat($(this).val().length);
 

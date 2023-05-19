@@ -4273,22 +4273,22 @@ function html_print_checkbox_extended(
 
     if (is_array($attributes) === true) {
         $tmpAttributes = [];
-        foreach ($attributes as $key => $value) {
+        foreach ($attributes as $key => $val) {
             switch ($key) {
                 case 'input_class':
-                    $inputClass .= ' '.$value;
+                    $inputClass .= ' '.$val;
                 break;
 
                 case 'label_class':
-                    $labelClass .= ' '.$value;
+                    $labelClass .= ' '.$val;
                 break;
 
                 case 'label_style':
-                    $labelStyle .= 'style="'.$value.'"';
+                    $labelStyle .= 'style="'.$val.'"';
                 break;
 
                 default:
-                    $tmpAttributes[] = $key.'="'.$value.'"';
+                    $tmpAttributes[] = $key.'="'.$val.'"';
                 break;
             }
         }
@@ -4620,6 +4620,14 @@ function html_print_image(
             // New way to show the force_title (cleaner and better performance).
             $output .= 'data-title="'.io_safe_input_html($options['title']).'" ';
             $output .= 'data-use_title_for_force_title="1" ';
+        }
+
+        if (isset($options['main_menu_icon']) && $options['main_menu_icon'] != '') {
+            if (isset($options['class'])) {
+                $options['class'] .= ' main_menu_icon';
+            } else {
+                $options['class'] = 'main_menu_icon';
+            }
         }
 
         // Valid attributes (invalid attributes get skipped).

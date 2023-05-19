@@ -840,8 +840,8 @@ if ($modules !== false) {
                 $linked = policies_is_module_linked($module['id_agente_modulo']);
                 $adopt = policies_is_module_adopt($module['id_agente_modulo']);
 
-                if ($linked !== false) {
-                    if ($adopt === true) {
+                if ((bool) $linked !== false) {
+                    if ((bool) $adopt === true) {
                         $img = 'images/policies_brick.png';
                         $title = '('.__('Adopted').') '.$policyInfo['name_policy'];
                     } else {
@@ -849,7 +849,7 @@ if ($modules !== false) {
                         $title = $policyInfo['name_policy'];
                     }
                 } else {
-                    if ($adopt === true) {
+                    if ((bool) $adopt === true) {
                         $img = 'images/policies_not_brick.png';
                         $title = '('.__('Unlinked').') ('.__('Adopted').') '.$policyInfo['name_policy'];
                     } else {
@@ -881,6 +881,10 @@ if ($modules !== false) {
             $status,
             $title
         );
+
+        if (strlen($module['ip_target']) !== 0) {
+            $title .= '<br/>IP: '.$module['ip_target'];
+        }
 
         // This module is initialized ? (has real data).
         if ($status === STATUS_MODULE_NO_DATA) {
@@ -1005,7 +1009,7 @@ if ($modules !== false) {
             $data[8] .= html_print_menu_button(
                 [
                     'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'],
-                    'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'onClick' => 'javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;',
                     'image'   => 'images/delete.svg',
                     'title'   => __('Delete'),
                 ],
@@ -1101,7 +1105,7 @@ $createModuleTable->data[0][] = html_print_label_input_block(
         false,
         '',
         false,
-        'max-width:300px;'
+        'width:250px;'
     )
 );
 

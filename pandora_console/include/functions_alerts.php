@@ -2149,8 +2149,9 @@ function get_group_alerts(
         break;
     }
 
-    // WHEN SELECT ALL TAGS TO FILTER ALERTS
-    $modules_tags = count(db_process_sql('select * from ttag'));
+    // WHEN SELECT ALL TAGS TO FILTER ALERTS.
+    $modules_tag_query = db_process_sql('select * from ttag');
+    $modules_tags = ($modules_tag_query !== false) ? (count($modules_tag_query)) : false;
 
     $modules_user_tags = count(explode(',', $tag));
 

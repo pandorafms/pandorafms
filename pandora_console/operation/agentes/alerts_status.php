@@ -375,7 +375,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'form'                => [
                 'inputs'    => [
                     [
@@ -417,7 +417,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'form'                => [
                 'html' => printFormFilterAlert(
@@ -441,7 +441,7 @@ if (is_metaconsole() === false) {
         if ($agent_view_page === true) {
             html_print_div(
                 [
-                    'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
+                    'class'   => 'action-buttons pdd_r_5px w100p',
                     'content' => html_print_submit_button(
                         __('Validate'),
                         'alert_validate',

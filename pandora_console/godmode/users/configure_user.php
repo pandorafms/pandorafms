@@ -73,6 +73,12 @@ if ($id !== $config['id_user']) {
 // ID given as parameter.
 $pure = get_parameter('pure', 0);
 $user_info = get_user_info($id);
+
+if (is_metaconsole() === true) {
+    $user_info['section'] = $user_info['metaconsole_section'];
+    $user_info['data_section'] = $user_info['metaconsole_data_section'];
+}
+
 $is_err = false;
 
 if (is_ajax() === true) {

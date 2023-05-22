@@ -100,7 +100,7 @@ if ($enterpriseEnable) {
     $buttons['graph_container'] = [
         'active' => false,
         'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image(
-            'images/graph-container.png',
+            'images/graph-container@svg.svg',
             true,
             [
                 'title' => __('Graphs containers'),

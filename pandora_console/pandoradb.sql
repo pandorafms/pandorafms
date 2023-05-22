@@ -1312,6 +1312,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `id_filter`  INT UNSIGNED NULL DEFAULT NULL,
   `session_time` INT signed NOT NULL DEFAULT 0,
   `default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
+  `metaconsole_default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
   `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `autorefresh_white_list` TEXT ,
   `time_autorefresh` INT UNSIGNED NOT NULL DEFAULT 30,

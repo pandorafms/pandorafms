@@ -821,6 +821,7 @@ function update_user(string $id_user, array $values)
         if (is_metaconsole() === true) {
             $values['metaconsole_section'] = $values['section'];
             $values['metaconsole_data_section'] = $values['data_section'];
+            $values['metaconsole_default_event_filter'] = $values['default_event_filter'];
             unset($values['id_skin']);
             unset($values['section']);
             unset($values['data_section']);

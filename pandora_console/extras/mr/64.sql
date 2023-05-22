@@ -13,4 +13,7 @@ ADD COLUMN `metaconsole_section` VARCHAR(255) NOT NULL DEFAULT 'Default' AFTER `
 ALTER TABLE `tusuario`
 ADD COLUMN `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '' AFTER `metaconsole_section`;
 
+ALTER TABLE `tusuario`
+ADD COLUMN `metaconsole_default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `default_event_filter`;
+
 COMMIT;

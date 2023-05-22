@@ -899,7 +899,7 @@ function html_print_select(
             if (is_array($selected) && in_array($value, $selected)) {
                 $output .= ' selected="selected"';
             } else if (is_numeric($value) && is_numeric($selected)
-                && $value == $selected
+                && $value === $selected
             ) {
                 // This fixes string ($value) to int ($selected) comparisons
                 $output .= ' selected="selected"';

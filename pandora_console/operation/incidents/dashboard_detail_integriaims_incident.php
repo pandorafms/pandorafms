@@ -342,7 +342,7 @@ $details_box .= '
     <div class="integriaims_details_titles">'.__('Type').'</div>';
 $details_box .= '
     <div>'.html_print_image('images/heart.png', true, ['class' => 'invert_filter']).'</div>
-    <div>'.html_print_image('images/builder.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/builder@svg.svg', true, ['class' => 'invert_filter']).'</div>
     <div>'.html_print_image('images/user_green.png', true, ['class' => 'invert_filter']).'</div>
     <div>'.ui_print_integria_incident_priority($priority, $priority_text).'</div>
     <div>'.html_print_image('images/incidents.png', true, ['class' => 'invert_filter']).'</div>';

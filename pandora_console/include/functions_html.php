@@ -2130,7 +2130,7 @@ function html_print_extended_select_for_time(
         $fields[$selected] = human_time_description_raw($selected, true);
     }
 
-    // hd(is_int($selected));
+    hd(is_int($selected));
     if (empty($nothing) === true && (is_int($selected) === true)) {
             $selected = 300;
     }

@@ -297,8 +297,12 @@ function clippy_context_help($help=null)
     $code = str_replace('{clippy_obj}', 'intro_'.$id, $code);
 
     $return = $code.'<div id="'.$id.'" class="inline"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
-        'images/clippy_icon.png',
-        true
+        'images/info-warning.svg',
+        true,
+        [
+            'class' => 'main_menu_icon invert_filter',
+            'style' => 'margin-left: -25px;',
+        ]
     ).'</a></div>
         <script type="text/javascript">
         

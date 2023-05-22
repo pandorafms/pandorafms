@@ -167,18 +167,21 @@ foreach ($servers as $server) {
         break;
     }
 
-    $data[6] = $server['threads'].' : '.$server['queued_modules'];
+    $data[6] = '';
     if ($server['queued_modules'] > 500) {
-        $data[6] .= '&nbsp;&nbsp;<div class="inline"><a onclick="show_dialog();" >'.html_print_image(
+        $data[6] .= '<div class="inline"><a onclick="show_dialog();" >'.html_print_image(
             'images/info-warning.svg',
             true,
             [
                 'width' => 16,
                 'heght' => 16,
                 'class' => 'pulsate clickable',
+                'style' => 'margin-left: -25px;',
             ]
-        ).'</a></div>';
+        ).'</a></div>&nbsp;&nbsp;';
     }
+
+    $data[6] .= $server['threads'].' : '.$server['queued_modules'];
 
     $data[7] = ui_print_timestamp($server['keepalive'], true);
 

@@ -632,11 +632,13 @@ if ($update_user) {
     $values['section'] = $homeScreenValues[$values['section']];
 
     if (enterprise_installed() === true && is_metaconsole() === true) {
-        $values['metaconsole_access'] = get_parameter('metaconsole_access');
-        $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
         if (users_is_admin() === true) {
+            $values['metaconsole_access'] = get_parameter('metaconsole_access');
+            $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
             $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
         } else {
+            $values['metaconsole_access'] = $user_info['metaconsole_access'];
+            $values['metaconsole_agents_manager'] = $user_info['metaconsole_agents_manager'];
             $values['metaconsole_access_node'] = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
         }
     }

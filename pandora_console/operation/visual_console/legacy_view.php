@@ -173,7 +173,7 @@ if ($vconsole_write || $vconsole_manage) {
         ]
     ).'</a>';
     $options['editor']['text'] = '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$id_layout.'">'.html_print_image(
-        'images/builder.png',
+        'images/builder@svg.svg',
         true,
         [
             'title' => __('Builder'),

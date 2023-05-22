@@ -2831,7 +2831,7 @@ function modules_get_color_status($status, $force_module=false)
 
         case STATUS_SERVER_DOWN:
         case STATUS_SERVER_DOWN_BALL:
-        return '#444';
+        return '#B2B2B2';
 
         default:
             // Ignored.

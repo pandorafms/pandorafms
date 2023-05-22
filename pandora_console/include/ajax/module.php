@@ -1182,7 +1182,6 @@ if (check_login()) {
             $last_status_change_text = __('Time elapsed since last status change: ');
             $last_status_change_text .= (empty($module['last_status_change']) === false) ? human_time_comparation($module['last_status_change']) : __('N/A');
 
-            $data[4] .= ui_print_status_image($status, htmlspecialchars($title), true, false, false, true, $last_status_change_text);
             if ($show_context_help_first_time === false) {
                 $show_context_help_first_time = true;
 
@@ -1190,6 +1189,8 @@ if (check_login()) {
                     $data[4] .= clippy_context_help('module_unknow');
                 }
             }
+
+            $data[4] .= ui_print_status_image($status, htmlspecialchars($title), true, false, false, true, $last_status_change_text);
 
             // Module thresholds.
             $data[5] = '';

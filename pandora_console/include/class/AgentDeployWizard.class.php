@@ -662,7 +662,7 @@ class AgentDeployWizard
                 var group_val = $('[name="group"] option:selected').text();
 
                 var win_installer_command = `Invoke-WebRequest -Uri https://firefly.pandorafms.com/pandorafms/latest/Windows/Pandora%20FMS%20Windows%20Agent%20v7.0NG.x86_64.exe -OutFile \$\{env:tmp\}\\\pandora-agent-windows.exe; & \$\{env:tmp\}\\\pandora-agent-windows.exe /S  --ip ${server_addr_val} --group \"${group_val}\" --remote_config 1`;
-                var linux_installer_command = `export PANDORA_SERVER_IP='${server_addr_val}' && \\ \nexport PANDORA_REMOTE_CONFIG=1 && \\ \nexport PANDORA_GROUP='${group_val}' && \\ \ncurl -Ls https://pfms.me/agent-deploy | bash`;
+                var linux_installer_command = `export PANDORA_SERVER_IP='${server_addr_val}' && \\\nexport PANDORA_REMOTE_CONFIG=1 && \\\nexport PANDORA_GROUP='${group_val}' && \\\ncurl -Ls https://pfms.me/agent-deploy | bash`;
                 var mac_installer_text = `To complete the installation process, please perform a manual installation and configure the server IP to ${server_addr_val} and specify the group as ${group_val}. Thank you for your cooperation`;
                 var linux_service_start = "/etc/init.d/pandora_agent_daemon start";
                 var win_service_start = "NET START PandoraFMSAgent";

@@ -317,9 +317,9 @@ $table->size[0] = '30%';
 $table->size[1] = '30%';
 $table->data[0][0] = html_print_wizard_diagnosis(__('Wizard install agent'), 'wizard_install', __('Wizard install agent'), false, true);
 $table->data[0][1] = html_print_wizard_diagnosis(__('Create check web'), 'configure_email', __('Create check web'), $status_check_web, true);
-$table->data[1][0] = html_print_wizard_diagnosis(__('Create basic connectivity'), 'servers_up', __('Create basic connectivity'), $status_check_connectivity, true);
-$table->data[1][1] = html_print_wizard_diagnosis(__('Create basic net'), 'license_valid', __('Create basic net'), true, true);
-$table->data[2][0] = html_print_wizard_diagnosis(__('Create Alert Mail'), 'license_valid', __('Create Alert Mail'), true, true);
+$table->data[1][0] = html_print_wizard_diagnosis(__('Create basic connectivity'), 'basic_connectivity', __('Create basic connectivity'), $status_check_connectivity, true);
+$table->data[1][1] = html_print_wizard_diagnosis(__('Create basic net'), 'basic_net', __('Create basic net'), true, true);
+$table->data[2][0] = html_print_wizard_diagnosis(__('Create Alert Mail'), 'alert_mail', __('Create Alert Mail'), true, true);
 html_print_table($table);
 ?>
 
@@ -329,22 +329,22 @@ html_print_table($table);
         'deployAgent()'
     );
 
-    document.getElementById("button-btn_check_web_conf").setAttribute(
+    document.getElementById("configure_email").setAttribute(
         'onclick',
         'openCreateModulesDialog()'
     );
 
-    document.getElementById("button-btn_check_connectivity_conf").setAttribute(
+    document.getElementById("basic_connectivity").setAttribute(
         'onclick',
         'openCreateConnectivityDialog()'
     );
 
-    document.getElementById("button-btn_check_net_conf").setAttribute(
+    document.getElementById("basic_net").setAttribute(
         'onclick',
         'openCreateBasicNetDialog()'
     );
 
-    document.getElementById("button-btn_check_mail_alert_conf").setAttribute(
+    document.getElementById("alert_mail").setAttribute(
         'onclick',
         'openCreateAlertMailDialog()'
     );

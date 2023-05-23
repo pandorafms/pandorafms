@@ -2160,7 +2160,6 @@ function html_print_extended_select_for_time(
     }
 
     ob_start();
-    hd($fields, true);
     // Use the no_meta parameter because this image is only in the base console.
     echo '<div id="'.$uniq_name.'_default" class="wauto inline_flex">';
     html_print_select(

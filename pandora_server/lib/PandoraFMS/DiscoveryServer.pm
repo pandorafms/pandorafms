@@ -433,7 +433,7 @@ sub PandoraFMS::Recon::Base::guess_os($$;$) {
     return OS_OTHER if ($? != 0);
     my $str_os;
     if ($return =~ /Aggressive OS guesses:\s*(.*)|OS details:\s(.*)/) {
-      if($1 ne "") {
+      if(defined($1) && $1 ne "") {
         $str_os = $1;
       } else {
         $str_os = $2;

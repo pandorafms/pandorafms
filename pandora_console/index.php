@@ -797,6 +797,7 @@ if (isset($config['id_user']) === false) {
         $pass2               = get_parameter_post('pass2');
         $id_user             = get_parameter_post('id_user');
 
+        $db_reset_pass_entry = false;
         if (empty($reset_hash) === false) {
             $hash_data = explode(':::', $reset_hash);
             $id_user = $hash_data[0];

@@ -1916,7 +1916,7 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
  *
  * @param $thrash3 Don't use.
  */
-function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
+function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false)
 {
     global $config;
 
@@ -2038,13 +2038,17 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
             }
         }
 
-        returnData(
-            'string',
-            [
-                'type' => 'string',
-                'data' => $id_agente,
-            ]
-        );
+        if ($return === false) {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => $id_agente,
+                ]
+            );
+        } else {
+            return $id_agente;
+        }
     } catch (\Exception $e) {
         returnError($e->getMessage());
         return;

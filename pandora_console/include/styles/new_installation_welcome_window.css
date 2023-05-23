@@ -86,3 +86,13 @@
 #welcome_form li.extra {
   padding-bottom: 2.5em;
 }
+
+#li-div_diagnosis,
+#li-div_task_todo {
+  border-left: unset !important;
+}
+
+#div_diagnosis > label,
+#div_task_todo > label {
+  font-weight: bold;
+}

@@ -1071,16 +1071,20 @@ if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             function () {
                 $(".actions", this).css ("visibility", "hidden");
         });
-        
+
         $("#ag_group").click (
             function () {
                 $(this).css ("width", "auto");
                 $(this).css ("min-width", "100px");
             });
-            
+
         $("#ag_group").blur (function () {
             $(this).css ("width", "100px");
         });
-        
+
+        var show_deploy_agent = "<?php echo get_parameter('show_deploy_agent', 0); ?>";
+        if (show_deploy_agent !== '0'){
+            $('#button-modal_deploy_agent').click();
+        }
     });
 </script>

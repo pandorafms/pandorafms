@@ -336,54 +336,7 @@ class WelcomeWindow extends Wizard
     public function loadWelcomeWindow()
     {
         global $config;
-
-        $btn_configure_mail_class = 'pending';
-        $btn_create_agent_class = 'pending';
-        $btn_create_module_class = '';
-        $btn_create_alert_class = '';
-        $btn_create_discovery_class = 'pending';
-
-        $li_configure_mail_class = 'row_green';
-        $li_create_agent_class = 'row_green';
-        $li_create_module_class = 'row_grey';
-        $li_create_alert_class = 'row_grey';
-        $li_create_discovery_class = 'row_green';
-
-        if (empty($config['welcome_mail_configured']) === false) {
-            $btn_configure_mail_class = ' completed';
-        }
-
-        if (empty($config['welcome_id_agent']) === false) {
-            $btn_create_agent_class = ' completed';
-            $btn_create_module_class = ' pending';
-            $li_create_module_class = 'row_green';
-        }
-
-        if (empty($config['welcome_module']) === false) {
-            $btn_create_module_class = ' completed';
-            $btn_create_alert_class = ' pending';
-            $li_create_module_class = 'row_green';
-        }
-
-        if (empty($config['welcome_alert']) === false) {
-            $btn_create_alert_class = ' completed';
-            $li_create_alert_class = 'row_green';
-        }
-
-        if (empty($config['welcome_task']) === false) {
-            $btn_create_discovery_class = ' completed';
-        }
-
-        if ((int) $config['welcome_state'] === WELCOME_FINISHED) {
-            // Nothing left to do.
-            $btn_configure_mail_class = ' completed';
-            $btn_create_agent_class = ' completed';
-            $btn_create_module_class = ' completed';
-            $btn_create_alert_class = ' completed';
-            $btn_create_discovery_class = ' completed';
-            $li_create_module_class = 'row_green';
-            $li_create_alert_class = 'row_green';
-        }
+        $flag_task = false;
 
         $form = [
             'action'   => '#',
@@ -413,186 +366,388 @@ class WelcomeWindow extends Wizard
                     ],
                 ],
             ],
-            [
+        ];
+
+        if (check_acl($config['id_user'], 0, 'PM')) {
+            $flag_um = false;
+            $flag_cm = false;
+            $flag_su = false;
+            $flag_lv = false;
+
+            $btn_update_manager_class = ' pending';
+            $btn_configure_mail_class = ' pending';
+            $btn_servers_up_class = ' pending';
+            $btn_license_valid_class = ' pending';
+
+            $li_update_manager_class = 'row_grey';
+            $li_configure_mail_class = 'row_grey';
+            $li_servers_up_class = 'row_grey';
+            $li_license_valid_class = 'row_grey';
+
+            if ($config['pandora_uid'] === 'ONLINE') {
+                $btn_update_manager_class = ' completed';
+                $li_update_manager_class = 'row_green';
+                $flag_um = true;
+            }
+
+            if (empty($config['welcome_mail_configured']) === false) {
+                $btn_configure_mail_class = ' completed';
+                $flag_cm = true;
+            }
+
+            include_once 'include/functions_servers.php';
+            if (check_all_servers_up() === true) {
+                $btn_servers_up_class = ' completed';
+                $li_servers_up_class = 'row_green';
+                $flag_su = true;
+            }
+
+            if (enterprise_installed()) {
+                $license_valid = true;
+                enterprise_include_once('include/functions_license.php');
+                $license = enterprise_hook('license_get_info');
+                $days_to_expiry = ((strtotime($license['expiry_date']) - time()) / (60 * 60 * 24));
+                if ($license === ENTERPRISE_NOT_HOOK || $days_to_expiry <= 30) {
+                    $license_valid = false;
+                }
+
+                if ($license_valid === true) {
+                    $btn_license_valid_class = ' completed';
+                    $li_license_valid_class = 'row_green';
+                    $flag_lv = true;
+                }
+            }
+
+            $inputs[] = [
                 'wrapper'       => 'div',
-                'block_id'      => 'div_configure_mail',
-                'class'         => 'hole flex-row flex-items-center w98p '.$li_configure_mail_class,
+                'block_id'      => 'div_diagnosis',
+                'class'         => 'flex-row flex-items-center w98p ',
                 'direct'        => 1,
                 'block_content' => [
                     [
-                        'label'     => __('Please ensure mail configuration matches your needs'),
+                        'label'     => __('Mini-diagnosis'),
                         'arguments' => [
                             'class' => 'first_lbl',
-                            'name'  => 'lbl_create_agent',
-                            'id'    => 'lbl_create_agent',
-                        ],
-                    ],
-                    [
-                        'arguments' => [
-                            'label'      => '',
-                            'type'       => 'button',
-                            'attributes' => [
-                                'class' => (empty($btn_configure_mail_class) === false) ? $btn_configure_mail_class : 'invisible_important',
-                                'mode'  => 'onlyIcon',
-                            ],
-                            'name'       => 'btn_email_conf',
-                            'id'         => 'btn_email_conf',
+                            'name'  => 'lbl_diagnosis',
+                            'id'    => 'lbl_diagnosis',
                         ],
                     ],
                 ],
-            ],
-            [
-                'label'     => 'Learn to monitor',
-                'class'     => 'extra',
-                'arguments' => [
-                    'class' => 'class="lbl_learn"',
-                    'name'  => 'lbl_learn',
-                    'id'    => 'lbl_learn',
-                ],
-            ],
-            [
-                'wrapper'       => 'div',
-                'block_id'      => 'div_create_agent',
-                'class'         => 'learn_content_indented flex-row flex-items-center w98p '.$li_create_agent_class,
-                'direct'        => 1,
-                'block_content' => [
-                    [
-                        'label'     => __('Create an agent'),
-                        'arguments' => [
-                            'class' => 'first_lbl',
-                            'name'  => 'lbl_create_agent',
-                            'id'    => 'lbl_create_agent',
-                        ],
-                    ],
-                    [
-                        'arguments' => [
-                            'label'      => '',
-                            'type'       => 'button',
-                            'attributes' => [
-                                'class' => (empty($btn_create_agent_class) === false) ? $btn_create_agent_class : 'invisible_important',
-                                'mode'  => 'onlyIcon',
+            ];
+
+            if ($flag_um === false || $flag_cm === false || $flag_su === false || $flag_lv === false) {
+                $inputs[] = [
+                    'wrapper'       => 'div',
+                    'block_id'      => 'div_update_manager',
+                    'class'         => 'hole flex-row flex-items-center w98p '.$li_update_manager_class,
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label'     => __('Verification update manager register'),
+                            'arguments' => [
+                                'class' => 'first_lbl',
+                                'name'  => 'lbl_update_manager',
+                                'id'    => 'lbl_update_manager',
                             ],
-                            'name'       => 'btn_create_agent',
-                            'id'         => 'btn_create_agent',
                         ],
-                    ],
-                ],
-            ],
-            [
-                'wrapper'       => 'div',
-                'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_indented flex-row flex-items-center w98p '.$li_create_module_class,
-                'direct'        => 1,
-                'block_content' => [
-                    [
-                        'label'     => __('Create a module to check if an agent is online'),
-                        'arguments' => [
-                            'class' => 'second_lbl',
-                            'name'  => 'lbl_check_agent',
-                            'id'    => 'lbl_check_agent',
-                        ],
-                    ],
-                    [
-                        'arguments' => [
-                            'label'      => '',
-                            'type'       => 'button',
-                            'attributes' => [
-                                'class' => (empty($btn_create_module_class) === false) ? $btn_create_module_class : 'invisible_important',
-                                'mode'  => 'onlyIcon',
+                        [
+                            'arguments' => [
+                                'label'      => '',
+                                'type'       => 'button',
+                                'attributes' => [
+                                    'class' => (empty($btn_update_manager_class) === false) ? $btn_update_manager_class : 'invisible_important',
+                                    'mode'  => 'onlyIcon',
+                                ],
+                                'name'       => 'btn_update_manager_conf',
+                                'id'         => 'btn_update_manager_conf',
                             ],
-                            'name'       => 'btn_create_module',
-                            'id'         => 'btn_create_module',
                         ],
                     ],
-                ],
-            ],
-            [
-                'wrapper'       => 'div',
-                'block_id'      => 'div_monitor_actions',
-                'class'         => 'hole learn_content_indented flex-row flex-items-center w98p '.$li_create_alert_class,
-                'direct'        => 1,
-                'block_content' => [
-                    [
-                        'label'     => __('Be warned if something is wrong, create an alert on the module'),
-                        'arguments' => [
-                            'class' => 'second_lbl',
-                            'name'  => 'lbl_create_alert',
-                            'id'    => 'lbl_create_alert',
-                        ],
-                    ],
-                    [
-                        'arguments' => [
-                            'label'      => '',
-                            'type'       => 'button',
-                            'attributes' => [
-                                'class' => (empty($btn_create_alert_class) === false) ? $btn_create_alert_class : 'invisible_important',
-                                'mode'  => 'onlyIcon',
+                ];
+                $inputs[] = [
+                    'wrapper'       => 'div',
+                    'block_id'      => 'div_configure_mail',
+                    'class'         => 'hole flex-row flex-items-center w98p '.$li_configure_mail_class,
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label'     => __('Please ensure mail configuration matches your needs'),
+                            'arguments' => [
+                                'class' => 'first_lbl',
+                                'name'  => 'lbl_create_agent',
+                                'id'    => 'lbl_create_agent',
                             ],
-                            'name'       => 'btn_create_alert',
-                            'id'         => 'btn_create_alert',
                         ],
-                    ],
-                ],
-            ],
-            [
-                'wrapper'       => 'div',
-                'block_id'      => 'div_discover',
-                'class'         => 'hole flex-row flex-items-center w98p '.$li_create_discovery_class,
-                'direct'        => 1,
-                'block_content' => [
-                    [
-                        'label'     => __('Discover hosts and devices in your network'),
-                        'arguments' => [
-                            'class' => 'first_lbl',
-                            'name'  => 'lbl_discover_devices',
-                            'id'    => 'lbl_discover_devices',
-                        ],
-                    ],
-                    [
-                        'arguments' => [
-                            'label'      => '',
-                            'type'       => 'button',
-                            'attributes' => [
-                                'class' => (empty($btn_create_discovery_class) === false) ? $btn_create_discovery_class : 'invisible_important',
-                                'mode'  => 'onlyIcon',
+                        [
+                            'arguments' => [
+                                'label'      => '',
+                                'type'       => 'button',
+                                'attributes' => [
+                                    'class' => (empty($btn_configure_mail_class) === false) ? $btn_configure_mail_class : 'invisible_important',
+                                    'mode'  => 'onlyIcon',
+                                ],
+                                'name'       => 'btn_email_conf',
+                                'id'         => 'btn_email_conf',
                             ],
-                            'name'       => 'btn_discover_devices',
-                            'id'         => 'btn_discover_devices',
                         ],
+                    ],
+                ];
+                $inputs[] = [
+                    'wrapper'       => 'div',
+                    'block_id'      => 'div_servers_up',
+                    'class'         => 'hole flex-row flex-items-center w98p '.$li_servers_up_class,
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label'     => __('All servers up'),
+                            'arguments' => [
+                                'class' => 'first_lbl',
+                                'name'  => 'lbl_servers_up',
+                                'id'    => 'lbl_servers_up',
+                            ],
+                        ],
+                        [
+                            'arguments' => [
+                                'label'      => '',
+                                'type'       => 'button',
+                                'attributes' => [
+                                    'class' => (empty($btn_servers_up_class) === false) ? $btn_servers_up_class : 'invisible_important',
+                                    'mode'  => 'onlyIcon',
+                                ],
+                                'name'       => 'btn_servers_up_conf',
+                                'id'         => 'btn_servers_up_conf',
+                            ],
+                        ],
+                    ],
+                ];
+                $inputs[] = [
+                    'wrapper'       => 'div',
+                    'block_id'      => 'div_license_valid',
+                    'class'         => 'hole flex-row flex-items-center w98p '.$li_license_valid_class,
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label'     => __('Valid license verification and expiration greater than 30 days'),
+                            'arguments' => [
+                                'class' => 'first_lbl',
+                                'name'  => 'lbl_license_valid',
+                                'id'    => 'lbl_license_valid',
+                            ],
+                        ],
+                        [
+                            'arguments' => [
+                                'label'      => '',
+                                'type'       => 'button',
+                                'attributes' => [
+                                    'class' => (empty($btn_license_valid_class) === false) ? $btn_license_valid_class : 'invisible_important',
+                                    'mode'  => 'onlyIcon',
+                                ],
+                                'name'       => 'btn_license_valid_conf',
+                                'id'         => 'btn_license_valid_conf',
+                            ],
+                        ],
+                    ],
+                ];
+            } else {
+                $key = db_get_value_sql('SELECT `value` FROM tupdate_settings WHERE `key` = "customer_key"');
+                $inputs[] = [
+                    'wrapper'       => 'div',
+                    'block_id'      => 'div_all_correct',
+                    'class'         => 'hole flex-row flex-items-center w98p',
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label'     => __('It seems that your Pandora FMS is working correctly and registered with ID:<br> #'.$key.'.<br>For more information use the self-diagnosis tool.'),
+                            'arguments' => [
+                                'class' => 'first_lbl w98p',
+                                'name'  => 'lbl_all_correct',
+                                'id'    => 'lbl_all_correct',
+                            ],
+                        ],
+                    ],
+                ];
+            }
+
+            if ($flag_um === false || $flag_cm === false || $flag_su === false || $flag_lv === false) {
+                $flag_task = true;
+            }
+        }
+
+        // Task to do.
+        $inputs[] = [
+            'wrapper'       => 'div',
+            'block_id'      => 'div_task_todo',
+            'class'         => 'flex-row flex-items-center w98p',
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'label'     => __('Task to perform'),
+                    'arguments' => [
+                        'class' => 'first_lbl',
+                        'name'  => 'lbl_task_todo',
+                        'id'    => 'lbl_task_todo',
                     ],
                 ],
             ],
         ];
 
-        if (enterprise_installed() === true) {
-            $inputs[] = [
-                'wrapper'       => 'div',
-                'block_id'      => 'div_not_working',
-                'class'         => 'hole flex-row flex-items-center w98p',
-                'direct'        => 1,
-                'block_content' => [
-                    [
-                        'label'     => __('If something is not working as expected, look for this icon and report!'),
-                        'arguments' => [
-                            'class' => 'first_lbl',
-                            'name'  => 'lbl_not_working',
-                            'id'    => 'lbl_not_working',
-                        ],
-                    ],
-                    [
-                        'label' => html_print_image(
-                            'images/feedback-header.png',
-                            true,
-                            [
-                                'onclick' => '$(\'#feedback-header\').click()',
-                                'style'   => 'cursor: pointer;',
-                            ]
-                        ),
-
+        $inputs[] = [
+            'wrapper'       => 'div',
+            'block_id'      => 'div_wizard_agent',
+            'class'         => 'hole flex-row flex-items-center w98p row_grey',
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'label'     => __('Wizard install agent'),
+                    'arguments' => [
+                        'class' => 'first_lbl row_grey',
+                        'name'  => 'lbl_wizard_agent',
+                        'id'    => 'lbl_wizard_agent',
                     ],
                 ],
-            ];
+                [
+                    'arguments' => [
+                        'label'      => '',
+                        'type'       => 'button',
+                        'attributes' => [
+                            'class' => 'completed',
+                            'mode'  => 'onlyIcon',
+                        ],
+                        'name'       => 'btn_wizard_agent_conf',
+                        'id'         => 'btn_wizard_agent_conf',
+                    ],
+                ],
+            ],
+        ];
+
+        $status_webserver = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_WEB], 'status')['status'];
+        $check_web_color = 'row_grey';
+        if ($status_webserver === '1') {
+            $check_web_color = 'row_green';
         }
+
+        $inputs[] = [
+            'wrapper'       => 'div',
+            'block_id'      => 'div_check_web',
+            'class'         => 'hole flex-row flex-items-center w98p '.$check_web_color,
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'label'     => __('Create check web'),
+                    'arguments' => [
+                        'class' => 'first_lbl row_grey',
+                        'name'  => 'lbl_check_web',
+                        'id'    => 'lbl_check_web',
+                    ],
+                ],
+                [
+                    'arguments' => [
+                        'label'      => '',
+                        'type'       => 'button',
+                        'attributes' => [
+                            'class' => 'completed',
+                            'mode'  => 'onlyIcon',
+                        ],
+                        'name'       => 'btn_check_web_conf',
+                        'id'         => 'btn_check_web_conf',
+                    ],
+                ],
+            ],
+        ];
+
+        $status_newtwork = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_NETWORK], 'status')['status'];
+        $status_pluggin = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_PLUGIN], 'status')['status'];
+        $check_connectivity = 'row_grey';
+        if ($status_newtwork === '1' && $status_pluggin === '1') {
+            $check_connectivity = 'row_green';
+        }
+
+        $inputs[] = [
+            'wrapper'       => 'div',
+            'block_id'      => 'div_check_connectivity',
+            'class'         => 'hole flex-row flex-items-center w98p '.$check_connectivity,
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'label'     => __('Create basic connectivity'),
+                    'arguments' => [
+                        'class' => 'first_lbl row_grey',
+                        'name'  => 'lbl_check_connectivity',
+                        'id'    => 'lbl_check_connectivity',
+                    ],
+                ],
+                [
+                    'arguments' => [
+                        'label'      => '',
+                        'type'       => 'button',
+                        'attributes' => [
+                            'class' => 'completed',
+                            'mode'  => 'onlyIcon',
+                        ],
+                        'name'       => 'btn_check_connectivity_conf',
+                        'id'         => 'btn_check_connectivity_conf',
+                    ],
+                ],
+            ],
+        ];
+
+        $inputs[] = [
+            'wrapper'       => 'div',
+            'block_id'      => 'div_check_net',
+            'class'         => 'hole flex-row flex-items-center w98p row_green',
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'label'     => __('Create basic net'),
+                    'arguments' => [
+                        'class' => 'first_lbl row_grey',
+                        'name'  => 'lbl_check_net',
+                        'id'    => 'lbl_check_net',
+                    ],
+                ],
+                [
+                    'arguments' => [
+                        'label'      => '',
+                        'type'       => 'button',
+                        'attributes' => [
+                            'class' => 'completed',
+                            'mode'  => 'onlyIcon',
+                        ],
+                        'name'       => 'btn_check_net_conf',
+                        'id'         => 'btn_check_net_conf',
+                    ],
+                ],
+            ],
+        ];
+
+        $inputs[] = [
+            'wrapper'       => 'div',
+            'block_id'      => 'div_check_mail_alert',
+            'class'         => 'hole flex-row flex-items-center w98p row_green',
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'label'     => __('Create Alert Mail'),
+                    'arguments' => [
+                        'class' => 'first_lbl row_grey',
+                        'name'  => 'lbl_check_mail_alert',
+                        'id'    => 'lbl_check_mail_alert',
+                    ],
+                ],
+                [
+                    'arguments' => [
+                        'label'      => '',
+                        'type'       => 'button',
+                        'attributes' => [
+                            'class' => 'completed',
+                            'mode'  => 'onlyIcon',
+                        ],
+                        'name'       => 'btn_check_mail_alert_conf',
+                        'id'         => 'btn_check_mail_alert_conf',
+                    ],
+                ],
+            ],
+        ];
 
         $output = $this->printForm(
             [
@@ -602,7 +757,7 @@ class WelcomeWindow extends Wizard
             true
         );
 
-        $output .= $this->loadJS();
+        $output .= $this->loadJS($flag_task);
         echo $output;
 
         // Ajax methods does not continue.
@@ -830,82 +985,96 @@ class WelcomeWindow extends Wizard
      *
      * @return string HTML code for javascript functionality.
      */
-    public function loadJS()
+    public function loadJS($flag_task=false)
     {
         ob_start();
         ?>
     <script type="text/javascript">
-        <?php
-        if ($this->step > W_CREATE_AGENT) {
-            switch ($this->step) {
-                case W_CREATE_MODULE:
-                    ?>
-                document.getElementById("button-btn_create_module").setAttribute(
-                    'onclick',
-                    'checkAgentOnline()'
-                );
-                    <?php
-                break;
+        $('#div_all_correct').children().attr('class','w100p').attr('style', 'overflow-wrap: break-word;');
+        <?php if ($flag_task === true) { ?>
+            document.getElementById("button-btn_update_manager_conf").setAttribute(
+                'onclick',
+                'configureUpdateManager()'
+            );
+            document.getElementById("button-btn_email_conf").setAttribute(
+                'onclick',
+                'configureEmail()'
+            );
+            document.getElementById("button-btn_servers_up_conf").setAttribute(
+                'onclick',
+                'serversUp()'
+            );
+            document.getElementById("button-btn_license_valid_conf").setAttribute(
+                'onclick',
+                'messageLicense()'
+            );
+        <?php } ?>
 
-                case W_CREATE_ALERT:
-                    ?>
-                document.getElementById("button-btn_create_alert").setAttribute(
-                    'onclick',
-                    'createAlertModule()'
-                );
-                    <?php
-                break;
+        // Task to do buttons.
+        document.getElementById("button-btn_wizard_agent_conf").setAttribute(
+            'onclick',
+            'deployAgent()'
+        );
 
-                default:
-                    // Ignore.
-                break;
-            }
+        document.getElementById("button-btn_check_web_conf").setAttribute(
+            'onclick',
+            'openCreateModulesDialog()'
+        );
+
+        document.getElementById("button-btn_check_connectivity_conf").setAttribute(
+            'onclick',
+            'openCreateConnectivityDialog()'
+        );
+
+        document.getElementById("button-btn_check_net_conf").setAttribute(
+            'onclick',
+            'openCreateBasicNetDialog()'
+        );
+
+        document.getElementById("button-btn_check_mail_alert_conf").setAttribute(
+            'onclick',
+            'openCreateAlertMailDialog()'
+        );
+
+        function configureUpdateManager() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'); ?>';
         }
-        ?>
 
-    document.getElementById("button-btn_email_conf").setAttribute(
-        'onclick',
-        'configureEmail()'
-    );
-    document.getElementById("button-btn_create_agent").setAttribute(
-        'onclick',
-        'createNewAgent()'
-    );
-    document.getElementById("button-btn_discover_devices").setAttribute(
-        'onclick',
-        'discoverDevicesNetwork()'
-    );
+        function configureEmail() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general#table3'); ?>';
+        }
 
-    function configureEmail() {
-        window.location = '<?php echo ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general#table3'); ?>';
-    }
+        function serversUp() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'); ?>';
+        }
 
-    function createNewAgent() {
-        window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&crt-2=Create+agent'); ?>';
-    }
+        function messageLicense() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_list'); ?>';
+        }
 
-    function checkAgentOnline() {
-        window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$this->getWelcomeAgent().''); ?>';
-    }
+        function deployAgent() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&show_deploy_agent=1'); ?>';
+        }
 
-    function createAlertModule() {
-        window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$this->getWelcomeAgent().''); ?>';
-    }
+        function openCreateModulesDialog() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=wizard&sec2=godmode/wizards/task_to_perform&create_modules_dialog=1'); ?>';
+        }
 
-    function monitorRemoteCommands() {
-        window.location = '<?php echo ui_get_full_url(''); ?>';
-    }
+        function openCreateConnectivityDialog() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=wizard&sec2=godmode/wizards/task_to_perform&create_connectivity_dialog=1'); ?>';
+        }
 
-    function discoverDevicesNetwork() {
-        window.location = '<?php echo ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd&mode=netscan'); ?>';
-    }
+        function openCreateBasicNetDialog() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=wizard&sec2=godmode/wizards/task_to_perform&create_net_scan_dialog=1'); ?>';
+        }
 
-    function reportIsNotWorking() {
-    }
+        function openCreateAlertMailDialog() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=wizard&sec2=godmode/wizards/task_to_perform&create_alert_mail_dialog=1'); ?>';
+        }
 
-    function cierre_dialog(){
-        this.dialog("close");
-    }
+        function cierre_dialog(){
+            this.dialog("close");
+        }
     </script>
         <?php
         return ob_get_clean();

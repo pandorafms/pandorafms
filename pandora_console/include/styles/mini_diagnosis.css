@@ -1,0 +1,83 @@
+.rectangle {
+  background-color: #ffffff;
+  border: 2px solid #e5e9ed;
+  border-radius: 6px;
+  max-width: 475px;
+  width: 475px;
+  height: 161px;
+  display: contents;
+  justify-content: flex-start;
+}
+
+.rectangle:hover {
+  background-color: #f3f5f7;
+}
+
+.rectangle_Connected {
+  border-left: 4px solid #82b92e;
+}
+
+.rectangle_Disconnected {
+  border-left: 4px solid #8a96a6;
+}
+
+.status {
+  font-weight: bold;
+  margin-top: -10px;
+  margin-left: 20px;
+}
+
+.Connected {
+  color: #82b92e;
+  font-family: Lato;
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.Disconnected {
+  color: #8a96a6;
+  font-family: Lato;
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.title {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.title > img {
+  margin-top: 5px;
+}
+
+.title > span {
+  color: #14524f;
+  font-family: Lato;
+  font-size: 18px;
+  line-height: 24px;
+  text-align: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: inline-block;
+  margin-left: 20px;
+  margin-top: -20px;
+}
+
+.description {
+  margin-top: 20px;
+  margin-left: 10px;
+  color: #454545;
+  font-family: Lato;
+  font-size: 15px;
+  line-height: 24px;
+  width: 430px;
+  text-align: left;
+}
+
+.button {
+  text-align: right;
+}
+
+span > img:hover {
+  cursor: pointer;
+}

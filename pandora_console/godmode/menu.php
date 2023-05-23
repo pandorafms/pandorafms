@@ -168,6 +168,22 @@ if ($access_console_node === true) {
     }
 
     $sub = [];
+    if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
+        $sub['wizard']['text'] = __('Configuration wizard');
+        $sub['wizard']['id'] = 'conf_wizard';
+        $sub['wizard']['type'] = 'direct';
+        $sub['wizard']['subtype'] = 'nolink';
+        $sub2 = [];
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+            $sub2['godmode/wizards/mini_diagnosis']['text'] = __('Mini-diagnosis');
+            $sub2['godmode/wizards/mini_diagnosis']['id'] = 'mini_diagnosis';
+        }
+
+        $sub2['godmode/wizards/task_to_perform']['text'] = __('Tasks to perform');
+        $sub2['godmode/wizards/task_to_perform']['id'] = 'task_to_perform';
+        $sub['wizard']['sub2'] = $sub2;
+    }
+
     if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
         $sub['templates']['text'] = __('Templates');
         $sub['templates']['id'] = 'Templates';

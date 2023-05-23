@@ -1339,7 +1339,11 @@ class ModuleTemplates extends HTML
         function filterGroupComponents(e){
             var selectedGroup = e.target.value;
             var entireList = JSON.parse($('#hidden-group-components').val());
-            var componentsToShow = entireList[selectedGroup];
+            if(typeof entireList[selectedGroup] !== 'undefined'){
+                var componentsToShow = entireList[selectedGroup].split(",");
+            } else {
+                var componentsToShow = [];
+            }
             $('#add-modules-components').children().each(function(){
                 var id = $(this).val();
                 if (typeof componentsToShow === 'undefined' && selectedGroup != '0') {
@@ -1348,7 +1352,7 @@ class ModuleTemplates extends HTML
                     $(this).css('display','block');
                 } else {
                     $(this).css('display','none');
-                }                
+                }
             });
         }
 

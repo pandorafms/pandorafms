@@ -1221,9 +1221,7 @@ $class = 'databox filters';
                     $servers,
                     'combo_server',
                     $server_name,
-                    '',
-                    $nothing,
-                    $nothing_value
+                    ''
                 );
                 ?>
             </td>

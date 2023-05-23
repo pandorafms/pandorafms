@@ -2555,3 +2555,28 @@ function db_get_column_type(string $table, string $column='')
 
     return $result;
 }
+
+
+/**
+ * Validate sql query.
+ *
+ * @param string $sql Query for validate.
+ *
+ * @return boolean True if query is valid.
+ */
+function db_validate_sql(string $sql)
+{
+    try {
+        error_reporting(0);
+        db_process_sql_begin();
+        $result = db_process_sql(io_safe_output($sql));
+    } catch (Exception $e) {
+        // Catch all posible errors.
+        $result = false;
+    } finally {
+        db_process_sql_rollback();
+        error_reporting(E_ALL);
+    }
+
+    return ($result !== false) ? true : false;
+}

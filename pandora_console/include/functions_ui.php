@@ -4521,7 +4521,7 @@ function ui_toggle(
 
     // Link to toggle.
     $output = '<div class="'.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
-    $output .= '<div class="'.$header_class.'" '.(($disableToggle === true) ? 'style="cursor: pointer;" ' : '').' id="tgl_ctrl_'.$uniqid.'">';
+    $output .= '<div class="'.$header_class.'" '.(($disableToggle === false) ? 'style="cursor: pointer;" ' : '').' id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
             if (empty($switch_name) === true) {
@@ -4610,37 +4610,38 @@ function ui_toggle(
         $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
         $output .= '	/* <![CDATA[ */'."\n";
         $output .= "	$(document).ready (function () {\n";
+        $output .= '	    var switch_enable = '.(int) $switch.";\n";
         $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-        $output .= '            if (is_metaconsole == 0) {';
-        $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "			    }\n";
-        $output .= "			    else {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "			    }\n";
-        $output .= "            }\n";
-        $output .= "		});\n";
-        $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-        $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
-        $output .= $class_table;
+        $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
         $output .= "			}\n";
         $output .= "			else {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
         $output .= "			}\n";
         $output .= "		});\n";
+        $output .= '        if (switch_enable === 0) {';
+        $output .= "		    $('#tgl_ctrl_".$uniqid."').click(function() {\n";
+        $output .= '			    if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', true);\n";
+        $output .= $class_table;
+        $output .= "			    }\n";
+        $output .= "			    else {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= "			    }\n";
+        $output .= "		    });\n";
+        $output .= "	    }\n";
         $output .= "	});\n";
         $output .= '/* ]]> */';
         $output .= '</script>';

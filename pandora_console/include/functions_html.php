@@ -903,6 +903,11 @@ function html_print_select(
             ) {
                 // This fixes string ($value) to int ($selected) comparisons
                 $output .= ' selected="selected"';
+            } else if (is_numeric($value) && is_string($selected)) {
+                $str_value = strval($value);
+                if ($str_value === $selected) {
+                    $output .= ' selected="selected"';
+                }
             } else if ($value === $selected) {
                 // Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
                 $output .= ' selected="selected"';
@@ -2155,6 +2160,7 @@ function html_print_extended_select_for_time(
     }
 
     ob_start();
+    hd($fields, true);
     // Use the no_meta parameter because this image is only in the base console.
     echo '<div id="'.$uniq_name.'_default" class="wauto inline_flex">';
     html_print_select(

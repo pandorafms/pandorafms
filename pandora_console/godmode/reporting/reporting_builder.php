@@ -3684,7 +3684,7 @@ if ($idReport != 0) {
 
 $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
-if ($action !== 'update') {
+if (is_metaconsole() === true || $action !== 'update') {
     // Header.
     ui_print_standard_header(
         $textReportName,

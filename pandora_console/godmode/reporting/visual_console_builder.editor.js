@@ -202,15 +202,6 @@ function visual_map_main() {
       }
     }
   });
-
-  //Resize the view to adapt the screen size.
-  if ($("#main").length) {
-    //Console
-    $("#frame_view").height($("#main").height() - 75);
-  } else {
-    //Metaconsole
-    $("#frame_view").height($("#page").height() - 75);
-  }
 }
 
 function cancel_button_palette_callback() {
@@ -2426,10 +2417,10 @@ function loadFieldsFromDB(item) {
   });
 }
 
-function setAspectRatioBackground(side) {
+function setAspectRatioBackground(side, id) {
   toggle_item_palette();
 
-  parameter = Array();
+  var parameter = Array();
   parameter.push({
     name: "page",
     value: "include/ajax/visual_console_builder.ajax"
@@ -2440,18 +2431,20 @@ function setAspectRatioBackground(side) {
     value: $("#background_img").attr("src")
   });
 
+  parameter.push({ name: "id_visual_console", value: id });
+
   jQuery.ajax({
     url: "ajax.php",
     data: parameter,
     type: "POST",
     dataType: "json",
     success: function(data) {
-      old_width = parseInt(
+      var old_width = parseInt(
         $("#background")
           .css("width")
           .replace("px", "")
       );
-      old_height = parseInt(
+      var old_height = parseInt(
         $("#background")
           .css("height")
           .replace("px", "")
@@ -2464,8 +2457,12 @@ function setAspectRatioBackground(side) {
         old_height = 768;
       }
 
-      img_width = data[0];
-      img_height = data[1];
+      var img_width = data[0];
+      var img_height = data[1];
+
+      var ratio = 0;
+      var height = 0;
+      var width = 0;
 
       if (side == "width") {
         ratio = old_width / img_width;
@@ -5821,14 +5818,14 @@ function deleteDB(idElement) {
 }
 
 function activeToolboxButton(id, active) {
-  if ($("input." + id + "[name=button_toolbox2]").length == 0) {
+  if ($("button." + id + "[name=" + id + "]").length == 0) {
     return;
   }
 
   if (active) {
-    $("input." + id + "[name=button_toolbox2]").removeAttr("disabled");
+    $("button." + id + "[name=" + id + "]").removeAttr("disabled");
   } else {
-    $("input." + id + "[name=button_toolbox2]").attr("disabled", true);
+    $("button." + id + "[name=" + id + "]").attr("disabled", true);
   }
 }
 
@@ -6446,9 +6443,9 @@ function eventsBackground() {
 
 function move_elements_resize(original_width, original_height, width, height) {
   jQuery.each($(".item"), function(key, value) {
-    item = value;
+    var item = value;
     idItem = $(item).attr("id");
-    classItem = $(item)
+    var classItem = $(item)
       .attr("class")
       .replace("item", "")
       .replace("ui-draggable", "")
@@ -6456,22 +6453,22 @@ function move_elements_resize(original_width, original_height, width, height) {
       .replace(/^\s+/g, "")
       .replace(/\s+$/g, "");
 
-    old_height = parseInt(
+    var old_height = parseInt(
       $(item)
         .css("top")
         .replace("px", "")
     );
-    old_width = parseInt(
+    var old_width = parseInt(
       $(item)
         .css("left")
         .replace("px", "")
     );
 
-    ratio_width = width / original_width;
-    ratio_height = height / original_height;
+    var ratio_width = width / original_width;
+    var ratio_height = height / original_height;
 
-    new_height = old_height * ratio_height;
-    new_width = old_width * ratio_width;
+    var new_height = old_height * ratio_height;
+    var new_width = old_width * ratio_width;
 
     var values = {};
 

@@ -3572,12 +3572,13 @@ function visual_map_print_visual_map(
     }
 
     echo '<div id="background_'.$id_layout.'"
-                style="margin:0px auto;text-align:
-                z-index: 0;
-                position:relative;
-                width:'.$mapWidth.'px;
-                height:'.$mapHeight.'px;
-                background-color:'.$layout['background_color'].';">';
+        style="margin:0px auto;text-align:
+        z-index: 0;
+        position:relative;
+        width:'.$mapWidth.'px;
+        height:'.$mapHeight.'px;
+        background-color:'.$layout['background_color'].';
+        z-index:0;">';
 
     if ($layout['background'] != 'None.png') {
         echo "<img src='".ui_get_full_url($backgroundImage, false, false, false)."' width='100%' height='100%' />";

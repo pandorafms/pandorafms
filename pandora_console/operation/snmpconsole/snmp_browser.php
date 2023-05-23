@@ -72,29 +72,32 @@ if ($config['pure']) {
     $link['text'] .= '</a>';
 }
 
-// Header.
-ui_print_standard_header(
-    __('SNMP Browser'),
-    'images/op_snmp.png',
-    false,
-    'snmp_browser_view',
-    false,
-    [$link],
-    [
+// Control from managent polices.
+if ($_POST['type'] !== 'networkserver') {
+    // Header.
+    ui_print_standard_header(
+        __('SNMP Browser'),
+        'images/op_snmp.png',
+        false,
+        'snmp_browser_view',
+        false,
+        [$link],
         [
-            'link'  => '',
-            'label' => __('Monitoring'),
-        ],
-        [
-            'link'  => '',
-            'label' => __('SNMP'),
-        ],
-    ]
-);
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('SNMP'),
+            ],
+        ]
+    );
 
-// SNMP tree container.
-if (!isset($_GET['tab'])) {
-    snmp_browser_print_container(false, '100%', '60%', '', true, true);
+    // SNMP tree container.
+    if (!isset($_GET['tab'])) {
+        snmp_browser_print_container(false, '100%', '60%', '', true, true);
+    }
 }
 
 // Div for modal.

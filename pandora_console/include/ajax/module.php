@@ -1267,7 +1267,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/module-graph.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => $module['nombre'],
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true

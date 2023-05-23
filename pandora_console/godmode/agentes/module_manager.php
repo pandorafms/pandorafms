@@ -1105,8 +1105,9 @@ $createModuleTable->data[0][] = html_print_label_input_block(
         false,
         '',
         false,
-        'width:250px;'
-    )
+        'width:350px;'
+    ),
+    ['div_style' => 'margin-top: 25px;'],
 );
 
 $createModuleTable->data[1][] = html_print_label_input_block(
@@ -1134,8 +1135,9 @@ $modalCreateModule .= html_print_div(
             'modal_button_create',
             false,
             [
-                'icon' => 'next',
-                'mode' => 'mini secondary',
+                'icon'  => 'next',
+                'mode'  => 'mini secondary',
+                'style' => 'margin-top: 140px;',
             ],
             true
         ),
@@ -1162,8 +1164,8 @@ html_print_div(
             draggable: true,
             modal: true,
             close: false,
-            height: 222,
-            width: 480,
+            height: 400,
+            width: 495,
             overlay: {
                 opacity: 0.5,
                 background: "black"

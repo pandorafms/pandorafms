@@ -162,7 +162,7 @@ class WebServerModuleDebug extends Wizard
                 results.setReadOnly(true);
                 results.setShowPrintMargin(false);
 
-                $("#submit-execute_query").click(function() {
+                $("#button-execute_query").click(function() {
                     // Show the spinner.
                     showSpinner(true);
                     // Empty the results container.

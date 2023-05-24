@@ -173,7 +173,7 @@ if ($vconsole_write || $vconsole_manage) {
         ]
     ).'</a>';
     $options['editor']['text'] = '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$id_layout.'">'.html_print_image(
-        'images/builder.png',
+        'images/builder@svg.svg',
         true,
         [
             'title' => __('Builder'),
@@ -192,30 +192,41 @@ $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual
 ).'</a>';
 $options['view']['active'] = true;
 
-if (!is_metaconsole()) {
-    if (!$config['pure']) {
-        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image(
-            'images/full_screen.png',
-            true,
-            [
-                'title' => __('Full screen mode'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>';
-        ui_print_page_header(
-            $layout_name,
-            'images/visual_console.png',
-            false,
-            'visual_console_view',
-            false,
-            $options
-        );
-    }
+if (!$config['pure']) {
+    $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image(
+        'images/full_screen.png',
+        true,
+        [
+            'title' => __('Full screen mode'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
-    // Set the hidden value for the javascript
+    ui_print_standard_header(
+        $layout_name,
+        'images/visual_console.png',
+        false,
+        'visual_console_view',
+        false,
+        $options,
+        [
+            [
+                'link'  => '',
+                'label' => __('Topology maps'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Visual console'),
+            ],
+        ]
+    );
+}
+
+if (!is_metaconsole()) {
+    // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 0);
 } else {
-    // Set the hidden value for the javascript
+    // Set the hidden value for the javascript.
     html_print_input_hidden('metaconsole', 1);
 }
 

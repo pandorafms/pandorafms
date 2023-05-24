@@ -736,7 +736,7 @@ div#main_pure {
 div#main,
 div#container,
 body.pure {
-  background-color: #111;
+  background-color: #111 !important;
 }
 
 form ul.form_flex {

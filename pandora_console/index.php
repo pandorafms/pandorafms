@@ -797,6 +797,7 @@ if (isset($config['id_user']) === false) {
         $pass2               = get_parameter_post('pass2');
         $id_user             = get_parameter_post('id_user');
 
+        $db_reset_pass_entry = false;
         if (empty($reset_hash) === false) {
             $hash_data = explode(':::', $reset_hash);
             $id_user = $hash_data[0];
@@ -1361,7 +1362,7 @@ if ($searchPage) {
                     $_GET['sec2'] = 'operation/agentes/group_view';
                 break;
 
-                case 'Alert detail':
+                case 'Alert details':
                     $_GET['sec'] = 'view';
                     $_GET['sec2'] = 'operation/agentes/alerts_status';
                 break;
@@ -1388,7 +1389,7 @@ if ($searchPage) {
                 case 'Visual console':
                     $id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
                     if (($home_url == '') || ($id_visualc == false)) {
-                        $str = 'sec=network&sec2=operation/visual_console/index&refr=60';
+                        $str = 'sec=godmode/reporting/map_builder&sec2=godmode/reporting/map_builder';
                     } else {
                         $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc;
                     }

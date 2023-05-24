@@ -509,7 +509,7 @@ $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
     10,
     1024,
     true,
-    $disabledBecauseInPolicy || $edit === false,
+    $disabledBecauseInPolicy,
     false,
     '',
     $classdisabledBecauseInPolicy
@@ -1049,8 +1049,8 @@ $table_advanced->data['textarea_description_instructions'][1] = html_print_texta
 
 $table_advanced->rowclass['caption_textarea_crit_warn_instructions'] = 'field_half_width pdd_t_10px';
 $table_advanced->rowclass['textarea_crit_warn_instructions'] = 'field_half_width';
-$table_advanced->data['caption_textarea_crit_warn_instructions'][1] = __('Warning instructions');
 $table_advanced->data['caption_textarea_crit_warn_instructions'][0] = __('Critical instructions');
+$table_advanced->data['caption_textarea_crit_warn_instructions'][1] = __('Warning instructions');
 $table_advanced->data['textarea_crit_warn_instructions'][0] = html_print_textarea(
     'critical_instructions',
     5,

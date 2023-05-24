@@ -272,7 +272,7 @@ $passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_exte
     'password_new',
     '',
     '25',
-    '45',
+    '150',
     $view_mode,
     '',
     [
@@ -291,7 +291,7 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     'password_conf',
     '',
     '20',
-    '45',
+    '150',
     $view_mode,
     '',
     [
@@ -311,7 +311,7 @@ if ($new_user === false) {
         'own_password_confirm',
         '',
         '20',
-        '45',
+        '150',
         $view_mode,
         '',
         [
@@ -596,11 +596,15 @@ $userManagementTable->data['fields_blocksize_eventfilter'][0] = html_print_input
     true
 );
 
+if (is_metaconsole() === true && empty($user_info['metaconsole_default_event_filter']) !== true) {
+    $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
+}
+
 $userManagementTable->data['captions_blocksize_eventfilter'][1] = __('Event filter');
 $userManagementTable->data['fields_blocksize_eventfilter'][1] = html_print_select(
     $event_filter,
     'default_event_filter',
-    ($user_info['default_event_filter'] ?? 0),
+    [$user_info['default_event_filter']],
     '',
     '',
     __('None'),
@@ -617,6 +621,11 @@ $homeScreenTable->style = [];
 $homeScreenTable->rowclass = [];
 $homeScreenTable->data = [];
 // Home screen.
+if (is_metaconsole() === true && empty($user_info['metaconsole_data_section']) !== true) {
+    $user_info['data_section'] = $user_info['metaconsole_data_section'];
+    $user_info['section'] = $user_info['metaconsole_section'];
+}
+
 $homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
 $homeScreenTable->colspan['captions_homescreen'][0] = 2;
 $homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
@@ -632,6 +641,17 @@ $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
     false,
     false
 );
+$homeScreenTable->data['fields_homescreen'][1] = html_print_div(
+    [
+        'class'   => 'w100p',
+        'content' => $customHomeScreenDataField,
+    ],
+    true
+);
+
+$userManagementTable->rowclass['homescreen_table'] = 'w100p';
+$userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
+
 $homeScreenTable->data['fields_homescreen'][1] = html_print_div(
     [
         'class'   => 'w100p',

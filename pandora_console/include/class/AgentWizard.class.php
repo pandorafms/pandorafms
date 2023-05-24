@@ -2333,7 +2333,7 @@ class AgentWizard extends HTML
                             }
 
                             $tmp->id_plugin($infoMacros['server_plugin']);
-                            $tmp->macros(json_encode($fieldsPlugin));
+                            $tmp->macros(io_json_mb_encode($fieldsPlugin));
                         }
                     }
                 }
@@ -2507,7 +2507,7 @@ class AgentWizard extends HTML
                         }
 
                         $tmp->id_plugin($infoMacros['server_plugin']);
-                        $tmp->macros(json_encode($fieldsPlugin));
+                        $tmp->macros(io_json_mb_encode($fieldsPlugin));
                     }
 
                     $tmp->ip_target(io_safe_input($this->targetIp));

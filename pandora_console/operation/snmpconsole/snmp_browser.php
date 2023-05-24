@@ -93,7 +93,9 @@ ui_print_standard_header(
 );
 
 // SNMP tree container.
-snmp_browser_print_container(false, '100%', '60%', '', true, true);
+if (!isset($_GET['tab'])) {
+    snmp_browser_print_container(false, '100%', '60%', '', true, true);
+}
 
 // Div for modal.
 echo '<div id="modal" style="display:none"></div>';
@@ -607,87 +609,142 @@ function show_add_module() {
 
     var id_agent = 0;
     var id_module = 0;
+    var id_agent_module = $("#id_agent_module").val();
 
-    $("#dialog_create_module").dialog({
-        resizable: true,
-        draggable: true,
-        modal: true,
-        width: '300',
-        height:'auto',
-        overlay: {
-            opacity: 0.5,
-            background: "black"
-        },
-        buttons: 
-        [
-            {
-                class: "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-cancel",
-                text: '<?php echo __('Cancel'); ?>',
-                click: function() {
-                    $(this).dialog("close");
-                }
+    if (id_agent_module) {
+        // Get SNMP target.
+        confirmDialog({
+            title: '<?php echo __('Are you sure?'); ?>',
+            message: '<?php echo __('Are you sure you want add module?'); ?> ',
+            ok: '<?php echo __('OK'); ?>',
+            cancel: '<?php echo __('Cancel'); ?>',
+            onAccept: function() {
+
+                // Get SNMP target.
+                var snmp_target = {
+                    target_ip : $('#text-target_ip').val(),
+                    community : $('#text-community').val(),
+                    snmp_version : $('#snmp_browser_version').val(),
+                    snmp3_auth_user : $('#text-snmp3_browser_auth_user').val(),
+                    snmp3_security_level : $('#snmp3_browser_security_level').val(),
+                    snmp3_auth_method : $('#snmp3_browser_auth_method').val(),
+                    snmp3_auth_pass : $('#password-snmp3_browser_auth_pass').val(),
+                    snmp3_privacy_method : $('#snmp3_browser_privacy_method').val(),
+                    snmp3_privacy_pass : $('#password-snmp3_browser_privacy_pass').val(),
+                    tcp_port : $('#target_port').val(),
+                };
+
+                // Append values to form.
+                var input = "";
+
+                $.each( snmp_target, function( key, val ) {
+                    input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", key).val(val);
+
+                    $("#snmp_create_module").append(input);
+                });
+
+                //Submit form to agent module url.
+                $("#snmp_create_module").attr(
+                    "action",
+                    "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente="
+                    +id_agent_module+
+                    "&tab=module&edit_module=1"
+                );
+
+                $('#snmp_create_module').submit();
+
             },
-            
-            {
-                class: "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-                text: '<?php echo __('Create module'); ?>',
-                click: function(e) {
-                    
-                            confirmDialog({
-                                title: '<?php echo __('Are you sure?'); ?>',
-                                message: '<?php echo __('Are you sure you want add module?'); ?> ',
-                                ok: '<?php echo __('OK'); ?>',
-                                cancel: '<?php echo __('Cancel'); ?>',
-                                onAccept: function() {
-                                    
-                                    // Get id agent and add it to form.
-                                    id_agent = $('#hidden-id_agent').val();
-                                    
-                                    // Get SNMP target.
-                                    var snmp_target = {
-
-                                        target_ip : $('#text-target_ip').val(),
-                                        community : $('#text-community').val(),
-                                        snmp_version : $('#snmp_browser_version').val(),
-                                        snmp3_auth_user : $('#text-snmp3_browser_auth_user').val(),
-                                        snmp3_security_level : $('#snmp3_browser_security_level').val(),
-                                        snmp3_auth_method : $('#snmp3_browser_auth_method').val(),
-                                        snmp3_auth_pass : $('#password-snmp3_browser_auth_pass').val(),
-                                        snmp3_privacy_method : $('#snmp3_browser_privacy_method').val(),
-                                        snmp3_privacy_pass : $('#password-snmp3_browser_privacy_pass').val(),
-                                        tcp_port : $('#target_port').val(),
-                                    };
-
-                                    // Append values to form.
-                                    var input = "";
-
-                                    $.each( snmp_target, function( key, val ) {
-                                        input = $("<input>")
-                                        .attr("type", "hidden")
-                                        .attr("name", key).val(val);
-                                        
-                                        $("#snmp_create_module").append(input);
-                                    });
-
-                                    //Submit form to agent module url.
-                                    $("#snmp_create_module").attr(
-                                        "action",
-                                        "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente="
-                                        +id_agent+
-                                        "&tab=module&edit_module=1"
-                                    );
-
-                                    $('#snmp_create_module').submit();
-                                },
-                                onDeny: function () {
-                                    $("#dialog_create_module").dialog("close");
-                                    return false;
-                                }
-                            });
-                    }
+            onDeny: function () {
+                $("#dialog_create_module").dialog("close");
+                return false;
             }
-        ],   
-    });
+        });
+
+    } else {
+
+        $("#dialog_create_module").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            width: '300',
+            height:'auto',
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            buttons:
+            [
+                {
+                    class: "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-cancel",
+                    text: '<?php echo __('Cancel'); ?>',
+                    click: function() {
+                        $(this).dialog("close");
+                    }
+                },
+                
+                {
+                    class: "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+                    text: '<?php echo __('Create module'); ?>',
+                    click: function(e) {
+                        
+                                confirmDialog({
+                                    title: '<?php echo __('Are you sure?'); ?>',
+                                    message: '<?php echo __('Are you sure you want add module?'); ?> ',
+                                    ok: '<?php echo __('OK'); ?>',
+                                    cancel: '<?php echo __('Cancel'); ?>',
+                                    onAccept: function() {
+                                        
+                                        // Get id agent and add it to form.
+                                        id_agent = $('#hidden-id_agent').val();
+                                        
+                                        // Get SNMP target.
+                                        var snmp_target = {
+
+                                            target_ip : $('#text-target_ip').val(),
+                                            community : $('#text-community').val(),
+                                            snmp_version : $('#snmp_browser_version').val(),
+                                            snmp3_auth_user : $('#text-snmp3_browser_auth_user').val(),
+                                            snmp3_security_level : $('#snmp3_browser_security_level').val(),
+                                            snmp3_auth_method : $('#snmp3_browser_auth_method').val(),
+                                            snmp3_auth_pass : $('#password-snmp3_browser_auth_pass').val(),
+                                            snmp3_privacy_method : $('#snmp3_browser_privacy_method').val(),
+                                            snmp3_privacy_pass : $('#password-snmp3_browser_privacy_pass').val(),
+                                            tcp_port : $('#target_port').val(),
+                                        };
+
+                                        // Append values to form.
+                                        var input = "";
+
+                                        $.each( snmp_target, function( key, val ) {
+                                            input = $("<input>")
+                                            .attr("type", "hidden")
+                                            .attr("name", key).val(val);
+                                            
+                                            $("#snmp_create_module").append(input);
+                                        });
+
+                                        //Submit form to agent module url.
+                                        $("#snmp_create_module").attr(
+                                            "action",
+                                            "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente="
+                                            +id_agent+
+                                            "&tab=module&edit_module=1"
+                                        );
+
+                                        $('#snmp_create_module').submit();
+                                    },
+                                    onDeny: function () {
+                                        $("#dialog_create_module").dialog("close");
+                                        return false;
+                                    }
+                                });
+                        }
+                }
+            ],   
+        });
+    }
 }
     
 </script>

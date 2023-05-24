@@ -526,12 +526,14 @@ class AgentDeployWizard
             true
         );
 
+        $mac_installer_link = 'http://firefly.pandorafms.com/pandorafms/latest/macOS/Pandora_FMS_MacOS_agent-7.0NG.dmg';
+        $mac_content_link = '<a class="green-link" style="font-size: 15px;" href="'.$mac_installer_link.'" target="_blank">'.__('Click to Download the agent').'</a>';
         html_print_div(
             [
                 'id'      => 'mac_installer',
                 'class'   => 'white_table_flex agent_details_col',
                 'style'   => 'margin-bottom: 20px',
-                'content' => $content.$mac_warn_box,
+                'content' => $content.$mac_warn_box.$mac_content_link,
             ]
         );
 

@@ -475,7 +475,12 @@ $skin = '';
         'Dashboard'      => __('Dashboard'),
     ];
 
-    $home_screen .= html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
+    if (is_metaconsole() === true) {
+        $home_screen .= html_print_select($values, 'metaconsole_section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
+    } else {
+        $home_screen .= html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
+    }
+
 
     $dashboards = Manager::getDashboards(
         -1,
@@ -556,6 +561,10 @@ $skin = '';
 
     if (isset($double_authentication) === true) {
         $double_authentication .= '</div>';
+    }
+
+    if (is_metaconsole() === true && empty($user_info['metaconsole_default_event_filter']) !== true) {
+        $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
     }
 
     if ((bool) check_acl($config['id_user'], 0, 'ER') === true) {

@@ -70,6 +70,10 @@ html_print_input_hidden('update_config', 1);
 
 $performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
 
+echo "<div id='dialog-legacy-vc' title='".__('Legacy visual console Information')."' class='invisible'>";
+echo "<p class='center'>".__('Visual console in legacy mode will no longer be supported as of LTS 772').'</p>';
+echo '</div>';
+
 // ----------------------------------------------------------------------
 // BEHAVIOUR CONFIGURATION
 // ----------------------------------------------------------------------
@@ -2243,9 +2247,22 @@ $(document).ready (function () {
     // Show the cache expiration conf or not.
     $("input[name=legacy_vc]").change(function (e) {
         if ($(this).prop("checked") === true) {
-            $("select#vc_default_cache_expiration_select").closest("tr").hide();
+            $("select#vc_default_cache_expiration_select").closest("td").hide();
+            $("#dialog-legacy-vc").dialog({
+                modal: true,
+                width: 500,
+                buttons:[
+                    {
+                        class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next',
+                        text: "<?php echo __('OK'); ?>",
+                        click: function(){
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
         } else {
-            $("select#vc_default_cache_expiration_select").closest("tr").show();
+            $("select#vc_default_cache_expiration_select").closest("td").show();
         }
     }).change();
 

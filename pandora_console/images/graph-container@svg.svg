@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons/Dark/20/graph container@svg</title>
+    <g id="Icons/Dark/20/graph-container" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Group" transform="translate(2.000000, 2.000000)" stroke="#3F3F3F" stroke-width="2">
+            <g id="Group-2">
+                <polyline id="Path-4" points="0 0 0 16 16 16"></polyline>
+                <g id="Group-3" transform="translate(2.941811, 0.000000)">
+                    <polyline id="Path" points="0 9.999897 4.0553112 5.0332489 7.05959702 7.04601669 13.0581894 -1.44328993e-15"></polyline>
+                    <polyline id="Path-2" points="13.0581894 4 13.0581894 0 9.05818939 0"></polyline>
+                </g>
+            </g>
+            <line x1="7.03043747" y1="16" x2="7.03043747" y2="13.0441227" id="Path-75"></line>
+            <line x1="3.03043747" y1="16" x2="3.03043747" y2="13.0441227" id="Path-75-Copy"></line>
+            <line x1="11.0304375" y1="16" x2="11.0304375" y2="13.0441227" id="Path-75-Copy-2"></line>
+            <line x1="15.0304375" y1="16" x2="15.0304375" y2="13.0441227" id="Path-75-Copy-3"></line>
+        </g>
+    </g>
+</svg>

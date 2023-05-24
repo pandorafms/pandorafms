@@ -54,7 +54,7 @@ ui_print_standard_header(
     ]
 );
 
-if (empty($config['pandora_uid']) === 'ONLINE') {
+if ($config['pandora_uid'] === 'ONLINE') {
     $status_um = true;
 }
 

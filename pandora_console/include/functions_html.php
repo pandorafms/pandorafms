@@ -903,6 +903,11 @@ function html_print_select(
             ) {
                 // This fixes string ($value) to int ($selected) comparisons
                 $output .= ' selected="selected"';
+            } else if (is_numeric($value) && is_string($selected)) {
+                $str_value = strval($value);
+                if ($str_value === $selected) {
+                    $output .= ' selected="selected"';
+                }
             } else if ($value === $selected) {
                 // Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
                 $output .= ' selected="selected"';

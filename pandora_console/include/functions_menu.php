@@ -1070,7 +1070,7 @@ if (is_ajax()) {
                                     <p class="about-last-p"><span>'.$db_info->data->dbSize->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p class="about-last-p">'.$db_info->data->dbSize->value.'</p>
+                                    <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbSize->value.'</p>
                                 </th>
                             </tr>
 
@@ -1084,7 +1084,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_fragmentation->data->tablesFragmentationMax->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_fragmentation->data->tablesFragmentationMax->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_fragmentation->data->tablesFragmentationMax->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1092,7 +1092,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_fragmentation->data->tablesFragmentationValue->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_fragmentation->data->tablesFragmentationValue->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_fragmentation->data->tablesFragmentationValue->value.'</p>
                                 </th>
                             </tr>
                             <tr>

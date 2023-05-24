@@ -11557,6 +11557,12 @@ p.trademark-copyright {
   overflow: hidden;
 }
 
+#tab-database {
+  height: 80%;
+  overflow: auto;
+  width: 96%;
+}
+
 .item_status_tree_view {
   position: absolute;
   top: 7px;

@@ -1389,6 +1389,12 @@ p.trademark-copyright {
   overflow: hidden;
 }
 
+#tab-database {
+  height: 80%;
+  overflow: auto;
+  width: 96%;
+}
+
 button.buttonButton,
 button.submitButton {
   box-shadow: 0px 3px 6px #111;

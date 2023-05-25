@@ -492,7 +492,7 @@ function configure_modules_form() {
           data["unit"] == "" ? "" : data["unit"]
         );
 
-        $("#checkbox-critical_inverse").prop(
+        $("#checkbox-critical_inverse_string").prop(
           "checked",
           data["critical_inverse"]
         );

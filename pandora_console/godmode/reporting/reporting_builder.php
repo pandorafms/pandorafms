@@ -2197,9 +2197,12 @@ switch ($action) {
                                 'id_custom'
                             );
                             if ($values['treport_custom_sql_id'] == 0) {
-                                $values['external_source'] = get_parameter(
-                                    'sql'
-                                );
+                                $sql = get_parameter('sql', '');
+                                if ($sql !== '') {
+                                    $good_format = db_validate_sql($sql);
+                                }
+
+                                $values['external_source'] = $sql;
                             }
 
                             $values['historical_db'] = get_parameter(
@@ -2936,9 +2939,12 @@ switch ($action) {
                                 'id_custom'
                             );
                             if ($values['treport_custom_sql_id'] == 0) {
-                                $values['external_source'] = get_parameter(
-                                    'sql'
-                                );
+                                $sql = get_parameter('sql', '');
+                                if ($sql !== '') {
+                                    $good_format = db_validate_sql($sql);
+                                }
+
+                                $values['external_source'] = $sql;
                             }
 
                             $values['historical_db'] = get_parameter(

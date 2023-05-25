@@ -12223,3 +12223,11 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 .toggle-traffic-graph {
   margin: 0px !important;
 }
+
+form.max_floating_element_size > ul#ul_tree_azure {
+  background-color: #fff;
+  border-spacing: 0px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e2e2;
+}

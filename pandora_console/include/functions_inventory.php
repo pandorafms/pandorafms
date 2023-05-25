@@ -750,14 +750,16 @@ function inventory_get_datatable(
             tagent_module_inventory.*,
             tagente.alias as name_agent,
             tagente_datos_inventory.utimestamp as last_update,
-            tagente_datos_inventory.timestamp as last_update_timestamp
+            tagente_datos_inventory.timestamp as last_update_timestamp,
+            tagente_datos_inventory.data as data_inventory
         FROM tmodule_inventory
         INNER JOIN tagent_module_inventory
             ON tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory
+        INNER JOIN tagente_datos_inventory
+            ON tagent_module_inventory.id_agent_module_inventory = tagente_datos_inventory.id_agent_module_inventory
         LEFT JOIN tagente
             ON tagente.id_agente = tagent_module_inventory.id_agente
-        LEFT JOIN tagente_datos_inventory
-            ON tagent_module_inventory.id_agent_module_inventory = tagente_datos_inventory.id_agent_module_inventory
+
         WHERE %s
         ORDER BY tmodule_inventory.id_module_inventory 
         LIMIT %d, %d',
@@ -765,6 +767,8 @@ function inventory_get_datatable(
         $offset,
         $config['block_size']
     );
+
+    hd($sql, true);
 
     $rows = db_get_all_rows_sql($sql);
 
@@ -775,7 +779,7 @@ function inventory_get_datatable(
                 $row['timestamp'] = $row['last_update_timestamp'];
             }
 
-            $data_rows = explode(PHP_EOL, $row['data']);
+            $data_rows = explode(PHP_EOL, $row['data_inventory']);
             foreach ($data_rows as $data_key => $data_value) {
                 if (empty($data_value) === false) {
                     $row['data'] = $data_value;

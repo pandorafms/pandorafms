@@ -15832,7 +15832,11 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     $return['time_critical'] = $data['time_error'];
     $return['time_warning'] = $data['time_warning'];
     $return['time_ok'] = $data['time_ok'];
-    $return['percent_ok'] = (($data['checks_ok'] * 100) / $data['checks_total']);
+    if ($data['checks_total'] > 0) {
+        $return['percent_ok'] = (($data['checks_ok'] * 100) / $data['checks_total']);
+    } else {
+        $return['percent_ok'] = 0;
+    }
 
     $colors = [
         1 => COL_NORMAL,

@@ -2210,7 +2210,14 @@ switch ($action) {
                             );
                             $values['top_n_value'] = get_parameter('max_items');
 
-                            $values['server_name'] = get_parameter('combo_server');
+                            if ($values['type'] === 'sql_graph_hbar'
+                                || ($values['type'] === 'sql_graph_vbar')
+                                || ($values['type'] === 'sql_graph_pie')
+                            ) {
+                                $values['server_name'] = get_parameter('combo_server_sql');
+                            } else {
+                                $values['server_name'] = get_parameter('combo_server');
+                            }
                         } else if ($values['type'] == 'url') {
                             $values['external_source'] = get_parameter('url');
                         } else if ($values['type'] == 'event_report_group') {

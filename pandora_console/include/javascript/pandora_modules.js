@@ -1544,10 +1544,7 @@ function changePlugin() {
 
   var pluginDescription = pluginAllData.description;
   var pluginMacros = pluginAllData.macros;
-  console.log(pluginAllData.macrosElement);
   var pluginMacrosElement = JSON.parse(atob(pluginAllData.macrosElement));
-  console.log(pluginMacrosElement);
-
   var displayShow = "none";
   if (executionType == EXECUTION_TYPE_NETWORK) {
     displayShow = "none";

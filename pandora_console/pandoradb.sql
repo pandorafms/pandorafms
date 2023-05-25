@@ -1009,6 +1009,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `target_ip` VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

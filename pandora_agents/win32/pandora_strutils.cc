@@ -24,6 +24,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <cstring>    // for strchr
+#include <vector>
+#include <iterator>
 
 using namespace Pandora;
 
@@ -54,6 +56,54 @@ Pandora_Strutils::trim (const string str) {
 	}
 	
 	return result;
+}
+
+/** 
+ * Encode the given string to base64.
+ * Based on: https://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
+ *
+ * @param str String to be encoded.
+ * 
+ * @return The base64 encoded string.
+ */
+string
+Pandora_Strutils::base64Encode(string str) {
+	string base64_str;
+	std::uint32_t temp;
+	const static char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+	std::vector<std::uint8_t> buffer(begin(str), end(str));
+	base64_str.reserve(((buffer.size() / 3) + (buffer.size() % 3 > 0)) * 4);
+
+	std::vector<std::uint8_t>::iterator cursor = buffer.begin();
+	for(size_t idx = 0; idx < buffer.size() / 3; idx++) {
+		temp  = (*cursor++) << 16;
+		temp += (*cursor++) << 8;
+		temp += (*cursor++);
+		base64_str.append(1, alphabet[(temp & 0x00FC0000) >> 18]);
+		base64_str.append(1, alphabet[(temp & 0x0003F000) >> 12]);
+		base64_str.append(1, alphabet[(temp & 0x00000FC0) >>  6]);
+		base64_str.append(1, alphabet[(temp & 0x0000003F)]);
+	}
+
+	switch(buffer.size() % 3){
+		case 1:
+			temp  = (*cursor++) << 16;
+			base64_str.append(1, alphabet[(temp & 0x00FC0000) >> 18]);
+			base64_str.append(1, alphabet[(temp & 0x0003F000) >> 12]);
+			base64_str.append(2, '=');
+			break;
+		case 2:
+			temp  = (*cursor++) << 16;
+			temp += (*cursor++) << 8;
+			base64_str.append(1, alphabet[(temp & 0x00FC0000) >> 18]);
+			base64_str.append(1, alphabet[(temp & 0x0003F000) >> 12]);
+			base64_str.append(1, alphabet[(temp & 0x00000FC0) >>  6]);
+			base64_str.append(1, '=');
+			break;
+		}
+
+	return base64_str;
 }
 
 /** 

@@ -325,7 +325,7 @@ class AgentWizard extends HTML
         $this->wizardSection = get_parameter('wizard_section', 'snmp_explorer');
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
-        $this->targetIp = get_parameter('targetIp', '');
+        $this->targetIp = trim(get_parameter('targetIp', ''), '&#x20;');
         $this->wmiBinary = $config['wmiBinary'];
         $this->defaultSNMPValues = (array) json_decode(io_safe_output($config['agent_wizard_defaults']));
 

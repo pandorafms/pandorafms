@@ -10249,7 +10249,7 @@ button.submitButton {
   justify-content: space-between;
   flex-direction: row;
   min-width: 110px;
-  height: 42px;
+  height: 45px;
   font-size: 14px;
   /*font-family: "lato";*/
   align-items: center;
@@ -11560,6 +11560,7 @@ p.trademark-copyright {
 #tab-database {
   height: 80%;
   overflow: auto;
+  width: 96%;
 }
 
 .item_status_tree_view {

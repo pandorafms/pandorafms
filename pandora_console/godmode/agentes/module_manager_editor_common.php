@@ -690,6 +690,7 @@ if ((int) $moduletype === MODULE_DATA) {
     // If it is a non policy form, the module_interval will not provided and will.
     // be taken the agent interval (this code is at configurar_agente.php).
 } else {
+    $interval = ($interval === '') ? '300' : $interval;
     $outputExecutionInterval = html_print_extended_select_for_time('module_interval', $interval, '', '', '0', false, true, false, false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
 }
 

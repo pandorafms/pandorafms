@@ -1713,6 +1713,7 @@ if (check_login()) {
         $length = ($length != '-1') ? $length : '18446744073709551615';
         $order = get_datatable_order(true);
         $nodes = get_parameter('nodes', 0);
+        $disabled_modules = (bool) get_parameter('disabled_modules', false);
 
         $where = '';
         $recordsTotal = 0;
@@ -1737,8 +1738,12 @@ if (check_login()) {
         $where .= sprintf(
             'tagente_estado.estado IN (%s)
             AND tagente_modulo.delete_pending = 0',
-            $status
+            $status,
         );
+
+        if ($disabled_modules === false) {
+            $where .= ' AND tagente_modulo.disabled = 0';
+        }
 
         if (is_metaconsole() === false) {
             $order_by = '';

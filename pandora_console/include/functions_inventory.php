@@ -818,9 +818,16 @@ function inventory_get_datatable(
 
 function get_data_basic_info_sql($params, $count=false)
 {
+    $table = 'tagente';
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_agent';
+    }
+
     $where = 'WHERE 1=1 ';
-    if ($params['id_agent'] > 0) {
+    if ($params['id_agent'] > 0 && $count === true) {
         $where .= sprintf(' AND id_agente = %d', $params['id_agent']);
+    } else if ($params['id_agent'] > 0 && $count === false) {
+        $where .= sprintf(' AND %s.id_agente = %d', $table, $params['id_agent']);
     }
 
     if ($params['id_group'] > 0) {
@@ -896,11 +903,6 @@ function get_data_basic_info_sql($params, $count=false)
     $fields = 'count(*)';
     $innerjoin = '';
     $groupby = '';
-
-    $table = 'tagente';
-    if (is_metaconsole() === true) {
-        $table = 'tmetaconsole_agent';
-    }
 
     if ($count !== true) {
         $fields = '*';

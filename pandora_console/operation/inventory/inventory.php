@@ -1041,9 +1041,9 @@ if ($inventory_module !== 'basic') {
         <?php
         if ($order_by_agent === true) {
             foreach ($rows as $agent_rows) {
-                $data = [];
                 $modules = '';
                 foreach ($agent_rows['row'] as $key_row => $row) {
+                    $data = [];
                     $columns = explode(';', io_safe_output($row['data_format']));
                     array_push($columns, 'Timestamp');
 

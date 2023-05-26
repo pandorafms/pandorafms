@@ -707,6 +707,17 @@ function inventory_get_datatable(
 ) {
     global $config;
 
+    if ($utimestamp === 0) {
+        $data_last = db_get_row_sql(
+            sprintf(
+                'SELECT `utimestamp`, `timestamp`
+                    FROM tagente_datos_inventory
+                    ORDER BY utimestamp DESC'
+            )
+        );
+        $utimestamp = $data_last['utimestamp'];
+    }
+
     $offset = (int) get_parameter('offset');
 
     $where = [];
@@ -742,7 +753,7 @@ function inventory_get_datatable(
     }
 
     if ($utimestamp > 0) {
-        array_push($where, 'tagente_datos_inventory.utimestamp <= '.$utimestamp.' ');
+        array_push($where, 'tagente_datos_inventory.utimestamp = '.$utimestamp.' ');
     }
 
     $sql = sprintf(
@@ -767,8 +778,6 @@ function inventory_get_datatable(
         $offset,
         $config['block_size']
     );
-
-    hd($sql, true);
 
     $rows = db_get_all_rows_sql($sql);
 
@@ -797,16 +806,17 @@ function inventory_get_datatable(
             $agent_data[$row['id_agente']][] = $row;
         }
 
-        foreach ($agent_data as $id_agent => $rows) {
+        foreach ($agent_data as $id_agent => $data_rows) {
             $rows_tmp['agent'] = $row['name_agent'];
-            foreach ($rows as $row) {
+            foreach ($data_rows as $row) {
                 if ($utimestamp > 0) {
                     $data_row = db_get_row_sql(
                         sprintf(
                             'SELECT `data`,
-                                `timestamp`
+                                `timestamp`, 
+                                `utimestamp`
                             FROM tagente_datos_inventory
-                            WHERE utimestamp <= "%s"
+                            WHERE utimestamp = "%s"
                                 AND id_agent_module_inventory = %d
                             ORDER BY utimestamp DESC',
                             $utimestamp,
@@ -817,12 +827,14 @@ function inventory_get_datatable(
                     if ($data_row !== false) {
                         $row['data'] = $data_row['data'];
                         $row['timestamp'] = $data_row['timestamp'];
+                        $row['utimestamp'] = $data_row['utimestamp'];
                     } else {
                         continue;
                     }
                 }
             }
 
+            $rows[0]['timestamp'] = $row['timestamp'];
             $rows_tmp['row'] = $rows;
             array_push($agents_rows, $rows_tmp);
         }

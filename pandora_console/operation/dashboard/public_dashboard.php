@@ -52,12 +52,6 @@ if ($config['force_instant_logout'] === true) {
     session_destroy();
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
-
-    if ($config['auth'] == 'saml') {
-        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-        $as = new SimpleSAML_Auth_Simple('PandoraFMS');
-        $as->logout();
-    }
 }
 
 while (ob_get_length() > 0) {

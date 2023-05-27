@@ -4515,7 +4515,7 @@ sub cli_create_event() {
 			# exist_check($id_agent,'agent',$agent_name);
 			if($id_agent == -1){
 				if($force_create_agent == 1){
-					pandora_create_agent ($conf, '', $agent_name, '', '', '', '', 'Created by cli_create_event', '', $dbh);
+					pandora_create_agent ($conf, '', $agent_name, '', '10', '', '', 'Created by cli_create_event', '', $dbh);
 					print_log "[INFO] Adding agent '$agent_name' \n\n";
 					$id_agent = get_agent_id($dbh,$agent_name);
 				}

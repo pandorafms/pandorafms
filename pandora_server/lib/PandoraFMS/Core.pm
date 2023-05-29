@@ -5272,7 +5272,7 @@ sub get_module_status ($$$$) {
 	
 		# Warning
 		if ($warning_min ne $warning_max && defined($module->{'warning_inverse'})) {
-			
+
 			# [warning_min, warning_max)
 			if ($module->{'warning_inverse'} == 0) {
 				return 2 if ($data >= $warning_min && $data < $warning_max);
@@ -5306,7 +5306,7 @@ sub get_module_status ($$$$) {
 		}
 
 		# Warning
-		if(defined($module->{'critical_inverse'})){
+		if(defined($module->{'warning_inverse'})){
 			
 			$eval_result = eval {
 				if ($module->{'warning_inverse'} == 0) {

@@ -798,8 +798,6 @@ if (enterprise_installed() === true) {
         '',
         'w540px',
         '',
-        // Autocomplete.
-        'new-password'
     );
 } else {
     $urlAddressInput = html_print_input_text(

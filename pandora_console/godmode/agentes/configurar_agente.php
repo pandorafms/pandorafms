@@ -1523,7 +1523,7 @@ if ($update_module === true || $create_module === true) {
     $warning_threshold_check_type = get_parameter('warning_thresholds_checks');
     if ($warning_threshold_check_type === 'normal_warning') {
         $percentage_warning = 0;
-        $warning_inverse = 0;
+        $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
     } else if ($warning_threshold_check_type === 'warning_inverse') {
          $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
          $percentage_warning = 0;
@@ -1536,10 +1536,10 @@ if ($update_module === true || $create_module === true) {
     $critical_threshold_check_type = get_parameter('critical_thresholds_checks');
     if ($critical_threshold_check_type === 'normal_critical') {
         $percentage_critical = 0;
-        $critical_inverse = 0;
+        $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
     } else if ($critical_threshold_check_type === 'critical_inverse') {
-         $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
-         $percentage_critical = 0;
+        $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
+        $percentage_critical = 0;
     } else {
         $percentage_critical = (int) get_parameter('critical_inverse_string_sent');
         $critical_inverse = 0;

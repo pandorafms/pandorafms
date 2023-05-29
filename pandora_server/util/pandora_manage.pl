@@ -4454,13 +4454,23 @@ sub cli_create_event() {
 	}
 	
 	my $id_group;
-	
-	if (! $group_name || $group_name eq "All") {
+
+	if($group_name eq "All"){
 		$id_group = 0;
+	}else{
+		$id_group = get_group_id($dbh, $group_name);
+
+		if ((!defined($id_group) || $id_group == -1)) {
+			
+			my $default_group_name = "Unknown";
+			print_log "[INFO] Not found '$group_name' group adding to default Unknown group \n\n";
+			$id_group = get_group_id($dbh, $default_group_name);
+
+			if (!defined($id_group) || $id_group == -1) {
+				$id_group = pandora_create_group ($default_group_name, 'unknown@groups.svg', 0, 0, 0, '', 0, undef, $dbh);
+				print_log "[INFO] Adding group '$default_group_name' \n\n";
+		}
 	}
-	else {
-		$id_group = get_group_id($dbh,$group_name);
-		exist_check($id_group,'group',$group_name);
 	}
 	
 	my $id_agent;
@@ -4515,7 +4525,7 @@ sub cli_create_event() {
 			# exist_check($id_agent,'agent',$agent_name);
 			if($id_agent == -1){
 				if($force_create_agent == 1){
-					pandora_create_agent ($conf, '', $agent_name, '', '10', '', '', 'Created by cli_create_event', '', $dbh);
+					pandora_create_agent ($conf, '', $agent_name, '', $id_group, '', '', 'Created by cli_create_event', '', $dbh);
 					print_log "[INFO] Adding agent '$agent_name' \n\n";
 					$id_agent = get_agent_id($dbh,$agent_name);
 				}

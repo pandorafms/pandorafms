@@ -32,7 +32,16 @@ function clippy_interval_agent_min()
     $return_tours['tours']['interval_agent_min']['steps'] = [];
     $return_tours['tours']['interval_agent_min']['steps'][] = [
         'init_step_context' => true,
-        'intro'             => '<table>'.'<tr>'.'<td class="context_help_title">'.__('Interval Agent.').'</td>'.'</tr>'.'<tr>'.'<td class="context_help_body">'.__('Please note that having agents with a monitoring interval below 300 seconds is not recommended. This will impact seriously in the performance of the server. For example, having 200 agents with one minute interval, is the same than having 1000 agents with a 5 minute interval. The probability of getting unknown modules is higher, and the impact on the server is higher because it requires a shorter response time.').'</td>'.'</tr>'.'</table>',
+        'intro'             => __('Please note that having agents with a monitoring interval below 300 seconds is not recommended. This will impact seriously in the performance of the server. For example, having 200 agents with one minute interval, is the same than having 1000 agents with a 5 minute interval. The probability of getting unknown modules is higher, and the impact on the server is higher because it requires a shorter response time.'),
+        'title'             => __('Interval Agent.'),
+        'img'               => html_print_image(
+            'images/info-warning.svg',
+            true,
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'margin-left: 5px;',
+            ]
+        ),
     ];
     $return_tours['tours']['interval_agent_min']['conf'] = [];
     $return_tours['tours']['interval_agent_min']['conf']['autostart'] = false;

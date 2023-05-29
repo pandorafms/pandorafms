@@ -5253,9 +5253,10 @@ sub get_module_status ($$$$) {
 	if ($module_type !~ m/_string/) {
 			
 		# Critical
-		if ($critical_min ne $critical_max) {
+		if ($critical_min ne $critical_max && defined($module->{'critical_inverse'})) {
+			
 			# [critical_min, critical_max)
-			if (defined($module->{'critical_inverse'}) && $module->{'critical_inverse'} == 0) {
+			if ($module->{'critical_inverse'} == 0) {
 				return 1 if ($data >= $critical_min && $data < $critical_max);
 				return 1 if ($data >= $critical_min && $critical_max < $critical_min);
 			}
@@ -5270,9 +5271,10 @@ sub get_module_status ($$$$) {
 		}
 	
 		# Warning
-		if ($warning_min ne $warning_max) {
+		if ($warning_min ne $warning_max && defined($module->{'warning_inverse'})) {
+			
 			# [warning_min, warning_max)
-			if (defined($module->{'warning_inverse'}) && $module->{'warning_inverse'} == 0) {
+			if ($module->{'warning_inverse'} == 0) {
 				return 2 if ($data >= $warning_min && $data < $warning_max);
 				return 2 if ($data >= $warning_min && $warning_max < $warning_min);
 			}
@@ -5290,24 +5292,32 @@ sub get_module_status ($$$$) {
 	else {
 
 		# Critical
-		$eval_result = eval {
-			if (defined($module->{'critical_inverse'}) && $module->{'critical_inverse'} == 0) {
-				$critical_str ne '' && $data =~ /$critical_str/ ;
-			} else {
-				$critical_str ne '' && $data !~ /$critical_str/ ;
-			}
-		};
-		return 1 if ($eval_result);
+		if(defined($module->{'critical_inverse'})){
+
+			$eval_result = eval {
+				if ($module->{'critical_inverse'} == 0) {
+					$critical_str ne '' && $data =~ /$critical_str/ ;
+				} else {
+					$critical_str ne '' && $data !~ /$critical_str/ ;
+				}
+			};
+			
+			return 1 if ($eval_result);
+		}
 
 		# Warning
-		$eval_result = eval {
-			if (defined($module->{'warning_inverse'}) && $module->{'warning_inverse'} == 0) {
-				$warning_str ne '' && $data =~ /$warning_str/ ;
-			} else {
-				$warning_str ne '' && $data !~ /$warning_str/ ;
-			}
-		};
-		return 2 if ($eval_result);
+		if(defined($module->{'critical_inverse'})){
+			
+			$eval_result = eval {
+				if ($module->{'warning_inverse'} == 0) {
+					$warning_str ne '' && $data =~ /$warning_str/ ;
+				} else {
+					$warning_str ne '' && $data !~ /$warning_str/ ;
+				}
+			};
+
+			return 2 if ($eval_result);
+		}
 	}
 
 	# Normal

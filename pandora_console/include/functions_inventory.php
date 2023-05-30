@@ -922,7 +922,7 @@ function inventory_get_dates($module_inventory_name, $inventory_agent, $inventor
 			AND tagente_datos_inventory.id_agent_module_inventory = tagent_module_inventory.id_agent_module_inventory
 			AND tagente.id_agente = tagent_module_inventory.id_agente';
 
-    if ($inventory_agent !== 'All') {
+    if ($inventory_agent !== 0) {
         $sql .= ' AND tagent_module_inventory.id_agente IN ('."'".implode(',', (array) $inventory_agent)."'".')';
     }
 

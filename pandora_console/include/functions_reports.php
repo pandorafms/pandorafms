@@ -944,6 +944,11 @@ function reports_get_report_types($template=false, $not_editor=false)
             'optgroup' => __('Log'),
             'name'     => __('Log report'),
         ];
+
+        $types['event_report_log_table'] = [
+            'optgroup' => __('Log'),
+            'name'     => __('Log report by period'),
+        ];
     }
 
     if ($template === false) {

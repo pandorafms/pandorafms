@@ -569,3 +569,11 @@ a.update_manager_button_open {
   color: #82b92e;
   border-radius: 2px;
 }
+
+#um-updates {
+  width: 300px;
+}
+
+#next-version:hover {
+  font-weight: bolder;
+}

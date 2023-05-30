@@ -1560,7 +1560,7 @@ if ($pure) {
         ]
     ).'</a>';
 
-    // Accoustic console.
+    // Acoustic console.
     $sound_event['active'] = false;
 
     // Sound Events.
@@ -1583,7 +1583,7 @@ if ($pure) {
         'images/sound_console@svg.svg',
         true,
         [
-            'title' => __('Accoustic console'),
+            'title' => __('Acoustic console'),
             'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
@@ -1633,7 +1633,7 @@ if ($pure) {
     switch ($section) {
         case 'sound_event':
             $onheader['sound_event']['active'] = true;
-            $section_string = __('Accoustic console');
+            $section_string = __('Acoustic console');
         break;
 
         case 'history':

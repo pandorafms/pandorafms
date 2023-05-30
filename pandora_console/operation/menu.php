@@ -563,11 +563,11 @@ if ($access_console_node === true) {
             $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
         }
 
-        // Accoustic console.
+        // Acoustic console.
         $data_sound = base64_encode(
             json_encode(
                 [
-                    'title'        => __('Accoustic console'),
+                    'title'        => __('Acoustic console'),
                     'start'        => __('Start'),
                     'stop'         => __('Stop'),
                     'noAlert'      => __('No alert'),
@@ -580,8 +580,8 @@ if ($access_console_node === true) {
         );
 
         $javascript = 'javascript: openSoundEventModal(`'.$data_sound.'`);';
-        $sub[$javascript]['text'] = __('Accoustic console');
-        $sub[$javascript]['id'] = 'Accoustic console Modal';
+        $sub[$javascript]['text'] = __('Acoustic console');
+        $sub[$javascript]['id'] = 'Acoustic console Modal';
         $sub[$javascript]['type'] = 'direct';
 
         echo '<div id="modal-sound" style="display:none;"></div>';

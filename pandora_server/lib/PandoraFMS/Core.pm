@@ -5292,7 +5292,7 @@ sub get_module_status ($$$$) {
 
 		# Critical
 		$eval_result = eval {
-			if (defined($module->{'critical_inverse'} && $module->{'critical_inverse'} == 1) {
+			if (defined($module->{'critical_inverse'}) && $module->{'critical_inverse'} == 1) {
 				$critical_str ne '' && $data !~ /$critical_str/ ;
 			} else {
 				$critical_str ne '' && $data =~ /$critical_str/ ;
@@ -5303,7 +5303,7 @@ sub get_module_status ($$$$) {
 		
 		# Warning
 		$eval_result = eval {
-			if (defined($module->{'warning_inverse'} && $module->{'warning_inverse'} == 1) {
+			if (defined($module->{'warning_inverse'}) && $module->{'warning_inverse'} == 1) {
 				$warning_str ne '' && $data !~ /$warning_str/ ;
 			} else {
 				$warning_str ne '' && $data =~ /$warning_str/ ;

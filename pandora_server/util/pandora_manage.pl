@@ -4453,26 +4453,9 @@ sub cli_create_event() {
 		exist_check($id_user,'user',$user_name);
 	}
 	
-	my $id_group;
+	my $id_group = get_group_id($dbh,$group_name);
+	exist_check($id_group,'group',$group_name);
 
-	if($group_name eq "All"){
-		$id_group = 0;
-	}else{
-		$id_group = get_group_id($dbh, $group_name);
-
-		if ((!defined($id_group) || $id_group == -1)) {
-			
-			my $default_group_name = "Unknown";
-			print_log "[INFO] Not found '$group_name' group adding to default Unknown group \n\n";
-			$id_group = get_group_id($dbh, $default_group_name);
-
-			if (!defined($id_group) || $id_group == -1) {
-				$id_group = pandora_create_group ($default_group_name, 'unknown@groups.svg', 0, 0, 0, '', 0, undef, $dbh);
-				print_log "[INFO] Adding group '$default_group_name' \n\n";
-		}
-	}
-	}
-	
 	my $id_agent;
 
 	if (defined $use_alias and $use_alias eq 'use_alias') {

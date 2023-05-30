@@ -806,9 +806,12 @@ function inventory_get_datatable(
             $agent_data[$row['id_agente']][] = $row;
         }
 
-        foreach ($agent_data as $id_agent => $data_rows) {
-            $rows_tmp['agent'] = $row['name_agent'];
-            foreach ($data_rows as $row) {
+        foreach ($agent_data as $id_agent => $data_agent) {
+            $rows_tmp['agent'] = $data_agent['name_agent'];
+            foreach ($data_agent as $key => $agent_row) {
+                $data_agent[$key]['timestamp'] = $agent_row['last_update_timestamp'];
+                $data_agent[$key]['utimestamp'] = $agent_row['last_update'];
+
                 if ($utimestamp > 0) {
                     $data_row = db_get_row_sql(
                         sprintf(
@@ -820,22 +823,19 @@ function inventory_get_datatable(
                                 AND id_agent_module_inventory = %d
                             ORDER BY utimestamp DESC',
                             $utimestamp,
-                            $row['id_agent_module_inventory']
+                            $agent_row['id_agent_module_inventory']
                         )
                     );
 
                     if ($data_row !== false) {
-                        $row['data'] = $data_row['data'];
-                        $row['timestamp'] = $data_row['timestamp'];
-                        $row['utimestamp'] = $data_row['utimestamp'];
+                        $data_agent[$key]['data'] = $data_row['data'];
                     } else {
                         continue;
                     }
                 }
             }
 
-            $rows[0]['timestamp'] = $row['timestamp'];
-            $rows_tmp['row'] = $rows;
+            $rows_tmp['row'] = $data_agent;
             array_push($agents_rows, $rows_tmp);
         }
 

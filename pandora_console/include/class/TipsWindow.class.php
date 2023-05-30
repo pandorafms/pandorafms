@@ -282,6 +282,13 @@ class TipsWindow
             $tip['title'] = io_safe_output($tip['title']);
             $tip['text'] = io_safe_output($tip['text']);
             $tip['url'] = io_safe_output($tip['url']);
+        } else {
+            $language = 'en_GB';
+            $sql = 'SELECT id, title, text, url
+            FROM twelcome_tip
+            WHERE enable = "1" AND id_lang = "'.$language.'"';
+            $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
+            $tip = db_get_row_sql($sql);
         }
 
         if ($return) {

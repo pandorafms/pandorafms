@@ -786,7 +786,7 @@ if ($create_alert || $update_alert) {
             2,
             2,
             $custom_value,
-            'class="w100p"',
+            'class="w100p" required="required"',
             true
         )
     );
@@ -804,6 +804,8 @@ if ($create_alert || $update_alert) {
             '',
             50,
             255,
+            true,
+            false,
             true
         )
     );
@@ -818,6 +820,8 @@ if ($create_alert || $update_alert) {
             '',
             20,
             255,
+            true,
+            false,
             true
         )
     );

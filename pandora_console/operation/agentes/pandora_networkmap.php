@@ -842,7 +842,7 @@ switch ($tab) {
             }
 
             html_print_table($table);
-            $tablePagination = ui_pagination($count_maps, false, 0, 0, true, 'offset', false);
+            $tablePagination = ui_pagination($count_maps, false, $offset, $limit, true, 'offset', false);
         } else {
             ui_print_info_message(['no_close' => true, 'message' => __('There are no maps defined.') ]);
         }

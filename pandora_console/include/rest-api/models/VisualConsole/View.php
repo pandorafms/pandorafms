@@ -379,6 +379,10 @@ class View extends \HTML
 
             case GROUP_ITEM:
                 $data['imageSrc'] = \get_parameter('imageSrc');
+                $data['recursiveGroup'] = \get_parameter_switch(
+                    'recursiveGroup',
+                    0
+                );
                 $data['showStatistics'] = \get_parameter_switch(
                     'showStatistics',
                     0

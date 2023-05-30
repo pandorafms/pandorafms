@@ -102,11 +102,25 @@ class Heatmap
     protected $group = null;
 
     /**
-     * Heatmap group.
+     * Heatmap dashboard.
      *
      * @var boolean
      */
     protected $dashboard = null;
+
+    /**
+     * Public hash.
+     *
+     * @var boolean
+     */
+    protected $hash = null;
+
+    /**
+     * Public user.
+     *
+     * @var boolean
+     */
+    protected $publicUser = null;
 
 
     /**
@@ -131,7 +145,9 @@ class Heatmap
         int $height=0,
         string $search=null,
         int $group=1,
-        bool $dashboard=false
+        bool $dashboard=false,
+        string $hash='',
+        string $publicUser=''
     ) {
         $this->type = $type;
         $this->filter = $filter;
@@ -142,6 +158,8 @@ class Heatmap
         $this->search = $search;
         $this->group = $group;
         $this->dashboard = $dashboard;
+        $this->hash = $hash;
+        $this->publicUser = $publicUser;
     }
 
 
@@ -164,15 +182,18 @@ class Heatmap
                 false
             ),
             'data'     => [
-                'page'      => 'operation/heatmap',
-                'method'    => 'showHeatmap',
-                'randomId'  => $this->randomId,
-                'type'      => $this->type,
-                'filter'    => $this->filter,
-                'refresh'   => $this->refresh,
-                'search'    => $this->search,
-                'group'     => $this->group,
-                'dashboard' => (int) $this->dashboard,
+                'page'       => 'operation/heatmap',
+                'method'     => 'showHeatmap',
+                'randomId'   => $this->randomId,
+                'type'       => $this->type,
+                'filter'     => $this->filter,
+                'refresh'    => $this->refresh,
+                'search'     => $this->search,
+                'group'      => $this->group,
+                'dashboard'  => (int) $this->dashboard,
+                'auth_hash'  => $this->hash,
+                'auth_class' => 'PandoraFMS\Dashboard\Manager',
+                'id_user'    => $this->publicUser,
             ],
         ];
 
@@ -1090,6 +1111,7 @@ class Heatmap
                     case 3:
                         $status = 'unknown';
                     break;
+                    case AGENT_MODULE_STATUS_NO_DATA:
                     case AGENT_MODULE_STATUS_NOT_INIT:
                     case 5:
                         $status = 'notinit';

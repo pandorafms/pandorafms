@@ -1190,30 +1190,32 @@ function mysql_db_format_array_to_update_sql($values)
     $fields = [];
 
     foreach ($values as $field => $value) {
-        if (is_numeric($field)) {
-            array_push($fields, $value);
-            continue;
-        } else if ($field[0] == '`') {
-            $field = str_replace('`', '', $field);
-        }
-
-        if ($value === null) {
-            $sql = sprintf('`%s` = NULL', $field);
-        } else if (is_int($value) || is_bool($value)) {
-            $sql = sprintf('`%s` = %d', $field, $value);
-        } else if (is_float($value) || is_double($value)) {
-            $sql = sprintf('`%s` = %f', $field, $value);
-        } else {
-            // String
-            if (isset($value[0]) && $value[0] == '`') {
-                // Don't round with quotes if it references a field
-                $sql = sprintf('`%s` = %s', $field, $value);
-            } else {
-                $sql = sprintf("`%s` = '%s'", $field, $value);
+        if (is_object($value) === false) {
+            if (is_numeric($field)) {
+                array_push($fields, $value);
+                continue;
+            } else if ($field[0] == '`') {
+                $field = str_replace('`', '', $field);
             }
-        }
 
-        array_push($fields, $sql);
+            if ($value === null) {
+                $sql = sprintf('`%s` = NULL', $field);
+            } else if (is_int($value) || is_bool($value)) {
+                $sql = sprintf('`%s` = %d', $field, $value);
+            } else if (is_float($value) || is_double($value)) {
+                $sql = sprintf('`%s` = %f', $field, $value);
+            } else {
+                // String
+                if (isset($value[0]) && $value[0] == '`') {
+                    // Don't round with quotes if it references a field
+                    $sql = sprintf('`%s` = %s', $field, $value);
+                } else {
+                    $sql = sprintf("`%s` = '%s'", $field, $value);
+                }
+            }
+
+            array_push($fields, $sql);
+        }
     }
 
     return implode(', ', $fields);

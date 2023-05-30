@@ -198,7 +198,7 @@ if ($view_graph) {
             'graph_editor' => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image(
-                    'images/builder.png',
+                    'images/builder@svg.svg',
                     true,
                     [
                         'title' => __('Graph editor'),
@@ -344,7 +344,7 @@ if ($view_graph) {
     $searchForm .= "<td class='datos w30p'>";
     $searchForm .= html_print_label_input_block(
         __('Time range'),
-        html_print_extended_select_for_time('period', $period, '', '', '0', 10, true, 'width:100%')
+        html_print_extended_select_for_time('period', (string) $period, '', '', 0, 10, true, 'width:100%')
     );
     $searchForm .= '</td>';
     $searchForm .= '</tr><tr>';
@@ -376,9 +376,9 @@ if ($view_graph) {
             false,
             '',
             false
-        )
+        ),
+        ['div_id' => 'thresholdDiv']
     );
-    $searchForm .= '</div>';
     $searchForm .= '</td>';
 
     $searchForm .= "<td class='datos w30p'>";

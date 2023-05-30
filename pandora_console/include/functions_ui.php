@@ -988,7 +988,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/satellite@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1000,7 +1003,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/network-server@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1012,7 +1018,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/data-server@svg.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -2439,7 +2448,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $anchorHref = 'javascript: ".$script_modified.";';
+            $anchorHref = 'javascript: '.$script_modified.';';
         } else {
             $anchorHref = $url.'&amp;'.$offset_name.'='.$offset_page;
         }
@@ -2484,7 +2493,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $nextHref = 'javascript: ".$script_modified.";';
+            $nextHref = 'javascript: '.$script_modified.';';
         } else {
             $nextHref = $url.'&amp;'.$offset_name.'='.$offset_next_page;
         }
@@ -2516,7 +2525,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $lastHref = 'javascript: ".$script_modified.";';
+            $lastHref = 'javascript: '.$script_modified.';';
         } else {
             $lastHref = $url.'&amp;'.$offset_name.'='.$offset_lastpage;
         }
@@ -4010,7 +4019,7 @@ function ui_print_datatable(array $parameters)
                     $(".datatable-msg-info-'.$table_id.'").hide();
                     $("table#'.$table_id.'").show();
                     $("div.dataTables_paginate").show();
-                    $("div.dataTables_info").show();
+                    $("div.dataTables_info").hide();
                     $("div.dataTables_length").show();
                     $("div.dt-buttons").show();
 
@@ -4601,37 +4610,38 @@ function ui_toggle(
         $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
         $output .= '	/* <![CDATA[ */'."\n";
         $output .= "	$(document).ready (function () {\n";
+        $output .= '	    var switch_enable = '.(int) $switch.";\n";
         $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-        $output .= '            if (is_metaconsole == 0) {';
-        $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "			    }\n";
-        $output .= "			    else {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "			    }\n";
-        $output .= "		    }\n";
-        $output .= "		});\n";
-        $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
-        $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
-        $output .= $class_table;
+        $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
         $output .= "			}\n";
         $output .= "			else {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
         $output .= "			}\n";
         $output .= "		});\n";
+        $output .= '        if (switch_enable === 0) {';
+        $output .= "		    $('#tgl_ctrl_".$uniqid."').click(function() {\n";
+        $output .= '			    if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', true);\n";
+        $output .= $class_table;
+        $output .= "			    }\n";
+        $output .= "			    else {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= "			    }\n";
+        $output .= "		    });\n";
+        $output .= "	    }\n";
         $output .= "	});\n";
         $output .= '/* ]]> */';
         $output .= '</script>';
@@ -7232,10 +7242,8 @@ function ui_query_result_editor($name='default')
         ]
     );
 
-    $buttons = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
-    html_print_action_buttons(
-        $buttons
-    );
+    html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update']);
+
 }
 
 
@@ -7459,13 +7467,20 @@ function ui_get_inventory_module_add_form(
                 0,
                 '',
                 __('Select inventory module'),
-                0,
+                '',
                 true,
                 false,
                 false,
                 'w100p',
                 false,
-                'width: 100%'
+                'width: 100%',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                true
             )
         );
     } else {
@@ -7560,81 +7575,95 @@ function ui_get_inventory_module_add_form(
     $table->data['userpass-row'] = $row;
 
     $row = [];
-    $row['hidden-title'] = '';
-    $row['hidden-input'] = html_print_input_hidden('hidden-custom-field-name', '', true);
-    $row['hidden-input'] .= html_print_input_hidden('hidden-custom-field-is-secure', 0, true);
-    $row['hidden-input'] .= html_print_input_text(
-        'hidden-custom-field-input',
-        '',
-        '',
-        25,
-        40,
-        true,
-        false,
-        false,
-        '',
-        'w93p'
-    );
-    $row['hidden-input'] .= html_print_image(
-        'images/delete.svg',
-        true,
-        [
-            'border' => '0',
-            'title'  => __('Remove'),
-            'style'  => 'cursor: pointer;',
-            'class'  => 'remove-custom-field invert_filter',
-        ]
-    );
 
-    $table->data['hidden-custom-field-row'] = $row;
+    $table->data['hidden-custom-field-row'] = html_print_label_input_block(
+        '',
+        '<div class="agent_details_agent_data">'.html_print_input_hidden(
+            'hidden-custom-field-name',
+            '',
+            true
+        ).html_print_input_hidden(
+            'hidden-custom-field-is-secure',
+            0,
+            true
+        ).html_print_input_text(
+            'hidden-custom-field-input',
+            '',
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        ).html_print_image(
+            'images/delete.svg',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Remove'),
+                'style'  => 'cursor: pointer;',
+                'class'  => 'remove-custom-field invert_filter main_menu_icon',
+            ]
+        ).'</div>'
+    );
+    $table->colspan['hidden-custom-field-row'][0] = 2;
 
     if ($custom_fields_enabled) {
         foreach ($custom_fields as $i => $field) {
-            $row = [];
-            $row['title'] = '<b>'.$field['name'].'</b>';
-            $row['input'] = html_print_input_hidden(
-                'custom_fields['.$i.'][name]',
-                $field['name'],
-                true
-            );
-            $row['input'] .= html_print_input_hidden(
-                'custom_fields['.$i.'][secure]',
-                $field['secure'],
-                true
-            );
             if ($field['secure']) {
-                $row['input'] .= html_print_input_password(
+                $secure = html_print_input_password(
                     'custom_fields['.$i.'][value]',
-                    $field['value'],
+                    io_safe_input($field['value']),
                     '',
-                    25,
+                    false,
                     40,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'off',
+                    false,
+                    'w100p'
                 );
             } else {
-                $row['input'] .= html_print_input_text(
+                $secure = html_print_input_text(
                     'custom_fields['.$i.'][value]',
-                    $field['value'],
+                    io_safe_input($field['value']),
                     '',
-                    25,
+                    false,
                     40,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w100p'
                 );
             }
 
-            $row['input'] .= '<span>&nbsp;</span>';
-            $row['input'] .= html_print_image(
-                'images/delete.svg',
-                true,
-                [
-                    'border' => '0',
-                    'title'  => __('Remove'),
-                    'style'  => 'cursor: pointer;',
-                    'class'  => 'remove-custom-field invert_filter',
-                ]
+            $table->colspan['custom-field-row-'.$i][0] = 2;
+            $table->data['custom-field-row-'.$i] = html_print_label_input_block(
+                $field['name'],
+                '<div class="agent_details_agent_data">'.html_print_input_hidden(
+                    'custom_fields['.$i.'][name]',
+                    $field['name'],
+                    true
+                ).html_print_input_hidden(
+                    'custom_fields['.$i.'][secure]',
+                    $field['secure'],
+                    true
+                ).$secure.html_print_image(
+                    'images/delete.svg',
+                    true,
+                    [
+                        'border' => '0',
+                        'title'  => __('Remove'),
+                        'style'  => 'cursor: pointer;',
+                        'class'  => 'remove-custom-field invert_filter main_menu_icon',
+                    ]
+                ).'</div>'
             );
-
-            $table->data['custom-field-row-'.$i] = $row;
         }
     }
 
@@ -7693,46 +7722,50 @@ function ui_get_inventory_module_add_form(
             $("#inventory-module-form-userpass-row").hide();
             $("#inventory-module-form-custom-fields-row").show();
             $("tr[id^=inventory-module-form-custom-field-row-]").show();
+            $('#inventory-module-form-custom-fields-button').show();
         } else {
             $("#inventory-module-form-userpass-row").show();
             $("#inventory-module-form-custom-fields-row").hide();
             $("tr[id^=inventory-module-form-custom-field-row-]").hide();
+            $('#inventory-module-form-custom-fields-button').hide();
         }
     }
 
     function add_row_for_custom_field (fieldName, isSecure) {
         var custom_fields_num = $("tr[id^=inventory-module-form-custom-field-row-]").length;
         $("#inventory-module-form-hidden-custom-field-row")
-            .clone()
-            .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)
-            .children("#inventory-module-form-hidden-custom-field-row-hidden-title")
-                .prop("id", "inventory-module-form-custom-field-row-title-" + custom_fields_num)
-                .html("<b>" + fieldName + "</b>")
-                .parent()
-            .children("#inventory-module-form-hidden-custom-field-row-hidden-input")
-                .prop("id", "inventory-module-form-custom-field-row-input-" + custom_fields_num)
-                .prop("colspan", 2)
-                .children("input[name=hidden-custom-field-name]")
+        .clone()
+        .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)
+        .children("[id^='inventory-module-form-hidden-custom-field-row']") // go to TD
+            .prop("id", "inventory-module-form-hidden-custom-field-row-"+ custom_fields_num)
+                .children() // go to DIV
+                    .find('label')
+                        .html(fieldName)
+                .parent() // up to DIV padre
+                .find('div') //go to DIV no label
+                    .children("[id^=hidden-hidden-custom-field-name]")
                     .prop("id", "custom-field-name-" + custom_fields_num)
                     .prop("name", "custom_fields[" + custom_fields_num + "][name]")
-                    .val(fieldName)
+                    .prop("value", fieldName)
                     .parent()
-                .children("input[name=hidden-custom-field-is-secure]")
-                    .prop("id", "custom-field-is-secure-" + custom_fields_num)
-                    .prop("name", "custom_fields[" + custom_fields_num + "][secure]")
-                    .val(isSecure ? 1 : 0)
-                    .parent()
-                .children("input[name=hidden-custom-field-input]")
-                    .prop("id", "custom-field-input-" + custom_fields_num)
-                    .prop("type", isSecure ? "password" : "text")
-                    .prop("name", "custom_fields[" + custom_fields_num + "][value]")
-                    .parent()
-                .children("img.remove-custom-field")
-                    .click(remove_custom_field)
-                    .parent()
-                .parent()
-            .insertBefore($("#inventory-module-form-custom-fields-row"))
-            .show();
+                    .children("input[name=hidden-custom-field-is-secure]")
+                        .prop("id", "custom-field-is-secure-" + custom_fields_num)
+                        .prop("name", "custom_fields[" + custom_fields_num + "][secure]")
+                        .val(isSecure ? 1 : 0)
+                        .parent()
+                    .children("input[name=hidden-custom-field-input]")
+                        .prop("id", "custom-field-input-" + custom_fields_num)
+                        .prop("type", isSecure ? "password" : "text")
+                        .prop("name", "custom_fields[" + custom_fields_num + "][value]")
+                        .parent()
+                    .children("img.remove-custom-field")
+                        .click(remove_custom_field)
+                        .parent()
+                        .parent()
+                .parent() // up to TD
+            .parent() // up to TR
+        .insertBefore($("#inventory-module-form-custom-fields-row"))
+        .show();
     }
 
     function add_custom_field () {

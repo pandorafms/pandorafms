@@ -3272,4 +3272,8 @@ table#list_servers tbody td span.data a {
   input[name="login_btn"] {
     line-height: 38px;
   }
+
+  fieldset.databox.tactical_set table#table1 td img[src$="modules@svg.svg"] {
+    margin-left: 10px !important;
+  }
 }

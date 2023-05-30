@@ -899,10 +899,15 @@ function html_print_select(
             if (is_array($selected) && in_array($value, $selected)) {
                 $output .= ' selected="selected"';
             } else if (is_numeric($value) && is_numeric($selected)
-                && $value == $selected
+                && $value === $selected
             ) {
                 // This fixes string ($value) to int ($selected) comparisons
                 $output .= ' selected="selected"';
+            } else if (is_numeric($value) && is_string($selected)) {
+                $str_value = strval($value);
+                if ($str_value === $selected) {
+                    $output .= ' selected="selected"';
+                }
             } else if ($value === $selected) {
                 // Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
                 $output .= ' selected="selected"';
@@ -2884,6 +2889,7 @@ function html_print_input_password(
     $class='',
     $autocomplete='off',
     $hide_div_eye=false,
+    $div_class=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2914,7 +2920,7 @@ function html_print_input_password(
         }
     }
 
-    return '<div class="relative container-div-input-password">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
+    return '<div class="relative container-div-input-password '.$div_class.'">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
 }
 
 
@@ -4272,22 +4278,22 @@ function html_print_checkbox_extended(
 
     if (is_array($attributes) === true) {
         $tmpAttributes = [];
-        foreach ($attributes as $key => $value) {
+        foreach ($attributes as $key => $val) {
             switch ($key) {
                 case 'input_class':
-                    $inputClass .= ' '.$value;
+                    $inputClass .= ' '.$val;
                 break;
 
                 case 'label_class':
-                    $labelClass .= ' '.$value;
+                    $labelClass .= ' '.$val;
                 break;
 
                 case 'label_style':
-                    $labelStyle .= 'style="'.$value.'"';
+                    $labelStyle .= 'style="'.$val.'"';
                 break;
 
                 default:
-                    $tmpAttributes[] = $key.'="'.$value.'"';
+                    $tmpAttributes[] = $key.'="'.$val.'"';
                 break;
             }
         }
@@ -4619,6 +4625,14 @@ function html_print_image(
             // New way to show the force_title (cleaner and better performance).
             $output .= 'data-title="'.io_safe_input_html($options['title']).'" ';
             $output .= 'data-use_title_for_force_title="1" ';
+        }
+
+        if (isset($options['main_menu_icon']) && $options['main_menu_icon'] != '') {
+            if (isset($options['class'])) {
+                $options['class'] .= ' main_menu_icon';
+            } else {
+                $options['class'] = 'main_menu_icon';
+            }
         }
 
         // Valid attributes (invalid attributes get skipped).
@@ -6931,4 +6945,40 @@ function html_print_go_top()
     $output .= '</div>';
 
     return $output;
+}
+
+
+/**
+ * Render a code picker fragment with default Pandora styles.
+ *
+ * @param string  $id,
+ * @param string  $content     Content.
+ * @param string  $classes     Classes for code picker.
+ * @param boolean $single_line If true, code picker will be displayed as a single line of code.
+ * @param boolean $return      Return output if set to true.
+ *
+ * @return string
+ */
+function html_print_code_picker(
+    string $id,
+    string $content='',
+    string $classes='',
+    bool $single_line=false,
+    bool $return=false
+) {
+    $single_line_class = '';
+
+    if ($single_line === true) {
+        $single_line_class = 'single-line ';
+    }
+
+    $output = '<div class="code-fragment '.$single_line_class.$classes.'">';
+    $output .= '<pre style="margin: 0;"><code class="code-font" id="'.$id.'" style="display: block; white-space: pre-wrap;">'.$content.'</code></pre>';
+    $output .= '</div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
 }

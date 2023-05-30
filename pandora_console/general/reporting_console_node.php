@@ -51,6 +51,11 @@ $data['check_php_version'] = phpversion();
 
         <?php
         html_print_image(
+            'images/pandora_tinylogo.png',
+            false,
+            ['class' => 'responsive flex margn']
+        );
+        html_print_image(
             'images/maintenance.png',
             false,
             [

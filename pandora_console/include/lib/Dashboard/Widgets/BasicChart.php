@@ -561,7 +561,6 @@ class BasicChart extends Widget
         global $config;
 
         $size = parent::getSize();
-        hd($size, true);
 
         include_once $config['homedir'].'/include/functions_graph.php';
         include_once $config['homedir'].'/include/functions_agents.php';
@@ -625,16 +624,20 @@ class BasicChart extends Widget
             ],
         ];
 
+        $graph = \grafico_modulo_sparse($params);
         $output = '<div class="container-center widget-mrgn-0px">';
-        $output .= '<div class="basic-chart-title">';
-        $output .= '<span style="color:'.$this->values['colorLabel'].'; font-size:'.$this->values['sizeLabel'].'px;">';
-        $output .= ((bool) $this->values['showLabel'] === true) ? $title : '';
-        $output .= '</span>';
-        $output .= '<span style="color:'.$color_status.'; font-size:'.$this->values['sizeValue'].'px;">';
-        $output .= ((bool) $this->values['showValue'] === true) ? $value : '';
-        $output .= '</span>';
-        $output .= '</div>';
-        $output .= \grafico_modulo_sparse($params);
+        if (str_contains($graph, '<img') === false) {
+            $output .= '<div class="basic-chart-title">';
+            $output .= '<span style="color:'.$this->values['colorLabel'].'; font-size:'.$this->values['sizeLabel'].'px;">';
+            $output .= ((bool) $this->values['showLabel'] === true) ? $title : '';
+            $output .= '</span>';
+            $output .= '<span style="color:'.$color_status.'; font-size:'.$this->values['sizeValue'].'px;">';
+            $output .= ((bool) $this->values['showValue'] === true) ? $value : '';
+            $output .= '</span>';
+            $output .= '</div>';
+        }
+
+        $output .= $graph;
         $output .= '</div>';
         return $output;
     }

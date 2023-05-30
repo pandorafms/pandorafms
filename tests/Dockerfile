@@ -54,7 +54,6 @@ RUN dnf install -y vim wget bzip2 curl && \
     php-zip \
     php-xmlrpc \
     nmap \
-    xprobe2 \
     mysql-server \
     mysql \
     htop \
@@ -76,7 +75,6 @@ RUN dnf install -y vim wget bzip2 curl && \
     perl-IO-Socket-SSL \
     nmap \
     sudo \
-    xprobe2 \
     make \
     perl-CPAN \
     perl-JSON \

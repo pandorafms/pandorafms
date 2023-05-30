@@ -258,7 +258,7 @@ function snmpGet(oid) {
   var ajax_url = $("#hidden-ajax_url").val();
   var server_to_exec = $("#server_to_exec").val();
   var target_port = $("#target_port").val();
-  var print_create_agent_module = $("#print_create_agent_module").val();
+  var print_create_agent_module = true;
 
   // Check for a custom action
   var custom_action = $("#hidden-custom_action").val();
@@ -533,7 +533,7 @@ function checkSNMPVersion() {
 }
 
 // Show the SNMP browser window
-function snmpBrowserWindow() {
+function snmpBrowserWindow(id_agente = 0) {
   // Keep elements in the form and the SNMP browser synced
   $("#text-target_ip").val($("#text-ip_target").val());
   $("#target_port").val($("#text-tcp_port").val());
@@ -549,6 +549,8 @@ function snmpBrowserWindow() {
   $("#password-snmp3_browser_privacy_pass").val(
     $("#password-snmp3_privacy_pass").val()
   );
+  // Realation agente module.
+  $("#id_agent_module").val(id_agente);
 
   checkSNMPVersion();
 

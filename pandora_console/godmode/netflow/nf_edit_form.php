@@ -74,8 +74,8 @@ if ($id) {
 
 // Header Buttons.
 $buttons = [];
-$buttons[] = ['text' => '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Filter list')]).'</a>'];
-$buttons[] = ['text' => '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'.html_print_image('images/plus@svg.svg', true, ['title' => __('Add filter')]).'</a>'];
+$buttons[] = ['text' => '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Filter list'), 'main_menu_icon' => true]).'</a>'];
+$buttons[] = ['text' => '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'.html_print_image('images/plus@svg.svg', true, ['title' => __('Add filter'), 'main_menu_icon' => true]).'</a>'];
 // Header Caption.
 $headerTitle = ($id) ? __('Update filter') : __('Create filter');
 

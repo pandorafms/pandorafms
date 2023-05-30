@@ -601,7 +601,7 @@ function filemanager_file_explorer(
                     }
                 }).show();
 
-            $("#submit-submit").on("click", copyToClipboard);
+            $("#button-submit").on("click", copyToClipboard);
         }
 
         function copyToClipboard() {

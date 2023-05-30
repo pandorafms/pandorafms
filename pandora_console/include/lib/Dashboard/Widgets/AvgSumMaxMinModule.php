@@ -643,17 +643,19 @@ class AvgSumMaxMinModule extends Widget
         $output .= '<div class="container-center" id="container-'.$uuid.'">';
 
         $orientation = '';
+        $extraClass = '';
         if ((int) $this->values['horizontal'] === 1) {
             $orientation = 'flex aligni_center';
         } else {
             $orientation = 'grid';
+            $extraClass = 'mrgn_btn_20px';
         }
 
         // General div.
         $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
 
         // Div value.
-        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_20px" style="line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px;'.$text_color.'">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px '.$extraClass.'" style="line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px;'.$text_color.'">';
 
         if (is_numeric($data) === true) {
             $dataDatos = remove_right_zeros(

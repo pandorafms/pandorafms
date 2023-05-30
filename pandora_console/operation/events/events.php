@@ -1100,16 +1100,29 @@ $load_filter_id = (int) get_parameter('filter_id', 0);
 $fav_menu = [];
 if ($load_filter_id === 0) {
     // Load user filter.
-    $loaded_filter = db_get_row_sql(
-        sprintf(
-            'SELECT f.id_filter, f.id_name
-             FROM tevent_filter f
-             INNER JOIN tusuario u
-                 ON u.default_event_filter=f.id_filter
-             WHERE u.id_user = "%s" ',
-            $config['id_user']
-        )
-    );
+    if (is_metaconsole() === true) {
+        $loaded_filter = db_get_row_sql(
+            sprintf(
+                'SELECT f.id_filter, f.id_name
+                 FROM tevent_filter f
+                 INNER JOIN tusuario u
+                     ON u.metaconsole_default_event_filter=f.id_filter
+                 WHERE u.id_user = "%s" ',
+                $config['id_user']
+            )
+        );
+    } else {
+        $loaded_filter = db_get_row_sql(
+            sprintf(
+                'SELECT f.id_filter, f.id_name
+                 FROM tevent_filter f
+                 INNER JOIN tusuario u
+                     ON u.default_event_filter=f.id_filter
+                 WHERE u.id_user = "%s" ',
+                $config['id_user']
+            )
+        );
+    }
 } else {
     // Load filter selected by user.
     $loaded_filter['id_filter'] = $load_filter_id;
@@ -3047,6 +3060,11 @@ $(document).ready( function() {
 
     });
 
+    var show_event_dialog = "<?php echo get_parameter('show_event_dialog', ''); ?>";
+    if (show_event_dialog !== ''){
+        show_event_dialo(show_event_dialog);
+    }
+
     /* Multi select handler */
     $('#checkbox-all_validate_box').on('change', function() {
         if($('#checkbox-all_validate_box').is(":checked")) {
@@ -3291,4 +3309,105 @@ $(document).ready(function () {
 
     $('.white_table_graph_header').first().append($('.filter_summary'));
 });
+
+// Show the modal window of an event
+function show_event_dialo(event, dialog_page) {
+    var ajax_file = getUrlAjax();
+
+    var view = ``;
+
+    if ($("#event_details_window").length) {
+        view = "#event_details_window";
+    } else if ($("#sound_event_details_window").length) {
+        view = "#sound_event_details_window";
+    }
+
+    if (dialog_page == undefined) {
+        dialog_page = "general";
+    }
+
+    try {
+        event = event.replaceAll("&#x20;", "+");
+        event = JSON.parse(atob(event), true);
+    } catch (e) {
+        console.error(e);
+        return;
+    }
+
+    var inputs = $("#events_form :input");
+    var values = {};
+    inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+
+    // Metaconsole mode flag
+    var meta = $("#hidden-meta").val();
+
+    // History mode flag
+    var history = $("#hidden-history").val();
+
+    jQuery.post(
+        ajax_file,
+        {
+        page: "include/ajax/events",
+        get_extended_event: 1,
+        dialog_page: dialog_page,
+        event: event,
+        meta: meta,
+        history: history,
+        filter: values
+        },
+        function(data) {
+        $(view)
+            .hide()
+            .empty()
+            .append(data)
+            .dialog({
+            title: event.evento,
+            resizable: true,
+            draggable: true,
+            modal: true,
+            minWidth: 875,
+            minHeight: 600,
+            close: function() {
+                $("#refrcounter").countdown("resume");
+                $("div.vc-countdown").countdown("resume");
+            },
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 710,
+            height: 650,
+            autoOpen: true,
+            open: function() {
+                if (
+                $.ui &&
+                $.ui.dialog &&
+                $.ui.dialog.prototype._allowInteraction
+                ) {
+                var ui_dialog_interaction =
+                    $.ui.dialog.prototype._allowInteraction;
+                $.ui.dialog.prototype._allowInteraction = function(e) {
+                    if ($(e.target).closest(".select2-dropdown").length)
+                    return true;
+                    return ui_dialog_interaction.apply(this, arguments);
+                };
+                }
+            },
+            _allowInteraction: function(event) {
+                return !!$(event.target).is(".select2-input") || this._super(event);
+            }
+            })
+            .show();
+
+        $("#refrcounter").countdown("pause");
+        $("div.vc-countdown").countdown("pause");
+
+        forced_title_callback();
+        },
+        "html"
+    );
+    return false;
+}
 </script>

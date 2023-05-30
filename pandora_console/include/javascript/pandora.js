@@ -1436,7 +1436,7 @@ function openURLTagWindow(url) {
 function defineTinyMCE(selector) {
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking",
+    plugins: "preview, searchreplace, table, nonbreaking, link, image",
     promotion: false,
     branding: false
   });

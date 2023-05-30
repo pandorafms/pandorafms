@@ -2463,12 +2463,13 @@ function pandoraFlotArea(
           $.each(update_legend, function(index, value) {
             if (typeof value[x - 1] !== "undefined") {
               data_legend[index] =
-                " Min: " +
+                "<span class='legend-font-small'> Min: </span><span class='bolder'>" +
                 number_format(value[x - 1].min, 0, unit, short_data, divisor) +
-                " Max: " +
+                "</span><span class='legend-font-small'> Max: </span><span class='bolder'>" +
                 number_format(value[x - 1].max, 0, unit, short_data, divisor) +
-                " Avg: " +
-                number_format(value[x - 1].avg, 0, unit, short_data, divisor);
+                "</span><span class='legend-font-small'> Avg: </span><span class='bolder'>" +
+                number_format(value[x - 1].avg, 0, unit, short_data, divisor) +
+                "</span>";
             } else {
               data_legend[index] = " Min: " + 0 + " Max: " + 0 + " Avg: " + 0;
             }
@@ -2476,9 +2477,9 @@ function pandoraFlotArea(
 
           if (typeof data_legend[series.label] !== "undefined") {
             label_aux =
-              legend[series.label].split(": Min")[0] +
-              ": " +
-              data_legend[series.label];
+              legend[series.label].split(
+                '<span class="legend-font-small">'
+              )[0] + data_legend[series.label];
             $("#legend_" + graph_id + " .legendLabel")
               .eq(i)
               .html(label_aux);

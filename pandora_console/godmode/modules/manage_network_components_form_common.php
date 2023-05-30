@@ -327,7 +327,7 @@ $table->data[10][2] = __('Discard unknown events');
 $table->data[10][3] = html_print_checkbox(
     'throw_unknown_events',
     1,
-    network_components_is_disable_type_event($id, EVENTS_GOING_UNKNOWN),
+    network_components_is_disable_type_event(($id === 0) ? false : $id, EVENTS_GOING_UNKNOWN),
     true
 );
 

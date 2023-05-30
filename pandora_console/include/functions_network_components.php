@@ -31,7 +31,7 @@ function network_components_is_disable_type_event($id=false, $type_event=false)
     if ($id === false) {
         switch ($type_event) {
             case EVENTS_GOING_UNKNOWN:
-            return true;
+            return false;
 
                 break;
             case EVENTS_UNKNOWN:
@@ -570,7 +570,7 @@ function network_components_get_name($id_network_component)
         return false;
     }
 
-    return @db_get_value('name', 'tnetwork_component', 'id', $id_network_component);
+    return @db_get_value('name', 'tnetwork_component', 'id_nc', $id_network_component);
 }
 
 

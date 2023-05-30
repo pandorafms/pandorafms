@@ -9123,7 +9123,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
                         modules_get_agentmodule_agent($item['id_agent_module'])
                     );
 
-                    if (empty($text)) {
+                    if (empty($row['data']['availability_item'])) {
                         $row['data']['availability_item'] = __('No Address');
                     }
                 } else {
@@ -15832,7 +15832,11 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     $return['time_critical'] = $data['time_error'];
     $return['time_warning'] = $data['time_warning'];
     $return['time_ok'] = $data['time_ok'];
-    $return['percent_ok'] = (($data['checks_ok'] * 100) / $data['checks_total']);
+    if ($data['checks_total'] > 0) {
+        $return['percent_ok'] = (($data['checks_ok'] * 100) / $data['checks_total']);
+    } else {
+        $return['percent_ok'] = 0;
+    }
 
     $colors = [
         1 => COL_NORMAL,
@@ -15845,6 +15849,11 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     ];
 
     $width_graph  = 100;
+    if ($metaconsole_on && $server_name != '') {
+        // Restore db connection.
+        metaconsole_restore_db();
+    }
+
     if (empty($array_result) === false) {
         $return['chart'] = flot_slicesbar_graph(
             $array_result,
@@ -15869,11 +15878,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         );
     } else {
         $return['chart'] = graph_nodata_image(['height' => $height_graph]);
-    }
-
-    if ($metaconsole_on && $server_name != '') {
-        // Restore db connection.
-        metaconsole_restore_db();
     }
 
     return reporting_check_structure_content($return);

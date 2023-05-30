@@ -77,6 +77,7 @@ $min = (int) get_parameter('min');
 $tcp_send = (string) get_parameter('tcp_send');
 $tcp_rcv = (string) get_parameter('tcp_rcv');
 $tcp_port = (int) get_parameter('tcp_port');
+$target_ip = (string) get_parameter('target_ip');
 $snmp_oid = (string) get_parameter('snmp_oid');
 $snmp_community = (string) get_parameter('snmp_community');
 $id_module_group = (int) get_parameter('id_module_group');
@@ -360,6 +361,7 @@ if ($is_management_allowed === true && $create_component) {
                 'tcp_send'              => $tcp_send,
                 'tcp_rcv'               => $tcp_rcv,
                 'tcp_port'              => $tcp_port,
+                'target_ip'             => $target_ip,
                 'snmp_oid'              => $snmp_oid,
                 'snmp_community'        => $snmp_community,
                 'id_module_group'       => $id_module_group,
@@ -465,6 +467,7 @@ if ($is_management_allowed === true && $update_component) {
                 'tcp_send'              => $tcp_send,
                 'tcp_rcv'               => $tcp_rcv,
                 'tcp_port'              => $tcp_port,
+                'target_ip'             => $target_ip,
                 'snmp_oid'              => $snmp_oid,
                 'snmp_community'        => $snmp_community,
                 'id_module_group'       => $id_module_group,

@@ -570,9 +570,9 @@ class TipsWindow
             }
 
             $sql = sprintf(
-                'SELECT id, name AS language, title, text, url, enable
+                'SELECT id, id_language AS language, title, text, url, enable
                 FROM twelcome_tip t
-                LEFT JOIN tlanguage l ON t.id_lang = l.id_language COLLATE utf8mb4_unicode_ci
+                LEFT JOIN tlanguage l ON t.id_lang COLLATE utf8mb4_unicode_ci = CONVERT(l.id_language USING utf8mb4) COLLATE utf8mb4_unicode_ci
                 %s %s %s',
                 $filter,
                 $order,
@@ -584,7 +584,7 @@ class TipsWindow
             $sqlCount = sprintf(
                 'SELECT count(*)
                 FROM twelcome_tip t
-                LEFT JOIN tlanguage l ON t.id_lang = l.id_language COLLATE utf8mb4_unicode_ci
+                LEFT JOIN tlanguage l ON t.id_lang COLLATE utf8mb4_unicode_ci = CONVERT(l.id_language USING utf8mb4) COLLATE utf8mb4_unicode_ci
                 %s',
                 $filter
             );

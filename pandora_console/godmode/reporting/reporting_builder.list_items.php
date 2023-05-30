@@ -518,8 +518,9 @@ foreach ($items as $item) {
                 }
 
                 $agent_name_db = implode('<br>', $agent_name_db);
-
-                $module_name_db = implode('<br>', $modules);
+                if (is_array($modules) === true) {
+                    $module_name_db = implode('<br>', $modules);
+                }
             } else {
                 $agent_id = agents_get_agent_id_by_module_id($item['id_agent_module']);
                 $agent_name = agents_get_name($agent_id);

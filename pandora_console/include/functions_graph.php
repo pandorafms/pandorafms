@@ -1600,9 +1600,15 @@ function graphic_combined_module(
 
                 if (is_metaconsole()) {
                     metaconsole_restore_db();
-                    $server = metaconsole_get_connection_by_id(
-                        isset($agent_module_id['server']) ? $agent_module_id['server'] : $source['id_server']
-                    );
+                    if (isset($agent_module_id['server'])) {
+                        $id_server = $agent_module_id['server'];
+                    } else if (isset($agent_module_id['id_server'])) {
+                        $id_server = $agent_module_id['id_server'];
+                    } else {
+                        $id_server = $source['id_server'];
+                    }
+
+                    $server = metaconsole_get_connection_by_id($id_server);
                     if (metaconsole_connect($server) != NOERR) {
                         continue;
                     }
@@ -5241,7 +5247,7 @@ function graph_monitor_wheel($width=550, $height=600, $filter=false)
         'name'     => __('Main node'),
         'type'     => 'center_node',
         'children' => iterate_group_array($data_groups, $data_agents),
-        'color'    => '#3F3F3F',
+        'color'    => ($config['style'] === 'pandora_black') ? '#111' : '#FFF',
     ];
 
     if (empty($graph_data['children'])) {

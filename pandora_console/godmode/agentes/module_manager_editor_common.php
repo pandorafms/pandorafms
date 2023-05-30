@@ -509,7 +509,7 @@ $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
     10,
     1024,
     true,
-    $disabledBecauseInPolicy || $edit === false,
+    $disabledBecauseInPolicy,
     false,
     '',
     $classdisabledBecauseInPolicy
@@ -523,6 +523,11 @@ $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_div(
     ],
     true
 );
+
+// CHANGE TO CRITICAL STATUS
+$tableBasicThresholds->data['caption_warning_time'][0] .= __('Change to critical status after');
+$tableBasicThresholds->data['warning_time'][0] .= html_print_input_text('warning_time', $warning_time, '', 5, 15, true);
+$tableBasicThresholds->data['warning_time'][1] .= '&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>';
 
 // CRITICAL THRESHOLD.
 $tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
@@ -607,7 +612,7 @@ $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
-$table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 340px;width: 100%';
+$table_simple->rowstyle['thresholds_table'] = 'margin-top: 15px;height: 400px;width: 100%';
 $table_simple->cellclass['thresholds_table'][0] = 'table_section half_section_left';
 $table_simple->data['thresholds_table'][0] = html_print_table($tableBasicThresholds, true);
 if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) {
@@ -685,6 +690,7 @@ if ((int) $moduletype === MODULE_DATA) {
     // If it is a non policy form, the module_interval will not provided and will.
     // be taken the agent interval (this code is at configurar_agente.php).
 } else {
+    $interval = ($interval === '') ? '300' : $interval;
     $outputExecutionInterval = html_print_extended_select_for_time('module_interval', $interval, '', '', '0', false, true, false, false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
 }
 
@@ -694,6 +700,8 @@ if (isset($module['id_policy_module']) === true) {
 }
 
 $cps_array[-1] = __('Disabled');
+$cps_array[0] = __('Enabled');
+
 if ($cps_module > 0) {
     $cps_array[$cps_module] = __('Enabled');
 } else {
@@ -705,7 +713,9 @@ if ($cps_module > 0) {
         }
     }
 
-    $cps_array[$cps_inc] = __('Enabled');
+    if ($cps_inc > -1) {
+        $cps_array[$cps_inc] = __('Enabled');
+    }
 }
 
 // JS Scripts for ff thresholds.
@@ -1040,8 +1050,8 @@ $table_advanced->data['textarea_description_instructions'][1] = html_print_texta
 
 $table_advanced->rowclass['caption_textarea_crit_warn_instructions'] = 'field_half_width pdd_t_10px';
 $table_advanced->rowclass['textarea_crit_warn_instructions'] = 'field_half_width';
-$table_advanced->data['caption_textarea_crit_warn_instructions'][1] = __('Warning instructions');
 $table_advanced->data['caption_textarea_crit_warn_instructions'][0] = __('Critical instructions');
+$table_advanced->data['caption_textarea_crit_warn_instructions'][1] = __('Warning instructions');
 $table_advanced->data['textarea_crit_warn_instructions'][0] = html_print_textarea(
     'critical_instructions',
     5,
@@ -1934,7 +1944,7 @@ $(document).ready (function () {
         var thisLabel = $(this).attr('for');
         $('#'+thisLabel).prop('checked', true);
         $('#'+thisLabel).siblings().prop('checked', false);
-        
+
         if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true) {
             $("#svg_dinamic").hide();
         } else {

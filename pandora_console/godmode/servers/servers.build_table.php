@@ -259,7 +259,7 @@ foreach ($servers as $server) {
                 'images/agents@svg.svg',
                 true,
                 [
-                    'title' => __('Manage satellite hosts'),
+                    'title' => __('Manage server conf'),
                     'class' => 'main_menu_icon invert_filter',
                 ]
             );

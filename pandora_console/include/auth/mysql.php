@@ -1624,7 +1624,7 @@ function local_ldap_search(
     }
 
     $dn = ' -b '.escapeshellarg($dn);
-    $ldapsearch_command = 'ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
+    $ldapsearch_command = 'timeout '.$ldap_search_time.' ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
     $shell_ldap_search = explode("\n", shell_exec($ldapsearch_command));
     foreach ($shell_ldap_search as $line) {
         $values = explode('=>', $line);

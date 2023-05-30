@@ -978,14 +978,14 @@ if (empty($create) === false || empty($view) === false) {
     if ($rows !== false) {
         $pluginTable = new stdClass();
         $pluginTable->id = 'plugin_table';
-        $pluginTable->class = (is_metaconsole() === true) ? 'databox data' : 'info_table';
+        $pluginTable->class = 'info_table';
 
         $pluginTable->head = [];
         $pluginTable->head[0] = __('Name');
         $pluginTable->head[1] = __('Type');
         $pluginTable->head[2] = __('Command');
         if ($management_allowed === true) {
-            $pluginTable->head[3] = '<span title="'.__('Operations').'">'.__('Op.').'</span>';
+            $pluginTable->head[3] = __('Operations');
         }
 
         $pluginTable->data = [];

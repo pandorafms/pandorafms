@@ -1629,6 +1629,8 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                                 $values['period'] = get_parameter('period');
                                 $values['period_range'] = get_parameter('period_range');
+                                $values['show_graph'] = get_parameter('combo_graph_options');
+                                $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 
@@ -2607,6 +2609,8 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                                 $values['period'] = get_parameter('period');
                                 $values['period_range'] = get_parameter('period_range');
+                                $values['show_graph'] = get_parameter('combo_graph_options');
+                                $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 

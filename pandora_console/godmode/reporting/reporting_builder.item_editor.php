@@ -332,6 +332,8 @@ switch ($action) {
                     $search = $es['search'];
                     $log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
                     $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
+                    $show_graph = $item['show_graph'];
+                    $group_by_agent = $item['group_by_agent'];
                 break;
 
                 case 'simple_graph':
@@ -6615,6 +6617,8 @@ function chooseType() {
             $("#agents_row").show();
             $("#row_source").show();
             $("#row_historical_db_check").hide();
+            $("#row_show_graph").show();
+            $("#row_group_by_agent").show();
 
             loadLogAgents();
 

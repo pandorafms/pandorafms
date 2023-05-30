@@ -370,6 +370,9 @@ if ($create_user === true) {
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
 
+    // Previously defined.
+    $values['autorefresh_white_list'] = $autorefresh_white_list;
+
     // eHorus user level conf.
     if ((bool) $config['ehorus_user_level_conf'] === true) {
         $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);

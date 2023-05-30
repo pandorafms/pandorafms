@@ -315,19 +315,10 @@ a.update_manager_button:after {
 }
 
 #um-buttons button {
-  margin: 0 1em 1em 1em;
-  border: none;
   padding: 10px;
   cursor: pointer;
-  background: #efefef;
-}
-
-#um-buttons button:hover {
-  background: #ddd;
-}
-
-#um-buttons button:active {
-  background: #ccc;
+  width: 285px;
+  margin: 20px;
 }
 
 .ui-widget.ui-widget-content {

@@ -432,8 +432,8 @@ sub PandoraFMS::Recon::Base::guess_os($$;$) {
     my $return = `"$self->{pa_config}->{nmap}" -sSU -T5 -F -O --osscan-limit $device 2>$DEVNULL`;
     return OS_OTHER if ($? != 0);
     my $str_os;
-    if ($return =~ /Aggressive OS guesses:\s*(.*)|OS details:\s(.*)/) {
-      if($1 ne "") {
+    if ($return =~ /Aggressive OS guesses:(.*?)(?>\(\d+%\),)|^OS details:(.*?)\(.*\)*$/mi) {
+      if(defined($1) && $1 ne "") {
         $str_os = $1;
       } else {
         $str_os = $2;

@@ -9123,7 +9123,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
                         modules_get_agentmodule_agent($item['id_agent_module'])
                     );
 
-                    if (empty($text)) {
+                    if (empty($row['data']['availability_item'])) {
                         $row['data']['availability_item'] = __('No Address');
                     }
                 } else {

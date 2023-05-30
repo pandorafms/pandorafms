@@ -295,25 +295,25 @@ if (enterprise_installed() === true) {
             $cps_val = $cps;
         }
     }
+}
 
-    // Parent agents.
-    $paramsParentAgent = [];
-    $paramsParentAgent['return'] = true;
-    $paramsParentAgent['show_helptip'] = false;
-    $paramsParentAgent['input_name'] = 'id_parent';
-    $paramsParentAgent['print_hidden_input_idagent'] = true;
-    $paramsParentAgent['hidden_input_idagent_name'] = 'id_agent_parent';
-    $paramsParentAgent['hidden_input_idagent_value'] = $id_parent;
-    $paramsParentAgent['value'] = db_get_value('alias', 'tagente', 'id_agente', $id_parent);
-    $paramsParentAgent['selectbox_id'] = 'cascade_protection_module';
-    $paramsParentAgent['javascript_is_function_select'] = true;
-    $paramsParentAgent['cascade_protection'] = true;
-    $paramsParentAgent['input_style'] = 'width: 100%;';
+// Parent agents.
+$paramsParentAgent = [];
+$paramsParentAgent['return'] = true;
+$paramsParentAgent['show_helptip'] = false;
+$paramsParentAgent['input_name'] = 'id_parent';
+$paramsParentAgent['print_hidden_input_idagent'] = true;
+$paramsParentAgent['hidden_input_idagent_name'] = 'id_agent_parent';
+$paramsParentAgent['hidden_input_idagent_value'] = $id_parent;
+$paramsParentAgent['value'] = db_get_value('alias', 'tagente', 'id_agente', $id_parent);
+$paramsParentAgent['selectbox_id'] = 'cascade_protection_module';
+$paramsParentAgent['javascript_is_function_select'] = true;
+$paramsParentAgent['cascade_protection'] = true;
+$paramsParentAgent['input_style'] = 'width: 100%;';
 
-    if ($id_agente !== 0) {
-        // Deletes the agent's offspring.
-        $paramsParentAgent['delete_offspring_agents'] = $id_agente;
-    }
+if ($id_agente !== 0) {
+    // Deletes the agent's offspring.
+    $paramsParentAgent['delete_offspring_agents'] = $id_agente;
 }
 
 $listIcons = gis_get_array_list_icons();
@@ -631,15 +631,18 @@ $tableAdvancedAgent->style = [];
 $tableAdvancedAgent->cellclass = [];
 $tableAdvancedAgent->colspan = [];
 $tableAdvancedAgent->rowspan = [];
-// Secondary groups.
-$tableAdvancedAgent->data['secondary_groups'][] = html_print_label_input_block(
-    __('Secondary groups'),
-    html_print_select_agent_secondary(
-        $agent,
-        $id_agente,
-        ['selected_post' => $secondary_groups]
-    )
-);
+
+if (enterprise_installed() === true) {
+    // Secondary groups.
+    $tableAdvancedAgent->data['secondary_groups'][] = html_print_label_input_block(
+        __('Secondary groups'),
+        html_print_select_agent_secondary(
+            $agent,
+            $id_agente,
+            ['selected_post' => $secondary_groups]
+        )
+    );
+}
 
 // Parent agent.
 $tableAdvancedAgent->data['parent_agent'][] = html_print_label_input_block(
@@ -795,8 +798,6 @@ if (enterprise_installed() === true) {
         '',
         'w540px',
         '',
-        // Autocomplete.
-        'new-password'
     );
 } else {
     $urlAddressInput = html_print_input_text(
@@ -903,18 +904,16 @@ $tableAdvancedAgent->data['safe_operation'][] = html_print_label_input_block(
     )
 );
 
-if (enterprise_installed() === true) {
-    ui_toggle(
-        html_print_table($tableAdvancedAgent, true),
-        '<span class="subsection_header_title">'.__('Advanced options').'</span>',
-        '',
-        '',
-        true,
-        false,
-        'white_box_content',
-        'no-border white_table_graph'
-    );
-}
+ui_toggle(
+    html_print_table($tableAdvancedAgent, true),
+    '<span class="subsection_header_title">'.__('Advanced options').'</span>',
+    '',
+    '',
+    true,
+    false,
+    'white_box_content',
+    'no-border white_table_graph'
+);
 
 // Custom fields.
 $customOutputData = '';

@@ -6707,6 +6707,9 @@ sub pandora_get_os ($$) {
 	if ($os =~ m/Apple/i || $os =~ m/Darwin/i) {
 		return 8;
 	}
+	if ($os =~ m/android/i) {
+		return 15;
+	}
 	if ($os =~ m/Linux/i) {
 		return 1;
 	}
@@ -6718,9 +6721,6 @@ sub pandora_get_os ($$) {
 	}
 	if ($os =~ m/embedded/i) {
 		return 14;
-	}
-	if ($os =~ m/android/i) {
-		return 15;
 	}
 	if ($os =~ m/BSD/i) {
 		return 4;

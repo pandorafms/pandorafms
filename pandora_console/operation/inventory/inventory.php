@@ -675,10 +675,9 @@ $table->data[1][1] = html_print_label_input_block(
 if (is_metaconsole() === false) {
     $dates = inventory_get_dates(
         $inventory_module,
-        $inventory_agent,
+        $inventory_id_agent,
         $inventory_id_group
     );
-
     $table->data[1][2] = html_print_label_input_block(
         __('Date'),
         html_print_select(
@@ -690,7 +689,7 @@ if (is_metaconsole() === false) {
             0,
             true,
             false,
-            true,
+            false,
             '',
             false,
             'width:100%;'

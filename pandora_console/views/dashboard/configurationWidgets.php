@@ -59,5 +59,7 @@ HTML::printForm(
 $output .= '<script>';
 $output .= 'dashboardInitTinyMce("'.ui_get_full_url(false, false, false, false).'")';
 $output .= '</script>';
-
+$output .= '<script>';
+$output .= "tinymce.init({selector: '#textarea_text'});";
+$output .= '</script>';
 echo $output;

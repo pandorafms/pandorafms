@@ -44,6 +44,7 @@ namespace Pandora_Strutils {
 	
 	string             trim        (const string str);
 
+	string             base64Encode(string str);
 	string             strUnicodeToAnsi (LPCWSTR s);
 	wstring			   strAnsiToUnicode (LPCSTR s);
 	string             inttostr    (const int i);

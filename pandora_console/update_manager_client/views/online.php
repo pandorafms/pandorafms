@@ -61,8 +61,10 @@ global $config;
                 <div id="um-updates">
                 </div>
                 <div id="um-buttons" style="display:none;">
-                    <button id="um-next"><?php echo __('Update to next version'); ?></button>
-                    <button id="um-last"><?php echo __('Update to latest version'); ?></button>
+                    <?php
+                    html_print_button(__('Update to next version'), 'um-next', false, '', ['icon' => 'next', 'class' => 'sub ok']);
+                    html_print_button(__('Update to latest version'), 'um-last', false, '', ['icon' => 'next', 'class' => 'sub ok']);
+                    ?>
                 </div>
 
                 <div id="um-result"></div>
@@ -99,8 +101,8 @@ global $config;
 
                     window.onload = function() {
                         var bsearch = document.getElementById('um-search');
-                        var bnext = document.getElementById('um-next');
-                        var blast = document.getElementById('um-last');
+                        var bnext = document.getElementById('button-um-next');
+                        var blast = document.getElementById('button-um-last');
                         var result = document.getElementById('um-result');
 
                         <?php

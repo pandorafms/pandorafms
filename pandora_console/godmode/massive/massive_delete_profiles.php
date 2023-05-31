@@ -68,7 +68,21 @@ if (is_ajax()) {
         $id_group = get_parameter('id_group');
         $id_profile = get_parameter('id_profile');
 
-        $profile_data = db_get_all_rows_filter('tusuario_perfil', ['id_perfil' => $id_profile[0], 'id_grupo' => $id_group[0]]);
+        if ($id_group[0] === '0' || $id_group[0] === '') {
+            $profile_data = db_get_all_rows_filter(
+                'tusuario_perfil',
+                ['id_perfil' => $id_profile[0]]
+            );
+        } else {
+            $profile_data = db_get_all_rows_filter(
+                'tusuario_perfil',
+                [
+                    'id_perfil' => $id_profile[0],
+                    'id_grupo'  => $id_group[0],
+                ]
+            );
+        }
+
         if (!users_is_admin()) {
             foreach ($profile_data as $user => $values) {
                 if (users_is_admin($values['id_usuario'])) {

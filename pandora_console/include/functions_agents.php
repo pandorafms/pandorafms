@@ -1689,7 +1689,7 @@ function agents_get_modules(
 					WHERE tagente_modulo.delete_pending = 0
 						AND %s
 					GROUP BY 1
-					ORDER BY 1',
+					ORDER BY tagente_modulo.nombre',
         ($details != 'tagente_modulo.*' && $indexed) ? 'tagente_modulo.id_agente_modulo,' : '',
         io_safe_output(implode(',', (array) $details)),
         $sql_tags_join,

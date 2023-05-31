@@ -667,7 +667,8 @@ $table->data[$i++][] = html_print_label_input_block(
         true
     )
 );
-
+$console_log_text = __('Log location').': /var/log/php-fpm/error.log';
+$console_log_text .= '<br/>'.__('This log is recommended to be DISABLED by default due to the large amount of debug data it generates.');
 $table->data[$i][] = html_print_label_input_block(
     __('Enable console log'),
     html_print_checkbox_switch(
@@ -676,8 +677,8 @@ $table->data[$i][] = html_print_label_input_block(
         $config['console_log_enabled'],
         true
     ).ui_print_input_placeholder(
-        __('Log location').': pandora_console/log/console.log',
-        true
+        $console_log_text,
+        true,
     )
 );
 

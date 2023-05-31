@@ -667,18 +667,21 @@ $table->data[$i++][] = html_print_label_input_block(
         true
     )
 );
-$console_log_text = __('Log location').': /var/log/php-fpm/error.log';
-$console_log_text .= '<br/>'.__('This log is recommended to be DISABLED by default due to the large amount of debug data it generates.');
+
+$help_tip = ui_print_help_tip(
+    __('This log is recommended to be DISABLED by default due to the large amount of debug data it generates.'),
+    true
+);
 $table->data[$i][] = html_print_label_input_block(
-    __('Enable console log'),
+    __('Enable console log').$help_tip,
     html_print_checkbox_switch(
         'console_log_enabled',
         1,
         $config['console_log_enabled'],
         true
     ).ui_print_input_placeholder(
-        $console_log_text,
-        true,
+        __('Log location').': /var/log/php-fpm/error.log',
+        true
     )
 );
 

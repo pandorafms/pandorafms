@@ -259,7 +259,6 @@ if ($access_console_node === true) {
 
     if ((bool) check_acl($config['id_user'], 0, 'LW') === true
         || (bool) check_acl($config['id_user'], 0, 'LM') === true
-        || (bool) check_acl($config['id_user'], 0, 'AD') === true
     ) {
         $menu_godmode['galertas']['text'] = __('Alerts');
         $menu_godmode['galertas']['sec2'] = 'godmode/alerts/alert_list';

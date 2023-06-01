@@ -688,7 +688,7 @@ if ($step == 2) {
     );
 
     $table->data[2][0] = html_print_label_input_block(
-        __('Time threshold'),
+        __('Time threshold').ui_print_help_tip(__('Reset the alert counter within the configured period if there is no manual recovery or validation of the alert.'), true),
         html_print_extended_select_for_time(
             'threshold',
             $threshold,

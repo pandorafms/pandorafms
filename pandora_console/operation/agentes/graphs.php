@@ -45,7 +45,7 @@ if ((bool) check_acl($config['id_user'], $id_grupo, 'AR') === false && (bool) ch
 require_once $config['homedir'].'/include/functions_graph.php';
 
 $draw_alerts = get_parameter('draw_alerts', 0);
-$period = get_parameter('period', SECONDS_1HOUR);
+$period = (string) get_parameter('period', SECONDS_2HOUR);
 $width = get_parameter('width', 555);
 $height = get_parameter('height', 245);
 $label = get_parameter('label', '');
@@ -53,8 +53,8 @@ $start_date = get_parameter('start_date', date('Y-m-d'));
 $draw_events = get_parameter('draw_events', 0);
 $modules = get_parameter('modules', []);
 $filter = get_parameter('filter', 0);
-$combined = get_parameter('combined', 1);
-$option_type = get_parameter('option_type', 0);
+$combined = get_parameter('combined', 0);
+$option_type = get_parameter('option_type', 2);
 
 // ----------------------------------------------------------------------
 // Get modules of agent sorted as:
@@ -176,11 +176,12 @@ foreach ($modules_boolean as $i => $m) {
 
 
 $list_modules = ($modules_networkmap_no_proc + $modules_others + $modules_boolean);
+sort($list_modules);
 // ----------------------------------------------------------------------
 if (empty($modules)) {
     // Selected the first 6 modules.
     $module_ids = array_keys($list_modules);
-    $module_ids = array_slice($module_ids, 0, 6);
+    $module_ids = array_slice($module_ids, 0, 12);
     $modules = $module_ids;
 }
 
@@ -301,7 +302,7 @@ $htmlForm .= html_print_div(
 
 $htmlForm .= '</form>';
 
-ui_toggle($htmlForm, __('Filter graphs'), __('Toggle filter(s)'), '', false);
+ui_toggle($htmlForm, __('Filter graphs'), __('Toggle filter(s)'), '', true);
 
 $utime = get_system_time();
 $current = date('Y-m-d', $utime);
@@ -316,13 +317,17 @@ if ($combined) {
     // Pass the $modules before the ajax call.
     echo '<div class="combined-graph-container center w100p white_box"'.'data-period="'.$period.'"'.'data-stacked="'.CUSTOM_GRAPH_LINE.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
 } else {
+    echo '<div class="content-graphs flex wrap bg-white">';
     foreach ($modules as $id_module) {
         $title = modules_get_agentmodule_name($id_module);
         $unit = modules_get_unit($id_module);
-
+        echo '<div class="graph" style="width: 100%; max-width: 480px; padding: 10px;">';
         echo '<h4>'.$title.'</h4>';
-        echo '<div class="sparse-graph-container center w100p"'.'data-id_module="'.$id_module.'"'.'data-period="'.$period.'"'.'data-draw_events="'.(int) $draw_events.'"'.'data-title="'.$title.'"'.'data-draw_alerts="'.(int) $draw_alerts.'"'.'data-date="'.$date.'"'.'data-unit="'.$unit.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
+        echo '<div class="sparse-graph-container" data-id_module="'.$id_module.'"'.'data-period="'.$period.'"'.'data-draw_events="'.(int) $draw_events.'"'.'data-title="'.$title.'"'.'data-draw_alerts="'.(int) $draw_alerts.'"'.'data-date="'.$date.'"'.'data-unit="'.$unit.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
+        echo '</div>';
     }
+
+    echo '</div>';
 }
 
 echo "<div class='both'></div>";

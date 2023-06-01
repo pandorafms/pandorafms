@@ -321,7 +321,7 @@ if ($combined) {
     foreach ($modules as $id_module) {
         $title = modules_get_agentmodule_name($id_module);
         $unit = modules_get_unit($id_module);
-        echo '<div class="graph" style="width: 100%; max-width: 480px; padding: 10px;">';
+        echo '<div class="graph w100p padding10" style="max-width: 480px;">';
         echo '<h4>'.$title.'</h4>';
         echo '<div class="sparse-graph-container" data-id_module="'.$id_module.'"'.'data-period="'.$period.'"'.'data-draw_events="'.(int) $draw_events.'"'.'data-title="'.$title.'"'.'data-draw_alerts="'.(int) $draw_alerts.'"'.'data-date="'.$date.'"'.'data-unit="'.$unit.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
         echo '</div>';

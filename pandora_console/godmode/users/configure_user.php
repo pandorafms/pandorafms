@@ -384,10 +384,19 @@ if ($create_user === true) {
 
     // Generate new API token.
     $values['api_token'] = api_token_generate();
+    // Validate the user ID if it already exists.
+    $user_exists = get_user_info($id);
 
     if (empty($id) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
+        $user_info = $values;
+        $password_new = '';
+        $password_confirm = '';
+        $new_user = true;
+    } else if (isset($user_exists['id_user'])) {
+        $is_err = true;
+        ui_print_error_message(__('User ID already exists'));
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';

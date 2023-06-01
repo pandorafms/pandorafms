@@ -4867,9 +4867,10 @@ sub on_demand_macro($$$$$$;$) {
 
 		return '';
 	} elsif ($macro eq '_moduletags_') {
-		return (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+		return (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_policy_') {
-		return (defined ($alert)) ? enterprise_hook('get_policy_name_policy_alerts_id', [$dbh, $alert->{'id_policy_alerts'}]) : '';
+		my $policy_name = get_db_value($dbh, 'SELECT p.name FROM tpolicy_modules AS pm, tpolicies AS p WHERE pm.id_policy = p.id AND pm.id = ?;', $module->{'id_policy_module'});
+		return (defined ($policy_name)) ? $policy_name  : '';
 	} elsif ($macro eq '_email_tag_') {
 		return (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_phone_tag_') {

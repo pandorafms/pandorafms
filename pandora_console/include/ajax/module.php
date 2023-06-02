@@ -1252,7 +1252,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/event-history.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Event history'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1268,7 +1271,7 @@ if (check_login()) {
                                 'images/module-graph.svg',
                                 true,
                                 [
-                                    'title' => $module['nombre'],
+                                    'title' => __('Module graph'),
                                     'class' => 'main_menu_icon forced_title',
                                 ]
                             ),
@@ -1287,7 +1290,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/simple-value.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Module detail'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true

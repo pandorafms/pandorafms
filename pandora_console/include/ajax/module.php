@@ -1329,7 +1329,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 $imgaction,
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Force remote check'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1346,7 +1349,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/edit.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Edit configuration'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true

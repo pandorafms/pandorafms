@@ -38,7 +38,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         if (check_acl($config['id_user'], $group, 'AW')) {
             $header_welcome .= '<div id="welcome-icon-header">';
             $header_welcome .= html_print_image(
-                'images/computer@groups.svg',
+                'images/wizard@svg.svg',
                 true,
                 [
                     'class' => 'main_menu_icon invert_filter',

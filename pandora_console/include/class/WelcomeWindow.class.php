@@ -374,34 +374,37 @@ class WelcomeWindow extends Wizard
             $flag_su = false;
             $flag_lv = false;
 
-            $btn_update_manager_class = ' pending';
-            $btn_configure_mail_class = ' pending';
-            $btn_servers_up_class = ' pending';
-            $btn_license_valid_class = ' pending';
+            $btn_update_manager_class = ' fail';
+            $btn_configure_mail_class = ' fail';
+            $btn_servers_up_class = ' fail';
+            $btn_license_valid_class = ' fail';
 
             $li_update_manager_class = 'row_grey';
             $li_configure_mail_class = 'row_grey';
             $li_servers_up_class = 'row_grey';
             $li_license_valid_class = 'row_grey';
 
-            if ($config['pandora_uid'] === 'ONLINE') {
-                $btn_update_manager_class = ' completed';
+            include_once 'include/functions_update_manager.php';
+            if (update_manager_verify_registration()) {
+                $btn_update_manager_class = '';
                 $li_update_manager_class = 'row_green';
                 $flag_um = true;
             }
 
             if (empty($config['welcome_mail_configured']) === false) {
-                $btn_configure_mail_class = ' completed';
+                $btn_configure_mail_class = '';
+                $li_configure_mail_class = 'row_green';
                 $flag_cm = true;
             }
 
             include_once 'include/functions_servers.php';
             if (check_all_servers_up() === true) {
-                $btn_servers_up_class = ' completed';
+                $btn_servers_up_class = '';
                 $li_servers_up_class = 'row_green';
                 $flag_su = true;
             }
 
+            $show_license = true;
             if (enterprise_installed()) {
                 $license_valid = true;
                 enterprise_include_once('include/functions_license.php');
@@ -412,10 +415,12 @@ class WelcomeWindow extends Wizard
                 }
 
                 if ($license_valid === true) {
-                    $btn_license_valid_class = ' completed';
+                    $btn_license_valid_class = '';
                     $li_license_valid_class = 'row_green';
                     $flag_lv = true;
                 }
+            } else {
+                $show_license = false;
             }
 
             $inputs[] = [
@@ -425,7 +430,7 @@ class WelcomeWindow extends Wizard
                 'direct'        => 1,
                 'block_content' => [
                     [
-                        'label'     => __('Mini-diagnosis'),
+                        'label'     => __('Post-installation status diagnostic'),
                         'arguments' => [
                             'class' => 'first_lbl',
                             'name'  => 'lbl_diagnosis',
@@ -443,7 +448,7 @@ class WelcomeWindow extends Wizard
                     'direct'        => 1,
                     'block_content' => [
                         [
-                            'label'     => __('Verification update manager register'),
+                            'label'     => __('Warp Update registration'),
                             'arguments' => [
                                 'class' => 'first_lbl',
                                 'name'  => 'lbl_update_manager',
@@ -471,7 +476,7 @@ class WelcomeWindow extends Wizard
                     'direct'        => 1,
                     'block_content' => [
                         [
-                            'label'     => __('Please ensure mail configuration matches your needs'),
+                            'label'     => __('Default mail to send alerts'),
                             'arguments' => [
                                 'class' => 'first_lbl',
                                 'name'  => 'lbl_create_agent',
@@ -499,7 +504,7 @@ class WelcomeWindow extends Wizard
                     'direct'        => 1,
                     'block_content' => [
                         [
-                            'label'     => __('All servers up'),
+                            'label'     => __('All servers running'),
                             'arguments' => [
                                 'class' => 'first_lbl',
                                 'name'  => 'lbl_servers_up',
@@ -520,36 +525,37 @@ class WelcomeWindow extends Wizard
                         ],
                     ],
                 ];
-                $inputs[] = [
-                    'wrapper'       => 'div',
-                    'block_id'      => 'div_license_valid',
-                    'class'         => 'hole flex-row flex-items-center w98p '.$li_license_valid_class,
-                    'direct'        => 1,
-                    'block_content' => [
-                        [
-                            'label'     => __('Valid license verification and expiration greater than 30 days'),
-                            'arguments' => [
-                                'class' => 'first_lbl',
-                                'name'  => 'lbl_license_valid',
-                                'id'    => 'lbl_license_valid',
-                            ],
-                        ],
-                        [
-                            'arguments' => [
-                                'label'      => '',
-                                'type'       => 'button',
-                                'attributes' => [
-                                    'class' => (empty($btn_license_valid_class) === false) ? $btn_license_valid_class : 'invisible_important',
-                                    'mode'  => 'onlyIcon',
+                if ($show_license) {
+                    $inputs[] = [
+                        'wrapper'       => 'div',
+                        'block_id'      => 'div_license_valid',
+                        'class'         => 'hole flex-row flex-items-center w98p '.$li_license_valid_class,
+                        'direct'        => 1,
+                        'block_content' => [
+                            [
+                                'label'     => __('Enterprise licence valid'),
+                                'arguments' => [
+                                    'class' => 'first_lbl',
+                                    'name'  => 'lbl_license_valid',
+                                    'id'    => 'lbl_license_valid',
                                 ],
-                                'name'       => 'btn_license_valid_conf',
-                                'id'         => 'btn_license_valid_conf',
+                            ],
+                            [
+                                'arguments' => [
+                                    'label'      => '',
+                                    'type'       => 'button',
+                                    'attributes' => [
+                                        'class' => (empty($btn_license_valid_class) === false) ? $btn_license_valid_class : 'invisible_important',
+                                        'mode'  => 'onlyIcon',
+                                    ],
+                                    'name'       => 'btn_license_valid_conf',
+                                    'id'         => 'btn_license_valid_conf',
+                                ],
                             ],
                         ],
-                    ],
-                ];
+                    ];
+                }
             } else {
-                $key = db_get_value_sql('SELECT `value` FROM tupdate_settings WHERE `key` = "customer_key"');
                 $inputs[] = [
                     'wrapper'       => 'div',
                     'block_id'      => 'div_all_correct',
@@ -557,7 +563,7 @@ class WelcomeWindow extends Wizard
                     'direct'        => 1,
                     'block_content' => [
                         [
-                            'label'     => __('It seems that your Pandora FMS is working correctly and registered with ID:<br> #'.$key.'.<br>For more information use the self-diagnosis tool.'),
+                            'label'     => __('It seems that your Pandora FMS is working correctly and registered with ID:<br> #'.$config['pandora_uid'].'.<br>For more information use the self-diagnosis tool.'),
                             'arguments' => [
                                 'class' => 'first_lbl w98p',
                                 'name'  => 'lbl_all_correct',
@@ -591,159 +597,39 @@ class WelcomeWindow extends Wizard
             ],
         ];
 
+        $fields['wizard_agent'] = __('Agent installation wizard');
+        $fields['check_web'] = __('Create WEB monitoring');
+        $fields['check_connectivity'] = __('Create network monitoring');
+        $fields['check_net'] = __('Discover my network');
+        $fields['check_mail_alert'] = __('Create email alert');
+
         $inputs[] = [
             'wrapper'       => 'div',
             'block_id'      => 'div_wizard_agent',
-            'class'         => 'hole flex-row flex-items-center w98p row_grey',
+            'class'         => 'flex space-between w98p',
             'direct'        => 1,
             'block_content' => [
                 [
-                    'label'     => __('Wizard install agent'),
                     'arguments' => [
-                        'class' => 'first_lbl row_grey',
-                        'name'  => 'lbl_wizard_agent',
-                        'id'    => 'lbl_wizard_agent',
+                        'type'          => 'select',
+                        'fields'        => $fields,
+                        'name'          => 'task_to_perform',
+                        'selected'      => '',
+                        'return'        => true,
+                        'nothing'       => \__('Please select one'),
+                        'nothing_value' => '',
                     ],
                 ],
                 [
                     'arguments' => [
-                        'label'      => '',
+                        'label'      => __('Let`s do it!'),
                         'type'       => 'button',
                         'attributes' => [
-                            'class' => 'completed',
-                            'mode'  => 'onlyIcon',
+                            'class' => 'secondary',
+                            'icon'  => 'next',
                         ],
-                        'name'       => 'btn_wizard_agent_conf',
-                        'id'         => 'btn_wizard_agent_conf',
-                    ],
-                ],
-            ],
-        ];
-
-        $status_webserver = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_WEB], 'status')['status'];
-        $check_web_color = 'row_grey';
-        if ($status_webserver === '1') {
-            $check_web_color = 'row_green';
-        }
-
-        $inputs[] = [
-            'wrapper'       => 'div',
-            'block_id'      => 'div_check_web',
-            'class'         => 'hole flex-row flex-items-center w98p '.$check_web_color,
-            'direct'        => 1,
-            'block_content' => [
-                [
-                    'label'     => __('Create check web'),
-                    'arguments' => [
-                        'class' => 'first_lbl row_grey',
-                        'name'  => 'lbl_check_web',
-                        'id'    => 'lbl_check_web',
-                    ],
-                ],
-                [
-                    'arguments' => [
-                        'label'      => '',
-                        'type'       => 'button',
-                        'attributes' => [
-                            'class' => 'completed',
-                            'mode'  => 'onlyIcon',
-                        ],
-                        'name'       => 'btn_check_web_conf',
-                        'id'         => 'btn_check_web_conf',
-                    ],
-                ],
-            ],
-        ];
-
-        $status_newtwork = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_NETWORK], 'status')['status'];
-        $status_pluggin = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_PLUGIN], 'status')['status'];
-        $check_connectivity = 'row_grey';
-        if ($status_newtwork === '1' && $status_pluggin === '1') {
-            $check_connectivity = 'row_green';
-        }
-
-        $inputs[] = [
-            'wrapper'       => 'div',
-            'block_id'      => 'div_check_connectivity',
-            'class'         => 'hole flex-row flex-items-center w98p '.$check_connectivity,
-            'direct'        => 1,
-            'block_content' => [
-                [
-                    'label'     => __('Create basic connectivity'),
-                    'arguments' => [
-                        'class' => 'first_lbl row_grey',
-                        'name'  => 'lbl_check_connectivity',
-                        'id'    => 'lbl_check_connectivity',
-                    ],
-                ],
-                [
-                    'arguments' => [
-                        'label'      => '',
-                        'type'       => 'button',
-                        'attributes' => [
-                            'class' => 'completed',
-                            'mode'  => 'onlyIcon',
-                        ],
-                        'name'       => 'btn_check_connectivity_conf',
-                        'id'         => 'btn_check_connectivity_conf',
-                    ],
-                ],
-            ],
-        ];
-
-        $inputs[] = [
-            'wrapper'       => 'div',
-            'block_id'      => 'div_check_net',
-            'class'         => 'hole flex-row flex-items-center w98p row_green',
-            'direct'        => 1,
-            'block_content' => [
-                [
-                    'label'     => __('Create basic net'),
-                    'arguments' => [
-                        'class' => 'first_lbl row_grey',
-                        'name'  => 'lbl_check_net',
-                        'id'    => 'lbl_check_net',
-                    ],
-                ],
-                [
-                    'arguments' => [
-                        'label'      => '',
-                        'type'       => 'button',
-                        'attributes' => [
-                            'class' => 'completed',
-                            'mode'  => 'onlyIcon',
-                        ],
-                        'name'       => 'btn_check_net_conf',
-                        'id'         => 'btn_check_net_conf',
-                    ],
-                ],
-            ],
-        ];
-
-        $inputs[] = [
-            'wrapper'       => 'div',
-            'block_id'      => 'div_check_mail_alert',
-            'class'         => 'hole flex-row flex-items-center w98p row_green',
-            'direct'        => 1,
-            'block_content' => [
-                [
-                    'label'     => __('Create Alert Mail'),
-                    'arguments' => [
-                        'class' => 'first_lbl row_grey',
-                        'name'  => 'lbl_check_mail_alert',
-                        'id'    => 'lbl_check_mail_alert',
-                    ],
-                ],
-                [
-                    'arguments' => [
-                        'label'      => '',
-                        'type'       => 'button',
-                        'attributes' => [
-                            'class' => 'completed',
-                            'mode'  => 'onlyIcon',
-                        ],
-                        'name'       => 'btn_check_mail_alert_conf',
-                        'id'         => 'btn_check_mail_alert_conf',
+                        'name'       => 'go_wizard',
+                        'id'         => 'go_wizard',
                     ],
                 ],
             ],
@@ -759,7 +645,233 @@ class WelcomeWindow extends Wizard
 
         $output .= $this->loadJS($flag_task);
         echo $output;
+        ?>
+        <div id="dialog_goliat" class="invisible">
+            <?php
+            echo html_print_input_hidden('check_web', 1);
+            echo html_print_label_input_block(
+                __('URL'),
+                html_print_input_text(
+                    'url_goliat',
+                    '',
+                    '',
+                    false,
+                    255,
+                    true,
+                    false,
+                    true,
+                    '',
+                    'w100p'
+                )
+            );
+            echo html_print_label_input_block(
+                __('Text to search'),
+                html_print_input_text(
+                    'text_to_search',
+                    '',
+                    '',
+                    false,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w100p'
+                )
+            );
+            echo html_print_label_input_block(
+                __('Modules name'),
+                html_print_input_text(
+                    'module_name',
+                    '',
+                    '',
+                    false,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w100p'
+                )
+            );
+            echo html_print_label_input_block(
+                __('Module group'),
+                html_print_select_from_sql(
+                    'SELECT * FROM tgrupo ORDER BY nombre',
+                    'id_group',
+                    '',
+                    '',
+                    '',
+                    false,
+                    true,
+                    false,
+                    true,
+                    false,
+                    'width: 100%;'
+                )
+            );
 
+            echo html_print_submit_button(__('Create'), 'create_goliat', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
+            ?>
+        </div>
+        <div id="dialog_connectivity" class="invisible">
+            <?php
+            echo html_print_input_hidden('check_connectivity', 1);
+            echo html_print_label_input_block(
+                __('Ip target'),
+                html_print_input_text(
+                    'ip_target',
+                    '',
+                    '',
+                    false,
+                    15,
+                    true,
+                    false,
+                    true,
+                    '',
+                    'w100p'
+                )
+            );
+            echo html_print_label_input_block(
+                __('Agent name'),
+                html_print_input_text(
+                    'agent_name',
+                    '',
+                    '',
+                    false,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w100p'
+                )
+            );
+            echo html_print_label_input_block(
+                __('Module group'),
+                html_print_select_from_sql(
+                    'SELECT * FROM tgrupo ORDER BY nombre',
+                    'id_group',
+                    '',
+                    '',
+                    '',
+                    false,
+                    true,
+                    false,
+                    true,
+                    false,
+                    'width: 100%;'
+                )
+            );
+
+            echo html_print_submit_button(__('Create'), 'create_conectivity', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
+            ?>
+        </div>
+        <div id="dialog_basic_net" class="invisible">
+            <?php
+            echo html_print_input_hidden('create_net_scan', 1);
+            echo html_print_label_input_block(
+                __('Ip target'),
+                html_print_input_text(
+                    'ip_target',
+                    '192.168.10.0/24',
+                    '192.168.10.0/24',
+                    false,
+                    18,
+                    true,
+                    false,
+                    true,
+                    '',
+                    'w100p',
+                    '',
+                    'off',
+                    false,
+                    '',
+                    '',
+                    '',
+                    false,
+                    '',
+                    '192.168.10.0/24'
+                )
+            );
+
+            echo html_print_submit_button(__('Create'), 'basic_net', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
+            ?>
+        </div>
+        <div id="dialog_alert_mail" class="invisible">
+            <?php
+            echo html_print_input_hidden('create_mail_alert', 1);
+            $params = [];
+            $params['return'] = true;
+            $params['show_helptip'] = true;
+            $params['input_name'] = 'id_agent';
+            $params['selectbox_id'] = 'id_agent_module';
+            $params['javascript_is_function_select'] = true;
+            $params['metaconsole_enabled'] = false;
+            $params['use_hidden_input_idagent'] = true;
+            $params['print_hidden_input_idagent'] = true;
+            echo html_print_label_input_block(
+                __('Agent'),
+                ui_print_agent_autocomplete_input($params)
+            );
+            echo html_print_label_input_block(
+                __('Module'),
+                html_print_select(
+                    $modules,
+                    'id_agent_module',
+                    '',
+                    true,
+                    '',
+                    '',
+                    true,
+                    false,
+                    true,
+                    'w100p',
+                    false,
+                    'width: 100%;',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    true
+                ).'<span id="latest_value" class="invisible">'.__('Latest value').':
+                <span id="value">&nbsp;</span></span>
+                <span id="module_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</span>'
+            );
+
+            $condition = alerts_get_alert_templates(['id IN (1,3)'], ['id', 'name']);
+
+            echo html_print_label_input_block(
+                __('Contition'),
+                html_print_select(
+                    index_array($condition, 'id', 'name'),
+                    'id_condition',
+                    '',
+                    '',
+                    __('Select'),
+                    '',
+                    true,
+                    false,
+                    true,
+                    'w100p',
+                    false,
+                    'width: 100%;',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    true
+                )
+            );
+
+            echo html_print_submit_button(__('Create'), 'alert_mail', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
+            ?>
+        </div>
+        <?php
         // Ajax methods does not continue.
         exit();
     }
@@ -1011,30 +1123,104 @@ class WelcomeWindow extends Wizard
         <?php } ?>
 
         // Task to do buttons.
-        document.getElementById("button-btn_wizard_agent_conf").setAttribute(
-            'onclick',
-            'deployAgent()'
-        );
+        $('#button-go_wizard').click(function(){
+            if ($('#task_to_perform :selected').val() === '') {
+                alert("<?php echo __('You must chose an option'); ?>");
+            } else {
+                switch($('#task_to_perform :selected').val()) {
+                    case 'wizard_agent':
+                        deployAgent();
+                    break;
+                    case 'check_mail_alert':
+                        openCreateAlertMailDialog();
+                    break;
+                    case 'check_connectivity':
+                        openCreateConnectivityDialog();
+                    break;
+                    case 'check_web':
+                        openCreateModulesDialog();
+                    break;
+                    case 'check_net':
+                        openCreateBasicNetDialog();
+                    break;
+                };
+            }
+        });
 
-        document.getElementById("button-btn_check_web_conf").setAttribute(
-            'onclick',
-            'openCreateModulesDialog()'
-        );
+        // Task to do buttons.
+        $('#button-go_wizard').click(function(){
+            if ($('#task_to_perform :selected').val() === '') {
+                alert("<?php echo __('You must chose an option'); ?>");
+            } else {
+                switch($('#task_to_perform :selected').val()) {
+                    case 'wizard_agent':
+                        deployAgent();
+                    break;
+                    case 'check_mail_alert':
+                        openCreateAlertMailDialog();
+                    break;
+                    case 'check_connectivity':
+                        openCreateConnectivityDialog();
+                    break;
+                    case 'check_web':
+                        openCreateModulesDialog();
+                    break;
+                    case 'check_net':
+                        openCreateBasicNetDialog();
+                    break;
+                };
+            }
+        });
 
-        document.getElementById("button-btn_check_connectivity_conf").setAttribute(
-            'onclick',
-            'openCreateConnectivityDialog()'
-        );
+        // Task to do buttons.
+        $('#button-go_wizard').click(function(){
+            if ($('#task_to_perform :selected').val() === '') {
+                alert("<?php echo __('You must chose an option'); ?>");
+            } else {
+                switch($('#task_to_perform :selected').val()) {
+                    case 'wizard_agent':
+                        deployAgent();
+                    break;
+                    case 'check_mail_alert':
+                        openCreateAlertMailDialog();
+                    break;
+                    case 'check_connectivity':
+                        openCreateConnectivityDialog();
+                    break;
+                    case 'check_web':
+                        openCreateModulesDialog();
+                    break;
+                    case 'check_net':
+                        openCreateBasicNetDialog();
+                    break;
+                };
+            }
+        });
 
-        document.getElementById("button-btn_check_net_conf").setAttribute(
-            'onclick',
-            'openCreateBasicNetDialog()'
-        );
-
-        document.getElementById("button-btn_check_mail_alert_conf").setAttribute(
-            'onclick',
-            'openCreateAlertMailDialog()'
-        );
+        // Task to do buttons.
+        $('#button-go_wizard').click(function(){
+            if ($('#task_to_perform :selected').val() === '') {
+                alert("<?php echo __('You must chose an option'); ?>");
+            } else {
+                switch($('#task_to_perform :selected').val()) {
+                    case 'wizard_agent':
+                        deployAgent();
+                    break;
+                    case 'check_mail_alert':
+                        openCreateAlertMailDialog();
+                    break;
+                    case 'check_connectivity':
+                        openCreateConnectivityDialog();
+                    break;
+                    case 'check_web':
+                        openCreateModulesDialog();
+                    break;
+                    case 'check_net':
+                        openCreateBasicNetDialog();
+                    break;
+                };
+            }
+        });
 
         function configureUpdateManager() {
             window.location = '<?php echo ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'); ?>';
@@ -1052,29 +1238,173 @@ class WelcomeWindow extends Wizard
             window.location = '<?php echo ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_list'); ?>';
         }
 
+        // Task to do actions.
         function deployAgent() {
             window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&show_deploy_agent=1'); ?>';
         }
 
         function openCreateModulesDialog() {
-            window.location = '<?php echo ui_get_full_url('index.php?sec=wizard&sec2=godmode/wizards/task_to_perform&create_modules_dialog=1'); ?>';
+            $('#dialog_goliat').dialog({
+                title: '<?php echo __('Create WEB monitoring'); ?>',
+                resizable: true,
+                draggable: true,
+                modal: true,
+                close: false,
+                height: 375,
+                width: 480,
+                overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                }
+            })
+            .show();
         }
 
         function openCreateConnectivityDialog() {
-            window.location = '<?php echo ui_get_full_url('index.php?sec=wizard&sec2=godmode/wizards/task_to_perform&create_connectivity_dialog=1'); ?>';
+            $('#dialog_connectivity').dialog({
+                title: '<?php echo __('Create network monitoring'); ?>',
+                resizable: true,
+                draggable: true,
+                modal: true,
+                close: false,
+                height: 350,
+                width: 480,
+                overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                }
+            })
+            .show();
         }
 
         function openCreateBasicNetDialog() {
-            window.location = '<?php echo ui_get_full_url('index.php?sec=wizard&sec2=godmode/wizards/task_to_perform&create_net_scan_dialog=1'); ?>';
+            $('#dialog_basic_net').dialog({
+                title: '<?php echo __('Discover my network'); ?>',
+                resizable: true,
+                draggable: true,
+                modal: true,
+                close: false,
+                height: 200,
+                width: 480,
+                overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                }
+            })
+            .show();
         }
 
         function openCreateAlertMailDialog() {
-            window.location = '<?php echo ui_get_full_url('index.php?sec=wizard&sec2=godmode/wizards/task_to_perform&create_alert_mail_dialog=1'); ?>';
+            $('#dialog_alert_mail').dialog({
+                title: '<?php echo __('Create email alert'); ?>',
+                resizable: true,
+                draggable: true,
+                modal: true,
+                close: false,
+                height: 350,
+                width: 480,
+                overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                }
+            })
+            .show();
         }
 
-        function cierre_dialog(){
-            this.dialog("close");
-        }
+        $('#button-create_goliat').click(function(){
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "include/ajax/task_to_perform.php",
+                data: {
+                    check_web: 1,
+                    id_group: $('#id_group :selected').val(),
+                    module_name: $('#text-module_name').val(),
+                    text_to_search: $('#text-text_to_search').val(),
+                    url_goliat: $('#text-url_goliat').val(),
+                },
+                success: function(data) {
+                    if (data !== 0) {
+                        data = data.replace(/(\r\n|\n|\r)/gm, "");
+                        console.log(data);
+                        $('body').append(data);
+                        // Close dialog
+                        $('.ui-dialog-titlebar-close').trigger('click');
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $('#button-create_conectivity').click(function(){
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "include/ajax/task_to_perform.php",
+                data: {
+                    check_connectivity: 1,
+                    id_group: $('#id_group :selected').val(),
+                    ip_target: $('#text-ip_target').val(),
+                    agent_name: $('#text-agent_name').val(),
+                },
+                success: function(data) {
+                    if (data !== 0) {
+                        data = data.replace(/(\r\n|\n|\r)/gm, "");
+                        console.log(data);
+                        $('body').append(data);
+                        // Close dialog
+                        $('.ui-dialog-titlebar-close').trigger('click');
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $('#button-basic_net').click(function(){
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "include/ajax/task_to_perform.php",
+                data: {
+                    create_net_scan: 1,
+                    ip_target: $('#text-ip_target').val(),
+                },
+                success: function(data) {
+                    if (data !== 0) {
+                        data = data.replace(/(\r\n|\n|\r)/gm, "");
+                        console.log(data);
+                        $('body').append(data);
+                        // Close dialog
+                        $('.ui-dialog-titlebar-close').trigger('click');
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $('#button-alert_mail').click(function(){
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "include/ajax/task_to_perform.php",
+                data: {
+                    create_mail_alert: 1,
+                    id_condition: $('#text-ip_target').val(),
+                    id_agent_module: $('#text-ip_target').val(),
+                },
+                success: function(data) {
+                    if (data !== 0) {
+                        data = data.replace(/(\r\n|\n|\r)/gm, "");
+                        console.log(data);
+                        $('body').append(data);
+                        // Close dialog
+                        $('.ui-dialog-titlebar-close').trigger('click');
+                        return false;
+                    }
+                }
+            });
+        });
+
     </script>
         <?php
         return ob_get_clean();

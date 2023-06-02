@@ -172,16 +172,7 @@ if ($access_console_node === true) {
         $sub['wizard']['text'] = __('Configuration wizard');
         $sub['wizard']['id'] = 'conf_wizard';
         $sub['wizard']['type'] = 'direct';
-        $sub['wizard']['subtype'] = 'nolink';
-        $sub2 = [];
-        if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
-            $sub2['godmode/wizards/mini_diagnosis']['text'] = __('Mini-diagnosis');
-            $sub2['godmode/wizards/mini_diagnosis']['id'] = 'mini_diagnosis';
-        }
-
-        $sub2['godmode/wizards/task_to_perform']['text'] = __('Tasks to perform');
-        $sub2['godmode/wizards/task_to_perform']['id'] = 'task_to_perform';
-        $sub['wizard']['sub2'] = $sub2;
+        $sub['wizard']['subtype'] = 'nolink_no_arrow';
     }
 
     if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
@@ -629,3 +620,55 @@ if ((bool) $config['pure'] === false) {
 }
 
 echo '<div id="about-div"></div>';
+// Need to be here because the translate string.
+if (check_acl($config['id_user'], $group, 'AW')) {
+    ?>
+<script type="text/javascript">
+$("#conf_wizard").click(function() {
+    $("#conf_wizard").addClass("selected");
+
+    if (!$("#welcome_modal_window").length) {
+        $(document.body).append('<div id="welcome_modal_window"></div>');
+        $(document.body).append(
+            $('<link rel="stylesheet" type="text/css" />').attr(
+                "href",
+                "include/styles/new_installation_welcome_window.css"
+            )
+        );
+    }
+
+    load_modal({
+        target: $('#welcome_modal_window'),
+        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+        modal: {
+            title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
+            cancel: '<?php echo __('Do not show anymore'); ?>',
+            ok: '<?php echo __('Close'); ?>'
+        },
+        onshow: {
+            page: 'include/ajax/welcome_window',
+            method: 'loadWelcomeWindow',
+        },
+        oncancel: {
+            page: 'include/ajax/welcome_window',
+            title: "<?php echo __('Cancel Configuration Window'); ?>",
+            method: 'cancelWelcome',
+            confirm: function (fn) {
+                confirmDialog({
+                    title: '<?php echo __('Are you sure?'); ?>',
+                    message: '<?php echo __('Are you sure you want to cancel this tutorial?'); ?>',
+                    ok: '<?php echo __('OK'); ?>',
+                    cancel: '<?php echo __('Cancel'); ?>',
+                    onAccept: function() {
+                        // Continue execution.
+                        fn();
+                    }
+                })
+            }
+        }
+    });
+});
+</script>
+
+    <?php
+}

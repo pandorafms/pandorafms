@@ -88,11 +88,27 @@
 }
 
 #li-div_diagnosis,
-#li-div_task_todo {
+#li-div_task_todo,
+#li-div_wizard_agent {
   border-left: unset !important;
 }
 
 #div_diagnosis > label,
 #div_task_todo > label {
   font-weight: bold;
+}
+
+button.buttonButton.onlyIcon.fail,
+button.submitButton.onlyIcon.fail {
+  mask: url(../../images/fail@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
+}
+
+.select2-container .select2-container--default .select2-container--open {
+  z-index: 2000;
+}
+
+#div_wizard_agent > .select2 {
+  width: 75% !important;
+  max-width: 75% !important;
 }

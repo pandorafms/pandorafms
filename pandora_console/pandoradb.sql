@@ -3742,20 +3742,6 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
--- -----------------------------------------------------
--- Table `tnetwork_matrix`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `source` VARCHAR(60) DEFAULT '',
-  `destination` VARCHAR(60) DEFAULT '',
-  `utimestamp` BIGINT DEFAULT 0,
-  `bytes` INT UNSIGNED DEFAULT 0,
-  `pkts` INT UNSIGNED DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE (`source`, `destination`, `utimestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 ;
-
 -- ---------------------------------------------------------------------
 -- Table `user_task`
 -- ---------------------------------------------------------------------

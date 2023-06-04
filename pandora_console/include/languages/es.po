@@ -40018,10 +40018,6 @@ msgstr "Interpolación de la compactación en horas (1 bueno - 20 malo)"
 msgid "Max. days before delete old messages"
 msgstr "Núm. máx. de días antes de borrar mensajes antiguos"
 
-#: ../../godmode/setup/performance.php:549 ../../include/functions_config.php:932
-msgid "Max. days before delete old network matrix data"
-msgstr "Núm. máx. de días antes de borrar datos de matriz antiguos"
-
 #: ../../godmode/setup/performance.php:565 ../../include/functions_config.php:923
 msgid "Max. days before delete inventory data"
 msgstr "Nº de días máximo antes del borrado de datos de inventario"

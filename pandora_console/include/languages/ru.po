@@ -36535,10 +36535,6 @@ msgstr "Максимальное количество дней до удален
 msgid "Max. days before delete old messages"
 msgstr "Максимальное количество дней до удаления старых сообщений"
 
-#: ../../include/functions_config.php:864 ../../godmode/setup/performance.php:485
-msgid "Max. days before delete old network matrix data"
-msgstr "Максимальное количество дней до удаления старых данных сетевой матрицы"
-
 #: ../../include/functions_config.php:868 ../../godmode/setup/performance.php:599
 msgid "Graph container - Max. Items"
 msgstr "Графический контейнер - Макс. Элементы"

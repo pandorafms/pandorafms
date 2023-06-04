@@ -36556,10 +36556,6 @@ msgstr "Màxim de dies abans de suprimir les dades de l'inventari"
 msgid "Max. days before delete old messages"
 msgstr "Màxims dies abans de suprimir missatges antics"
 
-#: ../../include/functions_config.php:864 ../../godmode/setup/performance.php:485
-msgid "Max. days before delete old network matrix data"
-msgstr "Màxim de dies abans de suprimir les dades antigues de la matriu de xarxa"
-
 #: ../../include/functions_config.php:868 ../../godmode/setup/performance.php:599
 msgid "Graph container - Max. Items"
 msgstr "Contenidor de gràfics - Màxims. Elements"

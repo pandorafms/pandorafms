@@ -35863,10 +35863,6 @@ msgstr "删除库存数据前的最大日期"
 msgid "Max. days before delete old messages"
 msgstr "删除旧邮件前的最大日期"
 
-#: ../../include/functions_config.php:864 ../../godmode/setup/performance.php:485
-msgid "Max. days before delete old network matrix data"
-msgstr "删除旧网络矩阵数据前的最大日期"
-
 #: ../../include/functions_config.php:868 ../../godmode/setup/performance.php:599
 msgid "Graph container - Max. Items"
 msgstr "图形容器 - 最大项目"

@@ -39389,10 +39389,6 @@ msgstr "データ縮小時の丸め込み単位時間 (1〜20)"
 msgid "Max. days before delete old messages"
 msgstr "古いメッセージの保持日数"
 
-#: ../../godmode/setup/performance.php:549 ../../include/functions_config.php:932
-msgid "Max. days before delete old network matrix data"
-msgstr "ネットワークマトリックスデータ保持日数"
-
 #: ../../godmode/setup/performance.php:565 ../../include/functions_config.php:923
 msgid "Max. days before delete inventory data"
 msgstr "インベントリデータの保持日数"

@@ -546,7 +546,7 @@ $table->data[6][0] = html_print_label_input_block(
 );
 
 if (enterprise_installed()) {
-    $table->data[7][0] = html_print_label_input_block(
+    $table->data[6][1] = html_print_label_input_block(
         __('Max. days before delete inventory data'),
         html_print_input_text(
             'inventory_purge',

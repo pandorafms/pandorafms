@@ -5389,6 +5389,8 @@ sub cli_get_agents_id_name_by_alias() {
 	my @agents;
 	my $where_value;
 
+	$agent_alias =~ s/ /&#x20;/g;
+
 	if($strict eq 'strict') {
 		$where_value = $agent_alias;
 	} else {
@@ -5404,14 +5406,14 @@ sub cli_get_agents_id_name_by_alias() {
 		print "[ERROR] No agents retrieved.\n\n";
 	} else {
 		if(is_metaconsole($conf) == 1) {
-			print "alias, id_agente, id_tagente, id_server, server_name\n";
+			print "id_agente, alias, id_tagente, id_server, server_name\n";
 
 				foreach my $agent (@agents) {
 			
-				print safe_output($agent->{'alias'}).", ".$agent->{'id_agente'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
+				print safe_output($agent->{'id_agente'}).", ".$agent->{'alias'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
 			}
 		} else {
-			print "alias, id_agente\n";
+			print "id_agente, alias\n";
 
 			foreach my $agent (@agents) {
 				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'})."\n";

@@ -965,7 +965,7 @@ foreach ($fields as $field) {
             true
         );
     } else if ($field['is_link_enabled']) {
-        list($link_text, $link_url) = json_decode($custom_value, true);
+        list($link_text, $link_url) = json_decode(io_safe_output($custom_value), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $link_text = '';

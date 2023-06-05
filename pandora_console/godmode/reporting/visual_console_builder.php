@@ -635,15 +635,20 @@ switch ($activeTab) {
                 } else {
                     if (is_metaconsole() === true) {
                         $agents_ids = [];
+                        $servers_ids = [];
                         foreach ($id_agents as $id_agent_id) {
                             $server_and_agent = explode('|', $id_agent_id);
 
                             $agents_ids[] = $server_and_agent[1];
+                            $servers_ids[] = $server_and_agent[0];
                         }
 
                         $rows = db_get_all_rows_filter(
                             'tmetaconsole_agent',
-                            ['id_tagente' => $agents_ids]
+                            [
+                                'id_tagente'            => $agents_ids,
+                                'id_tmetaconsole_setup' => $servers_ids,
+                            ]
                         );
 
                         $agents = [];
@@ -688,7 +693,9 @@ switch ($activeTab) {
 
                                     foreach ($modules_serial as $data_serialized) {
                                         $data = explode('|', $data_serialized);
-                                        $id_modules[] = $data[0];
+                                        if ($id_server == $data[2]) {
+                                            $id_modules[] = $data[0];
+                                        }
                                     }
                                 }
                             } else {

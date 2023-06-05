@@ -255,17 +255,7 @@ foreach ($servers as $server) {
 
         if (($names_servers[$safe_server_name] === true) && ($server['type'] === 'data' || $server['type'] === 'enterprise satellite')) {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext.'&tab=agent_editor').'">';
-            $data[8] .= html_print_image(
-                'images/agents@svg.svg',
-                true,
-                [
-                    'title' => __('Manage server conf'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            );
-            $data[8] .= '</a>';
-
-            $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext).'">';
+            $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext).'&tab=advanced_editor">';
             $data[8] .= html_print_image(
                 'images/remote-configuration@svg.svg',
                 true,

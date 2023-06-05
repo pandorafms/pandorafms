@@ -1423,6 +1423,9 @@ sub start_log (;$) {
 	# Open it
 	if ($Conf{'logfile'} eq 'syslog' && eval { Sys::Syslog->can('openlog') }) {
 		openlog('pandora_agent', 'nowait', 'daemon');
+	} elsif($Conf{'logfile'} eq 'syslog') {
+		# Fallback if syslog is not available
+
 	} else {
 		open ($LogFileFH, "> $Conf{'logfile'}") or error ("Could not open log file $Conf{'logfile'} for writing: $!.");
 		print "Logging to $Conf{'logfile'}\n" if (!defined ($quiet));
@@ -1433,10 +1436,10 @@ sub start_log (;$) {
 # Rotates the agent logfile.
 ################################################################################
 sub rotate_log () {
-	if ($Conf{'logfile'} eq 'syslog' && eval { Sys::Syslog->can('syslog') }) {
-		# No action needed
+	if ($Conf{'logfile'} eq 'syslog') {
+		# No action needed && no needed syslog fallback.
 		return;
-	} else {
+	}else {
 		if ($Conf{'logrotate'} < 0){
 			$Conf{'logrotate'} = DEFAULT_LOG_ROTATE;
 		}
@@ -1458,6 +1461,9 @@ sub rotate_log () {
 sub stop_log () {
 	if ($Conf{'logfile'} eq 'syslog' && eval { Sys::Syslog->can('closelog') }) {
 		closelog();
+	} elsif($Conf{'logfile'} eq 'syslog') {
+		# Fallback if syslog is not available
+		
 	} else {
 		close ($LogFileFH);
 	}
@@ -1473,6 +1479,9 @@ sub log_message ($$;$) {
 		print $dest strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
 	} elsif ($Conf{'logfile'} eq 'syslog' && eval { Sys::Syslog->can('syslog') }) {
 		syslog('info', $msg);
+	} elsif($Conf{'logfile'} eq 'syslog') {
+		# Fallback if syslog is not available
+		
 	} else {
 		#Trying to write into log file to test its writable
 		syswrite ($LogFileFH, "");

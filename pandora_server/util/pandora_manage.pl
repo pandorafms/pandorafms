@@ -5384,12 +5384,10 @@ sub cli_get_agent_status() {
 ##############################################################################
 
 sub cli_get_agents_id_name_by_alias() {
-	my $agent_alias = @ARGV[2];
+	my $agent_alias = safe_input(@ARGV[2]);
 	my $strict = @ARGV[3];
 	my @agents;
 	my $where_value;
-
-	$agent_alias =~ s/ /&#x20;/g;
 
 	if($strict eq 'strict') {
 		$where_value = $agent_alias;

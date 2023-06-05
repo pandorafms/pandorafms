@@ -1309,6 +1309,10 @@ class WelcomeWindow extends Wizard
                 }
             })
             .show();
+
+            $('#text-id_agent').autocomplete({
+                appendTo: '#dialog_alert_mail'
+            });
         }
 
         $('#button-create_goliat').click(function(){
@@ -1389,8 +1393,8 @@ class WelcomeWindow extends Wizard
                 url: "include/ajax/task_to_perform.php",
                 data: {
                     create_mail_alert: 1,
-                    id_condition: $('#text-ip_target').val(),
-                    id_agent_module: $('#text-ip_target').val(),
+                    id_condition: $('#id_condition').val(),
+                    id_agent_module: $('#id_agent_module').val(),
                 },
                 success: function(data) {
                     if (data !== 0) {

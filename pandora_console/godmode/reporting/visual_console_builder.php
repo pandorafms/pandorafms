@@ -693,7 +693,9 @@ switch ($activeTab) {
 
                                     foreach ($modules_serial as $data_serialized) {
                                         $data = explode('|', $data_serialized);
-                                        $id_modules[] = $data[0];
+                                        if ($id_server == $data[2]) {
+                                            $id_modules[] = $data[0];
+                                        }
                                     }
                                 }
                             } else {

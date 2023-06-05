@@ -3676,6 +3676,10 @@ function get_modules_agents(
                         implode(',', $id_agents)
                     )
                 );
+
+                if ($rows === false) {
+                    $rows = [];
+                }
             } else {
                 $rows = [];
             }

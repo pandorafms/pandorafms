@@ -345,28 +345,9 @@ class WelcomeWindow extends Wizard
             'class'    => 'modal',
         ];
 
-        $logo_url = 'images/custom_logo/pandora_logo_head_white_bg.png';
-
         if (enterprise_installed() === true) {
             $logo_url = ENTERPRISE_DIR.'/'.$logo_url;
         }
-
-        $inputs = [
-            [
-                'class'         => 'white_box',
-                'block_content' => [
-                    [
-                        'class'     => 'centered_full',
-                        'arguments' => [
-                            'type'   => 'image',
-                            'src'    => $logo_url,
-                            'value'  => 1,
-                            'return' => true,
-                        ],
-                    ],
-                ],
-            ],
-        ];
 
         if (check_acl($config['id_user'], 0, 'PM')) {
             $flag_um = false;

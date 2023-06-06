@@ -872,6 +872,7 @@ class ConsoleSupervisor
             case 'NOTIF.CRON.CONFIGURED':
             case 'NOTIF.ALLOWOVERRIDE.MESSAGE':
             case 'NOTIF.HAMASTER.MESSAGE':
+            case 'NOTIF.MYSQL.VERSION':
 
             default:
                 // NOTIF.SERVER.STATUS.
@@ -1839,7 +1840,7 @@ class ConsoleSupervisor
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.PHP.VERSION');
+            $this->cleanNotifications('NOTIF.MYSQL.VERSION');
         }
     }
 

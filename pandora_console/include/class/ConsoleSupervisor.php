@@ -278,6 +278,12 @@ class ConsoleSupervisor
         if ((bool) enterprise_installed() === true) {
             $this->checkLibaryError();
         }
+
+        /*
+         * Check MYSQL Support Version
+         */
+
+        $this->checkMYSQLSettings();
     }
 
 
@@ -559,6 +565,12 @@ class ConsoleSupervisor
         if ((bool) enterprise_installed() === true) {
             $this->checkLibaryError();
         }
+
+        /*
+         * Check MYSQL Support Version
+         *
+         */
+        $this->checkMYSQLSettings();
 
     }
 
@@ -1790,6 +1802,45 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.SERIALIZE_PRECISION');
         }
 
+        if (version_compare('8.1', PHP_VERSION) >= 0) {
+            $url = 'https://www.php.net/supported-versions.php';
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.PHP.VERSION',
+                    'title'   => __('PHP UPDATE REQUIRED'),
+                    'message' => __('You should update your PHP version because it will be out of official support').'<br>'.__('Current PHP version: ').PHP_VERSION,
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PHP.VERSION');
+        }
+    }
+
+
+    /**
+     * Checks if MYSQL version is supported.
+     *
+     * @return void
+     */
+    public function checkMYSQLSettings()
+    {
+        global $config;
+
+        $mysql_version = $config['dbconnection']->server_info;
+        if (version_compare('8.0', $mysql_version) <= 0) {
+            $url = 'https://www.mysql.com/support/eol-notice.html';
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.MYSQL.VERSION',
+                    'title'   => __('MYSQL UPDATE REQUIRED'),
+                    'message' => __('You should update your MYSQL version because it will be out of official support').'<br>'.__('Current MYSQL version: ').$mysql_version,
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PHP.VERSION');
+        }
     }
 
 

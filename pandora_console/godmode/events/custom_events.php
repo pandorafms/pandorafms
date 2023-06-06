@@ -125,7 +125,7 @@ foreach ($fields_available as $key => $available) {
 }
 
 $table->data[0][0] = '<b>'.__('Fields available').'</b>';
-$table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
+$table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px; height: auto');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     'images/arrow@svg.svg',
     true,
@@ -160,7 +160,7 @@ $table->data[1][2] = '<div class="flex_justify">'.html_print_select(
     false,
     '',
     false,
-    'width: 300px'
+    'width: 300px; height: auto'
 );
 
 $table->data[1][2] .= '<div id="sort_arrows" class="flex-column">';

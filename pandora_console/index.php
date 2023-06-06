@@ -1165,6 +1165,26 @@ if ((bool) ($config['maintenance_mode'] ?? false) === true
     exit('</html>');
 }
 
+if (empty($_GET['sec']) === true) {
+    // PHP Version.
+    if (version_compare('8.1', PHP_VERSION) >= 0) {
+        ui_print_warning_message(
+            __(
+                'You should update your PHP version because it will be out of official support.'
+            ).'</br>'.__('Current PHP version: ').PHP_VERSION
+        );
+    }
+
+    // MYSQL Version.
+    $mysql_version = explode(' ', mysqli_get_client_info())[1];
+    if (version_compare('8.0', $mysql_version) >= 0) {
+        ui_print_warning_message(
+            __(
+                'You should update your MYSQL version because it will be out of official support.'
+            ).'</br>'.__('Current MYSQL version: ').$mysql_version
+        );
+    }
+}
 
 // Pure.
 if ($config['pure'] == 0) {

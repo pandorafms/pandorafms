@@ -135,7 +135,29 @@ sub pandora_purgedb ($$$) {
 			}
 		}
 	}
+
+	# Delete old disabled agents
+	if (defined ($conf->{'_delete_disabled_agents'}) && $conf->{'_delete_disabled_agents'} > 0) {
 		
+		# TODO: Verificar este método para seleccionar los agentes eliminables.
+		# Usando último contacto o último contacto remoto y la columna de "disabled". ¿Se debe agregar una columna adicional?
+		# ¿Usar la función "days" o utilizar una solución desde Perl?
+
+		$removable_agents = get_db_value ($dbh, 'SELECT count(id_agente) as total FROM tagente WHERE disabled = 1 AND (ultimo_contacto < (NOW() - INTERVAL ? DAY) AND ultimo_contacto_remoto < (NOW() - INTERVAL ? DAY));', $conf->{'_delete_disabled_agents'},$conf->{'_delete_disabled_agents'});
+
+		if (defined ($removable_agents) && $removable_agents > 0){
+			log_message('PURGE', "Deleting old disabled agents (More than " . $conf->{'_delete_disabled_agents'} . " days).")
+
+			print("Founded ${removable_agents} to delete.")
+
+			# Verificar que cuando se borren agentes se borren módulos asociados a ese agente.
+			# Verificar que se borren alertas asociadas a módulos del agente.
+			# Verificar que se borren elementos en consolas visuales, en widgets, informes. 
+			# db_do ($dbh, "DELETE FROM tagente WHERE WHERE disabled = 1 AND (ultimo_contacto < (NOW() - INTERVAL $conf->{'_delete_disabled_agents'} DAY) AND ultimo_contacto_remoto < (NOW() - INTERVAL $conf->{'_delete_disabled_agents'} DAY));");
+		
+		} 
+	}
+
 	# Delete old data
 	if ($conf->{'_days_purge'} > 0) {
 
@@ -694,6 +716,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_days_delete_not_initialized'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_not_initialized'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
+	$conf->{'_delete_disabled_agents'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_disabled_agents'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
 	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_network_matrix'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");

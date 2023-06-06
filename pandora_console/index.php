@@ -1165,6 +1165,7 @@ if ((bool) ($config['maintenance_mode'] ?? false) === true
     exit('</html>');
 }
 
+
 // Pure.
 if ($config['pure'] == 0) {
     // Menu container prepared to autohide menu.

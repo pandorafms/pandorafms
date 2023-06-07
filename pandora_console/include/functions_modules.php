@@ -743,7 +743,8 @@ function modules_create_agent_module(
     string $name,
     array $values=[],
     bool $disableACL=false,
-    $tags=false
+    $tags=false,
+    $use_agent_ip=false,
 ) {
     global $config;
 
@@ -783,6 +784,10 @@ function modules_create_agent_module(
 
     if ($exists === true) {
         return ERR_EXIST;
+    }
+
+    if ($use_agent_ip === true) {
+        $values['ip_target'] = agents_get_address($id_agent);
     }
 
     // Encrypt passwords.

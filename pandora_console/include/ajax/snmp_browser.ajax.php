@@ -182,6 +182,7 @@ try {
 
         if ($method == 'snmp_browser_create_modules') {
             // Get target ids from form.
+            $use_agent_ip = get_parameter('use_agent_ip', '');
             $id_items = get_parameter('id_item2', null);
             $id_target = null;
             if (empty($id_items) === false) {
@@ -209,7 +210,8 @@ try {
                 $module_target,
                 $snmp_conf_values,
                 $id_target,
-                $server_to_exec
+                $server_to_exec,
+                $use_agent_ip
             );
 
             // Return fail modules for error/success message.

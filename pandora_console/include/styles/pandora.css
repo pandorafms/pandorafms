@@ -650,6 +650,10 @@ select:-internal-list-box {
   display: inline-flex;
 }
 
+.align-center {
+  align-items: center;
+}
+
 .relative {
   position: relative;
 }
@@ -12225,4 +12229,26 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .toggle-traffic-graph {
   margin: 0px !important;
+}
+
+.combo-oid-button {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:first-child {
+  padding-bottom: 0px !important;
+}
+
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:last-child {
+  padding-top: 0px !important;
+}
+
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
+  width: 100% !important;
 }

@@ -1700,6 +1700,8 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
   `maintenance_mode` TEXT,
+  `grid_color` VARCHAR(45) NOT NULL DEFAULT '#cccccc',
+  `grid_size` VARCHAR(45) NOT NULL DEFAULT '10px',
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

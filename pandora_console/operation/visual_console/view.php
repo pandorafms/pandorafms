@@ -463,6 +463,68 @@ if ($pure === false) {
                 echo '</div>';
             }
 
+            echo '<div id ="grid-controls" class="flex-colum-center center_switch" style="visibility:hidden">';
+            echo html_print_label(__('Grid'), 'grid-mode', true);
+            echo '<div>';
+            echo html_print_checkbox_switch_extended('grid-mode', 1, false, $disabled_edit_mode, '', '', true, '', 'mrgn_lft-20px');
+            echo html_print_image(
+                'images/configuration@svg.svg',
+                true,
+                [
+                    'title'   => __('Grid style'),
+                    'class'   => 'main_menu_icon invert_filter invisible',
+                    'style'   => 'position: absolute; margin-left: 5px;',
+                    'id'      => 'grid_img',
+                    'onclick' => 'dialog_grid()',
+                ]
+            );
+            echo '</div>';
+            echo '</div>';
+
+            echo '<div id="dialog_grid" class="invisible">';
+            $table = new stdClass();
+            $table->width = '100%';
+            $table->class = 'filter-table-adv';
+            $table->size[0] = '50%';
+            $table->size[1] = '50%';
+            $table->data = [];
+            $table->data[0][0] = html_print_label_input_block(
+                __('Grid size'),
+                html_print_input_number(
+                    [
+                        'name'   => 'grid_size',
+                        'value'  => $visualConsoleData['grid_size'],
+                        'id'     => 'grid_size',
+                        'min'    => 2,
+                        'max'    => 50,
+                        'return' => true,
+                    ]
+                )
+            );
+
+            $table->data[0][1] = html_print_label_input_block(
+                __('Grid color'),
+                html_print_input_color(
+                    'grid_color',
+                    $visualConsoleData['grid_color'],
+                    'grid_color',
+                    'w100p',
+                    true
+                )
+            );
+
+            html_print_table($table);
+            html_print_submit_button(
+                __('Update'),
+                'grid_setup',
+                false,
+                [
+                    'icon'  => 'next',
+                    'class' => 'float-right',
+                ],
+            );
+            echo '</div>';
+
             echo '<div id="edit-mode-control" class="flex-colum-center center_switch">';
             echo html_print_label(__('Edit'), 'edit-mode', true);
             echo html_print_checkbox_switch('edit-mode', 1, false, true, $disabled_edit_mode);
@@ -768,15 +830,102 @@ if ($edit_capable === true) {
             visualConsoleManager.visualConsole.enableEditMode();
             visualConsoleManager.changeUpdateInterval(0);
             $('#edit-controls').css('visibility', '');
+            $('#grid-controls').css('visibility', '');
         } else {
             visualConsoleManager.visualConsole.disableEditMode();
             visualConsoleManager.visualConsole.unSelectItems();
             visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>); // To ms.
             $('#edit-controls').css('visibility', 'hidden');
+            $('#grid-controls').css('visibility', 'hidden');
+            $('input[name=grid-mode]').prop('checked', false);
+            $('#div-grid').remove();
         }
 
         resetInterval();
     });
+
+    $('input[name=grid-mode]').change(function(evente) {
+        if ($(this).prop('checked')) {
+            color = $('#grid_color').val();
+            size = $('#grid_size').val();
+            display_grid(color,size);
+            $('#grid_img').removeClass('invisible');
+        } else {
+            $('#div-grid').remove();
+            $('#grid_img').addClass('invisible');
+        }
+    });
+
+    $('#button-grid_setup').click(function(){
+        if(validate_size()){
+            color = $('#grid_color').val();
+            size = $('#grid_size').val();
+            display_grid(color,size);
+            $('#dialog_grid').dialog('close');
+            save_grid_style(color, size);
+        }
+    });
+
+    $('#grid_size').blur(function(){
+        validate_size();
+    });
+
+    function validate_size(){
+        if($('#grid_size').val()<2 || $('#grid_size').val()>50){
+            $('#grid_size').val('10');
+            alert("<?php echo __('The size should be between 2 and 50'); ?>");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function dialog_grid(){
+        $('#dialog_grid').dialog({
+            title: '<?php echo __('Grid style'); ?>',
+            resizable: true,
+            draggable: true,
+            modal: true,
+            close: false,
+            height: 200,
+            width: 480,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            }
+        })
+        .show();
+    }
+
+    function display_grid(color='#ccc', size='10'){
+        $('#div-grid').remove();
+        var grid = "<div id='div-grid' style='background-image: linear-gradient("+color+" .1em, transparent .1em), linear-gradient(90deg, "+color+", .1em, transparent .1em); background-size: "+size+"px "+size+"px;height: 100%;width: 100%;'></div>";
+        $('#visual-console-container').append(grid);
+    };
+
+    function save_grid_style(color, size){
+        const idVisualConsole = '<?php echo $visualConsoleId; ?>';
+        $.ajax({
+            type: "POST",
+            url: "ajax.php",
+            dataType: "json",
+            data: {
+                page: "include/ajax/visual_console.ajax",
+                update_grid_style: true,
+                color: color,
+                size: size,
+                idVisualConsole: idVisualConsole,
+            },
+            success: function (data) {
+                if(data.result) {
+                    alert("<?php echo __('Grid style saved.'); ?>");
+                }
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }
 
     // Enable/disable the maintenance mode.
     $('input[name=maintenance-mode]').click(function(event) {

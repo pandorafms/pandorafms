@@ -744,6 +744,7 @@ function inventory_get_datatable(
     if ($inventory_module_name[0] !== '0'
         && $inventory_module_name !== ''
         && $inventory_module_name !== 'all'
+        && $inventory_module_name !== '0'
     ) {
         array_push($where, "tmodule_inventory.name IN ('".implode("','", (array) $inventory_module_name)."')");
     }
@@ -807,7 +808,8 @@ function inventory_get_datatable(
         }
 
         foreach ($agent_data as $id_agent => $data_agent) {
-            $rows_tmp['agent'] = $data_agent['name_agent'];
+            $rows_tmp['agent'] = $data_agent[0]['name_agent'];
+
             foreach ($data_agent as $key => $agent_row) {
                 $data_agent[$key]['timestamp'] = $agent_row['last_update_timestamp'];
                 $data_agent[$key]['utimestamp'] = $agent_row['last_update'];

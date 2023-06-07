@@ -138,23 +138,13 @@ sub pandora_purgedb ($$$) {
 
 	# Delete old disabled agents
 	if (defined ($conf->{'_delete_disabled_agents'}) && $conf->{'_delete_disabled_agents'} > 0) {
-		
-		# TODO: Verificar este método para seleccionar los agentes eliminables.
-		# Usando último contacto o último contacto remoto y la columna de "disabled". ¿Se debe agregar una columna adicional?
-		# ¿Usar la función "days" o utilizar una solución desde Perl?
-
-		$removable_agents = get_db_value ($dbh, 'SELECT count(id_agente) as total FROM tagente WHERE disabled = 1 AND (ultimo_contacto < (NOW() - INTERVAL ? DAY) AND ultimo_contacto_remoto < (NOW() - INTERVAL ? DAY));', $conf->{'_delete_disabled_agents'},$conf->{'_delete_disabled_agents'});
+		my $where_clause = 'WHERE disabled = 1 AND modo != 2 AND (ultimo_contacto < (NOW() - INTERVAL ? DAY) AND ultimo_contacto_remoto < (NOW() - INTERVAL ? DAY))';
+		my $query = 'SELECT count(id_agente) as total FROM tagente ' . $where_clause;
+		my $removable_agents = get_db_value ($dbh, $query, $conf->{'_delete_disabled_agents'},$conf->{'_delete_disabled_agents'});
 
 		if (defined ($removable_agents) && $removable_agents > 0){
-			log_message('PURGE', "Deleting old disabled agents (More than " . $conf->{'_delete_disabled_agents'} . " days).")
-
-			print("Founded ${removable_agents} to delete.")
-
-			# Verificar que cuando se borren agentes se borren módulos asociados a ese agente.
-			# Verificar que se borren alertas asociadas a módulos del agente.
-			# Verificar que se borren elementos en consolas visuales, en widgets, informes. 
-			# db_do ($dbh, "DELETE FROM tagente WHERE WHERE disabled = 1 AND (ultimo_contacto < (NOW() - INTERVAL $conf->{'_delete_disabled_agents'} DAY) AND ultimo_contacto_remoto < (NOW() - INTERVAL $conf->{'_delete_disabled_agents'} DAY));");
-		
+			log_message('PURGE', "Deleting old disabled agents (More than " . $conf->{'_delete_disabled_agents'} . " days).");
+			db_do ($dbh, "DELETE FROM tagente " . $where_clause, $conf->{'_delete_disabled_agents'},$conf->{'_delete_disabled_agents'});
 		} 
 	}
 

@@ -667,20 +667,24 @@ class ConsoleSupervisor
      */
     public function checkAccessStatisticsPerformance()
     {
+        global $config;
+
         $total_agents = db_get_value('count(*)', 'tagente');
 
         if ($total_agents >= 200) {
-            db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
-            $this->notify(
-                [
-                    'type'    => 'NOTIF.ACCESSSTASTICS.PERFORMANCE',
-                    'title'   => __('Access statistics performance'),
-                    'message' => __(
-                        'Usage of agent access statistics IS NOT RECOMMENDED on systems with more than 200 agents due performance penalty'
-                    ),
-                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
-                ]
-            );
+            if ($config['agentaccess'] !== 0) {
+                db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.ACCESSSTASTICS.PERFORMANCE',
+                        'title'   => __('Access statistics performance'),
+                        'message' => __(
+                            'Usage of agent access statistics IS NOT RECOMMENDED on systems with more than 200 agents due performance penalty'
+                        ),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    ]
+                );
+            }
         } else {
             $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
         }

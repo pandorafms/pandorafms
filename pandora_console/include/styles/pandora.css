@@ -11524,6 +11524,12 @@ span.subsection_header_title.secondary {
   margin-left: 0px;
 }
 
+.table-about p span i {
+  color: #454545;
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .table-about p.about-last-p {
   padding-bottom: 17px;
 }

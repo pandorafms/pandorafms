@@ -138,13 +138,13 @@ sub pandora_purgedb ($$$) {
 
 	# Delete old disabled agents
 	if (defined ($conf->{'_delete_disabled_agents'}) && $conf->{'_delete_disabled_agents'} > 0) {
-		my $where_clause = 'WHERE disabled = 1 AND modo != 2 AND (ultimo_contacto < (NOW() - INTERVAL ? DAY) AND ultimo_contacto_remoto < (NOW() - INTERVAL ? DAY))';
+		my $where_clause = 'WHERE disabled = 1 AND modo != 2 AND ultimo_contacto < (NOW() - INTERVAL ? DAY)';
 		my $query = 'SELECT count(id_agente) as total FROM tagente ' . $where_clause;
-		my $removable_agents = get_db_value ($dbh, $query, $conf->{'_delete_disabled_agents'},$conf->{'_delete_disabled_agents'});
+		my $removable_agents = get_db_value ($dbh, $query, $conf->{'_delete_disabled_agents'});
 
 		if (defined ($removable_agents) && $removable_agents > 0){
 			log_message('PURGE', "Deleting old disabled agents (More than " . $conf->{'_delete_disabled_agents'} . " days).");
-			db_do ($dbh, "DELETE FROM tagente " . $where_clause, $conf->{'_delete_disabled_agents'},$conf->{'_delete_disabled_agents'});
+			db_do ($dbh, "DELETE FROM tagente " . $where_clause, $conf->{'_delete_disabled_agents'});
 		} 
 	}
 

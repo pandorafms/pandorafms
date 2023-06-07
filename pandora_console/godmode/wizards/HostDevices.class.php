@@ -1460,7 +1460,7 @@ class HostDevices extends Wizard
             }
 
             include_once $config['homedir'].'/include/class/CredentialStore.class.php';
-            $available_keys = CredentialStore::getKeys('CUSTOM');
+            $available_keys = CredentialStore::getKeys('WMI');
             if (check_acl($config['id_user'], 0, 'UM')) {
                 $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
                     'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox'
@@ -1482,7 +1482,7 @@ class HostDevices extends Wizard
                             'arguments' => [
                                 'type'     => 'select',
                                 'name'     => 'auth_strings[]',
-                                'fields'   => CredentialStore::getKeys('CUSTOM'),
+                                'fields'   => CredentialStore::getKeys('WMI'),
                                 'selected' => explode(
                                     ',',
                                     $this->task['auth_strings']

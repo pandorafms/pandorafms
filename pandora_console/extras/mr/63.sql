@@ -40,4 +40,6 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
 
 ALTER TABLE `talert_template_module_actions` ADD COLUMN `recovered` TINYINT NOT NULL DEFAULT 0;
 
+UPDATE tconfig SET value = 'Renaissance' WHERE token LIKE 'lts_name';
+
 COMMIT;

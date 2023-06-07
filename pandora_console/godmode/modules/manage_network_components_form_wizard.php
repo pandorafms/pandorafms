@@ -692,23 +692,19 @@ push_table_row($data, 'server-plugin-pluginRow-snmpRow');
 
 // The creation of this fields will be dynamically.
 $data = [];
-$data[0] = html_print_label_input_block(
-    'field0',
-    html_print_input_text_extended(
-        'field0_snmp_field',
-        '',
-        'field0_snmp_fields',
-        '',
-        30,
-        255,
-        '',
-        '',
-        '',
-        true
-    )
+$data[0] = 'field0';
+$data[1] = html_print_input_text_extended(
+    'field0_snmp_field',
+    '',
+    'field0_snmp_fields',
+    '',
+    30,
+    255,
+    '',
+    '',
+    '',
+    true
 );
-
-$data[1] = '';
 
 push_table_row($data, 'plugin-snmp-fields-dynamicMacroRow-pluginRow-snmpRow-0');
 
@@ -906,22 +902,19 @@ push_table_row($data, 'server-plugin-pluginRow-wmiRow');
 
 // The creation of this fields will be dynamically.
 $data = [];
-$data[0] = html_print_label_input_block(
-    'field0',
-    html_print_input_text_extended(
-        'field0_wmi_field',
-        '',
-        'field0_wmi_fields',
-        '',
-        30,
-        255,
-        '',
-        '',
-        '',
-        true
-    )
+$data[0] = 'field0';
+$data[1] = html_print_input_text_extended(
+    'field0_wmi_field',
+    '',
+    'field0_wmi_fields',
+    '',
+    30,
+    255,
+    '',
+    '',
+    '',
+    true
 );
-$data[1] = '';
 
 push_table_row($data, 'plugin-wmi-fields-dynamicMacroRow-pluginRow-wmiRow-0');
 

@@ -12239,16 +12239,19 @@ div.parent_graph > p.legend_background > table > tbody > tr {
   align-items: flex-start !important;
 }
 
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:first-child,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
   > td:first-child {
   padding-bottom: 0px !important;
 }
 
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:last-child,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
   > td:last-child {
   padding-top: 0px !important;
 }
 
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
 }

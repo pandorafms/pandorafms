@@ -33677,6 +33677,11 @@ msgstr "Compact interpolation in hours (1 = fine / 20 = bad)"
 msgid "Max. days before delete old messages"
 msgstr ""
 
+#: ../../godmode/setup/performance.php:511
+#: ../../include/functions_config.php:829
+msgid "Max. days before delete old network matrix data"
+msgstr ""
+
 #: ../../godmode/setup/performance.php:531
 msgid "Item limit for realtime reports"
 msgstr "Item limit for real-time reports"

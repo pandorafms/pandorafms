@@ -35817,6 +35817,11 @@ msgstr ""
 msgid "Max. days before delete old messages"
 msgstr ""
 
+#: ../../include/functions_config.php:864
+#: ../../godmode/setup/performance.php:485
+msgid "Max. days before delete old network matrix data"
+msgstr ""
+
 #: ../../include/functions_config.php:868
 #: ../../godmode/setup/performance.php:599
 msgid "Graph container - Max. Items"

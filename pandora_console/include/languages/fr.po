@@ -40145,6 +40145,10 @@ msgstr "Interpolation de compression en heures (1 Optimale-20 Mauvaise)"
 msgid "Max. days before delete old messages"
 msgstr "Max. jours avant de supprimer les anciens messages"
 
+#: ../../godmode/setup/performance.php:549 ../../include/functions_config.php:932
+msgid "Max. days before delete old network matrix data"
+msgstr "Max. jours avant de supprimer les anciennes données de la matrice réseau"
+
 #: ../../godmode/setup/performance.php:565 ../../include/functions_config.php:923
 msgid "Max. days before delete inventory data"
 msgstr "Nombre de jours maximum avant la suppression de données d'inventaire"

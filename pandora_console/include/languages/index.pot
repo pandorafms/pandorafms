@@ -39282,6 +39282,11 @@ msgstr ""
 msgid "Max. days before delete old messages"
 msgstr ""
 
+#: ../../godmode/setup/performance.php:549
+#: ../../include/functions_config.php:932
+msgid "Max. days before delete old network matrix data"
+msgstr ""
+
 #: ../../godmode/setup/performance.php:565
 #: ../../include/functions_config.php:923
 msgid "Max. days before delete inventory data"

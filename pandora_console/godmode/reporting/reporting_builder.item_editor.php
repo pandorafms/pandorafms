@@ -4139,7 +4139,7 @@ function print_SLA_list($width, $action, $idItem=null)
                 </th>
                 <th class="header sla_list_sla_limit_col" scope="col">
                 <?php
-                echo __('SLA Limit (%)');
+                echo __('SLA Limit (%)').ui_print_help_tip(__('Enter possible range of values in SLA.'), true);
                 ?>
                 </th>
                 <th class="header sla_list_action_col" scope="col">
@@ -4544,7 +4544,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                 <input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text">
                             </td>
                             <td class="sla_list_sla_limit_col">
-                                <input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text">
+                                <input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text" required>
                             </td>
                             <td class="sla_list_action_col center">
                                 <a href="javascript: addSLARow();">
@@ -5846,7 +5846,7 @@ function addSLARow() {
 
     if ((((idAgent != '') && (idAgent > 0))
         && ((idModule != '') && (idModule > 0)))
-        || serviceId != null)
+        && (slaLimit != '') || serviceId != null)
     {
             if (nameAgent != '') {
                 //Truncate nameAgent

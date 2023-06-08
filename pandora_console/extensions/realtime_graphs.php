@@ -220,7 +220,7 @@ function pandora_realtime_graphs()
         false,
         '',
         'white-box-content',
-        'box-flat white_table_graph fixed_filter_bar'
+        'box-flat white_table_graph fixed_filter_bar top_0px_important mrgn_btn_35px_imp'
     );
 
     $chart[time()]['graph'] = '0';

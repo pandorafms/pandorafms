@@ -149,8 +149,11 @@ if (is_ajax() === true) {
                         $tmp->alias .= $server['server_name'].' &raquo; ';
                     }
 
-                    $id = !empty($agent['id_agente']) ? $agent['id_agente'] : $agent['id_agent'];
-                    $id = !empty($id) ? $id : $agent['id_tagente'];
+                    if (is_metaconsole() === true) {
+                        $id = !empty($agent['id_agente']) ? $agent['id_agente'] : $agent['id_tagente'];
+                    } else {
+                        $id = !empty($agent['id_agente']) ? $agent['id_agente'] : $agent['id_agent'];
+                    }
 
                     $tmp->alias .= $agent['alias'];
                     $ip = '<em>'.__('N/A').'</em>';

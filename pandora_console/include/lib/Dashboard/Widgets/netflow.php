@@ -298,6 +298,7 @@ class Netflow extends Widget
      */
     public function load()
     {
+        ui_require_css_file('netflow_widget', 'include/styles/', true);
         global $config;
 
         $output = '';
@@ -333,7 +334,7 @@ class Netflow extends Widget
                 $config['style'],
                 true
             );
-            $style = 'height: 100%; border: none;';
+            $style = 'width:100%; height: 100%; border: none;';
             if ($this->values['chart_type'] !== 'netflow_area') {
                 $style .= ' width: 95%;';
             }

@@ -1,0 +1,9 @@
+.menu_graph {
+  display: none;
+}
+.parent_graph {
+  width: 97% !important;
+}
+#image_hide_show_labels {
+  display: none !important;
+}

@@ -362,7 +362,6 @@ if ($is_metaconsole === true) {
 if ($is_metaconsole === true) {
     $nodo_image_url = $config['homeurl'].'/images/node.png';
     if ($id_server > 0) {
-        // $agent_selected = io_safe_output($inventory_agent), true);
         $connection = metaconsole_get_connection_by_id($id_server);
         $agents_node = metaconsole_get_agents_servers($connection['server_name'], $inventory_id_group);
         $node = metaconsole_get_servers($id_server);
@@ -769,14 +768,14 @@ if ($inventory_module !== 'basic') {
 
             foreach ($nodos as $nodo) {
                 $agents = '';
-                $data = [];
+
                 foreach ($nodo['data'] as $agent_rows) {
                     $modules = '';
 
                     foreach ($agent_rows['row'] as $key => $row) {
                         $columns = explode(';', io_safe_output($row['data_format']));
                         array_push($columns, 'Timestamp');
-
+                        $data = [];
                         $data_rows = explode(PHP_EOL, $row['data']);
                         foreach ($data_rows as $data_row) {
                             // Exclude results don't match filter.
@@ -796,35 +795,58 @@ if ($inventory_module !== 'basic') {
                                 array_push($data, (object) $row_tmp);
                             }
                         }
+
+                        $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+                        $table = ui_print_datatable(
+                            [
+                                'id'                  => $id_table,
+                                'class'               => 'info_table w100p',
+                                'style'               => 'width: 99%',
+                                'columns'             => $columns,
+                                'column_names'        => $columns,
+                                'no_sortable_columns' => [],
+                                'data_element'        => $data,
+                                'searching'           => true,
+                                'dom_elements'        => 'ftip',
+                                'order'               => [
+                                    'field'     => $columns[0],
+                                    'direction' => 'asc',
+                                ],
+                                'zeroRecords'         => __('No inventory found'),
+                                'emptyTable'          => __('No inventory found'),
+                                'return'              => true,
+                                'default_pagination'  => 10,
+                                'no_sortable_columns' => [-1],
+                            ]
+                        );
+
+                        $modules .= ui_toggle(
+                            $table,
+                            '<span class="title-blue">'.$row['name'].'</span>',
+                            '',
+                            '',
+                            true,
+                            true,
+                            '',
+                            'white-box-content w100p',
+                            'box-shadow white_table_graph w100p',
+                            'images/arrow_down_green.png',
+                            'images/arrow_right_green.png',
+                            false,
+                            false,
+                            false,
+                            '',
+                            '',
+                            null,
+                            null,
+                            false,
+                            $id_table
+                        );
                     }
 
-                    $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
-                    $table = ui_print_datatable(
-                        [
-                            'id'                  => $id_table,
-                            'class'               => 'info_table w100p',
-                            'style'               => 'width: 99%',
-                            'columns'             => $columns,
-                            'column_names'        => $columns,
-                            'no_sortable_columns' => [],
-                            'data_element'        => $data,
-                            'searching'           => true,
-                            'dom_elements'        => 'ftip',
-                            'order'               => [
-                                'field'     => $columns[0],
-                                'direction' => 'asc',
-                            ],
-                            'zeroRecords'         => __('No inventory found'),
-                            'emptyTable'          => __('No inventory found'),
-                            'return'              => true,
-                            'default_pagination'  => 10,
-                            'no_sortable_columns' => [-1],
-                        ]
-                    );
-
-                    $modules .= ui_toggle(
-                        $table,
-                        '<span class="title-blue">'.$row['name'].'</span>',
+                    $agents .= ui_toggle(
+                        $modules,
+                        $agent_rows['agent'],
                         '',
                         '',
                         true,
@@ -832,31 +854,8 @@ if ($inventory_module !== 'basic') {
                         '',
                         'white-box-content w100p',
                         'box-shadow white_table_graph w100p',
-                        'images/arrow_down_green.png',
-                        'images/arrow_right_green.png',
-                        false,
-                        false,
-                        false,
-                        '',
-                        '',
-                        null,
-                        null,
-                        false,
-                        $id_table
                     );
                 }
-
-                $agents .= ui_toggle(
-                    $modules,
-                    $agent_rows['agent'],
-                    '',
-                    '',
-                    true,
-                    true,
-                    '',
-                    'white-box-content w100p',
-                    'box-shadow white_table_graph w100p',
-                );
 
                 $node_name = $nodo['server_name'];
                 if ($count[$nodo['server_name']] > 1) {
@@ -882,9 +881,10 @@ if ($inventory_module !== 'basic') {
 
             foreach ($nodos as $nodo_key => $nodo) {
                 $agents = '';
-                $data = [];
+
                 foreach ($nodo['data'] as $module_key => $module_rows) {
                     $agent = '';
+                    $data = [];
                     foreach ($module_rows as $row) {
                         $columns = explode(';', io_safe_output($row['data_format']));
                         array_push($columns, 'Timestamp');
@@ -957,19 +957,20 @@ if ($inventory_module !== 'basic') {
                         false,
                         $id_table
                     );
-                }
 
-                $agents .= ui_toggle(
-                    $agent,
-                    $module_key,
-                    '',
-                    '',
-                    true,
-                    true,
-                    '',
-                    'white-box-content w100p',
-                    'box-shadow white_table_graph w100p',
-                );
+
+                    $agents .= ui_toggle(
+                        $agent,
+                        $module_key,
+                        '',
+                        '',
+                        true,
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
+                    );
+                }
 
                 $node_name = $nodo['server_name'];
                 if ($count[$nodo['server_name']] > 1) {

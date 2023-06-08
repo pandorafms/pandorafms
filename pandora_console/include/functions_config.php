@@ -815,6 +815,10 @@ function config_update_config()
                         $error_update[] = __('2FA all users');
                     }
 
+                    if (config_update_value('control_session_timeout', get_parameter('control_session_timeout'), true) === false) {
+                        $error_update[] = __('Control timeout');
+                    }
+
                     if (config_update_value('session_timeout', get_parameter('session_timeout'), true) === false) {
                         $error_update[] = __('Session timeout');
                     } else {
@@ -824,6 +828,8 @@ function config_update_config()
                             if (config_update_value('session_timeout', 90, true) === false) {
                                 $error_update[] = __('Session timeout');
                             }
+                        } else {
+                            config_prepare_expire_time_session(true);
                         }
                     }
 
@@ -3781,6 +3787,10 @@ function config_process_config()
         config_update_value('notification_autoclose_time', 5);
     }
 
+    if (isset($config['control_session_timeout']) === false) {
+        config_update_value('control_session_timeout', 'check_activity');
+    }
+
     // Finally, check if any value was overwritten in a form.
     config_update_config();
 }
@@ -3912,9 +3922,57 @@ function config_user_set_custom_config()
         }
     }
 
+    config_prepare_expire_time_session();
+
     if (is_metaconsole() === true) {
         $config['metaconsole_access'] = $userinfo['metaconsole_access'];
     }
+}
+
+
+function config_prepare_expire_time_session($force_update=false)
+{
+    global $config;
+    if (empty($config['id_user']) === true) {
+        return;
+    }
+
+    $userinfo = get_user_info($config['id_user']);
+
+    if (isset($userinfo)) {
+        $user_sesion_time = $userinfo['session_time'];
+    } else {
+        $user_sesion_time = null;
+    }
+
+    if ($user_sesion_time == 0) {
+        // Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours.
+        $sessionCookieExpireTime = $config['session_timeout'];
+    } else {
+        // Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours.
+        $sessionCookieExpireTime = $user_sesion_time;
+    }
+
+    if ($sessionCookieExpireTime <= 0) {
+        $sessionCookieExpireTime = (10 * 365 * 24 * 60 * 60);
+    } else {
+        $sessionCookieExpireTime *= 60;
+    }
+
+    if ($config['control_session_timeout'] === 'ignore_activity') {
+        $sessionMaxTimeout = (time() + $sessionCookieExpireTime);
+        if ((int) $userinfo['session_max_time_expire'] === 0 || $force_update === true) {
+            $userinfo['session_max_time_expire'] = $sessionMaxTimeout;
+            update_user($userinfo['id_user'], ['session_max_time_expire' => $sessionMaxTimeout]);
+        } else if (time() > (int) $userinfo['session_max_time_expire'] && (int) $userinfo['session_max_time_expire'] > 0) {
+            update_user($userinfo['id_user'], ['session_max_time_expire' => 0]);
+        }
+    } else {
+        if ((int) $userinfo['session_max_time_expire'] > 0) {
+            update_user($userinfo['id_user'], ['session_max_time_expire' => 0]);
+        }
+    }
+
 }
 
 
@@ -3959,7 +4017,13 @@ function config_prepare_session()
         }
 
         if ($update_cookie === true) {
-            setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
+            if ((int) $user['session_max_time_expire'] > 0 && time() < $user['session_max_time_expire']) {
+                $sessionMaxTimeout = $user['session_max_time_expire'];
+            } else {
+                $sessionMaxTimeout = (time() + $sessionCookieExpireTime);
+            }
+
+            setcookie(session_name(), $_COOKIE[session_name()], $sessionMaxTimeout, '/');
         }
     }
 

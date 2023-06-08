@@ -418,7 +418,27 @@ if (is_ajax() === true) {
             $table->rowclass['2FA_all_users'] = '';
         }
 
-            $table->data['2FA_all_users'] = $row;
+        $table->data['2FA_all_users'] = $row;
+
+        // Session timeout behavior.
+        // Set default value.
+        $row = [];
+        $options = [
+            'check_activity'  => __('Check activity'),
+            'ignore_activity' => __('Ignore activity'),
+        ];
+
+        $row['name'] = __('Control of timeout session').ui_print_help_tip(__('Select \'ignore activity\' to ignore user activity when checking the session.'), true);
+        $row['control'] = html_print_select(
+            $options,
+            'control_session_timeout',
+            $config['control_session_timeout'],
+            '',
+            '',
+            0,
+            true
+        );
+        $table->data['session_timeouts'] = $row;
 
 
         // Session timeout.

@@ -16,7 +16,7 @@
  *
  * ============================================================================
  * Copyright (c) 2005-2023 Pandora FMS
- * Please see http://pandorafms.org for full contribution list
+ * Please see http://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -604,7 +604,7 @@ function install_step1_licence()
 		<div id='install_box'>
 			<h2 class='subtitle'>GPL2 Licence terms agreement</h2>
 			<p class='text'>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
-			<p class='text'>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
+			<p class='text'>For more information, please refer to our website at http://pandorafms.com/community/ and contact us if you have any kind of question about the usage of Pandora FMS</p>
             <p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
 		";
 

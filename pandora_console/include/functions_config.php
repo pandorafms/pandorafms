@@ -16,7 +16,7 @@
  *
  * ============================================================================
  * Copyright (c) 2005-2023 Pandora FMS
- * Please see http://pandorafms.org for full contribution list
+ * Please see http://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -2831,7 +2831,7 @@ function config_process_config()
     }
 
     if (!isset($config['email_from_dir'])) {
-        config_update_value('email_from_dir', 'pandora@pandorafms.org');
+        config_update_value('email_from_dir', 'pandora@pandorafms.com/community/');
     }
 
     if (!isset($config['email_from_name'])) {

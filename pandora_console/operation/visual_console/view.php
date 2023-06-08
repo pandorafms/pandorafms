@@ -493,7 +493,7 @@ if ($pure === false) {
                 html_print_input_number(
                     [
                         'name'   => 'grid_size',
-                        'value'  => $visualConsoleData['grid_size'],
+                        'value'  => $visualConsoleData['gridSize'],
                         'id'     => 'grid_size',
                         'min'    => 2,
                         'max'    => 50,
@@ -506,7 +506,7 @@ if ($pure === false) {
                 __('Grid color'),
                 html_print_input_color(
                     'grid_color',
-                    $visualConsoleData['grid_color'],
+                    $visualConsoleData['gridColor'],
                     'grid_color',
                     'w100p',
                     true

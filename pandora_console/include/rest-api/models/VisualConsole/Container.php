@@ -91,8 +91,8 @@ final class Container extends Model
             'relationLineWidth' => (int) $data['relationLineWidth'],
             'hash'              => static::extractHash($data),
             'maintenanceMode'   => static::extractMaintenanceMode($data),
-            'grid_size'         => (int) $data['grid_size'],
-            'grid_color'        => (string) $data['grid_color'],
+            'gridSize'          => (int) $data['grid_size'],
+            'gridColor'         => (string) $data['grid_color'],
         ];
     }
 

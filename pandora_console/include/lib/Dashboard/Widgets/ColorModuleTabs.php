@@ -354,6 +354,8 @@ class ColorModuleTabs extends Widget
     {
         global $config;
 
+        include_once $config['homedir'].'/include/functions_graph.php';
+
         $size = parent::getSize();
 
         $output = '';

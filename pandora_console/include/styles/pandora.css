@@ -11860,6 +11860,10 @@ div.relative > div > div#ui-datepicker-div {
   width: 400px;
 }
 
+#message_dialog_connection {
+  height: auto !important;
+}
+
 #module_relations > thead > tr {
   border: none !important;
   border-bottom: 1px solid #e2e2e2 !important;

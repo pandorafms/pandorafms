@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2023 Pandora FMS
-// Please see http://pandorafms.com/community/ for full contribution list
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -63,7 +63,7 @@ echo '<div id="login_help_dialog" title="'.__('Welcome to %s', get_product_name(
                 echo '</td>';
 
                 echo '<td class="border_solid_white center">';
-                echo '<a href="http://pandorafms.com/" target="_blank" class="no_decoration">'.html_print_image(
+                echo '<a href="https://pandorafms.com/" target="_blank" class="no_decoration">'.html_print_image(
                     'images/enterprise_version.png',
                     true,
                     [
@@ -72,7 +72,7 @@ echo '<div id="login_help_dialog" title="'.__('Welcome to %s', get_product_name(
                     ]
                 ).'</a>';
                 echo '<br id="br_mb_40" />';
-                echo '<a class="font_9pt" href="http://pandorafms.com/" target="_blank">'.__('Enterprise version').'</a>';
+                echo '<a class="font_9pt" href="https://pandorafms.com/" target="_blank">'.__('Enterprise version').'</a>';
                 echo '</td>';
 
                 echo '<td class="border_solid_white center">';

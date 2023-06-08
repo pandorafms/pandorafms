@@ -1,6 +1,6 @@
 <?php
 /**
- * Pandora FMS- http://pandorafms.com
+ * Pandora FMS- https://pandorafms.com
  * ==================================================
  * Copyright (c) 2005-2023 Pandora FMS
  *

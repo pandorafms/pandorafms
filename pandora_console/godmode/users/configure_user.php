@@ -69,6 +69,11 @@ $homeScreenValues = [
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 $id = get_parameter('id', get_parameter('id_user', ''));
+
+if (empty($id) === true) {
+    $id = $config['id_user'];
+}
+
 // Check if we are the same user for edit or we have a proper profile for edit users.
 if ($id !== $config['id_user']) {
     if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
@@ -85,6 +90,13 @@ if ($id !== $config['id_user']) {
 // ID given as parameter.
 $pure = get_parameter('pure', 0);
 $user_info = get_user_info($id);
+
+if (is_metaconsole() === true) {
+    $user_info['section'] = $user_info['metaconsole_section'];
+    $user_info['data_section'] = $user_info['metaconsole_data_section'];
+    $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
+}
+
 $is_err = false;
 
 if (is_ajax() === true) {
@@ -372,10 +384,19 @@ if ($create_user === true) {
 
     // Generate new API token.
     $values['api_token'] = api_token_generate();
+    // Validate the user ID if it already exists.
+    $user_exists = get_user_info($id);
 
     if (empty($id) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
+        $user_info = $values;
+        $password_new = '';
+        $password_confirm = '';
+        $new_user = true;
+    } else if (isset($user_exists['id_user'])) {
+        $is_err = true;
+        ui_print_error_message(__('User ID already exists'));
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
@@ -627,9 +648,15 @@ if ($update_user) {
     $values['section'] = $homeScreenValues[$values['section']];
 
     if (enterprise_installed() === true && is_metaconsole() === true) {
-        $values['metaconsole_access'] = get_parameter('metaconsole_access');
-        $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
-        $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
+        if (users_is_admin() === true) {
+            $values['metaconsole_access'] = get_parameter('metaconsole_access');
+            $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
+            $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
+        } else {
+            $values['metaconsole_access'] = $user_info['metaconsole_access'];
+            $values['metaconsole_agents_manager'] = $user_info['metaconsole_agents_manager'];
+            $values['metaconsole_access_node'] = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
+        }
     }
 
     $values['not_login'] = (bool) get_parameter('not_login', false);
@@ -677,6 +704,10 @@ if ($update_user) {
                                     ]
                                 );
                                 $res3 = save_pass_history($id, $password_new);
+
+                                // Generate new API token.
+                                $newToken = api_token_generate();
+                                $res4 = update_user($id, ['api_token' => $newToken]);
                             }
 
                             ui_print_result_message(
@@ -701,6 +732,10 @@ if ($update_user) {
                                     'utimestamp'  => time(),
                                 ]
                             );
+
+                            // Generate new API token.
+                            $newToken = api_token_generate();
+                            $res4 = update_user($id, ['api_token' => $newToken]);
                         }
 
                         ui_print_result_message(
@@ -1453,6 +1488,10 @@ foreach ($event_filter_data as $filter) {
     $event_filter[$filter['id_filter']] = $filter['id_name'];
 }
 
+if (is_metaconsole() === true && empty($user_info['metaconsole_default_event_filter']) !== true) {
+    $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
+}
+
 $default_event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Default event filter').'</p>';
 $default_event_filter .= html_print_select(
     $event_filter,
@@ -1583,7 +1622,8 @@ $autorefresh_list_out['operation/events/events'] = 'Events';
 if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
     $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
-    if ($autorefresh_list === null) {
+    if ($autorefresh_list === null || $autorefresh_list === 0) {
+        $autorefresh_list = [];
         $autorefresh_list[0] = __('None');
     } else {
         $aux = [];

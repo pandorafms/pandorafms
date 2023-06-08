@@ -185,7 +185,7 @@ if (isset($config['force_instant_logout']) === true
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
 
-    if ($config['auth'] === 'saml') {
+    if ($config['auth'] === 'saml' && empty($public_hash) === true) {
         include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
         $as = new SimpleSAML_Auth_Simple('PandoraFMS');
         $as->logout();

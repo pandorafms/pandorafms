@@ -899,10 +899,15 @@ function html_print_select(
             if (is_array($selected) && in_array($value, $selected)) {
                 $output .= ' selected="selected"';
             } else if (is_numeric($value) && is_numeric($selected)
-                && $value == $selected
+                && $value === $selected
             ) {
                 // This fixes string ($value) to int ($selected) comparisons
                 $output .= ' selected="selected"';
+            } else if (is_numeric($value) && is_string($selected)) {
+                $str_value = strval($value);
+                if ($str_value === $selected) {
+                    $output .= ' selected="selected"';
+                }
             } else if ($value === $selected) {
                 // Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
                 $output .= ' selected="selected"';
@@ -4273,22 +4278,22 @@ function html_print_checkbox_extended(
 
     if (is_array($attributes) === true) {
         $tmpAttributes = [];
-        foreach ($attributes as $key => $value) {
+        foreach ($attributes as $key => $val) {
             switch ($key) {
                 case 'input_class':
-                    $inputClass .= ' '.$value;
+                    $inputClass .= ' '.$val;
                 break;
 
                 case 'label_class':
-                    $labelClass .= ' '.$value;
+                    $labelClass .= ' '.$val;
                 break;
 
                 case 'label_style':
-                    $labelStyle .= 'style="'.$value.'"';
+                    $labelStyle .= 'style="'.$val.'"';
                 break;
 
                 default:
-                    $tmpAttributes[] = $key.'="'.$value.'"';
+                    $tmpAttributes[] = $key.'="'.$val.'"';
                 break;
             }
         }

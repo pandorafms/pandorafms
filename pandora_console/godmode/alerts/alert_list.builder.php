@@ -166,10 +166,10 @@ $table->data[1][1] = html_print_label_input_block(
 );
 
 $table->data[2][0] = html_print_label_input_block(
-    __('Threshold'),
+    __('Threshold').ui_print_help_tip(__('It takes precedence over the action\'s threshold configuration.'), true),
     html_print_extended_select_for_time(
         'module_action_threshold',
-        0,
+        '0',
         '',
         '',
         '',

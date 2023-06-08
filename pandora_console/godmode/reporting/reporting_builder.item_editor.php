@@ -1219,11 +1219,9 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers,
-                    'combo_server',
+                    'combo_server_sql',
                     $server_name,
-                    '',
-                    $nothing,
-                    $nothing_value
+                    ''
                 );
                 ?>
             </td>

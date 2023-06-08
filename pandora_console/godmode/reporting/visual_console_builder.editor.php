@@ -92,14 +92,14 @@ html_print_input_hidden('metaconsole', (is_metaconsole() === true) ? 1 : 0);
 visual_map_editor_print_hack_translate_strings();
 visual_map_editor_print_item_palette($visualConsole['id'], $background);
 
-if (is_metaconsole() === false) {
+if (is_metaconsole() === true) {
     echo '<div id="frame_view" class="frame_view_meta">';
 } else {
-    echo '<div id="frame_view" class="frame_view_node mrgn_top_meta_35px">';
+    echo '<div id="frame_view" class="frame_view_node">';
 }
 
 echo '<div id="background" class="" style="top:0px;
-margin: 0px auto;border: 1px lightgray solid; width: '.$widthBackground.'px; height: '.$heightBackground.'px;background-color: '.$visualConsole['background_color'].';">';
+margin: 0px auto;border: 1px lightgray solid; width: '.$widthBackground.'px; height: '.$heightBackground.'px;background-color: '.$visualConsole['background_color'].';z-index:0;">';
 echo "<div id='background_grid'
 	style='position: absolute; display: none; overflow: hidden;
 	background: url(".ui_get_full_url('images/console/background/white_boxed.jpg', false, false, false).');

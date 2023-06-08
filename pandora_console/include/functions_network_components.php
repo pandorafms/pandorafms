@@ -31,7 +31,7 @@ function network_components_is_disable_type_event($id=false, $type_event=false)
     if ($id === false) {
         switch ($type_event) {
             case EVENTS_GOING_UNKNOWN:
-            return true;
+            return false;
 
                 break;
             case EVENTS_UNKNOWN:

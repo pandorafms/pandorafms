@@ -1100,16 +1100,29 @@ $load_filter_id = (int) get_parameter('filter_id', 0);
 $fav_menu = [];
 if ($load_filter_id === 0) {
     // Load user filter.
-    $loaded_filter = db_get_row_sql(
-        sprintf(
-            'SELECT f.id_filter, f.id_name
-             FROM tevent_filter f
-             INNER JOIN tusuario u
-                 ON u.default_event_filter=f.id_filter
-             WHERE u.id_user = "%s" ',
-            $config['id_user']
-        )
-    );
+    if (is_metaconsole() === true) {
+        $loaded_filter = db_get_row_sql(
+            sprintf(
+                'SELECT f.id_filter, f.id_name
+                 FROM tevent_filter f
+                 INNER JOIN tusuario u
+                     ON u.metaconsole_default_event_filter=f.id_filter
+                 WHERE u.id_user = "%s" ',
+                $config['id_user']
+            )
+        );
+    } else {
+        $loaded_filter = db_get_row_sql(
+            sprintf(
+                'SELECT f.id_filter, f.id_name
+                 FROM tevent_filter f
+                 INNER JOIN tusuario u
+                     ON u.default_event_filter=f.id_filter
+                 WHERE u.id_user = "%s" ',
+                $config['id_user']
+            )
+        );
+    }
 } else {
     // Load filter selected by user.
     $loaded_filter['id_filter'] = $load_filter_id;
@@ -1547,7 +1560,7 @@ if ($pure) {
         ]
     ).'</a>';
 
-    // Accoustic console.
+    // Acoustic console.
     $sound_event['active'] = false;
 
     // Sound Events.
@@ -1570,7 +1583,7 @@ if ($pure) {
         'images/sound_console@svg.svg',
         true,
         [
-            'title' => __('Accoustic console'),
+            'title' => __('Acoustic console'),
             'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
@@ -1620,7 +1633,7 @@ if ($pure) {
     switch ($section) {
         case 'sound_event':
             $onheader['sound_event']['active'] = true;
-            $section_string = __('Accoustic console');
+            $section_string = __('Acoustic console');
         break;
 
         case 'history':

@@ -3548,6 +3548,25 @@ function update_config_token($cfgtoken, $cfgvalue)
 }
 
 
+function update_check_config_token($cfgtoken, $cfgvalue)
+{
+    global $config;
+    db_process_sql('START TRANSACTION');
+    if (isset($config[$cfgtoken])) {
+        delete_config_token($cfgtoken);
+    }
+
+    $insert = db_process_sql(sprintf("INSERT INTO tconfig (token, value) VALUES ('%s', '%s')", $cfgtoken, $cfgvalue));
+    db_process_sql('COMMIT');
+    if ($insert) {
+        $config[$cfgtoken] = $cfgvalue;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 function delete_config_token($cfgtoken)
 {
     $delete = db_process_sql(sprintf('DELETE FROM tconfig WHERE token = "%s"', $cfgtoken));
@@ -4284,6 +4303,8 @@ function generator_chart_to_pdf(
             'data_module_list' => $module_list,
             'data_combined'    => $params_combined,
             'id_user'          => $config['id_user'],
+            'slicebar'         => $_SESSION['slicebar'],
+            'slicebar_value'   => $config[$_SESSION['slicebar']],
         ];
     } else {
         $data = [
@@ -4291,6 +4312,8 @@ function generator_chart_to_pdf(
             'session_id'     => $session_id,
             'type_graph_pdf' => $type_graph_pdf,
             'id_user'        => $config['id_user'],
+            'slicebar'       => $_SESSION['slicebar'],
+            'slicebar_value' => $config[$_SESSION['slicebar']],
         ];
     }
 

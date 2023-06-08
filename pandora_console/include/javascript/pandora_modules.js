@@ -377,6 +377,10 @@ function configure_modules_form() {
         );
         $("#textarea_tcp_send").html(js_html_entity_decode(data["tcp_send"]));
         $("#textarea_tcp_rcv").html(js_html_entity_decode(data["tcp_rcv"]));
+        $("#text-ip_target").attr(
+          "value",
+          js_html_entity_decode(data["target_ip"])
+        );
         $("#text-snmp_community").attr(
           "value",
           js_html_entity_decode(data["snmp_community"])
@@ -997,13 +1001,18 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
   $("#" + row_id).show();
 }
 
-function load_plugin_macros_fields(row_model_id) {
+function load_plugin_macros_fields(row_model_id, moduleId = 0) {
   // Get plugin macros when selected and load macros fields
   var id_plugin = $("#id_plugin").val();
 
   var params = [];
   params.push("page=include/ajax/module");
-  params.push("get_plugin_macros=1");
+
+  if (moduleId > 0) {
+    params.push("get_module_macros=" + moduleId);
+  } else {
+    params.push("get_plugin_macros=1");
+  }
   params.push("id_plugin=" + id_plugin);
 
   jQuery.ajax({
@@ -1539,10 +1548,7 @@ function changePlugin() {
 
   var pluginDescription = pluginAllData.description;
   var pluginMacros = pluginAllData.macros;
-  console.log(pluginAllData.macrosElement);
   var pluginMacrosElement = JSON.parse(atob(pluginAllData.macrosElement));
-  console.log(pluginMacrosElement);
-
   var displayShow = "none";
   if (executionType == EXECUTION_TYPE_NETWORK) {
     displayShow = "none";

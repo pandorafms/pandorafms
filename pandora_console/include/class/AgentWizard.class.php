@@ -325,7 +325,7 @@ class AgentWizard extends HTML
         $this->wizardSection = get_parameter('wizard_section', 'snmp_explorer');
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
-        $this->targetIp = get_parameter('targetIp', '');
+        $this->targetIp = io_safe_input(trim(io_safe_output(get_parameter('targetIp', ''))));
         $this->wmiBinary = $config['wmiBinary'];
         $this->defaultSNMPValues = (array) json_decode(io_safe_output($config['agent_wizard_defaults']));
 
@@ -2333,7 +2333,7 @@ class AgentWizard extends HTML
                             }
 
                             $tmp->id_plugin($infoMacros['server_plugin']);
-                            $tmp->macros(json_encode($fieldsPlugin));
+                            $tmp->macros(io_json_mb_encode($fieldsPlugin));
                         }
                     }
                 }
@@ -2507,7 +2507,7 @@ class AgentWizard extends HTML
                         }
 
                         $tmp->id_plugin($infoMacros['server_plugin']);
-                        $tmp->macros(json_encode($fieldsPlugin));
+                        $tmp->macros(io_json_mb_encode($fieldsPlugin));
                     }
 
                     $tmp->ip_target(io_safe_input($this->targetIp));

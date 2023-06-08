@@ -675,10 +675,9 @@ $table->data[1][1] = html_print_label_input_block(
 if (is_metaconsole() === false) {
     $dates = inventory_get_dates(
         $inventory_module,
-        $inventory_agent,
+        $inventory_id_agent,
         $inventory_id_group
     );
-
     $table->data[1][2] = html_print_label_input_block(
         __('Date'),
         html_print_select(
@@ -690,7 +689,7 @@ if (is_metaconsole() === false) {
             0,
             true,
             false,
-            true,
+            false,
             '',
             false,
             'width:100%;'
@@ -1041,9 +1040,9 @@ if ($inventory_module !== 'basic') {
         <?php
         if ($order_by_agent === true) {
             foreach ($rows as $agent_rows) {
-                $data = [];
                 $modules = '';
                 foreach ($agent_rows['row'] as $key_row => $row) {
+                    $data = [];
                     $columns = explode(';', io_safe_output($row['data_format']));
                     array_push($columns, 'Timestamp');
 

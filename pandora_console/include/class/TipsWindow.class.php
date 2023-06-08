@@ -270,12 +270,26 @@ class TipsWindow
         }
 
         $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
+        $sql .= sprintf(' AND id_lang = "%s"', $language);
 
         $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
 
         $tip = db_get_row_sql($sql);
-
+        $check_tips = db_get_row_sql('SELECT count(*) AS tips FROM twelcome_tip WHERE id_lang = "'.$language.'"')['tips'];
         if (empty($tip) === false) {
+            $tip['files'] = $this->getFilesFromTip($tip['id']);
+
+            $tip['title'] = io_safe_output($tip['title']);
+            $tip['text'] = io_safe_output($tip['text']);
+            $tip['url'] = io_safe_output($tip['url']);
+        } else if ($check_tips === '0') {
+            $language = 'en_GB';
+            $sql = 'SELECT id, title, text, url
+            FROM twelcome_tip
+            WHERE enable = "1" AND id_lang = "'.$language.'"';
+            $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
+            $tip = db_get_row_sql($sql);
+
             $tip['files'] = $this->getFilesFromTip($tip['id']);
 
             $tip['title'] = io_safe_output($tip['title']);
@@ -311,6 +325,15 @@ class TipsWindow
         global $config;
         $profilesUser = users_get_user_profile($config['id_user']);
         $idProfilesFilter = '0';
+        $userInfo = users_get_user_by_id($config['id_user']);
+        $language = ($userInfo['language'] !== 'default') ? $userInfo['language'] : $config['language'];
+
+        $check_tips = db_get_row_sql('SELECT count(*) AS tips FROM twelcome_tip WHERE id_lang = "'.$language.'"')['tips'];
+
+        if ($check_tips === '0') {
+            $language = 'en_GB';
+        }
+
         foreach ($profilesUser as $key => $profile) {
             $idProfilesFilter .= ','.$profile['id_perfil'];
         }
@@ -320,9 +343,9 @@ class TipsWindow
                 WHERE enable = "1" ';
 
         $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
+        $sql .= sprintf(' AND id_lang = "%s"', $language);
 
-        $sql .= ' ORDER BY CASE WHEN id_lang = "'.$config['language'].'" THEN id_lang END DESC, RAND()';
-
+        $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
         return db_get_sql($sql);
     }
 

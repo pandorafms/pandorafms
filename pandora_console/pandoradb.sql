@@ -1009,6 +1009,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `target_ip` VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1296,6 +1297,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `shortcut_data` TEXT,
   `section` TEXT,
   `data_section` TEXT,
+  `metaconsole_section` VARCHAR(255) NOT NULL DEFAULT 'Default',
+  `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '',
   `force_change_pass` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `last_pass_change` DATETIME,
   `last_failed_login` DATETIME,
@@ -1310,6 +1313,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `id_filter`  INT UNSIGNED NULL DEFAULT NULL,
   `session_time` INT signed NOT NULL DEFAULT 0,
   `default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
+  `metaconsole_default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
   `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `autorefresh_white_list` TEXT ,
   `time_autorefresh` INT UNSIGNED NOT NULL DEFAULT 30,
@@ -3692,6 +3696,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
   `label_position` VARCHAR(50) NOT NULL DEFAULT 'down',
   `border_color` VARCHAR(200) DEFAULT '',
   `fill_color` VARCHAR(200) DEFAULT '',
+  `recursive_group` TINYINT NOT NULL DEFAULT '0',
   `show_statistics` TINYINT NOT NULL DEFAULT 0,
   `linked_layout_node_id` INT NOT NULL DEFAULT 0,
   `linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',

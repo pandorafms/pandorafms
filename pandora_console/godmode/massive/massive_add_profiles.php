@@ -109,7 +109,7 @@ if ($create_profiles) {
     } else {
         foreach ($profiles_id as $profile) {
              // Check profiles permissions for non admin user.
-            if (is_user_admin($config['user_id']) === false) {
+            if (is_user_admin($config['id_user']) === false) {
                 $user_profiles = profile_get_profiles(
                     [
                         'pandora_management' => '<> 1',
@@ -122,7 +122,7 @@ if ($create_profiles) {
                         AUDIT_LOG_ACL_VIOLATION,
                         'Trying to add administrator profile whith standar user for user '.io_safe_input($user)
                     );
-                    exit;
+                    continue;
                 }
             }
 
@@ -132,7 +132,7 @@ if ($create_profiles) {
                         AUDIT_LOG_ACL_VIOLATION,
                         'Trying to add profile group without permission for user '.io_safe_input($user)
                     );
-                    exit;
+                    continue;
                 }
 
                 foreach ($users_id as $user) {
@@ -141,7 +141,7 @@ if ($create_profiles) {
                             AUDIT_LOG_ACL_VIOLATION,
                             'Trying to edit user without permission for user '.io_safe_input($user)
                         );
-                        exit;
+                        continue;
                     }
 
                     $profile_data = db_get_row_filter('tusuario_perfil', ['id_usuario' => $user, 'id_perfil' => $profile, 'id_grupo' => $group]);

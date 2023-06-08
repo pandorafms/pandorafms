@@ -90,13 +90,12 @@ $utimestamps = db_get_all_rows_sql(
             FROM tmodule_inventory, tagent_module_inventory, tagente_datos_inventory
             WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory
             AND tagente_datos_inventory.id_agent_module_inventory = tagent_module_inventory.id_agent_module_inventory
-            AND tagent_module_inventory.%s',
+            AND tagent_module_inventory.%s ORDER BY tagente_datos_inventory.utimestamp DESC',
         ($module !== 0) ? 'id_module_inventory = '.$module : 'id_agente = '.$id_agente
     )
 );
 
 $utimestamps = (empty($utimestamps) === true) ? [] : extract_column($utimestamps, 'utimestamp');
-
 $utimestampSelectValues = array_reduce(
     $utimestamps,
     function ($acc, $utimestamp) use ($config) {
@@ -143,7 +142,7 @@ $table->data[0][1] = html_print_label_input_block(
         0,
         true,
         false,
-        true,
+        false,
         '',
         false,
         'width:100%;'
@@ -232,7 +231,14 @@ foreach ($rows as $row) {
         $table->cellspacing = 4;
         $table->class = 'info_table';
         $table->head = [];
-        $table->head[0] = $row['name'].' - ('.date($config['date_format'], $row['utimestamp']).')';
+
+        if ($row['utimestamp'] === '0' && $utimestamp === 0) {
+            $table->head[0] = $row['name'];
+        } else if ($utimestamp === 0) {
+            $table->head[0] = $row['name'].' - (Last update '.date($config['date_format'], $row['utimestamp']).')';
+        } else {
+            $table->head[0] = $row['name'].' - ('.date($config['date_format'], $utimestamp).')';
+        }
 
         if ((bool) $row['block_mode'] === true) {
             $table->head[0] .= '&nbsp;&nbsp;&nbsp;<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'&utimestamp='.$utimestamp.'&id_agent_module_inventory='.$row['id_agent_module_inventory'].'&diff_view=1">'.html_print_image(

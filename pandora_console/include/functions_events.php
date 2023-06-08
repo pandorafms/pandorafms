@@ -2665,7 +2665,7 @@ function events_print_type_img(
 
     $urlImage = ui_get_full_url(false);
     $icon = '';
-    $style = 'invert_filter main_menu_icon';
+    $style = 'main_menu_icon';
 
     switch ($type) {
         case 'alert_recovered':
@@ -2702,23 +2702,28 @@ function events_print_type_img(
         break;
 
         case 'system':
+            $style .= ' invert_filter';
             $icon = 'images/configuration@svg.svg';
         break;
 
         case 'recon_host_detected':
+            $style .= ' invert_filter';
             $icon = 'images/recon.png';
         break;
 
         case 'new_agent':
+            $style .= ' invert_filter';
             $icon = 'images/agents@svg.svg';
         break;
 
         case 'configuration_change':
+            $style .= ' invert_filter';
             $icon = 'images/configuration@svg.svg';
         break;
 
         case 'unknown':
         default:
+            $style .= ' invert_filter';
             $icon = 'images/event.svg';
         break;
     }

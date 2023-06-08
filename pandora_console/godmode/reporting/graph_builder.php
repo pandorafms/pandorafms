@@ -309,7 +309,7 @@ if ($edit_graph === true) {
         'graph_editor' => [
             'active' => false,
             'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image(
-                'images/builder.png',
+                'images/builder@svg.svg',
                 true,
                 [
                     'title' => __('Graph editor'),

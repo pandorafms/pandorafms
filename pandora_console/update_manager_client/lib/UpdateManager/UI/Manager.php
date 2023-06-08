@@ -481,7 +481,7 @@ class Manager
 
         if (count($updates) > 0) {
             $next = $updates[0];
-            $return = '<p><b>'.\__('Next update').':</b><span id="next-version">';
+            $return = '<p><b>'.\__('Next update').': </b><span id="next-version" onclick="changelog()" style="cursor:pointer">';
             $return .= $next['version'].'</span>';
             $return .= ' - <a id="um-package-details-next" ';
             $return .= ' class="um-package-details" ';

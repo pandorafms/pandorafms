@@ -607,6 +607,10 @@ function config_update_config()
                         $error_update[] = __('Start TLS');
                     }
 
+                    if (config_update_value('recursive_search', get_parameter('recursive_search'), true) === false) {
+                        $error_update[] = __('Recursive search');
+                    }
+
                     if (config_update_value('ad_advanced_config', get_parameter('ad_advanced_config'), true) === false) {
                         $error_update[] = __('Advanced Config AD');
                     }
@@ -3080,6 +3084,10 @@ function config_process_config()
 
     if (!isset($config['ad_start_tls'])) {
         config_update_value('ad_start_tls', 0);
+    }
+
+    if (!isset($config['recursive_search'])) {
+        config_update_value('recursive_search', 1);
     }
 
     if (!isset($config['ad_advanced_config'])) {

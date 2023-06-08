@@ -50,8 +50,19 @@ $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 
 $data = [];
-$data[0] = __('Port');
-$data[1] = html_print_input_text('tcp_port', $tcp_port, '', 5, 20, true);
+$data[0] = __('Target IP');
+$data[1] = html_print_input_text_extended(
+    'target_ip',
+    $target_ip,
+    'target_ip',
+    '',
+    30,
+    10000,
+    '',
+    '',
+    '',
+    true
+);
 $data[2] = __('SNMP version');
 $data[3] = html_print_select(
     $snmp_versions,
@@ -66,19 +77,11 @@ $data[3] = html_print_select(
     ''
 );
 
-push_table_row($data, 'snmp_port');
+push_table_row($data, 'row1');
 
 $data = [];
-$data[0] = __('SNMP Enterprise String');
-$data[1] = html_print_input_text(
-    'snmp_oid',
-    $snmp_oid,
-    '',
-    30,
-    400,
-    true
-);
-
+$data[0] = __('Port');
+$data[1] = html_print_input_text('tcp_port', $tcp_port, '', 5, 20, true);
 $data[2] = __('SNMP community');
 $data[3] = html_print_input_text(
     'snmp_community',
@@ -89,17 +92,16 @@ $data[3] = html_print_input_text(
     true
 );
 
-push_table_row($data, 'snmp_2');
-
+push_table_row($data, 'snmp_port');
 
 $data = [];
-$data[0] = __('Auth user');
+$data[0] = __('SNMP Enterprise String');
 $data[1] = html_print_input_text(
-    'snmp3_auth_user',
-    $snmp3_auth_user,
+    'snmp_oid',
+    $snmp_oid,
     '',
-    15,
-    60,
+    30,
+    400,
     true
 );
 $data[2] = __('Auth password');
@@ -117,20 +119,18 @@ $data[3] .= html_print_input_hidden_extended(
     'active_snmp_v3_mncfn',
     true
 );
-push_table_row($data, 'field_snmpv3_row1');
+
+push_table_row($data, 'snmp_2');
+
 
 $data = [];
-$data[0] = __('Privacy method');
-$data[1] = html_print_select(
-    [
-        'DES' => __('DES'),
-        'AES' => __('AES'),
-    ],
-    'snmp3_privacy_method',
-    $snmp3_privacy_method,
+$data[0] = __('Auth user');
+$data[1] = html_print_input_text(
+    'snmp3_auth_user',
+    $snmp3_auth_user,
     '',
-    '',
-    '',
+    15,
+    60,
     true
 );
 $data[2] = __('Privacy pass');
@@ -142,17 +142,18 @@ $data[3] = html_print_input_password(
     60,
     true
 );
-push_table_row($data, 'field_snmpv3_row2');
+
+push_table_row($data, 'field_snmpv3_row1');
 
 $data = [];
-$data[0] = __('Auth method');
+$data[0] = __('Privacy method');
 $data[1] = html_print_select(
     [
-        'MD5' => __('MD5'),
-        'SHA' => __('SHA'),
+        'DES' => __('DES'),
+        'AES' => __('AES'),
     ],
-    'snmp3_auth_method',
-    $snmp3_auth_method,
+    'snmp3_privacy_method',
+    $snmp3_privacy_method,
     '',
     '',
     '',
@@ -172,6 +173,37 @@ $data[3] = html_print_select(
     '',
     true
 );
+
+push_table_row($data, 'field_snmpv3_row2');
+
+$data = [];
+$data[0] = __('Auth method');
+$data[1] = html_print_select(
+    [
+        'MD5' => __('MD5'),
+        'SHA' => __('SHA'),
+    ],
+    'snmp3_auth_method',
+    $snmp3_auth_method,
+    '',
+    '',
+    '',
+    true
+);
+$data[2] = __('Name OID').'&nbsp;'.ui_print_help_icon('xxx', true);
+$data[3] = html_print_input_text_extended(
+    'name_oid',
+    $name_oid,
+    'name_oid',
+    '',
+    30,
+    10000,
+    '',
+    '',
+    '',
+    true
+);
+
 push_table_row($data, 'field_snmpv3_row3');
 
 $data = [];
@@ -185,20 +217,6 @@ $data[1] = html_print_extended_select_for_post_process(
     false,
     true,
     false,
-    true
-);
-
-$data[2] = __('Name OID').'&nbsp;'.ui_print_help_icon('xxx', true);
-$data[3] = html_print_input_text_extended(
-    'name_oid',
-    $name_oid,
-    'name_oid',
-    '',
-    30,
-    10000,
-    '',
-    '',
-    '',
     true
 );
 

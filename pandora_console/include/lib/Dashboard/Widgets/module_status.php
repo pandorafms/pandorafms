@@ -375,7 +375,7 @@ class ModuleStatusWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
-                'filter_modules' => (users_access_to_agent($values['agentId']) === false) ? [$values['moduleId']] : [],
+                'filter_modules' => (users_access_to_agent($values['agentId'], 'AR', false, is_metaconsole()) === false) ? [$values['moduleId']] : [],
                 'nothing'        => __('None'),
                 'nothing_value'  => 0,
             ],
@@ -560,17 +560,19 @@ class ModuleStatusWidget extends Widget
         $output .= '<div class="container-center" id="container-'.$uuid.'">';
 
         $orientation = '';
+        $margin_bottom = '';
         if ((int) $this->values['horizontal'] === 1) {
             $orientation = 'flex aligni_center';
         } else {
             $orientation = 'grid';
+            $margin_bottom = 'mrgn_btn_15px';
         }
 
         // General div.
         $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
 
         // Div image.
-        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_25px" style="flex: 0 1 '.$sizeIcon.'px; height: '.$sizeIcon.'px;">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px '.$margin_bottom.'" style="flex: 0 1 '.$sizeIcon.'px; height: '.$sizeIcon.'px;">';
         $output .= html_print_image(
             'images/console/icons/'.$icon,
             true,

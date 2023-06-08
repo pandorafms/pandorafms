@@ -87,6 +87,11 @@
   font-weight: 900;
 }
 
+@font-face {
+  font-family: "text-security-disc";
+  src: url("https://raw.githubusercontent.com/noppa/text-security/master/dist/text-security-disc.woff");
+}
+
 /*
 @font-face {
   font-family: "lato-italic";
@@ -4424,9 +4429,13 @@ span.log_zone_line_error {
   border: 1px solid red;
 }
 
-#toolbox > input {
-  border-width: 0px 1px 0px 0px;
-  border-color: lightgray;
+/* VISUAL MAP */
+#toolbox {
+  padding-top: 10px;
+}
+
+#toolbox button {
+  margin: 0px 10px;
 }
 
 #toolbox > input.service_min {
@@ -7149,6 +7158,10 @@ div.graph div.legend table {
   margin-bottom: 35px;
 }
 
+.mrgn_btn_35px_imp {
+  margin-bottom: 35px !important;
+}
+
 .mrgn_btn_40px {
   margin-bottom: 40px;
 }
@@ -9006,6 +9019,8 @@ div.graph div.legend table {
 
 .pre-wrap {
   white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: "Courier New";
 }
 
 .reporting_ulr_img {
@@ -10240,7 +10255,7 @@ button.submitButton {
   justify-content: space-between;
   flex-direction: row;
   min-width: 110px;
-  height: 42px;
+  height: 45px;
   font-size: 14px;
   /*font-family: "lato";*/
   align-items: center;
@@ -10443,10 +10458,22 @@ button.submitButton.onlyIcon.delete_item {
   -webkit-mask: url(../../images/delete.svg) no-repeat right / contain;
 }
 
+button.buttonButton.onlyIcon.edit_item,
+button.submitButton.onlyIcon.edit_item {
+  mask: url(../../images/edit.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/edit.svg) no-repeat right / contain;
+}
+
 button.buttonButton.onlyIcon.copy_item,
 button.submitButton.onlyIcon.copy_item {
   mask: url(../../images/copy.svg) no-repeat right / contain;
   -webkit-mask: url(../../images/copy.svg) no-repeat right / contain;
+}
+
+button.buttonButton.onlyIcon.show_grid,
+button.submitButton.onlyIcon.show_grid {
+  mask: url(../../images/WMI@svg.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/WMI@svg.svg) no-repeat right / contain;
 }
 
 button.buttonButton.link-create-item,
@@ -11539,6 +11566,7 @@ p.trademark-copyright {
 #tab-database {
   height: 80%;
   overflow: auto;
+  width: 96%;
 }
 
 .item_status_tree_view {
@@ -11830,6 +11858,10 @@ div.relative > div > div#ui-datepicker-div {
 
 .container-div-input-password:has(.w400px-important) {
   width: 400px;
+}
+
+#message_dialog_connection {
+  height: auto !important;
 }
 
 #module_relations > thead > tr {

@@ -59,7 +59,7 @@ echo '<html>';
 echo '<head>';
 ?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo __('Accoustic console'); ?>)</title>
+<title><?php echo __('Acoustic console'); ?></title>
 <link rel="stylesheet" href="../../include/styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
 <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
 <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css?v=<?php echo $config['current_package']; ?>" type="text/css" />

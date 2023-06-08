@@ -524,6 +524,17 @@ function edit_massive_agent(
                 alerts_validate_alert_agent($id_agent);
             }
         }
+
+        if (empty($values['id_grupo']) === false) {
+            // Check if group and secondary group match and remove.
+            $remove_sg = (bool) db_process_sql_delete(
+                'tagent_secondary_group',
+                [
+                    'id_agent' => (int) $id_agent,
+                    'id_group' => (int) $values['id_grupo'],
+                ]
+            );
+        }
     }
 
     $info = [];

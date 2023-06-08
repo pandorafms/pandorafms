@@ -1032,7 +1032,7 @@ foreach ($simple_alerts as $alert) {
 
             $data[4] .= html_print_input_image(
                 'update',
-                'images/builder.png',
+                'images/builder@svg.svg',
                 1,
                 '',
                 true,

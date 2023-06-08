@@ -359,7 +359,7 @@ class ModuleValueWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
-                'filter_modules' => (users_access_to_agent($values['agentId']) === false) ? [$values['moduleId']] : [],
+                'filter_modules' => (users_access_to_agent($values['agentId'], 'AR', false, is_metaconsole()) === false) ? [$values['moduleId']] : [],
                 'nothing'        => __('None'),
                 'nothing_value'  => 0,
             ],
@@ -471,17 +471,19 @@ class ModuleValueWidget extends Widget
         $output .= '<div class="container-center" id="container-'.$uuid.'">';
 
         $orientation = '';
+        $margin_bottom = '';
         if ((int) $this->values['horizontal'] === 1) {
             $orientation = 'flex aligni_center';
         } else {
             $orientation = 'grid';
+            $margin_bottom = 'mrgn_btn_20px';
         }
 
         // General div.
         $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
 
         // Div value.
-        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_20px" style="flex: 0 1 '.$sizeValue.'px; line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px; color: '.$color.'">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px '.$margin_bottom.'" style="flex: 0 1 '.$sizeValue.'px; line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px; color: '.$color.'">';
 
         if (is_numeric($data_module) === true) {
             $dataDatos = remove_right_zeros(

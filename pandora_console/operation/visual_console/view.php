@@ -850,9 +850,11 @@ if ($edit_capable === true) {
             size = $('#grid_size').val();
             display_grid(color,size);
             $('#grid_img').removeClass('invisible');
+            visualConsoleManager.visualConsole.updateGridSelected(true);
         } else {
             $('#div-grid').remove();
             $('#grid_img').addClass('invisible');
+            visualConsoleManager.visualConsole.updateGridSelected(false);
         }
     });
 
@@ -925,6 +927,7 @@ if ($edit_capable === true) {
                 console.error(err);
             }
         });
+        visualConsoleManager.visualConsole.updateGridSize(size);
     }
 
     // Enable/disable the maintenance mode.

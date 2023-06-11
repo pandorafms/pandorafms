@@ -759,6 +759,8 @@ sub process_module_data ($$$$$$$$$$) {
 	# Name XML tag and column name don't match
 	$module_conf->{'nombre'} = safe_input($module_name);
 
+	delete $module_conf->{'name'};
+
 	# Calculate the module interval in seconds
 	if (defined($module_conf->{'cron_interval'})) {
 		$module_conf->{'module_interval'} = $module_conf->{'cron_interval'};

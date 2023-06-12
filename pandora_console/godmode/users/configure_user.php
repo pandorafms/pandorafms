@@ -1073,9 +1073,11 @@ if (!$new_user) {
         'show_api_token',
         false,
         sprintf(
-            'javascript:showAPIToken("%s", "%s")',
+            'javascript:showAPIToken("%s", "%s", "%s", "%s")',
             __('API Token'),
-            base64_encode(__('Your API Token is:').'&nbsp;<br><span class="font_12pt bolder">'.users_get_API_token($id).'</span><br>&nbsp;'.__('Please, avoid share this string with others.')),
+            __('Your API Token is:'),
+            base64_encode(users_get_API_token($id)),
+            __('Please, avoid share this string with others.'),
         ),
         [
             'mode'  => 'link',

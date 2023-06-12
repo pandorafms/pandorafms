@@ -1610,3 +1610,7 @@ a.pandora_pagination,
 .font-title-font {
   color: #fff;
 }
+
+#visual-console-container a p {
+  color: #3f3f3f;
+}

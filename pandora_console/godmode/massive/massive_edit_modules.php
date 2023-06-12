@@ -662,6 +662,21 @@ $table->data['edit1'][1] = '<table width="100%">';
             );
             $table->data['edit1'][1] .= '</td>';
             $table->data['edit1'][1] .= '</tr>';
+            $table->data['edit1'][1] .= "<tr id='edit1-1-warning_time'>";
+            $table->data['edit1'][1] .= '<td>';
+            $table->data['edit1'][1] .= '<em>'.__('Change to critical status after.').'</em>';
+            $table->data['edit1'][1] .= '</td>';
+            $table->data['edit1'][1] .= '<td align="right">';
+            $table->data['edit1'][1] .= html_print_input_text(
+                'warning_time',
+                '',
+                '',
+                5,
+                15,
+                true
+            );
+            $table->data['edit1'][1] .= '</td>';
+            $table->data['edit1'][1] .= '</tr>';
             $table->data['edit1'][1] .= '</table>';
 
             $table->data['edit1'][2] = __('Critical status');
@@ -2063,6 +2078,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         'disabled_types_event',
         'ip_target',
         'custom_ip_target',
+        'warning_time',
         'descripcion',
         'min_ff_event_normal',
         'min_ff_event_warning',

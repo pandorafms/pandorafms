@@ -27,7 +27,7 @@ if (! check_acl($config['id_user'], 0, 'AR')
     return;
 }
 
-$update = get_parameter('upd_button', '');
+$update = get_parameter('update_button', '');
 $default = (int) get_parameter('default', 0);
 
 // Header.
@@ -284,7 +284,7 @@ $(document).ready (function () {
         }
     });
     
-    $("#submit-upd_button").click(function () {
+    $("#button-update_button").click(function () {
         $("#fields_selected").find("option[value='0']").remove();
         $('#fields_selected option').map(function() {
             $(this).prop('selected', true);

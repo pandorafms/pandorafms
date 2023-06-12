@@ -879,6 +879,11 @@ if (is_ajax()) {
         $php_sys = json_decode($d->getPHPSetup());
         $system_date = json_decode($d->getSystemDate());
 
+        $lts_name = '';
+        if (empty($config['lts_name']) === false) {
+            $lts_name = ' <i>'.$config['lts_name'].'</i>';
+        }
+
         $fragmentation_status = '';
         if ($db_fragmentation->data->tablesFragmentationStatus->status === 1) {
             $fragmentation_status = html_print_image(
@@ -955,7 +960,7 @@ if (is_ajax()) {
                                 </th>
                                 <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
-                                    <p><span>'.__('Version').' '.$pandora_version.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
+                                    <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
                                     <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
                                     <p><span>Build</span>'.$build_version.'</p>
                                     <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';

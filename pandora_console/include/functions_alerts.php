@@ -2191,15 +2191,19 @@ function get_group_alerts(
                 } else {
                     $subQuery = 'SELECT id_agente_modulo
 						FROM tagente_modulo tam
-						WHERE delete_pending = 0 AND tam.disabled = 0
-							AND id_agente IN (SELECT id_agente
-								FROM tagente ta
-								LEFT JOIN tagent_secondary_group tasg
-									ON ta.id_agente = tasg.id_agent
-								WHERE ta.disabled = 0
-                                    AND
-										id_grupo IN ('.implode(',', $id_group).')
-										OR id_group IN ('.implode(',', $id_group).'))';
+						WHERE delete_pending = 0 
+                        AND tam.disabled = 0
+                        AND id_agente IN (
+                            SELECT ta.id_agente
+                            FROM tagente ta
+                            WHERE ta.disabled = 0
+                            AND ta.id_grupo IN ('.implode(',', $id_group).')
+                        )
+                        OR tam.id_agente IN (
+                            SELECT DISTINCT(tasg.id_agent)
+                            FROM tagent_secondary_group tasg
+                            WHERE tasg.id_group IN ('.implode(',', $id_group).')
+                        )';
                 }
             } else {
                 $subQuery = 'SELECT id_agente_modulo

@@ -2568,7 +2568,6 @@ function db_get_column_type(string $table, string $column='')
 function db_validate_sql(string $sql, $server=false)
 {
     if ($server !== false && is_metaconsole() === true) {
-        metaconsole_restore_db();
         $setup = metaconsole_get_connection($server);
         if (metaconsole_connect($setup) !== NOERR) {
             return false;

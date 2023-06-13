@@ -237,7 +237,13 @@ function process_user_login_remote($login, $pass, $api=false)
 
         // Active Directory.
         case 'ad':
-            if (enterprise_hook('ad_process_user_login', [$login, $pass]) === false) {
+            $sr = enterprise_hook('ad_process_user_login', [$login, $pass]);
+            // Try with secondary server.
+            if ($sr === false && (bool) $config['secondary_active_directory'] === true) {
+                $sr = enterprise_hook('ad_process_user_login', [$login, $pass, true]);
+            }
+
+            if ($sr === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
                 return false;
             }

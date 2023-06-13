@@ -623,6 +623,38 @@ function config_update_config()
                         $error_update[] = __('Domain');
                     }
 
+                    if (config_update_value('secondary_active_directory', get_parameter('secondary_active_directory'), true) === false) {
+                        $error_update[] = __('Secondary active directory');
+                    }
+
+                    if (config_update_value('ad_server_secondary', get_parameter('ad_server_secondary'), true) === false) {
+                        $error_update[] = __('Secondary active directory server');
+                    }
+
+                    if (config_update_value('ad_port_secondary', get_parameter('ad_port_secondary'), true) === false) {
+                        $error_update[] = __('Secondary active directory port');
+                    }
+
+                    if (config_update_value('ad_start_tls_secondary', get_parameter('ad_start_tls_secondary'), true) === false) {
+                        $error_update[] = __('Secondary start TLS');
+                    }
+
+                    if (config_update_value('recursive_search_secondary', get_parameter('recursive_search_secondary'), true) === false) {
+                        $error_update[] = __('Secondary recursive search');
+                    }
+
+                    if (config_update_value('ad_advanced_config_secondary', get_parameter('ad_advanced_config_secondary'), true) === false) {
+                        $error_update[] = __('Secondary advanced Config AD');
+                    }
+
+                    if (config_update_value('ldap_advanced_config_secondary', get_parameter('ldap_advanced_config_secondary'), true) === false) {
+                        $error_update[] = __('Secondary advanced Config LDAP');
+                    }
+
+                    if (config_update_value('ad_domain_secondary', get_parameter('ad_domain_secondary'), true) === false) {
+                        $error_update[] = __('Secondary domain');
+                    }
+
                     if (config_update_value('ad_adv_perms', get_parameter('ad_adv_perms'), true) === false) {
                         $error_update[] = __('Advanced Permisions AD');
                     }

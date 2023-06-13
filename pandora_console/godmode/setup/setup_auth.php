@@ -538,7 +538,13 @@ echo '</form>';
         if ($('input[type=checkbox][name=secondary_ldap_enabled]:checked').val() == 1) {
             $("tr[id*='ldap_'][id$='_secondary']").show();
         } else {
-                $( "tr[id*='ldap_'][id$='_secondary']" ).hide();
+            $( "tr[id*='ldap_'][id$='_secondary']" ).hide();
+        }
+
+        if ($('input[type=checkbox][name=secondary_active_directory]:checked').val() == 1) {
+            $("tr[id*='ad_'][id$='_secondary']").show();
+        } else {
+            $( "tr[id*='ad_'][id$='_secondary']" ).hide();
         }
     }
     $( document ).ready(function() {   

@@ -60,8 +60,6 @@ function menu_print_menu(&$menu)
         $sec2 = 'operation/agentes/estado_agente';
     } else if ($sec2 === 'godmode/alerts/configure_alert_template') {
         $sec2 = 'godmode/alerts/alert_templates';
-    } else if ($sec2 === 'godmode/events/events') {
-        $sec2 = 'godmode/events/events&section=filter';
     } else if ($sec2 === 'godmode/alerts/configure_alert_action') {
         $sec2 = 'godmode/alerts/alert_actions';
     } else if ($sec2 === 'godmode/alerts/configure_alert_command') {

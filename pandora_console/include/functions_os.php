@@ -23,8 +23,9 @@ function os_agents_critical($id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND
+                WHERE %s.disabled=0 AND
                 critical_count>0 AND id_os=%d',
+                $table,
                 $table,
                 $id_os
             )
@@ -36,9 +37,10 @@ function os_agents_critical($id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND
+                WHERE %s.disabled=0 AND
                 critical_count>0 AND
                 id_os=%d AND id_grupo IN (%s)',
+                $table,
                 $table,
                 $id_os,
                 implode(',', $groups)
@@ -60,8 +62,9 @@ function os_agents_ok($id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND
+                WHERE %s.disabled=0 AND
                 normal_count=total_count AND id_os=%d',
+                $table,
                 $table,
                 $id_os
             )
@@ -73,9 +76,10 @@ function os_agents_ok($id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND
+                WHERE %s.disabled=0 AND
                 normal_count=total_count AND
                 id_os=%d AND id_grupo IN (%s)',
+                $table,
                 $table,
                 $id_os,
                 implode(',', $groups)
@@ -97,9 +101,10 @@ function os_agents_warning($id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND
+                WHERE %s.disabled=0 AND
                 critical_count=0 AND warning_count>0
                 AND id_os=%d',
+                $table,
                 $table,
                 $id_os
             )
@@ -111,9 +116,10 @@ function os_agents_warning($id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND
+                WHERE %s.disabled=0 AND
                 critical_count=0 AND warning_count>0 AND
                 id_os=%d AND id_grupo IN (%s)',
+                $table,
                 $table,
                 $id_os,
                 implode(',', $groups)
@@ -135,9 +141,10 @@ function os_agents_unknown($id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND
+                WHERE %s.disabled=0 AND
                 critical_count=0 AND warning_count=0 AND
                 unknown_count>0 AND id_os=%d',
+                $table,
                 $table,
                 $id_os
             )
@@ -149,9 +156,10 @@ function os_agents_unknown($id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND
+                WHERE %s.disabled=0 AND
                 critical_count=0 AND warning_count=0 AND
                 unknown_count>0 AND id_os=%d AND id_grupo IN (%s)',
+                $table,
                 $table,
                 $id_os,
                 implode(',', $groups)
@@ -179,7 +187,8 @@ function os_agents_total(int $id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND id_os=%d',
+                WHERE %s.disabled=0 AND id_os=%d',
+                $table,
                 $table,
                 $id_os
             )
@@ -191,7 +200,8 @@ function os_agents_total(int $id_os)
             sprintf(
                 'SELECT COUNT(*)
                 FROM %s
-                WHERE tagente.disabled=0 AND id_os=%d AND id_grupo IN (%s)',
+                WHERE %s.disabled=0 AND id_os=%d AND id_grupo IN (%s)',
+                $table,
                 $table,
                 $id_os,
                 implode(',', $groups)

@@ -553,7 +553,7 @@ class ManageNetScanScripts extends Wizard
         $table->colspan['recon_name'][1] = 3;
 
         $data = [];
-        $data[0] = __('Script fullpath');
+        $data[0] = __('Script full path');
         $data[1] = '<input type="text" name="form_script" size=70 value="'.$form_script.'">';
         $table->data['recon_fullpath'] = $data;
         $table->colspan['recon_fullpath'][1] = 3;
@@ -732,9 +732,9 @@ class ManageNetScanScripts extends Wizard
                 true
             );
             $datam[0] .= '</a>';
-            $datam[0] .= '<div id="next_macro" class="invisible">';
+            $datam[0] .= '<div id="next_macro" class="invisible_important">';
             $datam[0] .= $i.'</div>';
-            $datam[0] .= '<div id="next_row" class="invisible">';
+            $datam[0] .= '<div id="next_row" class="invisible_important">';
             $datam[0] .= $next_name_number.'</div>';
 
             $delete_macro_style = '';

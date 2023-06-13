@@ -639,16 +639,8 @@ function config_update_config()
                         $error_update[] = __('Secondary start TLS');
                     }
 
-                    if (config_update_value('recursive_search_secondary', get_parameter('recursive_search_secondary'), true) === false) {
-                        $error_update[] = __('Secondary recursive search');
-                    }
-
-                    if (config_update_value('ad_advanced_config_secondary', get_parameter('ad_advanced_config_secondary'), true) === false) {
-                        $error_update[] = __('Secondary advanced Config AD');
-                    }
-
-                    if (config_update_value('ldap_advanced_config_secondary', get_parameter('ldap_advanced_config_secondary'), true) === false) {
-                        $error_update[] = __('Secondary advanced Config LDAP');
+                    if (config_update_value('ad_search_timeout', get_parameter('ad_search_timeout'), true) === false) {
+                        $error_update[] = __('AD search timeout');
                     }
 
                     if (config_update_value('ad_domain_secondary', get_parameter('ad_domain_secondary'), true) === false) {
@@ -3112,6 +3104,14 @@ function config_process_config()
 
     if (!isset($config['ad_port'])) {
         config_update_value('ad_port', 389);
+    }
+
+    if (!isset($config['ad_server_secondary'])) {
+        config_update_value('ad_server_secondary', 'localhost');
+    }
+
+    if (!isset($config['ad_port_secondary'])) {
+        config_update_value('ad_port_secondary', 389);
     }
 
     if (!isset($config['ad_start_tls'])) {

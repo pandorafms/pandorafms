@@ -210,7 +210,7 @@ if (is_ajax() === true) {
 
                 // Ldapsearch timeout.
                 // Default Ldapsearch timeout.
-                set_when_empty($config['ldap_searh_timeout'], 5);
+                set_when_empty($config['ldap_search_timeout'], 5);
                 $row = [];
                 $row['name'] = __('Ldap search timeout (secs)');
                 $row['control'] = html_print_input_text(

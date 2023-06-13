@@ -474,7 +474,7 @@ class TacticalWidget extends Widget
                 25
             );
             $table->data[0][0] .= \reporting_get_stats_alerts($data);
-                    $table->cellstyle[0][0] = 'vertical-align: top;';
+            $table->cellstyle[0][0] = 'vertical-align: top;';
 
             $data_agents = [];
             $data_agents['Critical'] = $data['monitor_critical'];

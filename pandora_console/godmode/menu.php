@@ -80,6 +80,12 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
         if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             enterprise_hook('applications_menu');
             enterprise_hook('cloud_menu');
+        }
+
+        if ((bool) check_acl($config['id_user'], 0, 'RW') === true
+            || (bool) check_acl($config['id_user'], 0, 'RM') === true
+            || (bool) check_acl($config['id_user'], 0, 'PM') === true
+        ) {
             enterprise_hook('console_task_menu');
         }
     }

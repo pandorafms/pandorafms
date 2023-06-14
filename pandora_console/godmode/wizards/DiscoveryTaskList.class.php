@@ -164,11 +164,9 @@ class DiscoveryTaskList extends HTML
 
         if (is_reporting_console_node() === false) {
             $ret2 = $this->showList(__('Host & devices tasks'), [0, 1]);
-            if (enterprise_installed()) {
-                $ret2 .= $this->showList(__('Applications tasks'), [3, 4, 5, 10, 11, 12], 'app');
-                $ret2 .= $this->showList(__('Cloud tasks'), [6, 7, 8, 13, 14], 'cloud');
-                $ret2 .= $this->showList(__('Custom tasks'), [-1], 'custom');
-            }
+            $ret2 .= $this->showList(__('Applications tasks'), [3, 4, 5, 10, 11, 12], 'app');
+            $ret2 .= $this->showList(__('Cloud tasks'), [6, 7, 8, 13, 14], 'cloud');
+            $ret2 .= $this->showList(__('Custom tasks'), [-1], 'custom');
         }
 
         if ($ret === false && $ret2 === false) {

@@ -228,12 +228,25 @@ if ($get_agent_alerts_agent_view) {
     } else {
         $whereAlertSimple .= sprintf(
             ' AND id_agent_module IN (
-            SELECT tam.id_agente_modulo
-            FROM tagente_modulo tam
-            WHERE tam.id_agente IN (SELECT ta.id_agente
-                FROM tagente ta LEFT JOIN tagent_secondary_group tasg ON
-                    ta.id_agente = tasg.id_agent
-                    WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)))) ',
+                SELECT tam.id_agente_modulo
+                FROM tagente_modulo tam
+                WHERE tam.id_agente IN (
+                    SELECT
+                        ta.id_agente
+                    FROM
+                        tagente ta
+                    WHERE
+                        ta.id_grupo IN (%s)
+                )
+                OR tam.id_agente IN (
+                    SELECT
+                        DISTINCT(tasg.id_agent)
+                    FROM
+                        tagent_secondary_group tasg
+                    WHERE
+                        tasg.id_group IN (%s)
+                )
+            ) ',
             implode(',', $id_groups),
             implode(',', $id_groups)
         );
@@ -833,12 +846,20 @@ if ($get_agent_alerts_datatable === true) {
         } else {
             $whereAlertSimple .= sprintf(
                 ' AND id_agent_module IN (
-            SELECT tam.id_agente_modulo
-            FROM tagente_modulo tam
-            WHERE tam.id_agente IN (SELECT ta.id_agente
-                FROM tagente ta LEFT JOIN tagent_secondary_group tasg ON
-                    ta.id_agente = tasg.id_agent
-                    WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)))) ',
+                    SELECT tam.id_agente_modulo
+                    FROM tagente_modulo tam
+                    WHERE
+                    tam.id_agente IN (
+                        SELECT ta.id_agente
+                        FROM tagente ta
+                        WHERE ta.id_grupo IN (%s)
+                    )
+                    OR tam.id_agente IN (
+                        SELECT DISTINCT(tasg.id_agent)
+                        FROM tagent_secondary_group tasg
+                        WHERE tasg.id_group IN (%s)
+                    )
+                ) ',
                 implode(',', $id_groups),
                 implode(',', $id_groups)
             );

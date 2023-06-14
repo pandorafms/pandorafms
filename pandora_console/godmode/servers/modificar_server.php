@@ -29,8 +29,8 @@
 // Load global vars.
 global $config;
 
-require_once 'include/functions_servers.php';
-require_once 'include/functions_graph.php';
+require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_graph.php';
 
 check_login();
 
@@ -205,24 +205,46 @@ if (isset($_GET['server']) === true) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_standard_header(
-        __('Remote Configuration'),
-        'images/gm_servers.png',
-        false,
-        'servers',
-        true,
-        $buttons,
-        [
+    if (is_metaconsole() === true) {
+        ui_print_standard_header(
+            __('Remote Configuration'),
+            'images/gm_servers.png',
+            false,
+            'servers',
+            true,
+            [],
             [
-                'link'  => '',
-                'label' => __('Servers'),
-            ],
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => 'index.php?sec=advanced&sec2=advanced/servers',
+                    'label' => __('%s servers', get_product_name()),
+                ],
+            ]
+        );
+    } else {
+        ui_print_standard_header(
+            __('Remote Configuration'),
+            'images/gm_servers.png',
+            false,
+            'servers',
+            true,
+            $buttons,
             [
-                'link'  => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server',
-                'label' => __('%s servers', get_product_name()),
-            ],
-        ]
-    );
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server',
+                    'label' => __('%s servers', get_product_name()),
+                ],
+            ]
+        );
+    }
+
 
     if ($tab === 'standard_editor') {
         $advanced_editor = false;

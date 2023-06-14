@@ -402,8 +402,8 @@ function process_user_login_remote($login, $pass, $api=false)
             $config['auth_error'] = __('User not found in database or incorrect password');
             return false;
         } else {
-            $user_info['fullname'] = db_escape_string_sql($sr['cn'][0]);
-            $user_info['email'] = $sr['mail'][0];
+            $user_info['fullname'] = db_escape_string_sql(io_safe_input($sr['cn'][0]));
+            $user_info['email'] = io_safe_input($sr['mail'][0]);
 
             // Create the user.
             $create_user = create_user_and_permisions_ldap(
@@ -799,6 +799,34 @@ function update_user(string $id_user, array $values)
 {
     if (is_array($values) === false) {
         return false;
+    }
+
+    if (isset($values['section']) === true) {
+        $homeScreenValues = [
+            HOME_SCREEN_DEFAULT        => __('Default'),
+            HOME_SCREEN_VISUAL_CONSOLE => __('Visual console'),
+            HOME_SCREEN_EVENT_LIST     => __('Event list'),
+            HOME_SCREEN_GROUP_VIEW     => __('Group view'),
+            HOME_SCREEN_TACTICAL_VIEW  => __('Tactical view'),
+            HOME_SCREEN_ALERT_DETAIL   => __('Alert detail'),
+            HOME_SCREEN_EXTERNAL_LINK  => __('External link'),
+            HOME_SCREEN_OTHER          => __('Other'),
+            HOME_SCREEN_DASHBOARD      => __('Dashboard'),
+        ];
+
+        if (array_key_exists($values['section'], $homeScreenValues) === true) {
+            $values['section'] = $homeScreenValues[$values['section']];
+        }
+
+        if (is_metaconsole() === true) {
+            $values['metaconsole_section'] = $values['section'];
+            $values['metaconsole_data_section'] = $values['data_section'];
+            $values['metaconsole_default_event_filter'] = $values['default_event_filter'];
+            unset($values['id_skin']);
+            unset($values['section']);
+            unset($values['data_section']);
+            unset($values['default_event_filter']);
+        }
     }
 
     $output = db_process_sql_update('tusuario', $values, ['id_user' => $id_user]);
@@ -1596,7 +1624,7 @@ function local_ldap_search(
     }
 
     $dn = ' -b '.escapeshellarg($dn);
-    $ldapsearch_command = 'ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
+    $ldapsearch_command = 'timeout '.$ldap_search_time.' ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
     $shell_ldap_search = explode("\n", shell_exec($ldapsearch_command));
     foreach ($shell_ldap_search as $line) {
         $values = explode('=>', $line);

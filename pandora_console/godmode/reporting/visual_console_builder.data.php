@@ -208,7 +208,7 @@ $table->data[2][] = html_print_label_input_block(
 if ($action === 'new') {
     $backgroundColorInput = html_print_input_color(
         'background_color',
-        'white',
+        '#FFFFFF',
         'background_color',
         false,
         true
@@ -408,7 +408,6 @@ $(document).ready (function () {
     });
     
     $( "button[type=submit]" ).click(function( event ) {
-        console.log('aaaaaaaaaaa');
         if (parseInt($('input[name=width]').val()) < 1024){
             alert('Default width is '+$('input[name=width]').val()+'px, smaller than minimum -> 1024px');
             $('input[name=width]').val('1024');

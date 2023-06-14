@@ -1,49 +1,8 @@
 START TRANSACTION;
 
-CREATE TABLE IF NOT EXISTS `tdiscovery_apps` (
-  `id_app` int(10) auto_increment,
-  `short_name` varchar(250) NOT NULL DEFAULT '',
-  `name` varchar(250) NOT NULL DEFAULT '',
-  `section` varchar(250) NOT NULL DEFAULT 'custom',
-  `description` varchar(250) NOT NULL DEFAULT '',
-  `version` varchar(250) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id_app`),
-  UNIQUE (`short_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
-CREATE TABLE IF NOT EXISTS `tdiscovery_apps_scripts` (
-  `id_app` int(10),
-  `macro` varchar(250) NOT NULL DEFAULT '',
-  `value` text NOT NULL DEFAULT '',
-  PRIMARY KEY (`id_app`, `macro`),
-  FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
-CREATE TABLE IF NOT EXISTS `tdiscovery_apps_executions` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_app` int(10),
-  `execution` text NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
-CREATE TABLE IF NOT EXISTS `tdiscovery_apps_tasks_macros` (
-  `id_task` int(10) unsigned NOT NULL,
-  `macro` varchar(250) NOT NULL DEFAULT '',
-  `type` varchar(250) NOT NULL DEFAULT 'custom',
-  `value` text NOT NULL DEFAULT '',
-  `temp_conf` tinyint unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id_task`, `macro`),
-  FOREIGN KEY (`id_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
-
-ALTER TABLE `trecon_task`
-  ADD COLUMN `id_app` int(10),
-  ADD COLUMN `setup_complete` tinyint unsigned NOT NULL DEFAULT 0,
-  ADD COLUMN `executions_timeout` int unsigned NOT NULL DEFAULT 60,
-  ADD FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE tpolicy_group_agents CONVERT TO CHARACTER SET UTF8MB4;
+ALTER TABLE tevent_sound CONVERT TO CHARACTER SET UTF8MB4;
+ALTER TABLE tsesion_filter CONVERT TO CHARACTER SET UTF8MB4;
 CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `id_filter` INT NOT NULL AUTO_INCREMENT,
     `id_name` TEXT NULL,
@@ -54,5 +13,31 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `user` TEXT NULL,
     PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
+    `id_filter` INT NOT NULL AUTO_INCREMENT,
+    `id_name` TEXT NULL,
+    `id_group_filter` TEXT NULL,
+    `id_search_mode` INT NULL,
+    `order` VARCHAR(45) NULL,
+    `search` VARCHAR(255) NULL,
+    `group_id` INT NULL,
+    `date_range` TINYINT NULL,
+    `start_date_defined` VARCHAR(45) NULL,
+    `start_date_time` VARCHAR(45) NULL,
+    `start_date_date` VARCHAR(45) NULL,
+    `start_date_date_range` VARCHAR(45) NULL,
+    `start_date_time_range` VARCHAR(45) NULL,
+    `end_date_date_range` VARCHAR(45) NULL,
+    `end_date_time_range` VARCHAR(45) NULL,
+    `agent` VARCHAR(255) NULL,
+    `source` VARCHAR(255) NULL,
+    `display_mode` INT NULL,
+    `capture_model` INT NULL,
+    `graph_type` INT NULL,
+    PRIMARY KEY (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+ALTER TABLE `talert_template_module_actions` ADD COLUMN `recovered` TINYINT NOT NULL DEFAULT 0;
 
 COMMIT;

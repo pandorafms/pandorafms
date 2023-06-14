@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC230426';
-$pandora_version = 'v7.0NG.770';
+$build_version = 'PC230613';
+$pandora_version = 'v7.0NG.771';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -220,7 +220,7 @@ if (!isset($config['inventory_changes_blacklist'])) {
 if (!isset($config['url_update_manager'])) {
     config_update_value(
         'url_update_manager',
-        'https://licensing.artica.es/pandoraupdate7/server.php'
+        'https://licensing.pandorafms.com/pandoraupdate7/server.php'
     );
 }
 

@@ -66,7 +66,7 @@ $table->head[1] = __('Icon');
 $table->head[2] = __('Name');
 $table->head[3] = __('Description');
 if ($is_management_allowed === true) {
-    $table->head[4] = '';
+    $table->head[4] = __('Actions');
 }
 
 if ($is_management_allowed === true) {
@@ -132,8 +132,7 @@ foreach ($osList as $os) {
             $data[] = html_print_anchor(
                 [
                     'href'    => $hrefDelete,
-                    'class'   => 'invert_filter main_menu_icon',
-                    'content' => html_print_image('images/delete.svg', true),
+                    'content' => html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']),
                 ],
                 true
             );

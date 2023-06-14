@@ -2197,9 +2197,12 @@ switch ($action) {
                                 'id_custom'
                             );
                             if ($values['treport_custom_sql_id'] == 0) {
-                                $values['external_source'] = get_parameter(
-                                    'sql'
-                                );
+                                $sql = get_parameter('sql', '');
+                                if ($sql !== '') {
+                                    $good_format = db_validate_sql($sql);
+                                }
+
+                                $values['external_source'] = $sql;
                             }
 
                             $values['historical_db'] = get_parameter(
@@ -2207,7 +2210,14 @@ switch ($action) {
                             );
                             $values['top_n_value'] = get_parameter('max_items');
 
-                            $values['server_name'] = get_parameter('combo_server');
+                            if ($values['type'] === 'sql_graph_hbar'
+                                || ($values['type'] === 'sql_graph_vbar')
+                                || ($values['type'] === 'sql_graph_pie')
+                            ) {
+                                $values['server_name'] = get_parameter('combo_server_sql');
+                            } else {
+                                $values['server_name'] = get_parameter('combo_server');
+                            }
                         } else if ($values['type'] == 'url') {
                             $values['external_source'] = get_parameter('url');
                         } else if ($values['type'] == 'event_report_group') {
@@ -2936,9 +2946,12 @@ switch ($action) {
                                 'id_custom'
                             );
                             if ($values['treport_custom_sql_id'] == 0) {
-                                $values['external_source'] = get_parameter(
-                                    'sql'
-                                );
+                                $sql = get_parameter('sql', '');
+                                if ($sql !== '') {
+                                    $good_format = db_validate_sql($sql);
+                                }
+
+                                $values['external_source'] = $sql;
                             }
 
                             $values['historical_db'] = get_parameter(
@@ -3684,7 +3697,7 @@ if ($idReport != 0) {
 
 $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
-if ($action !== 'update') {
+if (is_metaconsole() === true || $action !== 'update') {
     // Header.
     ui_print_standard_header(
         $textReportName,

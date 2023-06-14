@@ -278,8 +278,8 @@ function tactical_get_data(
         // Get total count of monitors for this group, except disabled.
         $list['_monitor_checks_'] = ($list['_monitors_not_init_'] + $list['_monitors_unknown_'] + $list['_monitors_warning_'] + $list['_monitors_critical_'] + $list['_monitors_ok_']);
 
-        // Calculate not_normal monitors
-        $list['_monitor_not_normal_'] = ($list[$i]['_monitor_checks_'] - $list['_monitors_ok_']);
+        // Calculate not_normal monitors.
+        $list['_monitor_not_normal_'] = ($list['_monitor_checks_'] - $list['_monitors_ok_']);
 
         if ($list['_monitor_not_normal_'] > 0 && $list['_monitor_checks_'] > 0) {
             $list['_monitor_health_'] = format_numeric((100 - ($list['_monitor_not_normal_'] / ($list['_monitor_checks_'] / 100))), 1);
@@ -293,7 +293,7 @@ function tactical_get_data(
             $list['_module_sanity_'] = 100;
         }
 
-        if (isset($list[$i]['_alerts_'])) {
+        if (isset($list['_alerts_'])) {
             if ($list['_monitors_alerts_fired_'] > 0 && $list['_alerts_'] > 0) {
                 $list['_alert_level_'] = format_numeric((100 - ($list['_monitors_alerts_fired_'] / ($list['_alerts_'] / 100))), 1);
             } else {

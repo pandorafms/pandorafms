@@ -338,7 +338,7 @@ class Client
     public function __construct(?array $settings)
     {
         // Default values.
-        $this->umHost = 'licensing.artica.es';
+        $this->umHost = 'licensing.pandorafms.com';
         $this->umPort = 443;
         $this->endPoint = '/';
         $this->insecure = false;

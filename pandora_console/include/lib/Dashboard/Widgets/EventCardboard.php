@@ -135,6 +135,7 @@ class EventCardboard extends Widget
 
         include_once $config['homedir'].'/include/functions_agents.php';
         include_once $config['homedir'].'/include/functions_modules.php';
+        include_once $config['homedir'].'/include/functions_events.php';
 
         // WARNING: Do not edit. This chunk must be in the constructor.
         parent::__construct(

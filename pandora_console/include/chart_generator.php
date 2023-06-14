@@ -46,6 +46,8 @@ if (json_last_error() === JSON_ERROR_NONE) {
     $session_id = $data_decoded['session_id'];
     $type_graph_pdf = $data_decoded['type_graph_pdf'];
     $id_user = $data_decoded['id_user'];
+    $slicebar = $data_decoded['slicebar'];
+    $slicebar_value = $data_decoded['slicebar_value'];
 
     $data_combined = [];
     if (isset($data_decoded['data_combined']) === true) {
@@ -64,6 +66,9 @@ global $config;
 // Care whit this!!! check_login not working if you remove this.
 $config['id_user'] = $id_user;
 $_SESSION['id_usuario'] = $id_user;
+if (!isset($config[$slicebar])) {
+    $config[$slicebar] = $slicebar_value;
+}
 
 // Try to initialize session using existing php session id.
 $user = new PandoraFMS\User(['phpsessionid' => $session_id]);

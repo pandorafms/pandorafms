@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.770
+# Version 7.0NG.771
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -302,13 +302,6 @@ dataserver_threads 1
 # Set 0 if want eMail deliver shared mail by all destination.
 mail_in_separate 1
 
-
-# xprobe2: Optional package to detect OS types using advanced TCP/IP 
-# fingerprinting tecniques, much more accurates than stadard nmap.
-# If not provided, nmap is used insted xprobe2
-
-xprobe2 /usr/bin/xprobe2
-
 # nmap: If provided, is used to detect OS type with recon server using 
 # advanded OS fingerprint technique. Xprobe2 gives more accurate results
 # Nmap is also used to do TCP port scanning in detected host.
@@ -606,7 +599,7 @@ unknown_block_size 1000
 global_alert_timeout 15
 
 # If set to 1 allows PandoraFMS Server to be configured via the web console (PANDORA FMS ENTERPRISE ONLY).
-remote_config 0
+remote_config 1
 
 # Remote address to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
 remote_config_address localhost

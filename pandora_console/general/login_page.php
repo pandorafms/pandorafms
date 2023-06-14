@@ -263,7 +263,7 @@ switch ($login_screen) {
         }
 
         if ($config['auth'] == 'saml') {
-            echo '<div id="log_nick" class="login_nick invisible" >';
+            echo '<div id="log_nick" class="login_nick invisible '.$style_theme.'" >';
                 html_print_input_text_extended(
                     'nick',
                     '',
@@ -294,7 +294,7 @@ switch ($login_screen) {
             echo '</div>';
 
             echo '<div id="log_button" class="login_button invisible">';
-                html_print_submit_button(__('Login as admin'), 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
+                html_print_submit_button(__('Let&#39;s go'), 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
             echo '</div>';
 
             echo '<div class="login_button" id="remove_button">';
@@ -303,7 +303,7 @@ switch ($login_screen) {
                     'input_saml',
                     false,
                     [
-                        'fixed_id' => 'submit-login_button',
+                        'fixed_id' => 'submit-admin_button',
                         'class'    => 'next_login',
                         'onclick'  => 'show_normal_menu()',
                         'id'       => 'input_saml',
@@ -833,13 +833,15 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
 ?>
 <script type="text/javascript" language="javascript">    
     function show_normal_menu() {
-        document.getElementById('input_saml').style.display = 'none';
+        event.preventDefault();
+        const style = '<?php echo $style_theme; ?>';
+
+        document.getElementById('remove_button').style.display = 'none';
         document.getElementById('log_nick').style.display = 'block';
         document.getElementById('log_pass').style.display = 'block';
+        document.getElementById('log_nick').className = `login_nick ${style}`;
+        document.getElementById('log_pass').className = `login_pass ${style}`;
         document.getElementById('log_button').style.display = 'block';
-        document.getElementById('remove_button').style.display = 'none';
-        document.getElementById('log_nick').className = 'login_nick';
-        document.getElementById('log_pass').className = 'login_pass';
     }
 
     switch ("<?php echo $login_screen; ?>") {

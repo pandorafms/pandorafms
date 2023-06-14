@@ -804,11 +804,6 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
 				 internal_counter = 0 WHERE id = ?', $id);
 
-		# Reset action thresholds
-		if (defined ($alert->{'id_template_module'})) {
-			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
-		}
-
 		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
 				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
@@ -855,7 +850,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		if ($pa_config->{'alertserver'} == 1) {
+		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
 				$alert, 1, $timestamp, 0, $extra_macros, $is_correlated_alert]);
 		} else {
@@ -919,7 +914,7 @@ sub pandora_execute_alert {
 			@actions = get_db_rows ($dbh,
 				'SELECT taa.name as action_name, taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
 					tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
-					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
+					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution, tatma.recovered
 				FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
 				WHERE tatma.id_alert_action = taa.id
 					AND taa.id_alert_command = tac.id
@@ -1030,10 +1025,13 @@ sub pandora_execute_alert {
 		
 		# Check the action threshold (template_action_threshold takes precedence over action_threshold)
 		my $threshold = 0;
-		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});
+		my $recovered = 0;
+		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});	
+		$action->{'recovered'} = 0 unless defined ($action->{'recovered'});
+
 		$threshold = $action->{'action_threshold'} if (defined ($action->{'action_threshold'}) && $action->{'action_threshold'} > 0);
 		$threshold = $action->{'module_action_threshold'} if (defined ($action->{'module_action_threshold'}) && $action->{'module_action_threshold'} > 0);
-		if (time () >= ($action->{'last_execution'} + $threshold)) {
+		if ((time () >= ($action->{'last_execution'} + $threshold)) || ($alert_mode == RECOVERED_ALERT && $action->{'recovered'} == 0)) {
 			my $monitoring_event_custom_data = '';
 
 			push(@{$custom_data->{'actions'}}, safe_output($action->{'action_name'}));
@@ -1043,13 +1041,33 @@ sub pandora_execute_alert {
 				$event_generated = 1;
 				$monitoring_event_custom_data = $custom_data;
 			}
+			
+				pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
 
-			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
-		} else {
-			if (defined ($module)) {
-				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
+			if($alert_mode == RECOVERED_ALERT) {
+				# Reset action thresholds and set recovered
+				if (defined ($alert->{'id_template_module'})) {
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+				}
 			} else {
-				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "'.", 10);
+					# Action executed again, set recovered to 0.
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+			}
+		} else {
+			if($alert_mode == RECOVERED_ALERT) {
+				if (defined ($alert->{'id_template_module'})) {
+					if (defined ($module)) {
+						logger ($pa_config, "Skipping recover action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
+					} else {
+						logger ($pa_config, "Skipping recover action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "'.", 10);
+					}
+				}
+			} else {		
+				if (defined ($module)) {
+					logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
+				} else {
+					logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "'.", 10);
+				}
 			}
 		}
 	}
@@ -1525,8 +1543,9 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		# Check for _module_graph_Xh_ macros
 		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
 		my $module_graph_list = {};
-		my $macro_regexp = "_modulegraph_(\\d+)h_";
+		my $macro_regexp = "_modulegraph_(?!([\\w\\s-]+_\\d+h_))(\\d+)h_";
 		my $macro_regexp2 = "_modulegraphth_(\\d+)h_";
+		my $macro_regexp3 = "_modulegraph_([\\w\\s-]+)_(\\d+)h_";
 		
 		# API connection
 		my $ua = new LWP::UserAgent;
@@ -1552,6 +1571,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		my $subst_func = sub {
 			my $hours = shift;
 			my $threshold = shift;
+			my $module = shift if @_;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
 				$params->{"other"} = $period . '%7C1%7C0%7C225%7C%7C14';
@@ -1562,8 +1582,12 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
+			if (defined($module)) {
+				$params->{"id"} = get_agent_module_id($dbh, $module, $agent->{'id_agente'});
+			}
+
 			$params->{"other_mode"} = 'url_encode_separator_%7C';
-			
+
 			if (! exists($module_graph_list->{$cid}) && defined $url) {
 				# Get the module graph image in base 64
 				my $response = $ua->post($url, $params);
@@ -1582,10 +1606,11 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		eval {
 			no warnings;
 			local $SIG{__DIE__};
-			$field3 =~ s/$macro_regexp/$subst_func->($1, 0)/ige;
+			$field3 =~ s/$macro_regexp/$subst_func->($2, 0)/ige;
 			$field3 =~ s/$macro_regexp2/$subst_func->($1, 1)/ige;
+			$field3 =~ s/$macro_regexp3/$subst_func->($2, 0, $1)/ige;
 		};
-		
+
 		# Default content type
 		my $content_type = $field4 . '; charset="iso-8859-1"';
 		
@@ -3559,9 +3584,21 @@ sub pandora_create_module ($$$$$$$$$$) {
 ##########################################################################
 ## Delete a module given its id.
 ##########################################################################
-sub pandora_delete_module ($$;$) {
-	my ($dbh, $module_id, $conf) = @_;
+sub pandora_delete_module {
+	my $dbh = shift;
+	my $module_id = shift;
+	my $conf = shift if @_;
+	my $cascade = shift if @_;
 	
+	# Recursively delete descendants (delete in cascade)
+	if (defined($cascade) && $cascade eq 1) {
+		my @id_children_modules = get_db_rows($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE parent_module_id = ?', $module_id);
+
+		foreach my $id_child_module (@id_children_modules) {
+				pandora_delete_module($dbh, $id_child_module->{'id_agente_modulo'}, $conf, 1);
+		}
+	}
+
 	# Get module data
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=?', $module_id);
 	return unless defined ($module);
@@ -4073,6 +4110,21 @@ sub pandora_event {
 	
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
+		my $keep_in_process_status_extra_id = pandora_get_tconfig_token ($dbh, 'keep_in_process_status_extra_id', 0);
+
+		if (defined ($keep_in_process_status_extra_id) && $keep_in_process_status_extra_id == 1) {
+			# Keep status if the latest event was In process 
+			logger($pa_config, "Checking status of latest event with extended id ".$id_extra, 10);
+			# Check if there is a previous event with that extra ID and it is currently in "in process" state
+			my $id_extra_inprocess_count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
+
+			# Only when the event comes as New. Validated events are excluded
+			if (defined($id_extra_inprocess_count) && $id_extra_inprocess_count > 0 && $event_status == 0) {
+				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
+				$event_status = 2;
+			}
+		}
+
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
 		db_do ($dbh, 'UPDATE tevento SET estado = 1, ack_utimestamp = ? WHERE estado IN (0,2) AND id_extra=?', $utimestamp, $id_extra);
 	}
@@ -5154,7 +5206,7 @@ sub get_module_status ($$$$) {
 	$warning_str = (defined ($warning_str) && valid_regex ($warning_str) == 1) ? safe_output($warning_str) : '';
 	
 	# Adjust percentage max/min values.
-	if ($module->{'percentage_critical'} == 1) {
+	if (defined($module->{'percentage_critical'}) && $module->{'percentage_critical'} == 1) {
 		if ($critical_max != 0 && $critical_min != 0) {
 			$critical_max = $last_data_value * (1 +  $critical_max / 100.0);
 			$critical_min = $last_data_value * (1 -  $critical_min / 100.0);
@@ -5171,7 +5223,7 @@ sub get_module_status ($$$$) {
 			$module->{'critical_inverse'} = 0;
 		}
 	}
-	if ($module->{'percentage_warning'} == 1) {
+	if (defined($module->{'percentage_warning'}) && $module->{'percentage_warning'} == 1) {
 		if ($warning_max != 0 && $warning_min != 0) {
 			$warning_max = $last_data_value * (1 +  $warning_max / 100.0);
 			$warning_min = $last_data_value * (1 -  $warning_min / 100.0);
@@ -5209,35 +5261,36 @@ sub get_module_status ($$$$) {
 			
 		# Critical
 		if ($critical_min ne $critical_max) {
-			# [critical_min, critical_max)
-			if ($module->{'critical_inverse'} == 0) {
-				return 1 if ($data >= $critical_min && $data < $critical_max);
-				return 1 if ($data >= $critical_min && $critical_max < $critical_min);
-			}
+			
 			# (-inf, critical_min), [critical_max, +inf)
-			else {
+			if (defined($module->{'critical_inverse'}) && $module->{'critical_inverse'} == 1) {
 				if ($critical_max < $critical_min) {
 					return 1 if ($data < $critical_min);
 				} else {
 					return 1 if ($data < $critical_min || $data >= $critical_max);
 				}
 			}
+			# [critical_min, critical_max)
+			else {
+				return 1 if ($data >= $critical_min && $data < $critical_max);
+				return 1 if ($data >= $critical_min && $critical_max < $critical_min);
+			}
 		}
 	
 		# Warning
 		if ($warning_min ne $warning_max) {
-			# [warning_min, warning_max)
-			if ($module->{'warning_inverse'} == 0) {
-				return 2 if ($data >= $warning_min && $data < $warning_max);
-				return 2 if ($data >= $warning_min && $warning_max < $warning_min);
-			}
 			# (-inf, warning_min), [warning_max, +inf)
-			else {
+			if (defined($module->{'warning_inverse'}) && $module->{'warning_inverse'} == 1) {
 				if ($warning_max < $warning_min) {
 					return 2 if ($data < $warning_min);
 				} else {
 					return 2 if ($data < $warning_min || $data >= $warning_max);
 				}
+			}
+			# [warning_min, warning_max)
+			else {
+				return 2 if ($data >= $warning_min && $data < $warning_max);
+				return 2 if ($data >= $warning_min && $warning_max < $warning_min);
 			}
 		}
 	}
@@ -5246,22 +5299,24 @@ sub get_module_status ($$$$) {
 
 		# Critical
 		$eval_result = eval {
-			if ($module->{'critical_inverse'} == 0) {
-				$critical_str ne '' && $data =~ /$critical_str/ ;
-			} else {
+			if (defined($module->{'critical_inverse'}) && $module->{'critical_inverse'} == 1) {
 				$critical_str ne '' && $data !~ /$critical_str/ ;
+			} else {
+				$critical_str ne '' && $data =~ /$critical_str/ ;
 			}
 		};
+			
 		return 1 if ($eval_result);
-
+		
 		# Warning
 		$eval_result = eval {
-			if ($module->{'warning_inverse'} == 0) {
-				$warning_str ne '' && $data =~ /$warning_str/ ;
-			} else {
+			if (defined($module->{'warning_inverse'}) && $module->{'warning_inverse'} == 1) {
 				$warning_str ne '' && $data !~ /$warning_str/ ;
+			} else {
+				$warning_str ne '' && $data =~ /$warning_str/ ;
 			}
 		};
+
 		return 2 if ($eval_result);
 	}
 
@@ -6662,6 +6717,9 @@ sub pandora_get_os ($$) {
 	if ($os =~ m/Apple/i || $os =~ m/Darwin/i) {
 		return 8;
 	}
+	if ($os =~ m/android/i) {
+		return 15;
+	}
 	if ($os =~ m/Linux/i) {
 		return 1;
 	}
@@ -6674,12 +6732,10 @@ sub pandora_get_os ($$) {
 	if ($os =~ m/embedded/i) {
 		return 14;
 	}
-	if ($os =~ m/android/i) {
-		return 15;
-	}
 	if ($os =~ m/BSD/i) {
 		return 4;
 	}
+		
 		
 	# Search for a custom OS
 	my $os_id = get_db_value ($dbh, 'SELECT id_os FROM tconfig_os WHERE name LIKE ?', '%' . $os . '%');

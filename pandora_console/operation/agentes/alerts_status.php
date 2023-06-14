@@ -271,29 +271,27 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
     }
 }
 
-if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
-    array_push(
-        $column_names,
-        ['text' => 'Module'],
-        ['text' => 'Template'],
-        [
-            'title' => __('Action'),
-            'text'  => __('Action'),
-            'style' => 'min-width: 15%;',
-        ],
-        ['text' => 'Last fired'],
-        ['text' => 'Status']
-    );
+array_push(
+    $column_names,
+    ['text' => 'Module'],
+    ['text' => 'Template'],
+    [
+        'title' => __('Action'),
+        'text'  => __('Action'),
+        'style' => 'min-width: 15%;',
+    ],
+    ['text' => 'Last fired'],
+    ['text' => 'Status']
+);
 
-    $columns = array_merge(
-        $columns,
-        ['agent_module_name'],
-        ['template_name'],
-        ['action'],
-        ['last_fired'],
-        ['status']
-    );
-}
+$columns = array_merge(
+    $columns,
+    ['agent_module_name'],
+    ['template_name'],
+    ['action'],
+    ['last_fired'],
+    ['status']
+);
 
 if (is_metaconsole() === false) {
     if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
@@ -375,7 +373,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'form'                => [
                 'inputs'    => [
                     [
@@ -417,7 +415,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'form'                => [
                 'html' => printFormFilterAlert(
@@ -441,7 +439,7 @@ if (is_metaconsole() === false) {
         if ($agent_view_page === true) {
             html_print_div(
                 [
-                    'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
+                    'class'   => 'action-buttons pdd_r_5px w100p',
                     'content' => html_print_submit_button(
                         __('Validate'),
                         'alert_validate',

@@ -988,7 +988,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/satellite@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1000,7 +1003,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/network-server@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1012,7 +1018,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/data-server@svg.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -2439,7 +2448,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $anchorHref = 'javascript: ".$script_modified.";';
+            $anchorHref = 'javascript: '.$script_modified.';';
         } else {
             $anchorHref = $url.'&amp;'.$offset_name.'='.$offset_page;
         }
@@ -2484,7 +2493,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $nextHref = 'javascript: ".$script_modified.";';
+            $nextHref = 'javascript: '.$script_modified.';';
         } else {
             $nextHref = $url.'&amp;'.$offset_name.'='.$offset_next_page;
         }
@@ -2516,7 +2525,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $lastHref = 'javascript: ".$script_modified.";';
+            $lastHref = 'javascript: '.$script_modified.';';
         } else {
             $lastHref = $url.'&amp;'.$offset_name.'='.$offset_lastpage;
         }
@@ -4010,7 +4019,7 @@ function ui_print_datatable(array $parameters)
                     $(".datatable-msg-info-'.$table_id.'").hide();
                     $("table#'.$table_id.'").show();
                     $("div.dataTables_paginate").show();
-                    $("div.dataTables_info").show();
+                    $("div.dataTables_info").hide();
                     $("div.dataTables_length").show();
                     $("div.dt-buttons").show();
 
@@ -4601,37 +4610,38 @@ function ui_toggle(
         $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
         $output .= '	/* <![CDATA[ */'."\n";
         $output .= "	$(document).ready (function () {\n";
+        $output .= '	    var switch_enable = '.(int) $switch.";\n";
         $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-        $output .= '            if (is_metaconsole == 0) {';
-        $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "			    }\n";
-        $output .= "			    else {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "			    }\n";
-        $output .= "		    }\n";
-        $output .= "		});\n";
-        $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
-        $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
-        $output .= $class_table;
+        $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
         $output .= "			}\n";
         $output .= "			else {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
         $output .= "			}\n";
         $output .= "		});\n";
+        $output .= '        if (switch_enable === 0) {';
+        $output .= "		    $('#tgl_ctrl_".$uniqid."').click(function() {\n";
+        $output .= '			    if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', true);\n";
+        $output .= $class_table;
+        $output .= "			    }\n";
+        $output .= "			    else {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= "			    }\n";
+        $output .= "		    });\n";
+        $output .= "	    }\n";
         $output .= "	});\n";
         $output .= '/* ]]> */';
         $output .= '</script>';
@@ -7232,10 +7242,8 @@ function ui_query_result_editor($name='default')
         ]
     );
 
-    $buttons = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
-    html_print_action_buttons(
-        $buttons
-    );
+    html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update']);
+
 }
 
 

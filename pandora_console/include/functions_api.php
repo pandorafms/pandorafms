@@ -9612,6 +9612,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
     $values['metaconsole_access_node'] = $other['data'][13];
+    $values['api_token'] = api_token_generate();
 
     if (empty($password) === true) {
         returnError('Password cannot be empty.');
@@ -9708,6 +9709,8 @@ function api_set_update_user($id, $thrash2, $other, $thrash3)
         if (!update_user_password($id, $other['data'][4])) {
             returnError('The user could not be updated. Password info incorrect.');
             return;
+        } else {
+            $values['api_token'] = api_token_generate();
         }
     }
 
@@ -13090,10 +13093,18 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento,estado FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
+
             if ($validation) {
                 foreach ($validation as $val) {
+                    if ((bool) $config['keep_in_process_status_extra_id'] === true
+                        && (int) $val['estado'] === EVENT_STATUS_INPROCESS
+                        && (int) $values['status'] === 0
+                    ) {
+                        $values['status'] = 2;
+                    }
+
                     api_set_validate_event_by_id($val['id_evento']);
                 }
             }

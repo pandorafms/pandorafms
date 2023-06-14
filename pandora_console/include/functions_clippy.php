@@ -296,22 +296,34 @@ function clippy_context_help($help=null)
     $code = str_replace('{clippy}', '#'.$id, $code);
     $code = str_replace('{clippy_obj}', 'intro_'.$id, $code);
 
-    $return = $code.'<div id="'.$id.'" class="inline"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
-        'images/clippy_icon.png',
-        true
-    ).'</a></div>
+    if ($help === 'module_unknow') {
+        $img = html_print_image(
+            'images/info-warning.svg',
+            true,
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'margin-left: -25px;',
+            ]
+        );
+    } else {
+        $img = html_print_image(
+            'images/info-warning.svg',
+            true,
+            ['class' => 'main_menu_icon invert_filter']
+        );
+    }
+
+    $return = $code.'<div id="'.$id.'" class="inline"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.$img.'</a></div>
         <script type="text/javascript">
         
         function show_'.$id.'() {
-            if (intro_'.$id.'.started()) {
-                started = 1;
-            }
-            else {
-                started = 0;
-            }
-            
-            if (started == 0)
-                intro_'.$id.'.start();
+            confirmDialog({
+                title: "'.__('You have unknown modules in this agent.').'",
+                message: "'.('Unknown modules are modules which receive data normally at least in one occassion, but at this time are not receving data. Please check our troubleshoot help page to help you determine why you have unknown modules.').'",
+                strOKButton: "'.__('Close').'",
+                hideCancelButton: true,
+                size: 675,
+            });
         }
         
         $(document).ready(function() {

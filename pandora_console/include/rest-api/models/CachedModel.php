@@ -79,6 +79,33 @@ abstract class CachedModel extends Model
         if ($ratio == 0 && $filter['cache_expiration'] > 0 && $widthRatio == 0) {
             $data = static::fetchCachedData($filter);
             $save_cache = true;
+            if (isset($filter['type']) === true
+                && (int) $filter['type'] === GROUP_ITEM
+                && empty($data) === false
+            ) {
+                // GROUP ITEM with cache.
+                if (isset($data['statusImageSrc']) === true) {
+                    $img = explode('images/console/icons/', $data['statusImageSrc']);
+                    if (empty($img[1]) === false) {
+                        $img_path = 'images/console/icons/'.$img[1];
+                        $data['statusImageSrc'] = ui_get_full_url(
+                            $img_path,
+                            false,
+                            false,
+                            false
+                        );
+                    }
+
+                    if (empty($img[0]) === false
+                        && isset($data['link']) === true
+                    ) {
+                        $img_aux = explode('images/console/icons/', $data['statusImageSrc']);
+                        if ($img_aux[0] !== $img[0]) {
+                            $data['link'] = str_replace($img[0], $img_aux[0], $data['link']);
+                        }
+                    }
+                }
+            }
         }
 
         if (isset($data) === false) {

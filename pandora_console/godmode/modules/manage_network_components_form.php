@@ -60,6 +60,7 @@ if ($create_network_from_module) {
     $max = $data_module['max'];
     $min = $data_module['min'];
     $module_interval = $data_module['module_interval'];
+    $target_ip = $data_module['target_ip'];
     $tcp_port = $data_module['tcp_port'];
     $tcp_rcv = $data_module['tcp_rcv'];
     $tcp_send = $data_module['tcp_send'];
@@ -120,6 +121,7 @@ if (isset($id)) {
         $max                     = $component['max'];
         $min                     = $component['min'];
         $module_interval         = $component['module_interval'];
+        $target_ip               = $component['target_ip'];
         $tcp_port                = $component['tcp_port'];
         $tcp_rcv                 = $component['tcp_rcv'];
         $tcp_send                = $component['tcp_send'];
@@ -207,6 +209,7 @@ if (isset($id)) {
         $max = '0';
         $min = '0';
         $module_interval = '300';
+        $target_ip = '';
         $tcp_port = '';
         $tcp_rcv = '';
         $tcp_send = '';

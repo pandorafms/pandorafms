@@ -736,7 +736,7 @@ div#main_pure {
 div#main,
 div#container,
 body.pure {
-  background-color: #111;
+  background-color: #111 !important;
 }
 
 form ul.form_flex {
@@ -1392,6 +1392,7 @@ p.trademark-copyright {
 #tab-database {
   height: 80%;
   overflow: auto;
+  width: 96%;
 }
 
 button.buttonButton,
@@ -1438,10 +1439,19 @@ select[multiple] option:active {
   background: #008d86;
 }
 
+.select2-search.select2-search--dropdown,
+.select2-results > .select2-results__options > .select2-results__option {
+  background-color: #222;
+}
+
 .select2-results
   > .select2-results__options
   > .select2-results__option.select2-results__option--highlighted {
   background-color: #008d86;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  color: var(--secondary-color) !important;
 }
 
 .filter_summary > div,
@@ -1599,4 +1609,8 @@ a.pandora_pagination,
 
 .font-title-font {
   color: #fff;
+}
+
+#visual-console-container a p {
+  color: #3f3f3f;
 }

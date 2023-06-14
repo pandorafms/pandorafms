@@ -11,7 +11,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='202304111'
+S_VERSION='2023050901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -30,6 +30,13 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$POOL_SIZE" ] || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 [ "$PANDORA_BETA" ] || PANDORA_BETA=0
 [ "$PANDORA_LTS" ]  || PANDORA_LTS=1
+
+#Check if possible to get os version
+if [ ! -e /etc/os-release ]; then
+    echo ' > Imposible to determinate the OS version for this machine, please make sure you are intalling in a compatible OS'
+    echo ' > More info: https://pandorafms.com/manual/en/documentation/02_installation/01_installing#minimum_software_requirements'
+    exit -1
+fi
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -85,7 +92,7 @@ check_pre_pandora () {
 }
 
 check_repo_connection () {
-    execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
+    execute_cmd "ping -c 2 firefly.pandorafms.com" "Checking Community repo"
     execute_cmd "ping -c 2 support.pandorafms.com" "Checking Enterprise repo"
 }
 
@@ -105,6 +112,12 @@ check_root_permissions () {
 ## Main
 echo "Starting PandoraFMS Community deployment ver. $S_VERSION"
 
+#check tools
+if ! grep --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+if ! sed --version &>> $LOGFILE ; then echo 'Error sed is not detected on the system, sed tool is needed for installation.'; exit -1 ;fi 
+if ! curl --version &>> $LOGFILE ; then echo 'Error curl is not detected on the system, curl tool is needed for installation.'; exit -1 ;fi 
+if ! ping -V &>> $LOGFILE ; then echo 'Error ping is not detected on the system, ping tool is needed for installation.'; exit -1 ;fi 
+
 # Centos Version
 if [ ! "$(grep -i centos /etc/redhat-release)" ]; then
          printf "${red}Error this is not a Centos Base system, this installer is compatible with Centos systems only${reset}\n"
@@ -118,7 +131,7 @@ os_name=$(grep ^PRETTY_NAME= /etc/os-release | cut -d '=' -f2 | tr -d '"')
 execute_cmd "echo $os_name" "OS detected: ${os_name}"
 
 echo -en "${cyan}Check Centos Version...${reset}"
-[ $(sed -nr 's/VERSION_ID+=\s*"([0-9])"$/\1/p' /etc/os-release) -eq '7' ]
+[[ $(sed -nr 's/VERSION_ID+=\s*"([0-9])"$/\1/p' /etc/os-release) -eq '7' ]]
 check_cmd_status 'Error OS version, Centos 7 is expected'
 
 # initialice logfile
@@ -273,7 +286,7 @@ console_dependencies=" \
     libzstd \
     openldap-clients \
     chromium \
-    http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
+    http://firefly.pandorafms.com/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
 execute_cmd "yum install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
 # Server dependencies
@@ -300,9 +313,9 @@ server_dependencies=" \
     bind-utils \
     whois \
     cpanminus \
-    http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
-    http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm \
-    https://firefly.artica.es/centos7/pandorawmic-1.0.0-1.x86_64.rpm"
+    http://firefly.pandorafms.com/centos7/xprobe2-0.3-12.2.x86_64.rpm \
+    http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
+    https://firefly.pandorafms.com/centos7/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "yum install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 
 # install cpan dependencies
@@ -311,13 +324,13 @@ execute_cmd "cpanm -i Thread::Semaphore"  "Installing Thread::Semaphore"
 
 # SDK VMware perl dependencies
 vmware_dependencies=" \
-    http://firefly.artica.es/centos8/VMware-vSphere-Perl-SDK-6.5.0-4566394.x86_64.rpm \
+    http://firefly.pandorafms.com/centos8/VMware-vSphere-Perl-SDK-6.5.0-4566394.x86_64.rpm \
     perl-JSON \
     perl-Archive-Zip \
     openssl-devel \
     perl-Crypt-CBC \
     perl-Digest-SHA \
-    http://firefly.artica.es/centos7/perl-Crypt-OpenSSL-AES-0.02-1.el7.x86_64.rpm"
+    http://firefly.pandorafms.com/centos7/perl-Crypt-OpenSSL-AES-0.02-1.el7.x86_64.rpm"
 execute_cmd "yum install -y $vmware_dependencies" "Installing SDK VMware perl dependencies"
 
 # Instant client Oracle
@@ -328,7 +341,7 @@ execute_cmd "yum install -y $oracle_dependencies || yum reinstall -y $oracle_dep
 
 #ipam dependencies
 ipam_dependencies=" \
-    http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
+    http://firefly.pandorafms.com/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     perl(NetAddr::IP) \
     perl(Sys::Syslog) \
     perl(DBI) \
@@ -451,20 +464,20 @@ export MYSQL_PWD=$DBPASS
 #Define packages
 #Define packages
 if [ "$PANDORA_LTS" -eq '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_server-7.0NG.noarch.rpm"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_console-7.0NG.noarch.rpm"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_server-7.0NG.noarch.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_console-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 elif [ "$PANDORA_LTS" -ne '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # if beta is enable
 if [ "$PANDORA_BETA" -eq '1' ] ; then
-    PANDORA_SERVER_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
-    PANDORA_CONSOLE_PACKAGE="http://firefly.artica.es/pandora_enterprise_nightlies/pandorafms_console-latest.noarch.rpm"
-    PANDORA_AGENT_PACKAGE="http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
+    PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.noarch.rpm"
+    PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # Downloading Pandora Packages
@@ -617,7 +630,16 @@ net.core.optmem_max = 81920
 
 EO_KO
 
-[ -d /dev/lxd/ ] || execute_cmd "sysctl --system" "Applying Kernel optimization"
+   echo -en "${cyan}Applying Kernel optimization... ${reset}"
+    sysctl --system &>> $LOGFILE
+    if [ $? -ne 0 ]; then
+        echo -e "${red}Fail${reset}"
+        echo -e "${yellow}Your kernel could not be optimized, you may be running this script in a virtualized environment with no support for accessing the kernel.${reset}"
+        echo -e "${yellow}This system can be used for testing but is not recommended for a production environment.${reset}"
+        echo "$old_sysctl_file" >  old_sysctl_file
+    else
+        echo -e "${green}OK${reset}"
+    fi
 fi
 
 # Fix pandora_server.{log,error} permissions to allow Console check them
@@ -704,7 +726,7 @@ cat > /etc/issue.net << EOF_banner
 
 Welcome to Pandora FMS appliance on CentOS
 ------------------------------------------
-Go to Public http://$ipplublic/pandora_console$to to login web console
+Go to Public http://$ipplublic/pandora_console to login web console
 $(ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v "172.17.0.1" | awk '{print $2}' | awk -F '/' '{print "Go to Local http://"$1"/pandora_console to login web console"}')
 
 You can find more information at http://pandorafms.com

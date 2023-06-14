@@ -572,6 +572,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   `fires_max` INT UNSIGNED DEFAULT 0,
   `module_action_threshold` INT NOT NULL DEFAULT 0,
   `last_execution` BIGINT NOT NULL DEFAULT 0,
+  `recovered` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
@@ -1023,6 +1024,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `target_ip` VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1310,6 +1312,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `shortcut_data` TEXT,
   `section` TEXT,
   `data_section` TEXT,
+  `metaconsole_section` VARCHAR(255) NOT NULL DEFAULT 'Default',
+  `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '',
   `force_change_pass` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `last_pass_change` DATETIME,
   `last_failed_login` DATETIME,
@@ -1324,6 +1328,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `id_filter`  INT UNSIGNED NULL DEFAULT NULL,
   `session_time` INT signed NOT NULL DEFAULT 0,
   `default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
+  `metaconsole_default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
   `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `autorefresh_white_list` TEXT ,
   `time_autorefresh` INT UNSIGNED NOT NULL DEFAULT 30,
@@ -1740,6 +1745,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
   `label_position` VARCHAR(50) NOT NULL DEFAULT 'down',
   `border_color` VARCHAR(200) DEFAULT '',
   `fill_color` VARCHAR(200) DEFAULT '',
+  `recursive_group` TINYINT NOT NULL DEFAULT 0,
   `show_statistics` TINYINT NOT NULL DEFAULT 0,
   `linked_layout_node_id` INT NOT NULL DEFAULT 0,
   `linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
@@ -2625,7 +2631,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`)
         ON DELETE CASCADE ON UPDATE CASCADE		
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
@@ -3705,6 +3711,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
   `label_position` VARCHAR(50) NOT NULL DEFAULT 'down',
   `border_color` VARCHAR(200) DEFAULT '',
   `fill_color` VARCHAR(200) DEFAULT '',
+  `recursive_group` TINYINT NOT NULL DEFAULT '0',
   `show_statistics` TINYINT NOT NULL DEFAULT 0,
   `linked_layout_node_id` INT NOT NULL DEFAULT 0,
   `linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
@@ -4252,7 +4259,7 @@ CREATE TABLE `tevent_sound` (
     `name` TEXT NULL,
     `sound` TEXT NULL,
     `active` TINYINT NOT NULL DEFAULT '1',
-PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tsesion_filter`
@@ -4266,7 +4273,7 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `type` TEXT NULL,
     `user` TEXT NULL,
     PRIMARY KEY (`id_filter`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 
 CREATE TABLE IF NOT EXISTS `twelcome_tip` (
@@ -4305,6 +4312,33 @@ CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
   `section` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`));
 
+-- ---------------------------------------------------------------------
+-- Table `tsesion_filter_log_viewer`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
+  `id_filter` INT NOT NULL AUTO_INCREMENT,
+  `id_name` TEXT NULL,
+  `id_group_filter` TEXT NULL,
+  `id_search_mode` INT NULL,
+  `order` VARCHAR(45) NULL,
+  `search` VARCHAR(255) NULL,
+  `group_id` INT NULL,
+  `date_range` TINYINT NULL,
+  `start_date_defined` VARCHAR(45) NULL,
+  `start_date_time` VARCHAR(45) NULL,
+  `start_date_date` VARCHAR(45) NULL,
+  `start_date_date_range` VARCHAR(45) NULL,
+  `start_date_time_range` VARCHAR(45) NULL,
+  `end_date_date_range` VARCHAR(45) NULL,
+  `end_date_time_range` VARCHAR(45) NULL,
+  `agent` VARCHAR(255) NULL,
+  `source` VARCHAR(255) NULL,
+  `display_mode` INT NULL,
+  `capture_model` INT NULL,
+  `graph_type` INT NULL,
+  PRIMARY KEY (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 CREATE TABLE IF NOT EXISTS `tdiscovery_apps_scripts` (
   `id_app` int(10),
   `macro` varchar(250) NOT NULL DEFAULT '',
@@ -4329,4 +4363,3 @@ CREATE TABLE IF NOT EXISTS `tdiscovery_apps_tasks_macros` (
   `temp_conf` tinyint unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_task`, `macro`),
   FOREIGN KEY (`id_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

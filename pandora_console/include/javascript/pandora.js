@@ -1436,7 +1436,7 @@ function openURLTagWindow(url) {
 function defineTinyMCE(selector) {
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking",
+    plugins: "preview, searchreplace, table, nonbreaking, link, image",
     promotion: false,
     branding: false
   });
@@ -2298,6 +2298,8 @@ var formatterDataVerticalBar = function(value, ctx) {
 $(document).ready(function() {
   $("#icon_about").click(function() {
     $("#icon_about").addClass("selected");
+    // Hidden  tips modal.
+    $(".window").css("display", "none");
 
     jQuery.post(
       "ajax.php",

@@ -537,7 +537,7 @@ if ($show_update_action_menu) {
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
             $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
-                $data .= __('Threshold');
+                $data .= __('Threshold').ui_print_help_tip(__('If a value of 0 is assigned, the Threshold of the action will be used.'), true);
             $data .= '</td>';
             $data .= '<td class="datos2">';
                 $data .= html_print_extended_select_for_time(

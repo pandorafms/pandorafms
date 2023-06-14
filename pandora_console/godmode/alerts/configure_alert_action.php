@@ -144,7 +144,7 @@ if ($disabled) {
 $name = '';
 $id_command = '';
 $group = 0;
-$action_threshold = 0;
+$action_threshold = '0';
 // All group is 0.
 if ($id) {
     $action = alerts_get_alert_action($id);
@@ -284,7 +284,7 @@ $table->data[1][0] = html_print_label_input_block(
 );
 
 $table->data[1][1] = html_print_label_input_block(
-    __('Threshold'),
+    __('Threshold').ui_print_help_tip(__('An alert action is executed only once within this time interval, regardless of how many times the alert is triggered.'), true),
     html_print_extended_select_for_time(
         'action_threshold',
         $action_threshold,

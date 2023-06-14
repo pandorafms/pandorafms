@@ -252,7 +252,7 @@ tr.group_view_data,
 .group_view_data,
 ol.steps li span,
 ol.steps li a {
-  color: #fff;
+  color: #fff !important;
 }
 
 /* Tabs icons change color */
@@ -753,7 +753,7 @@ form ul.form_flex {
 
 .invert_filter,
 .labels {
-  filter: invert(100%);
+  filter: invert(100%) !important;
 }
 
 .info_table .invert_filter,

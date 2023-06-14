@@ -118,7 +118,7 @@ $output = '<div id="tabs-sound-modal">';
 
         // Content tabs.
         $output .= '<div id="tabs-sound-modal-1">';
-        $output .= '<h3>';
+        $output .= '<h3 class="title-discovered-alerts">';
         $output .= __('Console configuration');
         $output .= '</h3>';
         $inputs = [];

@@ -284,7 +284,7 @@ function show_response_dialog(response_id, response) {
 }
 
 // Perform a response and put the output into a div
-function perform_response(response, response_id, index) {
+function perform_response(response, response_id, index = "") {
   $("#re_exec_command" + index).hide();
   $("#response_loading_command" + index).show();
   $("#response_out" + index).html("");

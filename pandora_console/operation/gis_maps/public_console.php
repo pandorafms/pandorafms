@@ -206,10 +206,10 @@ if ($layers != false) {
 
             $status = agents_get_status($idAgent);
             $icon = gis_get_agent_icon_map($idAgent, true, $status);
-            $icon = ui_get_full_url($icon);
             $icon_size = getimagesize($icon);
             $icon_width = $icon_size[0];
             $icon_height = $icon_size[1];
+            $icon = ui_get_full_url($icon);
 
             // Is a group item
             if (!empty($groupsByAgentId[$idAgent])) {

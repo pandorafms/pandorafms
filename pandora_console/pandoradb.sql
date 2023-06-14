@@ -4363,3 +4363,4 @@ CREATE TABLE IF NOT EXISTS `tdiscovery_apps_tasks_macros` (
   `temp_conf` tinyint unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_task`, `macro`),
   FOREIGN KEY (`id_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

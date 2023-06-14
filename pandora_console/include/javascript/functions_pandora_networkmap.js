@@ -1461,7 +1461,7 @@ function delete_nodes() {
   });
 }
 
-function zoom(manual) {
+function zoom_networkmap(manual) {
   if (typeof manual == "undefined") {
     manual = false;
   }
@@ -1877,7 +1877,7 @@ function init_minimap() {
       translation[0] = -(x * scale) / relation_min_nodes + width_svg / 2;
       translation[1] = -(y * scale) / relation_min_nodes + height_svg / 2;
 
-      zoom(true);
+      zoom_networkmap(true);
 
       event.stopPropagation();
 
@@ -1932,7 +1932,7 @@ function init_minimap() {
     translation[0] = -(x * scale) / relation_min_nodes + width_svg / 2;
     translation[1] = -(y * scale) / relation_min_nodes + height_svg / 2;
 
-    zoom(true);
+    zoom_networkmap(true);
 
     event.stopPropagation();
     return false;
@@ -3190,7 +3190,7 @@ function init_graph(parameter_object) {
   window.zoom_obj = d3.behavior.zoom();
   zoom_obj
     .scaleExtent([0.05, 1])
-    .on("zoom", zoom)
+    .on("zoom", zoom_networkmap)
     .translate(translation)
     .scale(scale);
 

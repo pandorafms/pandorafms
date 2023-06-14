@@ -430,10 +430,7 @@ class ManageExtensions extends HTML
                     return false;
                 }
 
-                chmod($installationFolder, 0777);
-                foreach (glob($installationFolder.'/*') as $file) {
-                    chmod($file, 0777);
-                }
+                $this->setPermissionfiles($installationFolder);
 
                 $result = $this->copyExtensionToServer($installationFolder, $nameFolder);
                 if ($result === false) {
@@ -476,10 +473,7 @@ class ManageExtensions extends HTML
         }
 
         $result = $this->copyFolder($path, $serverPath, $filesToExclude);
-        chmod($serverPath, 0777);
-        foreach (glob($serverPath.'/*') as $file) {
-            chmod($file, 0777);
-        }
+        $this->setPermissionfiles($serverPath);
 
         return $result;
     }
@@ -980,6 +974,29 @@ class ManageExtensions extends HTML
             'tdiscovery_apps',
             ['section' => $section]
         );
+    }
+
+
+    /**
+     * Set execution permission in folder items and subfolders.
+     *
+     * @param string $path Path folder to apply permissions.
+     *
+     * @return void
+     */
+    private function setPermissionfiles($path)
+    {
+        chmod($path, 0777);
+
+        if (is_dir($path)) {
+            $items = scandir($path);
+            foreach ($items as $item) {
+                if ($item != '.' && $item != '..') {
+                    $itemPath = $path.'/'.$item;
+                    $this->setPermissionfiles($itemPath);
+                }
+            }
+        }
     }
 
 

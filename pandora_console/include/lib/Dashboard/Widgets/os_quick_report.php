@@ -133,6 +133,7 @@ class OsQuickReportWidget extends Widget
         // Includes.
         enterprise_include_once('/include/functions_services.php');
         enterprise_include_once('/include/functions_servicemap.php');
+        include_once $config['homedir'].'/include/functions_os.php';
 
         // WARNING: Do not edit. This chunk must be in the constructor.
         parent::__construct(

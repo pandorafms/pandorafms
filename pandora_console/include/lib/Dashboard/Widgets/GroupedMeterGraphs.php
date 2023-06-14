@@ -170,6 +170,9 @@ class GroupedMeterGraphs extends Widget
             $widgetId
         );
 
+        // Include.
+        include_once $config['homedir'].'/include/functions_reporting.php';
+
         // Width.
         $this->width = $width;
 

@@ -2947,10 +2947,6 @@ switch ($action) {
                             );
                             if ($values['treport_custom_sql_id'] == 0) {
                                 $sql = get_parameter('sql', '');
-                                if ($sql !== '') {
-                                    $good_format = db_validate_sql($sql);
-                                }
-
                                 $values['external_source'] = $sql;
                             }
 
@@ -2958,6 +2954,19 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
+
+                            if ($values['type'] === 'sql_graph_hbar'
+                                || ($values['type'] === 'sql_graph_vbar')
+                                || ($values['type'] === 'sql_graph_pie')
+                            ) {
+                                $values['server_name'] = get_parameter('combo_server_sql');
+                            } else {
+                                $values['server_name'] = get_parameter('combo_server');
+                            }
+
+                            if ($sql !== '') {
+                                $good_format = db_validate_sql($sql, (is_metaconsole() === true) ? $values['server_name'] : false);
+                            }
                         } else if ($values['type'] == 'url') {
                             $values['external_source'] = get_parameter('url');
                         } else if ($values['type'] == 'event_report_group') {

@@ -2560,12 +2560,20 @@ function db_get_column_type(string $table, string $column='')
 /**
  * Validate sql query.
  *
- * @param string $sql Query for validate.
+ * @param string $sql    Query for validate.
+ * @param mixed  $server Server name where sql must connect.
  *
  * @return boolean True if query is valid.
  */
-function db_validate_sql(string $sql)
+function db_validate_sql(string $sql, $server=false)
 {
+    if ($server !== false && is_metaconsole() === true) {
+        $setup = metaconsole_get_connection($server);
+        if (metaconsole_connect($setup) !== NOERR) {
+            return false;
+        }
+    }
+
     try {
         error_reporting(0);
         db_process_sql_begin();
@@ -2576,6 +2584,10 @@ function db_validate_sql(string $sql)
     } finally {
         db_process_sql_rollback();
         error_reporting(E_ALL);
+    }
+
+    if ($server !== false && is_metaconsole() === true) {
+        metaconsole_restore_db();
     }
 
     return ($result !== false) ? true : false;

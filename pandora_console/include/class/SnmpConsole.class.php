@@ -236,27 +236,27 @@ class SnmpConsole extends HTML
                 'status',
                 [
                     'text'  => 'snmp_agent',
-                    'class' => 'snmp-td',
+                    'class' => 'snmp-td datos_green',
                 ],
                 [
                     'text'  => 'enterprise_string',
-                    'class' => 'snmp-td',
+                    'class' => 'snmp-td datos_green',
                 ],
                 [
                     'text'  => 'count',
-                    'class' => 'snmp-td',
+                    'class' => 'snmp-td datos_green',
                 ],
                 [
                     'text'  => 'trap_subtype',
-                    'class' => 'snmp-td',
+                    'class' => 'snmp-td datos_green',
                 ],
                 [
                     'text'  => 'user_id',
-                    'class' => 'snmp-td',
+                    'class' => 'snmp-td datos_green',
                 ],
                 [
                     'text'  => 'timestamp',
-                    'class' => 'snmp-td',
+                    'class' => 'snmp-td datos_green',
                 ],
                 'alert',
                 [

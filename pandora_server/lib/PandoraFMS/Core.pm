@@ -1025,7 +1025,6 @@ sub pandora_execute_alert {
 		
 		# Check the action threshold (template_action_threshold takes precedence over action_threshold)
 		my $threshold = 0;
-		my $recovered = 0;
 		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});	
 		$action->{'recovered'} = 0 unless defined ($action->{'recovered'});
 
@@ -1041,7 +1040,18 @@ sub pandora_execute_alert {
 				$event_generated = 1;
 				$monitoring_event_custom_data = $custom_data;
 			}
+			
 				pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
+
+			if($alert_mode == RECOVERED_ALERT) {
+				# Reset action thresholds and set recovered
+				if (defined ($alert->{'id_template_module'})) {
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id = ?', $action->{'id_alert_templ_module_actions'});
+				}
+			} else {
+					# Action executed again, set recovered to 0.
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id = ?', $action->{'id_alert_templ_module_actions'});
+			}
 		} else {
 			if($alert_mode == RECOVERED_ALERT) {
 				if (defined ($alert->{'id_template_module'})) {
@@ -1958,20 +1968,10 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		logger($pa_config, "Unknown action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'alias'} : 'N/A') . "'.", 3);
 	}
 	
-	# Update action last execution date and recovered alert.
+	# Update action last execution date
 	if ($alert_mode != RECOVERED_ALERT && defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
 		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
  			WHERE id = ?', int(time ()), $action->{'id_alert_templ_module_actions'});
-		# Update recovered status
-		db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0
-		WHERE id = ?', $action->{'id_alert_templ_module_actions'});
-
-	} else {
-		if (defined ($action->{'id_alert_templ_module_actions'})) {
-			# Update recovered status
-			db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1
-			WHERE id = ?', $alert->{'id_alert_templ_module_actions'});
-		}
 	}
 }
 

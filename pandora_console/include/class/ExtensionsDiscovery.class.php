@@ -562,7 +562,7 @@ class ExtensionsDiscovery extends Wizard
 
             case 'modules':
                 $input = html_print_select_from_sql(
-                    'select name, name as n from tmodule',
+                    'select nombre, nombre as n from tagente_modulo',
                     $name,
                     $defaultValue,
                     '',

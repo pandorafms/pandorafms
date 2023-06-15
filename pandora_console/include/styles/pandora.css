@@ -164,7 +164,7 @@
   font-weight: normal;
 }
 
-* {
+* :not(.external-visual-console-container *) {
   font-size: 9pt;
   line-height: 16pt;
 }

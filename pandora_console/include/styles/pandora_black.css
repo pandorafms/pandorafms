@@ -753,7 +753,7 @@ form ul.form_flex {
 
 .invert_filter,
 .labels {
-  filter: invert(100%);
+  filter: invert(100%) !important;
 }
 
 .info_table .invert_filter,

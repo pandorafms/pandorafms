@@ -745,9 +745,20 @@ function show_add_module() {
                                 });
                         }
                 }
-            ],   
+            ],
         });
     }
 }
-    
+
+function use_oid() {
+    $("#text-snmp_oid").val($("#hidden-snmp_oid").val());
+
+    $("#snmp_data").empty();
+
+    $("#snmp_data").css("display", "none");
+    $(".forced_title_layer").css("display", "none");
+
+    $("#snmp_browser_container").dialog("close");
+}
+
 </script>

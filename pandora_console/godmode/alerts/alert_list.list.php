@@ -912,7 +912,7 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'filter_none main_menu_icon']
+            ['class' => 'invert_filter main_menu_icon']
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {

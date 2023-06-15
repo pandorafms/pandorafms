@@ -4253,7 +4253,9 @@ function reporting_group_report($report, $content)
                     $data_node = reporting_groups_nodes($content);
                     $count_events += $data_node['count_events'];
                     foreach ($data_node['group_stats'] as $key => $value) {
-                        $group_stats[$key] += $value;
+                        if (array_key_exists($key, $group_stats)) {
+                            $group_stats[$key] += $value;
+                        }
                     }
 
                     if (is_metaconsole() === true) {

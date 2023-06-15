@@ -1025,7 +1025,6 @@ sub pandora_execute_alert {
 		
 		# Check the action threshold (template_action_threshold takes precedence over action_threshold)
 		my $threshold = 0;
-		my $recovered = 0;
 		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});	
 		$action->{'recovered'} = 0 unless defined ($action->{'recovered'});
 
@@ -1047,11 +1046,11 @@ sub pandora_execute_alert {
 			if($alert_mode == RECOVERED_ALERT) {
 				# Reset action thresholds and set recovered
 				if (defined ($alert->{'id_template_module'})) {
-					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id = ?', $action->{'id_alert_templ_module_actions'});
 				}
 			} else {
 					# Action executed again, set recovered to 0.
-					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id = ?', $action->{'id_alert_templ_module_actions'});
 			}
 		} else {
 			if($alert_mode == RECOVERED_ALERT) {
@@ -1970,7 +1969,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 	}
 	
 	# Update action last execution date
-	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
+	if ($alert_mode != RECOVERED_ALERT && defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
 		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
  			WHERE id = ?', int(time ()), $action->{'id_alert_templ_module_actions'});
 	}

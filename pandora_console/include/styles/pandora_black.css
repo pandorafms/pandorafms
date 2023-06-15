@@ -39,7 +39,7 @@ select,
 .selection,
 button.sub,
 .select2-container .select2-selection--single,
-.select2-container .select2-selection--multiple {
+.select2-container {
   background-color: #111 !important;
   color: #fff !important;
 }
@@ -1435,8 +1435,9 @@ button.submitButton.secondary:hover > div {
 }
 
 select[multiple] option:checked,
-select[multiple] option:active {
-  background: #008d86;
+select[multiple] option:active,
+select[multiple] option:hover {
+  background: #008d86 !important;
 }
 
 .select2-search.select2-search--dropdown,

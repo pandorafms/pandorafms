@@ -2198,10 +2198,6 @@ switch ($action) {
                             );
                             if ($values['treport_custom_sql_id'] == 0) {
                                 $sql = get_parameter('sql', '');
-                                if ($sql !== '') {
-                                    $good_format = db_validate_sql($sql);
-                                }
-
                                 $values['external_source'] = $sql;
                             }
 
@@ -2217,6 +2213,28 @@ switch ($action) {
                                 $values['server_name'] = get_parameter('combo_server_sql');
                             } else {
                                 $values['server_name'] = get_parameter('combo_server');
+                            }
+
+                            if ($sql !== '') {
+                                if ($values['server_name'] === 'all') {
+                                    $servers_connection = metaconsole_get_connections();
+                                    foreach ($servers_connection as $key => $s) {
+                                        $good_format = db_validate_sql($sql, $s['server_name']);
+                                    }
+
+                                    // Reconnected in nodo if exist.
+                                    if ($server_id !== 0) {
+                                        $connection = metaconsole_get_connection_by_id(
+                                            $server_id
+                                        );
+                                        metaconsole_connect($connection);
+                                    }
+                                } else if ($server_id === 0) {
+                                    // Connect with node if not exist conexion.
+                                    $good_format = db_validate_sql($sql, (is_metaconsole() === true) ? $values['server_name'] : false);
+                                } else {
+                                    $good_format = db_validate_sql($sql);
+                                }
                             }
                         } else if ($values['type'] == 'url') {
                             $values['external_source'] = get_parameter('url');
@@ -2965,7 +2983,25 @@ switch ($action) {
                             }
 
                             if ($sql !== '') {
-                                $good_format = db_validate_sql($sql, (is_metaconsole() === true) ? $values['server_name'] : false);
+                                if ($values['server_name'] === 'all') {
+                                    $servers_connection = metaconsole_get_connections();
+                                    foreach ($servers_connection as $key => $s) {
+                                        $good_format = db_validate_sql($sql, $s['server_name']);
+                                    }
+
+                                    // Reconnected in nodo if exist.
+                                    if ($server_id !== 0) {
+                                        $connection = metaconsole_get_connection_by_id(
+                                            $server_id
+                                        );
+                                        metaconsole_connect($connection);
+                                    }
+                                } else if ($server_id === 0) {
+                                    // Connect with node if not exist conexion.
+                                    $good_format = db_validate_sql($sql, (is_metaconsole() === true) ? $values['server_name'] : false);
+                                } else {
+                                    $good_format = db_validate_sql($sql);
+                                }
                             }
                         } else if ($values['type'] == 'url') {
                             $values['external_source'] = get_parameter('url');

@@ -2384,6 +2384,10 @@ switch ($action) {
                                 // $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'alert_report_group':
+                                $values['server_name'] = get_parameter('combo_server_sql');
+                            break;
+
                             case 'top_n':
                             case 'general':
                             case 'exception':
@@ -3188,6 +3192,10 @@ switch ($action) {
                                 $es['network_filter'] = get_parameter('network_filter');
                                 $es['alive_ip'] = get_parameter('alive_ip');
                                 $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
+                            break;
+
+                            case 'alert_report_group':
+                                $values['server_name'] = get_parameter('combo_server_sql');
                             break;
 
                             case 'top_n':

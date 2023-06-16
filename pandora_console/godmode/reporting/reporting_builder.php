@@ -2783,6 +2783,11 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'group_report':
+                                $values['server_name'] = get_parameter('combo_server');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -3229,10 +3234,6 @@ switch ($action) {
                                 $es['network_filter'] = get_parameter('network_filter');
                                 $es['alive_ip'] = get_parameter('alive_ip');
                                 $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
-                            break;
-
-                            case 'group_report':
-                                $values['server_name'] = get_parameter('combo_server');
                             break;
 
                             case 'top_n':

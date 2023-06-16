@@ -6125,8 +6125,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
-
     html_print_input_text_extended(
         $name,
         $default,
@@ -6138,7 +6136,7 @@ function html_print_autocomplete_users_from_integria(
         '',
         $attrs
     );
-    html_print_input_hidden($name.'_hidden', $id_agent_module);
+    html_print_input_hidden($name.'_hidden', $default);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>
@@ -6158,9 +6156,9 @@ function html_print_autocomplete_users_from_integria(
                             var term = request.term; //Word to search
                             
                             data_params = {
-                                page: "include/ajax/integria_incidents.ajax",
+                                page: "operation/ITSM/itsm",
                                 search_term: term,
-                                get_users: 1,
+                                method: "getUserSelect",
                             };
                             
                             jQuery.ajax ({

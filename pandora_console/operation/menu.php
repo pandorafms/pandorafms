@@ -688,6 +688,37 @@ if ($access_console_node === true) {
 $menu_operation['workspace']['sub'] = $sub;
 
 if ($access_console_node === true) {
+    // ITSM.
+    $menu_operation['ITSM']['text'] = __('ITSM');
+    $menu_operation['ITSM']['sec2'] = 'operation/ITSM/itsm';
+    $menu_operation['ITSM']['id'] = 'oper-itsm';
+
+    $sub = [];
+    // ITSM Tickets.
+    $sub['manageTickets']['text'] = __('Tickets');
+    $sub['manageTickets']['id'] = 'itsm-ticket';
+    $sub['manageTickets']['refr'] = 0;
+    $sub['manageTickets']['type'] = 'direct';
+    $sub['manageTickets']['subtype'] = 'nolink';
+
+    $sub2 = [];
+    $sub2['operation/ITSM/itsm&operation=list']['text'] = __('List');
+    $sub2['operation/ITSM/itsm&operation=list']['id'] = 'itsm-ticket-list';
+
+    $sub2['operation/ITSM/itsm&operation=edit']['text'] = __('Edit');
+    $sub2['operation/ITSM/itsm&operation=edit']['id'] = 'itsm-ticket-edit';
+
+    $sub['manageTickets']['sub2'] = $sub2;
+
+    // ITSM Dashboard.
+    $sub['operation/ITSM/itsm']['text'] = __('Dashboard');
+    $sub['operation/ITSM/itsm']['id'] = 'itsm-dashboard';
+    $sub['operation/ITSM/itsm']['refr'] = 0;
+
+    $menu_operation['ITSM']['sub'] = $sub;
+}
+
+if ($access_console_node === true) {
     // Rest of options, all with AR privilege (or should events be with incidents?)
     // ~ if (check_acl ($config['id_user'], 0, "AR")) {
     // Extensions menu additions.

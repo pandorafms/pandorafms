@@ -762,6 +762,62 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
     true
 );
 
+
+if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
+    // Integria IMS user remote login.
+    $table_remote = new StdClass();
+    $table_remote->data = [];
+    $table_remote->width = '100%';
+    $table_remote->id = 'integria-remote-setup';
+    $table_remote->class = 'white_box';
+    $table_remote->size['name'] = '30%';
+    $table_remote->style['name'] = 'font-weight: bold';
+
+    // Integria IMS user level authentication.
+    // Title.
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('Integria user configuration').': </p>';
+    $table_remote->data['integria_user_level_conf'] = $row;
+
+    // Integria IMS user.
+    $row = [];
+    $row['name'] = __('User');
+    $row['control'] = html_print_input_text('integria_user_level_user', $user_info['integria_user_level_user'], '', 30, 100, true);
+    $table_remote->data['integria_user_level_user'] = $row;
+
+    // Integria IMS pass.
+    $row = [];
+    $row['name'] = __('Password');
+    $row['control'] = html_print_input_password('integria_user_level_pass', io_output_password($user_info['integria_user_level_pass']), '', 30, 100, true);
+    $table_remote->data['integria_user_level_pass'] = $row;
+
+    // Test.
+    $integria_host = db_get_value('value', 'tconfig', 'token', 'integria_hostname');
+    $integria_api_pass = db_get_value('value', 'tconfig', 'token', 'integria_api_pass');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(
+        __('Start'),
+        'test-integria',
+        false,
+        'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')',
+        [ 'icon' => 'next' ],
+        true
+    );
+    $row['control'] .= '&nbsp;<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-integria-message" class="invisible"></span>';
+    $table_remote->data['integria_test'] = $row;
+
+    hd('Entra');
+    // echo '<div class="integria_user_conf">';
+    $userManagementTable->colspan['pandoraitsm'] = 2;
+    $userManagementTable->data['pandoraitsm'] = html_print_table($table_remote, true);
+    // echo '</div>';
+}
+
 if (isset($CodeQRTable) === true || isset($apiTokenContent) === true) {
     // QR Code and API Token advice.
     html_print_div(

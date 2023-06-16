@@ -1219,7 +1219,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers,
-                    'combo_server_sql',
+                    'combo_server',
                     $server_name,
                     ''
                 );
@@ -1240,7 +1240,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers_all_opt,
-                    'combo_server',
+                    'combo_server_sql',
                     $server_name,
                     '',
                     $nothing,
@@ -7192,6 +7192,8 @@ function chooseType() {
                 ?>
                 );
             });
+
+            $("#combo_server").trigger('change');
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');

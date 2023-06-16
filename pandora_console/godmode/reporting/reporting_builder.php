@@ -1757,6 +1757,10 @@ switch ($action) {
                                     'inventory_modules'
                                 );
                                 $es['inventory_regular_expression'] = get_parameter('inventory_regular_expression', '');
+                                if (is_metaconsole() === true) {
+                                    $es['inventory_server'] = get_parameter('combo_server');
+                                }
+
                                 $description = get_parameter('description');
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;

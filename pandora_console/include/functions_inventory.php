@@ -63,7 +63,12 @@ function inventory_get_data(
         array_push($where, 'id_agente IN ('.implode(',', $agents_ids).')');
     }
 
+    foreach ($inventory_module_name as $key => $module_name) {
+        $inventory_module_name[$key] = io_safe_output($module_name);
+    }
+
     if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name[0] !== 0
         && $inventory_module_name !== ''
         && $inventory_module_name !== 'all'
     ) {

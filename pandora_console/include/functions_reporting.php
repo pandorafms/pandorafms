@@ -4198,6 +4198,7 @@ function reporting_group_report($report, $content)
     if (is_metaconsole() === true) {
         if (isset($content['server_name']) === true
             && empty($content['server_name']) === false
+            && $content['server_name'] !== 'all'
         ) {
             $id_meta = metaconsole_get_id_server($content['server_name']);
             $server = metaconsole_get_connection_by_id($id_meta);
@@ -4253,7 +4254,9 @@ function reporting_group_report($report, $content)
                     $data_node = reporting_groups_nodes($content);
                     $count_events += $data_node['count_events'];
                     foreach ($data_node['group_stats'] as $key => $value) {
-                        $group_stats[$key] += $value;
+                        if (array_key_exists($key, $group_stats)) {
+                            $group_stats[$key] += $value;
+                        }
                     }
 
                     if (is_metaconsole() === true) {

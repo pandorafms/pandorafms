@@ -460,8 +460,9 @@ function menu_print_menu(&$menu)
                 ($main['sec2'] ?? null),
             ]
         ) === false
+            || $mainsec === 'about_operation'
         ) {
-            if ($count_sub_access > 0) {
+            if ($count_sub_access > 0 || $mainsec === 'about_operation') {
                 // If any susection have access but main section not, we change main link to first subsection found
                 $main['sec2'] = $first_sub_sec2;
             } else {

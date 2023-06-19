@@ -785,7 +785,10 @@ if ($access_console_node === true) {
     // ~ }
 }
 
-// Save operation menu array to use in operation/extensions.php view
+$menu_operation['about_operation']['text'] = __('About');
+$menu_operation['about_operation']['id'] = 'about_operation';
+
+// Save operation menu array to use in operation/extensions.php view.
 $operation_menu_array = $menu_operation;
 
 

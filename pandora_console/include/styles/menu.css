@@ -357,6 +357,11 @@
   background-size: 18px;
 }
 
+.icon_about_operation {
+  background: url(../../images/menu/about.svg) no-repeat 50% 50%;
+  background-size: 18px;
+}
+
 #menu_container {
   z-index: 3;
   position: absolute;

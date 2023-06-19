@@ -1734,7 +1734,12 @@ function netflow_get_top_summary(
     switch ($top_action) {
         case 'listeners':
             if (empty(!$filter)) {
-                $netflow_filter['ip_src'] = $filter;
+                if (!is_array($filter)) {
+                    $netflow_filter['ip_src'] = $filter;
+                } else {
+                    $netflow_filter['ip_src'] = $filter['ip'];
+                    $netflow_filter['advanced_filter'] = $filter['advanced_filter'];
+                }
             }
 
             $sort = 'dstip';
@@ -1742,7 +1747,12 @@ function netflow_get_top_summary(
 
         case 'talkers':
             if (empty(!$filter)) {
-                $netflow_filter['ip_dst'] = $filter;
+                if (!is_array($filter)) {
+                    $netflow_filter['ip_dst'] = $filter;
+                } else {
+                    $netflow_filter['ip_dst'] = $filter['ip'];
+                    $netflow_filter['advanced_filter'] = $filter['advanced_filter'];
+                }
             }
 
             $sort = 'srcip';
@@ -2069,7 +2079,7 @@ function netflow_aggregate_is_ip($aggregate)
  *
  * @return array With map structure.
  */
-function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
+function netflow_build_map_data($start_date, $end_date, $top, $aggregate, $advanced_filter='')
 {
     // Pass an empty filter data structure.
     $data = netflow_get_relationships_raw_data(
@@ -2083,7 +2093,7 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
             'ip_src'          => '',
             'dst_port'        => '',
             'src_port'        => '',
-            'advanced_filter' => '',
+            'advanced_filter' => $advanced_filter,
             'router_ip'       => '',
         ],
         $top,

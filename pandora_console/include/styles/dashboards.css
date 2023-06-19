@@ -684,6 +684,7 @@ form.modal-dashboard
   height: 100%;
   display: flex;
   flex-direction: column;
+  margin-left: 5px;
 }
 
 .widget-agent-hive-square-info-header {

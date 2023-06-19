@@ -308,6 +308,8 @@ class AgentHive extends Widget
                         window.open(url);
                     }
                 });
+
+                $("div [id*=hiveImg_] svg path").css("fill", "#99A3BE");
             });
         </script>';
 
@@ -403,16 +405,18 @@ class AgentHive extends Widget
 
                 // OS and alias.
                 $output .= '<div class="widget-agent-hive-square-info-body">';
-                    $output .= ui_print_os_icon(
-                        $data['id_os'],
-                        false,
-                        true,
-                        true,
-                        false,
-                        false,
-                        false,
-                        ['style' => 'margin-right: 5px;']
+                    $icon = (string) db_get_value(
+                        'icon_name',
+                        'tconfig_os',
+                        'id_os',
+                        (int) $data['id_os']
                     );
+                    $output .= '<div id="hiveImg_'.$id.'"
+                        style="width:20px;height:20px;margin-right: 5px;">';
+                        $output .= file_get_contents(
+                            ui_get_full_url('images/'.$icon)
+                        );
+                    $output .= '</div>';
                     $output .= ui_print_truncate_text(
                         ucfirst(io_safe_output($data['alias'])),
                         12,

@@ -376,7 +376,7 @@ class ManageExtensions extends HTML
         );
         $result = move_uploaded_file($disco['tmp_name'], $tmpPath.'/'.$nameFile);
         if ($result === true) {
-            $unzip = Files::unzip($tmpPath.'/'.$nameFile, $tmpPath);
+            $unzip = $this->unZip($tmpPath.'/'.$nameFile, $tmpPath);
             if ($unzip === true) {
                 unlink($tmpPath.'/'.$nameFile);
                 db_process_sql_begin();
@@ -430,7 +430,7 @@ class ManageExtensions extends HTML
                     return false;
                 }
 
-                $this->setPermissionfiles($installationFolder);
+                $this->setPermissionfiles($installationFolder, $this->iniFile['discovery_extension_definition']['execution_file']);
 
                 $result = $this->copyExtensionToServer($installationFolder, $nameFolder);
                 if ($result === false) {
@@ -473,7 +473,7 @@ class ManageExtensions extends HTML
         }
 
         $result = $this->copyFolder($path, $serverPath, $filesToExclude);
-        $this->setPermissionfiles($serverPath);
+        $this->setPermissionfiles($serverPath, $this->iniFile['discovery_extension_definition']['execution_file']);
 
         return $result;
     }
@@ -913,7 +913,7 @@ class ManageExtensions extends HTML
         );
         $result = move_uploaded_file($disco['tmp_name'], $tmpPath.'/'.$nameFile);
         if ($result === true) {
-            $unzip = Files::unzip($tmpPath.'/'.$nameFile, $tmpPath);
+            $unzip = $this->unZip($tmpPath.'/'.$nameFile, $tmpPath, 'discovery_definition.ini');
             if ($unzip === true) {
                 unlink($tmpPath.'/'.$nameFile);
                 $this->iniFile = parse_ini_file($tmpPath.'/discovery_definition.ini', true, INI_SCANNER_TYPED);
@@ -980,22 +980,58 @@ class ManageExtensions extends HTML
     /**
      * Set execution permission in folder items and subfolders.
      *
-     * @param string $path Path folder to apply permissions.
+     * @param string $path   Array of files to apply permissions.
+     * @param array  $filter Array of files for apply permission only.
      *
      * @return void
      */
-    private function setPermissionfiles($path)
+    private function setPermissionfiles($path, $filter=false)
     {
-        chmod($path, 0777);
+        global $config;
 
-        if (is_dir($path)) {
-            $items = scandir($path);
-            foreach ($items as $item) {
-                if ($item != '.' && $item != '..') {
-                    $itemPath = $path.'/'.$item;
-                    $this->setPermissionfiles($itemPath);
+        if ($filter !== false && is_array($filter) === true) {
+            foreach ($filter as $key => $file) {
+                if (substr($file, 0, 1) !== '/') {
+                    $file = $path.'/'.$file;
+                }
+
+                chmod($file, 0777);
+            }
+        } else {
+            chmod($path, 0777);
+
+            if (is_dir($path)) {
+                $items = scandir($path);
+                foreach ($items as $item) {
+                    if ($item != '.' && $item != '..') {
+                        $itemPath = $path.'/'.$item;
+                        $this->setPermissionfiles($itemPath);
+                    }
                 }
             }
+        }
+    }
+
+
+    /**
+     * Unzip folder or only file.
+     *
+     * @param string $zipFile     File to unzip.
+     * @param string $target_path Target path into unzip.
+     * @param string $file        If only need unzip one file.
+     *
+     * @return boolean  $result True if the file has been successfully decompressed.
+     */
+    public function unZip($zipFile, $target_path, $file=null)
+    {
+        $zip = new \ZipArchive;
+
+        if ($zip->open($zipFile) === true) {
+            $zip->extractTo($target_path, $file);
+            $zip->close();
+            return true;
+        } else {
+            return false;
         }
     }
 

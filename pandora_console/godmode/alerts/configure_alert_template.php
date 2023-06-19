@@ -333,6 +333,7 @@ function update_template($step)
         $wizard_level = (string) get_parameter('wizard_level');
         $priority = (int) get_parameter('priority');
         $id_group = get_parameter('id_group');
+        $name_check = db_get_value('name', 'talert_templates', 'name', $name);
         // Only for Metaconsole. Save the previous name for synchronizing.
         if (is_metaconsole() === true) {
             $previous_name = db_get_value('name', 'talert_templates', 'id', $id);
@@ -349,7 +350,12 @@ function update_template($step)
             'previous_name' => $previous_name,
         ];
 
-        $result = alerts_update_alert_template($id, $values);
+        if ($name_check === false) {
+            $result = alerts_update_alert_template($id, $values);
+        } else {
+            ui_print_warning_message(__('Another template with the same name already exists'));
+            $result = false;
+        }
     } else if ($step == 2) {
         $schedule = io_safe_output(get_parameter('schedule', []));
         json_decode($schedule, true);

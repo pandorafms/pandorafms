@@ -73,7 +73,8 @@ if ($config['pure']) {
 }
 
 // Control from managent polices.
-if ($_POST['type'] !== 'networkserver') {
+$type = get_parameter('type', false);
+if (empty($type) === false && $type !== 'networkserver') {
     // Header.
     ui_print_standard_header(
         __('SNMP Browser'),

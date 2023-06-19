@@ -3700,6 +3700,7 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'query_key_field'};
 	delete $parameters->{'name_oid'};
 	delete $parameters->{'module_type'};
+	delete $parameters->{'target_ip'};
 
 	if (defined $parameters->{'id_os'}) {
 		delete $parameters->{'id_os'};

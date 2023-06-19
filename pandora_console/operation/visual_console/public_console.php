@@ -15,13 +15,8 @@
 // The session is configured and started inside the config process.
 require_once '../../include/config.php';
 
-$legacy = (bool) get_parameter('legacy', $config['legacy_vc']);
 if (is_metaconsole() === true) {
     $config['requirements_use_base_url'] = true;
 }
 
-if ($legacy === false) {
-    include_once $config['homedir'].'/operation/visual_console/public_view.php';
-} else {
-    include_once $config['homedir'].'/operation/visual_console/legacy_public_view.php';
-}
+require_once $config['homedir'].'/operation/visual_console/public_view.php';

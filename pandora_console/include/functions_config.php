@@ -3417,10 +3417,6 @@ function config_process_config()
         config_update_value('dbtype', 'mysql');
     }
 
-    if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 0);
-    }
-
     if (!isset($config['vc_default_cache_expiration'])) {
         config_update_value('vc_default_cache_expiration', 60);
     }

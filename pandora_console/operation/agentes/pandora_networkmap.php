@@ -256,151 +256,164 @@ if ($new_networkmap || $save_networkmap) {
 
         $name = (string) get_parameter('name');
 
-        // Default size values.
-        $width = $config['networkmap_max_width'];
-        $height = $config['networkmap_max_width'];
-
-        $method = (string) get_parameter('method', 'fdp');
-
-        $recon_task_id = (int) get_parameter(
-            'recon_task_id',
-            0
+        $exist = db_get_row_filter(
+            'tmap',
+            [
+                'name'         => $name,
+                'id_group_map' => $id_group_map,
+            ],
         );
-        $ip_mask = get_parameter(
-            'ip_mask',
-            ''
-        );
-        $source = (string) get_parameter('source', 'group');
-        $dont_show_subgroups = (int) get_parameter_checkbox(
-            'dont_show_subgroups',
-            0
-        );
-        $node_radius = (int) get_parameter('node_radius', 40);
-        $description = get_parameter('description', '');
+        hd('Entraaaa', true);
+        hd($exist, true);
+        if ($exist !== false) {
+            $result_txt = ui_print_error_message(__('Another network map already exists with this name and group.'));
+        } else {
+            // Default size values.
+            $width = $config['networkmap_max_width'];
+            $height = $config['networkmap_max_width'];
 
-        $offset_x = get_parameter('pos_x', 0);
-        $offset_y = get_parameter('pos_y', 0);
-        $scale_z = get_parameter('scale_z', 0.5);
+            $method = (string) get_parameter('method', 'fdp');
 
-        $node_sep = get_parameter('node_sep', '0.25');
-        $rank_sep = get_parameter('rank_sep', ($method === 'twopi') ? '1.0' : '0.5');
-
-        $mindist = get_parameter('mindist', '1.0');
-        $kval = get_parameter('kval', '0.3');
-
-        $refresh_time = get_parameter('refresh_time', '300');
-
-        $values = [];
-        $values['name'] = $name;
-        $values['id_group'] = implode(',', $id_group);
-        $values['source_period'] = 60;
-        $values['width'] = $width;
-        $values['height'] = $height;
-        $values['id_user'] = $config['id_user'];
-        $values['description'] = $description;
-        $values['id_group_map'] = $id_group_map;
-        $values['refresh_time'] = $refresh_time;
-
-        switch ($method) {
-            case 'twopi':
-                $values['generation_method'] = LAYOUT_RADIAL;
-            break;
-
-            case 'dot':
-                $values['generation_method'] = LAYOUT_FLAT;
-            break;
-
-            case 'circo':
-                $values['generation_method'] = LAYOUT_CIRCULAR;
-            break;
-
-            case 'neato':
-                $values['generation_method'] = LAYOUT_SPRING1;
-            break;
-
-            case 'fdp':
-                $values['generation_method'] = LAYOUT_SPRING2;
-            break;
-
-            case 'radial_dinamic':
-                $values['generation_method'] = LAYOUT_RADIAL_DYNAMIC;
-            break;
-
-            default:
-                $values['generation_method'] = LAYOUT_RADIAL;
-            break;
-        }
-
-        if ($source == 'group') {
-            $values['source'] = 0;
-            $values['source_data'] = implode(',', $id_group);
-        } else if ($source == 'recon_task') {
-            $values['source'] = 1;
-            $values['source_data'] = $recon_task_id;
-        } else if ($source == 'ip_mask') {
-            $values['source'] = 2;
-            $values['source_data'] = $ip_mask;
-        }
-
-        if ($networkmap_write === false && $networkmap_manage === false) {
-            db_pandora_audit(
-                AUDIT_LOG_ACL_VIOLATION,
-                'Trying to access networkmap'
+            $recon_task_id = (int) get_parameter(
+                'recon_task_id',
+                0
             );
-            include 'general/noaccess.php';
-            return;
-        }
-
-        $filter = [];
-        $filter['dont_show_subgroups'] = $dont_show_subgroups;
-        $filter['node_radius'] = $node_radius;
-        $filter['x_offs'] = $offset_x;
-        $filter['y_offs'] = $offset_y;
-        $filter['z_dash'] = $scale_z;
-        $filter['node_sep'] = $node_sep;
-        $filter['rank_sep'] = $rank_sep;
-        $filter['mindist'] = $mindist;
-        $filter['kval'] = $kval;
-
-        $values['filter'] = json_encode($filter);
-
-        $result = false;
-        if (!empty($name)) {
-            $result = db_process_sql_insert(
-                'tmap',
-                $values
+            $ip_mask = get_parameter(
+                'ip_mask',
+                ''
             );
-        }
+            $source = (string) get_parameter('source', 'group');
+            $dont_show_subgroups = (int) get_parameter_checkbox(
+                'dont_show_subgroups',
+                0
+            );
+            $node_radius = (int) get_parameter('node_radius', 40);
+            $description = get_parameter('description', '');
 
-        $result_txt = ui_print_result_message(
-            $result,
-            __('Succesfully created'),
-            __('Could not be created'),
-            '',
-            true
-        );
+            $offset_x = get_parameter('pos_x', 0);
+            $offset_y = get_parameter('pos_y', 0);
+            $scale_z = get_parameter('scale_z', 0.5);
 
-        $id = $result;
-        define('_id_', $id);
+            $node_sep = get_parameter('node_sep', '0.25');
+            $rank_sep = get_parameter('rank_sep', ($method === 'twopi') ? '1.0' : '0.5');
 
-        if ($result !== false) {
-            $tab = 'view';
-            if ($values['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
-                $tab = 'r_dinamic';
-                define('_activeTab_', 'radial_dynamic');
-                $url = 'index.php?sec=network&sec2=operation/agentes/networkmap.dinamic&activeTab=radial_dynamic';
-                header(
-                    'Location: '.ui_get_full_url(
-                        $url.'&id_networkmap='.$id
-                    )
+            $mindist = get_parameter('mindist', '1.0');
+            $kval = get_parameter('kval', '0.3');
+
+            $refresh_time = get_parameter('refresh_time', '300');
+
+            $values = [];
+            $values['name'] = $name;
+            $values['id_group'] = implode(',', $id_group);
+            $values['source_period'] = 60;
+            $values['width'] = $width;
+            $values['height'] = $height;
+            $values['id_user'] = $config['id_user'];
+            $values['description'] = $description;
+            $values['id_group_map'] = $id_group_map;
+            $values['refresh_time'] = $refresh_time;
+
+            switch ($method) {
+                case 'twopi':
+                    $values['generation_method'] = LAYOUT_RADIAL;
+                break;
+
+                case 'dot':
+                    $values['generation_method'] = LAYOUT_FLAT;
+                break;
+
+                case 'circo':
+                    $values['generation_method'] = LAYOUT_CIRCULAR;
+                break;
+
+                case 'neato':
+                    $values['generation_method'] = LAYOUT_SPRING1;
+                break;
+
+                case 'fdp':
+                    $values['generation_method'] = LAYOUT_SPRING2;
+                break;
+
+                case 'radial_dinamic':
+                    $values['generation_method'] = LAYOUT_RADIAL_DYNAMIC;
+                break;
+
+                default:
+                    $values['generation_method'] = LAYOUT_RADIAL;
+                break;
+            }
+
+            if ($source == 'group') {
+                $values['source'] = 0;
+                $values['source_data'] = implode(',', $id_group);
+            } else if ($source == 'recon_task') {
+                $values['source'] = 1;
+                $values['source_data'] = $recon_task_id;
+            } else if ($source == 'ip_mask') {
+                $values['source'] = 2;
+                $values['source_data'] = $ip_mask;
+            }
+
+            if ($networkmap_write === false && $networkmap_manage === false) {
+                db_pandora_audit(
+                    AUDIT_LOG_ACL_VIOLATION,
+                    'Trying to access networkmap'
                 );
-            } else {
-                $url = 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap';
-                header(
-                    'Location: '.ui_get_full_url(
-                        $url.'&tab='.$tab.'&id_networkmap='.$id
-                    )
+                include 'general/noaccess.php';
+                return;
+            }
+
+            $filter = [];
+            $filter['dont_show_subgroups'] = $dont_show_subgroups;
+            $filter['node_radius'] = $node_radius;
+            $filter['x_offs'] = $offset_x;
+            $filter['y_offs'] = $offset_y;
+            $filter['z_dash'] = $scale_z;
+            $filter['node_sep'] = $node_sep;
+            $filter['rank_sep'] = $rank_sep;
+            $filter['mindist'] = $mindist;
+            $filter['kval'] = $kval;
+
+            $values['filter'] = json_encode($filter);
+
+            $result = false;
+            if (!empty($name)) {
+                $result = db_process_sql_insert(
+                    'tmap',
+                    $values
                 );
+            }
+
+            $result_txt = ui_print_result_message(
+                $result,
+                __('Succesfully created'),
+                __('Could not be created'),
+                '',
+                true
+            );
+
+            $id = $result;
+            define('_id_', $id);
+
+            if ($result !== false) {
+                $tab = 'view';
+                if ($values['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
+                    $tab = 'r_dinamic';
+                    define('_activeTab_', 'radial_dynamic');
+                    $url = 'index.php?sec=network&sec2=operation/agentes/networkmap.dinamic&activeTab=radial_dynamic';
+                    header(
+                        'Location: '.ui_get_full_url(
+                            $url.'&id_networkmap='.$id
+                        )
+                    );
+                } else {
+                    $url = 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap';
+                    header(
+                        'Location: '.ui_get_full_url(
+                            $url.'&tab='.$tab.'&id_networkmap='.$id
+                        )
+                    );
+                }
             }
         }
     }
@@ -464,70 +477,81 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
         }
 
         $name = (string) get_parameter('name', '');
-
-        $recon_task_id = (int) get_parameter(
-            'recon_task_id',
-            0
+        $exist = db_get_row_filter(
+            'tmap',
+            [
+                'name'         => $name,
+                'id_group_map' => $id_group_map,
+            ],
         );
 
-        $source = (string) get_parameter('source', 'group');
-
-        $offset_x = get_parameter('pos_x', 0);
-        $offset_y = get_parameter('pos_y', 0);
-        $scale_z = get_parameter('scale_z', 0.5);
-
-        $refresh_time = get_parameter('refresh_time', '300');
-
-        $values = [];
-        $values['name'] = $name;
-        $values['id_group'] = implode(',', $id_group);
-        $values['id_group_map'] = $id_group_map;
-
-        $description = get_parameter('description', '');
-        $values['description'] = $description;
-
-        $values['refresh_time'] = $refresh_time;
-
-        $dont_show_subgroups = (int) get_parameter('dont_show_subgroups', 0);
-        $node_radius = (int) get_parameter('node_radius', 40);
-        $row = db_get_row('tmap', 'id', $id);
-        $filter = json_decode($row['filter'], true);
-        $filter['dont_show_subgroups'] = $dont_show_subgroups;
-        $filter['node_radius'] = $node_radius;
-        $filter['x_offs'] = $offset_x;
-        $filter['y_offs'] = $offset_y;
-        $filter['z_dash'] = $scale_z;
-
-        $values['filter'] = json_encode($filter);
-
-        $result = false;
-        if (empty($name) === false) {
-            $result = db_process_sql_update(
-                'tmap',
-                $values,
-                ['id' => $id]
+        if ($exist !== false) {
+            $result_txt = ui_print_error_message(__('Another network map already exists with this name and group.'));
+        } else {
+            $recon_task_id = (int) get_parameter(
+                'recon_task_id',
+                0
             );
-            ui_update_name_fav_element($id, 'Network_map', $name);
-        }
 
-        $result_txt = ui_print_result_message(
-            $result,
-            __('Succesfully updated'),
-            __('Could not be updated'),
-            '',
-            true
-        );
+            $source = (string) get_parameter('source', 'group');
 
-        if ($result) {
-            // If change the group, the map must be regenerated
-            if ($id_group != $id_group_old) {
-                networkmap_delete_nodes($id);
-                // Delete relations.
-                networkmap_delete_relations($id);
+            $offset_x = get_parameter('pos_x', 0);
+            $offset_y = get_parameter('pos_y', 0);
+            $scale_z = get_parameter('scale_z', 0.5);
+
+            $refresh_time = get_parameter('refresh_time', '300');
+
+            $values = [];
+            $values['name'] = $name;
+            $values['id_group'] = implode(',', $id_group);
+            $values['id_group_map'] = $id_group_map;
+
+            $description = get_parameter('description', '');
+            $values['description'] = $description;
+
+            $values['refresh_time'] = $refresh_time;
+
+            $dont_show_subgroups = (int) get_parameter('dont_show_subgroups', 0);
+            $node_radius = (int) get_parameter('node_radius', 40);
+            $row = db_get_row('tmap', 'id', $id);
+            $filter = json_decode($row['filter'], true);
+            $filter['dont_show_subgroups'] = $dont_show_subgroups;
+            $filter['node_radius'] = $node_radius;
+            $filter['x_offs'] = $offset_x;
+            $filter['y_offs'] = $offset_y;
+            $filter['z_dash'] = $scale_z;
+
+            $values['filter'] = json_encode($filter);
+
+            $result = false;
+            if (empty($name) === false) {
+                $result = db_process_sql_update(
+                    'tmap',
+                    $values,
+                    ['id' => $id]
+                );
+                ui_update_name_fav_element($id, 'Network_map', $name);
             }
 
-            $networkmap_write = $networkmap_write_new;
-            $networkmap_manage = $networkmap_manage_new;
+            $result_txt = ui_print_result_message(
+                $result,
+                __('Succesfully updated'),
+                __('Could not be updated'),
+                '',
+                true
+            );
+
+            if ($result) {
+                // If change the group, the map must be regenerated
+                if ($id_group != $id_group_old) {
+                    networkmap_delete_nodes($id);
+                    // Delete relations.
+                    networkmap_delete_relations($id);
+                }
+
+                $networkmap_write = $networkmap_write_new;
+                $networkmap_manage = $networkmap_manage_new;
+            }
         }
     }
 

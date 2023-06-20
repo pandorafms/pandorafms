@@ -742,7 +742,7 @@ function inventory_get_datatable(
     }
 
     if ($utimestamp > 0) {
-        array_push($where, 'tagente_datos_inventory.utimestamp = '.$utimestamp.' ');
+        array_push($where, 'tagente_datos_inventory.utimestamp <= '.$utimestamp.' ');
     }
 
     $sql = sprintf(
@@ -761,12 +761,21 @@ function inventory_get_datatable(
             ON tagente.id_agente = tagent_module_inventory.id_agente
 
         WHERE %s
-        ORDER BY tmodule_inventory.id_module_inventory 
-        LIMIT %d, %d',
-        implode(' AND ', $where),
-        $offset,
-        $config['block_size']
+        ORDER BY tmodule_inventory.id_module_inventory
+        ',
+        implode(' AND ', $where)
     );
+
+    if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name !== ''
+        && $inventory_module_name !== 'all'
+    ) {
+        $sql .= sprintf(
+            'LIMIT %d, %d',
+            $offset,
+            $config['block_size']
+        );
+    }
 
     $rows = db_get_all_rows_sql($sql);
 

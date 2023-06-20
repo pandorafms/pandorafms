@@ -45,7 +45,6 @@ class ITSM
         if ($this->userLevelConf === true) {
             $this->userBearer = $user_info['integria_user_level_pass'];
         }
-
     }
 
 
@@ -77,6 +76,8 @@ class ITSM
         $path = $this->pathAction($action, $queryParams, $id);
         $url = $this->url.$path;
 
+        // Debugger.
+        // hd($url, true);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -85,15 +86,14 @@ class ITSM
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postFields));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
-        $result = curl_exec($ch);
+        $response = curl_exec($ch);
 
-        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        $result = json_decode($result, true);
+        $result = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception(__('Invalid response'));
+            throw new \Exception(__('Invalid response').', '.$response);
         }
 
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($http_status !== 200) {
             throw new \Exception($result['error']);
         }
@@ -144,6 +144,14 @@ class ITSM
             break;
 
             case 'updateIncidence':
+                $path = '/incidence/'.$id;
+            break;
+
+            case 'incidenceTypeFields':
+                $path = '/incidencetype/'.$id.'/field/list';
+            break;
+
+            case 'incidence':
                 $path = '/incidence/'.$id;
             break;
 

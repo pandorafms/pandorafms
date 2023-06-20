@@ -123,3 +123,23 @@ div.integria_details_description textarea {
 .comment_body {
   padding: 15px 20px 15px 20px;
 }
+
+/*---*/
+div.incidence-type-custom-fields {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.incidence-type-custom-fields > div {
+  flex: 1 1 45%;
+  display: flex;
+  margin: 0px 20px;
+  flex-direction: column;
+}
+
+.incidence-type-custom-fields > div.incidence-type-custom-fields-textarea {
+  flex: 1 1 100%;
+}

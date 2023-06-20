@@ -69,12 +69,10 @@ $table = new stdClass();
 $table->width = '100%';
 $table->id = 'edit-ticket-itms';
 $table->class = 'databox filter-table-adv';
-$table->head = [];
 $table->data = [];
-$table->size = [];
-$table->size = [];
 $table->colspan[0][0] = 2;
-$table->colspan[4][0] = 3;
+$table->colspan[2][0] = 3;
+$table->colspan[5][0] = 3;
 $table->colspan[6][0] = 3;
 
 $table->data[0][0] = html_print_label_input_block(
@@ -158,7 +156,9 @@ $table->data[1][2] = html_print_label_input_block(
     )
 );
 
-$table->data[2][0] = html_print_label_input_block(
+$table->data[2][0] = '<div class="object-type-fields">WIP...</div>';
+
+$table->data[3][0] = html_print_label_input_block(
     __('Status'),
     html_print_select(
         $status,
@@ -176,7 +176,7 @@ $table->data[2][0] = html_print_label_input_block(
     )
 );
 
-$table->data[2][1] = html_print_label_input_block(
+$table->data[3][1] = html_print_label_input_block(
     __('Creator').ui_print_help_tip(__('This field corresponds to the Integria IMS user specified in Integria IMS setup'), true),
     html_print_input_text(
         'idCreator',
@@ -192,7 +192,7 @@ $table->data[2][1] = html_print_label_input_block(
     )
 );
 
-$table->data[2][2] = html_print_label_input_block(
+$table->data[3][2] = html_print_label_input_block(
     __('Owner').ui_print_help_tip(__('Type at least two characters to search the user.'), true),
     html_print_autocomplete_users_from_integria(
         'owner',
@@ -205,7 +205,7 @@ $table->data[2][2] = html_print_label_input_block(
     )
 );
 
-$table->data[3][0] = '<div id="incidence-resolution" class="invisible">'.html_print_label_input_block(
+$table->data[4][0] = '<div id="incidence-resolution" class="invisible">'.html_print_label_input_block(
     __('Resolution'),
     html_print_select(
         $resolutions,
@@ -223,7 +223,7 @@ $table->data[3][0] = '<div id="incidence-resolution" class="invisible">'.html_pr
     ).'</div>'
 );
 
-$table->data[4][0] = html_print_label_input_block(
+$table->data[5][0] = html_print_label_input_block(
     __('Description').$help_macros,
     html_print_textarea(
         'description',
@@ -283,11 +283,27 @@ echo '</form>';
 
 <script type="text/javascript">
     $(document).ready(function () {
+        var ajax_url = '<?php echo ui_get_full_url('ajax.php'); ?>';
+        var fieldsData = '<?php echo json_encode($incidence['typeFieldData']); ?>';
+
         $('#status').on('change', function() {
             if ($(this).val() === 'CLOSED') {
                 $('#incidence-resolution').show();
             } else {
                 $('#incidence-resolution').hide();
+            }
+        }).trigger('change');
+
+        $('#idIncidenceType').on('change', function() {
+            if ($(this).val() != 0) {
+                $('.object-type-fields').show();
+                var output = getInputFieldsIncidenceType(
+                    $(this).val(),
+                    fieldsData,
+                    ajax_url
+                );
+            } else {
+                $('.object-type-fields').hide();
             }
         }).trigger('change');
     });

@@ -26,6 +26,7 @@ class Manager
     public $AJAXMethods = [
         'getListTickets',
         'getUserSelect',
+        'getInputFieldsIncidenceType',
     ];
 
     /**
@@ -106,12 +107,14 @@ class Manager
      */
     public function run()
     {
+        ui_require_css_file('integriaims');
         switch ($this->operation) {
             case 'list':
                 $this->showList();
             break;
 
             case 'edit':
+                \ui_require_javascript_file('ITSM');
                 $this->showEdit();
             break;
 
@@ -150,19 +153,9 @@ class Manager
         $create_incidence = (bool) \get_parameter('create_incidence', 0);
         $update_incidence = (bool) \get_parameter('update_incidence', 0);
         $idIncidence      = \get_parameter('idIncidence', 0);
-        $incidence = [
-            'title'           => \get_parameter('title', ''),
-            'idIncidenceType' => \get_parameter('idIncidenceType', 0),
-            'idGroup'         => \get_parameter('idGroup', 0),
-            'priority'        => 'LOW',
-        // \get_parameter('priority', 'LOW'),
-            'status'          => \get_parameter('status', 'NEW'),
-            'idCreator'       => \get_parameter('idCreator', ''),
-            'owner'           => \get_parameter('owner_hidden', ''),
-            'resolution'      => \get_parameter('resolution', null),
-            'description'     => \get_parameter('description', ''),
-        ];
 
+        // Debugger.
+        // hd($_POST);
         $error = '';
         $ITSM = new ITSM();
         try {
@@ -171,12 +164,47 @@ class Manager
             // $priorities = $ITSM->callApi('listPriorities');
             $resolutions = $this->getResolutions($ITSM);
             $status = $this->getStatus($ITSM);
+
+            if (empty($idIncidence) === false) {
+                $incidenceData = $this->getIncidence($ITSM, $idIncidence);
+            }
         } catch (\Throwable $th) {
             $error = $th->getMessage();
         }
 
+        // TODO: END POINT priorities.
+        // \get_parameter('priority', 'LOW').
+        $incidence = [
+            'title'           => \get_parameter('title', ($incidenceData['title'] ?? '')),
+            'idIncidenceType' => \get_parameter('idIncidenceType', ($incidenceData['idIncidenceType'] ?? 0)),
+            'idGroup'         => \get_parameter('idGroup', ($incidenceData['idGroup'] ?? 0)),
+            'priority'        => 'LOW',
+            'status'          => \get_parameter('status', ($incidenceData['status'] ?? 'NEW')),
+            'idCreator'       => \get_parameter('idCreator', ($incidenceData['idCreator'] ?? '')),
+            'owner'           => \get_parameter('owner_hidden', ''),
+            'resolution'      => \get_parameter('resolution', ($incidenceData['resolution'] ?? null)),
+            'description'     => \get_parameter('description', ($incidenceData['description'] ?? '')),
+        ];
+
         $successfullyMsg = '';
         try {
+            if (empty($incidence['idIncidenceType']) === false
+                && ($create_incidence === true || $update_incidence === true)
+            ) {
+                $customFields = \get_parameter('custom-fields', []);
+                if (empty($customFields) === false) {
+                    $typeFieldData = [];
+                    foreach ($customFields as $idField => $data) {
+                        $typeFieldData[] = [
+                            'idIncidenceTypeField' => $idField,
+                            'data'                 => $data,
+                        ];
+                    }
+                }
+
+                $incidence['typeFieldData'] = $typeFieldData;
+            }
+
             if ($create_incidence === true) {
                 $incidence = $this->createIncidence($ITSM, $incidence);
                 $idIncidence = $incidence['idIncidence'];
@@ -326,14 +354,58 @@ class Manager
 
 
     /**
+     * Get Incidence.
+     *
+     * @param ITSM    $ITSM        Object for callApi.
+     * @param integer $idIncidence Incidence ID.
+     *
+     * @return array Data incidence
+     */
+    private function getIncidence(ITSM $ITSM, int $idIncidence): array
+    {
+        $result = $ITSM->callApi(
+            'incidence',
+            [],
+            [],
+            $idIncidence,
+            'GET'
+        );
+
+        return $result;
+    }
+
+
+    /**
+     * Get fields incidence type.
+     *
+     * @param ITSM    $ITSM            Object for callApi.
+     * @param integer $idIncidenceType Incidence Type ID.
+     *
+     * @return array Fields array.
+     */
+    private function getFieldsIncidenceType(ITSM $ITSM, int $idIncidenceType): array
+    {
+        $result = $ITSM->callApi(
+            'incidenceTypeFields',
+            [
+                'page'     => 0,
+                'sizePage' => 0,
+            ],
+            [],
+            $idIncidenceType
+        );
+
+        return $result;
+    }
+
+
+    /**
      * Draw list dashboards.
      *
      * @return void
      */
     private function showDashboard()
     {
-        global $config;
-
         View::render(
             'ITSM/ITSMDashboardView',
             [
@@ -463,6 +535,50 @@ class Manager
         }
 
         echo json_encode($response);
+        exit;
+    }
+
+
+    /**
+     * Get Input fields of type incidence.
+     *
+     * @return void
+     */
+    public function getInputFieldsIncidenceType()
+    {
+        $idIncidenceType = (int) get_parameter('idIncidenceType', true);
+        $fieldsData = json_decode(io_safe_output(get_parameter('fieldsData', [])), true);
+        if (empty($fieldsData) === false) {
+            $fieldsData = array_reduce(
+                $fieldsData,
+                function ($carry, $user) {
+                    $carry[$user['idIncidenceField']] = $user['data'];
+                    return $carry;
+                }
+            );
+        } else {
+            $fieldsData = [];
+        }
+
+        $error = '';
+        try {
+            $ITSM = new ITSM();
+            $result = $this->getFieldsIncidenceType($ITSM, $idIncidenceType);
+            $customFields = $result['data'];
+        } catch (Throwable $e) {
+            $error = $e->getMessage();
+        }
+
+        View::render(
+            'ITSM/ITSMCustomFields',
+            [
+                'ajaxController' => $this->ajaxController,
+                'urlAjax'        => \ui_get_full_url('ajax.php'),
+                'customFields'   => $customFields,
+                'fieldsData'     => $fieldsData,
+                'error'          => $error,
+            ]
+        );
         exit;
     }
 

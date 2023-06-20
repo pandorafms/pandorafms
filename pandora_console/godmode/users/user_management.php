@@ -811,7 +811,6 @@ if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
     $row['control'] .= '<span id="test-integria-message" class="invisible"></span>';
     $table_remote->data['integria_test'] = $row;
 
-    hd('Entra');
     // echo '<div class="integria_user_conf">';
     $userManagementTable->colspan['pandoraitsm'] = 2;
     $userManagementTable->data['pandoraitsm'] = html_print_table($table_remote, true);

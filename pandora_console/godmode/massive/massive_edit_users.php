@@ -31,7 +31,7 @@ check_login();
 
 global $config;
 
-if (users_is_admin() === false) {
+if (check_acl($config['id_user'], 0, 'UM') !== 1) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access massive edit users'

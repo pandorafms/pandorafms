@@ -12240,3 +12240,8 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 .toggle-traffic-graph {
   margin: 0px !important;
 }
+
+div#visual-console-container * {
+  font-size: unset;
+  line-height: unset;
+}

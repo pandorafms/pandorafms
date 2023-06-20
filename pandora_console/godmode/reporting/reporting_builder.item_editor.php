@@ -6776,6 +6776,8 @@ function chooseType() {
             $("#row_dyn_height").show();
             $("#row_servers").show();
             $("#row_historical_db_check").show();
+            $("#sql_example").hide();
+            $("#sql_entry").show();
             break;
 
         case 'url':

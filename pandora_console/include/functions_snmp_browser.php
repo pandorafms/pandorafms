@@ -654,6 +654,18 @@ function snmp_browser_print_oid(
         );
     }
 
+    if (isset($_POST['print_copy_oid'])) {
+        // Hidden by default.
+        $output .= html_print_button(
+            __('Use this OID'),
+            'use_iod',
+            false,
+            'use_oid()',
+            'class="sub add invisible"',
+            true
+        );
+    }
+
     // Select agent modal.
     $output .= snmp_browser_print_create_modules(true);
 
@@ -1133,6 +1145,14 @@ function snmp_browser_print_container(
             false,
             false,
             'id_agent_module'
+        );
+        $output .= html_print_input_hidden(
+            'is_policy_agent',
+            1,
+            true,
+            false,
+            false,
+            'is_policy_agent'
         );
         $output .= html_print_table($table, true);
         $output .= html_print_div(

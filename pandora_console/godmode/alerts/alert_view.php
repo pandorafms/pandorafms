@@ -327,7 +327,7 @@ if (count($actions) == 1 && isset($actions[0])) {
 
         foreach ($action['escalation'] as $k => $v) {
             if ($v > 0) {
-                $table->data[$kaction][$k] = html_print_image(
+                $table->data[$kaction][$k] .= html_print_image(
                     'images/tick.png',
                     true,
                     ['class' => 'invert_filter']

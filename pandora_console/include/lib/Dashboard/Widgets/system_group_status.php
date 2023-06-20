@@ -482,7 +482,7 @@ class SystemGroupStatusWidget extends Widget
             }
         }
 
-        if ($all_group_selected === true) {
+        if ($all_group_selected === true && $this->values['groupRecursion'] === true) {
             $this->values['groupId'] = array_keys($result_groups);
         } else {
             $this->values['groupId'] = $selected_groups;

@@ -5333,7 +5333,7 @@ $(document).ready (function () {
                 break;
             case 'inventory':
             case 'inventory_changes':
-                if ($("select#inventory_modules>option:selected").val() == 0) {
+                if ($("select#inventory_modules>option:selected").val() == -1) {
                     dialog_message('#message_no_module');
                     return false;
                 }

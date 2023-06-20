@@ -252,7 +252,7 @@ function flot_area_graph(
 
     $return .= html_print_input_hidden(
         'line_width_graph',
-        $config['custom_graph_width'],
+        (empty($params['line_width']) === true) ? $config['custom_graph_width'] : $params['line_width'],
         true
     );
     $return .= "<div id='timestamp_$graph_id'

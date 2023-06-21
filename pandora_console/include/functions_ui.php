@@ -5616,6 +5616,9 @@ function ui_print_agent_autocomplete_input($parameters)
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
+        $background_results = 'background: #111;';
+    } else {
+        $background_results = 'background: #a8e7eb;';
     }
 
     $icon_image = html_print_image($icon_agent, true, false, true);
@@ -6289,7 +6292,7 @@ function ui_print_agent_autocomplete_input($parameters)
 							.appendTo(ul);
 						break;
 					case \'alias\':
-						return $("<li style=\'background: #a8e7eb;\'></li>")
+						return $("<li style=\"'.$background_results.'\"></li>")
 							.data("item.autocomplete", item)
 							.append(text)
 							.appendTo(ul);

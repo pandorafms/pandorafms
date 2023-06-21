@@ -395,6 +395,12 @@ class SystemGroupStatusWidget extends Widget
         $user_groups = users_get_groups(false, 'AR', $return_all_group);
 
         $selected_groups = explode(',', $this->values['groupId'][0]);
+        if (in_array(0, $selected_groups) === true) {
+            $selected_groups = [];
+            foreach (groups_get_all() as $key => $name_group) {
+                $selected_groups[] = groups_get_id($name_group);
+            }
+        }
 
          // Recursion.
         if ($this->values['groupRecursion'] === true) {

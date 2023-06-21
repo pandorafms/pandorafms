@@ -73,7 +73,8 @@ if ($config['pure']) {
 }
 
 // Control from managent polices.
-if ($_POST['type'] !== 'networkserver') {
+$type = get_parameter('type', false);
+if (empty($type) === false && $type !== 'networkserver') {
     // Header.
     ui_print_standard_header(
         __('SNMP Browser'),
@@ -745,9 +746,20 @@ function show_add_module() {
                                 });
                         }
                 }
-            ],   
+            ],
         });
     }
 }
-    
+
+function use_oid() {
+    $("#text-snmp_oid").val($("#hidden-snmp_oid").val());
+
+    $("#snmp_data").empty();
+
+    $("#snmp_data").css("display", "none");
+    $(".forced_title_layer").css("display", "none");
+
+    $("#snmp_browser_container").dialog("close");
+}
+
 </script>

@@ -12,6 +12,14 @@ use warnings;
 
 use File::Basename;
 BEGIN { push @INC, '/usr/lib/perl5'; }
+
+# NOTE: The binary compiled with PAR::Packer for Pandora FMS doesn't work well
+# with JSON:XS, probably because JSON::Backend::XS is defined in the __DATA__
+# section of JSON.pm and that doesn't work well with PAR::Filter.  If this
+# becomes a bottleneck, a workaround would be possible (e.g., redefining
+# JSON::Backend::XS here).
+BEGIN { $ENV{PERL_JSON_BACKEND} = 'JSON::PP' };
+
 use PandoraFMS::PluginTools;
 use PandoraFMS::Omnishell;
 

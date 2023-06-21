@@ -2298,6 +2298,8 @@ var formatterDataVerticalBar = function(value, ctx) {
 $(document).ready(function() {
   $("#icon_about").click(function() {
     $("#icon_about").addClass("selected");
+    // Hidden  tips modal.
+    $(".window").css("display", "none");
 
     jQuery.post(
       "ajax.php",

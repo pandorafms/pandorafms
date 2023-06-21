@@ -7162,6 +7162,10 @@ div.graph div.legend table {
   margin-bottom: 35px;
 }
 
+.mrgn_btn_35px_imp {
+  margin-bottom: 35px !important;
+}
+
 .mrgn_btn_40px {
   margin-bottom: 40px;
 }
@@ -11528,6 +11532,12 @@ span.subsection_header_title.secondary {
   margin-left: 0px;
 }
 
+.table-about p span i {
+  color: #454545;
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .table-about p.about-last-p {
   padding-bottom: 17px;
 }
@@ -11858,6 +11868,10 @@ div.relative > div > div#ui-datepicker-div {
 
 .container-div-input-password:has(.w400px-important) {
   width: 400px;
+}
+
+#message_dialog_connection {
+  height: auto !important;
 }
 
 #module_relations > thead > tr {
@@ -12229,6 +12243,11 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .toggle-traffic-graph {
   margin: 0px !important;
+}
+
+div#visual-console-container * {
+  font-size: unset;
+  line-height: unset;
 }
 
 .combo-oid-button {

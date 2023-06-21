@@ -425,7 +425,7 @@ $table_styles->data[$row][] = html_print_label_input_block(
 );
 
 $table_styles->data[$row][] = html_print_label_input_block(
-    __('Custom background logo'),
+    __('Custom background login'),
     html_print_div(
         [
             'class'   => 'select-with-sibling',

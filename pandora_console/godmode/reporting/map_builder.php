@@ -168,8 +168,8 @@ if ($delete_layout || $copy_layout) {
 
     // ACL for the visual console
     // $vconsole_read = check_acl ($config['id_user'], $group_id, "VR");
-    $vconsole_write = check_acl_restricted_all($config['id_user'], $group_id, 'VW');
-    $vconsole_manage = check_acl_restricted_all($config['id_user'], $group_id, 'VM');
+    $vconsole_write = check_acl_restricted_all($config['id_user'], $group_id, 'VW', true);
+    $vconsole_manage = check_acl_restricted_all($config['id_user'], $group_id, 'VM', true);
 
     if (!$vconsole_write && !$vconsole_manage) {
         db_pandora_audit(

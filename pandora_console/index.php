@@ -32,16 +32,6 @@ if (defined('__PAN_XHPROF__') === false) {
     define('__PAN_XHPROF__', 0);
 }
 
-require 'vendor/autoload.php';
-
-if (__PAN_XHPROF__ === 1) {
-    if (function_exists('tideways_xhprof_enable') === true) {
-        tideways_xhprof_enable();
-    } else {
-        error_log('Cannot find tideways_xhprof_enable function');
-    }
-}
-
 // Needed for InfoBox count.
 if (isset($_SESSION['info_box_count']) === true) {
     $_SESSION['info_box_count'] = 0;
@@ -140,6 +130,16 @@ if ((file_exists('include/config.php') === false)
     $login_screen = 'error_noconfig';
     include 'general/error_screen.php';
     exit;
+}
+
+require 'vendor/autoload.php';
+
+if (__PAN_XHPROF__ === 1) {
+    if (function_exists('tideways_xhprof_enable') === true) {
+        tideways_xhprof_enable();
+    } else {
+        error_log('Cannot find tideways_xhprof_enable function');
+    }
 }
 
 /*

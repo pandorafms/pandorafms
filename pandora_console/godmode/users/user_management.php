@@ -764,10 +764,12 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
 
 if (isset($CodeQRTable) === true || isset($apiTokenContent) === true) {
     // QR Code and API Token advice.
+    $titleQr = '<span class="font-title-font">'.__('Contact details (QR)').'</span>';
+    $titleApi = '<br><span class="font-title-font">'.__('API Token credentials').'</span>';
     html_print_div(
         [
             'id'      => 'api_qrcode_display',
-            'content' => $CodeQRTable.$apiTokenContent,
+            'content' => $titleQr.$CodeQRTable.$titleApi.$apiTokenContent,
         ]
     );
 }

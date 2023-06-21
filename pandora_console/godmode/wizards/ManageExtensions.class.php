@@ -431,6 +431,13 @@ class ManageExtensions extends HTML
                 }
 
                 $this->setPermissionfiles($installationFolder, $this->iniFile['discovery_extension_definition']['execution_file']);
+                $this->setPermissionfiles(
+                    $installationFolder,
+                    [
+                        $this->iniFile['discovery_extension_definition']['passencrypt_script'],
+                        $this->iniFile['discovery_extension_definition']['passdecrypt_script'],
+                    ]
+                );
 
                 $result = $this->copyExtensionToServer($installationFolder, $nameFolder);
                 if ($result === false) {

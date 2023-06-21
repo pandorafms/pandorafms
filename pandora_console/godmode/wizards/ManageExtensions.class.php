@@ -770,6 +770,14 @@ class ManageExtensions extends HTML
 
         $tempFiles = $this->iniFile['tempfile_confs']['file'];
         foreach ($tempFiles as $macro => $value) {
+            $sql = 'UPDATE `tdiscovery_apps_tasks_macros`
+                    SET `value` = "'.(string) io_safe_input($value).'" WHERE `id_task`
+                    IN (SELECT `id_rt` FROM `trecon_task` WHERE `id_app` = "'.$id.'") AND `macro` = "'.$macro.'"';
+            $result = db_process_sql($sql);
+            if ($result === false) {
+                return false;
+            }
+
             $sql = 'INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
                     (`id_task`, `macro`, `type`, `value`, `temp_conf`)
                     SELECT `id_rt`, "'.$macro.'", "custom", "'.(string) io_safe_input($value).'", "1"

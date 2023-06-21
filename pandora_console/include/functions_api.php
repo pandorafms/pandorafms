@@ -8610,7 +8610,7 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
         return;
     }
 
-    $new_configuration_data = io_safe_output(urldecode($configuration_data_serialized['data']));
+    $new_configuration_data = io_safe_output(base64_decode($configuration_data_serialized['data']));
 
     // Get current configuration.
     $old_configuration_data = config_agents_get_module_from_conf($id_agent, io_safe_output($module_name));

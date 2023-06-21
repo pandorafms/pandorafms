@@ -4410,8 +4410,8 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $ttl=1, $
     foreach ($data['sources'] as $key => $value) {
         $i = 0;
         foreach ($data['data'] as $k => $v) {
-            $chart['netflow_'.$key]['data'][$i][0] = ($k * 1000);
-            $chart['netflow_'.$key]['data'][$i][1] = $v[$key];
+            $chart[$key]['data'][$i][0] = ($k * 1000);
+            $chart[$key]['data'][$i][1] = $v[$key];
             $i++;
         }
     }

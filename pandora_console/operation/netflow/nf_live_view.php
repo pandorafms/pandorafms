@@ -727,6 +727,12 @@ ui_include_time_picker();
     .parent_graph {
         margin: 0 auto !important;
     }
+    .menu_graph{
+        display: none;
+    }
+    .parent_graph{
+        width: 97% !important;
+    }
 </style>
 
 <script type="text/javascript">

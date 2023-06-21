@@ -73,6 +73,7 @@ $meta = get_parameter('meta', 0);
 $history = get_parameter('history', 0);
 $table_events = get_parameter('table_events', 0);
 $total_events = (bool) get_parameter('total_events');
+$filter_groups = (string) get_parameter('filter_groups', '');
 $total_event_graph = (bool) get_parameter('total_event_graph');
 $graphic_event_group = (bool) get_parameter('graphic_event_group');
 $get_table_response_command = (bool) get_parameter('get_table_response_command');
@@ -2109,12 +2110,42 @@ if ($table_events) {
 if ($total_events) {
     global $config;
 
-    $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
-    if ($config['event_view_hr']) {
-        $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+    if (is_metaconsole() === true) {
+        $system_events = 0;
+        $servers = metaconsole_get_servers();
+
+        // Check if the group can be deleted or not.
+        if (isset($servers) === true
+            && is_array($servers) === true
+        ) {
+            foreach ($servers as $server) {
+                if (metaconsole_connect($server) == NOERR) {
+                    $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
+                    if ($config['event_view_hr']) {
+                        $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+                        if ($filter_groups !== '') {
+                            $sql_count_event .= ' AND id_grupo in ('.$filter_groups.')';
+                        }
+                    }
+
+                    $system_events += db_get_value_sql($sql_count_event);
+                }
+
+                metaconsole_restore_db();
+            }
+        }
+    } else {
+        $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
+        if ($config['event_view_hr']) {
+            $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+            if ($filter_groups !== '') {
+                $sql_count_event .= ' AND id_grupo in ('.$filter_groups.')';
+            }
+        }
+
+        $system_events = db_get_value_sql($sql_count_event);
     }
 
-    $system_events = db_get_value_sql($sql_count_event);
     echo $system_events;
     return;
 }

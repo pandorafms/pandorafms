@@ -382,6 +382,10 @@ class TacticalWidget extends Widget
 
         $data = [];
 
+        if (isset($all_data['_monitor_total_']) === false) {
+            $all_data['_monitor_total_'] = (int) $all_data['_monitor_checks_'];
+        }
+
         $data['monitor_not_init'] = (int) $all_data['_monitors_not_init_'];
         $data['monitor_unknown'] = (int) $all_data['_monitors_unknown_'];
         $data['monitor_ok'] = (int) $all_data['_monitors_ok_'];
@@ -393,6 +397,7 @@ class TacticalWidget extends Widget
         $data['monitor_total'] = (int) $all_data['_monitor_total_'];
 
         $data['total_agents'] = (int) $all_data['_total_agents_'];
+        $data['groups'] = $this->values['groupId'][0];
 
         $data['monitor_checks'] = (int) $all_data['_monitor_checks_'];
 
@@ -505,7 +510,7 @@ class TacticalWidget extends Widget
             $table->data = [];
             $table->style = [];
 
-            $table->data[0][0] = \reporting_get_stats_servers();
+            $table->data[0][0] = \reporting_get_stats_servers($data);
 
             $output .= \html_print_table($table, true);
         }

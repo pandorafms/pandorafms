@@ -2393,6 +2393,14 @@ try {
         ];
     }
 
+    $comment_id = array_search('user_comment', $fields);
+    if ($comment_id !== false) {
+        $fields[$comment_id] = [
+            'text'  => 'user_comment',
+            'class' => 'w180px',
+        ];
+    }
+
     // Always add options column.
     $fields = array_merge(
         $fields,

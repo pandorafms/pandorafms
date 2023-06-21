@@ -4337,10 +4337,17 @@ function generator_chart_to_pdf(
 
         // Creates a new page.
         $page = $browser->createPage();
+        $curl = curl_init();
 
-        // Navigate to an URL.
-        $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
-        $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, ['data' => json_encode($data)]);
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $page->setHtml($response);
 
         // Dynamic.
         $dynamic_height = $page->evaluate('document.getElementById("container-chart-generator-item").clientHeight')->getReturnValue();

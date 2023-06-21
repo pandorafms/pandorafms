@@ -186,7 +186,7 @@ $generalTitleContent[] = html_print_div([ 'class' => 'section_table_title', 'con
 $titledata[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $generalTitleContent) ], true);
 $table->data['general_title'] = $titledata;
 $table->data[0][0] = '<span class="font-title-font">'.__('Fields available').'</span>';
-$table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
+$table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px; height: auto');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     'images/darrowright.png',
     true,
@@ -220,7 +220,7 @@ $table->data[1][2] = html_print_select(
     false,
     '',
     false,
-    'width: 300px'
+    'width: 300px; height: auto'
 );
 
 echo '<form id="custom_status_monitor" method="post" action="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields&amp;pure='.$config['pure'].'" class="max_floating_element_size">';

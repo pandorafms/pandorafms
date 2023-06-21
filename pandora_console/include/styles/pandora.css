@@ -785,6 +785,10 @@ select:-internal-list-box {
   width: 100%;
 }
 
+.w100pi {
+  width: 100% !important;
+}
+
 /*
 * HEIGTH PERCENTILE
 */

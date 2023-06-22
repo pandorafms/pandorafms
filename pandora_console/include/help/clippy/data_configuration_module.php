@@ -32,7 +32,16 @@ function clippy_data_configuration_module()
     $return_tours['tours']['data_configuration_module']['steps'] = [];
     $return_tours['tours']['data_configuration_module']['steps'][] = [
         'init_step_context' => true,
-        'intro'             => '<table>'.'<tr>'.'<td class="context_help_title">'.__('Data Configuration Module.').'</td>'.'</tr>'.'<td class="context_help_body">'.__('Please note that information provided here affects how the agent collect information and generate the data XML. Any data/configuration reported by the agent, different from data or description is discarded, and the configuration shown in the console prevails over any configuration coming from the agent, this applies for example for crit/warn thresholds, interval, module group, min/max value, tags, etc.').'</td>'.'</tr>'.'<tr>'.'<td class="context_help_body">'.__('Information imported FIRST time from the XML will fill the information you can see in the console, but after the first import, system will ignore any update coming from the XML/Agent.').'</td>'.'</tr>'.'</table>',
+        'intro'             => __('Please note that information provided here affects how the agent collect information and generate the data XML. Any data/configuration reported by the agent, different from data or description is discarded, and the configuration shown in the console prevails over any configuration coming from the agent, this applies for example for crit/warn thresholds, interval, module group, min/max value, tags, etc.').__('Information imported FIRST time from the XML will fill the information you can see in the console, but after the first import, system will ignore any update coming from the XML/Agent.'),
+        'title'             => __('Data Configuration Module.'),
+        'img'               => html_print_image(
+            'images/info-warning.svg',
+            true,
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'margin-left: 5px;',
+            ]
+        ),
     ];
     $return_tours['tours']['data_configuration_module']['conf'] = [];
     $return_tours['tours']['data_configuration_module']['conf']['autostart'] = false;

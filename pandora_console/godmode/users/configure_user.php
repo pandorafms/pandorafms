@@ -201,8 +201,9 @@ if (is_metaconsole() === true) {
         $buttons[$tab]['active'] = true;
     }
 
+    $edit_user = get_parameter('edit_user');
     ui_print_standard_header(
-        (empty($id) === false) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
+        ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         'images/gm_users.png',
         false,
         '',
@@ -385,9 +386,8 @@ if ($create_user === true) {
     // Generate new API token.
     $values['api_token'] = api_token_generate();
     // Validate the user ID if it already exists.
-    $user_exists = get_user_info($id);
-
-    if (empty($id) === true) {
+    $user_exists = get_user_info($values['id_user']);
+    if (empty($values['id_user']) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
         $user_info = $values;

@@ -501,7 +501,7 @@ class TopNEventByGroupWidget extends Widget
                         ],
                         'elements' => [
                             'center' => [
-                                'text'  => '10000',
+                                'text'  => $sum,
                                 'color' => '#2c3e50',
                             ],
                         ],

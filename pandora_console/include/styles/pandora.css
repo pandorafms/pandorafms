@@ -9011,8 +9011,7 @@ div.graph div.legend table {
 }
 
 .app_mssg {
-  position: absolute;
-  bottom: 1em;
+  margin: 1em;
   clear: both;
   color: #888;
 }

@@ -432,12 +432,14 @@ if (is_management_allowed() === false) {
         $text_warning = __('any node');
     }
 
-    ui_print_warning_message(
-        __(
-            'This node is configured with centralized mode. To delete agents go to %s',
-            $text_warning
-        )
-    );
+    if ($option == 'delete_agents') {
+        ui_print_warning_message(
+            __(
+                'This node is configured with centralized mode. To delete agents go to %s',
+                $text_warning
+            )
+        );
+    }
 }
 
 $tip = '';

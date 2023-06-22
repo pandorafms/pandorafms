@@ -4544,7 +4544,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                 <input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text">
                             </td>
                             <td class="sla_list_sla_limit_col">
-                                <input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text" required>
+                                <input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text">
                             </td>
                             <td class="sla_list_action_col center">
                                 <a href="javascript: addSLARow();">

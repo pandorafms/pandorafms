@@ -760,7 +760,55 @@ sub pandora_checkdb_integrity {
 
     # Delete orphan data_inc reference records
     db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
-    
+
+		# Delete orphan data form deleted agents.
+		my @agents_ids = get_db_rows ($dbh, 'SELECT id_agente, alias FROM tagente');
+		my $agents_id = '0';
+		my $agents_alias;
+		foreach my $id (@agents_ids) {
+			$agents_id .= ','.$id->{'id_agente'};
+			$agents_alias .= ','.$id->{'alias'};
+		}
+		if(defined($agents_id) && $agents_id ne '0') {
+				# Delete orphan data from visual console.
+				db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agent NOT IN (?)', $agents_id);
+
+				# Clearl orphan data from dashboards
+				my $where_condition;
+				my $index ;
+				foreach my $agent_id (@agents_ids) {
+					$where_condition .= 'options NOT LIKE ("%\\"agentid\\":\\"'.$agent_id->{'id_agente'}.'\\"%")';
+					if($agent_id == @agents_ids[-1]) {
+						last;	
+					}
+					$where_condition .= ' AND ';
+				}
+				db_do ($dbh, 'UPDATE twidget_dashboard set options = NULL WHERE '.$where_condition);
+
+				# Delete orphan report items.
+				db_do ($dbh, 'DELETE FROM treport_content WHERE id_agent != 0 AND id_agent NOT IN (?)', $agents_id);
+
+				# Delete orphan tevent alert rules
+				db_do ($dbh, 'DELETE FROM tevent_rule WHERE agent IS NOT NULL AND agent != "" AND agent NOT IN (?) AND operator_agent = ?', $agents_alias, '==');
+				db_do ($dbh, 'DELETE FROM tevent_rule WHERE log_agent IS NOT NULL AND log_agent != "" AND log_agent NOT IN (?) AND operator_log_agent = ?', $agents_alias, '==');
+
+				# Delete orphan data from favorite agents
+				db_do ($dbh, 'DELETE FROM tfavmenu_user WHERE section = "Agents" AND id_element NOT IN (?)', $agents_id);
+
+				# Delete orphan data from tservices.	
+				db_do ($dbh, 'DELETE FROM tservice_element WHERE id_agent NOT IN (?)', $agents_id);
+
+				# Delete orphan data from gis maps
+				db_do ($dbh, 'DELETE FROM tgis_data_history WHERE tagente_id_agente NOT IN (?)', $agents_id);
+
+				# Delete agents from policies
+				db_do ($dbh, 'DELETE FROM tpolicy_agents WHERE id_agent NOT IN (?)', $agents_id);
+
+				# Delete orphan tnetwork maps data
+				db_do ($dbh, 'DELETE FROM titem WHERE source_data NOT IN (?)', $agents_id);
+				db_do ($dbh, 'DELETE FROM trel_item WHERE id_parent_source_data NOT IN (?) OR id_child_source_data NOT IN (?)', $agents_id, $agents_id);
+		}
+
     # Check enterprise tables
     enterprise_hook ('pandora_checkdb_integrity_enterprise', [$conf, $dbh]);
 }

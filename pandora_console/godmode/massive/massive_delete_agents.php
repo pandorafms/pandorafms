@@ -189,6 +189,14 @@ echo get_table_inputs_masive_agents($params);
 
 if (is_metaconsole() === true || is_management_allowed() === true) {
     attachActionButton('delete', 'delete', '100%', false, $SelectAction);
+} else {
+    html_print_action_buttons(
+        '',
+        [
+            'right_content' => $SelectAction,
+            'class'         => 'pdd_t_15px_important pdd_b_15px_important',
+        ]
+    );
 }
 
 echo '</form>';

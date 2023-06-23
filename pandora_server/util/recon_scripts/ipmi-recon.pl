@@ -112,7 +112,7 @@ sub update_recon_task ($$$) {
 ##########################################################################
 sub show_help {
 	print "\nSpecific Pandora FMS Intel DCM Discovery\n";
-	print "(c) Pandora FMS 2011 <info\@artica.es>\n\n";
+	print "(c) Pandora FMS 2011 <info\@pandorafms.com>\n\n";
 	print "Usage:\n\n";
 	print "   $0 <task_id> <group_id> <custom_field1> <custom_field2> <custom_field3> <custom_field4>\n\n";
 	print " * custom_field1 = network. i.e.: 192.168.100.0/24\n";

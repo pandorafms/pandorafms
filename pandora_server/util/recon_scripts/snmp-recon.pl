@@ -1056,7 +1056,7 @@ sub update_recon_task ($$$) {
 ##########################################################################
 sub show_help {
 	print "\nPandora FMS SNMP Recon Plugin for level 2 network topology discovery.\n";
-	print "(c) Pandora FMS 2014 <info\@artica.es>\n\n";
+	print "(c) Pandora FMS 2014 <info\@pandorafms.com>\n\n";
 	print "Usage:\n\n";
 	print "   $0 <task_id> <group_id> <create_incident> <custom_field1> <custom_field2> [custom_field3] [custom_field4]\n\n";
 	print " * custom_field1 = comma separated list of networks (i.e.: 192.168.1.0/24,192.168.2.0/24)\n";

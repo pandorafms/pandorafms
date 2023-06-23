@@ -2,7 +2,7 @@
 ###############################################################################
 #
 # Copyright (c) 2016  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2016  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2016  Pandora FMS.
 #
 # sockstat.sh Pandora FMS agent plug-in to retrieve file handle statistics.
 #

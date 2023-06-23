@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS Plugins migrate tool
 ###############################################################################
-# Copyright (c) 2010-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2010-2021 Pandora FMS
 #
 # This program is Free Software, licensed under the terms of GPL License v2
 ###############################################################################

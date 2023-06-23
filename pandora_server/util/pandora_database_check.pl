@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Speed test
 ###############################################################################
-# Copyright (c) 2013-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2013-2021 Pandora FMS
 # Copyright (c) 2021 Sancho Lerena
 # This is a small tool to check specific performance of Pandora database
 # return the total time needed in microseconds to perform a specific Pandora

@@ -3,7 +3,7 @@ package PandoraFMS::WebServer;
 # Pandora FMS Web Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2007-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2007-2021 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License

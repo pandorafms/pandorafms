@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2015-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2015-2021 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2

@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS Database Synchronization Tool
 ###############################################################################
-# Copyright (c) 2010-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2010-2021 Pandora FMS
 #
 # This code is not free or OpenSource. Please don't redistribute.
 ###############################################################################

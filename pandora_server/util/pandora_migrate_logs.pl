@@ -2,7 +2,7 @@
 #
 # Pandora FMS log migration tool
 #
-# Artica ST 2017
+# Pandora FMS 2017
 # 2017/09/07 v1 (c) Fco de Borja Sanchez <fborja.sanchez@artica.es>
 #
 ########################################################################
@@ -21,7 +21,7 @@ use PandoraFMS::DB;
 
 my $HELP=<<EO_HELP;
 
-Pandora FMS log migration tool (c) Artica ST
+Pandora FMS log migration tool (c) Pandora FMS
 
   Usage $0 /etc/pandora/pandora_server.conf
 	

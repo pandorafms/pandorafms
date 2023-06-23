@@ -24,7 +24,7 @@ if (($h -eq $true) -or ($($Args.Count) -le 2)){
     echo "interval:`t`ttime interval from events will be extracted (in minutes)"
     echo "nodatalist [optional]:`tshows all output in same module data"
     echo "sendlog [optional]:`tsends logs to log server"
-	echo "Artica ST @ 2020" 
+	echo "Pandora FMS @ 2020" 
 	exit
 }
 

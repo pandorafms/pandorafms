@@ -30,7 +30,7 @@ use Getopt::Std;
 # This function show a brief doc.
 # ------------------------------------------------------------------------------------------
 sub help {
-    print "SNMP Plugin for Pandora FMS (c) Artica ST 2008-2010 \n";
+    print "SNMP Plugin for Pandora FMS (c) Pandora FMS 2008-2010 \n";
     print "Syntax: \n\n";
     print "\t -i <device_ip>\n\t -c <password/snmp_community>\n\t -p <process name>\n\t -t <query type: status/cpu/mem>\n\n";
     print "\tCPU must be defined as generic_data_inc type \n";

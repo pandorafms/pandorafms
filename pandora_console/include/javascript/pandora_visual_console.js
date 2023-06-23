@@ -1,4 +1,4 @@
-// TODO: Add Artica ST header.
+// TODO: Add Pandora FMS header.
 /* globals jQuery, VisualConsole, AsyncTaskManager */
 
 /*

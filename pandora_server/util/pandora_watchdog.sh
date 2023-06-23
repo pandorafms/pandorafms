@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2005-2021 Artica ST
+# Copyright (c) 2005-2021 Pandora FMS
 # Author: Sancho Lerena <slerena@artica.es> 2009
 # Licence: GPL2
 #

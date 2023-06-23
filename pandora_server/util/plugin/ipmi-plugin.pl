@@ -31,7 +31,7 @@ sub get_param($) {
 ##########################################################################
 sub show_help {
 	print "\nSpecific Pandora FMS Intel DCM Discovery\n";
-	print "(c) Artica ST 2011 <info\@artica.es>\n\n";
+	print "(c) Pandora FMS 2011 <info\@artica.es>\n\n";
 	print "Usage:\n\n";
 	print "   $0 -h <host> -u <username> -p <password> -s <sensor_id>\n";
 	exit;

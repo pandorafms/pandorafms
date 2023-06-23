@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Pandora FMS Plugin for MySQL
-# (c) Artica ST 2015
+# (c) Pandora FMS 2015
 # v1.4, 19 Feb 2015
 # ----------------------------------------------------------------------
 

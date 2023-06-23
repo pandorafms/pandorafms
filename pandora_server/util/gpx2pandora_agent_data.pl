@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# (c) Artica ST 2010, for Pandora FMS monitoring system
+# (c) Pandora FMS 2010, for Pandora FMS monitoring system
 # See more at http://pandorafms.org
 # Licensed under GPL2 license.
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2005-2010 Artica ST
+# Copyright (c) 2005-2010 Pandora FMS
 #
 # Author: Sancho Lerena <slerena@artica.es> 2006-2010
 #
@@ -46,7 +46,7 @@ if [[ -z ${PANDORA_RB_PRODUCT_NAME} ]]; then
 	PANDORA_RB_PRODUCT_NAME="Pandora FMS"
 fi
 if [[ -z ${PANDORA_RB_COPYRIGHT_NOTICE} ]]; then
-	PANDORA_RB_COPYRIGHT_NOTICE="Artica ST"
+	PANDORA_RB_COPYRIGHT_NOTICE="Pandora FMS"
 fi
 
 export PANDORA_RB_PRODUCT_NAME=$PANDORA_RB_PRODUCT_NAME

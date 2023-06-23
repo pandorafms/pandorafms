@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Pandora FMS Embedded Agent, startup script
-# Copyright (c) 2011 Artica ST, <info@artica.es>
+# Copyright (c) 2011 Pandora FMS, <info@artica.es>
 # Tested on Busybox 1.13
 # v4.0 Build 110122
 # http://www.pandorafms.com

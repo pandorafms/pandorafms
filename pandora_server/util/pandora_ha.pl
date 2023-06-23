@@ -126,7 +126,7 @@ sub ha_daemonize($) {
 sub ha_init_pandora($) {
   my $conf = shift;
   
-  log_message($conf, '', "\nPandora FMS Daemon Watchdog " . $PandoraFMS::Tools::VERSION . " Copyright (c) Artica ST\n");
+  log_message($conf, '', "\nPandora FMS Daemon Watchdog " . $PandoraFMS::Tools::VERSION . " Copyright (c) Pandora FMS\n");
   
   getopts('dp:', \%Opts);
 

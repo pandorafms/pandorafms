@@ -1,6 +1,6 @@
 /* Pandora cron manager for Win32.
    
-   Copyright (c) 2018-2021 Artica ST.
+   Copyright (c) 2018-2021 Pandora FMS.
    Written by Fermin Hernandez.
   
    This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# (c) Ártica Soluciones Tecnológicas 2014 <info@pandorafms.com>
+# (c) Pandora FMS 2014 <info@pandorafms.com>
 # WMI Recon script.
 
 use IO::Socket::INET;

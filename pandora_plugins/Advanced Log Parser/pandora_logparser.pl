@@ -10,7 +10,7 @@
 #
 #
 #        Pandora FMS
-#        http://www.artica.es
+#        http:// https://pandorafms.com
 #
 # v1r3
 # Change log (v1r3 - Ago 2015)

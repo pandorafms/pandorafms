@@ -9,7 +9,7 @@
 #  |___|___||__|  |____|__||____|___._| |_______| |___|
 #
 #
-#        ARTICA SOLUCIONES TECNOLOGICAS
+#        Pandora FMS
 #        http://www.artica.es
 #
 # v1r3

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Pandora FMS Agent Plugin for Monitoring FTP servers
-# Mario Pulido (c) Artica Soluciones Tecnologicas  <info@artica.es> 2012
+# Mario Pulido (c) Pandora FMS  <info@artica.es> 2012
 # v1.0,  18 Jun 2012 
 # ------------------------------------------------------------------------
 

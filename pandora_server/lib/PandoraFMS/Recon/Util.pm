@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# (c) Ártica ST 2016 <info@pandorafms.com>
+# (c) Pandora FMS 2016 <info@pandorafms.com>
 # Utility functions for the network topology discovery modules.
 
 package PandoraFMS::Recon::Util;

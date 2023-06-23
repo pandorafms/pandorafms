@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# (c) Ártica ST 2014 <info@pandorafms.com>
+# (c) Pandora FMS 2014 <info@pandorafms.com>
 # SNMP Recon script for network topology discovery.
 
 use strict;

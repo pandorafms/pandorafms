@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Pandora FMS Linux Agent, startup script
-# Copyright (c) 2006-2010 Pandora FMS, <info@artica.es>
+# Copyright (c) 2006-2010 Pandora FMS, <info@pandorafms.com>
 # Linux Version (generic), for SuSe and Debian/Ubuntu.
 # other Linux distros could not work properly without modifications
 # v3.0.1 Build 091104

@@ -1,7 +1,7 @@
 #!/bin/csh
 
 # Pandora FMS IPSO/BSD, startup script
-# Copyright (c) 2006-2009 Pandora FMS, <info@artica.es>
+# Copyright (c) 2006-2009 Pandora FMS, <info@pandorafms.com>
 # IPSO/BSD (csh)
 # v1.2 Build 091104
 # http://www.pandorafms.com

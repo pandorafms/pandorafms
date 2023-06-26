@@ -3115,7 +3115,7 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
                 $fields[] = $table.'.id_agente as agent';
                 $group_array[] = $table.'.id_agente';
                 $names_search = agents_get_alias_array(
-                    array_values($filters['agents'] ?? [])
+                    array_values(($filters['agents'] ?? []))
                 );
 
                 if (is_metaconsole() === true) {

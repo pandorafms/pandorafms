@@ -1107,6 +1107,8 @@ $selectIntervalUp = false;
 $selectIntervalDown = false;
 $selectStatusUp = false;
 $selectStatusDown = false;
+$selectStatusChangeUp = false;
+$selectStatusChangeDown = false;
 $selectDataUp = false;
 $selectDataDown = false;
 $selectTimestampUp = false;
@@ -1244,7 +1246,7 @@ switch ($sortField) {
         $fieldForSorting = 'last_status_change';
         switch ($sort) {
             case 'up':
-                $selectStatusUp = $selected;
+                $selectStatusChangeUp = $selected;
                 $order = [
                     'field' => 'tagente_estado.last_status_change',
                     'order' => 'ASC',
@@ -1252,7 +1254,7 @@ switch ($sortField) {
             break;
 
             case 'down':
-                $selectStatusDown = $selected;
+                $selectStatusChangeDown = $selected;
                 $order = [
                     'field' => 'tagente_estado.last_status_change',
                     'order' => 'DESC',
@@ -1317,6 +1319,8 @@ switch ($sortField) {
         $selectIntervalDown = false;
         $selectStatusUp = false;
         $selectStatusDown = false;
+        $selectStatusChangeUp = false;
+        $selectStatusChangeDown = false;
         $selectDataUp = false;
         $selectDataDown = false;
         $selectTimestampUp = false;
@@ -1373,7 +1377,6 @@ $sql = 'SELECT
 	GROUP BY tagente_modulo.id_agente_modulo
 	ORDER BY '.$order['field'].' '.$order['order'].'
 	LIMIT '.$offset.','.$limit_sql;
-
 
 // We do not show the modules until the user searches with the filter.
 if ($autosearch) {
@@ -1464,7 +1467,7 @@ $url_module_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_mon
 $url_server_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_interval = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-$url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_status_change = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_data = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_timestamp_up = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_timestamp_down = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
@@ -1475,7 +1478,7 @@ $url_module_name .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$
 $url_server_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_interval .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-$url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_status_change .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_data .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_timestamp_up .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_timestamp_down .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
@@ -1487,7 +1490,7 @@ $url_module_name .= '&recursion='.$recursion;
 $url_server_type .= '&recursion='.$recursion;
 $url_interval .= '&recursion='.$recursion;
 $url_status .= '&recursion='.$recursion;
-$url_status .= '&recursion='.$recursion;
+$url_status_change .= '&recursion='.$recursion;
 $url_data .= '&recursion='.$recursion;
 $url_timestamp_up .= '&recursion='.$recursion;
 $url_timestamp_down .= '&recursion='.$recursion;
@@ -1498,7 +1501,7 @@ $url_module_name .= '&sort_field=module_name&sort=';
 $url_server_type .= '&sort_field=moduletype&sort=';
 $url_interval .= '&sort_field=interval&sort=';
 $url_status .= '&sort_field=status&sort=';
-$url_status .= '&sort_field=last_status_change&sort=';
+$url_status_change .= '&sort_field=last_status_change&sort=';
 $url_data .= '&sort_field=data&sort=';
 $url_timestamp_up .= '&sort_field=timestamp&sort=up';
 $url_timestamp_down .= '&sort_field=timestamp&sort=down';
@@ -1572,7 +1575,7 @@ if (empty($result) === false) {
 
     if (in_array('last_status_change', $show_fields)) {
         $table->head[7] = '<span>'.__('Last status change').'</span>';
-        $table->head[7] .= ui_get_sorting_arrows($url_status.'up', $url_status.'down', $selectStatusUp, $selectStatusDown);
+        $table->head[7] .= ui_get_sorting_arrows($url_status_change.'up', $url_status_change.'down', $selectStatusChangeUp, $selectStatusChangeDown);
         $table->headstyle[7] = 'text-align: center';
         $table->align[7] = 'center';
     }

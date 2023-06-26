@@ -7005,6 +7005,11 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
     $arrow_up = 'images/sort_up_black.png';
     $arrow_down = 'images/sort_down_black.png';
 
+    if (is_metaconsole()) {
+        $arrow_up = 'images/sort_up_black.png';
+        $arrow_down = 'images/sort_down_black.png';
+    }
+
     // Green arrows for the selected.
     if ($selectUp === true) {
         $arrow_up = 'images/sort_up_green.png';
@@ -7012,11 +7017,6 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
 
     if ($selectDown === true) {
         $arrow_down = 'images/sort_down_green.png';
-    }
-
-    if (is_metaconsole()) {
-        $arrow_up = 'images/sort_up.png';
-        $arrow_down = 'images/sort_down.png';
     }
 
     return '<span class="sort_arrow">

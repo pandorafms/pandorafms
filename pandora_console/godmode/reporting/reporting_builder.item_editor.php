@@ -7163,9 +7163,6 @@ function chooseType() {
             $('#row_regular_expression').show();
             $("#row_date").show();
 
-            $("#id_agents")
-                .change(event_change_id_agent_inventory);
-            $("#id_agents").trigger('change');
 
             $("#row_servers").show();
 
@@ -7187,13 +7184,15 @@ function chooseType() {
                     false,
                     false,
                     false,
-                    false
+                    false,
                 ).'"';
+                echo ', "false", '.json_encode($id_agents).'';
                 ?>
                 );
             });
 
             $("#combo_server").trigger('change');
+            
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');
@@ -7218,6 +7217,9 @@ function chooseType() {
                 ?>
                 );
             });
+            $("#id_agents").change(event_change_id_agent_inventory);
+            $("#id_agents").trigger('change');
+
             $("#id_agents").change(function() {
                 $('#hidden-date_selected').val('');
                 updateInventoryDates(
@@ -7244,7 +7246,7 @@ function chooseType() {
                 ?>
                 );
             });
-
+            
             if (!$("#hidden-date_selected").val())
                 updateInventoryDates(
                 <?php

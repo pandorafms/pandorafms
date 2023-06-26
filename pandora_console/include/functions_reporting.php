@@ -3470,7 +3470,7 @@ function reporting_agent_module_status($report, $content)
 
     $agents = json_decode(
         io_safe_output(
-            base64_decode($external_source['id_agents'])
+            base64_decode($external_source['id_agent'])
         ),
         true
     );

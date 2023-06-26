@@ -2230,10 +2230,16 @@ function renewAPIToken(title, message, form) {
  * @param {string} title Title for show.
  * @param {string} message Base64 encoded message for show.
  */
-function showAPIToken(title, message) {
+function showAPIToken(title, message_a, token, message_b) {
+  var message =
+    message_a +
+    '&nbsp;<br><span class="font_12pt bolder">' +
+    atob(token) +
+    "</span><br>&nbsp;" +
+    message_b;
   confirmDialog({
     title: title,
-    message: atob(message),
+    message: message,
     hideCancelButton: true
   });
 }

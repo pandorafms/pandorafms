@@ -1829,7 +1829,7 @@ class ConsoleSupervisor
         global $config;
 
         $mysql_version = $config['dbconnection']->server_info;
-        if (version_compare('8.0', $mysql_version) <= 0) {
+        if (version_compare('8.0', $mysql_version) >= 0) {
             $url = 'https://www.mysql.com/support/eol-notice.html';
             $this->notify(
                 [

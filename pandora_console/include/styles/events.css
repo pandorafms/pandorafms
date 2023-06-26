@@ -85,7 +85,7 @@ th:last-child {
 */
 
 table#table_events > tbody > tr > td {
-  padding: 0px !important;
+  padding: 0px 8px !important;
 }
 
 table#table_events > tbody > tr > td > i {

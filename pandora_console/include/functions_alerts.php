@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -2191,15 +2191,19 @@ function get_group_alerts(
                 } else {
                     $subQuery = 'SELECT id_agente_modulo
 						FROM tagente_modulo tam
-						WHERE delete_pending = 0 AND tam.disabled = 0
-							AND id_agente IN (SELECT id_agente
-								FROM tagente ta
-								LEFT JOIN tagent_secondary_group tasg
-									ON ta.id_agente = tasg.id_agent
-								WHERE ta.disabled = 0
-                                    AND
-										id_grupo IN ('.implode(',', $id_group).')
-										OR id_group IN ('.implode(',', $id_group).'))';
+						WHERE delete_pending = 0 
+                        AND tam.disabled = 0
+                        AND id_agente IN (
+                            SELECT ta.id_agente
+                            FROM tagente ta
+                            WHERE ta.disabled = 0
+                            AND ta.id_grupo IN ('.implode(',', $id_group).')
+                        )
+                        OR tam.id_agente IN (
+                            SELECT DISTINCT(tasg.id_agent)
+                            FROM tagent_secondary_group tasg
+                            WHERE tasg.id_group IN ('.implode(',', $id_group).')
+                        )';
                 }
             } else {
                 $subQuery = 'SELECT id_agente_modulo
@@ -3111,7 +3115,7 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
                 $fields[] = $table.'.id_agente as agent';
                 $group_array[] = $table.'.id_agente';
                 $names_search = agents_get_alias_array(
-                    array_values($filters['agents'])
+                    array_values($filters['agents'] ?? [])
                 );
 
                 if (is_metaconsole() === true) {

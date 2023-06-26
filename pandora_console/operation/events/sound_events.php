@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -60,119 +60,33 @@ echo '<head>';
 ?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo __('Acoustic console'); ?></title>
-<link rel="stylesheet" href="../../include/styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/select2.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/wizard.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/discovery.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-<script type='text/javascript' src='../../include/javascript/pandora_ui.js?v=<?php echo $config['current_package']; ?>'></script>
-<script type='text/javascript' src='../../include/javascript/jquery.current.js?v=<?php echo $config['current_package']; ?>'></script>
-<script type='text/javascript' src='../../include/javascript/jquery.pandora.js?v=<?php echo $config['current_package']; ?>'></script>
-<script type='text/javascript' src='../../include/javascript/jquery-ui.min.js?v=<?php echo $config['current_package']; ?>'></script>
-<script type='text/javascript' src='../../include/javascript/select2.min.js?v=<?php echo $config['current_package']; ?>'></script>
-<script type='text/javascript' src='../../include/javascript/pandora.js?v=<?php echo $config['current_package']; ?>'></script>
+<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/pandora_minimal.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/js/jquery-ui.min.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/js/jquery-ui_custom.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/select2.min.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/pandora.css" type="text/css" />
+<?php
+echo ui_require_css_file('wizard', 'include/styles/', true);
+echo ui_require_css_file('discovery', 'include/styles/', true);
+echo ui_require_css_file('sound_events', 'include/styles/', true);
+?>
+<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/jquery.current.js'></script>
+<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/jquery.pandora.js'></script>
+<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/jquery-ui.min.js'></script>
+<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/select2.min.js'></script>
+<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/pandora.js'></script>
+<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/pandora_ui.js'></script>
 
-<style type='text/css'>
-    * {
-        margin: 0;
-        padding: 0;
-    }
-
-    img {
-        border: 0;
-    }
-
-    ul.wizard li > label:not(.p-switch):first-of-type {
-        width: inherit;
-    }
-    form {
-        margin-top: -3px;
-        margin-bottom: 10px;
-    }
-    table {
-        margin-top: 5px;
-    }
-
-    .events_fired {
-        background: white;
-        padding: 20px;
-        overflow: auto;
-        height: 200px;
-        margin-bottom: 5px;
-    }
-
-    .events_fired li {
-        padding: 5px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .events_fired li div {
-        margin-right: 10px;
-    }
-
-    .events_fired li div.flex0 {
-        flex: 0;
-    }
-
-    .events_fired li div.flex-time {
-        flex: 0 1 100px;
-        text-align: end;
-    }
-
-    .events_fired li div.mess {
-        width: 100%;
-    }
-
-    .forced_title.mini-criticity {
-        width: 10px;
-        height: 30px;
-    }
-
-    .progressbar {
-        width: 100%;
-        margin: 5px 0px;
-    }
-    .progressbar .inner {
-        height: 10px;
-        animation: progressbar-countdown;
-        /* Placeholder, this will be updated using javascript */
-        animation-duration: 40s;
-        /* We stop in the end */
-        animation-iteration-count: 1;
-        /* Stay on pause when the animation is finished finished */
-        animation-fill-mode: forwards;
-        /* We start paused, we start the animation using javascript */
-        animation-play-state: paused;
-        /* We want a linear animation, ease-out is standard */
-        animation-timing-function: linear;
-    }
-    @keyframes progressbar-countdown {
-        0% {
-            width: 100%;
-            background: #82b92e;
-        }
-        100% {
-            width: 0%;
-            background: #e63c52;
-        }
-    }
-</style>
 <?php
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
 if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css?v='.$config['current_package'].'" type="text/css" />';
+    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css" />';
 } else {
-    echo '<link rel="stylesheet" href="../../include/styles/pandora.css?v='.$config['current_package'].'" type="text/css" />';
+    echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
 }
 
 echo '</head>';
 echo '<body style="overflow: hidden;">';
-echo ui_require_css_file('wizard', 'include/styles/', true);
-echo ui_require_css_file('discovery', 'include/styles/', true);
-echo ui_require_css_file('sound_events', 'include/styles/', true);
 $output = '<div id="tabs-sound-modal">';
     // Header tabs.
     $output .= '<ul class="tabs-sound-modal-options">';
@@ -204,7 +118,7 @@ $output = '<div id="tabs-sound-modal">';
 
         // Content tabs.
         $output .= '<div id="tabs-sound-modal-1">';
-        $output .= '<h3 class="console-configuration">';
+        $output .= '<h3 class="title-discovered-alerts">';
         $output .= __('Console configuration');
         $output .= '</h3>';
         $inputs = [];

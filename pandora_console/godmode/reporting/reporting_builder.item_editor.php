@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -4139,7 +4139,7 @@ function print_SLA_list($width, $action, $idItem=null)
                 </th>
                 <th class="header sla_list_sla_limit_col" scope="col">
                 <?php
-                echo __('SLA Limit (%)');
+                echo __('SLA Limit (%)').ui_print_help_tip(__('Enter possible range of values in SLA.'), true);
                 ?>
                 </th>
                 <th class="header sla_list_action_col" scope="col">
@@ -5846,7 +5846,7 @@ function addSLARow() {
 
     if ((((idAgent != '') && (idAgent > 0))
         && ((idModule != '') && (idModule > 0)))
-        || serviceId != null)
+        && (slaLimit != '') || serviceId != null)
     {
             if (nameAgent != '') {
                 //Truncate nameAgent
@@ -6776,6 +6776,8 @@ function chooseType() {
             $("#row_dyn_height").show();
             $("#row_servers").show();
             $("#row_historical_db_check").show();
+            $("#sql_example").hide();
+            $("#sql_entry").show();
             break;
 
         case 'url':
@@ -6986,7 +6988,7 @@ function chooseType() {
 
         case 'group_report':
             $("#row_group").show();
-            $("#row_servers").show();
+            $("#row_servers_all_opt").show();
             $("#row_description").show();
             $("#row_historical_db_check").hide();
             break;

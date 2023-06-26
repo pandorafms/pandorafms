@@ -44,4 +44,6 @@ ALTER TABLE `trecon_task`
   ADD COLUMN `executions_timeout` int unsigned NOT NULL DEFAULT 60,
   ADD FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+DELETE FROM tconfig WHERE token = 'refr';
+
 COMMIT;

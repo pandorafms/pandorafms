@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -3470,7 +3470,7 @@ function reporting_agent_module_status($report, $content)
 
     $agents = json_decode(
         io_safe_output(
-            base64_decode($external_source['id_agents'])
+            base64_decode($external_source['id_agent'])
         ),
         true
     );
@@ -4198,6 +4198,7 @@ function reporting_group_report($report, $content)
     if (is_metaconsole() === true) {
         if (isset($content['server_name']) === true
             && empty($content['server_name']) === false
+            && $content['server_name'] !== 'all'
         ) {
             $id_meta = metaconsole_get_id_server($content['server_name']);
             $server = metaconsole_get_connection_by_id($id_meta);
@@ -4253,7 +4254,9 @@ function reporting_group_report($report, $content)
                     $data_node = reporting_groups_nodes($content);
                     $count_events += $data_node['count_events'];
                     foreach ($data_node['group_stats'] as $key => $value) {
-                        $group_stats[$key] += $value;
+                        if (array_key_exists($key, $group_stats)) {
+                            $group_stats[$key] += $value;
+                        }
                     }
 
                     if (is_metaconsole() === true) {
@@ -14696,11 +14699,11 @@ function reporting_get_agentmodule_sla_day($id_agent_module, $period=0, $min_val
 }
 
 
-function reporting_get_stats_servers()
+function reporting_get_stats_servers($filter=[])
 {
     global $config;
 
-    $server_performance = servers_get_performance();
+    $server_performance = servers_get_performance($filter);
 
     // Alerts table
     $table_srv = html_get_predefined_table();
@@ -14836,6 +14839,9 @@ function reporting_get_stats_servers()
                 $output .= 'var parameters = {};';
                 $output .= 'parameters["page"] = "include/ajax/events";';
                 $output .= 'parameters["total_events"] = 1;';
+        if (empty($filter) === false && empty($filter['groups']) === false) {
+            $output .= 'parameters["filter_groups"] = "'.$filter['groups'].'";';
+        }
 
                 $output .= '$.ajax({type: "GET",url: "'.ui_get_full_url('ajax.php', false, false, false).'",data: parameters,';
                     $output .= 'success: function(data) {';

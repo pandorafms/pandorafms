@@ -143,7 +143,7 @@ if ($new_user === true) {
     $userManagementTable->data['captions_iduser'][0] = __('User ID');
     $userManagementTable->data['fields_iduser'][0] = html_print_input_text_extended(
         'id_user',
-        $id,
+        '',
         '',
         '',
         20,

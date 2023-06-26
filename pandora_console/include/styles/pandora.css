@@ -634,6 +634,12 @@ select:-internal-list-box {
   white-space: nowrap;
 }
 
+.nowrap_max180px {
+  width: 10px;
+  max-width: 180px;
+  white-space: nowrap;
+}
+
 .wrap {
   flex-wrap: wrap;
 }

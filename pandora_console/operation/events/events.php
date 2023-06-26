@@ -2397,7 +2397,7 @@ try {
     if ($comment_id !== false) {
         $fields[$comment_id] = [
             'text'  => 'user_comment',
-            'class' => 'w180px',
+            'class' => 'nowrap_max180px',
         ];
     }
 

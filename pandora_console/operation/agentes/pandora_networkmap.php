@@ -823,7 +823,8 @@ switch ($tab) {
                     $tableActionButtons[] = html_print_anchor(
                         [
                             'title'   => __('Delete'),
-                            'href'    => 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&delete=1&id_networkmap='.$network_map['id'],
+                            'href'    => 'javascript:',
+                            'onClick' => 'deleteMap('.$network_map['id'].')',
                             'content' => html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']),
                         ],
                         true
@@ -864,3 +865,25 @@ switch ($tab) {
 
     break;
 }
+
+?>
+
+<script type="text/javascript">
+
+    function deleteMap(idMap){
+
+        confirmDialog({
+            title: "<?php echo __('Are you sure?'); ?>",
+            message: "<?php echo __('Are you sure you want to delete this network map?'); ?>",
+            ok: "<?php echo __('OK'); ?>",
+            cancel: "<?php echo __('Cancel'); ?>",
+            onAccept: function() {
+                window.location.href = 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&delete=1&id_networkmap='+idMap;
+            }
+        });
+
+
+    }
+
+
+</script>

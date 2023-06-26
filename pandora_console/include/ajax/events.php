@@ -1487,6 +1487,7 @@ if ($add_comment === true) {
 if ($change_status === true) {
     $event_ids = get_parameter('event_ids');
     $new_status = get_parameter('new_status');
+    $group_rep = (int) get_parameter('group_rep', 0);
     $server_id = 0;
     if (is_metaconsole() === true) {
         $server_id = (int) get_parameter('server_id');
@@ -1500,10 +1501,19 @@ if ($change_status === true) {
             $node->connect();
         }
 
-        $return = events_change_status(
-            explode(',', $event_ids),
-            $new_status
-        );
+        if ($group_rep !== 3) {
+            $return = events_change_status(
+                explode(',', $event_ids),
+                $new_status
+            );
+        } else {
+            // Update all elements with same extraid.
+            $return = events_update_status(
+                $event_ids,
+                (int) $new_status,
+                ['group_rep' => $group_rep]
+            );
+        }
     } catch (\Exception $e) {
         // Unexistent agent.
         if (is_metaconsole() === true

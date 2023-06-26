@@ -477,7 +477,7 @@ function events_update_status($id_evento, $status, $filter=null)
 {
     global $config;
 
-    if (!$status) {
+    if (!$status && $status !== 0) {
         return false;
     }
 
@@ -3595,11 +3595,15 @@ function events_page_responses($event)
     );
 
     if ($status_blocked === false) {
+        if (isset($event['server_id']) === false) {
+            $event['server_id'] = '0';
+        }
+
         $data[2] = html_print_button(
             __('Update'),
             'status_button',
             false,
-            'event_change_status("'.$event['similar_ids'].'",'.$event['server_id'].');',
+            'event_change_status("'.$event['similar_ids'].'",'.$event['server_id'].', '.$event['group_rep'].');',
             [
                 'icon' => 'next',
                 'mode' => 'link',

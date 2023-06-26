@@ -322,7 +322,7 @@ function perform_response(response, response_id, index = "") {
 }
 
 // Change the status of an event to new, in process or validated.
-function event_change_status(event_ids, server_id) {
+function event_change_status(event_ids, server_id, group_rep) {
   var new_status = $("#estado").val();
 
   $("#button-status_button").attr("disabled", "disabled");
@@ -334,7 +334,8 @@ function event_change_status(event_ids, server_id) {
       change_status: 1,
       event_ids: event_ids,
       new_status: new_status,
-      server_id: server_id
+      server_id: server_id,
+      group_rep: group_rep
     },
     type: "POST",
     url: getUrlAjax(),

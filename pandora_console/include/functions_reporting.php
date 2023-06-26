@@ -4198,6 +4198,7 @@ function reporting_group_report($report, $content)
     if (is_metaconsole() === true) {
         if (isset($content['server_name']) === true
             && empty($content['server_name']) === false
+            && $content['server_name'] !== 'all'
         ) {
             $id_meta = metaconsole_get_id_server($content['server_name']);
             $server = metaconsole_get_connection_by_id($id_meta);

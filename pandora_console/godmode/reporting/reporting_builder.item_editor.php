@@ -6988,7 +6988,7 @@ function chooseType() {
 
         case 'group_report':
             $("#row_group").show();
-            $("#row_servers").show();
+            $("#row_servers_all_opt").show();
             $("#row_description").show();
             $("#row_historical_db_check").hide();
             break;

@@ -801,15 +801,16 @@ function agents_get_agents_selected($group)
             0,
             true
         );
-
-        $all = array_reduce(
-            $all,
-            function ($carry, $item) {
-                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['server_name'].' &raquo; '.$item['alias'];
-                return $carry;
-            },
-            []
-        );
+        if ($all !== false) {
+            $all = array_reduce(
+                $all,
+                function ($carry, $item) {
+                    $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['server_name'].' &raquo; '.$item['alias'];
+                    return $carry;
+                },
+                []
+            );
+        }
     } else {
         $all = agents_get_agents(
             ['id_grupo' => $group],

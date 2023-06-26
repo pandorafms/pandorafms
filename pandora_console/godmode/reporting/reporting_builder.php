@@ -1925,6 +1925,11 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'group_report':
+                                $values['server_name'] = get_parameter('combo_server');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2778,6 +2783,11 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'group_report':
+                                $values['server_name'] = get_parameter('combo_server');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2798,7 +2808,7 @@ switch ($action) {
                             break;
                         }
 
-                        if ($values['server_name'] == '') {
+                        if ($values['server_name'] == '' || $values['server_name'] === null) {
                             $values['server_name'] = get_parameter(
                                 'combo_server'
                             );

@@ -1517,7 +1517,45 @@ div#head {
 input.datos {
   background-color: #f5f5f5;
 }
-
+#modal_help {
+  position: absolute;
+  top: -2px;
+  right: 32px;
+  background: white;
+  display: flex;
+  min-width: 160px;
+  flex-direction: column;
+  filter: drop-shadow(1px 2px 2px #0000005e);
+  padding: 10px 0px;
+}
+#modal-help-content {
+  position: relative;
+  cursor: pointer;
+}
+#modal_help a {
+  margin: 3px 0px;
+  padding: 0px 15px;
+}
+#modal_help a:hover {
+  color: var(--primary-color);
+}
+#modal_help .separator {
+  width: 100%;
+  opacity: 0.4;
+}
+#modal_help::before {
+  content: "";
+  border: 8px solid #0000;
+  border-bottom: 8px solid white;
+  left: auto;
+  right: -16px;
+  top: 5px;
+  position: absolute;
+  transform: rotate(90deg);
+}
+#modal_help.invisible {
+  display: none;
+}
 /*
  * ---------------------------------------------------------------------
  * - REPORTS 														-

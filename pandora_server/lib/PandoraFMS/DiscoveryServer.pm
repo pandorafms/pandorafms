@@ -159,6 +159,12 @@ sub data_producer ($) {
 
   foreach my $row (@rows) {
     
+	# Discovery apps must be fully set up.
+    if ($row->{'type'} == DISCOVERY_APP && $row->{'setup_complete'} != 1) {
+      logger($pa_config, 'Setup for recon app task ' . $row->{'id_app'} . ' not complete.', 10);
+	  next;
+    }
+
     # Update task status
     update_recon_task ($dbh, $row->{'id_rt'}, 1);
     
@@ -189,11 +195,7 @@ sub data_consumer ($$) {
   }
   # Is it a discovery app?
   elsif ($task->{'type'} == DISCOVERY_APP) {
-    if ($task->{'setup_complete'} == 1) {
-      exec_recon_app ($pa_config, $dbh, $task);
-    } else {
-      logger($pa_config, 'Setup for recon app task ' . $task->{'id_app'} . ' not complete.', 10);
-    }
+    exec_recon_app ($pa_config, $dbh, $task);
 	return;
   }
   else {
@@ -429,8 +431,6 @@ sub exec_recon_app ($$$) {
 	
 	logger($pa_config, 'Executing recon app ID ' . $task->{'id_app'}, 10);
 	
-	update_recon_task ($dbh, $task->{'id_rt'}, 0);
-
 	# Configure macros.
 	my %macros = (
 		"__taskMD5__"        => md5($task->{'id_rt'}),

@@ -14698,11 +14698,11 @@ function reporting_get_agentmodule_sla_day($id_agent_module, $period=0, $min_val
 }
 
 
-function reporting_get_stats_servers()
+function reporting_get_stats_servers($filter=[])
 {
     global $config;
 
-    $server_performance = servers_get_performance();
+    $server_performance = servers_get_performance($filter);
 
     // Alerts table
     $table_srv = html_get_predefined_table();
@@ -14838,6 +14838,9 @@ function reporting_get_stats_servers()
                 $output .= 'var parameters = {};';
                 $output .= 'parameters["page"] = "include/ajax/events";';
                 $output .= 'parameters["total_events"] = 1;';
+        if (empty($filter) === false && empty($filter['groups']) === false) {
+            $output .= 'parameters["filter_groups"] = "'.$filter['groups'].'";';
+        }
 
                 $output .= '$.ajax({type: "GET",url: "'.ui_get_full_url('ajax.php', false, false, false).'",data: parameters,';
                     $output .= 'success: function(data) {';

@@ -382,6 +382,10 @@ class TacticalWidget extends Widget
 
         $data = [];
 
+        if (isset($all_data['_monitor_total_']) === false) {
+            $all_data['_monitor_total_'] = (int) $all_data['_monitor_checks_'];
+        }
+
         $data['monitor_not_init'] = (int) $all_data['_monitors_not_init_'];
         $data['monitor_unknown'] = (int) $all_data['_monitors_unknown_'];
         $data['monitor_ok'] = (int) $all_data['_monitors_ok_'];
@@ -393,6 +397,7 @@ class TacticalWidget extends Widget
         $data['monitor_total'] = (int) $all_data['_monitor_total_'];
 
         $data['total_agents'] = (int) $all_data['_total_agents_'];
+        $data['groups'] = $this->values['groupId'][0];
 
         $data['monitor_checks'] = (int) $all_data['_monitor_checks_'];
 
@@ -476,7 +481,14 @@ class TacticalWidget extends Widget
             $table->data[0][0] .= \reporting_get_stats_alerts($data);
             $table->cellstyle[0][0] = 'vertical-align: top;';
 
-            $table->data[0][1] = \reporting_get_stats_modules_status($data);
+            $data_agents = [];
+            $data_agents['Critical'] = $data['monitor_critical'];
+            $data_agents['Warning'] = $data['monitor_warning'];
+            $data_agents['Normal'] = $data['monitor_ok'];
+            $data_agents['Unknown'] = $data['monitor_unknown'];
+            $data_agents['Not init'] = $data['monitor_not_init'];
+
+            $table->data[0][1] = \reporting_get_stats_modules_status($data, 250, 150, false, $data_agents);
             $table->data[0][1] .= '<br>';
             $table->data[0][1] .= \reporting_get_stats_agents_monitors($data);
             $table->data[0][1] .= '<br>';
@@ -498,7 +510,7 @@ class TacticalWidget extends Widget
             $table->data = [];
             $table->style = [];
 
-            $table->data[0][0] = \reporting_get_stats_servers();
+            $table->data[0][0] = \reporting_get_stats_servers($data);
 
             $output .= \html_print_table($table, true);
         }

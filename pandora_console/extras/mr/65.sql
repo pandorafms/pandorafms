@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `tdiscovery_apps_executions` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_app` int(10),
   `execution` text NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`, `id_app`),
   FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

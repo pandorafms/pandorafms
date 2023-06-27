@@ -58,7 +58,7 @@ class ManageExtensions extends HTML
      *
      * @var string
      */
-    public $label = 'Manage extensions';
+    public $label = 'Manage disco packages';
 
     /**
      * Url of section
@@ -226,7 +226,7 @@ class ManageExtensions extends HTML
                 ],
                 [
                     'link'     => '',
-                    'label'    => _('Manage extensions'),
+                    'label'    => _('Manage disco packages'),
                     'selected' => 1,
                 ],
             ]
@@ -234,7 +234,7 @@ class ManageExtensions extends HTML
 
         // Header.
         ui_print_page_header(
-            __('Manage extensions'),
+            __('Manage disco packages'),
             '',
             false,
             '',

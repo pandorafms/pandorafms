@@ -160,7 +160,7 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
                 || check_acl($config['id_user'], 0, 'RM')
                 || check_acl($config['id_user'], 0, 'PM')
             ) {
-                $sub['godmode/servers/discovery&wiz=magextensions']['text'] = __('Manage extensions');
+                $sub['godmode/servers/discovery&wiz=magextensions']['text'] = __('Manage disco packages');
                 $sub['godmode/servers/discovery&wiz=magextensions']['id'] = 'mextensions';
             }
 

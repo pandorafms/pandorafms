@@ -280,6 +280,7 @@ class ExtensionsDiscovery extends Wizard
      */
     public function run()
     {
+        ui_require_javascript_file('extensions_discovery');
         $_iniFile = $this->loadIni();
         if ($_iniFile === false) {
             include 'general/noaccess.php';
@@ -1349,15 +1350,40 @@ class ExtensionsDiscovery extends Wizard
             )
         );
 
+        $inputs_interval = html_print_select(
+            [
+                'defined' => 'Defined',
+                'manual'  => 'Manual',
+            ],
+            'mode_interval',
+            ($task['interval_sweep'] === '0') ? 'manual' : 'defined',
+            'changeModeInterval(this)',
+            '',
+            '0',
+            true,
+            false,
+            true,
+            '',
+            false
+        ).html_print_extended_select_for_time(
+            'interval',
+            (empty($task['interval_sweep']) === true) ? '300' : $task['interval_sweep'],
+            '',
+            '',
+            '0',
+            false,
+            true,
+            false,
+            true,
+        );
+        $js_variables = '<script>const interval = "'.$task['interval_sweep'].'";</script>';
         $data[4][0] = html_print_label_input_block(
             __('Interval'),
-            html_print_extended_select_for_time(
-                'interval',
-                (empty($task['interval_sweep']) === true) ? '300' : $task['interval_sweep'],
-                '',
-                '',
-                '0',
-                false,
+            html_print_div(
+                [
+                    'style'   => 'display: flex;max-width: 345px; justify-content: space-between;',
+                    'content' => $inputs_interval.$js_variables,
+                ],
                 true
             )
         );
@@ -1402,9 +1428,14 @@ class ExtensionsDiscovery extends Wizard
         $description = get_parameter('description', '');
         $discoveryServer = get_parameter('discovery_server', '');
         $group = get_parameter('group', 0);
+        $mode_interval = get_parameter('mode_interval', 'defined');
         $interval = get_parameter('interval', '');
         $tiemout = get_parameter('tiemout', 60);
         $completeTask = get_parameter('complete_button', '');
+
+        if ($mode_interval === 'manual') {
+            $interval = '0';
+        }
 
         $error = false;
 

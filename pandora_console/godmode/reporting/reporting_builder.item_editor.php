@@ -1219,7 +1219,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers,
-                    'combo_server_sql',
+                    'combo_server',
                     $server_name,
                     ''
                 );
@@ -1240,7 +1240,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers_all_opt,
-                    'combo_server',
+                    'combo_server_sql',
                     $server_name,
                     '',
                     $nothing,
@@ -5333,7 +5333,7 @@ $(document).ready (function () {
                 break;
             case 'inventory':
             case 'inventory_changes':
-                if ($("select#inventory_modules>option:selected").val() == 0) {
+                if ($("select#inventory_modules>option:selected").val() == -1) {
                     dialog_message('#message_no_module');
                     return false;
                 }
@@ -7163,9 +7163,6 @@ function chooseType() {
             $('#row_regular_expression').show();
             $("#row_date").show();
 
-            $("#id_agents")
-                .change(event_change_id_agent_inventory);
-            $("#id_agents").trigger('change');
 
             $("#row_servers").show();
 
@@ -7187,11 +7184,15 @@ function chooseType() {
                     false,
                     false,
                     false,
-                    false
+                    false,
                 ).'"';
+                echo ', "false", '.json_encode($id_agents).'';
                 ?>
                 );
             });
+
+            $("#combo_server").trigger('change');
+            
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');
@@ -7216,6 +7217,9 @@ function chooseType() {
                 ?>
                 );
             });
+            $("#id_agents").change(event_change_id_agent_inventory);
+            $("#id_agents").trigger('change');
+
             $("#id_agents").change(function() {
                 $('#hidden-date_selected').val('');
                 updateInventoryDates(
@@ -7242,7 +7246,7 @@ function chooseType() {
                 ?>
                 );
             });
-
+            
             if (!$("#hidden-date_selected").val())
                 updateInventoryDates(
                 <?php

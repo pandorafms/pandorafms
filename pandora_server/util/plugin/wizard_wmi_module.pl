@@ -130,9 +130,9 @@ my $output = `$wmi_command 2>/dev/null`;
 
 my @data = split("\n", $output);
 
-if ($data[0] ne 'CLASS: ' . $config->{'wmiClass'}){
-	print $output;
-	exit 1;
+if (index($data[0], 'CLASS: ' . $config->{'wmiClass'}) != 0) {
+    print $output;
+    exit 1;
 }
 
 # Parse fields positions

@@ -30,7 +30,7 @@ Get the result of an arithmetic operation using distinct fields in a WMI query (
 
 Usage: $0 [-wmicPath "<path_to_wmic>"] -host "<ip_address>" [-namespace "<namespace>"] -user "<username>" -pass "<password>" -wmiClass "<wmi_class>" -fieldsList "<class_fields_names>" [-queryFilter "<query_filter>"] -operation "<aritmetic_operation>"
 
--wmicPath            Path to wmic command (Default: /usr/bin/wmic)
+-wmicPath            Path to pandorawmic command (Default: /usr/bin/pandorawmic)
 
 -host                Target host
 -namespace           WMI namespace
@@ -84,7 +84,7 @@ if ($Param{Help}){
 my $config;
 
 # General parameters
-$config->{'wmicPath'}  = $Param{wmicPath}  || '/usr/bin/wmic';
+$config->{'wmicPath'}  = $Param{wmicPath}  || '/usr/bin/pandorawmic';
 $config->{'host'}      = $Param{host}      || '';
 $config->{'namespace'} = $Param{namespace} || '';
 $config->{'user'}      = $Param{user}      || '';

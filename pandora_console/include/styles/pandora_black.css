@@ -1615,3 +1615,78 @@ a.pandora_pagination,
 #visual-console-container a p {
   color: #3f3f3f;
 }
+/* News Blacktheme */
+.new-board {
+  background-color: #222;
+  border: 1px solid #333;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.new-board-header {
+  background-image: linear-gradient(180deg, #1a1a1a 0%, #222 100%);
+  border-radius: 4px 4px 0 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.new-board-title {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #fff;
+  margin: 15px;
+}
+
+.new-board-author {
+  color: #fff;
+  margin: 15px;
+}
+
+.new.content {
+  padding: 0 15px 15px;
+}
+
+.default-new {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.default-new > div > img {
+  width: 100%;
+  max-width: 430px;
+  height: auto;
+}
+
+.default-new > div.default-text-new {
+  margin-left: 20px;
+  width: 400px;
+}
+
+.default-new > div.default-text-new > p {
+  color: #fff;
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.default-new > div.default-text-new > p:first-child {
+  margin-top: 0px;
+}
+
+.default-new > div.default-text-new > span {
+  color: #fff;
+  font-size: 11px;
+  line-height: 20px;
+}
+
+@media screen and (max-width: 1430px) {
+  .default-new > div.default-text-new > p {
+    font-size: 12px;
+    line-height: 18px;
+  }
+}

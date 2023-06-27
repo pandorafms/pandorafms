@@ -40,7 +40,7 @@ export PID_DIR=/var/run
 declare -A SERVERS_NAMES
 
 # Environment variables
-if [ -f /etc/pandora/pandora_server.env ]; then
+if [ -f $PANDORA_ENV ]; then
 	source $PANDORA_ENV
 fi
 if [[ -z ${PANDORA_RB_PRODUCT_NAME} ]]; then

@@ -650,6 +650,10 @@ select:-internal-list-box {
   display: inline-flex;
 }
 
+.align-center {
+  align-items: center;
+}
+
 .relative {
   position: relative;
 }
@@ -783,6 +787,10 @@ select:-internal-list-box {
 
 .w100p {
   width: 100%;
+}
+
+.w100pi {
+  width: 100% !important;
 }
 
 /*
@@ -12244,4 +12252,29 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 div#visual-console-container * {
   font-size: unset;
   line-height: unset;
+}
+
+.combo-oid-button {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:first-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:first-child {
+  padding-bottom: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:last-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:last-child {
+  padding-top: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
+  width: 100% !important;
 }

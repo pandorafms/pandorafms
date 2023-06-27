@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -293,6 +293,21 @@ function tactical_get_data(
             $list['_module_sanity_'] = 100;
         }
 
+        $list['_monitors_alerts_'] = 0;
+        $servers = metaconsole_get_servers();
+
+        if (isset($servers) === true
+            && is_array($servers) === true
+        ) {
+            foreach ($servers as $server) {
+                if (metaconsole_connect($server) == NOERR) {
+                    $list['_monitors_alerts_'] += tactical_monitor_alerts($user_strict, $user_groups_ids);
+                }
+
+                metaconsole_restore_db();
+            }
+        }
+
         if (isset($list['_alerts_'])) {
             if ($list['_monitors_alerts_fired_'] > 0 && $list['_alerts_'] > 0) {
                 $list['_alert_level_'] = format_numeric((100 - ($list['_monitors_alerts_fired_'] / ($list['_alerts_'] / 100))), 1);
@@ -476,13 +491,12 @@ function tactical_get_data(
         }
 
         $list['_monitors_alerts_fired_'] = tactical_monitor_fired_alerts(explode(',', $user_groups_ids), $user_strict, explode(',', $user_groups_ids));
-        $list['_monitors_alerts_'] = tactical_monitor_alerts($user_strict);
+        $list['_monitors_alerts_'] = tactical_monitor_alerts($user_strict, $user_groups_ids);
 
         $filter_agents = [];
-        if (users_is_admin() === false) {
+        // if (users_is_admin() === false) {
             $filter_agents = ['id_grupo' => explode(',', $user_groups_ids)];
-        }
-
+        // }
         $total_agentes = agents_get_agents(
             $filter_agents,
             ['count(DISTINCT id_agente) as total_agents'],
@@ -537,11 +551,15 @@ function tactical_status_modules_agents($id_user=false, $user_strict=false, $acc
 }
 
 
-function tactical_monitor_alerts($strict_user=false)
+function tactical_monitor_alerts($strict_user=false, $groups_ids='')
 {
     global $config;
-    $groups = users_get_groups($config['id_user'], 'AR', false);
-    $id_groups = array_keys($groups);
+    if ($groups_ids === '') {
+        $groups = users_get_groups($config['id_user'], 'AR', false);
+        $id_groups = array_keys($groups);
+    } else {
+        $id_groups = explode(',', $groups_ids);
+    }
 
     $where_clause = '';
     if (empty($id_groups) === true) {

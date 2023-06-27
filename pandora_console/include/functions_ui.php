@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -7005,6 +7005,11 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
     $arrow_up = 'images/sort_up_black.png';
     $arrow_down = 'images/sort_down_black.png';
 
+    if (is_metaconsole()) {
+        $arrow_up = 'images/sort_up_black.png';
+        $arrow_down = 'images/sort_down_black.png';
+    }
+
     // Green arrows for the selected.
     if ($selectUp === true) {
         $arrow_up = 'images/sort_up_green.png';
@@ -7012,11 +7017,6 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
 
     if ($selectDown === true) {
         $arrow_down = 'images/sort_down_green.png';
-    }
-
-    if (is_metaconsole()) {
-        $arrow_up = 'images/sort_up.png';
-        $arrow_down = 'images/sort_down.png';
     }
 
     return '<span class="sort_arrow">

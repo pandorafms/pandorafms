@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC230619';
-$pandora_version = 'v7.0NG.771';
+$build_version = 'PC230627';
+$pandora_version = 'v7.0NG.772';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();

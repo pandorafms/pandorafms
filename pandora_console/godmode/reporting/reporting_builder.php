@@ -72,13 +72,13 @@ function dialog_message(message_id) {
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1925,6 +1925,11 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'group_report':
+                                $values['server_name'] = get_parameter('combo_server');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2402,6 +2407,10 @@ switch ($action) {
                                 // $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'alert_report_group':
+                                $values['server_name'] = get_parameter('combo_server_sql');
+                            break;
+
                             case 'top_n':
                             case 'general':
                             case 'exception':
@@ -2778,6 +2787,11 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'group_report':
+                                $values['server_name'] = get_parameter('combo_server');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2798,7 +2812,7 @@ switch ($action) {
                             break;
                         }
 
-                        if ($values['server_name'] == '') {
+                        if ($values['server_name'] == '' || $values['server_name'] === null) {
                             $values['server_name'] = get_parameter(
                                 'combo_server'
                             );
@@ -3224,6 +3238,10 @@ switch ($action) {
                                 $es['network_filter'] = get_parameter('network_filter');
                                 $es['alive_ip'] = get_parameter('alive_ip');
                                 $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
+                            break;
+
+                            case 'alert_report_group':
+                                $values['server_name'] = get_parameter('combo_server_sql');
                             break;
 
                             case 'top_n':

@@ -586,10 +586,26 @@ class TopNWidget extends Widget
             break;
 
             case 'pie':
-                $output .= pie_graph(
-                    $data,
-                    $options
-                );
+                $empty = true;
+                foreach ($data as $key => $value) {
+                    if ($value > 0) {
+                        $empty = false;
+                        break;
+                    }
+                }
+
+                if ($empty === true) {
+                    $output .= html_print_image(
+                        'images/no_data_toshow.png',
+                        true,
+                        [ 'style' => 'width: 60%;' ]
+                    );
+                } else {
+                    $output .= pie_graph(
+                        $data,
+                        $options
+                    );
+                }
             break;
 
             default:

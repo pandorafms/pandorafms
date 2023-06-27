@@ -976,7 +976,7 @@ $tableAdvancedFilter->data['advancedField_1'][2] = html_print_label_input_block(
 
 $tableAdvancedFilter->data['advancedField_2'][0] = html_print_label_input_block(
     __('Data type'),
-    html_print_select_from_sql($sqlModuleType, 'datatype', '', '', __('All'), 0, true)
+    html_print_select_from_sql($sqlModuleType, 'datatype', $datatype, '', __('All'), 0, true)
 );
 
 $tableAdvancedFilter->data['advancedField_2'][1] = html_print_label_input_block(

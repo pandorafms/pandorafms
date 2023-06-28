@@ -462,7 +462,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, $redirection_form_id) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -1044,10 +1044,10 @@ if (is_ajax() === true) {
                             if ($tmp->meta === true) {
                                 $draw_agent_name = $redirection_form;
                                 $draw_agent_name .= "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-table-redirection-".$redirection_form_id."\").submit();' href='#'>";
-                                $redirection_form_id++;
                             } else {
                                 $draw_agent_name = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
                             }
+
                             $draw_agent_name .= $tmp->agent_name;
                             $draw_agent_name .= '</a>';
                             $tmp->agent_name = $draw_agent_name;
@@ -1057,7 +1057,13 @@ if (is_ajax() === true) {
 
                         // Agent ID link.
                         if ($tmp->id_agente > 0) {
-                            $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            if ($tmp->meta === true) {
+                                $draw_agent_id = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-table-redirection-".$redirection_form_id."\").submit();' href='#'>";
+                                $redirection_form_id++;
+                            } else {
+                                $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            }
+
                             $draw_agent_id .= $tmp->id_agente;
                             $draw_agent_id .= '</a>';
                             $tmp->id_agente = $draw_agent_id;

@@ -144,6 +144,10 @@ if ($update) {
                 $error_msg = __('Error updating the modules from a module type');
             }
         } else if ($force === 'group') {
+            if (empty($modules_) === true) {
+                $modules_ = [];
+            }
+
             $agents_ = array_keys(agents_get_group_agents($group_select, false, 'none'));
 
             foreach ($agents_ as $id_agent) {
@@ -161,6 +165,7 @@ if ($update) {
                 foreach ($module_name as $mod_name) {
                     $result = process_manage_edit($mod_name['nombre'], $id_agent, $module_status, $modules_selection_mode);
                     $count++;
+                    $modules_[] = $mod_name['nombre'];
                     $success += (int) $result;
                 }
             }
@@ -193,6 +198,9 @@ if ($update) {
         __('Successfully updated').'('.$success.'/'.$count.')',
         $error_msg
     );
+    if (empty($modules_) === true || is_array($modules_) === false) {
+        $modules_ = [];
+    }
 
     $info = '{"Modules":"'.implode(',', $modules_).'","Agents":"'.implode(',', $agents_).'"}';
     if ($success > 0) {

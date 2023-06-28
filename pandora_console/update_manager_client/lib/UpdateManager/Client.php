@@ -2094,7 +2094,7 @@ class Client
                     sprintf(
                         'UPDATE `tconfig` SET `value` = \'%s\'
                          WHERE `token` = "progress_update"',
-                        $updates
+                        mysqli_real_escape_string($this->dbh, $updates)
                     )
                 );
             }

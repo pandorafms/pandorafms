@@ -15,7 +15,7 @@ Name:               %{name}
 Version:            %{version}
 Release:            %{release}
 License:            GPL
-Vendor:             Artica ST <info@artica.es>
+Vendor:             Artica ST <info@pandorafms.com>
 #Source0:            %{name}-%{version}-%{revision}.tar.gz
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com

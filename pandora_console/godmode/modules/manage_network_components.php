@@ -738,7 +738,7 @@ $total_components = network_components_get_network_components(
     'COUNT(*) AS total'
 );
 $total_components = $total_components[0]['total'];
-$offset_delete = ($offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
+$offset_delete = ($offset > 0 && $offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
 $filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = network_components_get_network_components(

@@ -353,8 +353,7 @@ if ($create_user === true) {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    $values['section'] = $homeScreenValues[$values['section']];
-
+    // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;
         $values['last_pass_change'] = date('Y/m/d H:i:s', get_system_time());
@@ -645,8 +644,7 @@ if ($update_user) {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    $values['section'] = $homeScreenValues[$values['section']];
-
+    // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true && is_metaconsole() === true) {
         if (users_is_admin() === true) {
             $values['metaconsole_access'] = get_parameter('metaconsole_access');

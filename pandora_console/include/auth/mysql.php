@@ -814,10 +814,6 @@ function update_user(string $id_user, array $values)
             HOME_SCREEN_DASHBOARD      => __('Dashboard'),
         ];
 
-        if (array_key_exists($values['section'], $homeScreenValues) === true) {
-            $values['section'] = $homeScreenValues[$values['section']];
-        }
-
         if (is_metaconsole() === true) {
             $values['metaconsole_section'] = $values['section'];
             $values['metaconsole_data_section'] = $values['data_section'];

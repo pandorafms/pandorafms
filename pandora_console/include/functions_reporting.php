@@ -7568,7 +7568,7 @@ function reporting_sql($report, $content, $pdf=false)
     if (is_metaconsole() === true && $content['server_name'] === 'all') {
         $sync = new Synchronizer();
         $results = $sync->apply(
-            function ($node) use ($report, $content) {
+            function ($node) use ($report, $content, $pdf) {
                 try {
                     $node->connect();
                     $rs = reporting_sql_auxiliary($report, $content, $pdf);
@@ -7663,38 +7663,38 @@ function reporting_sql_auxiliary($report, $content, $pdf=false)
     }
 
     if ($pdf === true && isset($config['limit_sql_pdf']) === true && $config['limit_sql_pdf'] > 0) {
-        $pattern = '/\sLIMIT\s+(\d+)(\s*,\s*(\d+))?\s*(;+|(\\G)+)?$/i';
-        if (preg_match($pattern, $sql, $matches)) {
-            // Item query contains a LIMIT clause.
-            $limit_size = $limit1 = (int) $matches[1];
+        $pattern_limit_offset = '/LIMIT\s+(\d+)(?:\s*,\s*(\d+))?/i';
 
-            if (isset($matches[3]) === true && $matches[3] !== '') {
-                // The LIMIT clause is a range LIMIT.
-                $limit2 = (int) $matches[3];
-                $range_size = abs($limit2 - $limit1) + 1;
-                if ($range_size > $config['limit_sql_pdf']) {
-                    // Set new LIMIT only if it is more restrictive than the LIMIT size specified in the item query.
-                    $new_limit2 = ($limit1 + $config['limit_sql_pdf']);
-                    $new_limit = "$limit1, $new_limit2";
-                    // Replace item query limit by new calculated limit.
-                    $sql = preg_replace($pattern, " LIMIT $new_limit", $sql);
+        if (preg_match($pattern_limit_offset, $sql, $matches_limit_offset)) {
+            // Item query contains a LIMIT clause.
+            $limit1 = (int) $matches_limit_offset[1];
+
+            if (isset($matches_limit_offset[2]) === true && $matches_limit_offset[2] !== '') {
+                // The LIMIT clause has a second limit value in the form of LIMIT X, Y.
+                $limit2 = (int) $matches_limit_offset[2];
+
+                if ($config['limit_sql_pdf'] < $limit2) {
+                    // Overwrite the second limit value only if $config['limit_sql_pdf'] is less than the original limit.
+                    $new_limit2 = $config['limit_sql_pdf'];
+                    $sql = preg_replace($pattern_limit_offset, " LIMIT $limit1, $new_limit2", $sql);
                 }
             } else {
-                // The LIMIT clause is a simple LIMIT.
-                if ($limit_size > $config['limit_sql_pdf']) {
-                    // Set new LIMIT only if it is more restrictive than the LIMIT specified in the item query.
-                    $new_limit = $config['limit_sql_pdf'];
-                    $sql = preg_replace($pattern, " LIMIT $new_limit", $sql);
+                // The LIMIT clause is a simple LIMIT in the form of LIMIT X.
+                if ($config['limit_sql_pdf'] < $limit1) {
+                    // Overwrite the limit value only if $config['limit_sql_pdf'] is less than the original limit.
+                    $new_limit1 = $config['limit_sql_pdf'];
+                    $sql = preg_replace($pattern_limit_offset, " LIMIT $new_limit1", $sql);
                 }
             }
         } else {
             $limit_str = ' LIMIT '.$config['limit_sql_pdf'];
+
             // Check if SQL ends with semicolon or "\G".
             if (substr(trim($sql), -1) === ';') {
-                $sql = str_replace(';', '', trim($sql));
+                $sql = rtrim($sql, ';');
                 $sql .= $limit_str.';';
             } else if (substr(trim($sql), -2) === '\\G') {
-                $sql = str_replace('\G', '', trim($sql));
+                $sql = rtrim($sql, '\G');
                 $sql .= $limit_str.'\G';
             } else {
                 $sql .= $limit_str;
@@ -7732,6 +7732,7 @@ function reporting_sql_auxiliary($report, $content, $pdf=false)
         }
 
         $result = db_get_all_rows_sql($sql, $historical_db);
+        
         if ($result !== false) {
             foreach ($result as $row) {
                 $data_row = [];

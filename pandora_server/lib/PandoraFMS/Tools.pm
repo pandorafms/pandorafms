@@ -140,6 +140,9 @@ our @EXPORT = qw(
 	disk_free
 	load_average
 	free_mem
+	total_mem
+	cpu_load
+	count_files_ext
 	md5
 	md5_init
 	pandora_ping
@@ -1405,6 +1408,83 @@ sub free_mem {
 	return $free_mem;
 }
 
+sub total_mem {
+	my $total_mem;
+
+	my $OSNAME = $^O;
+
+	if ($OSNAME eq "freebsd"){
+		$total_mem = `/sbin/sysctl sysctl -b hw.physmem`;
+		# in kilobytes
+		$total_mem = $total_mem / 1024;
+
+	}
+	elsif ($OSNAME eq "netbsd"){
+		$total_mem = `cat /proc/meminfo | grep MemTotal | awk '{ print \$2 }'`;
+	}
+	elsif ($OSNAME eq "MSWin32"){
+		$total_mem = `wmic ComputerSystem get TotalPhysicalMemory /Value`;
+		if ($total_mem =~ m/=(.*)$/gm) {
+			$total_mem = $1;
+		} else {
+			$total_mem = undef;
+		}
+	}
+	# by default LINUX calls
+	else {
+		$total_mem = `free | grep Mem | awk '{ print \$2 }'`;
+	}
+	return $total_mem;
+}
+
+
+################################################################################
+## SUB CPU load
+	# Get CPU load (%)
+################################################################################
+sub cpu_load {
+	my $cpu_load;
+
+	my $OSNAME = $^O;
+	
+	if ($OSNAME eq "MSWin32"){
+		$cpu_load = `wmic cpu get loadpercentage|find /I /V "Loadpercentage" | findstr /r "[0-9]" `;
+	}
+	# by default LINUX calls
+	else {
+		$cpu_load = `top -bn 2 -d 0.01 | grep 'Cpu' | tail -n 1 | awk '{ print \$2+\$4+\$6 }'`;
+	}
+
+	return $cpu_load;
+}
+
+################################################################################
+## SUB count_files
+	# Count files in an specific folder by extension
+################################################################################
+sub count_files_ext($$) {
+	my($path, $ext) = @_;
+
+	my $count=0;
+	my $OSNAME = $^O;
+	
+	if ($OSNAME eq "MSWin32"){
+		$path =~ '/^([a-zA-Z]:)?(\\\\[^\\/:*?\"<>|]+)*\\\\?/';
+		my $drive = $1;
+		my $folder = $2;
+
+		$count = `wmic datafile where "drive=\'$drive\' and path=\'$folder\' and extension=\'$ext\'" get /value | find /c "="`;
+		if ($count =~ m/=(.*)$/gm) {
+			$count = $1;
+		}
+			$count = undef;
+			
+	} else {
+		$count = `find $path -type f -name "*.$ext" | wc -l`
+	}
+
+	return $count;
+}
 ################################################################################
 ## SUB ticks_totime
 	# Transform a snmp timeticks count in a date

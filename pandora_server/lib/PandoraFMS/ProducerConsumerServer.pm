@@ -95,7 +95,8 @@ sub run ($$$$$) {
 			'tstamp'      => time(),
 			'rate'        => 0,
 			'rate_count'  => 0,
-			'rate_tstamp' => time()
+			'rate_tstamp' => time(),
+			'task_queue'  => $task_queue,
 		});
 
 		my $thr = threads->create ({'exit' => 'thread_only'},
@@ -127,7 +128,8 @@ sub run ($$$$$) {
 		'tstamp'      => time(),
 		'rate'        => 0,
 		'rate_count'  => 0,
-		'rate_tstamp' => time()
+		'rate_tstamp' => time(),
+		'task_queue'  => $task_queue,
 	});
 
 	# Launch producer thread

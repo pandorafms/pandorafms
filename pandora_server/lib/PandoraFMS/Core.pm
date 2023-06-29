@@ -102,6 +102,8 @@ Exported Functions:
 
 =item * C<pandora_thread_monitoring>
 
+=item * C<pandora_installation_monitoring>
+
 =back
 
 =head1 METHODS
@@ -129,7 +131,7 @@ use Text::ParseWords;
 use Math::Trig;			# Math functions
 
 # Debugging
-#use Data::Dumper;
+use Data::Dumper;
 
 # Force XML::Simple to use XML::Parser instead SAX to manage XML
 # due a bug processing some XML with blank spaces.
@@ -262,6 +264,7 @@ our @EXPORT = qw(
 	pandora_server_statistics
 	pandora_self_monitoring
 	pandora_thread_monitoring
+	pandora_installation_monitoring
 	pandora_process_policy_queue
 	pandora_sync_agents_integria
 	pandora_get_integria_ticket_types
@@ -6094,6 +6097,13 @@ sub pandora_self_monitoring ($$) {
 	my $free_disk_spool = disk_free ($pa_config->{"incomingdir"});
 	$free_disk_spool = '' unless defined ($free_disk_spool);
 	my $my_data_server = get_db_value ($dbh, "SELECT id_server FROM tserver WHERE server_type = ? AND name = '".$pa_config->{"servername"}."'", DATASERVER);
+	my $total_mem = total_mem();
+	my $free_mem_percentage;
+	if(defined($total_mem) && $free_mem ne '') {
+		$free_mem_percentage = ($free_mem / $total_mem ) * 100;
+	} else {
+		$free_mem_percentage = '';
+	}
 
 	# Number of unknown agents
 	my $agents_unknown = 0;
@@ -6124,6 +6134,37 @@ sub pandora_self_monitoring ($$) {
 	}
 
 	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+	my $num_threads = 0;
+	$num_threads = get_db_value ($dbh, "SELECT SUM(threads) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $cpu_load = 0;
+	$cpu_load = cpu_load();
+
+
+	## Modules Networks average.
+	my $totalNetworkModules = get_db_value(
+		$dbh,
+		'SELECT count(*)
+		FROM tagente_modulo
+		WHERE id_tipo_modulo
+		BETWEEN 6 AND 18'
+	);
+
+	my $totalModuleIntervalTime = get_db_value(
+		$dbh,
+		'SELECT SUM(module_interval)
+			FROM tagente_modulo
+			WHERE id_tipo_modulo
+			BETWEEN 6 AND 18'
+	);
+
+	my $data_in_files = count_files_ext($pa_config->{"incomingdir"}, 'data');
+	my $data_in_files_badxml = count_files_ext($pa_config->{"incomingdir"}, 'data_BADXML');
+	my $averageTime = 0;
+
+	if (defined($totalModuleIntervalTime) && defined($totalNetworkModules)) {
+			$averageTime = $totalNetworkModules / $totalModuleIntervalTime;
+	}
+
 
 	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
 	
@@ -6160,7 +6201,14 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_mem</data>";
 		$xml_output .=" </module>";
 	}
-	
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Free_RAM_perccentage</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$free_mem_percentage</data>";
+	$xml_output .=" <unit>%</unit>";
+	$xml_output .=" </module>";
+
 	if (defined($free_disk_spool)) {
 		$xml_output .=" <module>";
 		$xml_output .=" <name>FreeDisk_SpoolDir</name>";
@@ -6168,6 +6216,43 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_disk_spool</data>";
 		$xml_output .=" </module>";
 	}
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Total Threads</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$num_threads</data>";
+	$xml_output .=" </module>";
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>CPU Load</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$cpu_load</data>";
+	$xml_output .=" <unit>%</unit>";
+	$xml_output .=" </module>";
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Network Modules Int AVG</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$averageTime</data>";
+	$xml_output .=" <unit>seconds</unit>";
+	$xml_output .=" </module>";
+
+	if(defined($data_in_files)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Data_in_files</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$data_in_files</data>";
+		$xml_output .=" </module>";
+	}
+
+	if(defined($data_in_files_badxml)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Data_in_BADXML_files</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$data_in_files_badxml</data>";
+		$xml_output .=" </module>";
+	}
+
 
 	$xml_output .= "</agent_data>";
 
@@ -6192,15 +6277,21 @@ sub pandora_thread_monitoring ($$$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
 	my $xml_output = "";
-	
+	my $module_parent = "";
+
+	# All trhead modules are "Status" module sons.
+	$module_parent = 'Status';
+
 	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
-		while (my ($tid, $stats) = each(%{$server->getProducerStats()})) {
+		my $producer_stats = $server->getProducerStats();
+		while (my ($tid, $stats) = each(%{$producer_stats})) {
 			$xml_output .=" <module>";
 			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Status</name>";
 			$xml_output .=" <type>generic_proc</type>";
 			$xml_output .=" <module_group>System</module_group>";
 			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" </module>";
 	
 			$xml_output .=" <module>";
@@ -6209,6 +6300,16 @@ sub pandora_thread_monitoring ($$$) {
 			$xml_output .=" <module_group>Performance</module_group>";
 			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
 			$xml_output .=" <unit>tasks/second</unit>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
+			$xml_output .=" </module>";
+
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Queued Elements</name>";
+			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <module_group>Performance</module_group>";
+			$xml_output .=" <data>" . ($#{$stats->{'task_queue'}} + 1) . "</data>";
+			$xml_output .=" <unit>tasks</unit>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" </module>";
 		}
 
@@ -6223,6 +6324,7 @@ sub pandora_thread_monitoring ($$$) {
 			$xml_output .=" <type>generic_proc</type>";
 			$xml_output .=" <module_group>System</module_group>";
 			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" </module>";
 	
 			$xml_output .=" <module>";
@@ -6230,13 +6332,115 @@ sub pandora_thread_monitoring ($$$) {
 			$xml_output .=" <type>generic_data</type>";
 			$xml_output .=" <module_group>Performance</module_group>";
 			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" <unit>tasks/second</unit>";
+			$xml_output .=" </module>";
+
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Queued Elements</name>";
+			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <module_group>Performance</module_group>";
+			$xml_output .=" <data>" . ($#{$stats->{'task_queue'}} + 1) . "</data>";
+			$xml_output .=" <unit>tasks</unit>";	
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" </module>";
 		}
 	}
 	$xml_output .= "</agent_data>";
 
 	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".threads.".$utimestamp.".data";
+	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
+	print XMLFILE $xml_output;
+	close (XMLFILE);
+}
+
+##########################################################################
+=head2 C<< pandora_installation_monitoring (I<$pa_config>, I<$dbh>, I<$servers>) >>
+
+Generate stats for Pandora FMS threads.
+
+=cut
+##########################################################################
+sub pandora_installation_monitoring($$) {
+	my ($pa_config, $dbh) = @_;
+
+	my $utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+	my @modules;
+
+	my $xml_output = "";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+
+	# Total amount of agents
+	my $module;
+	$module->{'name'} = "total_agents";
+	$module->{'description'} = 'Total amount of agents';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente)) FROM tagente');
+	push(@modules, $module);
+	undef $module;
+	# Total amount of modules
+	$module->{'name'} = "total_modules";
+	$module->{'description'} = 'Total modules';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente_modulo)) FROM tagente_modulo');
+	push(@modules, $module);
+	undef $module;
+	# Total groups
+	$module->{'name'} = "total_groups";
+	$module->{'description'} = 'Total groups';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_grupo)) FROM tgrupo');
+	push(@modules, $module);
+	undef $module;
+	# Total module data records
+	$module->{'name'} = "total_data";
+	$module->{'description'} = 'Total module data records';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(*) FROM tagente_datos');
+	$module->{'interval'} = '86400';
+	push(@modules, $module);
+	undef $module;
+	# Total module strimg data records
+	$module->{'name'} = "total_string_data";
+	$module->{'description'} = 'Total module string data records';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(*) FROM tagente_datos_string');
+	$module->{'interval'} = '86400';
+	push(@modules, $module);
+	undef $module;
+	# Total agent access record
+	$module->{'name'} = "total_access_data";
+	$module->{'description'} = 'Total agent access records';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(*) FROM tagent_access');
+	push(@modules, $module);
+	undef $module;
+
+	print Dumper(@modules);
+	foreach my $module_data (@modules) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>" .$module_data->{'name'}. "</name>";
+		$xml_output .=" <data>" . $module_data->{'data'} . "</data>";
+
+		if(defined($module->{'description'})) {
+			$xml_output .=" <description>" .$module_data->{'decription'}. "</description>";
+		}
+		if(defined($module->{'type'})) {
+			$xml_output .=" <type>" .$module_data->{'type'}. "</type>";
+		} else {
+			$xml_output .=" <type>generic_data</type>";
+		}
+		if(defined($module->{'unit'})) {
+			$xml_output .=" <unit>" .$module_data->{'unit'}. "</unit>";
+		}
+		if(defined($module->{'module_parent'})) {
+			$xml_output .=" <module_parent>" .$module_data->{'module_parent'}. "</module_parent>";
+		}
+		if(defined($module->{'interval'})) {
+			$xml_output .=" <moduintervalle_parent>" .$module_data->{'interval'}. "</interval>";
+		}
+
+		$xml_output .=" </module>";
+	}
+
+	$xml_output .= "</agent_data>";
+
+	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);

@@ -1446,13 +1446,22 @@ function ui_format_alert_row(
 
         $actionText .= '</ul></div>';
 
-        if ($actionDefault != '') {
-            $actionText .= db_get_sql(
+        if ($actionDefault !== '') {
+            $actionDefault_name = db_get_sql(
                 sprintf(
                     'SELECT name FROM talert_actions WHERE id = %d',
                     $actionDefault
                 )
-            ).' <i>('.__('Default').')</i>';
+            );
+            foreach ($actions as $action) {
+                if ($actionDefault_name === $action['name']) {
+                    $hide_actionDefault = true;
+                }
+            }
+
+            if ($hide_actionDefault !== true) {
+                $actionText .= $actionDefault_name.' <i>('.__('Default').')</i>';
+            }
         }
     }
 

@@ -821,6 +821,23 @@ $table_other->data[8][0] = html_print_label_input_block(
     )
 );
 
+$limit_sql_pdf_tip = ui_print_help_tip(
+    __('Before increasing this value, be aware that a large number can affect performance in PDF generation. Set to 0 to disregard this limit.'),
+    true
+);
+
+$table_other->data[8][1] = html_print_label_input_block(
+    __('Rows limit for SQL report item PDF').$limit_sql_pdf_tip,
+    html_print_input_text(
+        'limit_sql_pdf',
+        $config['limit_sql_pdf'],
+        '',
+        false,
+        15,
+        true
+    )
+);
+
 // Agent Wizard defaults.
 $defaultAgentWizardOptions = json_decode(io_safe_output($config['agent_wizard_defaults']));
 $tableSnmpWizard = new stdClass();

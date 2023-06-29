@@ -452,7 +452,8 @@ function reporting_make_reporting_data(
             case 'sql':
                 $report['contents'][] = reporting_sql(
                     $report,
-                    $content
+                    $content,
+                    $pdf
                 );
             break;
 
@@ -7541,7 +7542,7 @@ function reporting_text($report, $content)
  *
  * @return array
  */
-function reporting_sql($report, $content)
+function reporting_sql($report, $content, $pdf=false)
 {
     global $config;
 
@@ -7570,10 +7571,10 @@ function reporting_sql($report, $content)
     if (is_metaconsole() === true && $content['server_name'] === 'all') {
         $sync = new Synchronizer();
         $results = $sync->apply(
-            function ($node) use ($report, $content) {
+            function ($node) use ($report, $content, $pdf) {
                 try {
                     $node->connect();
-                    $rs = reporting_sql_auxiliary($report, $content);
+                    $rs = reporting_sql_auxiliary($report, $content, $pdf);
                     $node->disconnect();
                 } catch (Exception $e) {
                     return [
@@ -7623,7 +7624,7 @@ function reporting_sql($report, $content)
                 $node->connect();
             }
 
-            $query_result = reporting_sql_auxiliary($report, $content);
+            $query_result = reporting_sql_auxiliary($report, $content, $pdf);
             $return = array_merge($return, $query_result);
 
             if (is_metaconsole() === true && $id_server > 0) {
@@ -7648,8 +7649,10 @@ function reporting_sql($report, $content)
  *
  * @return array
  */
-function reporting_sql_auxiliary($report, $content)
+function reporting_sql_auxiliary($report, $content, $pdf=false)
 {
+    global $config;
+
     if ($content['treport_custom_sql_id'] != 0) {
         $sql = io_safe_output(
             db_get_value_filter(
@@ -7660,6 +7663,46 @@ function reporting_sql_auxiliary($report, $content)
         );
     } else {
         $sql = $content['external_source'];
+    }
+
+    if ($pdf === true && isset($config['limit_sql_pdf']) === true && $config['limit_sql_pdf'] > 0) {
+        $pattern_limit_offset = '/LIMIT\s+(\d+)(?:\s*,\s*(\d+))?/i';
+
+        if (preg_match($pattern_limit_offset, $sql, $matches_limit_offset)) {
+            // Item query contains a LIMIT clause.
+            $limit1 = (int) $matches_limit_offset[1];
+
+            if (isset($matches_limit_offset[2]) === true && $matches_limit_offset[2] !== '') {
+                // The LIMIT clause has a second limit value in the form of LIMIT X, Y.
+                $limit2 = (int) $matches_limit_offset[2];
+
+                if ($config['limit_sql_pdf'] < $limit2) {
+                    // Overwrite the second limit value only if $config['limit_sql_pdf'] is less than the original limit.
+                    $new_limit2 = $config['limit_sql_pdf'];
+                    $sql = preg_replace($pattern_limit_offset, " LIMIT $limit1, $new_limit2", $sql);
+                }
+            } else {
+                // The LIMIT clause is a simple LIMIT in the form of LIMIT X.
+                if ($config['limit_sql_pdf'] < $limit1) {
+                    // Overwrite the limit value only if $config['limit_sql_pdf'] is less than the original limit.
+                    $new_limit1 = $config['limit_sql_pdf'];
+                    $sql = preg_replace($pattern_limit_offset, " LIMIT $new_limit1", $sql);
+                }
+            }
+        } else {
+            $limit_str = ' LIMIT '.$config['limit_sql_pdf'];
+
+            // Check if SQL ends with semicolon or "\G".
+            if (substr(trim($sql), -1) === ';') {
+                $sql = rtrim($sql, ';');
+                $sql .= $limit_str.';';
+            } else if (substr(trim($sql), -2) === '\\G') {
+                $sql = rtrim($sql, '\G');
+                $sql .= $limit_str.'\G';
+            } else {
+                $sql .= $limit_str;
+            }
+        }
     }
 
     // Check if SQL macro exists.
@@ -7692,6 +7735,7 @@ function reporting_sql_auxiliary($report, $content)
         }
 
         $result = db_get_all_rows_sql($sql, $historical_db);
+        
         if ($result !== false) {
             foreach ($result as $row) {
                 $data_row = [];
@@ -7714,7 +7758,7 @@ function reporting_sql_auxiliary($report, $content)
         }
     } else {
         $return['correct'] = 0;
-        $return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
+        $return['error'] = __('Illegal query: Due to security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
     }
 
     return $return;

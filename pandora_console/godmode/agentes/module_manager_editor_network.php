@@ -90,14 +90,9 @@ push_table_simple($data, 'caption_target_ip');
 $data = [];
 // Show agent_for defect.
 if ($page === 'enterprise/godmode/policies/policy_modules') {
-    if (empty($ip_target) === false && $ip_target !== 'auto') {
+    if ($ip_target !== 'auto' && $ip_target !== 'force_pri') {
         $custom_ip_target = $ip_target;
         $ip_target = 'custom';
-    } else if (empty($ip_target) === true) {
-        $ip_target = 'force_pri';
-        $custom_ip_target = '';
-    } else {
-        $custom_ip_target = '';
     }
 
     $target_ip_values = [];
@@ -725,9 +720,13 @@ $(document).ready (function () {
     });
 
     var custom_ip_target = "<?php echo $custom_ip_target; ?>";
-    if(custom_ip_target == ''){
+    var ip_target = "<?php echo $ip_target; ?>";
+    if(ip_target === 'custom'){
+        $("#text-custom_ip_target").show();
+    } else {
         $("#text-custom_ip_target").hide();
     }
+
     $('#ip_target').change(function() {
         if($(this).val() === 'custom') {
             $("#text-custom_ip_target").show();

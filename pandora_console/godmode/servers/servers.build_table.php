@@ -101,6 +101,14 @@ foreach ($servers as $server) {
     }
 }
 
+//unset($servers[1]);
+$ext = '';
+
+// Check for any data-type server present in servers list. If none, enable server access for first server.
+if (array_search('data', array_column($servers, 'type')) === false) {
+    $ext = '_server';
+}
+
 foreach ($servers as $server) {
     $data = [];
 
@@ -185,14 +193,12 @@ foreach ($servers as $server) {
 
     $data[7] = ui_print_timestamp($server['keepalive'], true);
 
-
-    $ext = '_server';
-    if ($server['type'] != 'data') {
-        $ext = '';
+    if ($server['type'] === 'data') {
+        $ext = '_server';
     }
 
     $safe_server_name = servers_get_name($server['id_server']);
-    if (($server['type'] == 'data' || $server['type'] == 'enterprise satellite')) {
+    if (($ext === '_server' || $server['type'] == 'enterprise satellite')) {
         if (servers_check_remote_config($safe_server_name.$ext) && enterprise_installed()) {
             $names_servers[$safe_server_name] = true;
         } else {
@@ -253,8 +259,8 @@ foreach ($servers as $server) {
         );
         $data[8] .= '</a>';
 
-        if (($names_servers[$safe_server_name] === true) && ($server['type'] === 'data' || $server['type'] === 'enterprise satellite')) {
-            $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext.'&tab=agent_editor').'">';
+        if ($ext === '_server' || $server['type'] === 'enterprise satellite') {
+            $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext.'&tab=advanced_editor').'">';
             $data[8] .= html_print_image(
                 'images/agents@svg.svg',
                 true,
@@ -297,6 +303,8 @@ foreach ($servers as $server) {
         unset($data[7]);
         unset($data[8]);
     }
+
+    $ext = '';
 
     array_push($table->data, $data);
 }

@@ -101,7 +101,6 @@ foreach ($servers as $server) {
     }
 }
 
-//unset($servers[1]);
 $ext = '';
 
 // Check for any data-type server present in servers list. If none, enable server access for first server.
@@ -259,7 +258,7 @@ foreach ($servers as $server) {
         );
         $data[8] .= '</a>';
 
-        if ($ext === '_server' || $server['type'] === 'enterprise satellite') {
+        if (($names_servers[$safe_server_name] === true) && ($ext === '_server' || $server['type'] === 'enterprise satellite')) {
             $data[8] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext.'&tab=advanced_editor').'">';
             $data[8] .= html_print_image(
                 'images/agents@svg.svg',

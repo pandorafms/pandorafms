@@ -1313,6 +1313,7 @@ if (is_ajax()) {
 }
 
 $id_agente = (int) get_parameter('id_agente', 0);
+
 if (empty($id_agente)) {
     return;
 }

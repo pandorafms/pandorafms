@@ -458,9 +458,11 @@ if (is_ajax() === true) {
             }
 
             if (empty($events) === false) {
+                $redirection_form_id = 0;
+
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -1015,11 +1017,37 @@ if (is_ajax() === true) {
                             $url_link = $server_url;
                             $url_link .= '/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
                             $url_link_hash = $hashdata;
+
+                            parse_str($url_link_hash, $url_hash_array);
+
+                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' method='POST' action='".$url_link.$tmp->id_agente."'>";
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash',
+                                $url_hash_array['loginhash'],
+                                true
+                            );
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash_data',
+                                $url_hash_array['loginhash_data'],
+                                true
+                            );
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash_user',
+                                $url_hash_array['loginhash_user'],
+                                true
+                            );
+                            $redirection_form .= '</form>';
                         }
 
                         // Agent name link.
                         if ($tmp->id_agente > 0) {
-                            $draw_agent_name = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            if ($tmp->meta === true) {
+                                $draw_agent_name = $redirection_form;
+                                $draw_agent_name .= "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-table-redirection-".$redirection_form_id."\").submit();' href='#'>";
+                            } else {
+                                $draw_agent_name = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            }
+
                             $draw_agent_name .= $tmp->agent_name;
                             $draw_agent_name .= '</a>';
                             $tmp->agent_name = $draw_agent_name;
@@ -1029,7 +1057,13 @@ if (is_ajax() === true) {
 
                         // Agent ID link.
                         if ($tmp->id_agente > 0) {
-                            $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            if ($tmp->meta === true) {
+                                $draw_agent_id = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-table-redirection-".$redirection_form_id."\").submit();' href='#'>";
+                                $redirection_form_id++;
+                            } else {
+                                $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            }
+
                             $draw_agent_id .= $tmp->id_agente;
                             $draw_agent_id .= '</a>';
                             $tmp->id_agente = $draw_agent_id;

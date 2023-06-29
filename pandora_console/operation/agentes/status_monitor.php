@@ -1618,6 +1618,8 @@ if (empty($result) === false) {
         'web_content_string'
     );
 
+    $inc_id = 0;
+
     foreach ($result as $row) {
         // Avoid unset, null and false value.
         if (empty($row['server_name']) === true) {
@@ -1705,8 +1707,26 @@ if (empty($result) === false) {
             $agent_alias = !empty($row['agent_alias']) ? $row['agent_alias'] : $row['agent_name'];
 
             // TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
-            if (defined('METACONSOLE')) {
-                $agent_link = '<a href="'.$row['server_url'].'index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$row['id_agent'].'&'.'loginhash=auto&'.'loginhash_data='.$row['hashdata'].'&'.'loginhash_user='.str_rot13($row['user']).'">';
+            if (is_metaconsole() === true) {
+                echo "<form id='agent-redirection-".$inc_id."' method='POST' action='".$row['server_url']."index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row['id_agent']."'>";
+                html_print_input_hidden(
+                    'loginhash',
+                    'auto',
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash_data',
+                    $row['hashdata'],
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash_user',
+                    str_rot13($row['user']),
+                    false
+                );
+                echo '</form>';
+                $agent_link = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-redirection-".$inc_id."\").submit();' href='#'>";
+
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,
                     'agent_small',
@@ -2234,27 +2254,77 @@ if (empty($result) === false) {
         }
 
         if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
-            $url_edit_module = $row['server_url'];
-            $url_edit_module .= 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&';
-            $url_edit_module .= '&id_agente='.$row['id_agent'];
-            $url_edit_module .= '&tab=module&id_agent_module='.$row['id_agente_modulo'].'&edit_module=1';
+            $table->cellclass[][2] = 'action_buttons';
+
             if (is_metaconsole() === true) {
-                $url_edit_module .= '&loginhash=auto';
-                $url_edit_module .= '&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']);
+                echo "<form id='agent-edit-redirection-".$inc_id."' method='POST' action='".$row['server_url']."index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&edit_module=1'>";
+                html_print_input_hidden(
+                    'id_agente',
+                    $row['id_agent'],
+                    false
+                );
+                html_print_input_hidden(
+                    'id_agent_module',
+                    $row['id_agente_modulo'],
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash',
+                    'auto',
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash_data',
+                    $row['hashdata'],
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash_user',
+                    str_rot13($row['user']),
+                    false
+                );
+
+                echo '</form>';
+                $agent_link = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-edit-redirection-".$inc_id."\").submit();' href='#'>";
+
+                $agent_alias = ui_print_truncate_text(
+                    $agent_alias,
+                    'agent_small',
+                    false,
+                    true,
+                    true,
+                    '[&hellip;]',
+                    'font-size:7.5pt;'
+                );
+
+                $data[12] .= $agent_link.html_print_image(
+                    'images/edit.svg',
+                    true,
+                    [
+                        'alt'    => '0',
+                        'border' => '',
+                        'title'  => __('Edit'),
+                        'class'  => 'main_menu_icon invert_filter',
+                    ]
+                ).'</a>';
+            } else {
+                $url_edit_module = $row['server_url'];
+                $url_edit_module .= 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&';
+                $url_edit_module .= '&id_agente='.$row['id_agent'];
+                $url_edit_module .= '&tab=module&id_agent_module='.$row['id_agente_modulo'].'&edit_module=1';
+                $data[12] .= '<a href="'.$url_edit_module.'">'.html_print_image(
+                    'images/edit.svg',
+                    true,
+                    [
+                        'alt'    => '0',
+                        'border' => '',
+                        'title'  => __('Edit'),
+                        'class'  => 'main_menu_icon invert_filter',
+                    ]
+                ).'</a>';
             }
 
-            $table->cellclass[][2] = 'action_buttons';
-            $data[12] .= '<a href="'.$url_edit_module.'">'.html_print_image(
-                'images/edit.svg',
-                true,
-                [
-                    'alt'    => '0',
-                    'border' => '',
-                    'title'  => __('Edit'),
-                    'class'  => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-
+            // Delete.
             if (is_metaconsole() === false) {
                 $url_delete_module = $row['server_url'].'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente';
                 $url_delete_module .= '&id_agente='.$row['id_agent'].'&delete_module='.$row['id_agente_modulo'];
@@ -2272,6 +2342,8 @@ if (empty($result) === false) {
                 ).'</a>';
             }
         }
+
+        $inc_id++;
 
         array_push($table->data, $data);
     }

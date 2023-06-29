@@ -4834,7 +4834,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
         $url = substr_replace($url, '', $pos, 5);
     }
 
-    $url = htmlspecialchars($url);
+    $url = (isset($params['alert_flag']) && $params['alert_flag']) ? $url : htmlspecialchars($url);
 
     if (! $relative) {
         return ui_get_full_url($url, false, false, false);

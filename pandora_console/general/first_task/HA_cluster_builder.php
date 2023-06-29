@@ -9,12 +9,12 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas, http://www.artica.es
+ * Copyright (c) 2007-2023 Pandora FMS, http://www.pandorafms.com
  * This code is NOT free software. This code is NOT licenced under GPL2 licence
  * You cannnot redistribute it without written permission of copyright holder.
  * ============================================================================

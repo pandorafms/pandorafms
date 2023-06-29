@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -60,8 +60,10 @@ function visual_map_print_button_editor_refactor(
         $disabled,
         '',
         [
-            'class' => $class,
-            'mode'  => 'onlyIcon',
+            'class'                          => $class,
+            'mode'                           => 'onlyIcon',
+            'data-title'                     => $label,
+            'data-use_title_for_force_title' => '1',
         ],
         false,
         true
@@ -270,45 +272,45 @@ if ($pure === false) {
         echo '<div id ="edit-vc" class="fixed_filter_bar">';
         echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
         echo '<div class="toolbox-buttons">';
-        $class_camera = 'camera_min link-create-item';
-        $class_percentile = 'percentile_item_min link-create-item';
-        $class_module_graph = 'graph_min link-create-item';
-        $class_donut = 'donut_graph_min link-create-item';
-        $class_bars = 'bars_graph_min link-create-item';
-        $class_value = 'binary_min link-create-item';
-        $class_sla = 'auto_sla_graph_min link-create-item';
-        $class_label = 'label_min link-create-item';
-        $class_icon = 'icon_min link-create-item';
-        $class_clock = 'clock_min link-create-item';
-        $class_group = 'group_item_min link-create-item';
-        $class_box = 'box_item link-create-item';
-        $class_line = 'line_item link-create-item';
-        $class_cloud = 'color_cloud_min link-create-item';
-        $class_nlink = 'network_link_min link-create-item';
-        $class_odometer = 'odometer_min link-create-item';
-        $class_basic_chart = 'basic_chart_min link-create-item';
-        $class_delete = 'delete_item';
-        $class_copy = 'copy_item';
+        $class_camera = 'camera_min link-create-item forced_title';
+        $class_percentile = 'percentile_item_min link-create-item forced_title';
+        $class_module_graph = 'graph_min link-create-item forced_title';
+        $class_donut = 'donut_graph_min link-create-item forced_title';
+        $class_bars = 'bars_graph_min link-create-item forced_title';
+        $class_value = 'binary_min link-create-item forced_title';
+        $class_sla = 'auto_sla_graph_min link-create-item forced_title';
+        $class_label = 'label_min link-create-item forced_title';
+        $class_icon = 'icon_min link-create-item forced_title';
+        $class_clock = 'clock_min link-create-item forced_title';
+        $class_group = 'group_item_min link-create-item forced_title';
+        $class_box = 'box_item link-create-item forced_title';
+        $class_line = 'line_item link-create-item forced_title';
+        $class_cloud = 'color_cloud_min link-create-item forced_title';
+        $class_nlink = 'network_link_min link-create-item forced_title';
+        $class_odometer = 'odometer_min link-create-item forced_title';
+        $class_basic_chart = 'basic_chart_min link-create-item forced_title';
+        $class_delete = 'delete_item forced_title';
+        $class_copy = 'copy_item forced_title';
         if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
-            $class_camera .= ' invert_filter';
-            $class_percentile .= ' invert_filter';
-            $class_module_graph .= ' invert_filter';
-            $class_donut .= ' invert_filter';
-            $class_bars .= ' invert_filter';
-            $class_value .= ' invert_filter';
-            $class_sla .= ' invert_filter';
-            $class_label .= ' invert_filter';
-            $class_icon .= ' invert_filter';
-            $class_clock .= ' invert_filter';
-            $class_group .= ' invert_filter';
-            $class_box .= ' invert_filter';
-            $class_line .= ' invert_filter';
-            $class_cloud .= ' invert_filter';
-            $class_nlink .= ' invert_filter';
-            $class_odometer .= ' invert_filter';
-            $class_basic_chart .= ' invert_filter';
-            $class_delete .= ' invert_filter';
-            $class_copy .= ' invert_filter';
+            $class_camera .= ' invert_filter forced_title';
+            $class_percentile .= ' invert_filter forced_title';
+            $class_module_graph .= ' invert_filter forced_title';
+            $class_donut .= ' invert_filter forced_title';
+            $class_bars .= ' invert_filter forced_title';
+            $class_value .= ' invert_filter forced_title';
+            $class_sla .= ' invert_filter forced_title';
+            $class_label .= ' invert_filter forced_title';
+            $class_icon .= ' invert_filter forced_title';
+            $class_clock .= ' invert_filter forced_title';
+            $class_group .= ' invert_filter forced_title';
+            $class_box .= ' invert_filter forced_title';
+            $class_line .= ' invert_filter forced_title';
+            $class_cloud .= ' invert_filter forced_title';
+            $class_nlink .= ' invert_filter forced_title';
+            $class_odometer .= ' invert_filter forced_title';
+            $class_basic_chart .= ' invert_filter forced_title';
+            $class_delete .= ' invert_filter forced_title';
+            $class_copy .= ' invert_filter forced_title';
         }
 
         visual_map_print_button_editor_refactor(

@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -34,7 +34,7 @@ if ($get_image_path_status) {
 $id_visual_console = get_parameter('id_visual_console', null);
 
 // WARNING: CHECK THE ENTIRE FUNCTIONALITY
-// Visual console id required
+// Visual console id required.
 if (empty($id_visual_console)) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
@@ -1774,7 +1774,7 @@ switch ($action) {
     break;
 }
 
-// visual map element status check
+// Visual map element status check.
 if ($get_element_status) {
     $layoutData = db_get_row_filter(
         'tlayout_data',

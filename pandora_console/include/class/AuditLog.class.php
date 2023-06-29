@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -318,17 +318,29 @@ class AuditLog extends HTML
 
         $count = (int) db_get_value_sql(sprintf('SELECT COUNT(*) as "total" FROM tsesion WHERE %s', $filter));
 
-        $sql = sprintf(
-            'SELECT *
-			FROM tsesion
-			WHERE %s
-			ORDER BY %s
-            LIMIT %d, %d',
-            $filter,
-            $order,
-            $start,
-            $length
-        );
+        if ($length !== '-1') {
+            $sql = sprintf(
+                'SELECT *
+                FROM tsesion
+                WHERE %s
+                ORDER BY %s
+                LIMIT %d, %d',
+                $filter,
+                $order,
+                $start,
+                $length
+            );
+        } else {
+            $sql = sprintf(
+                'SELECT *
+                FROM tsesion
+                WHERE %s
+                ORDER BY %s',
+                $filter,
+                $order
+            );
+        }
+
         $data = db_get_all_rows_sql($sql);
 
         if (empty($data) === false) {

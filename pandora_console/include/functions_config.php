@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -370,6 +370,10 @@ function config_update_config()
                         $error_update[] = __('alias_as_name');
                     }
 
+                    if (config_update_value('keep_in_process_status_extra_id', get_parameter('keep_in_process_status_extra_id'), true) === false) {
+                        $error_update[] = __('keep_in_process_status_extra_id');
+                    }
+
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -601,6 +605,10 @@ function config_update_config()
 
                     if (config_update_value('ad_start_tls', get_parameter('ad_start_tls'), true) === false) {
                         $error_update[] = __('Start TLS');
+                    }
+
+                    if (config_update_value('recursive_search', get_parameter('recursive_search'), true) === false) {
+                        $error_update[] = __('Recursive search');
                     }
 
                     if (config_update_value('ad_advanced_config', get_parameter('ad_advanced_config'), true) === false) {
@@ -2355,6 +2363,10 @@ function config_process_config()
         config_update_value('alias_as_name', 0);
     }
 
+    if (!isset($config['keep_in_process_status_extra_id'])) {
+        config_update_value('keep_in_process_status_extra_id', 0);
+    }
+
     if (!isset($config['console_log_enabled'])) {
         config_update_value('console_log_enabled', 0);
     }
@@ -2827,7 +2839,7 @@ function config_process_config()
     }
 
     if (!isset($config['email_from_dir'])) {
-        config_update_value('email_from_dir', 'pandora@pandorafms.org');
+        config_update_value('email_from_dir', 'pandora@pandorafms.com/community/');
     }
 
     if (!isset($config['email_from_name'])) {
@@ -3080,6 +3092,10 @@ function config_process_config()
 
     if (!isset($config['ad_start_tls'])) {
         config_update_value('ad_start_tls', 0);
+    }
+
+    if (!isset($config['recursive_search'])) {
+        config_update_value('recursive_search', 1);
     }
 
     if (!isset($config['ad_advanced_config'])) {
@@ -3813,7 +3829,7 @@ function get_um_url()
         $url = $config['url_update_manager'];
         $url = substr($url, 0, (strlen($url) - strpos(strrev($url), '/')));
     } else {
-        $url = 'https://licensing.artica.es/pandoraupdate7/';
+        $url = 'https://licensing.pandorafms.com/pandoraupdate7/';
         config_update_value(
             'url_update_manager',
             $url.'/server.php'

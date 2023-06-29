@@ -1008,8 +1008,16 @@ use Sys::Hostname;
 use File::Basename;
 use File::Copy;
 use IO::Socket;
-use Sys::Syslog;
 use Time::Local;
+
+eval {
+    require Sys::Syslog;
+    Sys::Syslog->import();
+};
+
+if ($@) {
+    print ("[INFO] Could not import Sys::Syslog module\n\n");
+}
 
 BEGIN { push @INC, '/usr/lib/perl5'; }
 
@@ -1022,8 +1030,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.770';
-use constant AGENT_BUILD => '230427';
+use constant AGENT_VERSION => '7.0NG.772';
+use constant AGENT_BUILD => '230628';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1413,7 +1421,7 @@ sub start_log (;$) {
 	$Conf{'logfile'} = '/var/log/pandora/pandora_agent.log' unless defined ($Conf{'logfile'});
 
 	# Open it
-	if ($Conf{'logfile'} eq 'syslog') {
+	if ($Conf{'logfile'} eq 'syslog' && eval { Sys::Syslog->can('openlog') }) {
 		openlog('pandora_agent', 'nowait', 'daemon');
 	} else {
 		open ($LogFileFH, "> $Conf{'logfile'}") or error ("Could not open log file $Conf{'logfile'} for writing: $!.");
@@ -1425,15 +1433,12 @@ sub start_log (;$) {
 # Rotates the agent logfile.
 ################################################################################
 sub rotate_log () {
-	if ($Conf{'logfile'} eq 'syslog') {
-		# No action needed
+	if ($Conf{'logfile'} eq 'syslog' && eval { Sys::Syslog->can('syslog') }) {
+		# No action needed.
 		return;
-	} else {
+	}else {
 		if ($Conf{'logrotate'} < 0){
 			$Conf{'logrotate'} = DEFAULT_LOG_ROTATE;
-		}
-		if ($Conf{'logfile'} eq 'syslog') {
-			return;
 		}
 
 		# Rotate file
@@ -1451,7 +1456,7 @@ sub rotate_log () {
 # Close the agent logfile and stop logging.
 ################################################################################
 sub stop_log () {
-	if ($Conf{'logfile'} eq 'syslog') {
+	if ($Conf{'logfile'} eq 'syslog' && eval { Sys::Syslog->can('closelog') }) {
 		closelog();
 	} else {
 		close ($LogFileFH);
@@ -1466,7 +1471,7 @@ sub log_message ($$;$) {
 	
 	if (defined ($dest)) {
 		print $dest strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
-	} elsif ($Conf{'logfile'} eq 'syslog') {
+	} elsif ($Conf{'logfile'} eq 'syslog' && eval { Sys::Syslog->can('syslog') }) {
 		syslog('info', $msg);
 	} else {
 		#Trying to write into log file to test its writable
@@ -4377,7 +4382,7 @@ while (1) {
 		$Xml = $xml_header . $Xml . "</agent_data>";
 
 		# Save XML data file
-		my $temp_file = $Conf{'temporal'} . '/' . $Conf{'agent_name'} . '.' . time () . '.data';
+		my $temp_file = $Conf{'temporal'} . '/' . md5($Conf{'agent_name'}) . '.' . time () . '.data';
 		error ("File '$temp_file' already exists as a symlink and could not be removed: $!") if (-l $temp_file && !unlink($temp_file));
 		open (TEMP_FILE, "> $temp_file") || error ("Could not write XML data file: $!");
 		print TEMP_FILE $Xml;

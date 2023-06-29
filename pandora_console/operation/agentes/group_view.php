@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -230,6 +230,9 @@ if (empty($result_groups) === false) {
     echo '<table class="info_table mrgn_top_10px" border="0" width="100%">';
         echo '<thead>';
         echo '<tr>';
+            echo '<th colspan=14>'.__('Total items').': '.$count.'</th>';
+        echo '</tr>';
+        echo '<tr>';
             echo '<th colspan=2 ></th>';
             echo '<th colspan=6>'.__('Agents').'</th>';
             echo '<th colspan=6>'.__('Modules').'</th>';
@@ -238,13 +241,13 @@ if (empty($result_groups) === false) {
         echo '<tr>';
             echo "<th class='w26px'>".__('Force').'</th>';
             echo "<th width='30%' class='mw60px' style='text-align: justify'>".__('Group').'/'.__('Tags').'</th>';
-            echo "<th width='10%' class='mw60px center'>".__('Total').'</th>';
+            echo "<th class='center'>".__('Total').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Unknown').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Not init').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Normal').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Warning').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Critical').'</th>';
-            echo "<th width='10%' class='mw60px center'>".__('Unknown').'</th>';
+            echo "<th class='center'>".__('Unknown').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Not init').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Normal').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Warning').'</th>';

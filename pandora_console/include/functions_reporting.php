@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -3471,7 +3471,7 @@ function reporting_agent_module_status($report, $content)
 
     $agents = json_decode(
         io_safe_output(
-            base64_decode($external_source['id_agents'])
+            base64_decode($external_source['id_agent'])
         ),
         true
     );
@@ -4199,6 +4199,7 @@ function reporting_group_report($report, $content)
     if (is_metaconsole() === true) {
         if (isset($content['server_name']) === true
             && empty($content['server_name']) === false
+            && $content['server_name'] !== 'all'
         ) {
             $id_meta = metaconsole_get_id_server($content['server_name']);
             $server = metaconsole_get_connection_by_id($id_meta);
@@ -4254,7 +4255,9 @@ function reporting_group_report($report, $content)
                     $data_node = reporting_groups_nodes($content);
                     $count_events += $data_node['count_events'];
                     foreach ($data_node['group_stats'] as $key => $value) {
-                        $group_stats[$key] += $value;
+                        if (array_key_exists($key, $group_stats)) {
+                            $group_stats[$key] += $value;
+                        }
                     }
 
                     if (is_metaconsole() === true) {
@@ -9167,7 +9170,7 @@ function reporting_availability($report, $content, $date=false, $time=false)
                         modules_get_agentmodule_agent($item['id_agent_module'])
                     );
 
-                    if (empty($text)) {
+                    if (empty($row['data']['availability_item'])) {
                         $row['data']['availability_item'] = __('No Address');
                     }
                 } else {
@@ -12139,7 +12142,7 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
         $table_ind->data[] = $tdata;
 
         $tdata[0] = '<fieldset class="databox tactical_set">
-                        <legend>'.__('Module sanityX').ui_print_help_tip(sprintf(__('%d Not inited monitors'), (int) $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
+                        <legend>'.__('Module sanity').ui_print_help_tip(sprintf(__('%d Not inited monitors'), (int) $data['monitor_not_init']), true).'</legend>'.progress_bar($data['module_sanity'], $width, $height, $data['module_sanity'].'% '.__('of total modules inited'), 0).'</fieldset>';
         $table_ind->rowclass[] = '';
         $table_ind->data[] = $tdata;
 
@@ -14740,11 +14743,11 @@ function reporting_get_agentmodule_sla_day($id_agent_module, $period=0, $min_val
 }
 
 
-function reporting_get_stats_servers()
+function reporting_get_stats_servers($filter=[])
 {
     global $config;
 
-    $server_performance = servers_get_performance();
+    $server_performance = servers_get_performance($filter);
 
     // Alerts table
     $table_srv = html_get_predefined_table();
@@ -14880,6 +14883,9 @@ function reporting_get_stats_servers()
                 $output .= 'var parameters = {};';
                 $output .= 'parameters["page"] = "include/ajax/events";';
                 $output .= 'parameters["total_events"] = 1;';
+        if (empty($filter) === false && empty($filter['groups']) === false) {
+            $output .= 'parameters["filter_groups"] = "'.$filter['groups'].'";';
+        }
 
                 $output .= '$.ajax({type: "GET",url: "'.ui_get_full_url('ajax.php', false, false, false).'",data: parameters,';
                     $output .= 'success: function(data) {';
@@ -15876,7 +15882,11 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     $return['time_critical'] = $data['time_error'];
     $return['time_warning'] = $data['time_warning'];
     $return['time_ok'] = $data['time_ok'];
-    $return['percent_ok'] = (($data['checks_ok'] * 100) / $data['checks_total']);
+    if ($data['checks_total'] > 0) {
+        $return['percent_ok'] = (($data['checks_ok'] * 100) / $data['checks_total']);
+    } else {
+        $return['percent_ok'] = 0;
+    }
 
     $colors = [
         1 => COL_NORMAL,
@@ -15889,6 +15899,11 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     ];
 
     $width_graph  = 100;
+    if ($metaconsole_on && $server_name != '') {
+        // Restore db connection.
+        metaconsole_restore_db();
+    }
+
     if (empty($array_result) === false) {
         $return['chart'] = flot_slicesbar_graph(
             $array_result,
@@ -15913,11 +15928,6 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         );
     } else {
         $return['chart'] = graph_nodata_image(['height' => $height_graph]);
-    }
-
-    if ($metaconsole_on && $server_name != '') {
-        // Restore db connection.
-        metaconsole_restore_db();
     }
 
     return reporting_check_structure_content($return);

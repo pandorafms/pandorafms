@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -143,7 +143,7 @@ if ($new_user === true) {
     $userManagementTable->data['captions_iduser'][0] = __('User ID');
     $userManagementTable->data['fields_iduser'][0] = html_print_input_text_extended(
         'id_user',
-        $id,
+        '',
         '',
         '',
         20,
@@ -272,7 +272,7 @@ $passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_exte
     'password_new',
     '',
     '25',
-    '45',
+    '150',
     $view_mode,
     '',
     [
@@ -291,7 +291,7 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     'password_conf',
     '',
     '20',
-    '45',
+    '150',
     $view_mode,
     '',
     [
@@ -311,7 +311,7 @@ if ($new_user === false) {
         'own_password_confirm',
         '',
         '20',
-        '45',
+        '150',
         $view_mode,
         '',
         [
@@ -596,11 +596,15 @@ $userManagementTable->data['fields_blocksize_eventfilter'][0] = html_print_input
     true
 );
 
+if (is_metaconsole() === true && empty($user_info['metaconsole_default_event_filter']) !== true) {
+    $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
+}
+
 $userManagementTable->data['captions_blocksize_eventfilter'][1] = __('Event filter');
 $userManagementTable->data['fields_blocksize_eventfilter'][1] = html_print_select(
     $event_filter,
     'default_event_filter',
-    ($user_info['default_event_filter'] ?? 0),
+    [$user_info['default_event_filter']],
     '',
     '',
     __('None'),
@@ -608,41 +612,57 @@ $userManagementTable->data['fields_blocksize_eventfilter'][1] = html_print_selec
     false,
     false
 );
-if (is_metaconsole() === false) {
-    // Home screen table.
-    $homeScreenTable = new stdClass();
-    $homeScreenTable->class = 'w100p full_section';
-    $homeScreenTable->id = 'home_screen_table';
-    $homeScreenTable->style = [];
-    $homeScreenTable->rowclass = [];
-    $homeScreenTable->data = [];
-    // Home screen.
-    $homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
-    $homeScreenTable->colspan['captions_homescreen'][0] = 2;
-    $homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
-    $homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
-    $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
-        $homeScreenValues,
-        'section',
-        io_safe_output($user_info['section']),
-        'show_data_section();',
-        '',
-        -1,
-        true,
-        false,
-        false
-    );
-    $homeScreenTable->data['fields_homescreen'][1] = html_print_div(
-        [
-            'class'   => 'w100p',
-            'content' => $customHomeScreenDataField,
-        ],
-        true
-    );
 
-    $userManagementTable->rowclass['homescreen_table'] = 'w100p';
-    $userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
+// Home screen table.
+$homeScreenTable = new stdClass();
+$homeScreenTable->class = 'w100p full_section';
+$homeScreenTable->id = 'home_screen_table';
+$homeScreenTable->style = [];
+$homeScreenTable->rowclass = [];
+$homeScreenTable->data = [];
+// Home screen.
+if (is_metaconsole() === true && empty($user_info['metaconsole_data_section']) !== true) {
+    $user_info['data_section'] = $user_info['metaconsole_data_section'];
+    $user_info['section'] = $user_info['metaconsole_section'];
 }
+
+$homeScreenTable->data['captions_homescreen'][0] = __('Home screen');
+$homeScreenTable->colspan['captions_homescreen'][0] = 2;
+$homeScreenTable->rowclass['captions_homescreen'] = 'field_half_width';
+$homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
+$homeScreenTable->data['fields_homescreen'][0] = html_print_select(
+    $homeScreenValues,
+    'section',
+    array_search($user_info['section'], $homeScreenValues),
+    'show_data_section();',
+    '',
+    -1,
+    true,
+    false,
+    false
+);
+$homeScreenTable->data['fields_homescreen'][1] = html_print_div(
+    [
+        'class'   => 'w100p',
+        'content' => $customHomeScreenDataField,
+    ],
+    true
+);
+
+$userManagementTable->rowclass['homescreen_table'] = 'w100p';
+$userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
+
+$homeScreenTable->data['fields_homescreen'][1] = html_print_div(
+    [
+        'class'   => 'w100p',
+        'content' => $customHomeScreenDataField,
+    ],
+    true
+);
+
+$userManagementTable->rowclass['homescreen_table'] = 'w100p';
+$userManagementTable->data['homescreen_table'] = html_print_table($homeScreenTable, true);
+
 
 if (is_metaconsole() === true && users_is_admin() === true) {
     $userManagementTable->rowclass['search_custom1_looknfeel'] = 'field_half_width';

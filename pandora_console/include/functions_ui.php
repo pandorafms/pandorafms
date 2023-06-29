@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -988,7 +988,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/satellite@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1000,7 +1003,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/network-server@os.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1012,7 +1018,10 @@ function ui_print_type_agent_icon(
         $output = html_print_image(
             'images/data-server@svg.svg',
             true,
-            ['class' => 'main_menu_icon invert_filter'],
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
             false,
             false,
             false,
@@ -1134,11 +1143,11 @@ function ui_format_alert_row(
                 'agent_name'      => 3,
                 'module_name'     => 4,
                 'description'     => 5,
-                'template'        => 5,
-                'action'          => 6,
-                'last_fired'      => 7,
-                'status'          => 8,
-                'validate'        => 9,
+                'template'        => 6,
+                'action'          => 7,
+                'last_fired'      => 8,
+                'status'          => 9,
+                'validate'        => 10,
             ];
         } else {
             $index = [
@@ -1146,13 +1155,13 @@ function ui_format_alert_row(
                 'standby'         => 1,
                 'force_execution' => 2,
                 'agent_name'      => 3,
-                'module_name'     => 3,
-                'description'     => 4,
-                'template'        => 4,
-                'action'          => 5,
-                'last_fired'      => 6,
-                'status'          => 7,
-                'validate'        => 8,
+                'module_name'     => 4,
+                'description'     => 5,
+                'template'        => 6,
+                'action'          => 7,
+                'last_fired'      => 8,
+                'status'          => 9,
+                'validate'        => 10,
             ];
         }
     } else {
@@ -1163,24 +1172,24 @@ function ui_format_alert_row(
                 'agent_name'      => 2,
                 'module_name'     => 3,
                 'description'     => 4,
-                'template'        => 4,
-                'action'          => 5,
-                'last_fired'      => 6,
-                'status'          => 7,
-                'validate'        => 8,
+                'template'        => 5,
+                'action'          => 6,
+                'last_fired'      => 7,
+                'status'          => 8,
+                'validate'        => 9,
             ];
         } else {
             $index = [
                 'standby'         => 0,
                 'force_execution' => 1,
                 'agent_name'      => 2,
-                'module_name'     => 2,
-                'description'     => 3,
-                'template'        => 3,
-                'action'          => 4,
-                'last_fired'      => 5,
-                'status'          => 6,
-                'validate'        => 7,
+                'module_name'     => 3,
+                'description'     => 4,
+                'template'        => 5,
+                'action'          => 6,
+                'last_fired'      => 7,
+                'status'          => 8,
+                'validate'        => 9,
             ];
         }
     }
@@ -1313,7 +1322,7 @@ function ui_format_alert_row(
                 $additionUrl = '';
             }
 
-            $forceExecButtons[] = html_print_anchor(
+            $forceExecButtons['force_check'] = html_print_anchor(
                 [
                     'href'    => $url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl,
                     'content' => html_print_image(
@@ -1329,9 +1338,10 @@ function ui_format_alert_row(
             );
         }
 
-        $forceExecButtons[] = html_print_anchor(
+        $forceExecButtons['template'] = html_print_anchor(
             [
                 'href'    => 'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'],
+                'style'   => 'margin-left: 5px;',
                 'class'   => 'template_details',
                 'content' => html_print_image(
                     'images/details.svg',
@@ -1342,9 +1352,10 @@ function ui_format_alert_row(
             true
         );
     } else {
-        $forceExecButtons[] = html_print_anchor(
+        $forceExecButtons['template'] = html_print_anchor(
             [
                 'href'    => ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'],
+                'style'   => 'margin-left: 5px;',
                 'class'   => 'template_details',
                 'content' => html_print_image(
                     'images/details.svg',
@@ -1356,13 +1367,19 @@ function ui_format_alert_row(
         );
     }
 
-    $data[$index['force_execution']] = html_print_div(
-        [
-            'class'   => 'table_action_buttons flex',
-            'content' => implode('', $forceExecButtons),
-        ],
-        true
-    );
+    if (isset($forceExecButtons['force_check'])) {
+        $data[$index['force_execution']] = html_print_div(
+            [
+                'class'   => 'table_action_buttons flex',
+                'content' => $forceExecButtons['force_check'],
+            ],
+            true
+        );
+    }
+
+    if (isset($forceExecButtons['template'])) {
+        $data[$index['template']] = $forceExecButtons['template'];
+    }
 
     $data[$index['agent_name']] = $disabledHtmlStart;
     if ($agent == 0) {
@@ -2439,7 +2456,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $anchorHref = 'javascript: ".$script_modified.";';
+            $anchorHref = 'javascript: '.$script_modified.';';
         } else {
             $anchorHref = $url.'&amp;'.$offset_name.'='.$offset_page;
         }
@@ -2484,7 +2501,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $nextHref = 'javascript: ".$script_modified.";';
+            $nextHref = 'javascript: '.$script_modified.';';
         } else {
             $nextHref = $url.'&amp;'.$offset_name.'='.$offset_next_page;
         }
@@ -2516,7 +2533,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $lastHref = 'javascript: ".$script_modified.";';
+            $lastHref = 'javascript: '.$script_modified.';';
         } else {
             $lastHref = $url.'&amp;'.$offset_name.'='.$offset_lastpage;
         }
@@ -4010,7 +4027,7 @@ function ui_print_datatable(array $parameters)
                     $(".datatable-msg-info-'.$table_id.'").hide();
                     $("table#'.$table_id.'").show();
                     $("div.dataTables_paginate").show();
-                    $("div.dataTables_info").show();
+                    $("div.dataTables_info").hide();
                     $("div.dataTables_length").show();
                     $("div.dt-buttons").show();
 
@@ -4601,37 +4618,38 @@ function ui_toggle(
         $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
         $output .= '	/* <![CDATA[ */'."\n";
         $output .= "	$(document).ready (function () {\n";
+        $output .= '	    var switch_enable = '.(int) $switch.";\n";
         $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-        $output .= '            if (is_metaconsole == 0) {';
-        $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "			    }\n";
-        $output .= "			    else {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "			    }\n";
-        $output .= "		    }\n";
-        $output .= "		});\n";
-        $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
-        $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
-        $output .= $class_table;
+        $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
         $output .= "			}\n";
         $output .= "			else {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
         $output .= "			}\n";
         $output .= "		});\n";
+        $output .= '        if (switch_enable === 0) {';
+        $output .= "		    $('#tgl_ctrl_".$uniqid."').click(function() {\n";
+        $output .= '			    if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', true);\n";
+        $output .= $class_table;
+        $output .= "			    }\n";
+        $output .= "			    else {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= "			    }\n";
+        $output .= "		    });\n";
+        $output .= "	    }\n";
         $output .= "	});\n";
         $output .= '/* ]]> */';
         $output .= '</script>';
@@ -5606,6 +5624,9 @@ function ui_print_agent_autocomplete_input($parameters)
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
+        $background_results = 'background: #111;';
+    } else {
+        $background_results = 'background: #a8e7eb;';
     }
 
     $icon_image = html_print_image($icon_agent, true, false, true);
@@ -6279,7 +6300,7 @@ function ui_print_agent_autocomplete_input($parameters)
 							.appendTo(ul);
 						break;
 					case \'alias\':
-						return $("<li style=\'background: #a8e7eb;\'></li>")
+						return $("<li style=\"'.$background_results.'\"></li>")
 							.data("item.autocomplete", item)
 							.append(text)
 							.appendTo(ul);
@@ -6992,6 +7013,11 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
     $arrow_up = 'images/sort_up_black.png';
     $arrow_down = 'images/sort_down_black.png';
 
+    if (is_metaconsole()) {
+        $arrow_up = 'images/sort_up_black.png';
+        $arrow_down = 'images/sort_down_black.png';
+    }
+
     // Green arrows for the selected.
     if ($selectUp === true) {
         $arrow_up = 'images/sort_up_green.png';
@@ -6999,11 +7025,6 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
 
     if ($selectDown === true) {
         $arrow_down = 'images/sort_down_green.png';
-    }
-
-    if (is_metaconsole()) {
-        $arrow_up = 'images/sort_up.png';
-        $arrow_down = 'images/sort_down.png';
     }
 
     return '<span class="sort_arrow">
@@ -7232,10 +7253,8 @@ function ui_query_result_editor($name='default')
         ]
     );
 
-    $buttons = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
-    html_print_action_buttons(
-        $buttons
-    );
+    html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update']);
+
 }
 
 

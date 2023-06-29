@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -38,6 +38,7 @@ if (check_login()) {
     enterprise_include_once('include/functions_metaconsole.php');
 
     $get_plugin_macros = get_parameter('get_plugin_macros');
+    $get_module_macros = get_parameter('get_module_macros');
     $search_modules = get_parameter('search_modules');
     $get_module_detail = get_parameter('get_module_detail', 0);
     $get_module_autocomplete_input = (bool) get_parameter(
@@ -113,6 +114,28 @@ if (check_login()) {
         $macros = [];
         $macros['base64'] = base64_encode($plugin_macros);
         $macros['array'] = json_decode($plugin_macros, true);
+
+        echo json_encode($macros);
+        return;
+    }
+
+    if ($get_module_macros && $get_module_macros > 0) {
+        if (https_is_running()) {
+            header('Content-type: application/json');
+        }
+
+        $module_id = $get_module_macros;
+
+        $module_macros = db_get_value(
+            'macros',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $module_id
+        );
+
+        $macros = [];
+        $macros['base64'] = base64_encode($module_macros);
+        $macros['array'] = json_decode($module_macros, true);
 
         echo json_encode($macros);
         return;
@@ -1058,8 +1081,8 @@ if (check_login()) {
                     $policyInfo = policies_info_module_policy($module['id_policy_module']);
                     $adopt = policies_is_module_adopt($module['id_agente_modulo']);
 
-                    if ($linked === true) {
-                        if ($adopt === true) {
+                    if ((bool) $linked === true) {
+                        if ((bool) $adopt === true) {
                             $img = 'images/policies_brick.png';
                             $title = '('.__('Adopted').') '.$name_policy;
                         } else {
@@ -1067,7 +1090,7 @@ if (check_login()) {
                             $title = $name_policy;
                         }
                     } else {
-                        if ($adopt === true) {
+                        if ((bool) $adopt === true) {
                             $img = 'images/policies_not_brick.png';
                             $title = '('.__('Unlinked').') ('.__('Adopted').') '.$name_policy;
                         } else {
@@ -1152,10 +1175,13 @@ if (check_login()) {
                 $title
             );
 
+            if (strlen($module['ip_target']) !== 0) {
+                $title .= '<br/>IP: '.$module['ip_target'];
+            }
+
             $last_status_change_text = __('Time elapsed since last status change: ');
             $last_status_change_text .= (empty($module['last_status_change']) === false) ? human_time_comparation($module['last_status_change']) : __('N/A');
 
-            $data[4] .= ui_print_status_image($status, htmlspecialchars($title), true, false, false, true, $last_status_change_text);
             if ($show_context_help_first_time === false) {
                 $show_context_help_first_time = true;
 
@@ -1163,6 +1189,8 @@ if (check_login()) {
                     $data[4] .= clippy_context_help('module_unknow');
                 }
             }
+
+            $data[4] .= ui_print_status_image($status, htmlspecialchars($title), true, false, false, true, $last_status_change_text);
 
             // Module thresholds.
             $data[5] = '';

@@ -9,8 +9,8 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ==========================================================
@@ -912,7 +912,7 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'filter_none main_menu_icon']
+            ['class' => 'invert_filter main_menu_icon']
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -1032,7 +1032,7 @@ foreach ($simple_alerts as $alert) {
 
             $data[4] .= html_print_input_image(
                 'update',
-                'images/builder.png',
+                'images/builder@svg.svg',
                 1,
                 '',
                 true,

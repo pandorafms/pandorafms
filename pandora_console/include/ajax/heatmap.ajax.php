@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -364,26 +364,26 @@ if (is_ajax() === true) {
                     break;
 
                     case AGENT_MODULE_STATUS_CRITICAL_BAD:
-                        $status = ui_print_status_image('module_critical.png', $data_module, false);
+                        $status = ui_print_status_image('module_critical.png', $data_module, true);
                     break;
 
                     case AGENT_MODULE_STATUS_WARNING:
-                        $status = ui_print_status_image('module_warning.png', $data_module, false);
+                        $status = ui_print_status_image('module_warning.png', $data_module, true);
                     break;
 
                     case AGENT_MODULE_STATUS_NORMAL_ALERT:
                     case AGENT_MODULE_STATUS_WARNING_ALERT:
                     case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-                        $status = ui_print_status_image('module_alertsfired.png', $data_module, false);
+                        $status = ui_print_status_image('module_alertsfired.png', $data_module, true);
                     break;
 
-                    case 4:
-                        $status = ui_print_status_image('module_no_data.png', $data_module, false);
+                    case AGENT_MODULE_STATUS_NO_DATA:
+                        $status = ui_print_status_image('module_no_data.png', $data_module, true);
                     break;
 
                     default:
                     case AGENT_MODULE_STATUS_UNKNOWN:
-                        $status = ui_print_status_image('module_unknown.png', $data_module, false);
+                        $status = ui_print_status_image('module_unknown.png', $data_module, true);
                     break;
                 }
 

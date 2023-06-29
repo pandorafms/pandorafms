@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -2665,7 +2665,7 @@ function events_print_type_img(
 
     $urlImage = ui_get_full_url(false);
     $icon = '';
-    $style = 'invert_filter main_menu_icon';
+    $style = 'main_menu_icon';
 
     switch ($type) {
         case 'alert_recovered':
@@ -2702,23 +2702,28 @@ function events_print_type_img(
         break;
 
         case 'system':
+            $style .= ' invert_filter';
             $icon = 'images/configuration@svg.svg';
         break;
 
         case 'recon_host_detected':
+            $style .= ' invert_filter';
             $icon = 'images/recon.png';
         break;
 
         case 'new_agent':
+            $style .= ' invert_filter';
             $icon = 'images/agents@svg.svg';
         break;
 
         case 'configuration_change':
+            $style .= ' invert_filter';
             $icon = 'images/configuration@svg.svg';
         break;
 
         case 'unknown':
         default:
+            $style .= ' invert_filter';
             $icon = 'images/event.svg';
         break;
     }

@@ -55,7 +55,6 @@ ui_print_standard_header(
     ]
 );
 
-
 if (empty($error) === false) {
     ui_print_error_message($error);
 }
@@ -92,7 +91,7 @@ $table->data[0][0] = html_print_label_input_block(
 );
 
 $integria_logo = 'images/integria_logo_gray.png';
-if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
+if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
     $integria_logo = 'images/integria_logo.svg';
 }
 
@@ -177,7 +176,10 @@ $table->data[3][0] = html_print_label_input_block(
 );
 
 $table->data[3][1] = html_print_label_input_block(
-    __('Creator').ui_print_help_tip(__('This field corresponds to the Integria IMS user specified in Integria IMS setup'), true),
+    __('Creator').ui_print_help_tip(
+        __('This field corresponds to the Integria IMS user specified in Integria IMS setup'),
+        true
+    ),
     html_print_input_text(
         'idCreator',
         $config['integria_user'],
@@ -200,7 +202,7 @@ $table->data[3][2] = html_print_label_input_block(
         true,
         0,
         false,
-        false,
+        true,
         'w100p',
     )
 );
@@ -235,24 +237,10 @@ $table->data[5][0] = html_print_label_input_block(
     )
 );
 
-// $table->data[5][0] = html_print_label_input_block(
-// __('File name'),
-// html_print_input_file('userfile', true)
-// );
-//
-// $table->data[6][0] = html_print_label_input_block(
-// __('Attachment description'),
-// html_print_textarea(
-// 'file_description',
-// 3,
-// 20,
-// '',
-// '',
-// true
-// )
-// );
-// Print forms and stuff.
-echo '<form class="max_floating_element_size" id="create_integria_incident_form" name="create_integria_incident_form" method="POST" enctype="multipart/form-data">';
+$formName = 'create_integria_incident_form';
+$classForm = 'max_floating_element_size';
+$enctype = 'multipart/form-data';
+echo '<form class="'.$classForm.'" id="'.$formName.'" name="'.$formName.'" method="POST" enctype="'.$enctype.'">';
 html_print_table($table);
 $buttons = '';
 if (empty($idIncidence) === true) {
@@ -279,12 +267,16 @@ if (empty($idIncidence) === true) {
 html_print_action_buttons($buttons);
 
 echo '</form>';
+
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ?>
 
 <script type="text/javascript">
     $(document).ready(function () {
         var ajax_url = '<?php echo ui_get_full_url('ajax.php'); ?>';
         var fieldsData = '<?php echo json_encode($incidence['typeFieldData']); ?>';
+
+        defineTinyMCE('#textarea_description');
 
         $('#status').on('change', function() {
             if ($(this).val() === 'CLOSED') {

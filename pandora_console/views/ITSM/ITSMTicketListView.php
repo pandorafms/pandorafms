@@ -53,36 +53,26 @@ ui_print_standard_header(
     ]
 );
 
-/*
-    if (isset($resultDelete) === true) {
-    \ui_print_result_message(
-        $resultDelete,
-        __('Successfully deleted'),
-        __('Could not be deleted')
-    );
-    }
+if (empty($error) === false) {
+    ui_print_error_message($error);
+}
 
-    if (isset($resultCopy) === true) {
-    \ui_print_result_message(
-        $resultCopy,
-        __('Successfully duplicate'),
-        __('Could not be duplicate')
-    );
-    }
-*/
-
+if (empty($successfullyMsg) === false) {
+    ui_print_success_message($successfullyMsg);
+}
 
 try {
     $columns = [
-        'id',
+        'idIncidence',
         'title',
         'groupCompany',
         'statusResolution',
         'priority',
-        'updated',
-        'started',
-        'creator',
+        'updateDate',
+        'startDate',
+        'idCreator',
         'owner',
+        'operation',
     ];
 
     $column_names = [
@@ -95,6 +85,10 @@ try {
         __('Started'),
         __('Creator'),
         __('Owner'),
+        [
+            'text'  => __('Op.'),
+            'class' => 'table_action_buttons w90px',
+        ],
     ];
 
     ui_print_datatable(
@@ -109,6 +103,11 @@ try {
             'no_sortable_columns' => [
                 2,
                 3,
+                -1,
+            ],
+            'order'               => [
+                'field'     => 'updateDate',
+                'direction' => 'desc',
             ],
             'search_button_class' => 'sub filter float-right',
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
@@ -118,14 +117,14 @@ try {
     echo $e->getMessage();
 }
 
-$input_button = '';
-$input_button = html_print_button(
+$input_button = '<form method="post" action="index.php?sec=manageTickets&sec2=operation/ITSM/itsm&operation=edit">';
+$input_button .= html_print_submit_button(
     __('Create'),
     '',
     false,
-    '',
     ['icon' => 'next'],
     true
 );
+$input_button .= '</form>';
 
 html_print_action_buttons($input_button);

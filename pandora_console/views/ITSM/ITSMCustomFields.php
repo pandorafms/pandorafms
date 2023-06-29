@@ -49,7 +49,6 @@ if (empty($customFields) === true) {
             'name'     => 'custom-fields['.$field['idIncidenceTypeField'].']',
             'required' => $field['isRequired'],
             'return'   => true,
-            'value'    => ($fieldsData[$field['idIncidenceTypeField']] ?? null),
         ];
 
         $class = '';
@@ -57,10 +56,13 @@ if (empty($customFields) === true) {
         switch ($field['type']) {
             case 'COMBO':
                 $options['type'] = 'select';
-                $options['fields'] = explode(',', $field['comboValue']);
+                $fieldsValues = explode(',', $field['comboValue']);
+                $options['fields'] = array_combine($fieldsValues, $fieldsValues);
+                $options['selected'] = ($fieldsData[$field['idIncidenceTypeField']] ?? null);
             break;
 
             case 'TEXT':
+                $options['value'] = ($fieldsData[$field['idIncidenceTypeField']] ?? null);
                 $options['type'] = 'text';
             break;
 
@@ -73,10 +75,12 @@ if (empty($customFields) === true) {
             break;
 
             case 'NUMERIC':
+                $options['value'] = ($fieldsData[$field['idIncidenceTypeField']] ?? null);
                 $options['type'] = 'number';
             break;
 
             case 'TEXTAREA':
+                $options['value'] = ($fieldsData[$field['idIncidenceTypeField']] ?? null);
                 $options['type'] = 'textarea';
                 $options['rows'] = 4;
                 $options['columns'] = 0;

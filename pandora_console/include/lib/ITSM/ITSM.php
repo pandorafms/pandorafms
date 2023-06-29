@@ -56,6 +56,8 @@ class ITSM
      * @param array       $postFields  Params send post.
      * @param mixed       $id          Specific id for path.
      * @param string|null $method      Request method.
+     * @param array|null  $file        Upload file.
+     * @param boolean     $download    Download file.
      *
      * @return array Array result.
      * @throws \Exception On error.
@@ -65,7 +67,9 @@ class ITSM
         ?array $queryParams=null,
         ?array $postFields=null,
         mixed $id=null,
-        ?string $method='POST'
+        ?string $method='POST',
+        ?array $file=null,
+        ?bool $download=false
     ) {
         $headers = [
             'accept: application/json',
@@ -76,17 +80,48 @@ class ITSM
         $path = $this->pathAction($action, $queryParams, $id);
         $url = $this->url.$path;
 
-        // Debugger.
-        // hd($url, true);
+        $data = [];
+        // Clean safe_input forms.
+        if (empty($postFields) === false) {
+            foreach ($postFields as $key => $field) {
+                if ($field !== null) {
+                    $field = io_safe_output($field);
+                }
+
+                $data[$key] = $field;
+            }
+        }
+
+        if ($file !== null && file_exists($file['tmp_name']) === true) {
+            $data['attachment'] = curl_file_create(
+                $file['tmp_name'],
+                $file['type'],
+                $file['name']
+            );
+
+            $headers = [
+                'Content-Type: multipart/form-data',
+                'Authorization: Bearer '.$this->userBearer,
+            ];
+        } else {
+            $data = json_encode($data);
+        }
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postFields));
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         $response = curl_exec($ch);
+
+        if ($download === true) {
+            return $response;
+        }
 
         $result = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -135,6 +170,10 @@ class ITSM
                 $path = '/incidence/status/list';
             break;
 
+            case 'listPriorities':
+                $path = '/incidence/priority/list';
+            break;
+
             case 'listUsers':
                 $path = '/user/list';
             break;
@@ -153,6 +192,30 @@ class ITSM
 
             case 'incidence':
                 $path = '/incidence/'.$id;
+            break;
+
+            case 'deleteIncidence':
+                $path = '/incidence/'.$id;
+            break;
+
+            case 'incidenceWus':
+                $path = '/incidence/'.$id.'/workunit/list';
+            break;
+
+            case 'incidenceFiles':
+                $path = '/incidence/'.$id.'/attachment/list';
+            break;
+
+            case 'createIncidenceAttachment':
+                $path = '/incidence/'.$id.'/attachment';
+            break;
+
+            case 'deleteIncidenceAttachment':
+                $path = '/incidence/'.$id['idIncidence'].'/attachment/'.$id['idAttachment'];
+            break;
+
+            case 'downloadIncidenceAttachment':
+                $path = '/incidence/'.$id['idIncidence'].'/attachment/'.$id['idAttachment'].'/download';
             break;
 
             default:

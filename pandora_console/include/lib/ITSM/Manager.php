@@ -27,6 +27,7 @@ class Manager
         'getListTickets',
         'getUserSelect',
         'getInputFieldsIncidenceType',
+        'getDownloadIncidenceAttachment',
     ];
 
     /**
@@ -107,15 +108,19 @@ class Manager
      */
     public function run()
     {
-        ui_require_css_file('integriaims');
+        \ui_require_css_file('integriaims');
+        \ui_require_javascript_file('ITSM');
         switch ($this->operation) {
             case 'list':
                 $this->showList();
             break;
 
             case 'edit':
-                \ui_require_javascript_file('ITSM');
                 $this->showEdit();
+            break;
+
+            case 'detail':
+                $this->showDetail();
             break;
 
             case 'dashboard':
@@ -133,11 +138,26 @@ class Manager
      */
     private function showList()
     {
+        $idIncidence = \get_parameter('idIncidence', 0);
+        $error = '';
+        $successfullyMsg = '';
+        if (empty($idIncidence) === false) {
+            $ITSM = new ITSM();
+            try {
+                $this->deleteIncidence($ITSM, $idIncidence);
+                $successfullyMsg = __('Delete ticket successfully');
+            } catch (\Throwable $th) {
+                $error = $th->getMessage();
+            }
+        }
+
         View::render(
             'ITSM/ITSMTicketListView',
             [
-                'ajaxController' => $this->ajaxController,
-                'urlAjax'        => \ui_get_full_url('ajax.php'),
+                'ajaxController'  => $this->ajaxController,
+                'urlAjax'         => \ui_get_full_url('ajax.php'),
+                'error'           => $error,
+                'successfullyMsg' => $successfullyMsg,
             ]
         );
     }
@@ -154,14 +174,12 @@ class Manager
         $update_incidence = (bool) \get_parameter('update_incidence', 0);
         $idIncidence      = \get_parameter('idIncidence', 0);
 
-        // Debugger.
-        // hd($_POST);
         $error = '';
         $ITSM = new ITSM();
         try {
             $objectTypes = $this->getObjectypes($ITSM);
             $groups = $this->getGroups($ITSM);
-            // $priorities = $ITSM->callApi('listPriorities');
+            $priorities = $this->getPriorities($ITSM);
             $resolutions = $this->getResolutions($ITSM);
             $status = $this->getStatus($ITSM);
 
@@ -172,16 +190,14 @@ class Manager
             $error = $th->getMessage();
         }
 
-        // TODO: END POINT priorities.
-        // \get_parameter('priority', 'LOW').
         $incidence = [
             'title'           => \get_parameter('title', ($incidenceData['title'] ?? '')),
             'idIncidenceType' => \get_parameter('idIncidenceType', ($incidenceData['idIncidenceType'] ?? 0)),
             'idGroup'         => \get_parameter('idGroup', ($incidenceData['idGroup'] ?? 0)),
-            'priority'        => 'LOW',
+            'priority'        => \get_parameter('priority', ($incidenceData['priority'] ?? 'LOW')),
             'status'          => \get_parameter('status', ($incidenceData['status'] ?? 'NEW')),
             'idCreator'       => \get_parameter('idCreator', ($incidenceData['idCreator'] ?? '')),
-            'owner'           => \get_parameter('owner_hidden', ''),
+            'owner'           => \get_parameter('owner_hidden', ($incidenceData['owner'] ?? '')),
             'resolution'      => \get_parameter('resolution', ($incidenceData['resolution'] ?? null)),
             'description'     => \get_parameter('description', ($incidenceData['description'] ?? '')),
         ];
@@ -203,6 +219,8 @@ class Manager
                 }
 
                 $incidence['typeFieldData'] = $typeFieldData;
+            } else {
+                $incidence['typeFieldData'] = $incidenceData['typeFieldData'];
             }
 
             if ($create_incidence === true) {
@@ -229,10 +247,112 @@ class Manager
                 'priorities'      => [],
                 'resolutions'     => $resolutions,
                 'status'          => $status,
+                'priorities'      => $priorities,
                 'error'           => $error,
                 'incidence'       => $incidence,
                 'idIncidence'     => $idIncidence,
                 'successfullyMsg' => $successfullyMsg,
+            ]
+        );
+    }
+
+
+    /**
+     * Draw list tickets.
+     *
+     * @return void
+     */
+    private function showDetail()
+    {
+        $idIncidence = (int) \get_parameter('idIncidence', 0);
+        $uploadFile = (bool) \get_parameter('upload_file', 0);
+        $idAttachment = (int) \get_parameter('idAttachment', 0);
+        $addComment = (bool) \get_parameter('addComment', 0);
+
+        $error = '';
+        $successfullyMsg = null;
+        $incidence = null;
+        $objectTypes = null;
+        $groups = null;
+        $resolutions = null;
+        $status = null;
+        $wus = null;
+        $files = null;
+        $users = null;
+        $priorities = null;
+        $priorityDiv = null;
+        $ITSM = new ITSM();
+        try {
+            if (empty($idIncidence) === false) {
+                if ($uploadFile === true) {
+                    $attachment = [
+                        'description' => get_parameter('file_description', ''),
+                    ];
+
+                    $incidenceAttachment = $this->createIncidenceAttachment(
+                        $ITSM,
+                        $idIncidence,
+                        $attachment,
+                        get_parameter('userfile')
+                    );
+
+                    if ($incidenceAttachment !== false) {
+                        $successfullyMsg = __('File added succesfully');
+                    }
+                }
+
+                if (empty($idAttachment) === false) {
+                    $this->deleteIncidenceAttachment($ITSM, $idIncidence, $idAttachment);
+                    $successfullyMsg = __('Delete File successfully');
+                }
+
+                $incidence = $this->getIncidence($ITSM, $idIncidence);
+                $objectTypes = $this->getObjectypes($ITSM);
+                $groups = $this->getGroups($ITSM);
+                $resolutions = $this->getResolutions($ITSM);
+                $status = $this->getStatus($ITSM);
+                $priorities = $this->getPriorities($ITSM);
+                $wus = $this->getIncidenceWus($ITSM, $idIncidence);
+                $files = $this->getIncidenceFiles($ITSM, $idIncidence);
+
+                $usersInvolved = [];
+                $usersInvolved[$incidence['idCreator']] = $incidence['idCreator'];
+                $usersInvolved[$incidence['owner']] = $incidence['owner'];
+                $usersInvolved[$incidence['closedBy']] = $incidence['closedBy'];
+
+                foreach ($wus['data'] as $wu) {
+                    $usersInvolved[$wu['idUser']] = $wu['idUser'];
+                }
+
+                foreach ($files['data'] as $file) {
+                    $usersInvolved[$file['idUser']] = $file['idUser'];
+                }
+
+                $users = $this->getUsers($ITSM, $usersInvolved);
+
+                $priorityDiv = $this->priorityDiv($incidence['priority'], $priorities[$incidence['priority']]);
+            }
+        } catch (\Throwable $th) {
+            $error = $th->getMessage();
+        }
+
+        View::render(
+            'ITSM/ITSMTicketDetailView',
+            [
+                'ajaxController'  => $this->ajaxController,
+                'urlAjax'         => \ui_get_full_url('ajax.php'),
+                'error'           => $error,
+                'successfullyMsg' => $successfullyMsg,
+                'incidence'       => $incidence,
+                'objectTypes'     => $objectTypes,
+                'groups'          => $groups,
+                'resolutions'     => $resolutions,
+                'status'          => $status,
+                'wus'             => $wus,
+                'files'           => $files,
+                'users'           => $users,
+                'priorities'      => $priorities,
+                'priorityDiv'     => $priorityDiv,
             ]
         );
     }
@@ -354,6 +474,20 @@ class Manager
 
 
     /**
+     * Get Priorities.
+     *
+     * @param ITSM $ITSM Object for callApi.
+     *
+     * @return array Return mode select.
+     */
+    private function getPriorities(ITSM $ITSM): array
+    {
+        $listPriorities = $ITSM->callApi('listPriorities');
+        return $listPriorities;
+    }
+
+
+    /**
      * Get Incidence.
      *
      * @param ITSM    $ITSM        Object for callApi.
@@ -372,6 +506,26 @@ class Manager
         );
 
         return $result;
+    }
+
+
+    /**
+     * Delete Incidence.
+     *
+     * @param ITSM    $ITSM        Object for callApi.
+     * @param integer $idIncidence Incidence ID.
+     *
+     * @return void
+     */
+    private function deleteIncidence(ITSM $ITSM, int $idIncidence): void
+    {
+        $ITSM->callApi(
+            'deleteIncidence',
+            [],
+            [],
+            $idIncidence,
+            'DELETE'
+        );
     }
 
 
@@ -400,6 +554,167 @@ class Manager
 
 
     /**
+     * Get Incidence Work units.
+     *
+     * @param ITSM    $ITSM        Object for callApi.
+     * @param integer $idIncidence Incidence ID.
+     *
+     * @return array Data workUnits incidence.
+     */
+    private function getIncidenceWus(ITSM $ITSM, int $idIncidence): array
+    {
+        $result = $ITSM->callApi(
+            'incidenceWus',
+            [
+                'page'     => 0,
+                'sizePage' => 0,
+            ],
+            [],
+            $idIncidence
+        );
+
+        return $result;
+    }
+
+
+    /**
+     * Get Incidence Attachments.
+     *
+     * @param ITSM    $ITSM        Object for callApi.
+     * @param integer $idIncidence Incidence ID.
+     *
+     * @return array Data attachment incidence.
+     */
+    private function getIncidenceFiles(ITSM $ITSM, int $idIncidence): array
+    {
+        $result = $ITSM->callApi(
+            'incidenceFiles',
+            [
+                'page'     => 0,
+                'sizePage' => 0,
+            ],
+            [],
+            $idIncidence
+        );
+
+        return $result;
+    }
+
+
+    /**
+     * Get Users.
+     *
+     * @param ITSM  $ITSM  Object for callApi.
+     * @param array $users Users ID.
+     *
+     * @return array Users.
+     */
+    private function getUsers(ITSM $ITSM, array $users): array
+    {
+        $result = $ITSM->callApi(
+            'listUsers',
+            [
+                'page'     => 0,
+                'sizePage' => 0,
+            ],
+            [
+                'multipleSearchString' => [
+                    'field' => 'idUser',
+                    'data'  => $users,
+                ],
+            ]
+        );
+
+        $res = [];
+        if (empty($result['data']) === false) {
+            $res = array_reduce(
+                $result['data'],
+                function ($carry, $user) {
+                    $carry[$user['idUser']] = $user['fullName'];
+                    return $carry;
+                }
+            );
+        }
+
+        return $res;
+    }
+
+
+    /**
+     * Create incidence
+     *
+     * @param ITSM    $ITSM        Object for callApi.
+     * @param integer $idIncidence Id incidence.
+     * @param array   $attachment  Params insert.
+     * @param array   $file        Info file.
+     *
+     * @return array
+     */
+    private function createIncidenceAttachment(ITSM $ITSM, int $idIncidence, array $attachment, array $file): array
+    {
+        $incidenceAttachment = $ITSM->callApi(
+            'createIncidenceAttachment',
+            null,
+            $attachment,
+            $idIncidence,
+            'POST',
+            $file
+        );
+        return $incidenceAttachment;
+    }
+
+
+    /**
+     * Delete Attachment.
+     *
+     * @param ITSM    $ITSM         Object for callApi.
+     * @param integer $idIncidence  Incidence ID.
+     * @param integer $idAttachment Attachment ID.
+     *
+     * @return void
+     */
+    private function deleteIncidenceAttachment(ITSM $ITSM, int $idIncidence, int $idAttachment): void
+    {
+        $ITSM->callApi(
+            'deleteIncidenceAttachment',
+            [],
+            [],
+            [
+                'idIncidence'  => $idIncidence,
+                'idAttachment' => $idAttachment,
+            ],
+            'DELETE'
+        );
+    }
+
+
+    /**
+     * Download Attachment.
+     *
+     * @param ITSM    $ITSM         Object for callApi.
+     * @param integer $idIncidence  Incidence ID.
+     * @param integer $idAttachment Attachment ID.
+     *
+     * @return mixed
+     */
+    private function downloadIncidenceAttachment(ITSM $ITSM, int $idIncidence, int $idAttachment)
+    {
+        return $ITSM->callApi(
+            'downloadIncidenceAttachment',
+            [],
+            [],
+            [
+                'idIncidence'  => $idIncidence,
+                'idAttachment' => $idAttachment,
+            ],
+            'GET',
+            null,
+            true
+        );
+    }
+
+
+    /**
      * Draw list dashboards.
      *
      * @return void
@@ -417,6 +732,51 @@ class Manager
 
 
     /**
+     * Draw priority div.
+     *
+     * @param string $priority Priority incidence.
+     * @param string $label    Name.
+     *
+     * @return string Html output.
+     */
+    private function priorityDiv(string $priority, string $label)
+    {
+        $output = '';
+        switch ($priority) {
+            case 'LOW':
+                $color = COL_NORMAL;
+            break;
+
+            case 'INFORMATIVE':
+                $color = COL_UNKNOWN;
+            break;
+
+            case 'MEDIUM':
+                $color = COL_WARNING;
+            break;
+
+            case 'SERIOUS':
+                $color = COL_ALERTFIRED;
+            break;
+
+            case 'VERY_SERIOUS':
+                $color = COL_CRITICAL;
+            break;
+
+            default:
+                $color = COL_NOTINIT;
+            break;
+        }
+
+        $output = '<div class="priority" style="background: '.$color.'">';
+        $output .= $label;
+        $output .= '</div>';
+
+        return $output;
+    }
+
+
+    /**
      * Get list tickets and prepare data for datatable.
      *
      * @return void
@@ -428,20 +788,19 @@ class Manager
         // Init data.
         $data = [];
         // Catch post parameters.
-        $start = get_parameter('start', 0);
-        $length = get_parameter('length', $config['block_size']);
+        $start = (int) get_parameter('start', 1);
+        $length = (int) get_parameter('length', $config['block_size']);
         $order = get_datatable_order(true);
         $filters = get_parameter('filter', []);
 
         try {
             ob_start();
-            $queryParams = array_merge(
-                [
-                    'page'     => $start,
-                    'sizePage' => $length,
-                ],
-                $order
-            );
+            $queryParams = [
+                'page'          => ($start === 0) ? $start : ($start / $length),
+                'sizePage'      => $length,
+                'sortField'     => $order['field'],
+                'sortDirection' => $order['direction'],
+            ];
 
             $ITSM = new ITSM();
             $result = $ITSM->callApi(
@@ -450,23 +809,83 @@ class Manager
                 $filters
             );
 
+            $groups = $this->getGroups($ITSM);
+            $resolutions = $this->getResolutions($ITSM);
+            $resolutions['NOTRESOLVED'] = __('None');
+            $status = $this->getStatus($ITSM);
+            $priorities = $this->getPriorities($ITSM);
+
+            $usersInvolved = [];
+            foreach ($result['data'] as $incidence) {
+                $usersInvolved[$incidence['idCreator']] = $incidence['idCreator'];
+                $usersInvolved[$incidence['owner']] = $incidence['owner'];
+                $usersInvolved[$incidence['closedBy']] = $incidence['closedBy'];
+            }
+
+            $users = $this->getUsers($ITSM, $usersInvolved);
+            $url = \ui_get_full_url('index.php?sec=manageTickets&sec2=operation/ITSM/itsm');
+
             $data = array_reduce(
                 $result['data'],
-                function ($carry, $item) {
-                    global $config;
+                function ($carry, $item) use ($groups, $resolutions, $status, $priorities, $users, $url) {
                     // Transforms array of arrays $data into an array
                     // of objects, making a post-process of certain fields.
                     $tmp = (object) $item;
+
                     $new = (object) [];
-                    $new->id = $tmp->idIncidence;
-                    $new->title = $tmp->title;
-                    $new->groupCompany = $tmp->idGroup.'/'.$tmp->idCompany;
-                    $new->statusResolution = $tmp->status.'/'.$tmp->resolution;
-                    $new->priority = $tmp->priority;
-                    $new->updated = $tmp->updateDate;
-                    $new->started = $tmp->startDate;
-                    $new->creator = $tmp->idCreator;
-                    $new->owner = $tmp->owner;
+                    $new->idIncidence = $tmp->idIncidence;
+                    $new->title = '<a href="'.$url.'&operation=detail&idIncidence='.$tmp->idIncidence.'">';
+                    $new->title .= $tmp->title;
+                    $new->title .= '</a>';
+                    $new->groupCompany = $groups[$tmp->idGroup];
+                    if (empty($tmp->idCompany) === false) {
+                        $new->groupCompany .= '/'.$tmp->idCompany;
+                    }
+
+                    $new->statusResolution = $status[$tmp->status].'/'.$resolutions[$tmp->resolution];
+                    $new->priority = $this->priorityDiv($tmp->priority, $priorities[$tmp->priority]);
+                    $new->updateDate = $tmp->updateDate;
+                    $new->startDate = $tmp->startDate;
+                    $new->idCreator = $users[$tmp->idCreator];
+                    $new->owner = $users[$tmp->owner];
+
+                    $new->operation = '<div class="table_action_buttons">';
+                    $new->operation .= '<a href="'.$url.'&operation=edit&idIncidence='.$tmp->idIncidence.'">';
+                    $new->operation .= html_print_image(
+                        'images/edit.svg',
+                        true,
+                        [
+                            'title' => __('Edit'),
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    );
+                    $new->operation .= '</a>';
+
+                    $new->operation .= '<a href="'.$url.'&operation=detail&idIncidence='.$tmp->idIncidence.'">';
+                    $new->operation .= html_print_image(
+                        'images/enable.svg',
+                        true,
+                        [
+                            'title' => __('Detail'),
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    );
+                    $new->operation .= '</a>';
+
+                    $urlDelete = $url.'&operation=list&idIncidence='.$tmp->idIncidence;
+                    $urlOnClick = 'javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;';
+                    $new->operation .= '<a href="'.$urlDelete.'" onClick="'.$urlOnClick.'">';
+                    $new->operation .= html_print_image(
+                        'images/delete.svg',
+                        true,
+                        [
+                            'title' => __('Delete'),
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    );
+                    $new->operation .= '</a>';
+
+                    $new->operation .= '</div>';
 
                     $carry[] = $new;
                     return $carry;
@@ -579,6 +998,29 @@ class Manager
                 'error'          => $error,
             ]
         );
+        exit;
+    }
+
+
+    /**
+     * Get Download.
+     *
+     * @return void
+     */
+    public function getDownloadIncidenceAttachment()
+    {
+        $idIncidence = (int) get_parameter('idIncidence', true);
+        $idAttachment = (int) get_parameter('idAttachment', true);
+
+        try {
+            $ITSM = new ITSM();
+            $result = $this->downloadIncidenceAttachment($ITSM, $idIncidence, $idAttachment);
+        } catch (Throwable $e) {
+            echo $e->getMessage();
+            exit;
+        }
+
+        echo $result;
         exit;
     }
 

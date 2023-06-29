@@ -4,7 +4,7 @@ div.priority {
   color: #fff;
   text-align: center;
   border-radius: 5px;
-  padding: 5px;
+  padding: 0px;
   display: table-cell;
   vertical-align: middle;
 }
@@ -47,13 +47,8 @@ div.integria_details_row_three {
 
 div.integria_details_description {
   width: 100%;
-}
-
-div.integria_details_description textarea {
-  width: 100%;
-  background-color: #fbfbfb;
-  resize: vertical;
-  color: #000;
+  overflow: auto;
+  padding: 0px 10px;
 }
 
 .integriaims_details_box {
@@ -142,4 +137,11 @@ div.incidence-type-custom-fields {
 
 .incidence-type-custom-fields > div.incidence-type-custom-fields-textarea {
   flex: 1 1 100%;
+}
+
+.label_select,
+.label_select_simple {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
 }

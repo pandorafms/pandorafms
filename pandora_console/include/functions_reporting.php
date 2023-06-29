@@ -12302,29 +12302,29 @@ function reporting_get_stats_modules_status($data, $graph_width=250, $graph_heig
     $tdata = [];
     $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_CRITICAL, 'title' => __('Monitor critical')], true);
     $tdata[1] = $data['monitor_critical'] <= 0 ? '-' : $data['monitor_critical'];
-    $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="big_data line_heigth_initial" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_CRITICAL.' !important;" class="big_data line_heigth_initial" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_WARNING_DARK, 'title' => __('Monitor warning')], true);
     $tdata[3] = $data['monitor_warning'] <= 0 ? '-' : $data['monitor_warning'];
-    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="big_data line_heigth_initial" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
+    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.' !important;" class="big_data line_heigth_initial" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
     $tdata = [];
     $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_NORMAL, 'title' => __('Monitor normal')], true);
     $tdata[1] = $data['monitor_ok'] <= 0 ? '-' : $data['monitor_ok'];
-    $tdata[1] = '<a style="color: '.COL_NORMAL.';" class="big_data" href="'.$urls['monitor_ok'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_NORMAL.' !important;" class="big_data" href="'.$urls['monitor_ok'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_UNKNOWN, 'title' => __('Monitor unknown')], true);
     $tdata[3] = $data['monitor_unknown'] <= 0 ? '-' : $data['monitor_unknown'];
-    $tdata[3] = '<a style="color: '.COL_UNKNOWN.';" class="big_data line_heigth_initial" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
+    $tdata[3] = '<a style="color: '.COL_UNKNOWN.' !important;" class="big_data line_heigth_initial" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
     $tdata = [];
     $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_NOTINIT, 'title' => __('Monitor not init')], true);
     $tdata[1] = $data['monitor_not_init'] <= 0 ? '-' : $data['monitor_not_init'];
-    $tdata[1] = '<a style="color: '.COL_NOTINIT.';" class="big_data line_heigth_initial" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_NOTINIT.' !important;" class="big_data line_heigth_initial" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = $tdata[3] = '';
     $table_mbs->rowclass[] = '';

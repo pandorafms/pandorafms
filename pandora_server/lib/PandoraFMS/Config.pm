@@ -1527,7 +1527,7 @@ sub pandora_get_initial_product_name {
 sub pandora_get_initial_copyright_notice {
 	# PandoraFMS product name
 	my $name = $ENV{'PANDORA_RB_COPYRIGHT_NOTICE'};
-	return 'Artica ST' unless (defined ($name) && $name ne '');
+	return 'Pandora FMS' unless (defined ($name) && $name ne '');
 	return $name;
 }
 

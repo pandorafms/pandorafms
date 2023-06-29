@@ -15,7 +15,7 @@ WriteMakefile(
 	) :(),
 
 	NAME            => 'PandoraFMS',
-	AUTHOR 			=> 'Artica ST <info@pandorafms.com>',
+	AUTHOR 			=> 'Pandora FMS <info@pandorafms.com>',
 	EXE_FILES 		=> [ @exe_files ],
 	PMLIBDIRS  		=> [ 'lib' ],
 	'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX' => '.gz', 'COMPRESS' => 'gzip'}

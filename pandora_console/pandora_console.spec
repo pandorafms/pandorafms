@@ -18,7 +18,7 @@ Name:               %{name}
 Version:            %{version}
 Release:            %{release}
 License:            GPL
-Vendor:             Artica ST <info@pandorafms.com>
+Vendor:             Pandora FMS <info@pandorafms.com>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.org
 Group:              System/Monitoring

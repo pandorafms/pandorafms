@@ -163,7 +163,7 @@ if [ $package_pear -eq 1 ]
 then
 	echo "Make the package \"php-xml-rpc\"."
 	cd temp_package
-	dh-make-pear --maintainer "ÁRTICA ST <info@pandorafms.com>" XML_RPC
+	dh-make-pear --maintainer "Pandora FMS <info@pandorafms.com>" XML_RPC
 	cd php-xml-rpc-*
 	dpkg-buildpackage -rfakeroot
 	cd ..

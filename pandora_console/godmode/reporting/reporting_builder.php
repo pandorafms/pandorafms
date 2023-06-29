@@ -2223,15 +2223,7 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
-
-                            if ($values['type'] === 'sql_graph_hbar'
-                                || ($values['type'] === 'sql_graph_vbar')
-                                || ($values['type'] === 'sql_graph_pie')
-                            ) {
-                                $values['server_name'] = get_parameter('combo_server_sql');
-                            } else {
-                                $values['server_name'] = get_parameter('combo_server');
-                            }
+                            $values['server_name'] = get_parameter('combo_server_sql');
 
                             if ($sql !== '') {
                                 if ($values['server_name'] === 'all') {
@@ -3000,15 +2992,8 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
+                            $values['server_name'] = get_parameter('combo_server_sql');
 
-                            if ($values['type'] === 'sql_graph_hbar'
-                                || ($values['type'] === 'sql_graph_vbar')
-                                || ($values['type'] === 'sql_graph_pie')
-                            ) {
-                                $values['server_name'] = get_parameter('combo_server_sql');
-                            } else {
-                                $values['server_name'] = get_parameter('combo_server');
-                            }
 
                             if ($sql !== '') {
                                 if ($values['server_name'] === 'all') {

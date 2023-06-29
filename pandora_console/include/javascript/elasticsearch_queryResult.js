@@ -9,7 +9,7 @@ view.renderer.setShowGutter(false);
 view.setReadOnly(true);
 view.setShowPrintMargin(false);
 
-$("#submit-execute_query").click(function() {
+$("#button-execute_query").click(function() {
   view.setValue("");
   let text;
   let selectText = editor.getSelectedText();

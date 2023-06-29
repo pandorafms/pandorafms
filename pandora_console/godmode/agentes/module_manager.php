@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -769,7 +769,17 @@ if ($modules !== false) {
         }
 
         if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
-            $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+            if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+                $linked = policies_is_module_linked($module['id_agente_modulo']);
+                $adopt = policies_is_module_adopt($module['id_agente_modulo']);
+                if ($linked !== false && $adopt === false) {
+                    $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'&id_policy_module='.$module['id_policy_module'].'">';
+                } else {
+                    $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+                }
+            } else {
+                $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+            }
         }
 
         if ((bool) $module['disabled'] === true) {
@@ -830,8 +840,8 @@ if ($modules !== false) {
                 $linked = policies_is_module_linked($module['id_agente_modulo']);
                 $adopt = policies_is_module_adopt($module['id_agente_modulo']);
 
-                if ($linked !== false) {
-                    if ($adopt === true) {
+                if ((bool) $linked !== false) {
+                    if ((bool) $adopt === true) {
                         $img = 'images/policies_brick.png';
                         $title = '('.__('Adopted').') '.$policyInfo['name_policy'];
                     } else {
@@ -839,7 +849,7 @@ if ($modules !== false) {
                         $title = $policyInfo['name_policy'];
                     }
                 } else {
-                    if ($adopt === true) {
+                    if ((bool) $adopt === true) {
                         $img = 'images/policies_not_brick.png';
                         $title = '('.__('Unlinked').') ('.__('Adopted').') '.$policyInfo['name_policy'];
                     } else {
@@ -871,6 +881,10 @@ if ($modules !== false) {
             $status,
             $title
         );
+
+        if (strlen($module['ip_target']) !== 0) {
+            $title .= '<br/>IP: '.$module['ip_target'];
+        }
 
         // This module is initialized ? (has real data).
         if ($status === STATUS_MODULE_NO_DATA) {
@@ -995,7 +1009,7 @@ if ($modules !== false) {
             $data[8] .= html_print_menu_button(
                 [
                     'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'],
-                    'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'onClick' => 'javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;',
                     'image'   => 'images/delete.svg',
                     'title'   => __('Delete'),
                 ],
@@ -1071,34 +1085,59 @@ if ((bool) check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === tr
     echo '</form>';
 }
 
-$modalCreateModule = '<form name="create_module_form" method="post">';
-$input_type = html_print_input_hidden('edit_module', 1, true);
-$input_type .= html_print_select(
-    policies_type_modules_availables($sec2),
-    'moduletype',
-    '',
-    '',
-    '',
-    '',
-    true,
-    false,
-    false,
-    '',
-    false,
-    'max-width:300px;'
+// Form table for Module creation.
+$createModuleTable = new stdClass();
+$createModuleTable->id = 'module_creation_modal';
+$createModuleTable->class = 'filter-table-adv';
+$createModuleTable->data = [];
+
+$createModuleTable->data[0][] = html_print_label_input_block(
+    __('Select module type'),
+    html_print_select(
+        policies_type_modules_availables($sec2),
+        'moduletype',
+        '',
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width:350px;'
+    ),
+    ['div_style' => 'margin-top: 25px;'],
 );
 
-$modalCreateModule .= $input_type;
+$createModuleTable->data[1][] = html_print_label_input_block(
+    '',
+    html_print_anchor(
+        [
+            'href'    => 'https://pandorafms.com/Library/Library/',
+            'class'   => 'color-black-grey invert_filter',
+            'content' => __('Get more modules on Monitoring Library'),
+        ],
+        true
+    )
+);
+
+$createModuleFormTable = html_print_input_hidden('edit_module', 1, true);
+$createModuleFormTable .= html_print_table($createModuleTable, true);
+// Form definition.
+$modalCreateModule = '<form name="create_module_form" method="post">';
+$modalCreateModule .= $createModuleFormTable;
 $modalCreateModule .= html_print_div(
     [
-        'class'   => 'action-buttons',
+        'class'   => 'action-buttons-right-forced',
         'content' => html_print_submit_button(
             __('Create'),
-            'create_module',
+            'modal_button_create',
             false,
             [
-                'icon' => 'next',
-                'mode' => 'mini secondary',
+                'icon'  => 'next',
+                'mode'  => 'mini secondary',
+                'style' => 'margin-top: 140px;',
             ],
             true
         ),
@@ -1119,15 +1158,14 @@ html_print_div(
 <script type="text/javascript">
 
     function create_module_dialog(){
-        console.log('Entra');
         $('#modal').dialog({
             title: '<?php echo __('Create Module'); ?>',
             resizable: true,
             draggable: true,
             modal: true,
             close: false,
-            height: 222,
-            width: 480,
+            height: 400,
+            width: 495,
             overlay: {
                 opacity: 0.5,
                 background: "black"
@@ -1161,6 +1199,11 @@ html_print_div(
                 $("[name^=id_delete").prop("checked", false);
             }
         });
+
+        var show_dialog_create = "<?php echo get_parameter('show_dialog_create', 0); ?>";
+        if (show_dialog_create !== '0'){
+            $('#button-create_module').click();
+        }
 
 
     });

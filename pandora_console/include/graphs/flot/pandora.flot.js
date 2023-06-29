@@ -1975,25 +1975,27 @@ function pandoraFlotArea(
         !(type == 1 && /percentil/.test(index) == true) &&
         !(type == 3 && /percentil/.test(index) == true)
       ) {
-        data_base.push({
-          id: "serie_" + i,
-          data: value.data,
-          label: index,
-          color: color[index]["color"],
-          lines: {
-            show: line_show,
-            fill: filled,
-            lineWidth: lineWidth,
-            steps: steps_chart
-          },
-          points: {
-            show: points_show,
-            radius: radius,
-            fillColor: fill_points,
-            fill: filled
-          },
-          legend: legend.index
-        });
+        if (color[index] !== null) {
+          data_base.push({
+            id: "serie_" + i,
+            data: value.data,
+            label: index,
+            color: color[index]["color"],
+            lines: {
+              show: line_show,
+              fill: filled,
+              lineWidth: lineWidth,
+              steps: steps_chart
+            },
+            points: {
+              show: points_show,
+              radius: radius,
+              fillColor: fill_points,
+              fill: filled
+            },
+            legend: legend.index
+          });
+        }
       }
     }
     i++;
@@ -2062,7 +2064,8 @@ function pandoraFlotArea(
     yaxes: [
       {
         tickFormatter: yFormatter,
-        position: "left"
+        position: "left",
+        minTickSize: 0.5
       }
     ],
     legend: {
@@ -2462,12 +2465,13 @@ function pandoraFlotArea(
           $.each(update_legend, function(index, value) {
             if (typeof value[x - 1] !== "undefined") {
               data_legend[index] =
-                " Min: " +
+                "<span class='legend-font-small'> Min: </span><span class='bolder'>" +
                 number_format(value[x - 1].min, 0, unit, short_data, divisor) +
-                " Max: " +
+                "</span><span class='legend-font-small'> Max: </span><span class='bolder'>" +
                 number_format(value[x - 1].max, 0, unit, short_data, divisor) +
-                " Avg: " +
-                number_format(value[x - 1].avg, 0, unit, short_data, divisor);
+                "</span><span class='legend-font-small'> Avg: </span><span class='bolder'>" +
+                number_format(value[x - 1].avg, 0, unit, short_data, divisor) +
+                "</span>";
             } else {
               data_legend[index] = " Min: " + 0 + " Max: " + 0 + " Avg: " + 0;
             }
@@ -2475,9 +2479,9 @@ function pandoraFlotArea(
 
           if (typeof data_legend[series.label] !== "undefined") {
             label_aux =
-              legend[series.label].split(": Min")[0] +
-              ": " +
-              data_legend[series.label];
+              legend[series.label].split(
+                '<span class="legend-font-small">'
+              )[0] + data_legend[series.label];
             $("#legend_" + graph_id + " .legendLabel")
               .eq(i)
               .html(label_aux);

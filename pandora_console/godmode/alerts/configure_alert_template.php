@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -688,7 +688,7 @@ if ($step == 2) {
     );
 
     $table->data[2][0] = html_print_label_input_block(
-        __('Time threshold'),
+        __('Time threshold').ui_print_help_tip(__('Reset the alert counter within the configured period if there is no manual recovery or validation of the alert.'), true),
         html_print_extended_select_for_time(
             'threshold',
             $threshold,
@@ -702,6 +702,19 @@ if ($step == 2) {
             'w100p',
             (!$is_management_allowed | $disabled)
         )
+    );
+
+    $usr_groups = implode(
+        ',',
+        array_keys(users_get_groups($config['id_user'], 'LM', true))
+    );
+
+    $sql_query = sprintf(
+        'SELECT id, name
+        FROM talert_actions
+        WHERE id_group IN (%s)
+        ORDER BY name',
+        $usr_groups
     );
 
     $table->data[2][1] = html_print_label_input_block(
@@ -799,19 +812,6 @@ if ($step == 2) {
             true,
             (!$is_management_allowed | $disabled)
         )
-    );
-
-    $usr_groups = implode(
-        ',',
-        array_keys(users_get_groups($config['id_user'], 'LM', true))
-    );
-
-    $sql_query = sprintf(
-        'SELECT id, name
-        FROM talert_actions
-        WHERE id_group IN (%s)
-        ORDER BY name',
-        $usr_groups
     );
 
     $table->data[5][0] = html_print_label_input_block(
@@ -957,7 +957,7 @@ if ($step == 2) {
             '',
             false,
             (!$is_management_allowed | $disabled),
-            "removeTinyMCE('textarea_field".$i."')",
+            "UndefineTinyMCE('#textarea_field".$i."')",
             'style="height: 15px !important;"',
             true
         );
@@ -970,7 +970,7 @@ if ($step == 2) {
             '',
             true,
             (!$is_management_allowed | $disabled),
-            "addTinyMCE('textarea_field".$i."')",
+            "defineTinyMCE('#textarea_field".$i."')",
             'style="height: 15px !important;"',
             true
         );
@@ -1002,7 +1002,7 @@ if ($step == 2) {
             '',
             false,
             (!$is_management_allowed | $disabled),
-            "removeTinyMCE('textarea_field".$i."_recovery')",
+            "UndefineTinyMCE('#textarea_field".$i."_recovery')",
             'style="height: 15px !important;"',
             true
         );
@@ -1015,7 +1015,7 @@ if ($step == 2) {
             '',
             true,
             (!$is_management_allowed | $disabled),
-            "addTinyMCE('textarea_field".$i."_recovery')",
+            "defineTinyMCE('#textarea_field".$i."_recovery')",
             'style="height: 15px !important;"',
             true
         );
@@ -1255,7 +1255,7 @@ echo '</form>';
 ui_require_javascript_file('pandora_alerts');
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ui_require_css_file('main.min', 'include/javascript/fullcalendar/');
 ui_require_javascript_file('main.min', 'include/javascript/fullcalendar/');
 ui_require_javascript_file('pandora_fullcalendar');
@@ -1626,18 +1626,7 @@ if ($step == 2) {
         }
     });
 
-    var added_config = {
-        "selector": 'textarea.tiny-mce-editor',
-        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        "theme_advanced_buttons1": "bold,italic,underline,|,cut,copy,paste,|,justifyleft,justifycenter,justifyright,|,forecolor,backcolor,|,formatselect,fontselect,fontsizeselect",
-        "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview",
-        "force_p_newlines" : false,
-        "forced_root_block" : '',
-        "inline_styles": true,
-        "valid_children": "+body[style]",
-    }
-
-    defineTinyMCE(added_config);
+    defineTinyMCE('textarea.tiny-mce-editor');
 
     <?php
 }

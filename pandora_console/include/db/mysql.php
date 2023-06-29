@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -1190,30 +1190,32 @@ function mysql_db_format_array_to_update_sql($values)
     $fields = [];
 
     foreach ($values as $field => $value) {
-        if (is_numeric($field)) {
-            array_push($fields, $value);
-            continue;
-        } else if ($field[0] == '`') {
-            $field = str_replace('`', '', $field);
-        }
-
-        if ($value === null) {
-            $sql = sprintf('`%s` = NULL', $field);
-        } else if (is_int($value) || is_bool($value)) {
-            $sql = sprintf('`%s` = %d', $field, $value);
-        } else if (is_float($value) || is_double($value)) {
-            $sql = sprintf('`%s` = %f', $field, $value);
-        } else {
-            // String
-            if (isset($value[0]) && $value[0] == '`') {
-                // Don't round with quotes if it references a field
-                $sql = sprintf('`%s` = %s', $field, $value);
-            } else {
-                $sql = sprintf("`%s` = '%s'", $field, $value);
+        if (is_object($value) === false) {
+            if (is_numeric($field)) {
+                array_push($fields, $value);
+                continue;
+            } else if ($field[0] == '`') {
+                $field = str_replace('`', '', $field);
             }
-        }
 
-        array_push($fields, $sql);
+            if ($value === null) {
+                $sql = sprintf('`%s` = NULL', $field);
+            } else if (is_int($value) || is_bool($value)) {
+                $sql = sprintf('`%s` = %d', $field, $value);
+            } else if (is_float($value) || is_double($value)) {
+                $sql = sprintf('`%s` = %f', $field, $value);
+            } else {
+                // String
+                if (isset($value[0]) && $value[0] == '`') {
+                    // Don't round with quotes if it references a field
+                    $sql = sprintf('`%s` = %s', $field, $value);
+                } else {
+                    $sql = sprintf("`%s` = '%s'", $field, $value);
+                }
+            }
+
+            array_push($fields, $sql);
+        }
     }
 
     return implode(', ', $fields);

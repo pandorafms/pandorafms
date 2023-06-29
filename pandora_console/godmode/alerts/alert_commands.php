@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -133,7 +133,7 @@ if (is_ajax()) {
                 }
             }
 
-            $style = ((int) $field_hidden === 1) ? '-webkit-text-security: disc;' : '';
+            $style = ((int) $field_hidden === 1) ? '-webkit-text-security: disc; font-family: text-security-disc;' : '';
 
             if (!empty($field_value)) {
                 $field_value = io_safe_output($field_value);
@@ -151,7 +151,7 @@ if (is_ajax()) {
                         '',
                         false,
                         $is_management_allowed,
-                        "removeTinyMCE('textarea_field".$i."_value')",
+                        "UndefineTinyMCE('#textarea_field".$i."_value')",
                         '',
                         true
                     );
@@ -163,7 +163,7 @@ if (is_ajax()) {
                         '',
                         true,
                         $is_management_allowed,
-                        "addTinyMCE('textarea_field".$i."_value')",
+                        "defineTinyMCE('#textarea_field".$i."_value')",
                         '',
                         true
                     );
@@ -188,7 +188,7 @@ if (is_ajax()) {
                         '',
                         false,
                         $is_management_allowed,
-                        "removeTinyMCE('textarea_field".$i."_recovery_value')",
+                        "UndefineTinyMCE('#textarea_field".$i."_recovery_value')",
                         '',
                         true
                     );
@@ -200,7 +200,7 @@ if (is_ajax()) {
                         '',
                         true,
                         $is_management_allowed,
-                        "addTinyMCE('textarea_field".$i."_recovery_value')",
+                        "defineTinyMCE('#textarea_field".$i."_recovery_value')",
                         '',
                         true
                     );
@@ -227,7 +227,7 @@ if (is_ajax()) {
                         'field'.$i.'_value',
                         'text/plain',
                         '',
-                        $content_type == 'text/plain',
+                        '',
                         $is_management_allowed,
                         '',
                         '',
@@ -239,7 +239,7 @@ if (is_ajax()) {
                         'field'.$i.'_value',
                         'text/html',
                         '',
-                        $content_type == 'text/html',
+                        'text/html',
                         $is_management_allowed,
                         '',
                         '',
@@ -855,16 +855,16 @@ if (users_is_admin() === true) {
     });
 
     function dialog_message(message) {
-      $(message)
+    $(message)
         .css("display", "inline")
         .dialog({
-          modal: true,
-          width: "400px",
-          buttons: {
-            Close: function() {
-              $(this).dialog("close");
+            modal: true,
+            width: "400px",
+            buttons: {
+                Close: function() {
+                $(this).dialog("close");
+                }
             }
-          }
         });
     }
 

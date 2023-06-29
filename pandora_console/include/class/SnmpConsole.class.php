@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -181,113 +181,47 @@ class SnmpConsole extends HTML
 
         $default_refr = 300;
 
-        if (!isset($config['pure']) || $config['pure'] === false) {
-            $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'">'.html_print_image(
-                'images/logs@svg.svg',
-                true,
-                [
-                    'title' => __('Statistics'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-            $list['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0">'.html_print_image(
-                'images/SNMP-network-numeric-data@svg.svg',
-                true,
-                [
-                    'title' => __('List'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-            $list['active'] = true;
+        $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'">'.html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'title' => __('Statistics'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        ).'</a>';
+        $list['text'] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0">'.html_print_image(
+            'images/SNMP-network-numeric-data@svg.svg',
+            true,
+            [
+                'title' => __('List'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        ).'</a>';
+        $list['active'] = true;
 
-            $screen['text'] = '<a href="#" onClick="javascript:fullscreen(1)">'.html_print_image(
-                'images/fullscreen@svg.svg',
-                true,
+        // Header.
+        ui_print_standard_header(
+            __('SNMP Console'),
+            'images/op_snmp.png',
+            false,
+            'snmp_console',
+            false,
+            [
+                $screen,
+                $list,
+                $statistics,
+            ],
+            [
                 [
-                    'title' => __('View in full screen'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-
-            // Header.
-            ui_print_standard_header(
-                __('SNMP Console'),
-                'images/op_snmp.png',
-                false,
-                'snmp_console',
-                false,
-                [
-                    $screen,
-                    $list,
-                    $statistics,
+                    'link'  => '',
+                    'label' => __('Monitoring'),
                 ],
                 [
-                    [
-                        'link'  => '',
-                        'label' => __('Monitoring'),
-                    ],
-                    [
-                        'link'  => '',
-                        'label' => __('SNMP'),
-                    ],
-                ]
-            );
-        } else {
-            echo '<div id="dashboard-controls">';
-
-            echo '<div id="menu_tab">';
-            echo '<ul class="mn">';
-            // Normal view button.
-            echo '<li class="nomn">';
-
-            echo '<a href="#" onClick="javascript:fullscreen(0)">';
-            echo html_print_image(
-                'images/exit_fullscreen@svg.svg',
-                true,
-                [
-                    'title' => __('Exit fullscreen'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            );
-            echo '</a>';
-            echo '</li>';
-
-            // Auto refresh control.
-            echo '<li class="nomn">';
-            echo '<div class="dashboard-refr mrgn_top_6px">';
-            echo '<div class="dashboard-countdown display_in"></div>';
-            $normal_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view';
-
-            echo '<form id="refr-form" method="get" action="'.$normal_url.'"  >';
-            echo __('Refresh every').':';
-            echo html_print_select(get_refresh_time_array(), 'refresh', $this->refr, '', '', 0, true, false, false);
-            echo '</form>';
-            echo '</li>';
-
-            html_print_input_hidden('sec', 'snmpconsole');
-            html_print_input_hidden('sec2', 'operation/snmpconsole/snmp_view');
-            html_print_input_hidden('pure', 1);
-            html_print_input_hidden('refresh', (($this->refr > 0) ? $this->refr : $default_refr));
-
-            // Dashboard name.
-            echo '<li class="nomn">';
-            echo '<div class="dashboard-title">'.__('SNMP Traps').'</div>';
-            echo '</li>';
-
-            echo '</ul>';
-            echo '</div>';
-
-            echo '</div>';
-
-            ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
-            ui_require_css_file('pandora_dashboard', ENTERPRISE_DIR.'/include/styles/');
-            ui_require_css_file('cluetip', 'include/styles/js/');
-
-            ui_require_jquery_file('countdown');
-            ui_require_javascript_file('pandora_dashboard', ENTERPRISE_DIR.'/include/javascript/');
-            ui_require_javascript_file('wz_jsgraphics');
-            ui_require_javascript_file('pandora_visual_console');
-        }
+                    'link'  => '',
+                    'label' => __('SNMP'),
+                ],
+            ]
+        );
 
         // Datatables list.
         try {
@@ -325,7 +259,10 @@ class SnmpConsole extends HTML
                     'class' => 'snmp-td',
                 ],
                 'alert',
-                'action',
+                [
+                    'text'  => 'action',
+                    'class' => 'table_action_buttons w120px',
+                ],
                 [
                     'text'  => 'm',
                     'class' => 'mw60px pdd_0px',
@@ -729,16 +666,17 @@ class SnmpConsole extends HTML
             }
 
             if ($filters['filter_free_search'] !== '') {
+                $free_search_str = io_safe_output($filters['filter_free_search']);
                 $whereSubquery .= '
-                    AND (source LIKE "%'.$filters['filter_free_search'].'%" OR
-                    oid LIKE "%'.$filters['filter_free_search'].'%" OR
-                    oid_custom LIKE "%'.$filters['filter_free_search'].'%" OR
-                    type_custom LIKE "%'.$filters['filter_free_search'].'%" OR
-                    value LIKE "%'.$filters['filter_free_search'].'%" OR
-                    value_custom LIKE "%'.$filters['filter_free_search'].'%" OR
-                    id_usuario LIKE "%'.$filters['filter_free_search'].'%" OR
-                    text LIKE "%'.$filters['filter_free_search'].'%" OR
-                    description LIKE "%'.$filters['filter_free_search'].'%")';
+                    AND (source LIKE "%'.$free_search_str.'%" OR
+                    oid LIKE "%'.$free_search_str.'%" OR
+                    oid_custom LIKE "%'.$free_search_str.'%" OR
+                    type_custom LIKE "%'.$free_search_str.'%" OR
+                    value LIKE "%'.$free_search_str.'%" OR
+                    value_custom LIKE "%'.$free_search_str.'%" OR
+                    id_usuario LIKE "%'.$free_search_str.'%" OR
+                    text LIKE "%'.$free_search_str.'%" OR
+                    description LIKE "%'.$free_search_str.'%")';
             }
 
             if ($filters['filter_status'] != -1) {
@@ -781,6 +719,7 @@ class SnmpConsole extends HTML
             }
 
             $sql = sprintf($sql, $whereSubquery, $start, $length);
+
             $sql_count = 'SELECT COUNT(id_trap) FROM ttrap
 			WHERE (
 				source IN ('.implode(',', $address_by_user_groups).") OR
@@ -970,7 +909,7 @@ class SnmpConsole extends HTML
                         ).'</a>';
 
                         if ($config['enterprise_installed']) {
-                            $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">';
+                            $tmp->action .= '<a href="index.php?sec=snmpconsole&sec2=enterprise/godmode/snmpconsole/snmp_trap_editor_form&id='.$tmp->id_trap.'&oid='.$tmp->oid.'&custom_oid='.urlencode($tmp->oid_custom).'&severity='.$tmp->severity.'&text='.io_safe_input($tmp->text).'&description='.io_safe_input($tmp->description, ENT_QUOTES).'" title="'.io_safe_input($tmp->description, ENT_QUOTES).'">';
                             $tmp->action .= html_print_image(
                                 'images/edit.svg',
                                 true,
@@ -1506,7 +1445,7 @@ class SnmpConsole extends HTML
                                 binding_vars.forEach(function(oid) {
                                     string += oid+'<br/>';
                                 });
-                                variableBindings = `<td align="left" colspan="8">${string}</td>`;
+                                variableBindings = `<td align="left" colspan="8" class="break-word w200px">${string}</td>`;
                             }
 
                             tr.after(`<tr id="show_" role="row">${labelBindings}${variableBindings}</tr>`);

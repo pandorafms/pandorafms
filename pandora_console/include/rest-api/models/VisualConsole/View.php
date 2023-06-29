@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -124,7 +124,7 @@ class View extends \HTML
         $result = html_print_tabs($tabs);
 
         // TODO:Change other place.
-        \ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+        ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
         $js = '<script>
 	            $(function() {
                     $tabs = $( "#html-tabs" ).tabs({
@@ -145,49 +145,11 @@ class View extends \HTML
                         },
                         load: function( event, ui ) {
                             var active = $( "#html-tabs" ).tabs( "option", "active" );
-                            if (active === 0 && tinyMCE.editors.length == 0) {
+                            if (active === 0) {
+                                // Remove.
+                                UndefineTinyMCE("#textarea_label");
                                 // Initialice.
-                                tinyMCE.init({
-                                    selector: "#textarea_label",
-                                    theme: "advanced",
-                                    convert_urls:false,
-                                    relative_urls:false,
-                                    content_css: "'.ui_get_full_url(false, false, false, false).'include/styles/pandora.css",
-                                    theme_advanced_font_sizes:
-                                    "4pt=.visual_font_size_4pt, " +
-                                    "6pt=.visual_font_size_6pt, " +
-                                    "8pt=.visual_font_size_8pt, " +
-                                    "10pt=.visual_font_size_10pt, " +
-                                    "12pt=.visual_font_size_12pt, " +
-                                    "14pt=.visual_font_size_14pt, " +
-                                    "18pt=.visual_font_size_18pt, " +
-                                    "24pt=.visual_font_size_24pt, " +
-                                    "28pt=.visual_font_size_28pt, " +
-                                    "36pt=.visual_font_size_36pt, " +
-                                    "48pt=.visual_font_size_48pt, " +
-                                    "60pt=.visual_font_size_60pt, " +
-                                    "72pt=.visual_font_size_72pt, " +
-                                    "84pt=.visual_font_size_84pt, " +
-                                    "96pt=.visual_font_size_96pt, " +
-                                    "116pt=.visual_font_size_116pt, " +
-                                    "128pt=.visual_font_size_128pt, " +
-                                    "140pt=.visual_font_size_140pt, " +
-                                    "154pt=.visual_font_size_154pt, " +
-                                    "196pt=.visual_font_size_196pt",
-                                    theme_advanced_toolbar_location: "top",
-                                    theme_advanced_toolbar_align: "left",
-                                    theme_advanced_buttons1:
-                                    "bold,italic, |,justifyleft, justifycenter, justifyright, |, undo, redo, |, image, link, |, fontselect, forecolor, fontsizeselect, |,code",
-                                    theme_advanced_buttons2: "",
-                                    theme_advanced_buttons3: "",
-                                    theme_advanced_statusbar_location: "none",
-                                    body_class: "tinyMCEBody",
-                                    forced_root_block : false,
-                                    force_p_newlines : false,
-                                    force_br_newlines : true,
-                                    convert_newlines_to_brs : false,
-                                    remove_linebreaks : true,
-                                });
+                                defineTinyMCE("#textarea_label");
                             }
                         },
                         active: '.$activetabs.'
@@ -417,6 +379,10 @@ class View extends \HTML
 
             case GROUP_ITEM:
                 $data['imageSrc'] = \get_parameter('imageSrc');
+                $data['recursiveGroup'] = \get_parameter_switch(
+                    'recursiveGroup',
+                    0
+                );
                 $data['showStatistics'] = \get_parameter_switch(
                     'showStatistics',
                     0

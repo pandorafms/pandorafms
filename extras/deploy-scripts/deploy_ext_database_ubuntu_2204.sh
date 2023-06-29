@@ -89,6 +89,9 @@ check_root_permissions () {
 ## Main
 echo "Starting PandoraFMS External DB deployment Ubuntu 22.04 ver. $S_VERSION"
 
+if ! grep --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+if ! sed --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+
 # Ubuntu Version
 if [ ! "$(grep -Ei 'Ubuntu' /etc/lsb-release)" ]; then
          printf "\n ${red}Error this is not a Ubuntu system, this installer is compatible with Ubuntu systems only${reset}\n"
@@ -155,7 +158,7 @@ execute_cmd "apt install -y gnupg2 lsb-release ./percona-release_latest.generic_
 execute_cmd "percona-release setup ps80" "Configuring Percona repository for MySQL8"
 
 echo -en "${cyan}Installing Percona Server for MySQL8...${reset}"
-    env DEBIAN_FRONTEND=noninteractive apt install -y percona-server-server &>> "$LOGFILE"
+    env DEBIAN_FRONTEND=noninteractive apt install -y percona-server-server percona-xtrabackup-80 &>> "$LOGFILE"
 check_cmd_status "Error Installing MySql Server"
 
 #Configuring Database

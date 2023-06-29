@@ -226,8 +226,8 @@ $(document).ready(function() {
       resizable: false,
       draggable: true,
       modal: true,
-      height: 450,
-      width: 620,
+      height: 410,
+      width: 390,
       overlay: {
         opacity: 0.5,
         background: "black"

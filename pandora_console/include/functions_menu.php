@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -57,7 +57,41 @@ function menu_print_menu(&$menu)
     $sec = (string) get_parameter('sec');
     $sec2 = (string) get_parameter('sec2');
     if ($sec2 === 'operation/agentes/ver_agente') {
-        $sec2 = 'godmode/agentes/configurar_agente';
+        $sec2 = 'operation/agentes/estado_agente';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_template') {
+        $sec2 = 'godmode/alerts/alert_templates';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_action') {
+        $sec2 = 'godmode/alerts/alert_actions';
+    } else if ($sec2 === 'godmode/alerts/configure_alert_command') {
+        $sec2 = 'godmode/alerts/alert_commands';
+    } else if ($sec2 === 'enterprise/godmode/setup/edit_skin') {
+        $sec2 = 'enterprise/godmode/setup/setup_skins';
+    } else if ($sec2 === 'operation/agentes/networkmap.dinamic') {
+        $sec2 = 'operation/agentes/pandora_networkmap';
+    } else if ($sec2 === 'godmode/gis_maps/configure_gis_map') {
+        $map_id = (string) get_parameter('map_id');
+        if (empty($map_id) === false) {
+            $sec2 = 'operation/gis_maps/render_view&map_id='.$map_id;
+        } else {
+            $sec2 = 'operation/gis_maps/gis_map';
+        }
+    } else if ($sec2 === 'enterprise/godmode/servers/manage_export_form') {
+        $sec2 = 'enterprise/godmode/servers/manage_export';
+    } else if ($sec2 === 'godmode/setup/gis_step_2') {
+        $sec2 = 'godmode/setup/setup&section=gis';
+    } else if ($sec2 === 'enterprise/godmode/agentes/agent_autoconfiguration.definition') {
+        $sec2 = 'enterprise/godmode/agentes/agent_autoconfiguration';
+    } else if ($sec2 === 'enterprise/godmode/reporting/graph_template_list') {
+        $sec2 = 'godmode/reporting/graphs';
+    } else if ($sec2 === 'enterprise/godmode/reporting/graph_template_wizard') {
+        $sec2 = 'godmode/reporting/graphs';
+    } else if ($sec2 === 'godmode/reporting/graph_container') {
+        $sec2 = 'godmode/reporting/graphs';
+    } else if ($sec2 === 'operation/gis_maps/render_view') {
+        $map_id = (int) get_parameter('map_id');
+        if (empty($map_id) === false) {
+            $sec2 .= '&map_id='.$map_id;
+        }
     } else if ($sec2 === 'godmode/servers/discovery') {
         $wiz = (string) get_parameter('wiz');
         $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
@@ -253,6 +287,7 @@ function menu_print_menu(&$menu)
             if (($sec2 == $subsec2 || $allsec2 == $subsec2
                 || $selected_submenu2) && isset($sub[$subsec2]['options'])
                 && (get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])
+                && $main['id'] !== 'fav-menu'
             ) {
                 // If the subclass is selected and there are options and that options value is true.
                 $class .= 'submenu_selected selected';
@@ -260,7 +295,7 @@ function menu_print_menu(&$menu)
                 $menu2_selected = $sub['id'];
                 $selected = true;
                 $visible = true;
-            } else if (($sec2 === $subsec2 || $allsec2 === $subsec2 || $selected_submenu2 === true) && isset($sub[$subsec2]['options']) === false) {
+            } else if (($sec2 === $subsec2 || $allsec2 === $subsec2 || $selected_submenu2 === true) && isset($sub[$subsec2]['options']) === false && $main['id'] !== 'fav-menu') {
                 $class .= 'submenu_selected selected';
                 $selected = true;
                 $menu_selected = true;
@@ -382,7 +417,7 @@ function menu_print_menu(&$menu)
 
                     $class = 'sub_subMenu';
 
-                    if ($key == $sec2) {
+                    if ($key == $sec2 && $main['id'] !== 'fav-menu') {
                         $class .= ' selected';
                     }
 
@@ -548,7 +583,9 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=wizard']['text'] = __('Templates wizard');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=new']['text'] = __('New custom reports');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=edit']['text'] = __('Edit custom reports');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&action=delete_report']['text'] = __('Remove custom reports');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=list_items&action=edit']['text'] = __('List items');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=item_editor&action=new']['text'] = __('Edit item');
     $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=edit']['text'] = __('Wizard');
@@ -829,6 +866,7 @@ if (is_ajax()) {
         global $pandora_version;
         global $build_version;
         $product_name = io_safe_output(get_product_name());
+        $license_expiry_date = substr($config['license_expiry_date'], 0, 4).'/'.substr($config['license_expiry_date'], 4, 2).'/'.substr($config['license_expiry_date'], 6, 2);
 
         include_once $config['homedir'].'/include/class/Diagnostics.class.php';
         $d = new Diagnostics;
@@ -839,10 +877,15 @@ if (is_ajax()) {
         $php_sys = json_decode($d->getPHPSetup());
         $system_date = json_decode($d->getSystemDate());
 
+        $lts_name = '';
+        if (empty($config['lts_name']) === false) {
+            $lts_name = ' <i>'.$config['lts_name'].'</i>';
+        }
+
         $fragmentation_status = '';
         if ($db_fragmentation->data->tablesFragmentationStatus->status === 1) {
             $fragmentation_status = html_print_image(
-                'images/exito.png',
+                'images/validate.svg',
                 true,
                 [
                     'title' => __('Successfully'),
@@ -851,7 +894,7 @@ if (is_ajax()) {
             );
         } else {
             $fragmentation_status = html_print_image(
-                'images/error_1.png',
+                'images/fail@svg.svg',
                 true,
                 [
                     'title' => __('Error'),
@@ -915,10 +958,10 @@ if (is_ajax()) {
                                 </th>
                                 <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
-                                    <p><span>'.__('Version').' '.$pandora_version.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
+                                    <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
                                     <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
-                                    <p><span>'.__('Build').'</span> '.$build_version.'</p>
-                                    <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span> 2023/04/26</p>';
+                                    <p><span>Build</span>'.$build_version.'</p>
+                                    <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';
 
         if (((bool) check_acl($config['id_user'], 0, 'PM') === true) && (is_metaconsole() === false)) {
             $dialogButtons = [];
@@ -930,7 +973,7 @@ if (is_ajax()) {
                 'location.href="'.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'"',
                 [
                     'icon' => 'cog',
-                    'mode' => 'mini secondary',
+                    'mode' => 'secondary',
                 ],
                 true
             );
@@ -942,7 +985,7 @@ if (is_ajax()) {
                 'location.href="'.ui_get_full_url('/index.php?sec=gextensions&sec2=tools/diagnostics', false, false, false).'"',
                 [
                     'icon' => 'info',
-                    'mode' => 'mini secondary',
+                    'mode' => 'secondary',
                 ],
                 true
             );
@@ -976,7 +1019,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_health->data->unknownAgents->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_health->data->unknownAgents->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_health->data->unknownAgents->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -984,7 +1027,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_health->data->notInitAgents->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_health->data->notInitAgents->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_health->data->notInitAgents->value.'</p>
                                 </th>
                             </tr>
                             <tr class="about-last-tr">
@@ -992,7 +1035,7 @@ if (is_ajax()) {
                                     <p class="about-last-p"><span>'.$db_health->data->pandoraDbLastRun->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p class="about-last-p">'.$db_health->data->pandoraDbLastRun->value.'</p>
+                                    <p class="about-last-p" style="font-size: 10pt;">'.$db_health->data->pandoraDbLastRun->value.'</p>
                                 </th>
                             </tr>
 
@@ -1006,7 +1049,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_info->data->dbSchemeFirstVersion->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_info->data->dbSchemeFirstVersion->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_info->data->dbSchemeFirstVersion->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1014,7 +1057,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_info->data->dbSchemeVersion->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_info->data->dbSchemeVersion->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_info->data->dbSchemeVersion->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1022,7 +1065,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_info->data->dbSchemeBuild->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_info->data->dbSchemeBuild->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_info->data->dbSchemeBuild->value.'</p>
                                 </th>
                             </tr>
                             <tr class="about-last-tr">
@@ -1030,7 +1073,7 @@ if (is_ajax()) {
                                     <p class="about-last-p"><span>'.$db_info->data->dbSize->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p class="about-last-p">'.$db_info->data->dbSize->value.'</p>
+                                    <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbSize->value.'</p>
                                 </th>
                             </tr>
 
@@ -1044,7 +1087,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_fragmentation->data->tablesFragmentationMax->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_fragmentation->data->tablesFragmentationMax->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_fragmentation->data->tablesFragmentationMax->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1052,7 +1095,7 @@ if (is_ajax()) {
                                     <p><span>'.$db_fragmentation->data->tablesFragmentationValue->name.'</span></p>
                                 </th>
                                 <th style="width: 50%;">
-                                    <p>'.$db_fragmentation->data->tablesFragmentationValue->value.'</p>
+                                    <p style="font-size: 10pt;">'.$db_fragmentation->data->tablesFragmentationValue->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1075,11 +1118,11 @@ if (is_ajax()) {
                                 </th>
                             </tr>
                             <tr>
-                                <th style="width: 15%;">
+                                <th style="width: 30%;">
                                     <p><span>'.$sys_info->data->cpuInfo->name.'</span></p>
                                 </th>
                                 <th style="width: 85%;">
-                                    <p>'.$sys_info->data->cpuInfo->value.'</p>
+                                    <p style="font-size: 10pt;">'.$sys_info->data->cpuInfo->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1087,7 +1130,7 @@ if (is_ajax()) {
                                     <p><span>'.$sys_info->data->ramInfo->name.'</span></p>
                                 </th>
                                 <th style="width: 85%;">
-                                    <p>'.$sys_info->data->ramInfo->value.'</p>
+                                    <p style="font-size: 10pt;">'.$sys_info->data->ramInfo->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1095,7 +1138,7 @@ if (is_ajax()) {
                                     <p><span>'.$sys_info->data->osInfo->name.'</span></p>
                                 </th>
                                 <th style="width: 85%;">
-                                    <p>'.$sys_info->data->osInfo->value.'</p>
+                                    <p style="font-size: 10pt;">'.$sys_info->data->osInfo->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1103,7 +1146,7 @@ if (is_ajax()) {
                                     <p><span>'.$sys_info->data->hostnameInfo->name.'</span></p>
                                 </th>
                                 <th style="width: 85%;">
-                                    <p>'.$sys_info->data->hostnameInfo->value.'</p>
+                                    <p style="font-size: 10pt;">'.$sys_info->data->hostnameInfo->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1111,7 +1154,7 @@ if (is_ajax()) {
                                     <p><span>'.$sys_info->data->ipInfo->name.'</span></p>
                                 </th>
                                 <th style="width: 85%;">
-                                    <p>'.$sys_info->data->ipInfo->value.'</p>
+                                    <p style="font-size: 10pt;">'.$sys_info->data->ipInfo->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1119,7 +1162,7 @@ if (is_ajax()) {
                                     <p><span>'.$system_date->data->date->name.'</span></p>
                                 </th>
                                 <th style="width: 85%;">
-                                    <p>'.$system_date->data->date->value.'</p>
+                                    <p style="font-size: 10pt;">'.$system_date->data->date->value.'</p>
                                 </th>
                             </tr>
                         </tbody>
@@ -1134,11 +1177,11 @@ if (is_ajax()) {
                                 </th>
                             </tr>
                             <tr>
-                                <th style="width: 35%;">
+                                <th style="width: 50%;">
                                     <p><span>'.$php_sys->data->phpVersion->name.'</span></p>
                                 </th>
                                 <th style="width: 65%;">
-                                    <p>'.$php_sys->data->phpVersion->value.'</p>
+                                    <p style="font-size: 10pt;">'.$php_sys->data->phpVersion->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1146,7 +1189,7 @@ if (is_ajax()) {
                                     <p><span>'.$php_sys->data->maxExecutionTime->name.'</span></p>
                                 </th>
                                 <th style="width: 65%;">
-                                    <p>'.$php_sys->data->maxExecutionTime->value.'</p>
+                                    <p style="font-size: 10pt;">'.$php_sys->data->maxExecutionTime->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1154,7 +1197,7 @@ if (is_ajax()) {
                                     <p><span>'.$php_sys->data->maxInputTime->name.'</span></p>
                                 </th>
                                 <th style="width: 65%;">
-                                    <p>'.$php_sys->data->maxInputTime->value.'</p>
+                                    <p style="font-size: 10pt;">'.$php_sys->data->maxInputTime->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1162,7 +1205,7 @@ if (is_ajax()) {
                                     <p><span>'.$php_sys->data->memoryLimit->name.'</span></p>
                                 </th>
                                 <th style="width: 65%;">
-                                    <p>'.$php_sys->data->memoryLimit->value.'</p>
+                                    <p style="font-size: 10pt;">'.$php_sys->data->memoryLimit->value.'</p>
                                 </th>
                             </tr>
                             <tr>
@@ -1170,7 +1213,7 @@ if (is_ajax()) {
                                     <p><span>'.$php_sys->data->sessionLifetime->name.'</span></p>
                                 </th>
                                 <th style="width: 65%;">
-                                    <p>'.$php_sys->data->sessionLifetime->value.'</p>
+                                    <p style="font-size: 10pt;">'.$php_sys->data->sessionLifetime->value.'</p>
                                 </th>
                             </tr>
                         </tbody>

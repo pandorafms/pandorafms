@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -27,10 +27,27 @@ require_once __DIR__.'/../include/functions_ui.php';
 require_once __DIR__.'/../include/functions.php';
 require_once __DIR__.'/../include/functions_html.php';
 
+echo '<style>
+        :root {';
+if ($config['style'] === 'pandora') {
+    echo '--login-background-color: rgba(255, 255, 255, 0.4);';
+    echo '--login-label-color: #545454;';
+    echo '--login-text-color: #000;';
+    $style_theme = 'white-theme';
+} else {
+    echo '--login-background-color: rgba(0, 0, 0, 0.8);';
+    echo '--login-label-color: #c5c5c5;';
+    echo '--login-text-color: #fff;';
+    $style_theme = '';
+}
+
+echo '}
+</style>';
 
 if ($config['visual_animation']) {
+    // form#login_form, div.login_data {
     echo '<style>
-        div.container_login {
+    div.container_login {
             animation: container_login 3s ease;
         }
         
@@ -100,12 +117,12 @@ if (empty($config['random_background']) === false) {
     unset($random_backgrounds[0], $random_backgrounds[1]);
     $random_background = array_rand($random_backgrounds);
     $background_url = 'images/backgrounds/random_backgrounds/'.$random_backgrounds[$random_background];
-    $background_100 = 'background-size: 100% 100% !important; ';
+    $background_100 = 'background-size: cover !important; background-position: center !important; ';
 }
 
 if (empty($config['login_background']) === false) {
     $background_url = 'images/backgrounds/'.$config['login_background'];
-    $background_100 = 'background-size: 100% 100% !important; ';
+    $background_100 = 'background-size: cover !important; background-position: center !important; ';
 }
 
 // Support for Internet Explorer and Microsoft Edge browsers
@@ -120,7 +137,13 @@ if (empty($config['background_opacity']) === false) {
     $opacity = 30;
 }
 
-$login_body_style = 'style="'.$background_100.'background: linear-gradient(rgba(0,0,0,.'.$opacity.'), rgba(0,0,0,.'.$opacity.")), url('".$background_url."');\"";
+if ($config['style'] === 'pandora') {
+    $opacity_color = '255, 255, 255, .';
+} else {
+    $opacity_color = '0, 0, 0, .';
+}
+
+$login_body_style = 'style="'.$background_100.'background: linear-gradient(rgba('.$opacity_color.$opacity.'), rgba('.$opacity_color.$opacity.")), url('".$background_url."');\"";
 
 // Get alternative custom in case of db fail.
 $custom_fields = [
@@ -147,7 +170,7 @@ foreach ($custom_fields as $field) {
 $docs_logo = ui_get_docs_logo();
 $support_logo = ui_get_support_logo();
 echo '<div id="login_body" '.$login_body_style.'>';
-echo '<div id="header_login">';
+echo '<div id="header_login" class="'.$style_theme.'">';
 
 echo '<div id="list_icon_docs_support"><ul>';
 
@@ -185,12 +208,12 @@ echo '</div>';
 
 echo '<div class="container_login">';
 echo '<div class="login_page">';
-    echo '<form method="post" action="'.ui_get_full_url('index.php'.$url).'" ><div class="login_logo_icon">';
+    echo '<form method="post" id="login_form" action="'.ui_get_full_url('index.php'.$url).'" ><div class="login_logo_icon">';
         echo '<a href="'.$logo_link.'">';
 if (is_metaconsole() === true) {
     if (!isset($config['custom_logo_login'])) {
         html_print_image(
-            'enterprise/images/custom_logo_login/login_logo.png',
+            'enterprise/images/custom_logo_login/Pandora-FMS-1.png',
             false,
             [
                 'class'  => 'login_logo',
@@ -215,13 +238,13 @@ if (is_metaconsole() === true) {
     }
 } else if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (!isset($config['custom_logo_login'])) {
-        html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/login_logo_v7.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/Pandora-FMS-1.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
         html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/'.$config['custom_logo_login']), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 } else {
     if (empty($config['custom_logo_login']) === true) {
-        html_print_image(ui_get_full_url('images/custom_logo_login/pandora_logo.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url('images/custom_logo_login/Pandora-FMS-1.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
         html_print_image(ui_get_full_url('images/custom_logo_login/').$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
@@ -240,7 +263,7 @@ switch ($login_screen) {
         }
 
         if ($config['auth'] == 'saml') {
-            echo '<div id="log_nick" class="login_nick invisible" >';
+            echo '<div id="log_nick" class="login_nick invisible '.$style_theme.'" >';
                 html_print_input_text_extended(
                     'nick',
                     '',
@@ -271,7 +294,7 @@ switch ($login_screen) {
             echo '</div>';
 
             echo '<div id="log_button" class="login_button invisible">';
-                html_print_submit_button(__('Login as admin'), 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
+                html_print_submit_button(__('Let&#39;s go'), 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
             echo '</div>';
 
             echo '<div class="login_button" id="remove_button">';
@@ -280,7 +303,7 @@ switch ($login_screen) {
                     'input_saml',
                     false,
                     [
-                        'fixed_id' => 'submit-login_button',
+                        'fixed_id' => 'submit-admin_button',
                         'class'    => 'next_login',
                         'onclick'  => 'show_normal_menu()',
                         'id'       => 'input_saml',
@@ -297,7 +320,7 @@ switch ($login_screen) {
                 );
             echo '</div>';
         } else {
-            echo '<div class="login_nick">';
+            echo '<div class="login_nick '.$style_theme.'">';
                 html_print_input_text_extended(
                     'nick',
                     '',
@@ -307,10 +330,11 @@ switch ($login_screen) {
                     '',
                     false,
                     '',
-                    'autocomplete="off" placeholder="'.__('User').'"'
+                    'autocomplete="off" class="input" placeholder=" "'
                 );
+                echo '<label for="nick" class="placeholder">'.__('User').'</label>';
             echo '</div>';
-            echo '<div class="login_pass">';
+            echo '<div class="login_pass '.$style_theme.'">';
                 html_print_input_text_extended(
                     'pass',
                     '',
@@ -320,20 +344,18 @@ switch ($login_screen) {
                     '',
                     false,
                     '',
-                    'autocomplete="off" placeholder="'.__('Password').'"',
+                    'autocomplete="off" class="input " placeholder=" " style="background-image: url(images/enable.svg);"',
                     false,
                     true
                 );
+                echo '<label for="pass" class="placeholder">'.__('Password').'</label>';
             echo '</div>';
             echo '<div class="login_button">';
                 html_print_submit_button(
-                    __('Login'),
+                    __('Let&#39;s go'),
                     'login_button',
                     false,
-                    [
-                        'fixed_id' => 'submit-login_button',
-                        'icon'     => 'signin',
-                    ]
+                    ['fixed_id' => 'submit-login_button']
                 );
             echo '</div>';
         }
@@ -346,15 +368,36 @@ switch ($login_screen) {
             }
         }
 
-        echo '<div class="login_nick">';
+        echo '<div class="login_nick '.$style_theme.'">';
         echo '<div>';
 
         echo '</div>';
-        html_print_input_text_extended('auth_code', '', 'auth_code', '', '', '', false, '', 'class="login login_password" placeholder="'.__('Authentication code').'"', false, true);
+        html_print_input_text_extended(
+            'auth_code',
+            '',
+            'auth_code',
+            '',
+            '',
+            '',
+            false,
+            '',
+            'class="login login_password input" placeholder=" "',
+            false,
+            true
+        );
+        echo '<label for="pass" class="placeholder">'.__('Authentication code').'</label>';
         echo '</div>';
         echo '<div class="login_button">';
         // html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, 'class="next_login"');
-        html_print_submit_button(__('Check code').'&nbsp;&nbsp;>', 'login_button', false, [ 'fixed_id' => 'submit-login_button', 'class' => 'next_login']);
+        html_print_submit_button(
+            __('Check code'),
+            'login_button',
+            false,
+            [
+                'fixed_id' => 'submit-login_button',
+                'class'    => 'next_login',
+            ]
+        );
         echo '</div>';
     break;
 
@@ -425,78 +468,79 @@ html_print_csrf_hidden();
 
     echo '</form></div>';
     echo '<div class="login_data">';
+
+    echo '<div class ="img_banner_login">';
+if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    if (empty($config['custom_splash_login']) === false && $config['custom_splash_login'] !== 'default') {
+        if ($config['custom_splash_login'] !== 'none.png') {
+            html_print_image(
+                'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
+                false,
+                [
+                    'class'  => 'splash-logo',
+                    'alt'    => 'splash',
+                    'border' => 0,
+                ],
+                false,
+                false
+            );
+        }
+    } else {
+        echo '
+                <div class="loginimg-container">
+                    <div class="lineone"></div> 
+                    <div class="linetwo"></div>
+                    <div class="linethree"></div>
+                    <div style="display:flex;">
+                        <div class="towerone"></div>
+                        <div class="towertwo"></div>
+                        <div class="towerthree"></div>
+                        <div class="towerfour"></div>
+                    </div>
+                </div>
+            ';
+    }
+} else {
+    echo '
+                <div class="loginimg-container">
+                    <div class="lineone"></div> 
+                    <div class="linetwo"></div>
+                    <div class="linethree"></div>
+                    <div style="display:flex;">
+                        <div class="towerone"></div>
+                        <div class="towertwo"></div>
+                        <div class="towerthree"></div>
+                        <div class="towerfour"></div>
+                    </div>
+                </div>
+            ';
+}
+
+            echo '</div>';
+
         echo '<div class ="text_banner_login">';
-            echo '<div><span class="span1">';
+echo '<div><span class="span1">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if ($config['custom_title1_login']) {
         echo io_safe_output($config['custom_title1_login']);
     } else {
-        echo __('WELCOME TO %s', get_product_name());
+        echo __('ONE TOOL TO RULE THEM ALL');
     }
 } else {
-    echo __('WELCOME TO %s', get_product_name());
+    echo __('ONE TOOL TO RULE THEM ALL');
 }
 
-            echo '</span></div>';
-            echo '<div><span class="span2">';
+echo '</span></div>';
+echo '<div><span class="span2">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if ($config['custom_title2_login']) {
         echo io_safe_output($config['custom_title2_login']);
-    } else {
-        echo __('NEXT GENERATION');
     }
-} else {
-    echo __('NEXT GENERATION');
 }
 
-            echo '</span></div>';
-        echo '</div>';
-        echo '<div class ="img_banner_login">';
-if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
-    if (empty($config['custom_splash_login']) === false && $config['custom_splash_login'] !== 'default') {
-        html_print_image(
-            'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
-            false,
-            [
-                'alt'    => 'splash',
-                'border' => 0,
-            ],
-            false,
-            false
-        );
-    } else {
-        echo '
-            <div class="loginimg-container">
-                <div class="lineone"></div> 
-                <div class="linetwo"></div>
-                <div class="linethree"></div>
-                <div style="display:flex;">
-                    <div class="towerone"></div>
-                    <div class="towertwo"></div>
-                    <div class="towerthree"></div>
-                    <div class="towerfour"></div>
-                </div>
-            </div>
-        ';
-    }
-} else {
-    echo '
-            <div class="loginimg-container">
-                <div class="lineone"></div> 
-                <div class="linetwo"></div>
-                <div class="linethree"></div>
-                <div style="display:flex;">
-                    <div class="towerone"></div>
-                    <div class="towertwo"></div>
-                    <div class="towerthree"></div>
-                    <div class="towerfour"></div>
-                </div>
-            </div>
-        ';
-}
-
-        echo '</div>';
-    echo '</div>';
+echo '</span></div>';
+echo '</div>';
+echo '</div>';
 echo '</div>';
 echo '</div>';
 
@@ -789,13 +833,15 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
 ?>
 <script type="text/javascript" language="javascript">    
     function show_normal_menu() {
-        document.getElementById('input_saml').style.display = 'none';
+        event.preventDefault();
+        const style = '<?php echo $style_theme; ?>';
+
+        document.getElementById('remove_button').style.display = 'none';
         document.getElementById('log_nick').style.display = 'block';
         document.getElementById('log_pass').style.display = 'block';
+        document.getElementById('log_nick').className = `login_nick ${style}`;
+        document.getElementById('log_pass').className = `login_pass ${style}`;
         document.getElementById('log_button').style.display = 'block';
-        document.getElementById('remove_button').style.display = 'none';
-        document.getElementById('log_nick').className = 'login_nick';
-        document.getElementById('log_pass').className = 'login_pass';
     }
 
     switch ("<?php echo $login_screen; ?>") {

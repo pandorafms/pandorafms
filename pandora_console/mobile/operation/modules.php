@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -250,7 +250,7 @@ class Modules
                 __('Filter Modules by %s'),
                 $this->filterEventsGetString()
             );
-            $ui->contentBeginCollapsible($filter_title);
+            $ui->contentBeginCollapsible($filter_title, 'filter-collapsible');
                 $ui->beginForm('index.php?page=modules');
                     $system = System::getInstance();
                     $groups = users_get_groups_for_select(
@@ -591,7 +591,18 @@ class Modules
                     }
                 }
 
-                $row[0] = $row[__('Module name')] = '<span class="tiny mrgn_right_5px">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span>';
+                $script = '';
+                if ($system->getConfig('metaconsole')) {
+                    $script = 'onclick="openDialog('.$module['id_agente_modulo'].', '.$this->id_agent.' ,'.$module['server_id'].');"';
+                } else {
+                    $script = 'onclick="openDialog('.$module['id_agente_modulo'].', '.$this->id_agent.', \'node\');"';
+                }
+
+                if ($system->getRequest('page') === 'modules') {
+                    $row[0] = $row[__('Module name')] = '<span '.$script.'><span class="tiny module-status">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span></span>';
+                } else {
+                    $row[0] = $row[__('Module name')] = '<span class="tiny module-status">'.$image_status.'</span>'.'<span '.$script.' class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span>';
+                }
 
                 if ($this->columns['agent']) {
                     $row[1] = $row[__('Agent name')] = '<span class="data"><span class="show_collapside bolder invisible">'.__('Agent').' </span>'.ui_print_truncate_text($module['agent_alias'], 50, false).'</span>';
@@ -658,7 +669,7 @@ class Modules
 
                 $row[4] = $row[__('Interval')] = '<span class="data"><span class="show_collapside bolder invisible">'.__('Interval.').' </span>'.$row[__('Interval')].'</span>';
 
-                $row[6] = $row[__('Timestamp')] = '<span class="data"><span class="show_collapside bolder invisible">'.__('Last update.').' </span>'.ui_print_timestamp($module['utimestamp'], true, ['units' => 'tiny']).'</span>';
+                $row[6] = $row[__('Timestamp')] = '<span class="data"><span class="show_collapside bolder invisible">'.__('Last update.').' </span>'.human_time_comparation($module['utimestamp'], 'tiny').'</span>';
                 if (is_numeric($module['datos'])) {
                     $output = format_numeric($module['datos']);
 
@@ -712,29 +723,50 @@ class Modules
                     );
 
                     // Row 7.
-                    $row[__('Data')] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
+                    $row[7] = $row[__('Data')] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
                 } else {
-                    if ($system->getConfig('metaconsole')) {
-                        $row[__('Data')] = '<span class="nowrap">';
-                        $row[__('Data')] .= '<span class="show_collapside invisible">';
-                        $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
-                        $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
-                        $row[__('Data')] .= 'href="index.php?page=module_graph&id='.$module['id_agente_modulo'];
-                        $row[__('Data')] .= '&server_id='.$module['server_id'];
-                        $row[__('Data')] .= '&id_agent='.$this->id_agent.'">';
-                        $row[__('Data')] .= $output.'</a></span>';
-                        // Row 7.
-                        $row[__('Data')];
+                    if ($system->getRequest('page') === 'modules') {
+                        if ($system->getConfig('metaconsole')) {
+                            $row[7] = $row[__('Data')] = '<span class="nowrap">';
+                            $row[7] = $row[__('Data')] .= '<span class="show_collapside invisible">';
+                            $row[7] = $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
+                            $row[7] = $row[__('Data')] .= '<span data-ajax="false" class="ui-link" ';
+                            $row[7] = $row[__('Data')] .= 'href="#">';
+                            $row[7] = $row[__('Data')] .= $output.'</span></span>';
+                            // Row 7.
+                            $row[7] = $row[__('Data')];
+                        } else {
+                            // Row 7.
+                            $row[7] = $row[__('Data')] = '<span class="nowrap">';
+                            $row[7] = $row[__('Data')] .= '<span class="show_collapside invisible">';
+                            $row[7] = $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
+                            $row[7] = $row[__('Data')] .= '<span data-ajax="false" class="ui-link" ';
+                            $row[7] = $row[__('Data')] .= 'href="#">';
+                            $row[7] = $row[__('Data')] .= $output.'</span></span>';
+                        }
                     } else {
-                        // Row 7.
-                        $row[__('Data')] = '<span class="nowrap">';
-                        $row[__('Data')] .= '<span class="show_collapside invisible">';
-                        $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
-                        $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
-                        $row[__('Data')] .= 'href="index.php?page=module_graph&id=';
-                        $row[__('Data')] .= $module['id_agente_modulo'];
-                        $row[__('Data')] .= '&id_agent='.$this->id_agent.'">';
-                        $row[__('Data')] .= $output.'</a></span>';
+                        if ($system->getConfig('metaconsole')) {
+                            $row[__('Data')] = '<span class="nowrap">';
+                            $row[__('Data')] .= '<span class="show_collapside invisible">';
+                            $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
+                            $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
+                            $row[__('Data')] .= 'href="index.php?page=module_graph&id='.$module['id_agente_modulo'];
+                            $row[__('Data')] .= '&server_id='.$module['server_id'];
+                            $row[__('Data')] .= '&id_agent='.$this->id_agent.'">';
+                            $row[__('Data')] .= $output.'</a></span>';
+                            // Row 7.
+                            $row[__('Data')];
+                        } else {
+                            // Row 7.
+                            $row[__('Data')] = '<span class="nowrap">';
+                            $row[__('Data')] .= '<span class="show_collapside invisible">';
+                            $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
+                            $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
+                            $row[__('Data')] .= 'href="index.php?page=module_graph&id=';
+                            $row[__('Data')] .= $module['id_agente_modulo'];
+                            $row[__('Data')] .= '&id_agent='.$this->id_agent.'">';
+                            $row[__('Data')] .= $output.'</a></span>';
+                        }
                     }
                 }
 
@@ -769,7 +801,7 @@ class Modules
 
         $listModules = $this->getListModules($page);
         if ($listModules['total'] == 0) {
-            $html = '<p class="empty_advice">'.__('No modules').'</p>';
+            $html = '<p class="no-data">'.__('No modules').'</p>';
             if (!$return) {
                 $ui->contentAddHtml($html);
             } else {
@@ -781,7 +813,21 @@ class Modules
                 $table->id = 'list_Modules';
                 $table->importFromHash($listModules['modules']);
 
+                $ui->contentAddHtml('<div class="hr-full"></div>');
+                $ui->contentAddHtml('<div class="white-card p-lr-0px">');
                 $ui->contentAddHtml($table->getHTML());
+
+                if (!$this->all_modules) {
+                    if ($system->getPageSize() < $listModules['total']) {
+                        $ui->contentAddHtml(
+                            '<br><div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
+                        );
+
+                        $this->addJavascriptAddBottom();
+                    }
+                }
+
+                $ui->contentAddHtml('</div>');
             } else {
                 $table = new Table();
                 $table->id = 'list_agent_Modules';
@@ -792,17 +838,30 @@ class Modules
 
                 return $html;
             }
-
-            if (!$this->all_modules) {
-                if ($system->getPageSize() < $listModules['total']) {
-                    $ui->contentAddHtml(
-                        '<div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
-                    );
-
-                    $this->addJavascriptAddBottom();
-                }
-            }
         }
+
+        $ui->contentAddHtml(
+            '<a id="module-dialog-button" href="#module-dialog" data-rel="popup" data-position-to="window" 
+            data-transition="pop" class="ui-btn ui-corner-all ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-b">
+            </a>
+            
+            <div data-role="popup" id="module-dialog" data-overlay-theme="b" data-dismissible="false">
+                <div data-role="header" data-theme="a" class="flex align-items-center space-between">
+                    <h1 style="margin-left: 10px;" class="font-10pt"> '.__('Choose option').'</h1>
+                    <a href="#" id="close-dialog-btn" data-role="button" class="ui-corner-all close-button-dialog" data-rel="back"></a>
+                </div>
+                
+                <div role="main" class="ui-content">                    
+                    <a data-role="button" id="graph-option" href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b">
+                        '.__('Graph').'
+                    </a>
+
+                    <a data-role="button" id="historical-option" href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b">
+                        '.__('Historical data').'
+                    </a>
+                </div>
+            </div>'
+        );
 
         $ui->contentAddLinkListener('list_Modules');
     }
@@ -850,8 +909,8 @@ class Modules
 													\"<td class='cell_2'><b class='ui-table-cell-label'>".__('Status')."</b>\" + module[5] + \"</td>\" +
 													\"<td class='cell_3'><b class='ui-table-cell-label'>".__('Interval')."</b>\" + module[4] + \"</td>\" +
 													\"<td class='cell_4'><b class='ui-table-cell-label'>".__('Timestamp')."</b>\" + module[6] + \"</td>\" +
-													\"<td class='cell_5'><b class='ui-table-cell-label'>".__('Data').'</b>" + module[7] + "</td>" +
-												"</tr>");
+													\"<td class='cell_5'><b class='ui-table-cell-label'>".__('Data')."</b>\" + module[7] + \"</td>\" +
+												\"</tr>\");
 											});
 										
 										load_more_rows = 1;
@@ -860,21 +919,58 @@ class Modules
 									
 									
 								},
-								"json");
+								\"json\");
 						}
 					}
 				}
-				
+
+                function openDialog(moduleId, agentId, serverId) {
+                    var graph = '';
+                    var historical = '';
+                    if (serverId === 'node') {
+                        graph = 'index.php?page=module_graph&id='+moduleId+'&id_agent='+agentId;
+                        historical = 'index.php?page=module_data&module_id='+moduleId;
+                    } else {
+                        graph = 'index.php?page=module_graph&id='+moduleId+'&id_agent='+agentId+'&server_id='+serverId;
+                        historical = 'index.php?page=module_data&module_id='+moduleId;
+                    }
+                    
+                    $('#graph-option').attr('href', graph);
+                    $('#historical-option').attr('href', historical);
+
+                    $('#module-dialog-button').click();
+                }
+
+                let intervalId;
+                let count = 0;
+                function getFreeSpace() {
+                    let headerHeight = $('div[data-role=\"header\"].ui-header').outerHeight();
+                    let contentHeight = $('div[data-role=\"content\"].ui-content').outerHeight();
+                    let windowHeight = $(window).height();
+
+                    let freeSpace = windowHeight - (headerHeight + contentHeight);
+
+                    if (freeSpace > 0 && count < 50) {
+                        custom_scroll();
+                    } else {
+                        clearInterval(intervalId);
+                    }
+
+                    count++;
+                }
+                
 				$(document).ready(function() {
-					$(window).bind("scroll", function () {
+                    intervalId = setInterval(getFreeSpace, 500);
+
+					$(window).bind(\"scroll\", function () {
 						custom_scroll();
 					});
 					
-					$(window).on("touchmove", function(event) {
+					$(window).on(\"touchmove\", function(event) {
 						custom_scroll();
 					});
-				});
-			</script>'
+                });
+			</script>"
         );
     }
 

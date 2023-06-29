@@ -51,7 +51,7 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.symbol.min.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.exportdata.pandora.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.axislabels.js').'"></script>
-			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/pandora.flot.js').'"></script>';
+			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/pandora.flot.js').'?v='.$config['current_package'].'"></script>';
 
         // Chartjs.
         $output .= '<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/chartjs/chart.js').'"></script>';
@@ -272,6 +272,11 @@ function flot_area_graph(
 				style='	width: ".$params['width'].'px;
 				height: '.$params['height']."px;'></div>";
 
+    $legend_top = 10;
+    if (empty($params['show_legend']) === false) {
+        $legend_top = (int) $params['height'];
+    }
+
     if ($params['menu']) {
         $params['height'] = 100;
     } else {
@@ -280,13 +285,9 @@ function flot_area_graph(
 
     if ((bool) $params['vconsole'] === false) {
         $return .= '<div id="overview_'.$graph_id.'" class="overview_graph" style="margin:0px; margin-top:30px; margin-bottom:50px; width:'.$params['width'].'px; height: 200px;"></div>';
-        $legend_top = 10;
-        if (empty($params['show_legend']) === false) {
-            $legend_top = (20 + (count($legend) * 18));
-        }
 
         if ($water_mark != '' && (bool) $params['dashboard'] === false) {
-            $return .= '<div id="watermark_'.$graph_id.'" style="position:absolute; top: '.$legend_top.'px; left: calc(100% - 100px);">';
+            $return .= '<div id="watermark_'.$graph_id.'" style="position:absolute; bottom: '.$legend_top.'px; left: calc(100% - 100px);">';
             $return .= '<img id="watermark_image_'.$graph_id.'" src="'.$water_mark['url'].'">';
             $return .= '</div>';
         }
@@ -730,8 +731,9 @@ function flot_slicesbar_graph(
     global $config;
 
     if ($ttl == 2) {
+        $tokem_config = uniqid('slicebar');
         $params = [
-            'graph_data'         => $graph_data,
+            'tokem_config'       => $tokem_config,
             'period'             => $period,
             'width'              => $width,
             'height'             => $height,
@@ -753,7 +755,10 @@ function flot_slicesbar_graph(
             'date_to'            => $date_to,
             'server_id'          => $server_id,
         ];
-
+        // TO-DO Cambiar esto para que se pase por POST, NO SE PUEDE PASAR POR GET.
+        update_check_config_token($tokem_config, json_encode($graph_data));
+        $_SESSION['slicebar'] = $tokem_config;
+        $_SESSION['slicebar_value'] = json_encode($graph_data);
         $graph = '<img src="data:image/png;base64,';
         $graph .= generator_chart_to_pdf('slicebar', $params);
         $graph .= '" />';

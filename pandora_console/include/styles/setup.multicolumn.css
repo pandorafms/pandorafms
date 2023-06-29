@@ -1,9 +1,10 @@
 #form_setup {
-  display: flex;
+  /*display: flex;
   flex-direction: row;
   justify-items: baseline;
   justify-content: space-between;
   flex-wrap: wrap;
+  */
 }
 
 fieldset {

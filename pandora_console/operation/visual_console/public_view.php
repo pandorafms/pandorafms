@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -37,7 +37,7 @@ ui_require_javascript_file('connection_check', 'include/javascript/', true);
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
@@ -56,13 +56,19 @@ ob_start('ui_process_page_head');
 enterprise_include('index.php');
 
 $url_css = ui_get_full_url('include/styles/visual_maps.css', false, false, false);
-echo '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />';
+echo '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'" type="text/css" />';
 
 require_once 'include/functions_visual_map.php';
 
 $hash = (string) get_parameter('hash');
 $visualConsoleId = (int) get_parameter('id_layout');
-$config['id_user'] = (string) get_parameter('id_user');
+$userAccessMaintenance = null;
+if (empty($config['id_user']) === true) {
+    $config['id_user'] = (string) get_parameter('id_user');
+} else {
+    $userAccessMaintenance = $config['id_user'];
+}
+
 $refr = (int) get_parameter('refr', ($config['refr'] ?? null));
 
 if (!isset($config['pure'])) {
@@ -179,6 +185,7 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
 
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
+    var user = "<?php echo $userAccessMaintenance; ?>";
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode(',', $visualConsoleItems).']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
@@ -282,7 +289,9 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     );
 
     if(props.maintenanceMode != null) {
-        visualConsoleManager.visualConsole.enableMaintenanceMode();
+        if(props.maintenanceMode.user !== user) {
+            visualConsoleManager.visualConsole.enableMaintenanceMode();
+        }
     }
 
     var controls = document.getElementById('vc-controls');

@@ -232,6 +232,11 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
     }
   }
 
+  var exclude_policy_modules = 0;
+  if ($("#hidden-exclude_policy_modules").val() === "1") {
+    exclude_policy_modules = 1;
+  }
+
   jQuery.post(
     homedir + "/ajax.php",
     {
@@ -248,7 +253,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       status_module: module_status,
       id_group: id_group,
       pendingdelete:
-        event.target != undefined ? event.target.dataset.pendingdelete : 0 // Get pendingdelete attribute from target
+        event.target != undefined ? event.target.dataset.pendingdelete : 0, // Get pendingdelete attribute from target
+      exclude_policy_modules
     },
     function(data) {
       $("#module").empty();
@@ -1283,14 +1289,95 @@ function paint_qrcode(text, where, width, height) {
 
   $(where).empty();
 
-  var qrcode = new QRCode(where, {
-    text: text,
-    width: width,
-    height: height,
-    colorDark: "#343434",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.M
+  var qrcode = qrCode.createQr({
+    typeElement: "createImg",
+    data: text,
+    typeNumber: 5,
+    cellSize: 5
   });
+
+  $(where).append(qrcode);
+}
+
+function paint_vcard(text, where) {
+  if (typeof text == "undefined") {
+    text = window.location.href;
+  } else {
+    //null value
+    if (isEmptyObject(text)) {
+      text = window.location.href;
+    }
+  }
+
+  if (typeof where == "undefined") {
+    where = $("#qrcode_container_image").get(0);
+  } else if (typeof where == "string") {
+    where = $(where).get(0);
+  }
+
+  if (typeof where == "undefined") {
+    where = $("#qrcode_container_image").get(0);
+  } else if (typeof where == "string") {
+    where = $(where).get(0);
+  }
+
+  // version: "3.0",
+  // lastName: "Нижинский",
+  // middleName: "D",
+  // firstName: "Костя",
+  // nameSuffix: "JR",
+  // namePrefix: "MR",
+  // nickname: "Test User",
+  // gender: "M",
+  // organization: "ACME Corporation",
+  // workPhone: "312-555-1212444",
+  // homePhone: "312-555-1313333",
+  // cellPhone: "312-555-1414111",
+  // pagerPhone: "312-555-1515222",
+  // homeFax: "312-555-1616",
+  // workFax: "312-555-1717",
+  // birthday: "20140112",
+  // anniversary: "20140112",
+  // title: "Crash Test Dummy",
+  // role: "Crash Testing",
+  // email: "john.doe@testmail",
+  // workEmail: "john.doe@workmail",
+  // url: "http://johndoe",
+  // workUrl: "http://acemecompany/johndoe",
+  // homeAddress: {
+  //   label: "Home Address",
+  //   street: "123 Main Street",
+  //   city: "Chicago",
+  //   stateProvince: "IL",
+  //   postalCode: "12345",
+  //   countryRegion: "United States of America"
+  // },
+
+  // workAddress: {
+  //   label: "Work Address",
+  //   street: "123 Corporate Loop\nSuite 500",
+  //   city: "Los Angeles",
+  //   stateProvince: "CA",
+  //   postalCode: "54321",
+  //   countryRegion: "California Republic"
+  // },
+
+  // source: "http://sourceurl",
+  // note: "dddddd",
+  // socialUrls: {
+  //   facebook: "johndoe",
+  //   linkedIn: "johndoe",
+  //   twitter: "johndoe",
+  //   flickr: "johndoe",
+  //   skype: "test_skype",
+  //   custom: "johndoe"
+  // }
+
+  $(where).empty();
+
+  var qrcode = qrCode.createVCardQr(text, { typeNumber: 30, cellSize: 2 });
+
+  $(where).append(qrcode);
 }
 
 function show_dialog_qrcode(dialog, text, where, width, height) {
@@ -1352,80 +1439,18 @@ function openURLTagWindow(url) {
  * @param added_config  Associative Array. Config to add adding default.
  */
 
-function defineTinyMCE(added_config) {
-  // Default values
-  var buttons1 =
-    "bold,italic,underline,|,link,image,|,cut,copy,paste,|,undo,redo,|,forecolor,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright";
-  var elements = added_config["elements"];
-  var plugins = added_config["plugins"];
-  // Initialize with fixed parameters. Some parameters must be initialized too.
-  tinyMCE.init({
-    mode: "exact",
-    theme: "advanced",
-    elements: elements,
-    plugins: plugins,
-    theme_advanced_buttons1: buttons1,
-    theme_advanced_toolbar_location: "top",
-    theme_advanced_toolbar_align: "left",
-    theme_advanced_statusbar_location: "bottom",
-    theme_advanced_resizing: true,
-    convert_urls: false,
-    element_format: "html",
-    object_resizing: true,
-    autoresize_bottom_margin: 50,
-    autoresize_on_init: true,
-    extended_valid_elements: "img[*]"
+function defineTinyMCE(selector) {
+  tinymce.init({
+    selector: selector,
+    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    promotion: false,
+    branding: false
   });
-
-  if (!isEmptyObject(added_config)) {
-    // If use asterisk mask, you can add at end of buttons new buttons.
-    for (var key in added_config) {
-      switch (key) {
-        case "theme_advanced_buttons1*":
-          tinyMCE.settings.theme_advanced_buttons1 =
-            buttons1 + ",|," + added_config[key];
-          break;
-        case "theme_advanced_font_sizes":
-          tinyMCE.settings.theme_advanced_font_sizes =
-            "4pt=.visual_font_size_4pt, " +
-            "6pt=.visual_font_size_6pt, " +
-            "8pt=.visual_font_size_8pt, " +
-            "10pt=.visual_font_size_10pt, " +
-            "12pt=.visual_font_size_12pt, " +
-            "14pt=.visual_font_size_14pt, " +
-            "18pt=.visual_font_size_18pt, " +
-            "24pt=.visual_font_size_24pt, " +
-            "28pt=.visual_font_size_28pt, " +
-            "36pt=.visual_font_size_36pt, " +
-            "48pt=.visual_font_size_48pt, " +
-            "60pt=.visual_font_size_60pt, " +
-            "72pt=.visual_font_size_72pt, " +
-            "84pt=.visual_font_size_84pt, " +
-            "96pt=.visual_font_size_96pt, " +
-            "116pt=.visual_font_size_116pt, " +
-            "128pt=.visual_font_size_128pt, " +
-            "140pt=.visual_font_size_140pt, " +
-            "154pt=.visual_font_size_154pt, " +
-            "196pt=.visual_font_size_196pt";
-          break;
-        default:
-          tinyMCE.settings[key] = added_config[key];
-          break;
-      }
-    }
-  }
 }
 
-function removeTinyMCE(elementID) {
-  if (elementID.length > 0 && !isEmptyObject(tinyMCE))
-    tinyMCE.EditorManager.execCommand("mceRemoveControl", true, elementID);
-}
-
-function addTinyMCE(elementID) {
-  if (elementID.length > 0 && !isEmptyObject(tinyMCE))
-    tinyMCE.EditorManager.execCommand("mceAddControl", true, elementID);
-  tinyMCE.EditorManager.execCommand("mceAutoResize");
-  tinymce.EditorManager.execCommand("mceTableSizingMode", false, "responsive");
+function UndefineTinyMCE(textarea_id) {
+  tinyMCE.remove(textarea_id);
+  $(textarea_id).show("");
 }
 
 function toggle_full_value(id) {
@@ -2211,10 +2236,16 @@ function renewAPIToken(title, message, form) {
  * @param {string} title Title for show.
  * @param {string} message Base64 encoded message for show.
  */
-function showAPIToken(title, message) {
+function showAPIToken(title, message_a, token, message_b) {
+  var message =
+    message_a +
+    '&nbsp;<br><span class="font_12pt bolder">' +
+    atob(token) +
+    "</span><br>&nbsp;" +
+    message_b;
   confirmDialog({
     title: title,
-    message: atob(message),
+    message: message,
     hideCancelButton: true
   });
 }
@@ -2279,6 +2310,8 @@ var formatterDataVerticalBar = function(value, ctx) {
 $(document).ready(function() {
   $("#icon_about").click(function() {
     $("#icon_about").addClass("selected");
+    // Hidden  tips modal.
+    $(".window").css("display", "none");
 
     jQuery.post(
       "ajax.php",

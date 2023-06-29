@@ -534,11 +534,6 @@ ul.datatable_filter > li > div.action-buttons > button {
   margin-bottom: 0px !important;
 }
 
-#backgroundMaskId {
-  bottom: 0px !important;
-  height: auto !important;
-}
-
 #image-1,
 #image-2 {
   padding-left: 0px !important;
@@ -554,4 +549,8 @@ ul.datatable_filter > li > div.action-buttons > button {
 
 .ui-dialog.ui-corner-all.ui-widget.ui-widget-content {
   z-index: 10000 !important;
+}
+
+.action_buttons_right_content {
+  z-index: 1 !important;
 }

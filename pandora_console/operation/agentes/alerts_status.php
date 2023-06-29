@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -230,10 +230,16 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
             'title' => __('Standby'),
             'text'  => __('Standby'),
         ],
+        [
+            'title' => __('Operations'),
+            'text'  => __('Operations'),
+            'class' => 'left pdd_l_0px pdd_r_0px w100p',
+        ],
     );
 
     $columns = array_merge(
         ['standby'],
+        ['force'],
         $columns
     );
 
@@ -265,38 +271,27 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
     }
 }
 
-if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
-    array_push(
-        $column_names,
-        ['text' => 'Module'],
-        ['text' => 'Template'],
-        ['text' => 'Operation'],
-        ['text' => 'Last fired'],
-        ['text' => 'Status']
-    );
+array_push(
+    $column_names,
+    ['text' => 'Module'],
+    ['text' => 'Template'],
+    [
+        'title' => __('Action'),
+        'text'  => __('Action'),
+        'style' => 'min-width: 15%;',
+    ],
+    ['text' => 'Last fired'],
+    ['text' => 'Status']
+);
 
-    $columns = array_merge(
-        $columns,
-        ['agent_module_name'],
-        ['template_name'],
-        ['operation'],
-        ['last_fired'],
-        ['status']
-    );
-}
-
-
-if ($print_agent === true) {
-    array_push(
-        $column_names,
-        ['text' => 'Agent']
-    );
-
-    $columns = array_merge(
-        $columns,
-        ['agent_name']
-    );
-}
+$columns = array_merge(
+    $columns,
+    ['agent_module_name'],
+    ['template_name'],
+    ['action'],
+    ['last_fired'],
+    ['status']
+);
 
 if (is_metaconsole() === false) {
     if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
@@ -315,28 +310,13 @@ if (is_metaconsole() === false) {
             $columns
         );
     }
-
-    if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
-        array_push(
-            $column_names,
-            [
-                'title' => __('Actions'),
-                'text'  => __('Actions'),
-                'style' => 'min-width: 15%;',
-            ]
-        );
-
-        $columns = array_merge(
-            $columns,
-            ['actions']
-        );
-    }
 }
 
 if (is_metaconsole() === true) {
     $no_sortable_columns = [
         0,
         1,
+        2,
         5,
     ];
 } else {
@@ -346,14 +326,16 @@ if (is_metaconsole() === true) {
             1,
             2,
             3,
-            7,
+            -3,
+            -1,
         ];
     } else {
         $no_sortable_columns = [
             0,
             1,
             2,
-            6,
+            -3,
+            -1,
         ];
     }
 }
@@ -391,7 +373,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'form'                => [
                 'inputs'    => [
                     [
@@ -433,7 +415,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'form'                => [
                 'html' => printFormFilterAlert(
@@ -452,35 +434,39 @@ if ($agent_view_page === true) {
     );
 }
 
-if (((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
-    if ($agent_view_page === true) {
-        html_print_div(
-            [
-                'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
-                'content' => html_print_submit_button(
+if (is_metaconsole() === false) {
+    if (((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true)) {
+        if ($agent_view_page === true) {
+            html_print_div(
+                [
+                    'class'   => 'action-buttons pdd_r_5px w100p',
+                    'content' => html_print_submit_button(
+                        __('Validate'),
+                        'alert_validate',
+                        false,
+                        [
+                            'icon' => 'wand',
+                            'mode' => 'secondary mini',
+                        ],
+                        true
+                    ),
+                ]
+            );
+        } else {
+            html_print_action_buttons(
+                html_print_submit_button(
                     __('Validate'),
                     'alert_validate',
                     false,
-                    [
-                        'icon' => 'wand',
-                        'mode' => 'secondary mini',
-                    ],
+                    [ 'icon' => 'wand' ],
                     true
                 ),
-            ]
-        );
-    } else {
-        html_print_action_buttons(
-            html_print_submit_button(
-                __('Validate'),
-                'alert_validate',
-                false,
-                [ 'icon' => 'wand' ],
-                true
-            ),
-            ['type' => 'form_action']
-        );
+                ['type' => 'form_action']
+            );
+        }
     }
+} else {
+    html_print_action_buttons('');
 }
 
 $html_content = ob_get_clean();
@@ -497,9 +483,9 @@ if ($agent_view_page === true) {
                 !$alerts_defined,
                 false,
                 true,
-                'box-flat agent_details_col',
-                'white-box-content',
-                'width_available'
+                '',
+                '',
+                'box-flat white_table_graph w100p'
             ),
         ],
     );
@@ -528,10 +514,14 @@ function alerts_table_controls() {
             attribute: 'href',
             cluetipClass: 'default'
         }).click (function () {
-            console.log('click aqui');
             return false;
         });
 
+        $("a.template_details").cluetip ({
+                    arrows: true,
+                    attribute: 'href',
+                    cluetipClass: 'default'
+                });
 
         $('[id^=checkbox-all_validate]').change(function(){    
             if ($("#checkbox-all_validate").prop("checked")) {

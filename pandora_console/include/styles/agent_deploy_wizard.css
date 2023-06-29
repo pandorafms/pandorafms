@@ -1,0 +1,97 @@
+#agent_deploy_modal {
+  margin-bottom: 5px;
+}
+
+#footer_separator {
+  position: absolute;
+  bottom: 57px;
+  border-top: 1px solid #c1ccdc;
+  width: 100%;
+  left: 0px;
+}
+
+#stepper_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#modal_header {
+  background-color: #f6f7fb;
+  border-radius: 10px;
+  width: 100%;
+  height: 76px;
+  /* padding: 10px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#config_form_more_info {
+  margin-bottom: 5px !important;
+}
+
+#stepper_container {
+  width: 35%;
+}
+
+#table1-os-0 {
+  width: 100%;
+}
+
+#os_selector {
+  width: 100%;
+  height: 50px;
+  color: #333;
+}
+
+#os_selector > label {
+  width: 100%;
+  height: 30px;
+}
+
+.modal-content {
+  display: flex;
+  margin-bottom: 20px;
+  min-height: 400px;
+  flex-direction: column;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.installer-code-fragment {
+  margin-bottom: 15px;
+  margin-top: 5px;
+}
+
+.installer-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.installer-title-icon {
+  margin-right: 9px;
+}
+
+.green-link {
+  color: #1d7873 !important;
+  text-decoration: none !important;
+}
+
+.green-link:hover {
+  color: #0d312f !important;
+}
+
+.custom-switch-radio-button > label {
+  color: #444 !important;
+}
+
+.custom-switch-radio-button input:checked + label img {
+  filter: brightness(100);
+}
+
+.svg-brightness-0 {
+  filter: brightness(0);
+}

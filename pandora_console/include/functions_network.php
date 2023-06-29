@@ -5,10 +5,10 @@
  * @package    Include.
  * @subpackage Network functions.
  *
- * Pandora FMS - http://pandorafms.com
+ * Pandora FMS - https://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
@@ -68,10 +68,10 @@ function network_print_explorer_header(
     $cell = '<div class="flex_center">';
     $cell .= $title;
     $cell .= html_print_link_with_params(
-        'images/arrow-down-white.png',
+        'images/arrow@svg.svg',
         array_merge($hidden_data, ['order_by' => $order]),
         'image',
-        ($selected === $order) ? 'opacity: 0.5' : ''
+        'rotate: 270deg; width: 20px; margin-top: 4px;'.(($selected === $order) ? '' : 'opacity: 0.5')
     );
     $cell .= '</div>';
 

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -186,10 +186,6 @@ function pandora_realtime_graphs()
 
     $table->data[] = $data;
 
-    if ($graph == 'snmp_interface' || $graph == 'snmp_module') {
-        echo snmp_browser_print_container(true, '100%', '60%', 'none');
-    }
-
     // Print the relative path to AJAX calls.
     html_print_input_hidden('rel_path', get_parameter('rel_path', ''));
 
@@ -224,7 +220,7 @@ function pandora_realtime_graphs()
         false,
         '',
         'white-box-content',
-        'box-flat white_table_graph fixed_filter_bar'
+        'box-flat white_table_graph fixed_filter_bar top_0px_important mrgn_btn_35px_imp'
     );
 
     $chart[time()]['graph'] = '0';
@@ -266,6 +262,16 @@ function pandora_realtime_graphs()
         ]
     );
 
+    if ($graph == 'snmp_interface' || $graph == 'snmp_module') {
+        html_print_div(
+            [
+                'class'   => 'white_box',
+                'id'      => 'graph_snmp_interface',
+                'content' => snmp_browser_print_container(true, '100%', '60%', '', false, false),
+            ]
+        );
+    }
+
     // echo $canvas;
     // Define a custom action to save
     // the OID selected in the SNMP browser to the form.
@@ -280,10 +286,10 @@ function pandora_realtime_graphs()
     );
     html_print_input_hidden('incremental_base', '0');
 
-    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/pandora_snmp_browser.js').'"></script>';
-    echo '<script type="text/javascript" src="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.js').'"></script>';
+    echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/pandora_snmp_browser.js').'?v='.$config['current_package'].'"></script>';
+    echo '<script type="text/javascript" src="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.js').'?v='.$config['current_package'].'"></script>';
     if ($config['style'] !== 'pandora_black') {
-        echo '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.css').'"></style>';
+        echo '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.css').'?v='.$config['current_package'].'"></style>';
     }
 
     // Store servers timezone offset to be retrieved from js.

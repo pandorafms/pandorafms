@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -97,7 +97,7 @@ function snmp_browser_get_html_tree(
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
         // Display the branch.
-        $output .= '<li id="li_'.$sub_id.'" class="'.$class.' mrgn_0px pdd_0px">';
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.' mrgn_0px pdd_0px flex_center">';
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
@@ -654,6 +654,18 @@ function snmp_browser_print_oid(
         );
     }
 
+    if (isset($_POST['print_copy_oid'])) {
+        // Hidden by default.
+        $output .= html_print_button(
+            __('Use this OID'),
+            'use_iod',
+            false,
+            'use_oid()',
+            'class="sub add invisible"',
+            true
+        );
+    }
+
     // Select agent modal.
     $output .= snmp_browser_print_create_modules(true);
 
@@ -1122,10 +1134,26 @@ function snmp_browser_print_container(
 
     if ($toggle === false) {
         // This extra div that can be handled by jquery's dialog.
-        $output .= '<div id="snmp_browser_container" style="display:none">';
+        $output .= '<div id="snmp_browser_container" style="'.$display.'">';
         $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
         $output .= '<div class="w100p">';
         $output .= '<form onsubmit="snmpBrowse(); return false;">';
+        $output .= html_print_input_hidden(
+            'id_agent_module',
+            0,
+            true,
+            false,
+            false,
+            'id_agent_module'
+        );
+        $output .= html_print_input_hidden(
+            'is_policy_agent',
+            1,
+            true,
+            false,
+            false,
+            'is_policy_agent'
+        );
         $output .= html_print_table($table, true);
         $output .= html_print_div(
             [
@@ -1302,9 +1330,10 @@ function snmp_browser_create_modules_snmp(
             $snmp3_auth_pass = $snmp_values['snmp3_browser_auth_pass'];
         }
 
-        if (isset($snmp_values['snmp3_privacy_method']) === true) {
-            $snmp3_privacy_method = $snmp_values['snmp3_privacy_method'];
+        if (isset($snmp_values['snmp3_browser_privacy_method']) === true) {
+            $snmp3_privacy_method = $snmp_values['snmp3_browser_privacy_method'];
         };
+
         if (isset($snmp_values['snmp3_browser_privacy_pass']) === true) {
             $snmp3_privacy_pass = $snmp_values['snmp3_browser_privacy_pass'];
         }
@@ -1376,9 +1405,9 @@ function snmp_browser_create_modules_snmp(
                         'id_module_group'       => 3,
                         'id_modulo'             => 2,
                         'id_plugin'             => 0,
-                        'plugin_user'           => '',
-                        'plugin_pass'           => '',
-                        'plugin_parameter'      => '',
+                        'plugin_user'           => $snmp3_auth_user,
+                        'plugin_pass'           => $snmp3_auth_pass,
+                        'plugin_parameter'      => $snmp3_auth_method,
                         'macros'                => '',
                         'max_timeout'           => 0,
                         'max_retries'           => 0,
@@ -1394,9 +1423,9 @@ function snmp_browser_create_modules_snmp(
                         'max_critical'          => 0,
                         'str_critical'          => '',
                         'min_ff_event'          => 0,
-                        'custom_string_1'       => '',
-                        'custom_string_2'       => '',
-                        'custom_string_3'       => '',
+                        'custom_string_1'       => $snmp3_privacy_method,
+                        'custom_string_2'       => $snmp3_privacy_pass,
+                        'custom_string_3'       => $snmp3_security_level,
                         'post_process'          => 0,
                         'unit'                  => '',
                         'wizard_level'          => 'nowizard',
@@ -1435,9 +1464,9 @@ function snmp_browser_create_modules_snmp(
                     'id_module_group'       => 3,
                     'id_modulo'             => 2,
                     'id_plugin'             => 0,
-                    'plugin_user'           => '',
-                    'plugin_pass'           => '',
-                    'plugin_parameter'      => '',
+                    'plugin_user'           => $snmp3_auth_user,
+                    'plugin_pass'           => $snmp3_auth_pass,
+                    'plugin_parameter'      => $snmp3_auth_method,
                     'macros'                => '',
                     'max_timeout'           => 0,
                     'max_retries'           => 0,
@@ -1453,9 +1482,9 @@ function snmp_browser_create_modules_snmp(
                     'max_critical'          => 0,
                     'str_critical'          => '',
                     'min_ff_event'          => 0,
-                    'custom_string_1'       => '',
-                    'custom_string_2'       => '',
-                    'custom_string_3'       => '',
+                    'custom_string_1'       => $snmp3_privacy_method,
+                    'custom_string_2'       => $snmp3_privacy_pass,
+                    'custom_string_3'       => $snmp3_security_level,
                     'post_process'          => 0,
                     'unit'                  => '',
                     'wizard_level'          => 'nowizard',
@@ -1496,9 +1525,9 @@ function snmp_browser_create_modules_snmp(
                     'snmp_community'        => $community,
                     'id_module_group'       => 3,
                     'id_plugin'             => 0,
-                    'plugin_user'           => '',
-                    'plugin_pass'           => '',
-                    'plugin_parameter'      => '',
+                    'plugin_user'           => $snmp3_auth_user,
+                    'plugin_pass'           => $snmp3_auth_pass,
+                    'plugin_parameter'      => $snmp3_auth_method,
                     'macros'                => '',
                     'max_timeout'           => 0,
                     'max_retries'           => 0,
@@ -1514,9 +1543,9 @@ function snmp_browser_create_modules_snmp(
                     'max_critical'          => 0,
                     'str_critical'          => '',
                     'min_ff_event'          => 0,
-                    'custom_string_1'       => '',
-                    'custom_string_2'       => '',
-                    'custom_string_3'       => '',
+                    'custom_string_1'       => $snmp3_privacy_method,
+                    'custom_string_2'       => $snmp3_privacy_pass,
+                    'custom_string_3'       => $snmp3_security_level,
                     'post_process'          => 0,
                     'unit'                  => '',
                     'macros'                => '',

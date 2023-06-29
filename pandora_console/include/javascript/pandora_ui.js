@@ -351,10 +351,85 @@ function load_modal(settings) {
           AJAX_RUNNING = 0;
         }
       } else {
-        // No onsumbit configured. Directly close.
-        d.dialog("close");
-        if (document.getElementById(settings.form) != undefined) {
-          document.getElementById(settings.form).submit();
+        if (Array.isArray(settings.form) === false) {
+          $("#" + settings.form + " :input").each(function() {
+            if (this.checkValidity() === false) {
+              var select2 = $(this).attr("data-select2-id");
+              if (typeof select2 !== typeof undefined && select2 !== false) {
+                $(this)
+                  .next()
+                  .attr("title", this.validationMessage);
+                $(this)
+                  .next()
+                  .tooltip({
+                    tooltipClass: "uitooltip",
+                    position: {
+                      my: "right bottom",
+                      at: "right top",
+                      using: function(position, feedback) {
+                        $(this).css(position);
+                        $("<div>")
+                          .addClass("arrow")
+                          .addClass(feedback.vertical)
+                          .addClass(feedback.horizontal)
+                          .appendTo(this);
+                      }
+                    }
+                  });
+                $(this)
+                  .next()
+                  .tooltip("open");
+
+                var element = $(this).next();
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+              } else {
+                $(this).attr("title", this.validationMessage);
+                $(this).tooltip({
+                  tooltipClass: "uitooltip",
+                  position: {
+                    my: "right bottom",
+                    at: "right top",
+                    using: function(position, feedback) {
+                      $(this).css(position);
+                      $("<div>")
+                        .addClass("arrow")
+                        .addClass(feedback.vertical)
+                        .addClass(feedback.horizontal)
+                        .appendTo(this);
+                    }
+                  }
+                });
+                $(this).tooltip("open");
+
+                var element = $(this);
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+              }
+
+              flagError = true;
+            }
+          });
+        }
+
+        if (!flagError) {
+          // No onsumbit configured. Directly close.
+          if (document.getElementById(settings.form) != undefined) {
+            document.getElementById(settings.form).submit();
+          }
+          d.dialog("close");
         }
       }
     };
@@ -833,4 +908,56 @@ function unblockSubmit(button) {
   expireCookie("downloadToken");
   expireCookie("downloadReady");
   attempts = 30;
+}
+
+function favMenuAction(e) {
+  var data = JSON.parse(atob(e.value));
+  if (data.label === "" && $(e).hasClass("active") === false) {
+    $("#dialog-fav-menu").dialog({
+      title: "Please choose a title",
+      width: 330,
+      buttons: [
+        {
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next",
+          text: "Confirm",
+          click: function() {
+            data.label = $("#text-label_fav_menu").val();
+            if (data.label.length > 18) {
+              data.label = data.label.slice(0, 18) + "...";
+            }
+
+            $(e).val(btoa(JSON.stringify(data)));
+            favMenuAction(e);
+            $(this).dialog("close");
+            $("input[name='label_fav_menu']").val("");
+          }
+        }
+      ]
+    });
+    return;
+  }
+  $.ajax({
+    method: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: {
+      page: "include/ajax/fav_menu.ajax",
+      id_element: data["id_element"],
+      url: data["url"],
+      label: data["label"],
+      section: data["section"]
+    },
+    success: function(res) {
+      if (res.success) {
+        if (res.action === "create") {
+          $("#image-fav-menu-action1").attr("src", "images/star_fav_menu.png");
+          $("#image-fav-menu-action1").addClass("active");
+        } else {
+          $("#image-fav-menu-action1").attr("src", "images/star_dark.png");
+          $("#image-fav-menu-action1").removeClass("active");
+        }
+      }
+    }
+  });
 }

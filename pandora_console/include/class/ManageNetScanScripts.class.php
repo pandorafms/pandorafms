@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -453,7 +453,7 @@ class ManageNetScanScripts extends Wizard
                     'delete',
                     'images/delete.svg',
                     1,
-                    'width:40px;',
+                    '',
                     true,
                     [
                         'title' => __('Delete Script'),
@@ -468,18 +468,14 @@ class ManageNetScanScripts extends Wizard
 
             echo "<form name=reconscript method='post' action='".$url."'>";
                 echo html_print_input_hidden('page', 1, true);
-                html_print_div(
-                    [
-                        'class'   => 'action-buttons',
-                        'content' => html_print_submit_button(
-                            __('Add'),
-                            'crtbutton',
-                            false,
-                            [ 'icon' => 'next' ],
-                            true
-                        ),
-                    ],
-                    true
+                html_print_action_buttons(
+                    html_print_submit_button(
+                        __('Add'),
+                        'crtbutton',
+                        false,
+                        [ 'icon' => 'next' ],
+                        true
+                    )
                 );
             echo '</form>';
         } else {
@@ -557,14 +553,14 @@ class ManageNetScanScripts extends Wizard
         $table->colspan['recon_name'][1] = 3;
 
         $data = [];
-        $data[0] = __('Script fullpath');
+        $data[0] = __('Script full path');
         $data[1] = '<input type="text" name="form_script" size=70 value="'.$form_script.'">';
         $table->data['recon_fullpath'] = $data;
         $table->colspan['recon_fullpath'][1] = 3;
 
         $data = [];
         $data[0] = __('Description');
-        $data[1] = '<textarea name="form_description" cols="50" rows="4">';
+        $data[1] = '<textarea name="form_description" cols="69" rows="5">';
         $data[1] .= $form_description;
         $data[1] .= '</textarea>';
         $table->data['recon_description'] = $data;
@@ -736,9 +732,9 @@ class ManageNetScanScripts extends Wizard
                 true
             );
             $datam[0] .= '</a>';
-            $datam[0] .= '<div id="next_macro" class="invisible">';
+            $datam[0] .= '<div id="next_macro" class="invisible_important">';
             $datam[0] .= $i.'</div>';
-            $datam[0] .= '<div id="next_row" class="invisible">';
+            $datam[0] .= '<div id="next_row" class="invisible_important">';
             $datam[0] .= $next_name_number.'</div>';
 
             $delete_macro_style = '';

@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -251,6 +251,22 @@ function groups_check_used($idGroup)
         $return['tables'][] = __('Network maps');
     }
 
+    switch ($config['dbtype']) {
+        case 'mysql':
+        case 'postgresql':
+            $numRows = db_get_num_rows('SELECT * FROM talert_snmp WHERE id_group = '.$idGroup.';');
+        break;
+
+        case 'oracle':
+            $numRows = db_get_num_rows('SELECT * FROM talert_snmp WHERE id_group = '.$idGroup);
+        break;
+    }
+
+    if ($numRows > 0) {
+        $return['return'] = true;
+        $return['tables'][] = __('SNMP alerts');
+    }
+
     $hookEnterprise = enterprise_include_once('include/functions_groups.php');
     if ($hookEnterprise !== ENTERPRISE_NOT_HOOK) {
         $returnEnterprise = enterprise_hook('groups_check_used_group_enterprise', [$idGroup]);
@@ -444,6 +460,15 @@ function groups_get_icon($id_group)
         $icon = 'unknown@groups.svg';
     } else {
         $icon = (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+
+        $extension = pathinfo($icon, PATHINFO_EXTENSION);
+        if (empty($extension) === true) {
+            $icon .= '.png';
+        }
+
+        if (empty($extension) === true || $extension === 'png') {
+            $icon = 'groups_small/'.$icon;
+        }
 
         if (empty($icon) === true) {
             $icon = 'unknown@groups.svg';

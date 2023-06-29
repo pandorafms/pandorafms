@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -133,6 +133,11 @@ class Tree
 
     protected function getEmptyModuleFilterStatus()
     {
+        if ($this->filter['statusModule'] === 'fired') {
+            $this->filter['statusModuleOriginal'] = $this->filter['statusModule'];
+            $this->filter['statusModule'] = -1;
+        }
+
         return (
             !isset($this->filter['statusModule']) ||
             $this->filter['statusModule'] == -1
@@ -219,6 +224,10 @@ class Tree
                 $agent_status_filter = ' AND (ta.critical_count > 0
 											OR ta.warning_count > 0) ';
             break;
+
+            case AGENT_STATUS_ALERT_FIRED:
+                $agent_status_filter = ' AND ta.fired_count > 0 ';
+            break;
         }
 
         return $agent_status_filter;
@@ -284,6 +293,11 @@ class Tree
 
     protected function getModuleStatusFilter()
     {
+        if ($this->filter['statusModule'] === 'fired') {
+            $this->filter['statusModuleOriginal'] = $this->filter['statusModule'];
+            $this->filter['statusModule'] = -1;
+        }
+
         $show_init_condition = ($this->filter['show_not_init_agents']) ? '' : ' AND ta.notinit_count <> ta.total_count';
 
         if ($this->getEmptyModuleFilterStatus()) {
@@ -292,6 +306,10 @@ class Tree
 
         if ((int) $this->filter['statusModule'] === 6) {
             return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)';
+        }
+
+        if ($this->filter['statusModule'] === 'fired') {
+            return ' AND ta.fired_count > 0';
         }
 
         $field_filter = modules_get_counter_by_states($this->filter['statusModule']);
@@ -333,6 +351,11 @@ class Tree
 
     protected function getModuleStatusFilterFromTestado($state=false, $without_ands=false)
     {
+        if ($this->filter['statusModule'] === 'fired') {
+            $this->filter['statusModuleOriginal'] = $this->filter['statusModule'];
+            $this->filter['statusModule'] = -1;
+        }
+
         $selected_status = ($state !== false && $state !== self::TV_DEFAULT_AGENT_STATUS) ? $state : $this->filter['statusModule'];
 
         $filter = [modules_get_state_condition($selected_status)];
@@ -811,6 +834,11 @@ class Tree
 
     protected function processAgent(&$agent, $server=false)
     {
+        if ($this->filter['statusModule'] === 'fired') {
+            $this->filter['statusModuleOriginal'] = $this->filter['statusModule'];
+            $this->filter['statusModule'] = -1;
+        }
+
         global $config;
 
         $agent['type'] = 'agent';
@@ -1028,6 +1056,7 @@ class Tree
         $agent_search_filter = $this->getAgentSearchFilter();
         $agent_status_filter = $this->getAgentStatusFilter();
         $module_search_filter = $this->getModuleSearchFilter();
+        $module_status_filter = $this->getModuleStatusFilter();
         $module_status_inner = '';
         $module_search_inner = '';
         $module_search_filter = '';
@@ -1035,9 +1064,9 @@ class Tree
         if (!empty($this->filter['searchModule'])) {
             $module_search_inner = '
                 INNER JOIN tagente_estado tae
-                    ON tae.id_agente_modulo = tam.id_agente_modulo';
-            $module_search_filter = "AND tam.disabled = 0
-                AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
+                    ON tae.id_agente_modulo = tam_inner.id_agente_modulo';
+            $module_search_filter = "AND tam_inner.disabled = 0
+                AND tam_inner.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }
 
         $sql_model = "SELECT %s FROM

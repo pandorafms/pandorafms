@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -97,6 +97,7 @@ class Agents
                             $agent[6] = '<b class="ui-table-cell-label">'.__('Status').'</b>'.$agent[6];
                             $agent[7] = '<b class="ui-table-cell-label">'.__('Alerts').'</b>'.$agent[7];
                             $agent[8] = '<b class="ui-table-cell-label">'.__('Last contact').'</b>'.$agent[8];
+                            $agent[9] = '<b class="ui-table-cell-label">'.__('Last status change').'</b>'.$agent[9];
 
                             $agents[$key] = $agent;
                         }
@@ -218,7 +219,7 @@ class Agents
                 __('Filter Agents by %s'),
                 $this->filterEventsGetString()
             );
-            $ui->contentBeginCollapsible($filter_title);
+            $ui->contentBeginCollapsible($filter_title, 'filter-collapsible');
                 $ui->beginForm('index.php?page=agents');
                     $system = System::getInstance();
                     $groups = users_get_groups_for_select(
@@ -400,18 +401,18 @@ class Agents
 
             $serialized_filters_q_param = empty($this->serializedFilters) ? '' : '&agents_filter='.$this->serializedFilters;
 
-            $row[0] = $row[__('Agent')] = '<span class="tiny mrgn_right_5px">'.$img_status.'</span>'.'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id='.$agent['id_agente'].$serialized_filters_q_param.'">'.ui_print_truncate_text($agent['alias'], 30, false).'</a>';
+            $row[0] = $row[__('Agent')] = '<span class="tiny agent-status">'.$img_status.'</span>'.'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id='.$agent['id_agente'].$serialized_filters_q_param.'">'.ui_print_truncate_text($agent['alias'], 30, false).'</a>';
             $row[2] = $row[__('OS')] = ui_print_os_icon($agent['id_os'], false, true);
             $row[3] = $row[__('Group')] = ui_print_group_icon($agent['id_grupo'], true, 'groups_small', '', false);
             $row[5] = $row[__('Status')] = '<span class="show_collapside align-none-10p">'.__('S.').' </span>'.$img_status;
             $row[6] = $row[__('Alerts')] = '<span class="show_collapside align-none-10p">&nbsp;&nbsp;'.__('A.').' </span>'.$img_alert;
 
-            $row[7] = $row[__('Modules')] = '<span class="show_collapside align-none-0p">'.__('Modules').' </span>'.'<span class="agents_tiny_stats">'.reporting_tiny_stats($agent, true, 'agent', '&nbsp;').' </span>';
+            $row[7] = $row[__('Modules')] = '<span class="agents_tiny_stats">'.reporting_tiny_stats($agent, true, 'agent', ':').' </span>';
 
             $last_time = time_w_fixed_tz($agent['ultimo_contacto']);
             $now = get_system_time();
             $diferencia = ($now - $last_time);
-            $time = ui_print_timestamp($last_time, true, ['style' => 'font-size: 12px; margin-left: 20px;', 'units' => 'tiny']);
+            $time = human_time_comparation($agent['ultimo_contacto'], 'tiny');
             $style = '';
             if ($diferencia > ($agent['intervalo'] * 2)) {
                 $row[8] = $row[__('Last contact')] = '<b><span class="color_ff0">'.$time.'</span></b>';
@@ -419,7 +420,10 @@ class Agents
                 $row[8] = $row[__('Last contact')] = $time;
             }
 
-            $row[8] = $row[__('Last contact')] = '<span class="show_collapside align-none-0p">'.__('Last contact').' </span>'.'<span class="agents_last_contact">'.$row[__('Last contact')].'</span>';
+            $row[8] = $row[__('Last contact')] = '<span class="agents_last_contact">'.$row[__('Last contact')].'</span>';
+
+            $last_status_change = human_time_comparation(agents_get_last_status_change($agent['id_agente']), 'tiny');
+            $row[9] = $row[__('Last status change')] = '<span class="agents_last_contact">'.$last_status_change.'</span>';
 
             if (!$ajax) {
                 unset($row[0]);
@@ -431,6 +435,7 @@ class Agents
                 unset($row[6]);
                 unset($row[7]);
                 unset($row[8]);
+                unset($row[9]);
             }
 
             $agents[$agent['id_agente']] = $row;
@@ -451,20 +456,25 @@ class Agents
         $listAgents = $this->getListAgents($page);
 
         if ($listAgents['total'] == 0) {
-            $ui->contentAddHtml('<p class="color_ff0">'.__('No agents').'</p>');
+            $ui->contentAddHtml('<p class="no-data">'.__('No agents').'</p>');
         } else {
             $table = new Table();
             $table->id = 'list_agents';
             $table->importFromHash($listAgents['agents']);
+
+            $ui->contentAddHtml('<div class="hr-full"></div>');
+            $ui->contentAddHtml('<div class="white-card p-lr-0px">');
             $ui->contentAddHtml($table->getHTML());
 
             if ($system->getPageSize() < $listAgents['total']) {
                 $ui->contentAddHtml(
-                    '<div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
+                    '<br><div id="loading_rows">'.html_print_image('images/spinner.gif', true, false, false, false, false, true).' '.__('Loading...').'</div>'
                 );
 
                 $this->addJavascriptAddBottom();
             }
+
+            $ui->contentAddHtml('</div>');
         }
 
         $ui->contentAddLinkListener('list_agents');
@@ -513,6 +523,7 @@ class Agents
 														\"<td class='cell_4'>\" + agent[6] + \"</td>\" +
 														\"<td class='cell_5'>\" + agent[7] + \"</td>\" +
 														\"<td class='cell_6'>\" + agent[8] + \"</td>\" +
+														\"<td class='cell_7'>\" + agent[9] + \"</td>\" +
 													\"</tr>\");
 												});
 
@@ -522,7 +533,7 @@ class Agents
 									},
 									\"json\");
                                 // Clean
-                                $('#loading_rows').remove();
+                                // $('#loading_rows').remove();
 							}
 						}
 				}

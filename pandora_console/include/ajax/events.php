@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -37,6 +37,7 @@ require_once 'include/functions_ui.php';
 require_once 'include/functions_db.php';
 require_once 'include/functions_io.php';
 require_once 'include/functions.php';
+require_once $config['homedir'].'/include/class/HTML.class.php';
 enterprise_include_once('meta/include/functions_events_meta.php');
 enterprise_include_once('include/functions_metaconsole.php');
 
@@ -72,6 +73,7 @@ $meta = get_parameter('meta', 0);
 $history = get_parameter('history', 0);
 $table_events = get_parameter('table_events', 0);
 $total_events = (bool) get_parameter('total_events');
+$filter_groups = (string) get_parameter('filter_groups', '');
 $total_event_graph = (bool) get_parameter('total_event_graph');
 $graphic_event_group = (bool) get_parameter('graphic_event_group');
 $get_table_response_command = (bool) get_parameter('get_table_response_command');
@@ -91,9 +93,8 @@ $node_id = (int) get_parameter('node_id', 0);
 
 if ($get_comments === true) {
     $event = get_parameter('event', false);
-    $event_rep = (int) get_parameter('event_rep', 0);
-    $event_rep = get_parameter_post('event')['event_rep'];
-    $group_rep = get_parameter_post('event')['group_rep'];
+    $event_rep = (int) get_parameter_post('event')['event_rep'];
+    $group_rep = (int) get_parameter_post('event')['group_rep'];
 
     if ($event === false) {
         return __('Failed to retrieve comments');
@@ -126,7 +127,7 @@ if ($get_comments === true) {
     } else if ($group_rep === EVENT_GROUP_REP_EXTRAIDS) {
         $whereGrouped = sprintf(
             '`id_extra` = "%s"',
-            $event['id_extra']
+            io_safe_output($event['id_extra'])
         );
     } else {
         $whereGrouped = sprintf('`id_evento` = %d', $event['id_evento']);
@@ -730,7 +731,9 @@ function load_form_filter() {
     $("#current_filter").text($('#filter_id option:selected').text());
 
     // Search.
-    dt_events.draw(false);
+    $("#table_events")
+            .DataTable()
+            .draw(false);
 }
 
 $(document).ready (function() {
@@ -2107,12 +2110,42 @@ if ($table_events) {
 if ($total_events) {
     global $config;
 
-    $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
-    if ($config['event_view_hr']) {
-        $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+    if (is_metaconsole() === true) {
+        $system_events = 0;
+        $servers = metaconsole_get_servers();
+
+        // Check if the group can be deleted or not.
+        if (isset($servers) === true
+            && is_array($servers) === true
+        ) {
+            foreach ($servers as $server) {
+                if (metaconsole_connect($server) == NOERR) {
+                    $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
+                    if ($config['event_view_hr']) {
+                        $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+                        if ($filter_groups !== '') {
+                            $sql_count_event .= ' AND id_grupo in ('.$filter_groups.')';
+                        }
+                    }
+
+                    $system_events += db_get_value_sql($sql_count_event);
+                }
+
+                metaconsole_restore_db();
+            }
+        }
+    } else {
+        $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
+        if ($config['event_view_hr']) {
+            $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+            if ($filter_groups !== '') {
+                $sql_count_event .= ' AND id_grupo in ('.$filter_groups.')';
+            }
+        }
+
+        $system_events = db_get_value_sql($sql_count_event);
     }
 
-    $system_events = db_get_value_sql($sql_count_event);
     echo $system_events;
     return;
 }
@@ -2404,7 +2437,7 @@ if ($drawConsoleSound === true) {
                 'Star_Trek_emergency_simulation.wav' => 'StarTrek emergency simulation',
             ];
 
-            $eventsounds = mysql_db_get_all_rows_sql('SELECT * FROM tevent_sound WHERE active = 1');
+            $eventsounds = db_get_all_rows_sql('SELECT * FROM tevent_sound WHERE active = 1');
             foreach ($eventsounds as $key => $row) {
                 $sounds[$row['sound']] = $row['name'];
             }

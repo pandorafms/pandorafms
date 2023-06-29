@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -179,7 +179,7 @@ class ModulesByStatus extends Widget
         // This forces at least a first configuration.
         // This forces at least a first configuration.
         $this->configurationRequired = false;
-        if (empty($this->values['status']) === true) {
+        if (empty($this->values['status']) === true && $this->values['status'] !== '0') {
             $this->configurationRequired = true;
         }
 
@@ -216,6 +216,10 @@ class ModulesByStatus extends Widget
             $values['nodes'] = $decoder['nodes'];
         }
 
+        if (isset($decoder['disabled_modules']) === true) {
+            $values['disabled_modules'] = $decoder['disabled_modules'];
+        }
+
         return $values;
     }
 
@@ -248,6 +252,23 @@ class ModulesByStatus extends Widget
             ],
         ];
 
+        $inputs[] = [
+            'label'     => html_print_div(
+                [
+                    'class'   => 'flex',
+                    'content' => __('Disabled modules').ui_print_help_tip(__('Include disabled modules'), true),
+                ],
+                true
+            ),
+            'arguments' => [
+                'id'     => 'disabled_modules',
+                'name'   => 'disabled_modules',
+                'type'   => 'switch',
+                'value'  => ($values['disabled_modules'] === null) ? true : $values['disabled_modules'],
+                'return' => true,
+            ],
+        ];
+
         // Status fields.
         $status_fields = [];
         $status_fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
@@ -269,7 +290,6 @@ class ModulesByStatus extends Widget
                 'selected'   => $status_selected,
                 'return'     => true,
                 'multiple'   => true,
-                'class'      => 'overflow-hidden',
                 'size'       => count($status_fields),
                 'select_all' => false,
                 'required'   => true,
@@ -310,6 +330,8 @@ class ModulesByStatus extends Widget
             foreach ($servers_ids as $server) {
                 $nodes_fields[$server['id']] = $server['server_name'];
             }
+
+            $nodes_fields[0] = __('Metaconsola');
 
             $nodes_selected = explode(',', $values['nodes']);
 
@@ -355,6 +377,7 @@ class ModulesByStatus extends Widget
         $values['status'] = \get_parameter('status', '');
         $values['limit'] = \get_parameter('limit', '');
         $values['nodes'] = \get_parameter('nodes', '');
+        $values['disabled_modules'] = \get_parameter_switch('disabled_modules');
 
         return $values;
     }
@@ -368,6 +391,8 @@ class ModulesByStatus extends Widget
     public function load()
     {
         $this->size = parent::getSize();
+
+        global $config;
 
         $output = '';
 
@@ -413,7 +438,7 @@ class ModulesByStatus extends Widget
                     [
                         'id'                 => $tableId,
                         'class'              => 'info_table align-left-important',
-                        'style'              => 'width: 100%',
+                        'style'              => 'width: 99%',
                         'columns'            => $columns,
                         'column_names'       => $column_names,
                         'ajax_url'           => 'include/ajax/module',
@@ -423,6 +448,7 @@ class ModulesByStatus extends Widget
                             'search'                   => $this->values['search'],
                             'status'                   => $this->values['status'],
                             'nodes'                    => $this->values['nodes'],
+                            'disabled_modules'         => $this->values['disabled_modules'],
                         ],
                         'default_pagination' => $this->values['limit'],
                         'order'              => [
@@ -430,6 +456,27 @@ class ModulesByStatus extends Widget
                             'direction' => 'desc',
                         ],
                         'csv'                => 0,
+                        'pagination_options' => [
+                            [
+                                5,
+                                10,
+                                25,
+                                100,
+                                200,
+                                500,
+                                1000,
+                            ],
+                            [
+                                5,
+                                10,
+                                25,
+                                100,
+                                200,
+                                500,
+                                1000,
+                            ],
+                        ],
+                        'dom_elements'       => 'frtilp',
                     ]
                 );
             } catch (\Exception $e) {
@@ -462,6 +509,18 @@ class ModulesByStatus extends Widget
     {
         if (empty($search) === false) {
             $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
+        }
+
+        if (str_contains($status, '6') === true) {
+            $expl = explode(',', $status);
+            $exist = array_search('6', $expl);
+            if (isset($exist) === true) {
+                unset($expl[$exist]);
+            }
+
+            array_push($expl, '1', '2');
+
+            $status = implode(',', $expl);
         }
 
         $where .= sprintf(

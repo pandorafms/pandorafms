@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -31,7 +31,7 @@ function network_components_is_disable_type_event($id=false, $type_event=false)
     if ($id === false) {
         switch ($type_event) {
             case EVENTS_GOING_UNKNOWN:
-            return true;
+            return false;
 
                 break;
             case EVENTS_UNKNOWN:
@@ -570,7 +570,7 @@ function network_components_get_name($id_network_component)
         return false;
     }
 
-    return @db_get_value('name', 'tnetwork_component', 'id', $id_network_component);
+    return @db_get_value('name', 'tnetwork_component', 'id_nc', $id_network_component);
 }
 
 

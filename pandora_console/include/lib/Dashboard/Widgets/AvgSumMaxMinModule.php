@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -316,6 +316,10 @@ class AvgSumMaxMinModule extends Widget
             $values['unit'] = $decoder['unit'];
         }
 
+        if (isset($decoder['horizontal']) === true) {
+            $values['horizontal'] = $decoder['horizontal'];
+        }
+
         return $values;
     }
 
@@ -501,6 +505,18 @@ class AvgSumMaxMinModule extends Widget
             ],
         ];
 
+        // Horizontal.
+        $inputs[] = [
+            'label'     => __('Horizontal').ui_print_help_tip(__('If not, layout is vertical'), true),
+            'arguments' => [
+                'wrapper' => 'div',
+                'name'    => 'horizontal',
+                'type'    => 'switch',
+                'value'   => $values['horizontal'],
+                'return'  => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -525,6 +541,7 @@ class AvgSumMaxMinModule extends Widget
         $values['sizeLabel'] = \get_parameter_switch('sizeLabel');
         $values['text_color'] = \get_parameter('text_color', 0);
         $values['unit'] = \get_parameter_switch('unit');
+        $values['horizontal'] = \get_parameter_switch('horizontal');
 
         return $values;
     }
@@ -601,13 +618,13 @@ class AvgSumMaxMinModule extends Widget
             break;
 
             case 2:
-                $rows = modules_get_min_max_data($id_module, $to);
+                $rows = module_get_min_max_tagente_datos($id_module, $to, $now);
 
                 $data = $rows[0]['max'];
             break;
 
             case 3:
-                $rows = modules_get_min_max_data($id_module, $to);
+                $rows = module_get_min_max_tagente_datos($id_module, $to, $now);
 
                 $data = $rows[0]['min'];
             break;
@@ -621,11 +638,24 @@ class AvgSumMaxMinModule extends Widget
         $sizeLabel = (isset($this->values['sizeLabel']) === true) ? $this->values['sizeLabel'] : 40;
         $sizeValue = (isset($this->values['sizeValue']) === true) ? $this->values['sizeValue'] : 40;
 
-        $output .= '<div class="container-center">';
+        $uuid = uniqid();
+
+        $output .= '<div class="container-center" id="container-'.$uuid.'">';
+
+        $orientation = '';
+        $extraClass = '';
+        if ((int) $this->values['horizontal'] === 1) {
+            $orientation = 'flex aligni_center';
+        } else {
+            $orientation = 'grid';
+            $extraClass = 'mrgn_btn_20px';
+        }
+
         // General div.
-        $output .= '<div class="container-icon">';
+        $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
+
         // Div value.
-        $output .= '<div style="flex: 0 1 '.$sizeValue.'px; font-size:'.$sizeValue.'px;'.$text_color.'">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px '.$extraClass.'" style="line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px;'.$text_color.'">';
 
         if (is_numeric($data) === true) {
             $dataDatos = remove_right_zeros(
@@ -651,11 +681,22 @@ class AvgSumMaxMinModule extends Widget
 
         if (empty($label) === false) {
             // Div Label.
-            $output .= '<div style="flex: 1 1 '.$sizeLabel.'px; font-size:'.$sizeLabel.'px;'.$text_color.'">'.$label.'</div>';
+            $output .= '<div class="pdd_l_15px pdd_r_15px" style="line-height: '.$sizeLabel.'px; font-size:'.$sizeLabel.'px;'.$text_color.'">'.$label.'</div>';
         }
 
         $output .= '</div>';
         $output .= '</div>';
+
+        $output .= '<script>
+        var containerWidth = document.querySelector("#container-'.$uuid.'").offsetWidth;
+        var generalWidth = document.querySelector("#general-'.$uuid.'").offsetWidth;
+
+        if (generalWidth >= containerWidth) {
+            $("#container-'.$uuid.'").css("align-items", "flex-start");
+        } else {
+            $("#container-'.$uuid.'").css("align-items", "center");
+        }
+        </script>';
         return $output;
     }
 

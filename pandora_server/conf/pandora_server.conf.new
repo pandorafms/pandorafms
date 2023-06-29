@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.769
+# Version 7.0NG.772
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -302,13 +302,6 @@ dataserver_threads 1
 # Set 0 if want eMail deliver shared mail by all destination.
 mail_in_separate 1
 
-
-# xprobe2: Optional package to detect OS types using advanced TCP/IP 
-# fingerprinting tecniques, much more accurates than stadard nmap.
-# If not provided, nmap is used insted xprobe2
-
-xprobe2 /usr/bin/xprobe2
-
 # nmap: If provided, is used to detect OS type with recon server using 
 # advanded OS fingerprint technique. Xprobe2 gives more accurate results
 # Nmap is also used to do TCP port scanning in detected host.
@@ -331,17 +324,18 @@ recon_timing_template 3
 
 snmpget /usr/bin/snmpget
 
-# Location of the braa binary needed by the Enterprise SNMP Server
-# /usr/bin/braa by default (PANDORA FMS ENTERPRISE ONLY).
+# Location of the pandorafsnmp/braa binary needed by the Enterprise SNMP Server v1 and v2c
+# /usr/bin/pandorafsnmp by default for v1 and v2c (PANDORA FMS ENTERPRISE ONLY).
+# /usr/bin/braa could be set as optional legacy binary for snmp v1 and v2c (PANDORA FMS ENTERPRISE ONLY).
 
-braa /usr/bin/braa
+braa /usr/bin/pandorafsnmp
 
 # Number of retries before braa hands a module over to the Network Server (PANDORA FMS ENTERPRISE ONLY).
 
 braa_retries 3
 
-# Location of the pandorafsnmp binary needed by the Enterprise SNMP Server.
-# /usr/bin/pandorafsnmp by default (PANDORA FMS ENTERPRISE ONLY).
+# Location of the pandorafsnmp binary needed by the Enterprise SNMP Server v3.
+# /usr/bin/pandorafsnmp by default for snmp version 3 (PANDORA FMS ENTERPRISE ONLY).
 
 fsnmp /usr/bin/pandorafsnmp
 
@@ -605,7 +599,7 @@ unknown_block_size 1000
 global_alert_timeout 15
 
 # If set to 1 allows PandoraFMS Server to be configured via the web console (PANDORA FMS ENTERPRISE ONLY).
-remote_config 0
+remote_config 1
 
 # Remote address to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
 remote_config_address localhost
@@ -701,8 +695,35 @@ ncm_ssh_utility /usr/share/pandora_server/util/ncm_ssh_extension
 # Pandora FMS Daemon Watchdog execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
 ha_interval 30
 
-# Pandora FMS Daemon Watchdog monitoring interval in seconds. Must be a multiple of ha_interval (PANDORA FMS ENTERPRISE ONLY).
-ha_monitoring_interval 60
+# HA operation mode. For backward compatibility with pacemaker. Do not change this value (PANDORA FMS ENTERPRISE ONLY).
+ha_mode pandora
+
+# Comma separated list of HA host IPs or FQDNs (PANDORA FMS ENTERPRISE ONLY).
+#ha_hosts 172.16.0.8,172.168.0.16
+
+# Database username for pandora_ha (PANDORA FMS ENTERPRISE ONLY).
+#ha_dbuser pandora
+
+# Database password for pandora_ha (PANDORA FMS ENTERPRISE ONLY).
+#ha_dbpass pandora
+
+# SSH username for pandora_ha (PANDORA FMS ENTERPRISE ONLY).
+#ha_sshuser pandora
+
+# SSH port for pandora_ha (PANDORA FMS ENTERPRISE ONLY).
+#ha_sshport 22
+
+# Absolute path to the HA slave resync script (PANDORA FMS ENTERPRISE ONLY).
+#ha_resync /usr/share/pandora_server/util/pandora_ha_resync_slave.sh
+
+# Database username for HA replication (PANDORA FMS ENTERPRISE ONLY).
+#repl_dbuser pandora
+
+# Database password for HA replication (PANDORA FMS ENTERPRISE ONLY).
+#repl_dbpass pandora
+
+# Number of retries for connection attempts to HA databases.
+#ha_connect_retries 2
 
 # Enable (1) or disable (0) Pandora FMS Alert Server.
 alertserver 0
@@ -736,3 +757,10 @@ tentacle_service_watchdog 1
 # Enable (1) or disable (0) the parameter of mysql ssl certification (mysql_ssl_verify_server_cert) (enabled by default).
 
 verify_mysql_ssl_cert 1
+
+# Enable (1) or disable (0) the Pandora FMS Netflow Server (PANDORA FMS ENTERPRISE ONLY).
+netflowserver 0
+
+# Number of threads for the Pandora FMS Netflow Server (PANDORA FMS ENTERPRISE ONLY).
+netflowserver_threads 1
+

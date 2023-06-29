@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -123,7 +123,7 @@ $table->data[1][0] = html_print_label_input_block(
         'w100p',
         false,
         'width: 100%;'
-    ).'<span id="advanced_action" class="advanced_actions invisible"><br>'.__('Number of alerts match from').' '.html_print_input_text('fires_min', '', '', 4, 10, true).' '.__('to').' '.html_print_input_text('fires_max', '', '', 4, 10, true).'</span>'.$create_action
+    ).'<span id="advanced_action" class="advanced_actions invisible"><br>'.__('Number of alerts match from').' '.html_print_input_text('fires_min', '', '', 4, 10, true).' '.__('to').' '.html_print_input_text('fires_max', '', '', 4, 10, true).'</span><div class="flex_justify_end">'.$create_action.'</div>'
 );
 
 $own_info = get_user_info($config['id_user']);
@@ -162,14 +162,14 @@ $table->data[1][1] = html_print_label_input_block(
         'w100p',
         false,
         'width: 100%;'
-    ).' <a class="template_details invisible" href="#">'.html_print_image('images/zoom.png', true, ['class' => 'img_help']).'</a>'.$create_template
+    ).' <a class="template_details invisible" href="#">'.html_print_image('images/zoom.png', true, ['class' => 'img_help']).'</a><div class="flex_justify_end">'.$create_template.'</div>'
 );
 
 $table->data[2][0] = html_print_label_input_block(
-    __('Threshold'),
+    __('Threshold').ui_print_help_tip(__('It takes precedence over the action\'s threshold configuration.'), true),
     html_print_extended_select_for_time(
         'module_action_threshold',
-        0,
+        '0',
         '',
         '',
         '',
@@ -187,7 +187,7 @@ $table->data[2][0] = html_print_label_input_block(
 );
 
 if (isset($step) === false) {
-    echo '<form class="add_alert_form max_floating_element_size" method="post">';
+    echo '<form id="form_alerts" class="add_alert_form max_floating_element_size" method="post">';
     html_print_table($table);
 }
 
@@ -215,6 +215,26 @@ if (isset($step) === false) {
         [ 'icon' => 'wand' ],
         true
     );
+
+    if ($_GET['sec2'] === 'operation/cluster/cluster') {
+        html_print_div(
+            [
+                'content' => html_print_submit_button(
+                    __('Add alert'),
+                    'add',
+                    false,
+                    [
+                        'icon' => 'wand',
+                        'form' => 'form_alerts',
+                        'mode' => 'secondary',
+                    ],
+                    true
+                ),
+                'style'   => 'display:none',
+                'id'      => 'add_alert_div',
+            ]
+        );
+    }
 
     html_print_action_buttons($actionButtons, ['right_content' => $pagination]);
 

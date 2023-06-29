@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -77,7 +77,7 @@ function html_debug_print($var, $file='', $oneline=false)
         fprintf($f, '%s', $output);
         fclose($f);
     } else {
-        echo '<pre class="bg_white pdd_1em zindex10000">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
+        echo '<pre class="bg_white pdd_1em zindex10000 relative-mobile">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
         print_r($var);
         echo '</pre>';
     }
@@ -515,7 +515,7 @@ function html_print_select_groups(
             false,
             false
         );
-        $output .= '" type="text/javascript"></script>';
+        $output .= '?v='.$config['current_package'].'" type="text/javascript"></script>';
 
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
@@ -524,7 +524,7 @@ function html_print_select_groups(
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
     } else {
         ui_require_css_file($select2_css);
         ui_require_javascript_file('select2.min');
@@ -899,10 +899,15 @@ function html_print_select(
             if (is_array($selected) && in_array($value, $selected)) {
                 $output .= ' selected="selected"';
             } else if (is_numeric($value) && is_numeric($selected)
-                && $value == $selected
+                && $value === $selected
             ) {
                 // This fixes string ($value) to int ($selected) comparisons
                 $output .= ' selected="selected"';
+            } else if (is_numeric($value) && is_string($selected)) {
+                $str_value = strval($value);
+                if ($str_value === $selected) {
+                    $output .= ' selected="selected"';
+                }
             } else if ($value === $selected) {
                 // Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
                 $output .= ' selected="selected"';
@@ -977,7 +982,7 @@ function html_print_select(
                 false,
                 false
             );
-            $output .= '" type="text/javascript"></script>';
+            $output .= '?v='.$config['current_package'].'" type="text/javascript"></script>';
 
             $output .= '<link rel="stylesheet" href="';
             $output .= ui_get_full_url(
@@ -986,7 +991,7 @@ function html_print_select(
                 false,
                 false
             );
-            $output .= '"/>';
+            $output .= '?v='.$config['current_package'].'"/>';
         } else {
             ui_require_css_file($select2);
             ui_require_javascript_file('select2.min');
@@ -1559,6 +1564,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
     $output .= html_print_input(
         [
             'label'          => __('Group'),
+            'label_class'    => 'font-title-font',
             'name'           => 'filtered-module-group-'.$uniqId,
             'returnAllGroup' => $return_all_group,
             'privilege'      => 'AR',
@@ -1572,14 +1578,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
     // Recursion.
     $output .= html_print_input(
         [
-            'label'    => __('Recursion'),
-            'type'     => 'switch',
-            'name'     => 'filtered-module-recursion-'.$uniqId,
-            'value'    => (empty($data['mRecursion']) === true) ? false : true,
-            'checked'  => (empty($data['mRecursion']) === true) ? false : true,
-            'return'   => true,
-            'id'       => 'filtered-module-recursion-'.$uniqId,
-            'onchange' => 'fmAgentChange(\''.$uniqId.'\')',
+            'label'       => __('Recursion'),
+            'label_class' => 'font-title-font',
+            'type'        => 'switch',
+            'name'        => 'filtered-module-recursion-'.$uniqId,
+            'value'       => (empty($data['mRecursion']) === true) ? false : true,
+            'checked'     => (empty($data['mRecursion']) === true) ? false : true,
+            'return'      => true,
+            'id'          => 'filtered-module-recursion-'.$uniqId,
+            'onchange'    => 'fmAgentChange(\''.$uniqId.'\')',
         ]
     );
 
@@ -1598,6 +1605,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
     $output .= html_print_input(
         [
             'label'         => __('Module group'),
+            'label_class'   => 'font-title-font',
             'type'          => 'select',
             'fields'        => $module_groups,
             'name'          => 'filtered-module-module-group-'.$uniqId,
@@ -1682,15 +1690,16 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= html_print_input(
         [
-            'label'    => __('Agents'),
-            'type'     => 'select',
-            'fields'   => $agents,
-            'name'     => 'filtered-module-agents-'.$uniqId,
-            'selected' => explode(',', $data['mAgents']),
-            'return'   => true,
-            'multiple' => true,
-            'style'    => 'min-width: 200px;max-width:200px;',
-            'script'   => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            'label'       => __('Agents'),
+            'label_class' => 'font-title-font',
+            'type'        => 'select',
+            'fields'      => $agents,
+            'name'        => 'filtered-module-agents-'.$uniqId,
+            'selected'    => explode(',', $data['mAgents']),
+            'return'      => true,
+            'multiple'    => true,
+            'style'       => 'min-width: 200px;max-width:200px;',
+            'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
 
@@ -1701,14 +1710,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= html_print_input(
         [
-            'label'    => __('Only common modules'),
-            'type'     => 'switch',
-            'checked'  => $commonModules,
-            'value'    => $commonModules,
-            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
-            'id'       => 'filtered-module-show-common-modules-'.$uniqId,
-            'return'   => true,
-            'onchange' => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            'label'       => __('Only common modules'),
+            'label_class' => 'font-title-font',
+            'type'        => 'switch',
+            'checked'     => $commonModules,
+            'value'       => $commonModules,
+            'name'        => 'filtered-module-show-common-modules-'.$uniqId,
+            'id'          => 'filtered-module-show-common-modules-'.$uniqId,
+            'return'      => true,
+            'onchange'    => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
         ]
     );
 
@@ -1742,14 +1752,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= html_print_input(
         [
-            'label'    => __('Modules'),
-            'type'     => 'select',
-            'fields'   => $all_modules,
-            'name'     => 'filtered-module-modules-'.$uniqId,
-            'selected' => $result,
-            'return'   => true,
-            'multiple' => true,
-            'style'    => 'min-width: 200px;max-width:200px;',
+            'label'       => __('Modules'),
+            'label_class' => 'font-title-font',
+            'type'        => 'select',
+            'fields'      => $all_modules,
+            'name'        => 'filtered-module-modules-'.$uniqId,
+            'selected'    => $result,
+            'return'      => true,
+            'multiple'    => true,
+            'style'       => 'min-width: 200px;max-width:200px;',
         ]
     );
 
@@ -2124,10 +2135,7 @@ function html_print_extended_select_for_time(
         $fields[$selected] = human_time_description_raw($selected, true);
     }
 
-    if (empty($nothing) === true
-        && (empty($selected) === true
-        || $selected === '0')
-    ) {
+    if (empty($nothing) === true && (is_int($selected) === true)) {
             $selected = 300;
     }
 
@@ -2242,6 +2250,13 @@ function html_print_extended_select_for_time(
 			$('#".$uniq_name."_manual').show();
 			$('#".$uniq_name."_default').hide();
 		}
+
+        if ($('#text-".$uniq_name."_text').val() === '0') {
+            setTimeout(() => {
+                $('#".$uniq_name."_manual').hide();
+                $('#".$uniq_name."_default').show();
+            }, 100);
+        }
 	</script>";
     $returnString = ob_get_clean();
 
@@ -2874,6 +2889,7 @@ function html_print_input_password(
     $class='',
     $autocomplete='off',
     $hide_div_eye=false,
+    $div_class=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2904,7 +2920,7 @@ function html_print_input_password(
         }
     }
 
-    return '<div class="relative container-div-input-password">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
+    return '<div class="relative container-div-input-password '.$div_class.'">'.html_print_input_text_extended($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true, '', $autocomplete, false, $hide_div_eye).'</div>';
 }
 
 
@@ -3261,6 +3277,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'onkeyup',
         'class',
         'form',
+        'disabled',
     ];
 
     foreach ($attrs as $attribute) {
@@ -3630,10 +3647,9 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $classes .= ' buttonButton';
     }
 
-    if ($disabled === true) {
-        $classes .= ' disabled_action_button';
-    }
-
+    // if ($disabled === true) {
+    // $classes .= ' disabled_action_button';
+    // }
     if (empty($buttonAttributes) === true) {
         $parameters = [];
         $parameters[] = 'class="'.$classes.'"';
@@ -4262,22 +4278,22 @@ function html_print_checkbox_extended(
 
     if (is_array($attributes) === true) {
         $tmpAttributes = [];
-        foreach ($attributes as $key => $value) {
+        foreach ($attributes as $key => $val) {
             switch ($key) {
                 case 'input_class':
-                    $inputClass .= ' '.$value;
+                    $inputClass .= ' '.$val;
                 break;
 
                 case 'label_class':
-                    $labelClass .= ' '.$value;
+                    $labelClass .= ' '.$val;
                 break;
 
                 case 'label_style':
-                    $labelStyle .= 'style="'.$value.'"';
+                    $labelStyle .= 'style="'.$val.'"';
                 break;
 
                 default:
-                    $tmpAttributes[] = $key.'="'.$value.'"';
+                    $tmpAttributes[] = $key.'="'.$val.'"';
                 break;
             }
         }
@@ -4565,12 +4581,6 @@ function html_print_image(
     // Dont use safe_input here or the performance will dead.
     $style = '';
 
-    if (empty($options) === false && isset($options['class']) === true) {
-        $options['class'] .= ' main_menu_icon';
-    } else {
-        $options['class'] = 'main_menu_icon invert_filter';
-    }
-
     if (!empty($options)) {
         // Deprecated or value-less attributes.
         if (isset($options['align'])) {
@@ -4615,6 +4625,14 @@ function html_print_image(
             // New way to show the force_title (cleaner and better performance).
             $output .= 'data-title="'.io_safe_input_html($options['title']).'" ';
             $output .= 'data-use_title_for_force_title="1" ';
+        }
+
+        if (isset($options['main_menu_icon']) && $options['main_menu_icon'] != '') {
+            if (isset($options['class'])) {
+                $options['class'] .= ' main_menu_icon';
+            } else {
+                $options['class'] = 'main_menu_icon';
+            }
         }
 
         // Valid attributes (invalid attributes get skipped).
@@ -4794,13 +4812,16 @@ function html_print_input_file($name, $return=false, $options=false)
         if (isset($options['accept']) === true) {
             $output .= ' accept="'.$options['accept'].'"';
         }
+
+        $label = '';
+        if (isset($options['label']) === true) {
+            $label = $options['label'];
+        }
     }
 
     // Close input.
     $output .= '/>';
-    if (is_metaconsole() === false) {
-        $output .= ($options['caption'] ?? __('Select a file'));
-    }
+    $output .= ($options['caption'] ?? __('Select a file'));
 
     $output .= '</label>';
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
@@ -6104,6 +6125,8 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
+    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
+
     html_print_input_text_extended(
         $name,
         $default,
@@ -6116,8 +6139,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
-
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>
@@ -6205,7 +6226,8 @@ function html_print_tabs(array $tabs)
         $result .= "<li><a href='".$value['href']."' id='".$value['id']."'>";
         $result .= html_print_image(
             'images/'.$value['img'],
-            true
+            true,
+            ['class' => 'main_menu_icon invert_filter']
         );
         $result .= '<span>'.$value['name'].'</span>';
         $result .= '</a></li>';
@@ -6431,7 +6453,11 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         [$id_agente]
     );
 
-    $name = 'secondary_groups_selected'.$options['extra_id'];
+    if ($options['selected_post'] !== null) {
+        $secondary_groups_selected['plain'] = $options['selected_post'];
+    }
+
+    $name = 'secondary_groups_selected[]'.$options['extra_id'];
     if ($options['only_select'] === true) {
         $name = 'secondary_groups'.$options['extra_id'].'[]';
     }
@@ -6451,7 +6477,7 @@ function html_print_select_agent_secondary($agent, $id_agente, $options=[])
         $name,
         // Selected.
         // No select any by default.
-        $secondary_groups_selected['for_select'],
+        $secondary_groups_selected['plain'],
         // Script.
         // Javascript onChange code.
         '',
@@ -6908,15 +6934,51 @@ function html_print_label_input_block(
 function html_print_go_top()
 {
     $output = '</div>';
-    $output .= '<div onclick="topFunction()" id="top_btn" title="Go to top">';
-    $output .= '<svg viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">';
-    $output .= '<title>Dark / 20 / arrow@svg</title>';
+    $output .= '<div onclick="topFunction()" id="top_btn" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    $output .= '<svg viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    // $output .= '<title>'.__('Go to top').'</title>';
     $output .= '<desc>Created with Sketch.</desc>';
-    $output .= '<g id="Dark-/-20-/-arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">';
-    $output .= '<path d="M3.41005051,6.39052429 C3.91472805,5.90987901 4.70885153,5.8729063 5.25805922,6.27960615 L5.38994949,6.39052429 L10,10.78 L14.6100505,6.39052429 C15.1147281,5.90987901 15.9088515,5.8729063 16.4580592,6.27960615 L16.5899495,6.39052429 C17.094627,6.87116957 17.1334484,7.62747765 16.7064135,8.15053259 L16.5899495,8.27614237 L10.9899495,13.6094757 C10.4852719,14.090121 9.69114847,14.1270937 9.14194078,13.7203939 L9.01005051,13.6094757 L3.41005051,8.27614237 C2.8633165,7.75544332 2.8633165,6.91122335 3.41005051,6.39052429 Z" id="Path-8" fill="#14524f" fill-rule="nonzero" transform="translate(10.000000, 10.000000) rotate(90.000000) translate(-10.000000, -10.000000) "></path>';
+    $output .= '<g id="Dark-/-20-/-arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1">';
+    $output .= '<path d="M3.41005051,6.39052429 C3.91472805,5.90987901 4.70885153,5.8729063 5.25805922,6.27960615 L5.38994949,6.39052429 L10,10.78 L14.6100505,6.39052429 C15.1147281,5.90987901 15.9088515,5.8729063 16.4580592,6.27960615 L16.5899495,6.39052429 C17.094627,6.87116957 17.1334484,7.62747765 16.7064135,8.15053259 L16.5899495,8.27614237 L10.9899495,13.6094757 C10.4852719,14.090121 9.69114847,14.1270937 9.14194078,13.7203939 L9.01005051,13.6094757 L3.41005051,8.27614237 C2.8633165,7.75544332 2.8633165,6.91122335 3.41005051,6.39052429 Z" id="Path-8" fill="#14524f" fill-rule="nonzero" transform="translate(10.000000, 10.000000) rotate(90.000000) translate(-10.000000, -10.000000) " class="forced_title" data-title="'.__('Go to top').'" data-use_title_for_force_title="1"></path>';
     $output .= '</g>';
     $output .= '</svg>';
     $output .= '</div>';
 
     return $output;
+}
+
+
+/**
+ * Render a code picker fragment with default Pandora styles.
+ *
+ * @param string  $id,
+ * @param string  $content     Content.
+ * @param string  $classes     Classes for code picker.
+ * @param boolean $single_line If true, code picker will be displayed as a single line of code.
+ * @param boolean $return      Return output if set to true.
+ *
+ * @return string
+ */
+function html_print_code_picker(
+    string $id,
+    string $content='',
+    string $classes='',
+    bool $single_line=false,
+    bool $return=false
+) {
+    $single_line_class = '';
+
+    if ($single_line === true) {
+        $single_line_class = 'single-line ';
+    }
+
+    $output = '<div class="code-fragment '.$single_line_class.$classes.'">';
+    $output .= '<pre style="margin: 0;"><code class="code-font" id="'.$id.'" style="display: block; white-space: pre-wrap;">'.$content.'</code></pre>';
+    $output .= '</div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
 }

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1142,6 +1142,27 @@ function modules_get_raw_data($id_agent_module, $date_init, $date_end)
     $data = db_get_all_rows_sql(
         '
 		SELECT *
+		FROM '.$table.'
+		WHERE id_agente_modulo = '.$id_agent_module.'
+			AND utimestamp >= '.$date_init.'
+			AND utimestamp <= '.$date_end,
+        $search_in_history_db
+    );
+
+    return $data;
+}
+
+
+function module_get_min_max_tagente_datos($id_agent_module, $date_init, $date_end)
+{
+    $table = modules_get_table_data($id_agent_module, null);
+
+    $datelimit = ($date_init - $date_end);
+    $search_in_history_db = db_search_in_history_db($datelimit);
+
+    $data = db_get_all_rows_sql(
+        '
+		SELECT max(datos) as max, min(datos) as min
 		FROM '.$table.'
 		WHERE id_agente_modulo = '.$id_agent_module.'
 			AND utimestamp >= '.$date_init.'
@@ -2810,7 +2831,7 @@ function modules_get_color_status($status, $force_module=false)
 
         case STATUS_SERVER_DOWN:
         case STATUS_SERVER_DOWN_BALL:
-        return '#444';
+        return '#B2B2B2';
 
         default:
             // Ignored.
@@ -4555,4 +4576,82 @@ function getStatuses()
         'warning',
         'normal',
     ];
+}
+
+
+function policies_type_modules_availables(string $sec2): array
+{
+    $network_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_NETWORK
+    );
+    $wmi_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_WMI
+    );
+    $plugin_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_PLUGIN
+    );
+    $prediction_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_PREDICTION
+    );
+    $web_available = db_get_sql(
+        'SELECT count(*)
+        FROM tserver
+        WHERE server_type = '.SERVER_TYPE_WEB
+    );
+
+    if (is_metaconsole()) {
+        $network_available = 1;
+        $wmi_available = 1;
+        $plugin_available = 1;
+        $prediction_available = 1;
+    }
+
+    $modules = [];
+    $modules['dataserver'] = __('Create a new data server module');
+    if ($network_available) {
+        $modules['networkserver'] = __('Create a new network server module');
+    }
+
+    if ($plugin_available) {
+        $modules['pluginserver'] = __('Create a new plugin server module');
+    }
+
+    if ($wmi_available) {
+        $modules['wmiserver'] = __('Create a new WMI server module');
+    }
+
+    if ($prediction_available) {
+        $modules['predictionserver'] = __('Create a new prediction server module');
+    }
+
+    if (is_metaconsole() === true || $web_available >= '1') {
+        $modules['webserver'] = __('Create a new web Server module');
+    }
+
+    if (enterprise_installed() === true) {
+        enterprise_include('godmode/agentes/module_manager.php');
+        set_enterprise_module_types($modules);
+    }
+
+    if (strstr($sec2, 'enterprise/godmode/policies/policies') !== false) {
+        // It is unset because the policies haven't a table tmodule_synth and the
+        // some part of code to apply this kind of modules in policy agents.
+        // But in the future maybe will be good to make this feature, but remember
+        // the modules to show in syntetic module policy form must be the policy
+        // modules from the same policy.
+        unset($modules['predictionserver']);
+        if (enterprise_installed() === true) {
+            unset($modules['webux']);
+        }
+    }
+
+    return $modules;
 }

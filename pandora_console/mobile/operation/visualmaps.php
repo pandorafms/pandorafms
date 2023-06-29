@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -241,7 +241,7 @@ class Visualmaps
                         'pos'   => 'right',
                         'text'  => __('All visual consoles'),
                         'href'  => 'index.php?page=visualmaps&favourite=0',
-                        'class' => '',
+                        'class' => 'visual-console-button',
                     ]
                 )
             );
@@ -253,14 +253,16 @@ class Visualmaps
                         'pos'   => 'right',
                         'text'  => __('Favourite visual consoles'),
                         'href'  => 'index.php?page=visualmaps&favourite=1',
-                        'class' => '',
+                        'class' => 'visual-console-button',
                     ]
                 )
             );
         }
 
+        $ui->contentAddHtml('<div class="hr-full"></div>');
+
         if (empty($visualmaps) === true) {
-            $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No maps defined').'</p>');
+            $ui->contentAddHtml('<p class="no-data">'.__('There are no favorite maps to show').'</p>');
         } else {
             $table = new Table();
             // Without header jquery.mobile crashes.
@@ -282,7 +284,9 @@ class Visualmaps
                 $table->addRow([ $map['id'].' flex-center' => $row]);
             }
 
+            $ui->contentAddHtml('<div class="white-card p-tb-0px p-lr-0px">');
             $ui->contentAddHtml($table->getHTML());
+            $ui->contentAddHtml('</div>');
             $ui->contentAddLinkListener('list_visualmaps');
         }
     }

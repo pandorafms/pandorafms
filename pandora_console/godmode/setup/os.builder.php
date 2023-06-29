@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -55,7 +55,7 @@ $iconData[] = html_print_select(
 $iconData[] = html_print_div(
     [
         'id'      => 'icon_image',
-        'class'   => 'inverse_filter main_menu_icon',
+        'class'   => 'invert_filter main_menu_icon',
         'style'   => 'margin-left: 10px',
         'content' => ui_print_os_icon($idOS, false, true),
     ],
@@ -116,6 +116,22 @@ function get_list_os_icons_dir()
         }
     }
 
+    $items2 = scandir($config['homedir'].'/images/os_icons');
+
+    foreach ($items2 as $item2) {
+        if (strstr($item2, '_small.png') || strstr($item2, '_small.gif')
+            || strstr($item2, '_small.jpg')
+        ) {
+            continue;
+        }
+
+        if (strstr($item2, '.png') || strstr($item2, '.gif')
+            || strstr($item2, '.jpg')
+        ) {
+            $return[$item2] = $item2;
+        }
+    }
+
     return $return;
 }
 
@@ -124,10 +140,15 @@ function get_list_os_icons_dir()
 <script type="text/javascript">
 
 function show_icon_OS() {
+    var extension = $("#icon").val().split('.').pop();
 
     var params = [];
     params.push("get_image_path=1");
-    params.push('img_src=images/' + $("#icon").val());
+    if (extension !== 'svg') {
+        params.push('img_src=images/os_icons/' + $("#icon").val());
+    } else {
+        params.push('img_src=images/' + $("#icon").val());
+    }
     params.push("page=include/ajax/skins.ajax");
     jQuery.ajax ({
         data: params.join ("&"),

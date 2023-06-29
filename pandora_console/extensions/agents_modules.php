@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -258,6 +258,14 @@ function agents_modules_load_js()
             } else {
                 return results[1];
             }
+        }
+
+        function select_selected () {
+            // $('#id_agents2 option').each(function(){
+            //     if($(this).attr('selected') === 'selected'){
+            //         $(this).prop('selected', true);
+            //     }
+            // });
         }
     </script>
     <?php
@@ -645,7 +653,7 @@ function mainAgentsModules()
     }
 
     if ($config['pure'] != 1) {
-        $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" class="w100p">';
+        $show_filters = '<form method="post" action="index.php?sec=view&sec2=extensions/agents_modules" class="w100p">';
         $show_filters .= '<table class="filter-table-adv w100p no-border" cellpadding="4" cellspacing="4">';
             $show_filters .= '<tr>';
                 $show_filters .= '<td width="33%">'.$filter_type.'</td>';
@@ -666,8 +674,9 @@ function mainAgentsModules()
                     'srcbutton',
                     false,
                     [
-                        'icon' => 'search',
-                        'mode' => 'mini',
+                        'icon'    => 'search',
+                        'mode'    => 'mini',
+                        'onclick' => 'select_selected()',
                     ],
                     true
                 ),
@@ -729,16 +738,31 @@ function mainAgentsModules()
         if (isset($modules_selected[0]) === true && $modules_selected[0]) {
             $all_modules = [];
             foreach ($modules_selected as $key => $value) {
-                $name = modules_get_agentmodule_name($value);
-                $sql = "SELECT id_agente_modulo 
-                        FROM tagente_modulo 
-                        WHERE nombre = '".$name."';";
+                if ((int) $value > 0) {
+                    $name = modules_get_agentmodule_name($value);
+                    $sql = "SELECT id_agente_modulo
+                            FROM tagente_modulo
+                            WHERE nombre = '".$name."';";
 
-                $result_sql = db_get_all_rows_sql($sql);
+                    $result_sql = db_get_all_rows_sql($sql);
 
-                if (is_array($result_sql)) {
-                    foreach ($result_sql as $key => $value) {
-                        $all_modules[$value['id_agente_modulo']] = io_safe_output($name);
+                    if (is_array($result_sql)) {
+                        foreach ($result_sql as $key => $value) {
+                            $all_modules[$value['id_agente_modulo']] = io_safe_output($name);
+                        }
+                    }
+                } else {
+                    $name = $value;
+                    $sql = "SELECT id_agente_modulo
+                            FROM tagente_modulo
+                            WHERE nombre = '".$name."';";
+
+                    $result_sql = db_get_all_rows_sql($sql);
+
+                    if (is_array($result_sql)) {
+                        foreach ($result_sql as $key => $value) {
+                            $all_modules[$value['id_agente_modulo']] = io_safe_output($name);
+                        }
                     }
                 }
             }
@@ -838,7 +862,7 @@ function mainAgentsModules()
 
     echo '<tr>';
 
-    echo "<th width='140px' class='pdd_r_10px align_right'>".__('Agents').' / '.__('Modules').'</th>';
+    echo "<th width='40px' class='pdd_r_10px align_left'>".__('Agents').' / '.__('Modules').'</th>';
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);
@@ -958,7 +982,7 @@ function mainAgentsModules()
 
             foreach ($module['id'] as $module_id) {
                 if (!$match && array_key_exists($module_id, $agent_modules)) {
-                    echo "<td class='center'>";
+                    echo "<td class='center' style='text-align:left;'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
                     $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."', 800, 480)";

@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -84,7 +84,7 @@ $buttons['gis_maps_list'] = [
         true,
         [
             'title' => __('GIS Maps list'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
 ];
@@ -96,19 +96,30 @@ if ($idMap) {
             true,
             [
                 'title' => __('View GIS'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>',
     ];
 }
 
-ui_print_page_header(
+// Header.
+ui_print_standard_header(
     __('GIS Maps builder'),
     'images/gm_gis.png',
     false,
     'configure_gis_map_edit',
-    true,
-    $buttons
+    false,
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('GIS Maps'),
+        ],
+    ]
 );
 
 switch ($action) {
@@ -480,7 +491,7 @@ $table->data[1][1] = "<table  class='no-class' border='0' id='map_connection'>
 			<a href='javascript: addConnectionMap();'>".html_print_image(
             'images/add.png',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'invert_filter main_menu_icon']
 )."</a>
 			<input type='hidden' name='map_connection_list' value='' id='map_connection_list' />
 			<input type='hidden' name='layer_list' value='' id='layer_list' />
@@ -583,7 +594,7 @@ $table->data[1][1] = '<div id="form_layer" class="invisible">
 
 
 
-$table->data[1][1] .= html_print_button(__('Add agent'), 'add_agent', true, '', 'class="sub add"', true);
+$table->data[1][1] .= html_print_button(__('Add agent'), 'add_agent', true, '', ['mode' => 'secondary', 'icon' => 'next'], true);
 
 $params = [];
 $params['return'] = true;
@@ -628,7 +639,7 @@ $params['javascript_is_function_select'] = true;
 // Filter by group.
 $params['disabled_javascript_on_blur_function'] = false;
 $agent_for_group_input = ui_print_agent_autocomplete_input($params);
-$add_group_btn = html_print_button(__('Add'), 'add_group', true, '', 'class="sub add"', true);
+$add_group_btn = html_print_button(__('Add'), 'add_group', true, '', ['mode' => 'secondary', 'icon' => 'next'], true);
 
 $table->data[1][1] .= '<tr><td colspan="4"><hr /></td></tr>
 			<tr>
@@ -660,21 +671,19 @@ $table->data[1][1] .= '<tr>
 
 html_print_table($table);
 
-
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
 switch ($action) {
     case 'save_new':
     case 'edit_map':
     case 'update_saved':
         if (empty($invalidFields) === true) {
-            html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
+            $action_button = html_print_submit_button(_('Save map'), 'save_button', false, ['mode' => 'primary', 'icon' => 'next'], true);
         } else {
-            html_print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
+            $action_button = html_print_submit_button(_('Update map'), 'update_button', false, ['mode' => 'primary', 'icon' => 'next'], true);
         }
     break;
 
     case 'new_map':
-        html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
+        $action_button = html_print_submit_button(_('Save map'), 'save_button', false, ['mode' => 'primary', 'icon' => 'next'], true);
     break;
 
     default:
@@ -682,7 +691,10 @@ switch ($action) {
     break;
 }
 
-echo '</div>';
+html_print_action_buttons(
+    $action_button,
+    ['type' => 'form_action']
+);
 
 echo '</form>';
 
@@ -702,7 +714,7 @@ echo '</form>';
                 false,
                 [
                     'alt'   => '',
-                    'class' => 'invert_filter',
+                    'class' => 'invert_filter main_menu_icon',
                 ]
             );
             ?>
@@ -899,7 +911,7 @@ function setLayerEditorData (data) {
     var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
     var $layerFormAgentsFromGroupSelect = $("#layer_group_form");
     var $layerFormAgentInput = $("input#text-agent_alias");
-    var $layerFormAgentButton = $("input#button-add_agent");
+    var $layerFormAgentButton = $("button#button-add_agent");
     var $layerFormAgentsListItems = $("tr.agents_list_item");
     var $layerFormGroupsListItems = $("tr.groups_list_item");
 
@@ -929,33 +941,66 @@ function newLayer () {
 }
 
 function saveNewLayer () {
-    var $layerFormNameInput = $("input#text-layer_name_form");
-    var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
-    var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
-    var $layerFormAgentsListItems = $("tr.agents_list_item > td > span.agent_alias");
-    var $layerFormGroupsListItems = $("tr.groups_list_item");
-    var newLayerId = "new_" + ($("tr.layer_row").length + 1);
+    if ($('#hidden-current_edit_layer_id').val()!=='0') {
+        updateLayer();
+    } else {
+        var $layerFormNameInput = $("input#text-layer_name_form");
+        var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
+        var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
+        var $layerFormAgentsListItems = $("tr.agents_list_item > td > span.agent_alias");
+        var $layerFormGroupsListItems = $("tr.groups_list_item");
+        var newLayerId = "new_" + ($("tr.layer_row").length + 1);
 
-    addLayerRow(newLayerId, {
-        id: newLayerId,
-        name: $layerFormNameInput.val(),
-        visible: $layerFormVisibleCheckbox.prop("checked"),
-        agentsFromGroup: $layerFormAgentsFromGroupSelect.val(),
-        agents: $layerFormAgentsListItems.map(function () {
-            return {
-                "id": $(this).data("agent-id"),
-                "alias": $(this).text()
-            };
-        }).get(),
-        groups: $layerFormGroupsListItems.map(function () {
-            return {
-                "id": $(this).data("group-id"),
-                "name": $(this).data("group-name"),
-                "agentId": $(this).data("agent-id"),
-                "agentAlias": $(this).data("agent-alias")
-            };
-        }).get()
-    });
+        addLayerRow(newLayerId, {
+            id: newLayerId,
+            name: $layerFormNameInput.val(),
+            visible: $layerFormVisibleCheckbox.prop("checked"),
+            agentsFromGroup: $layerFormAgentsFromGroupSelect.val(),
+            agents: $layerFormAgentsListItems.map(function () {
+                return {
+                    "id": $(this).data("agent-id"),
+                    "alias": $(this).text()
+                };
+            }).get(),
+            groups: $layerFormGroupsListItems.map(function () {
+                return {
+                    "id": $(this).data("group-id"),
+                    "name": $(this).data("group-name"),
+                    "agentId": $(this).data("agent-id"),
+                    "agentAlias": $(this).data("agent-alias")
+                };
+            }).get()
+        });
+    }
+}
+
+function updateLayer () {
+    var tr = $('#layer_row_'+$('#hidden-current_edit_layer_id').val());
+    var agent_alias = $("tr.agents_list_item > td > span.agent_alias").map(function () {
+        return {
+            "id": $(this).data("agent-id"),
+            "alias": $(this).text()
+        };
+    }).get();
+
+    var groups_list_item = $("tr.groups_list_item").map(function () {
+        return {
+            "id": $(this).data("group-id"),
+            "name": $(this).data("group-name"),
+            "agentId": $(this).data("agent-id"),
+            "agentAlias": $(this).data("agent-alias")
+        };
+    }).get();
+
+    tr.find('input.layer_name').val($("input#text-layer_name_form").val());
+    tr.find('input.layer_visible').val($("input#checkbox-layer_visible_form").prop("checked"));
+    tr.find('input.layer_agents_from_group').val($("select#layer_group_form").val());
+    tr.find('input.layer_agent_id').val(agent_alias[0]["id"]);
+    tr.find('input.layer_agent_alias').val(agent_alias[0]["alias"]);
+    tr.find('input.layer_group_id').val(groups_list_item[0]["id"]);
+    tr.find('input.layer_group_name').val(groups_list_item[0]["name"]);
+    tr.find('input.layer_agent_id_for_data').val(groups_list_item[0]["agentId"]);
+    tr.find('input.layer_agent_alias_for_data').val(groups_list_item[0]["agentAlias"]);
 }
 
 function cleanLayerEditor () {
@@ -1005,7 +1050,7 @@ function getAgentRow (layerId, agentId, agentAlias) {
     var $deleteCol = $("<td />");
 
     var $agentAlias = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + agentAlias + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/delete.svg', false, ['class' => 'invert_filter']); ?> </a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/delete.svg', false, ['class' => 'invert_filter main_menu_icon']); ?> </a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);
@@ -1061,7 +1106,7 @@ function getGroupRow (layerId, groupId, groupName, agentId, agentAlias) {
         + "<i>" + agentAlias + "</i>"
         + ")"
         + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter']); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']); ?></a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);
@@ -1139,8 +1184,8 @@ function getLayerRow (layerId, layerData) {
     var $layerName = $("<span class=\"layer_name\">" + layerData.name + "</span>");
     var $sortUpBtn = $("<a class=\"up_arrow\" href=\"javascript:;\" />");
     var $sortDownBtn = $("<a class=\"down_arrow\" href=\"javascript:;\" />");
-    var $editBtn = $('<a class="edit_layer" href="javascript:;"><?php echo html_print_image('images/edit.svg', true, ['class' => 'invert_filter']); ?></a>');
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter']); ?></a>');
+    var $editBtn = $('<a class="edit_layer" href="javascript:;"><?php echo html_print_image('images/edit.svg', true, ['class' => 'invert_filter main_menu_icon']); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']); ?></a>');
 
     $sortUpBtn.click(moveLayerRowUpOnClick);
     $sortDownBtn.click(moveLayerRowDownOnClick);
@@ -1231,9 +1276,9 @@ function onLayerGroupIdChange (event) {
 
 // Bind events
 $("form#form_setup").submit(onFormSubmit);
-$("input#button-add_agent").click(addAgentClick);
+$("button#button-add_agent").click(addAgentClick);
 $("select#layer_group_id").change(onLayerGroupIdChange);
-$("input#button-add_group").click(addGroupClick);
+$("button#button-add_group").click(addGroupClick);
 
 // Populate layer list
 var layers = <?php echo json_encode($layer_list); ?>;

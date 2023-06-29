@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -275,7 +275,7 @@ if ($not_found) {
 } else {
     if ($disabled_source === false) {
         echo '<div id="map_loading" style="width: 98%;height: 1000px; background-color: rgba(245, 245, 245, .3);position: absolute;display: flex;justify-content: center;align-items: center;flex-direction: column-reverse;">';
-        echo html_print_image('images/spinner.gif', true, 'width: 50px;height: 50px;');
+        echo html_print_image('images/spinner.gif', true, ['width' => '50px', 'height' => '50px']);
         echo '<div>'.__('Creating map...').'</div>';
         echo '</div>';
         $info1 = __('To create a network map that visually recreates link-level (L2) relationships, you must first discover these relationships with Discovery Server.  Network maps only reflect relationships that have already been discovered.');

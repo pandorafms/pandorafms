@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2007-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -36,7 +36,8 @@ function inventory_get_data(
     $return_mode=false,
     $order_by_agent=false,
     $node='',
-    $pagination_url_parameters=[]
+    $pagination_url_parameters=[],
+    $regular_expression=''
 ) {
     global $config;
 
@@ -62,7 +63,12 @@ function inventory_get_data(
         array_push($where, 'id_agente IN ('.implode(',', $agents_ids).')');
     }
 
+    foreach ($inventory_module_name as $key => $module_name) {
+        $inventory_module_name[$key] = io_safe_output($module_name);
+    }
+
     if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name[0] !== 0
         && $inventory_module_name !== ''
         && $inventory_module_name !== 'all'
     ) {
@@ -268,7 +274,15 @@ function inventory_get_data(
                         $i++;
                     }
 
-                    $data[] = $temp_row;
+                    if ($regular_expression !== '') {
+                        if (is_array(preg_grep('/'.$regular_expression.'/', $temp_row))) {
+                            if (count(preg_grep('/'.$regular_expression.'/', $temp_row)) > 0) {
+                                $data[] = $temp_row;
+                            }
+                        }
+                    } else {
+                        $data[] = $temp_row;
+                    }
                 }
             }
 
@@ -732,29 +746,52 @@ function inventory_get_datatable(
         array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
     }
 
+    if ($utimestamp > 0) {
+        array_push($where, 'tagente_datos_inventory.utimestamp <= '.$utimestamp.' ');
+    }
+
     $sql = sprintf(
         'SELECT tmodule_inventory.*,
             tagent_module_inventory.*,
-            tagente.alias as name_agent
+            tagente.alias as name_agent,
+            tagente_datos_inventory.utimestamp as last_update,
+            tagente_datos_inventory.timestamp as last_update_timestamp,
+            tagente_datos_inventory.data as data_inventory
         FROM tmodule_inventory
         INNER JOIN tagent_module_inventory
             ON tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory
+        INNER JOIN tagente_datos_inventory
+            ON tagent_module_inventory.id_agent_module_inventory = tagente_datos_inventory.id_agent_module_inventory
         LEFT JOIN tagente
             ON tagente.id_agente = tagent_module_inventory.id_agente
+
         WHERE %s
-        ORDER BY tmodule_inventory.id_module_inventory 
-        LIMIT %d, %d',
-        implode(' AND ', $where),
-        $offset,
-        $config['block_size']
+        ORDER BY tmodule_inventory.id_module_inventory
+        ',
+        implode(' AND ', $where)
     );
+
+    if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name !== ''
+        && $inventory_module_name !== 'all'
+    ) {
+        $sql .= sprintf(
+            'LIMIT %d, %d',
+            $offset,
+            $config['block_size']
+        );
+    }
 
     $rows = db_get_all_rows_sql($sql);
 
     if ($order_by_agent === false) {
         $modules = [];
         foreach ($rows as $row) {
-            $data_rows = explode(PHP_EOL, $row['data']);
+            if ($row['utimestamp'] !== $row['last_update']) {
+                $row['timestamp'] = $row['last_update_timestamp'];
+            }
+
+            $data_rows = explode(PHP_EOL, $row['data_inventory']);
             foreach ($data_rows as $data_key => $data_value) {
                 if (empty($data_value) === false) {
                     $row['data'] = $data_value;
@@ -769,36 +806,56 @@ function inventory_get_datatable(
         $agent_data = [];
         $rows_tmp = [];
         foreach ($rows as $row) {
-            $agent_data[$row['id_agente']][] = $row;
+            $replace_agent_data = false;
+            if (isset($agent_data[$row['id_agente']]) === true) {
+                foreach ($agent_data[$row['id_agente']] as $key => $compare_data) {
+                    if ($compare_data['id_module_inventory'] === $row['id_module_inventory']
+                        && $row['last_update'] > $compare_data['last_update']
+                    ) {
+                        $agent_data[$row['id_agente']][$key] = $row;
+                        $replace_agent_data = true;
+                    }
+                }
+            }
+
+            if ($replace_agent_data === false) {
+                $agent_data[$row['id_agente']][] = $row;
+            }
         }
 
-        foreach ($agent_data as $id_agent => $rows) {
-            $rows_tmp['agent'] = $row['name_agent'];
-            foreach ($rows as $row) {
+        foreach ($agent_data as $id_agent => $data_agent) {
+            foreach ($data_agent as $key => $agent_row) {
+                if (isset($rows_tmp['agent']) === false) {
+                    $rows_tmp['agent'] = $agent_row['name_agent'];
+                }
+
+                $data_agent[$key]['timestamp'] = $agent_row['last_update_timestamp'];
+                $data_agent[$key]['utimestamp'] = $agent_row['last_update'];
+
                 if ($utimestamp > 0) {
                     $data_row = db_get_row_sql(
                         sprintf(
                             'SELECT `data`,
-                                `timestamp`
+                                `timestamp`, 
+                                `utimestamp`
                             FROM tagente_datos_inventory
-                            WHERE utimestamp <= "%s"
+                            WHERE utimestamp = "%s"
                                 AND id_agent_module_inventory = %d
                             ORDER BY utimestamp DESC',
                             $utimestamp,
-                            $row['id_agent_module_inventory']
+                            $agent_row['id_agent_module_inventory']
                         )
                     );
 
                     if ($data_row !== false) {
-                        $row['data'] = $data_row['data'];
-                        $row['timestamp'] = $data_row['timestamp'];
+                        $data_agent[$key]['data'] = $data_row['data'];
                     } else {
                         continue;
                     }
                 }
             }
 
-            $rows_tmp['row'] = $rows;
+            $rows_tmp['row'] = $data_agent;
             array_push($agents_rows, $rows_tmp);
         }
 
@@ -809,9 +866,20 @@ function inventory_get_datatable(
 
 function get_data_basic_info_sql($params, $count=false)
 {
+    $table = 'tagente';
+    if (is_metaconsole() === true) {
+        $table = 'tmetaconsole_agent';
+    }
+
     $where = 'WHERE 1=1 ';
-    if ($params['id_agent'] > 0) {
+    if ($params['id_agent'] > 0 && $count === true) {
         $where .= sprintf(' AND id_agente = %d', $params['id_agent']);
+    } else if ($params['id_agent'] > 0 && $count === false) {
+        $where .= sprintf(' AND %s.id_agente = %d', $table, $params['id_agent']);
+    }
+
+    if ($params['id_group'] > 0) {
+        $where .= sprintf(' AND id_grupo = %d', $params['id_group']);
     }
 
     if ($params['search'] > 0) {
@@ -821,12 +889,75 @@ function get_data_basic_info_sql($params, $count=false)
         );
     }
 
+    if ($params['order'] > 0) {
+        $str_split = explode(' ', $params['order']);
+        switch ($str_split[0]) {
+            case 'alias':
+                $params['order'] = 'alias '.$str_split[1];
+            break;
+
+            case 'ip':
+                $params['order'] = 'direccion '.$str_split[1];
+            break;
+
+            case 'secondoaryIp':
+                $params['order'] = 'fixed_ip '.$str_split[1];
+            break;
+
+            case 'group':
+                $params['order'] = 'id_grupo '.$str_split[1];
+            break;
+
+            case 'secondaryGroups':
+                $params['order'] = 'tagent_secondary_group.id_group '.$str_split[1];
+            break;
+
+            case 'description':
+                $params['order'] = 'comentarios '.$str_split[1];
+            break;
+
+            case 'os':
+                $params['order'] = 'id_os '.$str_split[1];
+            break;
+
+            case 'interval':
+                $params['order'] = 'intervalo '.$str_split[1];
+            break;
+
+            case 'lastContact':
+                $params['order'] = 'ultimo_contacto '.$str_split[1];
+            break;
+
+            case 'lastStatusChange':
+                $params['order'] = 'tagente_estado.last_status_change '.$str_split[1];
+            break;
+
+            case 'customFields':
+                $params['order'] = 'tagent_custom_data.id_field '.$str_split[1];
+            break;
+
+            case 'valuesCustomFields':
+                $params['order'] = 'tagent_custom_data.description '.$str_split[1];
+            break;
+
+            default:
+                $params['order'] = 'alias '.$str_split[1];
+            break;
+        }
+    }
+
     $limit_condition = '';
     $order_condition = '';
     $fields = 'count(*)';
+    $innerjoin = '';
+    $groupby = '';
+
     if ($count !== true) {
         $fields = '*';
-
+        $innerjoin = 'LEFT JOIN tagente_estado ON '.$table.'.id_agente = tagente_estado.id_agente ';
+        $innerjoin .= 'LEFT JOIN tagent_secondary_group ON '.$table.'.id_agente = tagent_secondary_group.id_agent ';
+        $innerjoin .= 'LEFT JOIN tagent_custom_data ON '.$table.'.id_agente = tagent_custom_data.id_agent ';
+        $groupby = 'GROUP BY '.$table.'.id_agente';
         $limit_condition = sprintf(
             'LIMIT %d, %d',
             $params['start'],
@@ -838,12 +969,17 @@ function get_data_basic_info_sql($params, $count=false)
 
     $sql = sprintf(
         'SELECT %s
-        FROM tagente
+        FROM %s
+        %s
+        %s
         %s
         %s
         %s',
         $fields,
+        $table,
+        $innerjoin,
         $where,
+        $groupby,
         $order_condition,
         $limit_condition
     );
@@ -875,16 +1011,16 @@ function inventory_get_dates($module_inventory_name, $inventory_agent, $inventor
 			AND tagente_datos_inventory.id_agent_module_inventory = tagent_module_inventory.id_agent_module_inventory
 			AND tagente.id_agente = tagent_module_inventory.id_agente';
 
-    if ($inventory_agent != 0) {
+    if ($inventory_agent !== 0) {
         $sql .= ' AND tagent_module_inventory.id_agente IN ('."'".implode(',', (array) $inventory_agent)."'".')';
     }
 
-    if ($inventory_id_group != 0) {
+    if ($inventory_id_group !== 0) {
         $sql .= " AND tagente.id_grupo = $inventory_id_group";
     }
 
     if (is_string($module_inventory_name) === true
-        && $module_inventory_name != 'all'
+        && $module_inventory_name !== '0'
     ) {
         $sql .= " AND tmodule_inventory.name IN ('".str_replace(',', "','", $module_inventory_name)."')";
     }

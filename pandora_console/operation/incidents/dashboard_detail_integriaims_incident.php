@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -50,14 +50,30 @@ $result_api_call_list = integria_api_call(
 // Return array of api call 'get_incidents'.
 $array_get_incidents = [];
 get_array_from_csv_data_all($result_api_call_list, $array_get_incidents);
-// Remove index (id)
-$array_get_incidents = $array_get_incidents[$incident_id];
 
+// Remove index (id).
+$array_get_incidents = $array_get_incidents[$incident_id];
 
 // Header tabs.
 $onheader = integriaims_tabs(false, $incident_id);
-ui_print_page_header($array_get_incidents[3].' - '.__('Details'), '', false, '', false, $onheader);
-
+ui_print_standard_header(
+    $array_get_incidents[3],
+    '',
+    false,
+    '',
+    false,
+    $onheader,
+    [
+        [
+            'link'  => '',
+            'label' => __('Issues'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Details'),
+        ],
+    ]
+);
 
 // Data.
 $status = $array_get_incidents[6];
@@ -215,7 +231,7 @@ $table_files_section->data[1][0] .= html_print_textarea(
     true
 );
 
-$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
+$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, ['icon' => 'wand', 'mode' => 'mini secondary'], true).'</div>';
 
 $upload_file_form = '<div class="w100p">';
 
@@ -268,7 +284,7 @@ $table_comments_section->data[0][0] .= html_print_textarea(
     true
 );
 
-$table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, 'class="sub wand"', true).'</div>';
+$table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, ['icon' => 'wand', 'mode' => 'mini secondary'], true).'</div>';
 
 // Upload comment. If ticket is closed, this action cannot be performed.
 if ($upload_comment && $array_get_incidents[6] != 7) {
@@ -326,7 +342,7 @@ $details_box .= '
     <div class="integriaims_details_titles">'.__('Type').'</div>';
 $details_box .= '
     <div>'.html_print_image('images/heart.png', true, ['class' => 'invert_filter']).'</div>
-    <div>'.html_print_image('images/builder.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/builder@svg.svg', true, ['class' => 'invert_filter']).'</div>
     <div>'.html_print_image('images/user_green.png', true, ['class' => 'invert_filter']).'</div>
     <div>'.ui_print_integria_incident_priority($priority, $priority_text).'</div>
     <div>'.html_print_image('images/incidents.png', true, ['class' => 'invert_filter']).'</div>';
@@ -399,8 +415,8 @@ ui_toggle(
     '',
     true,
     false,
-    'white_box white_box_opened',
-    'no-border flex'
+    'white-box-content',
+    'w98p'
 );
 echo '</div>';
 
@@ -412,15 +428,14 @@ ui_toggle(
     '',
     true,
     false,
-    'white_box white_box_opened',
-    'no-border flex'
+    'white-box-content',
+    'w98p'
 );
 echo '</div>';
 
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
-
     $('#details_box .white_table_graph_header').click(function(){
         $('div#details_box').toggleClass('integria_details_shadow');
     });
@@ -432,6 +447,5 @@ $(document).ready (function () {
     $('#dates_box .white_table_graph_header').click(function(){
         $('div#dates_box').toggleClass('integria_details_shadow');
     });
-
 });
 </script>

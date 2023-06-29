@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -115,7 +115,9 @@ $exception_condition_value = 10;
 $modulegroup = 0;
 $period = SECONDS_1DAY;
 $search = '';
+$full_text = 0;
 $log_number = 1000;
+$inventory_regular_expression = '';
 // Added support for projection graphs.
 $period_pg = SECONDS_5DAY;
 $projection_period = SECONDS_5DAY;
@@ -316,6 +318,7 @@ switch ($action) {
                     $source = $es['source'];
                     $search = $es['search'];
                     $log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
+                    $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
                 break;
 
                 case 'simple_graph':
@@ -938,6 +941,7 @@ switch ($action) {
                     $inventory_modules = $es['inventory_modules'];
                     $id_agents = $es['id_agents'];
                     $recursion = $item['recursion'];
+                    $inventory_regular_expression = $es['inventory_regular_expression'];
 
                     $idAgent = $es['id_agents'];
                     $idAgentModule = $inventory_modules;
@@ -1047,17 +1051,6 @@ $class = 'databox filters';
 
 ?>
 <table id="table_item_edit_reporting"  class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
-    <?php
-    if (defined('METACONSOLE')) {
-        echo '<thead>
-				<tr>
-					<th align=center colspan=5>
-						'.__('Item Editor').'
-					</th>
-				</tr>
-			</thead>';
-    }
-    ?>
     <tbody>
         <tr id="row_type"   class="datos">
             <td class="bolder w220px">
@@ -1228,9 +1221,7 @@ $class = 'databox filters';
                     $servers,
                     'combo_server',
                     $server_name,
-                    '',
-                    $nothing,
-                    $nothing_value
+                    ''
                 );
                 ?>
             </td>
@@ -1240,8 +1231,8 @@ $class = 'databox filters';
         ?>
 
         <?php
-        $servers_all_opt = array_merge(['all' => 'All nodes'], $servers);
-        if ($meta) {
+        if (is_metaconsole() === true) {
+            $servers_all_opt = array_merge(['all' => 'All nodes'], $servers);
             ?>
         <tr id="row_servers_all_opt"   class="datos">
             <td class="bolder"><?php echo __('Server'); ?></td>
@@ -1249,7 +1240,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers_all_opt,
-                    'combo_server',
+                    'combo_server_sql',
                     $server_name,
                     '',
                     $nothing,
@@ -1324,6 +1315,14 @@ $class = 'databox filters';
             <td  >
                 <?php
                 html_print_input_text('search', $search, '', 40, 100);
+                html_print_checkbox(
+                    'full_text',
+                    1,
+                    $full_text,
+                    false,
+                    false
+                );
+                ui_print_help_tip(__('Full context'), false);
                 ?>
             </td>
         </tr>
@@ -2193,6 +2192,15 @@ $class = 'databox filters';
                     'inventory_modules_selected',
                     $array_inventory_modules
                 );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_regular_expression"   class="datos">
+            <td class="bolder"><?php echo __('Regular expression'); ?></td>
+            <td>
+                <?php
+                html_print_input_text('inventory_regular_expression', $inventory_regular_expression, '', false, 255, false, false, false, '', 'w50p');
                 ?>
             </td>
         </tr>
@@ -4131,7 +4139,7 @@ function print_SLA_list($width, $action, $idItem=null)
                 </th>
                 <th class="header sla_list_sla_limit_col" scope="col">
                 <?php
-                echo __('SLA Limit (%)');
+                echo __('SLA Limit (%)').ui_print_help_tip(__('Enter possible range of values in SLA.'), true);
                 ?>
                 </th>
                 <th class="header sla_list_action_col" scope="col">
@@ -4272,7 +4280,7 @@ function print_SLA_list($width, $action, $idItem=null)
                         echo '</td>';
                         echo '<td class="sla_list_action_col center">';
                         echo '<a href="javascript: deleteSLARow('.$item['id'].');">';
-                        echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter']);
+                        echo html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']);
                         echo '</a>';
                         echo '</td>';
                         echo '</tr>';
@@ -4315,7 +4323,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                     html_print_image(
                                         'images/delete.svg',
                                         false,
-                                        ['class' => 'invert_filter']
+                                        ['class' => 'invert_filter main_menu_icon']
                                     );
                                     ?>
                                 </a>
@@ -4739,7 +4747,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     <td>'.printSmallFont($nameAgentFailover).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModuleFailover).'</td>
                                     <td class="center">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
                                     </td>
                                 </tr>';
                             } else {
@@ -4747,7 +4755,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModule).'</td>
                                     <td class="center">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
                                     </td>
                                 </tr>';
                             }
@@ -4757,7 +4765,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 								<td>'.printSmallFont($nameModule).'</td>
 								<td>'.printSmallFont($operation[$item['operation']]).'</td>
 								<td class="center">
-									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter']).'</a>
+									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/delete.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>
 								</td>
 							</tr>';
                         }
@@ -4797,7 +4805,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     html_print_image(
                                         'images/delete.svg',
                                         false,
-                                        ['class' => 'invert_filter']
+                                        ['class' => 'invert_filter main_menu_icon']
                                     );
                                     ?>
                                 </a>
@@ -4965,7 +4973,7 @@ ui_require_javascript_file(
     ENTERPRISE_DIR.'/include/javascript/'
 );
 
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ui_require_javascript_file('pandora');
 ?>
 
@@ -5204,13 +5212,7 @@ $(document).ready (function () {
         });
     });
 
-    var added_config = {
-        "elements": "textarea_render_definition",
-        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
-        "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor"
-    }
-    defineTinyMCE(added_config);
+    defineTinyMCE('#textarea_render_definition');
 
     $("#checkbox-select_by_group").change(function () {
         var select_by_group  = $('#checkbox-select_by_group').prop('checked');
@@ -5331,7 +5333,7 @@ $(document).ready (function () {
                 break;
             case 'inventory':
             case 'inventory_changes':
-                if ($("select#inventory_modules>option:selected").val() == 0) {
+                if ($("select#inventory_modules>option:selected").val() == -1) {
                     dialog_message('#message_no_module');
                     return false;
                 }
@@ -5844,7 +5846,7 @@ function addSLARow() {
 
     if ((((idAgent != '') && (idAgent > 0))
         && ((idModule != '') && (idModule > 0)))
-        || serviceId != null)
+        && (slaLimit != '') || serviceId != null)
     {
             if (nameAgent != '') {
                 //Truncate nameAgent
@@ -6446,6 +6448,7 @@ function chooseType() {
     $("#row_date").hide();
     $("#row_agent_multi").hide();
     $("#row_module_multi").hide();
+    $('#row_regular_expression').hide();
     $("#row_event_graphs").hide();
     $("#row_event_graph_by_agent").hide();
     $("#row_event_graph_by_user").hide();
@@ -6773,6 +6776,8 @@ function chooseType() {
             $("#row_dyn_height").show();
             $("#row_servers").show();
             $("#row_historical_db_check").show();
+            $("#sql_example").hide();
+            $("#sql_entry").show();
             break;
 
         case 'url':
@@ -6983,7 +6988,7 @@ function chooseType() {
 
         case 'group_report':
             $("#row_group").show();
-            $("#row_servers").show();
+            $("#row_servers_all_opt").show();
             $("#row_description").show();
             $("#row_historical_db_check").hide();
             break;
@@ -7155,11 +7160,9 @@ function chooseType() {
             $("#row_group").show();
             $("#row_agent_multi").show();
             $("#row_module_multi").show();
+            $('#row_regular_expression').show();
             $("#row_date").show();
 
-            $("#id_agents")
-                .change(event_change_id_agent_inventory);
-            $("#id_agents").trigger('change');
 
             $("#row_servers").show();
 
@@ -7181,11 +7184,15 @@ function chooseType() {
                     false,
                     false,
                     false,
-                    false
+                    false,
                 ).'"';
+                echo ', "false", '.json_encode($id_agents).'';
                 ?>
                 );
             });
+
+            $("#combo_server").trigger('change');
+            
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');
@@ -7210,6 +7217,9 @@ function chooseType() {
                 ?>
                 );
             });
+            $("#id_agents").change(event_change_id_agent_inventory);
+            $("#id_agents").trigger('change');
+
             $("#id_agents").change(function() {
                 $('#hidden-date_selected').val('');
                 updateInventoryDates(
@@ -7236,7 +7246,7 @@ function chooseType() {
                 ?>
                 );
             });
-
+            
             if (!$("#hidden-date_selected").val())
                 updateInventoryDates(
                 <?php

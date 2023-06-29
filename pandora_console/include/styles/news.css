@@ -1,14 +1,74 @@
-.green_title {
-  background-color: #82b92e;
+.new-board {
+  background-color: #ffffff;
+  border: 1px solid #e5e9ed;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.new-board-header {
+  background-image: linear-gradient(180deg, #fdfdfe 0%, #ffffff 100%);
+  border-radius: 4px 4px 0 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.new-board-title {
   font-weight: 600;
-  width: auto;
-  text-align: center;
-  display: block;
-  padding: 1em;
-  font-size: 1.3em;
-  color: #fff;
+  font-size: 16px;
+  line-height: 24px;
+  color: #161628;
+  margin: 15px;
+}
+
+.new-board-author {
+  color: #8a96a6;
+  margin: 15px;
 }
 
 .new.content {
-  padding: 0 4em 2em;
+  padding: 0 15px 15px;
+}
+
+.default-new {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.default-new > div > img {
+  width: 100%;
+  max-width: 430px;
+  height: auto;
+}
+
+.default-new > div.default-text-new {
+  margin-left: 20px;
+  width: 400px;
+}
+
+.default-new > div.default-text-new > p {
+  color: #454545;
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.default-new > div.default-text-new > p:first-child {
+  margin-top: 0px;
+}
+
+.default-new > div.default-text-new > span {
+  color: #8a96a6;
+  font-size: 11px;
+  line-height: 20px;
+}
+
+@media screen and (max-width: 1430px) {
+  .default-new > div.default-text-new > p {
+    font-size: 12px;
+    line-height: 18px;
+  }
 }

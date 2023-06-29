@@ -1,5 +1,4 @@
 <?php
-
 /**
  * User creation / update.
  *
@@ -10,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -55,12 +54,29 @@ if ($enterprise_include === true) {
     enterprise_include_once('meta/include/functions_users_meta.php');
 }
 
+$homeScreenValues = [
+    HOME_SCREEN_DEFAULT        => __('Default'),
+    HOME_SCREEN_VISUAL_CONSOLE => __('Visual console'),
+    HOME_SCREEN_EVENT_LIST     => __('Event list'),
+    HOME_SCREEN_GROUP_VIEW     => __('Group view'),
+    HOME_SCREEN_TACTICAL_VIEW  => __('Tactical view'),
+    HOME_SCREEN_ALERT_DETAIL   => __('Alert detail'),
+    HOME_SCREEN_EXTERNAL_LINK  => __('External link'),
+    HOME_SCREEN_OTHER          => __('Other'),
+    HOME_SCREEN_DASHBOARD      => __('Dashboard'),
+];
+
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 $id = get_parameter('id', get_parameter('id_user', ''));
+
+if (empty($id) === true) {
+    $id = $config['id_user'];
+}
+
 // Check if we are the same user for edit or we have a proper profile for edit users.
 if ($id !== $config['id_user']) {
-    if ((is_centralized() === true) || (bool) check_acl($config['id_user'], 0, 'UM') === false) {
+    if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
             'Trying to access User Management'
@@ -74,97 +90,18 @@ if ($id !== $config['id_user']) {
 // ID given as parameter.
 $pure = get_parameter('pure', 0);
 $user_info = get_user_info($id);
+
+if (is_metaconsole() === true) {
+    $user_info['section'] = $user_info['metaconsole_section'];
+    $user_info['data_section'] = $user_info['metaconsole_data_section'];
+    $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
+}
+
 $is_err = false;
 
 if (is_ajax() === true) {
     $delete_profile = (bool) get_parameter('delete_profile');
     $get_user_profile = (bool) get_parameter('get_user_profile');
-
-    if ($delete_profile === true) {
-        $id2 = (string) get_parameter('id_user');
-        $id_up = (int) get_parameter('id_user_profile');
-
-        $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
-        $id_perfil = $perfilUser['id_perfil'];
-        $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
-
-        db_pandora_audit(
-            AUDIT_LOG_USER_MANAGEMENT,
-            'Deleted profile for user '.io_safe_output($id2),
-            false,
-            false,
-            'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
-        );
-
-        $return = profile_delete_user_profile($id2, $id_up);
-        ui_print_result_message(
-            $return,
-            __('Successfully deleted'),
-            __('Could not be deleted')
-        );
-
-
-        $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
-        $user_is_global_admin = users_is_admin($id2);
-
-        if ($has_profile === false && $user_is_global_admin === false) {
-            $result = delete_user($id2);
-
-            if ($result === true) {
-                db_pandora_audit(
-                    AUDIT_LOG_USER_MANAGEMENT,
-                    __('Deleted user %s', io_safe_output($id_user))
-                );
-            }
-
-            ui_print_result_message(
-                $result,
-                __('Successfully deleted'),
-                __('There was a problem deleting the user')
-            );
-
-            // Delete the user in all the consoles.
-            if (is_metaconsole() === true) {
-                $servers = metaconsole_get_servers();
-                foreach ($servers as $server) {
-                    // Connect to the remote console.
-                    metaconsole_connect($server);
-
-                    // Delete the user.
-                    $result = delete_user($id_user);
-                    if ($result === true) {
-                        db_pandora_audit(
-                            AUDIT_LOG_USER_MANAGEMENT,
-                            __('Deleted user %s from metaconsole', io_safe_output($id_user))
-                        );
-                    }
-
-                    // Restore the db connection.
-                    metaconsole_restore_db();
-
-                    // Log to the metaconsole too.
-                    if ($result === true) {
-                        db_pandora_audit(
-                            AUDIT_LOG_USER_MANAGEMENT,
-                            __(
-                                'Deleted user %s from %s',
-                                io_safe_input($id_user),
-                                io_safe_input($server['server_name'])
-                            )
-                        );
-                    }
-
-                    ui_print_result_message(
-                        $result,
-                        __('Successfully deleted from %s', io_safe_input($server['server_name'])),
-                        __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
-                    );
-                }
-            }
-        }
-
-        return;
-    }
 
     if ($get_user_profile === true) {
         $profile_id = (int) get_parameter('profile_id');
@@ -264,8 +201,9 @@ if (is_metaconsole() === true) {
         $buttons[$tab]['active'] = true;
     }
 
+    $edit_user = get_parameter('edit_user');
     ui_print_standard_header(
-        (empty($id) === false) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
+        ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         'images/gm_users.png',
         false,
         '',
@@ -297,7 +235,7 @@ if ((bool) $config['user_can_update_info'] === true) {
     $view_mode = true;
 }
 
-$delete_profile = (is_ajax() === true) ? (bool) get_parameter('delete_profile') : false;
+$delete_profile = (bool) get_parameter('delete_profile');
 $new_user = (bool) get_parameter('new_user');
 $create_user = (bool) get_parameter('create_user');
 $add_profile = (bool) get_parameter('add_profile');
@@ -345,7 +283,7 @@ if ($new_user === true && (bool) $config['admin_can_add_user'] === true) {
         $user_info['metaconsole_access_node'] = 0;
     }
 
-    if ((bool) $config['ehorus_user_level_conf'] === true) {
+    if (isset($config['ehorus_user_level_conf']) === true && (bool) $config['ehorus_user_level_conf'] === true) {
         $user_info['ehorus_user_level_user'] = '';
         $user_info['ehorus_user_level_pass'] = '';
         $user_info['ehorus_user_level_enabled'] = true;
@@ -393,6 +331,8 @@ if ($create_user === true) {
     $values['timezone'] = (string) get_parameter('timezone');
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
+    $values['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
+    $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
@@ -412,6 +352,8 @@ if ($create_user === true) {
     } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
         $values['data_section'] = get_parameter('data_section');
     }
+
+    $values['section'] = $homeScreenValues[$values['section']];
 
     if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;
@@ -443,10 +385,18 @@ if ($create_user === true) {
 
     // Generate new API token.
     $values['api_token'] = api_token_generate();
-
-    if (empty($id) === true) {
+    // Validate the user ID if it already exists.
+    $user_exists = get_user_info($values['id_user']);
+    if (empty($values['id_user']) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
+        $user_info = $values;
+        $password_new = '';
+        $password_confirm = '';
+        $new_user = true;
+    } else if (isset($user_exists['id_user'])) {
+        $is_err = true;
+        ui_print_error_message(__('User ID already exists'));
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
@@ -639,7 +589,6 @@ if ($update_user) {
     }
 
     $values = [];
-    $values['id_user'] = (string) get_parameter('id_user');
     $values['fullname'] = (string) get_parameter('fullname');
     $values['firstname'] = (string) get_parameter('firstname');
     $values['lastname'] = (string) get_parameter('lastname');
@@ -654,9 +603,10 @@ if ($update_user) {
     $values['default_event_filter'] = (int) get_parameter('default_event_filter');
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
     $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
+    $values['time_autorefresh'] = (int) get_parameter('time_autorefresh');
     // API Token information.
     $apiTokenRenewed = (bool) get_parameter('renewAPIToken');
-    $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($values['id_user']);
+    $values['api_token'] = ($apiTokenRenewed === true) ? api_token_generate() : users_get_API_token($id);
 
     if (users_is_admin() === false && (bool) $values['is_admin'] !== false) {
         db_pandora_audit(
@@ -695,10 +645,18 @@ if ($update_user) {
         $values['data_section'] = get_parameter('data_section');
     }
 
+    $values['section'] = $homeScreenValues[$values['section']];
+
     if (enterprise_installed() === true && is_metaconsole() === true) {
-        $values['metaconsole_access'] = get_parameter('metaconsole_access');
-        $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
-        $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
+        if (users_is_admin() === true) {
+            $values['metaconsole_access'] = get_parameter('metaconsole_access');
+            $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
+            $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
+        } else {
+            $values['metaconsole_access'] = $user_info['metaconsole_access'];
+            $values['metaconsole_agents_manager'] = $user_info['metaconsole_agents_manager'];
+            $values['metaconsole_access_node'] = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
+        }
     }
 
     $values['not_login'] = (bool) get_parameter('not_login', false);
@@ -746,6 +704,10 @@ if ($update_user) {
                                     ]
                                 );
                                 $res3 = save_pass_history($id, $password_new);
+
+                                // Generate new API token.
+                                $newToken = api_token_generate();
+                                $res4 = update_user($id, ['api_token' => $newToken]);
                             }
 
                             ui_print_result_message(
@@ -770,6 +732,10 @@ if ($update_user) {
                                     'utimestamp'  => time(),
                                 ]
                             );
+
+                            // Generate new API token.
+                            $newToken = api_token_generate();
+                            $res4 = update_user($id, ['api_token' => $newToken]);
                         }
 
                         ui_print_result_message(
@@ -804,7 +770,7 @@ if ($update_user) {
             $has_skin = false;
             $has_wizard = false;
 
-            $info = '{"id_user":"'.$values['id_user'].'",
+            $info = '{"id_user":"'.$id.'",
 				"FullName":"'.$values['fullname'].'",
 				"Firstname":"'.$values['firstname'].'",
 				"Lastname":"'.$values['lastname'].'",
@@ -882,6 +848,89 @@ if ($update_user) {
     }
 
     $user_info = $values;
+}
+
+if ($delete_profile) {
+    $id2 = (string) get_parameter('id_user');
+    $id_up = (int) get_parameter('id_user_profile');
+    $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
+    $id_perfil = $perfilUser['id_perfil'];
+    $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
+
+    db_pandora_audit(
+        AUDIT_LOG_USER_MANAGEMENT,
+        'Deleted profile for user '.io_safe_output($id2),
+        false,
+        false,
+        'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
+    );
+
+    $return = profile_delete_user_profile($id2, $id_up);
+    ui_print_result_message(
+        $return,
+        __('Successfully deleted'),
+        __('Could not be deleted')
+    );
+
+
+    $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
+    $user_is_global_admin = users_is_admin($id2);
+
+    if ($has_profile === false && $user_is_global_admin === false) {
+        $result = delete_user($id2);
+
+        if ($result === true) {
+            db_pandora_audit(
+                AUDIT_LOG_USER_MANAGEMENT,
+                __('Deleted user %s', io_safe_output($id_user))
+            );
+        }
+
+        ui_print_result_message(
+            $result,
+            __('Successfully deleted'),
+            __('There was a problem deleting the user')
+        );
+
+        // Delete the user in all the consoles.
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            foreach ($servers as $server) {
+                // Connect to the remote console.
+                metaconsole_connect($server);
+
+                // Delete the user.
+                $result = delete_user($id_user);
+                if ($result === true) {
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_MANAGEMENT,
+                        __('Deleted user %s from metaconsole', io_safe_output($id_user))
+                    );
+                }
+
+                // Restore the db connection.
+                metaconsole_restore_db();
+
+                // Log to the metaconsole too.
+                if ($result === true) {
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_MANAGEMENT,
+                        __(
+                            'Deleted user %s from %s',
+                            io_safe_input($id_user),
+                            io_safe_input($server['server_name'])
+                        )
+                    );
+                }
+
+                ui_print_result_message(
+                    $result,
+                    __('Successfully deleted from %s', io_safe_input($server['server_name'])),
+                    __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
+                );
+            }
+        }
+    }
 }
 
 if ((int) $status !== -1) {
@@ -996,28 +1045,19 @@ if (!users_is_admin() && $config['id_user'] !== $id && $new_user === false) {
     }
 }
 
-if (is_metaconsole() === true) {
-    html_print_div(
-        [
-            'class'   => 'user_form_title',
-            'content' => ((bool) $id === true) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
-        ]
-    );
-}
-
 if (!$new_user) {
     $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
     $user_id .= '<span>'.$id.'</span>';
     $user_id .= html_print_input_hidden('id_user', $id, true);
     $user_id .= '</div>';
 
-    $apiTokenContentElements[] = '<span style="height: 15px;font-size: 14px;">'.__('API Token').'</span>';
+    $apiTokenContentElements[] = '<span style="line-height: 15px; height: 15px;font-size: 14px;">'.__('API Token').'</span>';
     $apiTokenContentElements[] = html_print_button(
         __('Renew'),
         'renew_api_token',
         false,
         sprintf(
-            'javascript:renewAPIToken(\'%s\', \'%s\', \'%s\')',
+            'javascript:renewAPIToken("%s", "%s", "%s")',
             __('Warning'),
             __('The API token will be renewed. After this action, the last token you were using will not work. Are you sure?'),
             'user_profile_form',
@@ -1033,9 +1073,11 @@ if (!$new_user) {
         'show_api_token',
         false,
         sprintf(
-            'javascript:showAPIToken(\'%s\', \'%s\')',
+            'javascript:showAPIToken("%s", "%s", "%s", "%s")',
             __('API Token'),
-            base64_encode(__('Your API Token is:').'&nbsp;<br><span class="font_12pt bolder">'.users_get_API_token($id).'</span><br>&nbsp;'.__('Please, avoid share this string with others.')),
+            __('Your API Token is:'),
+            base64_encode(users_get_API_token($id)),
+            __('Please, avoid share this string with others.'),
         ),
         [
             'mode'  => 'link',
@@ -1053,6 +1095,22 @@ if (!$new_user) {
     );
 
     $user_id .= $apiTokenContent;
+
+    $CodeQRContent .= html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
+    $CodeQRContent .= html_print_anchor(
+        ['id' => 'qr_code_agent_view'],
+        true
+    );
+    $CodeQRContent .= '<br/>'.$custom_id_div;
+
+    // QR code div.
+    $CodeQRTable = html_print_div(
+        [
+            'class'   => 'agent_qr',
+            'content' => $CodeQRContent,
+        ],
+        true
+    );
 } else {
     $user_id = '<div class="label_select_simple">'.html_print_input_text_extended(
         'id_user',
@@ -1239,7 +1297,7 @@ $allowedIP .= ui_print_help_tip(__('Add the source IPs that will allow console a
 $allowedIP .= html_print_checkbox_switch(
     'allowed_ip_active',
     0,
-    $user_info['allowed_ip_active'],
+    ($user_info['allowed_ip_active'] ?? 0),
     true
 );
 $allowedIP .= '</p>';
@@ -1247,7 +1305,7 @@ $allowedIP .= html_print_textarea(
     'allowed_ip_list',
     2,
     65,
-    $user_info['allowed_ip_list'],
+    ($user_info['allowed_ip_list'] ?? 0),
     (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
     true
 );
@@ -1271,10 +1329,12 @@ if ($new_user) {
 
 if (is_metaconsole() === false) {
     // User only can change skins if has more than one group.
-    if (count($usr_groups) > 1) {
-        if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
-            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+    if (function_exists('skins_print_select')) {
+        if (count($usr_groups) > 1) {
+            if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+                $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
+                $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
+            }
         }
     }
 }
@@ -1282,8 +1342,9 @@ if (is_metaconsole() === false) {
 if (is_metaconsole() === true) {
     $array_filters = get_filters_custom_fields_view(0, true);
 
-    $search_custom_fields_view = '<div class="label_select"><p class="edit_user_labels">'.__('Search custom field view').' '.ui_print_help_tip(__('Load by default the selected view in custom field view'), true).'</p>';
-    $search_custom_fields_view .= html_print_select(
+    $searchCustomFieldView = [];
+    $searchCustomFieldView[] = __('Search custom field view');
+    $searchCustomFieldView[] = html_print_select(
         $array_filters,
         'default_custom_view',
         $user_info['default_custom_view'],
@@ -1295,7 +1356,10 @@ if (is_metaconsole() === true) {
         true,
         '',
         false
-    ).'</div>';
+    ).ui_print_input_placeholder(
+        __('Load by default the selected view in custom field view'),
+        true
+    );
 }
 
 $values = [
@@ -1308,20 +1372,6 @@ $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home
     __('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'),
     true
 ).'</p>';
-
-/*
-    $home_screen .= html_print_select(
-    $values,
-    'section',
-    io_safe_output($user_info['section']),
-    'show_data_section();',
-    '',
-    -1,
-    true,
-    false,
-    false
-    ).'</div>';
-*/
 
 $dashboards = Manager::getDashboards(
     -1,
@@ -1343,7 +1393,6 @@ if ($dashboards === false) {
 $home_screen .= '<div id="show_db" style="display: none; width: 100%;">';
 $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
 $home_screen .= '</div>';
-
 
 $layouts = visual_map_get_user_layouts($config['id_user'], true);
 $layouts_aux = [];
@@ -1377,6 +1426,8 @@ $home_screen .= html_print_input_text(
     false
 );
 
+$home_screen = '';
+
 $size_pagination = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Block size for pagination').'</p>';
 $size_pagination .= html_print_input_text(
     'block_size',
@@ -1395,19 +1446,20 @@ if ($id === $config['id_user']) {
     );
 }
 
-if (enterprise_installed() && is_metaconsole() === true) {
+if (enterprise_installed() === true && is_metaconsole() === true) {
     $user_info_metaconsole_access = 'only_console';
     if (isset($user_info['metaconsole_access'])) {
         $user_info_metaconsole_access = $user_info['metaconsole_access'];
     }
 
-    // TODO review help tips on meta.
-    $meta_access = '<div class="label_select"><p class="edit_user_labels">'.__('Metaconsole access').' './* ui_print_help_icon('meta_access', true). */ '</p>';
     $metaconsole_accesses = [
         'basic'    => __('Basic'),
         'advanced' => __('Advanced'),
     ];
-    $meta_access .= html_print_select(
+
+    $outputMetaAccess = [];
+    $outputMetaAccess[] = __('Metaconsole access');
+    $outputMetaAccess[] = html_print_select(
         $metaconsole_accesses,
         'metaconsole_access',
         $user_info_metaconsole_access,
@@ -1417,51 +1469,9 @@ if (enterprise_installed() && is_metaconsole() === true) {
         true,
         false,
         false
-    ).'</div>';
+    );
 }
 
-/*
-    $not_login = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Not Login').'</p>';
-    $not_login .= ui_print_help_tip(
-    __('The user with not login set only can access to API.'),
-    true
-    );
-    $not_login .= html_print_checkbox_switch(
-    'not_login',
-    1,
-    $user_info['not_login'],
-    true
-    ).'</div>';
-
-    $local_user = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Local user').'</p>';
-    $local_user .= ui_print_help_tip(
-    __('The user with local authentication enabled will always use local authentication.'),
-    true
-    );
-    $local_user .= html_print_checkbox_switch(
-    'local_user',
-    1,
-    $user_info['local_user'],
-    true
-    ).'</div>';
-
-    $session_time = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Session Time');
-    $session_time .= ui_print_help_tip(
-    __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
-    true
-    ).'</p>';
-    $session_time .= html_print_input_text(
-    'session_time',
-    $user_info['session_time'],
-    '',
-    5,
-    5,
-    true.false,
-    false,
-    '',
-    'class="input_line_small"'
-    ).'</div>';
-*/
 $user_groups = implode(',', array_keys((users_get_groups($id, 'AR', $display_all_group))));
 
 if (empty($user_groups) === false) {
@@ -1480,11 +1490,15 @@ foreach ($event_filter_data as $filter) {
     $event_filter[$filter['id_filter']] = $filter['id_name'];
 }
 
+if (is_metaconsole() === true && empty($user_info['metaconsole_default_event_filter']) !== true) {
+    $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
+}
+
 $default_event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Default event filter').'</p>';
 $default_event_filter .= html_print_select(
     $event_filter,
     'default_event_filter',
-    $user_info['default_event_filter'],
+    ($user_info['default_event_filter'] ?? 0),
     '',
     '',
     __('None'),
@@ -1582,31 +1596,6 @@ if (empty($doubleAuthElementsContent) === false) {
     $doubleAuthentication = '';
 }
 
-
-/*
-    if (isset($double_authentication)) {
-    $double_authentication .= '</div>';
-}*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
@@ -1632,10 +1621,11 @@ $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console'
 $autorefresh_list_out['operation/events/events'] = 'Events';
 
 
-if (isset($autorefresh_list) === false) {
-    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
+if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
+    $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
     $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
-    if ($autorefresh_list === null) {
+    if ($autorefresh_list === null || $autorefresh_list === 0) {
+        $autorefresh_list = [];
         $autorefresh_list[0] = __('None');
     } else {
         $aux = [];
@@ -1665,30 +1655,31 @@ if (isset($autorefresh_list) === false) {
     }
 }
 
-
-
 if (is_metaconsole() === true) {
     enterprise_include_once('include/functions_metaconsole.php');
 
     $access_node = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
 
-    $metaconsole_agents_manager = '<div class="label_select_simple" id="metaconsole_agents_manager_div"><p class="edit_user_labels">'.__('Enable agents managment').'</p>';
-    $metaconsole_agents_manager .= html_print_checkbox_switch(
+    $metaconsoleAgentManager = [];
+    $metaconsoleAgentManager[] = __('Enable agents managment');
+    $metaconsoleAgentManager[] = html_print_checkbox_switch(
         'metaconsole_agents_manager',
         1,
         $user_info['metaconsole_agents_manager'],
         true
-    ).'</div>';
+    );
 
-    $metaconsole_access_node = '<div class="label_select_simple" id="metaconsole_access_node_div"><p class="edit_user_labels">'.__('Enable node access').ui_print_help_tip(__('With this option enabled, the user will can access to nodes console'), true).'</p>';
-    $metaconsole_access_node .= html_print_checkbox(
+    $metaconsoleAgentManager[] = __('Enable node access').ui_print_help_tip(
+        __('With this option enabled, the user will can access to nodes console'),
+        true
+    );
+    $metaconsoleAgentManager[] = html_print_checkbox_switch(
         'metaconsole_access_node',
         1,
         $access_node,
         true
-    ).'</div>';
+    );
 }
-
 
 echo '<div class="max_floating_element_size">';
 echo '<form id="user_profile_form" name="user_profile_form" method="post" autocomplete="off" action="#">';
@@ -1701,137 +1692,8 @@ if (!$id) {
     $user_id_create = $user_id;
 }
 
-if (is_metaconsole() === true) {
-    $access_or_pagination = $meta_access;
-    if ($id != '' && !$is_err) {
-        $div_user_info = '<div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
-        <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$own_pass_confirm.$global_profile.'</div>';
-    } else {
-        $div_user_info = '<div class="edit_user_info_left">'.$avatar.'</div>
-        <div class="edit_user_info_right">'.$user_id_create.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
-    }
-
-    echo '<div id="user_form">
-    <div class="user_edit_first_row">
-        <div class="edit_user_info white_box">'.$div_user_info.'</div>
-        <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$local_user.$session_time.'</div>
-    </div>
-    <div class="user_edit_second_row white_box">
-        <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$default_event_filter.$double_authentication.'</div>
-    
-        <div class="edit_user_timezone">'.$timezone;
-
-    echo $search_custom_fields_view.$metaconsole_agents_manager.$metaconsole_access_node;
-
-    $autorefresh_show = '<p class="edit_user_labels">'._('Autorefresh').ui_print_help_tip(
-        __('This will activate autorefresh in selected pages'),
-        true
-    ).'</p>';
-    $select_out = html_print_select(
-        $autorefresh_list_out,
-        'autorefresh_list_out[]',
-        '',
-        '',
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'width:100%'
-    );
-    $arrows = ' ';
-    $select_in = html_print_select(
-        $autorefresh_list,
-        'autorefresh_list[]',
-        '',
-        '',
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'width:100%'
-    );
-
-    $table_ichanges = '<div class="autorefresh_select">
-                            <div class="autorefresh_select_list_out">
-                                <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
-                                <div>'.$select_out.'</div>
-                            </div>
-                            <div class="autorefresh_select_arrows" style="display:grid">
-                                <a href="javascript:">'.html_print_image(
-                                    'images/darrowright_green.png',
-                                    true,
-                                    [
-                                        'id'    => 'right_autorefreshlist',
-                                        'alt'   => __('Push selected pages into autorefresh list'),
-                                        'title' => __('Push selected pages into autorefresh list'),
-                                    ]
-                                ).'</a>
-                                <a href="javascript:">'.html_print_image(
-                                    'images/darrowleft_green.png',
-                                    true,
-                                    [
-                                        'id'    => 'left_autorefreshlist',
-                                        'alt'   => __('Pop selected pages out of autorefresh list'),
-                                        'title' => __('Pop selected pages out of autorefresh list'),
-                                    ]
-                                ).'</a>
-                            </div>    
-                            <div class="autorefresh_select_list">    
-                                <p class="autorefresh_select_text">'.__('List of pages with autorefresh').': </p>   
-                                <div>'.$select_in.'</div>
-                            </div>
-                        </div>';
-
-    $autorefresh_show .= $table_ichanges;
-
-    // Time autorefresh.
-    $times = get_refresh_time_array();
-    $time_autorefresh = '<div class="label_select"><p class="edit_user_labels">'.__('Time autorefresh');
-    $time_autorefresh .= ui_print_help_tip(
-        __('Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first'),
-        true
-    ).'</p>';
-    $time_autorefresh .= html_print_select(
-        $times,
-        'time_autorefresh',
-        $user_info['time_autorefresh'],
-        '',
-        '',
-        '',
-        true,
-        false,
-        false
-    ).'</div>';
-
-
-    echo '</div>
-    </div>
-    <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
-    <div class="user_edit_third_row white_box">
-        <div class="edit_user_comments">'.$comments.'</div>
-    </div>';
-
-    if (empty($ehorus) === false) {
-        html_print_div(
-            [
-                'class'   => 'user_edit_third_row white_box',
-                'content' => $ehorus,
-            ],
-            true
-        );
-    }
-} else {
-    $access_or_pagination = $size_pagination;
-    // WIP: Only for node.
-    include_once 'user_management.php';
-}
-
+// User management form.
+require_once 'user_management.php';
 
 if ((bool) $config['admin_can_add_user'] === true) {
     html_print_csrf_hidden();
@@ -1839,13 +1701,15 @@ if ((bool) $config['admin_can_add_user'] === true) {
 }
 
 echo '</div>';
-if ($new_user === true) {
-    html_print_input_hidden('json_profile', $json_profile);
-}
-
-echo '</div>';
+html_print_input_hidden('json_profile', $json_profile);
 
 echo '</form>';
+
+// User Profile definition table. (Only where user is not creating).
+if ((bool) check_acl($config['id_user'], 0, 'UM') === true) {
+    profile_print_profile_table($id, io_safe_output($json_profile), false, ($is_err === true));
+}
+
 echo '</div>';
 
 $actionButtons = [];
@@ -1894,7 +1758,7 @@ $delete_image = html_print_input_image(
     true,
     [
         'onclick' => 'delete_profile(event, this)',
-        'class'   => 'invert_filter',
+        'class'   => 'invert_filter main_menu_icon',
     ]
 );
 
@@ -1912,7 +1776,7 @@ if (is_metaconsole() === false) {
         $(document).ready(function() {
             // Set up the picker to update target timezone and country select lists.
             $('#timezone-image').timezonePicker({
-                target: '#timezone',
+                target: '#timezone1',
             });
 
             // Optionally an auto-detect button to trigger JavaScript geolocation.
@@ -1934,23 +1798,13 @@ if (is_metaconsole() === false) {
     var json_profile = $('#hidden-json_profile');
     /* <![CDATA[ */
     $(document).ready(function() {
-
-        // Set up the picker to update target timezone and country select lists.
-        $('#timezone-image').timezonePicker({
-            target: '#timezone1',
-        });
-
-        // Optionally an auto-detect button to trigger JavaScript geolocation.
-        $('#timezone-detect').click(function() {
-            $('#timezone-image').timezonePicker('detectLocation');
-        });
-
         $("#right_autorefreshlist").click(function() {
             jQuery.each($("select[name='autorefresh_list_out[]'] option:selected"), function(key, value) {
                 imodule_name = $(value).html();
                 if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
                     id_imodule = $(value).attr('value');
-                    $("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
+                    $("select[name='autorefresh_list[]'] option").each(function() { $(this).attr("selected", true) });
+                    $("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>').attr("selected", true));
                     $("#autorefresh_list_out").find("option[value='" + id_imodule + "']").remove();
                     $("#autorefresh_list").find("option[value='']").remove();
                     $("#autorefresh_list").find("option[value='0']").remove();
@@ -1975,6 +1829,13 @@ if (is_metaconsole() === false) {
                     }
                 }
             });
+        });
+
+        $("#button-uptbutton").click (function () {
+            console.log('aaaaaaaaaaaaa');
+            if($("#autorefresh_list option").length > 0) {
+                $('#autorefresh_list option').prop('selected', true);
+            }
         });
 
         $("input#checkbox-double_auth").change(function(e) {
@@ -2068,7 +1929,7 @@ if (is_metaconsole() === false) {
 
                 profile_text = `<a href="index.php?sec2=godmode/users/configure_profile&id=${profile}">${profile_text}</a>`;
                 group_img = `<img id="img_group_${aux}" src="" data-title="${group_text}" data-use_title_for_force_title="1" class="invert_filter main_menu_icon bot forced_title" alt="${group_text}"/>`;
-                group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img}${group_text}</a>`;
+                group_text = `<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=${group}">${group_img} ${group_text}</a>`;
 
                 $('#table_profiles tr:last').before(
                     `<tr>

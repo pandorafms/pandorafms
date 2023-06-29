@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -297,7 +297,7 @@ if (!empty($table->data)) {
     html_print_input_hidden('multiple_delete', 1);
     ui_pagination($count_network_templates, false, $offset);
     html_print_table($table);
-    ui_pagination($count_network_templates, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination($count_network_templates, false, $offset, 0, false, 'offset', true, '');
     echo "<div class='pdd_l_5px right'>";
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';

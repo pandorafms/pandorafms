@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -30,16 +30,6 @@
 // Begin.
 if (defined('__PAN_XHPROF__') === false) {
     define('__PAN_XHPROF__', 0);
-}
-
-require 'vendor/autoload.php';
-
-if (__PAN_XHPROF__ === 1) {
-    if (function_exists('tideways_xhprof_enable') === true) {
-        tideways_xhprof_enable();
-    } else {
-        error_log('Cannot find tideways_xhprof_enable function');
-    }
 }
 
 // Needed for InfoBox count.
@@ -142,6 +132,16 @@ if ((file_exists('include/config.php') === false)
     exit;
 }
 
+require 'vendor/autoload.php';
+
+if (__PAN_XHPROF__ === 1) {
+    if (function_exists('tideways_xhprof_enable') === true) {
+        tideways_xhprof_enable();
+    } else {
+        error_log('Cannot find tideways_xhprof_enable function');
+    }
+}
+
 /*
  * DO NOT CHANGE ORDER OF FOLLOWING REQUIRES.
  */
@@ -233,7 +233,7 @@ ob_start('ui_process_page_head');
 enterprise_include_once('index.php');
 
 // Load event.css to display the about section dialog with correct styles.
-echo '<link rel="stylesheet" href="'.ui_get_full_url('/include/styles/events.css', false, false, false).'" type="text/css" />';
+echo '<link rel="stylesheet" href="'.ui_get_full_url('/include/styles/events.css', false, false, false).'?v='.$config['current_package'].'" type="text/css" />';
 
 echo '<script type="text/javascript">';
 echo 'var dispositivo = navigator.userAgent.toLowerCase();';
@@ -755,7 +755,7 @@ if (isset($config['id_user']) === false) {
         header('Location: '.ui_get_full_url('index.php'.$redirect_url));
         exit;
         // Always exit after sending location headers.
-    } else if (isset($_GET['loginhash']) === true) {
+    } else if (isset($_GET['loginhash']) === true || isset($_POST['loginhash']) === true) {
         // Hash login process.
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));
@@ -797,6 +797,7 @@ if (isset($config['id_user']) === false) {
         $pass2               = get_parameter_post('pass2');
         $id_user             = get_parameter_post('id_user');
 
+        $db_reset_pass_entry = false;
         if (empty($reset_hash) === false) {
             $hash_data = explode(':::', $reset_hash);
             $id_user = $hash_data[0];
@@ -1361,7 +1362,7 @@ if ($searchPage) {
                     $_GET['sec2'] = 'operation/agentes/group_view';
                 break;
 
-                case 'Alert detail':
+                case 'Alert details':
                     $_GET['sec'] = 'view';
                     $_GET['sec2'] = 'operation/agentes/alerts_status';
                 break;
@@ -1388,7 +1389,7 @@ if ($searchPage) {
                 case 'Visual console':
                     $id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
                     if (($home_url == '') || ($id_visualc == false)) {
-                        $str = 'sec=network&sec2=operation/visual_console/index&refr=60';
+                        $str = 'sec=godmode/reporting/map_builder&sec2=godmode/reporting/map_builder';
                     } else {
                         $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc;
                     }
@@ -1487,11 +1488,12 @@ echo html_print_div(
 );
 
 // Connection lost alert.
+set_js_value('check_conexion_interval', $config['check_conexion_interval']);
 ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 if ($config['pure'] == 0) {
     echo '</div>';
@@ -1522,13 +1524,6 @@ require 'include/php_to_js_values.php';
 <script type="text/javascript" language="javascript">
     // Handle the scroll.
     $(document).ready(scrollFunction());
-    // When there are less than 5 rows, all rows must be white
-    var theme = "<?php echo $config['style']; ?>";
-    if (theme === 'pandora') {
-        if ($('table.info_table tr').length < 5) {
-            $('table.info_table tbody > tr').css('background-color', '#fff');
-        }
-    }
 
     // When the user scrolls down 400px from the top of the document, show the
     // button.

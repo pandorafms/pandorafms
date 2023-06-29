@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -208,6 +208,10 @@ class AlertsFiredWidget extends Widget
             $values['groupId'] = $decoder['groupId'];
         }
 
+        if (isset($decoder['group_recursion']) === true) {
+            $values['group_recursion'] = $decoder['group_recursion'];
+        }
+
         return $values;
     }
 
@@ -245,6 +249,18 @@ class AlertsFiredWidget extends Widget
             ],
         ];
 
+        // Group recursion.
+        $inputs[] = [
+            'label'     => __('Recursion'),
+            'arguments' => [
+                'wrapper' => 'div',
+                'name'    => 'group_recursion',
+                'type'    => 'switch',
+                'value'   => $values['group_recursion'],
+                'return'  => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -260,6 +276,7 @@ class AlertsFiredWidget extends Widget
         $values = parent::getPost();
 
         $values['groupId'] = \get_parameter('groupId', 0);
+        $values['group_recursion'] = \get_parameter_switch('group_recursion');
 
         return $values;
     }
@@ -282,19 +299,48 @@ class AlertsFiredWidget extends Widget
             $groups = [$this->values['groupId'] => ''];
         }
 
+        $group_recursion = false;
+        if (empty($this->values['group_recursion']) === false) {
+            $group_recursion = true;
+        }
+
         if (isset($groups) === true && is_array($groups) === true) {
             $table = new \StdClass();
-            $table->class = 'databox data';
+            $table->class = 'databox data centered';
             $table->cellspacing = '0';
-            $table->width = '90%';
+            $table->width = '100%';
             $table->data = [];
             $table->size = [];
+            $table->style = [];
+            $table->style[0] = 'text-align: left;';
+            $table->style[1] = 'text-align: left;';
+            $table->style[2] = 'text-align: left;';
+            $table->style[3] = 'text-align: left;';
 
             $url = $config['homeurl'];
             $url .= 'index.php?sec=estado&sec2=operation/agentes/alerts_status';
             $url .= '&refr=60&filter=fired&filter_standby=all';
 
             $flag = false;
+
+            $groups_ids = [];
+            $groups_ids_tmp = [];
+            foreach ($groups as $id_group => $name) {
+                if ($group_recursion === true) {
+                    $groups_ids_tmp[] = groups_get_children_ids($id_group);
+                }
+            }
+
+            if ($group_recursion === true) {
+                foreach ($groups_ids_tmp as $ids_tmp => $values) {
+                    foreach ($values as $value) {
+                        $groups_ids[$value] = '';
+                    }
+                }
+
+                $groups = $groups_ids;
+            }
+
             foreach ($groups as $id_group => $name) {
                 $alerts_group = get_group_alerts([$id_group]);
                 if (isset($alerts_group['simple']) === true) {
@@ -335,7 +381,7 @@ class AlertsFiredWidget extends Widget
             if ($flag === true) {
                 $height = (count($table->data) * 30);
                 $style = 'min-width:300px; min-height:'.$height.'px;';
-                $output .= '<div class="container-center" style="'.$style.'">';
+                $output .= '<div class="" style="'.$style.'">';
                 $output .= html_print_table($table, true);
                 $output .= '</div>';
             } else {

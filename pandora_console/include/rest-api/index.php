@@ -360,11 +360,14 @@ if ($getVisualConsole === true) {
 
     $removeBtn = [
         'name'       => 'Remove',
-        'label'      => '',
+        'label'      => __('Remove'),
         'type'       => 'button',
-        'attributes' => 'class="remove-item-img"',
+        'attributes' => [
+            'mode' => 'mini secondary',
+            'icon' => 'delete',
+        ],
         'return'     => true,
-        'script'     => 'removeColorRange(\''.$uniqId.'\')',
+        'script'     => 'removeColorRange("'.$uniqId.'")',
     ];
 
     $classRangeColor = 'interval-color-ranges flex-row flex-start w100p';
@@ -377,8 +380,7 @@ if ($getVisualConsole === true) {
     $liRangeColor .= '<div>';
     $liRangeColor .= html_print_input($rangeColor);
     $liRangeColor .= '</div>';
-    $liRangeColor .= '<label></label>';
-    $liRangeColor .= html_print_input($removeBtn);
+    $liRangeColor .= html_print_input($removeBtn, 'div', true);
     $liRangeColor .= '<li>';
 
     echo $liRangeColor;

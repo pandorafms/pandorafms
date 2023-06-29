@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -321,16 +321,61 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $group_name = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
     $agent_name = db_get_value('nombre', 'tagente', 'id_agente', $module['id_agente']);
 
-    /*
-        if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
-        // Actions table
-        echo '<div class="actions_treeview" style="text-align: right">';
-        echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
-            html_print_submit_button(__('Go to module edition'), 'upd_button', false, 'class="sub config"');
+    if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
+        echo '<div class="actions_treeview flex flex-evenly">';
+
+        if (is_metaconsole() === true) {
+            echo "<form id='module-table-redirection' method='POST' action='".$console_url."index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module'>";
+
+            parse_str($url_hash, $url_hash_array);
+
+            html_print_input_hidden(
+                'id_agente',
+                $module['id_agente'],
+                false
+            );
+            html_print_input_hidden(
+                'edit_module',
+                1,
+                false
+            );
+            html_print_input_hidden(
+                'id_agent_module',
+                $module['id_agente_modulo'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash',
+                $url_hash_array['loginhash'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash_data',
+                $url_hash_array['loginhash_data'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash_user',
+                $url_hash_array['loginhash_user'],
+                false
+            );
+
+            echo '</form>';
+            echo "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"module-table-redirection\").submit();' href='#'>";
+        } else {
+            echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
+        }
+
+        html_print_submit_button(
+            __('Go to module edition'),
+            'upd_button',
+            false,
+            ['class' => 'secondary mini']
+        );
         echo '</a>';
 
         echo '</div>';
-    }*/
+    }
 
     // id_module and id_agent hidden
     echo '<div id="ids" class="invisible">';
@@ -657,7 +702,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $table->data['description'] = $row;
 
     // Last contact.
-    $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true, ['class' => 'font_11']);
+    $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true, ['style' => 'font-size: 13px;']);
 
     if ($agent['ultimo_contacto_remoto'] === '01-01-1970 00:00:00') {
         $last_remote_contact = __('Never');
@@ -689,8 +734,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         '#ececec',
         true,
         '',
-        false,
-        'line-height: 13px;'
+        false
     );
     $table->data['next_contact'] = $row;
 
@@ -703,6 +747,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $eventsGraph = html_print_div(
         [
             'style'   => 'height: 150px;',
+            'class'   => 'max-graph-tree-view',
             'content' => graph_graphic_agentevents(
                 $id_agente,
                 '500px;',
@@ -727,8 +772,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         false,
         '',
-        'white-box-content',
-        'white_table_flex margin-bottom-10 border-bottom-gray'
+        'white-box-content mrgn_top_0 mrgn_btn_0px',
+        'white_table_flex'
     );
 
     if ($config['agentaccess']) {
@@ -747,8 +792,8 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             true,
             false,
             '',
-            'white-box-content border-bottom-gray',
-            'white_table_flex margin-top-10 margin-bottom-10'
+            'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
+            'white_table_flex'
         );
     }
 
@@ -920,9 +965,50 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         true,
         false,
         '',
-        'white-box-content border-bottom-gray',
-        'white_table_flex margin-top-10 margin-bottom-10'
+        'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
+        'white_table_flex'
     );
+
+    if ($user_access_node && check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
+        $buttons_act = '<div style="text-align: right" class="margin-bottom-20 margin-top-20  flex flex-evenly">';
+
+        if ($agent['id_os'] == CLUSTER_OS_ID) {
+            $cluster = PandoraFMS\Cluster::loadFromAgentId(
+                $agent['id_agente']
+            );
+            $buttons_act .= '<a target=_blank href="'.$console_url.'index.php?sec=reporting&sec2=operation/cluster/cluster&op=update&id='.$cluster->id().'">';
+            $buttons_act .= html_print_submit_button(
+                __('Go to cluster edition'),
+                'upd_button',
+                false,
+                ['class' => 'secondary mini'],
+                true
+            );
+        } else {
+            $buttons_act .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'&tab=module&show_dialog_create=1">';
+            $buttons_act .= html_print_submit_button(
+                __('Go to module creation'),
+                'upd_button',
+                false,
+                ['class' => 'secondary mini no_decoration'],
+                true
+            );
+
+            $buttons_act .= '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$ent.'">';
+            $buttons_act .= html_print_submit_button(
+                __('Go to agent edition'),
+                'upd_button',
+                false,
+                ['class' => 'secondary mini no_decoration'],
+                true
+            );
+        }
+
+        $buttons_act .= '</a>';
+        $buttons_act .= '</div>';
+    }
+
+    echo $buttons_act;
 
     if (empty($server_data) === false && is_metaconsole() === true) {
         metaconsole_restore_db();
@@ -933,6 +1019,33 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             function sendHash(url) {
                 window.location = url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."';
  
+            }
+
+            $('.max-graph-tree-view').ready(function() {
+                widthGraph();
+            });
+
+            $(window).resize(function() {
+                widthGraph();
+            });
+
+            function widthGraph () {
+                var parentWidth = $('.max-graph-tree-view').parent().width();
+                $('.max-graph-tree-view').children().width(parentWidth + 5);
+                
+                $('<input>').attr({
+                    type: 'hidden',
+                    id: 'graph-counter',
+                    value: 1
+                }).appendTo('body');
+
+                
+                if ($('#graph-counter').val() == 1) {
+                    $('.max-graph-tree-view div.flot-x-axis').css('inset', '-25px').css('margin-top', '10px').css('margin-left', '10px');
+                    $('.max-graph-tree-view canvas.flot-base').css('height', '85px');
+                    $('#graph-counter').val(2);
+                }
+
             }
 
         </script>";

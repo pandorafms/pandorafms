@@ -11,13 +11,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -27,7 +27,7 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
-
+global $config;
 ?>
 <head>
 
@@ -39,12 +39,12 @@
             document.write('<script type="text/javascript" src="<?php echo $asset('resources/javascript/jquery.fileupload.js'); ?>"></'+'script>');
         }
     </script>
-    <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
-    <script src="<?php $asset('resources/javascript/umc_offline.js'); ?>" type="text/javascript"></script>
+    <script src="<?php $asset('resources/javascript/umc.js'); ?>?v=<?php echo $config['current_package']; ?>" type="text/javascript"></script>
+    <script src="<?php $asset('resources/javascript/umc_offline.js'); ?>?v=<?php echo $config['current_package']; ?>" type="text/javascript"></script>
     <script src="<?php $asset('resources/javascript/jquery.fileupload.js'); ?>" type="text/javascript"></script>
     <script src="<?php $asset('resources/javascript/jquery.iframe-transport.js'); ?>" type="text/javascript"></script>
     <script src="<?php $asset('resources/javascript/jquery.knob.js'); ?>" type="text/javascript"></script>
-    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
+    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>?v=<?php echo $config['current_package']; ?>">
 </head>
 
 <div id="box_offline">

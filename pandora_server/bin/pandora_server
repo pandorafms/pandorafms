@@ -76,6 +76,9 @@ sub pandora_shutdown () {
 	# Stop the netflow daemon
 	pandora_stop_netflow_daemon ();
 
+	# Stop the sflow daemon
+	pandora_stop_sflow_daemon ();
+
 	# Stop server threads.
 	stop_server_threads();
 
@@ -167,6 +170,9 @@ sub pandora_startup () {
 	
 	# Start the netflow daemon if necessary
 	pandora_start_netflow_daemon ();
+
+	# Start the sflow daemon if necessary
+	pandora_start_sflow_daemon ();
 	
 	# Remove disabled servers
 	@Servers = grep { defined ($_) } @Servers;
@@ -262,8 +268,8 @@ sub pandora_start_netflow_daemon () {
 	
 	# Check if netflow is enabled
 	if ($Config{'activate_netflow'} != 1) {
-		logger (\%Config, " [*] Netflow daemon disabled.", 1);
-		print_message (\%Config, " [*] Netflow daemon disabled.", 1);
+		logger (\%Config, " [*] NetFlow daemon disabled.", 1);
+		print_message (\%Config, " [*] NetFlow daemon disabled.", 1);
 		return;
 	}
 	
@@ -282,8 +288,8 @@ sub pandora_start_netflow_daemon () {
 		return;
 	}
 	
-	logger (\%Config, "[*] Netflow daemon started.", 1);
-	print_message (\%Config, "[*] Netflow daemon started.", 1);
+	logger (\%Config, "[*] NetFlow daemon started.", 1);
+	print_message (\%Config, "[*] NetFlow daemon started.", 1);
 }
 
 ########################################################################################
@@ -302,6 +308,62 @@ sub pandora_stop_netflow_daemon () {
 	close PIDFILE;
 
 	# Check if nfcapd is running
+	if (kill (0, $pid) > 0) {
+		kill (9, $pid);
+		return $pid;
+	}
+	
+	return 0;
+}
+
+########################################################################################
+# Start the sflow daemon if necessary.
+########################################################################################
+sub pandora_start_sflow_daemon () {
+	my $pid_file = '/var/run/pandora_sfcapd.pid';
+	
+	# Check if sflow is enabled
+	if ($Config{'activate_sflow'} != 1) {
+		logger (\%Config, " [*] sFlow daemon disabled.", 1);
+		print_message (\%Config, " [*] sFlow daemon disabled.", 1);
+		return;
+	}
+	
+	# Stop sfcapd if it's already running
+	my $pid = pandora_stop_sflow_daemon ();
+	if (pandora_stop_sflow_daemon () != 0) {
+		logger (\%Config, "sfcapd (pid $pid) is already running, attempting to kill it...", 1);
+		print_message (\%Config, "sfcapd (pid $pid) is already running, attempting to kill it...", 1);
+	}
+
+	# Start sfcapd	
+	my $command = $Config{'sflow_daemon'} . ' -D -T all -w -t ' . $Config{'sflow_interval'} . ' -P ' . $pid_file . ' -l ' . $Config{'sflow_path'};
+	if (system ("$command >/dev/null 2>&1") != 0) {
+		logger (\%Config, " [E] Could not start sfcapd: $command", 1);
+		print_message (\%Config, " [E] Could not start sfcapd: $command", 1);
+		return;
+	}
+	
+	logger (\%Config, "[*] sFlow daemon started.", 1);
+	print_message (\%Config, "[*] sFlow daemon started.", 1);
+}
+
+########################################################################################
+# Stop the sflow daemon if it's running.
+########################################################################################
+sub pandora_stop_sflow_daemon () {
+	
+	my $pid_file = '/var/run/pandora_sfcapd.pid';
+	
+	# Open the pid file
+	if ( ! (-e $pid_file && open (PIDFILE, $pid_file))) {
+		return 0;
+	}
+	
+	my $pid = <PIDFILE>;
+	close PIDFILE;
+
+	# Check if sfcapd is running
 	if (kill (0, $pid) > 0) {
 		kill (9, $pid);
 		return $pid;

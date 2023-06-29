@@ -572,6 +572,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   `fires_max` INT UNSIGNED DEFAULT 0,
   `module_action_threshold` INT NOT NULL DEFAULT 0,
   `last_execution` BIGINT NOT NULL DEFAULT 0,
+  `recovered` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
@@ -1008,6 +1009,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `target_ip` VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1295,6 +1297,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `shortcut_data` TEXT,
   `section` TEXT,
   `data_section` TEXT,
+  `metaconsole_section` VARCHAR(255) NOT NULL DEFAULT 'Default',
+  `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '',
   `force_change_pass` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `last_pass_change` DATETIME,
   `last_failed_login` DATETIME,
@@ -1309,6 +1313,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `id_filter`  INT UNSIGNED NULL DEFAULT NULL,
   `session_time` INT signed NOT NULL DEFAULT 0,
   `default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
+  `metaconsole_default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
   `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `autorefresh_white_list` TEXT ,
   `time_autorefresh` INT UNSIGNED NOT NULL DEFAULT 30,
@@ -1725,6 +1730,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
   `label_position` VARCHAR(50) NOT NULL DEFAULT 'down',
   `border_color` VARCHAR(200) DEFAULT '',
   `fill_color` VARCHAR(200) DEFAULT '',
+  `recursive_group` TINYINT NOT NULL DEFAULT 0,
   `show_statistics` TINYINT NOT NULL DEFAULT 0,
   `linked_layout_node_id` INT NOT NULL DEFAULT 0,
   `linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
@@ -2185,6 +2191,12 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
   `advanced_filter` TEXT,
   `filter_args` TEXT,
   `aggregate` VARCHAR(60),
+  `netflow_monitoring` TINYINT UNSIGNED NOT NULL default 0,
+  `traffic_max` INTEGER NOT NULL default 0,
+  `traffic_critical` FLOAT(20,2) NOT NULL default 0,
+  `traffic_warning` FLOAT(20,2) NOT NULL default 0,
+  `netflow_monitoring_interval` INT UNSIGNED NOT NULL DEFAULT 300,
+  `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2604,7 +2616,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_group_agents` (
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`)
         ON DELETE CASCADE ON UPDATE CASCADE		
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
@@ -2634,9 +2646,17 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
   `action` TINYINT UNSIGNED DEFAULT 0,
   `ssh_key` TEXT,
   `ssh_pubkey` TEXT,
+  `ssh_status` TINYINT UNSIGNED DEFAULT 0,
   `last_error` TEXT,
+  `db_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_status` TINYINT UNSIGNED DEFAULT 0,
+  `replication_delay` BIGINT DEFAULT 0,
+  `master` TINYINT UNSIGNED DEFAULT 0,
+  `utimestamp` BIGINT DEFAULT 0,
+  `mysql_version` VARCHAR(10) DEFAULT '',
+  `pandora_version` VARCHAR(10) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
 -- Table `twidget`
@@ -3676,6 +3696,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
   `label_position` VARCHAR(50) NOT NULL DEFAULT 'down',
   `border_color` VARCHAR(200) DEFAULT '',
   `fill_color` VARCHAR(200) DEFAULT '',
+  `recursive_group` TINYINT NOT NULL DEFAULT '0',
   `show_statistics` TINYINT NOT NULL DEFAULT 0,
   `linked_layout_node_id` INT NOT NULL DEFAULT 0,
   `linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
@@ -3761,6 +3782,7 @@ CREATE TABLE IF NOT EXISTS `tuser_task_scheduled` (
   `flag_delete` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `id_grupo` INT UNSIGNED NOT NULL DEFAULT 0,
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `id_console` BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4182,6 +4204,21 @@ CREATE TABLE IF NOT EXISTS `tmonitor_filter` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
+-- Table `tconsole`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tconsole` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_console` BIGINT NOT NULL DEFAULT 0,
+  `description` TEXT,
+  `version` TINYTEXT,
+  `last_execution` INT UNSIGNED NOT NULL DEFAULT 0,
+  `console_type` TINYINT NOT NULL DEFAULT 0,
+  `timezone` TINYTEXT,
+  `public_url` TEXT,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
 -- Table `tagent_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagent_filter` (
@@ -4199,6 +4236,7 @@ CREATE TABLE IF NOT EXISTS `tagent_filter` (
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
 -- Table `tevent_sound`
 -- ---------------------------------------------------------------------
 CREATE TABLE `tevent_sound` (
@@ -4206,7 +4244,7 @@ CREATE TABLE `tevent_sound` (
     `name` TEXT NULL,
     `sound` TEXT NULL,
     `active` TINYINT NOT NULL DEFAULT '1',
-PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tsesion_filter`
@@ -4220,7 +4258,7 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `type` TEXT NULL,
     `user` TEXT NULL,
     PRIMARY KEY (`id_filter`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 
 CREATE TABLE IF NOT EXISTS `twelcome_tip` (
@@ -4245,4 +4283,43 @@ CREATE TABLE IF NOT EXISTS `twelcome_tip_file` (
     FOREIGN KEY (`twelcome_tip_file`)
     REFERENCES `twelcome_tip` (`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tfavmenu_user`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_user` VARCHAR(255) NOT NULL,
+  `id_element` TEXT,
+  `url` TEXT NOT NULL,
+  `label` VARCHAR(255) NOT NULL,
+  `section` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`));
+
+-- ---------------------------------------------------------------------
+-- Table `tsesion_filter_log_viewer`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
+  `id_filter` INT NOT NULL AUTO_INCREMENT,
+  `id_name` TEXT NULL,
+  `id_group_filter` TEXT NULL,
+  `id_search_mode` INT NULL,
+  `order` VARCHAR(45) NULL,
+  `search` VARCHAR(255) NULL,
+  `group_id` INT NULL,
+  `date_range` TINYINT NULL,
+  `start_date_defined` VARCHAR(45) NULL,
+  `start_date_time` VARCHAR(45) NULL,
+  `start_date_date` VARCHAR(45) NULL,
+  `start_date_date_range` VARCHAR(45) NULL,
+  `start_date_time_range` VARCHAR(45) NULL,
+  `end_date_date_range` VARCHAR(45) NULL,
+  `end_date_time_range` VARCHAR(45) NULL,
+  `agent` VARCHAR(255) NULL,
+  `source` VARCHAR(255) NULL,
+  `display_mode` INT NULL,
+  `capture_model` INT NULL,
+  `graph_type` INT NULL,
+  PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

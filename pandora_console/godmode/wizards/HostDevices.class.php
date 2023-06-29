@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -792,7 +792,7 @@ class HostDevices extends Wizard
 
                 $form['rows'][0]['columns'][0] = [
                     'width'  => '30%',
-                    'style'  => 'padding: 9px;min-width: 250px;',
+                    'style'  => 'padding: 9px;min-width: 188px;',
                     'inputs' => [
                         '1' => '<div class="height_50p mrgn_btn_35px">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close')], false).'</div>',
                         '2' => [
@@ -810,10 +810,7 @@ class HostDevices extends Wizard
                                 'name'     => 'interval_manual_defined',
                                 'return'   => true,
                             ],
-                            'extra'     => '<div id="interval_manual_container"><div class="time_selection_container mrgn_top_20px">'.ui_print_help_tip(
-                                __('The minimum recomended interval for Recon Task is 5 minutes'),
-                                true
-                            ).html_print_extended_select_for_time(
+                            'extra'     => '<div id="interval_manual_container"><div class="time_selection_container mrgn_top_20px">'.html_print_extended_select_for_time(
                                 'interval',
                                 $this->task['interval_sweep'],
                                 '',
@@ -828,12 +825,11 @@ class HostDevices extends Wizard
                         ],
                     ],
                 ];
-
                 $form['rows'][0]['columns'][1] = [
                     'width'         => '40%',
-                    'padding-right' => '12%',
-                    'padding-left'  => '5%',
-                    'style'         => 'min-width: 350px',
+                    'padding-right' => '8%',
+                    'padding-left'  => '0%',
+                    'style'         => 'min-width: 230px',
                     'inputs'        => [
                         '0' => [
                             'label'     => '<b>'.__('Task name').':</b>',
@@ -929,27 +925,27 @@ class HostDevices extends Wizard
                     ],
                 ];
 
-                // Group select (custom for this section).
-                $group_select = '<div class="label_select"><label>'.__('Group').':</label></div>';
-
-                $group_select .= $this->printInput(
-                    [
-                        'name'                    => 'id_group',
-                        'returnAllGroup'          => false,
-                        'privilege'               => $this->access,
-                        'type'                    => 'select_groups',
-                        'selected'                => $this->task['id_group'],
-                        'return'                  => true,
-                        'class'                   => 'discovery_list_input',
-                        'simple_multiple_options' => true,
-                        'required'                => true,
-                    ]
-                );
-
                 $form['rows'][0]['columns'][2] = [
-                    'width'  => '30%',
-                    'style'  => 'min-width: 250px',
-                    'inputs' => ['0' => $group_select],
+                    'width'         => '40%',
+                    'padding-right' => '5%',
+                    'padding-left'  => '0',
+                    'style'         => 'min-width: 144px;',
+                    'inputs'        => [
+                        '0' => [
+                            'label'     => '<b>'.__('Group').':</b>',
+                            'arguments' => [
+                                'name'                    => 'id_group',
+                                'returnAllGroup'          => false,
+                                'privilege'               => $this->access,
+                                'type'                    => 'select_groups',
+                                'selected'                => $this->task['id_group'],
+                                'return'                  => true,
+                                'class'                   => 'discovery_list_input',
+                                'simple_multiple_options' => true,
+                                'required'                => true,
+                            ],
+                        ],
+                    ],
                 ];
 
                 $form['rows'][1]['style'] = 'style de row';
@@ -1464,7 +1460,7 @@ class HostDevices extends Wizard
             }
 
             include_once $config['homedir'].'/include/class/CredentialStore.class.php';
-            $available_keys = CredentialStore::getKeys('CUSTOM');
+            $available_keys = CredentialStore::getKeys('WMI');
             if (check_acl($config['id_user'], 0, 'UM')) {
                 $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
                     'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox'
@@ -1486,7 +1482,7 @@ class HostDevices extends Wizard
                             'arguments' => [
                                 'type'     => 'select',
                                 'name'     => 'auth_strings[]',
-                                'fields'   => CredentialStore::getKeys('CUSTOM'),
+                                'fields'   => CredentialStore::getKeys('WMI'),
                                 'selected' => explode(
                                     ',',
                                     $this->task['auth_strings']
@@ -1588,6 +1584,10 @@ class HostDevices extends Wizard
 
                 $(function() {
                     SNMPExtraShow($("#snmp_version").val());
+                });
+
+                $("#id_network_profile").select2({
+                    placeholder: "'.__('Please select...').'"
                 });
             ';
 

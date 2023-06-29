@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -195,15 +195,15 @@ class Events
 
                         switch ($event['estado']) {
                             case 0:
-                                $img_st = 'images/star_white.png';
+                                $img_st = 'images/star-dark.svg';
                             break;
 
                             case 1:
-                                $img_st = 'images/tick_white.png';
+                                $img_st = 'images/validate.svg';
                             break;
 
                             case 2:
-                                $img_st = 'images/hourglass_white.png';
+                                $img_st = 'images/clock.svg';
                             break;
 
                             default:
@@ -221,7 +221,7 @@ class Events
                         $status_icon = html_print_image(
                             $img_st,
                             true,
-                            false,
+                            ['class' => 'main_menu_icon'],
                             false,
                             false,
                             false,
@@ -264,11 +264,7 @@ class Events
 
                         $row_1 = '<span class="events_agent">'.$agent_name.'</span>';
                         $row_1 .= '<span class="events_timestamp">';
-                        $row_1 .= ui_print_timestamp(
-                            $event['timestamp_last'],
-                            true,
-                            ['units' => 'tiny']
-                        );
+                        $row_1 .= human_time_comparation($event['timestamp_last'], 'tiny');
                         $row_1 .= $status_icon;
                         $row_1 .= '</span>';
 
@@ -326,10 +322,7 @@ class Events
                             $event['clean_tags'] = events_clean_tags(
                                 $event['tags']
                             );
-                            $event['timestamp'] = date(
-                                $system->getConfig('date_format'),
-                                $event['utimestamp']
-                            );
+                            $event['timestamp'] = human_time_comparation($event['utimestamp'], 'tiny');
                             if (empty($event['owner_user']) === true) {
                                 $event['owner_user'] = '<i>'.__('N/A').'</i>';
                             } else {
@@ -380,30 +373,30 @@ class Events
                             switch ($event['criticity']) {
                                 default:
                                 case 0:
-                                    $img_sev = 'images/status_sets/default/severity_maintenance.png';
+                                    $img_sev = 'images/status_sets/default/severity_maintenance_rounded.png';
                                 break;
                                 case 1:
-                                    $img_sev = 'images/status_sets/default/severity_informational.png';
+                                    $img_sev = 'images/status_sets/default/severity_informational_rounded.png';
                                 break;
 
                                 case 2:
-                                    $img_sev = 'images/status_sets/default/severity_normal.png';
+                                    $img_sev = 'images/status_sets/default/severity_normal_rounded.png';
                                 break;
 
                                 case 3:
-                                    $img_sev = 'images/status_sets/default/severity_warning.png';
+                                    $img_sev = 'images/status_sets/default/severity_warning_rounded.png';
                                 break;
 
                                 case 4:
-                                    $img_sev = 'images/status_sets/default/severity_critical.png';
+                                    $img_sev = 'images/status_sets/default/severity_critical_rounded.png';
                                 break;
 
                                 case 5:
-                                    $img_sev = 'images/status_sets/default/severity_minor.png';
+                                    $img_sev = 'images/status_sets/default/severity_minor_rounded.png';
                                 break;
 
                                 case 6:
-                                    $img_sev = 'images/status_sets/default/severity_major.png';
+                                    $img_sev = 'images/status_sets/default/severity_major_rounded.png';
                                 break;
                             }
 
@@ -412,9 +405,8 @@ class Events
                                 $img_sev,
                                 true,
                                 [
-                                    'class'  => 'image_status',
-                                    'width'  => 12,
-                                    'height' => 12,
+                                    'width'  => 30,
+                                    'height' => 15,
                                     'title'  => $event_criticity,
                                 ],
                                 false,
@@ -446,17 +438,17 @@ class Events
                             // Get Status.
                             switch ($event['estado']) {
                                 case 0:
-                                    $img_st = 'images/star_dark.png';
+                                    $img_st = 'images/star-dark.svg';
                                     $title_st = __('New event');
                                 break;
 
                                 case 1:
-                                    $img_st = 'images/tick.png';
+                                    $img_st = 'images/validate.svg';
                                     $title_st = __('Event validated');
                                 break;
 
                                 case 2:
-                                    $img_st = 'images/hourglass.png';
+                                    $img_st = 'images/clock.svg';
                                     $title_st = __('Event in process');
                                 break;
 
@@ -570,6 +562,43 @@ class Events
                         }
 
                         if (events_change_status($id_event, EVENT_VALIDATE) === true) {
+                            echo json_encode(['correct' => 1]);
+                        } else {
+                            echo json_encode(['correct' => 0]);
+                        }
+                    } catch (\Exception $e) {
+                        // Unexistent agent.
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
+
+                        echo json_encode(['correct' => 0]);
+                    } finally {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node->disconnect();
+                        }
+                    }
+                break;
+
+                case 'process_event':
+                    $system = System::getInstance();
+
+                    $id_event = $system->getRequest('id_event', 0);
+                    $server_id = $system->getRequest('server_id', 0);
+
+                    try {
+                        if (is_metaconsole() === true
+                            && $server_id > 0
+                        ) {
+                            $node = new Node($server_id);
+                            $node->connect();
+                        }
+
+                        if (events_change_status($id_event, EVENT_PROCESS) === true) {
                             echo json_encode(['correct' => 1]);
                         } else {
                             echo json_encode(['correct' => 0]);
@@ -791,7 +820,7 @@ class Events
         // Content.
         ob_start();
         ?>
-        <table class="pandora_responsive alternate event_details">
+        <table class="pandora_responsive event_details">
             <tbody>
                 <tr class="event_name">
                     <td class="cell_event_name" colspan="2"></td>
@@ -860,6 +889,14 @@ class Events
             'href' => 'javascript: validateEvent();',
         ];
         $options['content_text'] .= $ui->createButton($options_button);
+
+        $options_button = [
+            'text' => __('In process'),
+            'id'   => 'process_button',
+            'href' => 'javascript: processEvent();',
+        ];
+        $options['content_text'] .= $ui->createButton($options_button);
+
         $options_hidden = [
             'id'    => 'event_id',
             'value' => 0,
@@ -879,7 +916,14 @@ class Events
         $options['content_text'] .= '<div id="validate_button_fail" class="invisible center">
 			<h3 class="color_ff0">'.__('Fail validate').'</h3></div>';
 
-        $options['button_close'] = false;
+        $options['content_text'] .= '<div id="process_button_loading" class="invisible center">
+			<img src="images/ajax-loader.gif" /></div>';
+        $options['content_text'] .= '<div id="process_button_correct" class="invisible center">
+			<h3>'.__('Sucessful in process').'</h3></div>';
+        $options['content_text'] .= '<div id="process_button_fail" class="invisible center">
+			<h3 class="color_ff0">'.__('Fail in process').'</h3></div>';
+
+        $options['button_close'] = true;
 
         return $options;
     }
@@ -922,7 +966,7 @@ class Events
         $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 
         $filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
-        $ui->contentBeginCollapsible($filter_title);
+        $ui->contentBeginCollapsible($filter_title, 'filter-collapsible');
         $ui->beginForm('index.php?page=events');
         $items = db_get_all_rows_in_table('tevent_filter');
         $items[] = [
@@ -1012,7 +1056,10 @@ class Events
         $html = $ui->getEndForm();
         $ui->contentCollapsibleAddItem($html);
         $ui->contentEndCollapsible();
+        $ui->contentAddHtml('<div class="hr-full"></div>');
+        $ui->contentAddHtml('<div class="white-card">');
         $this->listEventsHtml();
+        $ui->contentAddHtml('</div>');
         $ui->endContent();
         $ui->showPage();
     }
@@ -1141,7 +1188,7 @@ class Events
         $table = new Table();
         $table->id = $id_table;
 
-        $no_events = '<p id="empty_advice_events" class="empty_advice invisible" class="invisible">'.__('No events').'</p>';
+        $no_events = '<p id="empty_advice_events" class="no-data invisible" class="invisible">'.__('No events').'</p>';
 
         if (!$return) {
             $ui->contentAddHtml($table->getHTML());
@@ -1206,12 +1253,10 @@ class Events
 						data: postvars,
 						success:
 							function (data) {
-								if (data.correct) {
-									event = data.event;
+                                if (data.correct) {
+                                    event = data.event;
 									//Fill the dialog
-									$("#detail_event_dialog h1.dialog_title")
-										.html(event["evento"]);
-									$("#detail_event_dialog .cell_event_name")
+                                    $("#detail_event_dialog h1.dialog_title")
 										.html(event["evento"]);
 									$("#detail_event_dialog .cell_event_id")
 										.html(id_event);
@@ -1227,6 +1272,8 @@ class Events
 										.html(event["criticity"]);
 									$("#detail_event_dialog .cell_event_status")
 										.html(event["status"]);
+									$("#detail_event_dialog .cell_event_status img")
+										.addClass("main_menu_icon");
 									$("#detail_event_dialog .cell_event_acknowledged_by")
 										.html(event["acknowledged_by"]);
 									$("#detail_event_dialog .cell_event_group")
@@ -1251,11 +1298,21 @@ class Events
 										//The event is validated.
                                         $("#validate_button").hide();
 									}
+
+                                    if (event["status"].indexOf("clock") >= 0) {
+                                        $("#process_button").hide();
+                                    }
+
 									$("#validate_button_loading").hide();
 									$("#validate_button_fail").hide();
 									$("#validate_button_correct").hide();
                                     $.mobile.loading( "hide" );
 									$("#detail_event_dialog_hook").click();
+
+                                    $("#detail_event_dialog-button_close").html("");
+                                    $("#detail_event_dialog-button_close").addClass("close-button-dialog");
+                                    $(".dialog_title").parent().addClass("flex align-items-center space-between");
+                                    $(".dialog_title").parent().append($("#detail_event_dialog-button_close"));
 								}
 								else {
                                     $.mobile.loading( "hide" );
@@ -1316,6 +1373,53 @@ class Events
 							}
 					});
 				}
+
+				function processEvent() {
+					id_event = $("#event_id").val();
+                    server_id = $("#server_id").val();
+
+					$("#process_button").hide();
+					$("#process_button_loading").show();
+
+					//Hide the button to close
+					$("#detail_event_dialog div.ui-header a.ui-btn-right")
+						.hide();
+
+					postvars = {};
+					postvars["action"] = "ajax";
+					postvars["parameter1"] = "events";
+					postvars["parameter2"] = "process_event";
+					postvars["id_event"] = id_event;
+                    postvars["server_id"] = server_id;
+
+					$.ajax ({
+						type: "POST",
+						url: "index.php",
+						dataType: "json",
+						data: postvars,
+						success:
+							function (data) {
+								$("#process_button_loading").hide();
+
+								if (data.correct) {
+									$("#process_button_correct").show();
+								}
+								else {
+									$("#process_button_fail").show();
+								}
+
+								$("#detail_event_dialog div.ui-header a.ui-btn-right")
+									.show();
+							},
+						error:
+							function (jqXHR, textStatus, errorThrown) {
+								$("#process_button_loading").hide();
+								$("#process_button_fail").show();
+								$("#detail_event_dialog div.ui-header a.ui-btn-right")
+									.show();
+							}
+					});
+				}
 			</script>'
         );
     }
@@ -1351,14 +1455,14 @@ class Events
 
 						$(\"table#\"+table_id+\" tbody\").append(new_rows);
 
-						load_more_rows = 0;
+						// load_more_rows = 0;
 						refresh_link_listener_list_events();
 					}
 				}
 
 				function ajax_load_rows() {
-					if (load_more_rows) {
-						load_more_rows = 0;
+                    if (load_more_rows) {
+						// load_more_rows = 0;
 						postvars = {};
 						postvars[\"action\"] = \"ajax\";
 						postvars[\"parameter1\"] = \"events\";
@@ -1383,7 +1487,7 @@ class Events
 									//Check if the end of the event list tables is in the client limits
 									var table_end = $('#list_events').offset().top + $('#list_events').height();
 									if (table_end < document.documentElement.clientHeight) {
-										ajax_load_rows();
+										// ajax_load_rows();
 									}
 								}
 
@@ -1411,26 +1515,47 @@ class Events
 							if (data.events.length == 0) {
 								$('#last_agent_events').css('visibility', 'hidden');
 								$('#empty_advice_events').show();
-							}
+							} else {
+                                $('#empty_advice_events').hide();
+                            }
 						},
 						\"json\");
 				}
 
+                let intervalId;
+                let count = 0;
+                function getFreeSpace() {
+                    let headerHeight = $('div[data-role=\"header\"].ui-header').outerHeight();
+                    let contentHeight = $('div[data-role=\"content\"].ui-content').outerHeight();
+                    let windowHeight = $(window).height();
+
+                    let freeSpace = windowHeight - (headerHeight + contentHeight);
+
+                    if (freeSpace > 0 && count < 50) {
+                        custom_scroll();
+                    } else {
+                        clearInterval(intervalId);
+                    }
+
+                    count++;
+                }
+
 				$(document).ready(function() {
-						ajax_load_rows();
-						$(window).bind(\"scroll\", function () {
-							custom_scroll();
-						});
-						$(window).on(\"touchmove\", function(event) {
-							custom_scroll();
-						});
+                    intervalId = setInterval(getFreeSpace, 500);
+                    ajax_load_rows();
+                    $(window).bind(\"scroll\", function () {
+                        custom_scroll();
+                    });
+                    $(window).on(\"touchmove\", function(event) {
+                        custom_scroll();
+                    });
 				});
 
 				function custom_scroll() {
 					if ($(this).scrollTop() + $(this).height()
-							>= ($(document).height() - 100)) {
-							ajax_load_rows();
-						}
+                        >= ($(document).height() - 100)) {
+                        ajax_load_rows();
+                    }
 				}
 			</script>"
         );

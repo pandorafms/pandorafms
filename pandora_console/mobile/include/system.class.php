@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -151,9 +151,34 @@ class System
     }
 
 
+    public function checkEnterprise($page='')
+    {
+        if ((int) $this->getConfig('enterprise_installed', false) === 1) {
+            return true;
+        } else {
+            if (empty($this->getRequest('page', false)) === false && $page === '') {
+                $page = $this->getRequest('page', false);
+            }
+
+            db_pandora_audit(
+                AUDIT_LOG_ENTERPRISE_VIOLATION,
+                'Trying to access to Mobile Page: '.$page
+            );
+
+            return false;
+        }
+    }
+
+
     public static function getDefaultACLFailText()
     {
         return __('Access to this page is restricted to authorized users only, please contact your system administrator if you should need help.').'<br><br>'.__('Please remember that any attempts to access this page will be recorded on the %s System Database.', get_product_name());
+    }
+
+
+    public static function getDefaultLicenseFailText()
+    {
+        return __('Invalid license, please contact your system administrator if you should need help.').'<br><br>'.__('Please remember that any attempts to access this page will be recorded on the %s System Database.', get_product_name());
     }
 
 

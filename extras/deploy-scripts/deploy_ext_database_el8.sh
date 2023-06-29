@@ -15,7 +15,7 @@ LOGFILE="/tmp/deploy-ext-db-$(date +%F).log"
 
 # define default variables
 [ "$TZ" ]       || TZ="Europe/Madrid"
-[ "$MYVER" ]    || MYVER=57
+[ "$MYVER" ]    || MYVER=80
 [ "$DBHOST" ]   || DBHOST=127.0.0.1
 [ "$DBNAME" ]   || DBNAME=pandora
 [ "$DBUSER" ]   || DBUSER=pandora
@@ -26,6 +26,7 @@ LOGFILE="/tmp/deploy-ext-db-$(date +%F).log"
 [ "$SKIP_DATABASE_INSTALL" ]     || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
 [ "$POOL_SIZE" ]    || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
+
 
 # Ansi color code variables
 red="\e[0;91m"
@@ -80,6 +81,10 @@ check_root_permissions () {
 
 ## Main
 echo "Starting PandoraFMS External DB deployment EL8 ver. $S_VERSION"
+
+if ! grep --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+if ! sed --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+ 
 
 # Centos Version
 if [ ! "$(grep -Ei 'centos|rocky|Almalinux|Red Hat Enterprise' /etc/redhat-release)" ]; then
@@ -174,7 +179,7 @@ execute_cmd "dnf module disable -y mysql" "Disabiling mysql module"
 
 if [ "$MYVER" -eq '80' ] ; then
     execute_cmd "percona-release setup ps80 -y" "Enabling mysql80 module"
-    execute_cmd "dnf install -y percona-server-server percona-xtrabackup-24" "Installing Percona Server 80"
+    execute_cmd "dnf install -y percona-server-server percona-xtrabackup-80" "Installing Percona Server 80"
 fi
 
 if [ "$MYVER" -ne '80' ] ; then

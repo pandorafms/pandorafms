@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -168,6 +168,10 @@ if (!$strict_acl) {
     $header_title = $header_title.' &raquo; '.$header_sub_title;
 }
 
+if (is_metaconsole() === true) {
+    $tabs = [];
+}
+
 ui_print_standard_header(
     $header_title,
     'images/extensions.png',
@@ -206,6 +210,7 @@ $agent_status_arr[AGENT_STATUS_WARNING] = __('Warning');
 $agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
 $agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
+$agent_status_arr[AGENT_STATUS_ALERT_FIRED] = __('Fired alerts');
 
 $table->data['group_row'][] = html_print_label_input_block(
     __('Search group'),
@@ -267,7 +272,7 @@ $table->data['agent_row'][] = html_print_label_input_block(
         0,
         true,
         false,
-        true,
+        false,
         '',
         false,
         'width:100%'
@@ -296,6 +301,7 @@ if (is_metaconsole() === false) {
     $module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
     $module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
     $module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+    $module_status_arr['fired'] = __('Fired alerts');
 
     $table->data['last_row'][] = html_print_label_input_block(
         __('Search module'),
@@ -318,7 +324,7 @@ if (is_metaconsole() === false) {
             0,
             true,
             false,
-            true,
+            false,
             '',
             false,
             'width:100%'
@@ -376,7 +382,7 @@ html_print_div(
     ]
 );
 
-$infoHeadTitle = 'Sombra oscura';
+$infoHeadTitle = '';
 ?>
 
 <?php if (is_metaconsole() === false) { ?>
@@ -603,9 +609,9 @@ $infoHeadTitle = 'Sombra oscura';
                             opacity: 0.5,
                             background: "black"
                         },
-                        width: 650,
+                        width: "auto",
                         height: 500
-                    })
+                    }).css({"min-width": "650px"})
                     .show ();
                     refresh_pagination_callback(module_id, id_agent, server_name, module_name);
                     datetime_picker_callback();

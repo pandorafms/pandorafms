@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -485,6 +485,11 @@ function filemanager_file_explorer(
     // Options.
     $allowZipFiles = (isset($options['all']) === true) || ((isset($options['allowZipFiles']) === true) && ($options['allowZipFiles'] === true));
     $allowCreateText = (isset($options['all']) === true) || ((isset($options['allowCreateText']) === true) && ($options['allowCreateText'] === true));
+    $allowCreateFolder = (isset($options['allowCreateFolder'])) ? false : true;
+
+    if ($options['denyCreateText'] === true) {
+        $allowCreateText = false;
+    }
 
     if ($homedir_filemanager === false) {
         $homedir_filemanager = $config['homedir'];
@@ -494,11 +499,14 @@ function filemanager_file_explorer(
 
     ?>
     <script type="text/javascript">
+        <?php if ($allowCreateFolder === true) : ?>
         function show_form_create_folder() {
             actions_dialog('create_folder');
             $("#create_folder").css("display", "block");
             check_opened_dialog('create_folder');
         }
+        <?php endif ?>
+
         <?php if ($allowCreateText === true) : ?>
             function show_create_text_file() {
                 actions_dialog('create_text_file');
@@ -514,11 +522,14 @@ function filemanager_file_explorer(
         }
 
         function check_opened_dialog(check_opened) {
-            if (check_opened !== 'create_folder') {
-                if (($("#create_folder").hasClass("ui-dialog-content") && $('#create_folder').dialog('isOpen') === true)) {
-                    $('#create_folder').dialog('close');
+            <?php if ($allowCreateFolder === true) : ?>
+                if (check_opened !== 'create_folder') {
+                    if (($("#create_folder").hasClass("ui-dialog-content") && $('#create_folder').dialog('isOpen') === true)) {
+                        $('#create_folder').dialog('close');
+                    }
                 }
-            }
+            <?php endif ?>
+
             <?php if ($allowCreateText === true) : ?>
                 if (check_opened !== 'create_text_file') {
                     if (($("#create_text_file").hasClass("ui-dialog-content") && $('#create_text_file').dialog('isOpen') === true)) {
@@ -537,14 +548,18 @@ function filemanager_file_explorer(
             $('.' + action).addClass('file_table_modal_active');
             var title_action = '';
             switch (action) {
-                case 'create_folder':
-                    title_action = "<?php echo __('Create a Directory'); ?>";
-                    break;
-                    <?php if ($allowCreateText === true) : ?>
-                    case 'create_text_file':
-                        title_action = "<?php echo __('Create File'); ?>";
+                <?php if ($allowCreateFolder === true) : ?>
+                    case 'create_folder':
+                        title_action = "<?php echo __('Create a Directory'); ?>";
                         break;
-                    <?php endif ?>
+                <?php endif ?>
+
+                <?php if ($allowCreateText === true) : ?>
+                case 'create_text_file':
+                    title_action = "<?php echo __('Create File'); ?>";
+                    break;
+                <?php endif ?>
+
                 case 'upload_file':
                     title_action = "<?php echo __('Upload Files'); ?>";
                     break;
@@ -601,7 +616,7 @@ function filemanager_file_explorer(
                     }
                 }).show();
 
-            $("#submit-submit").on("click", copyToClipboard);
+            $("#button-submit").on("click", copyToClipboard);
         }
 
         function copyToClipboard() {
@@ -626,7 +641,7 @@ function filemanager_file_explorer(
         $table->width = '100%';
         $table->id = 'table_filemanager';
 
-        $table->class = (is_metaconsole() === true) ? 'databox_tactical' : 'info_table';
+        $table->class = 'info_table';
         $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
         $table->colspan = [];
         $table->data = [];
@@ -751,7 +766,7 @@ function filemanager_file_explorer(
                 && ($readOnly === false)
             ) {
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
-                $data[4] .= '<input type="image" style="margin-top: 2px;height:21px" class="invert_filter" src="images/delete.svg" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[4] .= '<input type="image" style="margin-top: 2px;height:21px" class="invert_filter main_menu_icon" src="images/delete.svg" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
                 $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['server_unique_identifier']), true);
                 $data[4] .= html_print_input_hidden('delete_file', 1, true);
@@ -809,18 +824,21 @@ function filemanager_file_explorer(
     if ($readOnly === false) {
         if (is_writable($real_directory) === true) {
             // The buttons to make actions.
-            $tabs_dialog = '<ul id="file_table_modal">
-            <li class="create_folder">
-                <a href="javascript: show_form_create_folder();">'.html_print_image(
-                'images/create_directory.png',
-                true,
-                [
-                    'title' => __('Create directory'),
-                    'class' => 'invert_filter',
-                ]
-            ).'<span>'.__('Create a Directory').'</span>
-                </a>
-            </li>';
+            $tabs_dialog = '<ul id="file_table_modal">';
+            if ($allowCreateFolder === true) {
+                $tabs_dialog .= '
+                <li class="create_folder">
+                    <a href="javascript: show_form_create_folder();">'.html_print_image(
+                    'images/create_directory.png',
+                    true,
+                    [
+                        'title' => __('Create directory'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'<span>'.__('Create a Directory').'</span>
+                    </a>
+                </li>';
+            }
 
             if ($allowCreateText === true) {
                 $tabs_dialog .= '
@@ -853,23 +871,25 @@ function filemanager_file_explorer(
             $tabs_dialog .= '</ul>';
 
             // Create folder section.
-            $createFolderElements = $tabs_dialog;
-            $createFolderElements .= sprintf('<form method="POST" action="%s">', $url);
-            $createFolderElements .= html_print_input_text('dirname', '', '', 30, 255, true);
-            $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
-            $createFolderElements .= html_print_input_hidden('directory', $relative_directory, true);
-            $createFolderElements .= html_print_input_hidden('create_dir', 1, true);
-            $createFolderElements .= html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true);
-            $createFolderElements .= html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true);
-            $createFolderElements .= '</form>';
+            if ($allowCreateFolder === true) {
+                $createFolderElements = $tabs_dialog;
+                $createFolderElements .= sprintf('<form method="POST" action="%s">', $url);
+                $createFolderElements .= html_print_input_text('dirname', '', '', 30, 255, true);
+                $createFolderElements .= html_print_submit_button(__('Create'), 'crt', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
+                $createFolderElements .= html_print_input_hidden('directory', $relative_directory, true);
+                $createFolderElements .= html_print_input_hidden('create_dir', 1, true);
+                $createFolderElements .= html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true);
+                $createFolderElements .= html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true);
+                $createFolderElements .= '</form>';
 
-            html_print_div(
-                [
-                    'id'      => 'create_folder',
-                    'class'   => 'invisible',
-                    'content' => $createFolderElements,
-                ]
-            );
+                html_print_div(
+                    [
+                        'id'      => 'create_folder',
+                        'class'   => 'invisible',
+                        'content' => $createFolderElements,
+                    ]
+                );
+            }
 
             // Upload file section.
             $uploadFileElements = $tabs_dialog;
@@ -896,7 +916,7 @@ function filemanager_file_explorer(
                 $uploadFileElements .= html_print_input_hidden('upload_file', 1, true);
             }
 
-            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, [ 'class' => 'submitButton', 'style' => 'float:right', 'icon' => 'next'], true);
+            $uploadFileElements .= html_print_submit_button(__('Go'), 'go', false, [ 'class' => 'submitButton', 'style' => 'float:right; margin-top: 10px;', 'icon' => 'next'], true);
             $uploadFileElements .= html_print_input_hidden('real_directory', $real_directory, true);
             $uploadFileElements .= html_print_input_hidden('directory', $relative_directory, true);
             $uploadFileElements .= html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true);
@@ -936,18 +956,20 @@ function filemanager_file_explorer(
 
             echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";
 
-            $buttons[] = html_print_button(
-                __('Create directory'),
-                'create_directory',
-                false,
-                'show_form_create_folder()',
-                [
-                    'class' => 'margin-right-2 invert_filter secondary',
-                    'icon'  => 'create_directory',
-                ],
-                true,
-                false
-            );
+            if ($allowCreateFolder === true) {
+                $buttons[] = html_print_button(
+                    __('Create directory'),
+                    'create_directory',
+                    false,
+                    'show_form_create_folder()',
+                    [
+                        'class' => 'margin-right-2 invert_filter secondary',
+                        'icon'  => 'create_directory',
+                    ],
+                    true,
+                    false
+                );
+            }
 
             if ($allowCreateText === true) {
                 $buttons[] = html_print_button(

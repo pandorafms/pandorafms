@@ -269,6 +269,7 @@
 
           $(this).change(function() {
             var id_os = this.value;
+            $("select#id_os").select2("close");
 
             var home_url;
             if (typeof settings == "undefined") home_url = "./";
@@ -296,7 +297,7 @@
   $.extend({
     pandoraSelectGroupIcon: new (function() {
       this.defaults = {
-        alertSelect: "select#id_group",
+        alertSelect: "select#grupo",
         spanPreview: "#group_preview",
         debug: false
       };
@@ -315,25 +316,26 @@
 
           $(this).change(function() {
             var id_group = this.value;
+            let href = $("a", config.spanPreview).attr("href");
+            let hrefPosition = href.search("group_id=");
+            let hrefNew = href.slice(0, hrefPosition) + "group_id=" + id_group;
 
-            $(config.spanPreview).fadeOut("fast", function() {
-              $("img", config.spanPreview).remove();
-              jQuery.post(
-                "ajax.php",
-                {
-                  page: "godmode/groups/group_list",
-                  get_group_json: 1,
-                  id_group: id_group
-                },
-                function(data) {
-                  var img = $("<img />").attr("src", "images/" + data["icon"]);
-                  $(config.spanPreview)
-                    .append(img)
-                    .fadeIn("fast");
-                },
-                "json"
-              );
-            });
+            jQuery.post(
+              "ajax.php",
+              {
+                page: "godmode/groups/group_list",
+                get_group_json: 1,
+                id_group: id_group
+              },
+              function(data) {
+                $("img", config.spanPreview).attr(
+                  "src",
+                  "images/" + data["icon"]
+                );
+                $("a", config.spanPreview).attr("href", hrefNew);
+              },
+              "json"
+            );
           });
         });
       };

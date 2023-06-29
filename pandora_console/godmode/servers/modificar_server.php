@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -29,8 +29,8 @@
 // Load global vars.
 global $config;
 
-require_once 'include/functions_servers.php';
-require_once 'include/functions_graph.php';
+require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_graph.php';
 
 check_login();
 
@@ -205,34 +205,69 @@ if (isset($_GET['server']) === true) {
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_standard_header(
-        __('Remote Configuration'),
-        'images/gm_servers.png',
-        false,
-        'servers',
-        true,
-        $buttons,
-        [
+    if (is_metaconsole() === true) {
+        ui_print_standard_header(
+            __('Remote Configuration'),
+            'images/gm_servers.png',
+            false,
+            'servers',
+            true,
+            [],
             [
-                'link'  => '',
-                'label' => __('Servers'),
-            ],
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => 'index.php?sec=advanced&sec2=advanced/servers',
+                    'label' => __('%s servers', get_product_name()),
+                ],
+            ]
+        );
+    } else {
+        ui_print_standard_header(
+            __('Remote Configuration'),
+            'images/gm_servers.png',
+            false,
+            'servers',
+            true,
+            $buttons,
             [
-                'link'  => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server',
-                'label' => __('%s servers', get_product_name()),
-            ],
-        ]
-    );
+                [
+                    'link'  => '',
+                    'label' => __('Servers'),
+                ],
+                [
+                    'link'  => 'index.php?sec=gservers&sec2=godmode/servers/modificar_server',
+                    'label' => __('%s servers', get_product_name()),
+                ],
+            ]
+        );
+    }
+
 
     if ($tab === 'standard_editor') {
         $advanced_editor = false;
 
         if ($server_type === 13) {
-            echo "<table cellpadding='4' cellspacing='4' class='databox filters font_bold margin-bottom-10' width='100%'>
+            echo "<table cellpadding='4' cellspacing='4' class='databox filters margin-bottom-10 max_floating_element_size filter-table-adv'>
             <tr>";
             echo '<td class="w100p">';
-            echo __('Dynamic search').'&nbsp;&nbsp;';
-            html_print_input_text('search_config_token', $search, '', 12);
+            echo html_print_label_input_block(
+                __('Dynamic search'),
+                html_print_input_text(
+                    'search_config_token',
+                    $search,
+                    '',
+                    12,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w400px'
+                )
+            );
             echo '</td>';
             echo '</tr></table>';
         }

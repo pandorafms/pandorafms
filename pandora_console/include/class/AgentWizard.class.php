@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -325,7 +325,7 @@ class AgentWizard extends HTML
         $this->wizardSection = get_parameter('wizard_section', 'snmp_explorer');
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
-        $this->targetIp = get_parameter('targetIp', '');
+        $this->targetIp = io_safe_input(trim(io_safe_output(get_parameter('targetIp', ''))));
         $this->wmiBinary = $config['wmiBinary'];
         $this->defaultSNMPValues = (array) json_decode(io_safe_output($config['agent_wizard_defaults']));
 
@@ -601,6 +601,7 @@ class AgentWizard extends HTML
             'action' => $this->sectionUrl,
             'id'     => 'form-main-wizard',
             'method' => 'POST',
+            'class'  => 'white_box pdd_20px filter-list-adv',
         ];
 
         // Inputs.
@@ -829,24 +830,22 @@ class AgentWizard extends HTML
             ];
         }
 
-        $inputs[] = [
-            'arguments' => [
-                'label'      => $this->actionLabel,
-                'name'       => 'sub-protocol',
-                'type'       => 'submit',
-                'attributes' => [
+        html_print_action_buttons(
+            html_print_submit_button(
+                $this->actionLabel,
+                'sub-protocol',
+                false,
+                [
                     'icon'    => 'cog',
-                    'onclick' => '$(\'#form-main-wizard\').submit();',
+                    'onclick' => '$("#form-main-wizard").submit();',
                 ],
-                'return'     => true,
-            ],
-        ];
+                true
+            )
+        );
 
         // Prints main form.
         html_print_div(
             [
-                'class'   => 'white_box',
-                'style'   => 'padding: 20px',
                 'content' => $this->printForm(
                     [
                         'form'      => $form,
@@ -1330,7 +1329,7 @@ class AgentWizard extends HTML
                 $table->rowstyle[$i] = 'color:#ccc;';
                 $data[0] .= ' ';
                 $data[0] .= html_print_image(
-                    'images/error.png',
+                    'images/alert-warning@svg.svg',
                     true,
                     ['title' => $msgError]
                 );
@@ -1348,7 +1347,7 @@ class AgentWizard extends HTML
             // Img Server.
             if ($this->serverType == SERVER_TYPE_ENTERPRISE_SATELLITE) {
                 $img_server = html_print_image(
-                    'images/satellite.png',
+                    'images/satellite@os.svg',
                     true,
                     [
                         'title' => __('Enterprise Satellite server'),
@@ -1358,30 +1357,30 @@ class AgentWizard extends HTML
             } else {
                 if ($module['execution_type'] == EXECUTION_TYPE_PLUGIN) {
                     $img_server = html_print_image(
-                        'images/plugin.png',
+                        'images/plugins@svg.svg',
                         true,
                         [
                             'title' => __('Plugin server'),
-                            'class' => 'invert_filter',
+                            'class' => 'invert_filter main_menu_icon',
                         ]
                     );
                 } else {
                     if ($this->protocol === 'wmi') {
                         $img_server = html_print_image(
-                            'images/wmi.png',
+                            'images/WMI@svg.svg',
                             true,
                             [
                                 'title' => __('WMI server'),
-                                'class' => 'invert_filter',
+                                'class' => 'invert_filter main_menu_icon',
                             ]
                         );
                     } else {
                         $img_server = html_print_image(
-                            'images/op_network.png',
+                            'images/network@svg.svg',
                             true,
                             [
                                 'title' => __('Network server'),
-                                'class' => 'invert_filter',
+                                'class' => 'invert_filter main_menu_icon',
                             ]
                         );
                     }
@@ -2334,7 +2333,7 @@ class AgentWizard extends HTML
                             }
 
                             $tmp->id_plugin($infoMacros['server_plugin']);
-                            $tmp->macros(json_encode($fieldsPlugin));
+                            $tmp->macros(io_json_mb_encode($fieldsPlugin));
                         }
                     }
                 }
@@ -2508,7 +2507,7 @@ class AgentWizard extends HTML
                         }
 
                         $tmp->id_plugin($infoMacros['server_plugin']);
-                        $tmp->macros(json_encode($fieldsPlugin));
+                        $tmp->macros(io_json_mb_encode($fieldsPlugin));
                     }
 
                     $tmp->ip_target(io_safe_input($this->targetIp));
@@ -4091,27 +4090,27 @@ class AgentWizard extends HTML
                     $blockTitle .= '<b>'.$block['name'];
                     $blockTitle .= '&nbsp;&nbsp;';
                     $blockTitle .= html_print_image(
-                        'images/tip_help.png',
+                        'images/info@svg.svg',
                         true,
                         [
                             'title' => __('Modules selected'),
                             'alt'   => __('Modules selected'),
                             'id'    => 'image-info-modules-'.$idBlock,
-                            'class' => 'hidden',
+                            'class' => 'hidden main_menu_icon',
                         ]
                     );
                     $blockTitle .= '</b>';
                 }
             } else {
                 $blockTitle = '<b>'.$block['name'];
-                $classImg = '';
+                $classImg = 'main_menu_icon ';
                 if ($activeModules === 0) {
-                    $classImg = 'hidden';
+                    $classImg .= 'hidden';
                 }
 
                 $blockTitle .= '&nbsp;&nbsp;';
                 $blockTitle .= html_print_image(
-                    'images/tip_help.png',
+                    'images/info@svg.svg',
                     true,
                     [
                         'title' => __('Modules selected'),
@@ -4133,10 +4132,10 @@ class AgentWizard extends HTML
             $table->width = '100%';
             $table->class = 'info_table';
             // Subheaders for Warning and Critical columns.
-            $subheaders = '<span class=\'wizard-colum-levels font_w300 mrgn_lft_0.8em\'>Min.</span>';
-            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_1.6em\'>Max.</span>';
-            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_2em\'>Inv.</span>';
-            $subheaders .= '<span class=\'wizard-colum-levels font_w300 mrgn_lft_2em\'>%.</span>';
+            $subheaders = '<span class=\'wizard-colum-levels font_w300 margin-left-1\'>Min.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 margin-left-1\'>Max.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 margin-left-1\'>Inv.</span>';
+            $subheaders .= '<span class=\'wizard-colum-levels font_w300 margin-left-05\'>%.</span>';
 
             // Warning header.
             $warning_header = html_print_div(
@@ -4206,6 +4205,9 @@ class AgentWizard extends HTML
             $table->size[4] = '140px';
             $table->size[5] = '3%';
 
+            $table->align = [];
+            $table->align[1] = 'center';
+
             // If is needed show current value, we must correct the table.
             if ($showCurrentValue === true) {
                 // Correct headers.
@@ -4274,7 +4276,7 @@ class AgentWizard extends HTML
                         false,
                         false,
                         '',
-                        $md5IdBlock,
+                        $md5IdBlock.' w100p',
                         '',
                         '',
                         false,
@@ -4294,8 +4296,9 @@ class AgentWizard extends HTML
                         1,
                         20,
                         $module['description'],
-                        'form=\'form-create-modules\' class=\'min-height-50px\'',
-                        true
+                        'form=\'form-create-modules\'',
+                        true,
+                        'w100p'
                     );
                 }
 
@@ -4349,8 +4352,7 @@ class AgentWizard extends HTML
                 );
                 $data_warning .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels-check',
-                        'style'   => 'margin-top: 0.3em;',
+                        'class'   => 'wizard-column-levels-check mrgn_top_10px',
                         'content' => html_print_checkbox(
                             'module-warning-inv-'.$uniqueId,
                             $module['inv_warning'],
@@ -4366,8 +4368,7 @@ class AgentWizard extends HTML
                 );
                 $data_warning .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels-check',
-                        'style'   => 'margin-top: 0.3em;',
+                        'class'   => 'wizard-column-levels-check mrgn_top_10px',
                         'content' => html_print_checkbox(
                             'module-warning-perc-'.$uniqueId,
                             $module['perc_warning'],
@@ -4433,8 +4434,7 @@ class AgentWizard extends HTML
 
                 $data[4] .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels-check',
-                        'style'   => 'margin-top: 0.3em;',
+                        'class'   => 'wizard-column-levels-check mrgn_top_10px',
                         'content' => html_print_checkbox(
                             'module-critical-inv-'.$uniqueId,
                             $module['inv_critical'],
@@ -4451,8 +4451,7 @@ class AgentWizard extends HTML
 
                 $data[4] .= html_print_div(
                     [
-                        'class'   => 'wizard-column-levels-check',
-                        'style'   => 'margin-top: 0.3em;',
+                        'class'   => 'wizard-column-levels-check mrgn_top_10px',
                         'content' => html_print_checkbox(
                             'module-critical-perc-'.$uniqueId,
                             $module['perc_critical'],
@@ -4487,7 +4486,7 @@ class AgentWizard extends HTML
                         '',
                         true,
                         '',
-                        'pdd_0px'
+                        'pdd_0px mrgn_top-8px'
                     );
                 } else {
                     // WIP. Current value of this module.
@@ -4704,8 +4703,6 @@ class AgentWizard extends HTML
                     'toggle_class'      => '',
                     'container_class'   => 'white-box-content',
                     'main_class'        => $class,
-                    'img_a'             => 'images/arrow_down_green.png',
-                    'img_b'             => 'images/arrow_right_green.png',
                     'clean'             => false,
                     'reverseImg'        => $reverseImg,
                     'switch'            => $buttonSwitch,
@@ -5980,7 +5977,7 @@ class AgentWizard extends HTML
                 });
 
                 // Loading.
-                $('#submit-sub-protocol').click(function() {
+                $('#button-sub-protocol').click(function() {
                     $('.wizard-result').remove();
                     $('#form-create-modules').remove();
                     $('.textodialogo').remove();

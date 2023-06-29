@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -30,7 +30,7 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 
 global $config;
 
-require_once 'include/functions_gis.php';
+require_once $config['homedir'].'/include/functions_gis.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
@@ -483,6 +483,7 @@ if (is_ajax()) {
         $status_modulo = (int) get_parameter('status_module', -1);
         $id_group_selected = (int) get_parameter('id_group', 0);
         $metaconsole_server_name = null;
+        $exclude_policy_modules = (bool) get_parameter('exclude_policy_modules', false);
         if (!empty($id_server)) {
             $metaconsole_server_name = db_get_value(
                 'server_name',
@@ -767,6 +768,10 @@ if (is_ajax()) {
                 }
             }
 
+            if ($exclude_policy_modules === true) {
+                $sql .= ' AND t1.id_policy_module = 0 AND t1.policy_linked = 0';
+            }
+
             $sql .= ' ORDER BY nombre';
             $nameModules = db_get_all_rows_sql($sql);
             if ($tags != null) {
@@ -835,6 +840,8 @@ if (is_ajax()) {
         $safe_name = (bool) get_parameter('safe_name', false);
 
         $truncate_module_names = (bool) get_parameter('truncate_module_names');
+
+        $exclude_policy_modules = (bool) get_parameter('exclude_policy_modules', false);
 
         // Filter.
         $filter = [];
@@ -925,6 +932,11 @@ if (is_ajax()) {
         $force_tags = !empty($tags);
         if ($force_tags) {
             $filter['ttag_module.id_tag IN '] = '('.implode(',', $tags).')';
+        }
+
+        if ($exclude_policy_modules === true) {
+            $filter['id_policy_module'] = 0;
+            $filter['policy_linked'] = 0;
         }
 
         if (is_metaconsole() && !$force_local_modules) {
@@ -1301,6 +1313,7 @@ if (is_ajax()) {
 }
 
 $id_agente = (int) get_parameter('id_agente', 0);
+
 if (empty($id_agente)) {
     return;
 }
@@ -1442,24 +1455,22 @@ $alerttab['active'] = ($tab === 'alert');
 
 // Inventory.
 $inventoryCount = db_get_num_rows('SELECT id_agent_module_inventory FROM tagent_module_inventory WHERE id_agente = '.$agent['id_agente']);
-$inventorytab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
-    'images/hardware-software-component@svg.svg',
-    true,
-    [
-        'class' => 'main_menu_icon invert_filter',
-        'title' => __('Inventory'),
-    ]
-).'</a>';
 
-if ($tab == 'inventory') {
-    $inventorytab['active'] = true;
-} else {
-    $inventorytab['active'] = false;
-}
+if ($inventoryCount > 0) {
+    $inventorytab['text'] = html_print_menu_button(
+        [
+            'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente,
+            'image' => 'images/hardware-software-component@svg.svg',
+            'title' => __('Inventory'),
+        ],
+        true
+    );
 
-$inventorytab = enterprise_hook('inventory_tab');
-if ($inventorytab === ENTERPRISE_NOT_HOOK || $inventoryCount === 0) {
-    $inventorytab = '';
+    if ($tab === 'inventory') {
+        $inventorytab['active'] = true;
+    } else {
+        $inventorytab['active'] = false;
+    }
 }
 
 // Collection.
@@ -1479,9 +1490,8 @@ if ($policyTab === ENTERPRISE_NOT_HOOK) {
     $policyTab = '';
 }
 
-
 // Omnishell.
-$tasks = count_tasks_agent($id_agente);
+$tasks = enterprise_hook('count_tasks_agent', [$id_agente]);
 
 if ($tasks === true) {
     $omnishellTab = enterprise_hook('omnishell_tab');
@@ -1591,7 +1601,7 @@ if (enterprise_installed() === true && (bool) $config['log_collector'] === true)
         $log_viewer_tab['text'] = html_print_menu_button(
             [
                 'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente,
-                'image' => 'images/gm_log.png',
+                'image' => 'images/gm_log@svg.svg',
                 'title' => __('Log Viewer'),
             ],
             true
@@ -1921,7 +1931,7 @@ switch ($tab) {
 
 if ((bool) $config['pure'] === false) {
     ui_print_standard_header(
-        __('Agent main view'),
+        __('Agent main view').' ( '.strtolower(agents_get_alias($id_agente)).' )',
         $icon,
         false,
         ($help_header ?? ''),
@@ -1940,6 +1950,12 @@ if ((bool) $config['pure'] === false) {
                 'link'  => '',
                 'label' => $tab_name,
             ],
+        ],
+        [
+            'id_element' => $id_agente,
+            'url'        => 'operation/agentes/ver_agente&id_agente='.$id_agente,
+            'label'      => agents_get_alias($id_agente),
+            'section'    => 'Agents',
         ]
     );
 }

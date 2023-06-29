@@ -194,6 +194,8 @@ class Item extends CachedModel
      */
     protected function decode(array $data): array
     {
+        global $config;
+
         $decodedData = [
             'id'              => (int) $data['id'],
             'colorStatus'     => (string) COL_UNKNOWN,
@@ -209,8 +211,11 @@ class Item extends CachedModel
             'x'               => static::extractX($data),
             'y'               => static::extractY($data),
             'cacheExpiration' => static::extractCacheExpiration($data),
-            'alertOutline'    => static::checkLayoutAlertsRecursive($data),
         ];
+
+        if ((bool) $config['display_item_frame'] === true) {
+            $decodedData['alertOutline'] = static::checkLayoutAlertsRecursive($data);
+        }
 
         if (static::$useLinkedModule === true) {
             $decodedData = array_merge(
@@ -1860,6 +1865,10 @@ class Item extends CachedModel
 
                 $save = array_merge($dataModelEncode, $dataEncode);
 
+                if (!empty($save['label'])) {
+                    $save['label'] = io_safe_output(io_safe_input(str_replace("'", "\'", $save['label'])));
+                }
+
                 $result = \db_process_sql_update(
                     'tlayout_data',
                     $save,
@@ -1944,12 +1953,10 @@ class Item extends CachedModel
                 $inputs[] = [
                     'id'        => 'div-textarea-label',
                     'arguments' => [
-                        'type'    => 'textarea',
-                        'rows'    => 4,
-                        'columns' => 60,
-                        'name'    => 'label',
-                        'value'   => $values['label'],
-                        'return'  => true,
+                        'type'   => 'textarea',
+                        'name'   => 'label',
+                        'value'  => $values['label'],
+                        'return' => true,
                     ],
                 ];
 

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -49,11 +49,11 @@ $output .= '<div class="images">';
 if ($files !== false) {
     if ($preview === true) {
         foreach ($files as $key => $file) {
-            $output .= html_print_image($file, true);
+            $output .= html_print_image($file, true, ['class' => 'main_menu_icon']);
         }
     } else {
         foreach ($files as $key => $file) {
-            $output .= html_print_image($file['path'].$file['filename'], true);
+            $output .= html_print_image($file['path'].$file['filename'], true, ['class' => 'main_menu_icon']);
         }
     }
 }
@@ -73,14 +73,17 @@ $output .= '<p id="text_tip">';
 $output .= $text;
 $output .= '</p>';
 
+$link_class = 'invisible';
 if (empty($url) === false && $url !== '') {
-    $output .= '<a href="'.$url.'" target="_blank" id="url_tip">'.__('See more info').'<span class="arrow_tips">→</span></a>';
+    $link_class = '';
 }
+
+$output .= '<a href="'.$url.'" class="'.$link_class.'" target="_blank" id="url_tip">'.__('See more info').'</a>';
 
 $output .= '</div>';
 
 $output .= '<div class="ui-dialog-buttonset">';
-// TODO Delete this buttons and use html_print_button when merge new design
+
 $output .= html_print_button(
     __('Maybe later'),
     '',
@@ -116,7 +119,7 @@ if ($preview === true) {
         '',
         [
             'onclick' => 'next_tip()',
-            'class'   => 'mini',
+            'class'   => ($totalTips === '1') ? 'mini hide-button' : 'mini',
         ],
         true
     );

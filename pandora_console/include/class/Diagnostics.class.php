@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1032,10 +1032,14 @@ class Diagnostics extends Wizard
 
         $unit = 'M';
 
-        $pathServerLogs = '/var/log/pandora/pandora_server.log';
+        $logs_directory = (empty($config['server_log_dir']) === false)
+            ? io_safe_output($config['server_log_dir'])
+            : '/var/log/pandora';
+
+        $pathServerLogs = $logs_directory.'/pandora_server.log';
         $servers = $this->getLogInfo($pathServerLogs);
 
-        $pathErrLogs = '/var/log/pandora/pandora_server.error';
+        $pathErrLogs = $logs_directory.'/pandora_server.error';
         $errors = $this->getLogInfo($pathErrLogs);
 
         $pathConsoleLogs = $config['homedir'].'/log/console.log';
@@ -1831,7 +1835,7 @@ class Diagnostics extends Wizard
 
                         if ($items[$key]['status'] === 2) {
                             $items[$key]['value'] = html_print_image(
-                                'images/icono-warning.png',
+                                'images/alert-yellow@svg.svg',
                                 true,
                                 [
                                     'title' => __('Warning'),
@@ -1840,7 +1844,7 @@ class Diagnostics extends Wizard
                             );
                         } else if ($items[$key]['status'] === 1) {
                             $items[$key]['value'] = html_print_image(
-                                'images/exito.png',
+                                'images/validate.svg',
                                 true,
                                 [
                                     'title' => __('Successfully'),
@@ -1849,7 +1853,7 @@ class Diagnostics extends Wizard
                             );
                         } else {
                             $items[$key]['value'] = html_print_image(
-                                'images/error_1.png',
+                                'images/fail@svg.svg',
                                 true,
                                 [
                                     'title' => __('Error'),

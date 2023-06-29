@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -134,12 +134,7 @@ class TreeViewWidget extends Widget
     ) {
         global $config;
 
-        if (is_metaconsole() === true) {
-            ui_require_css_file('tree_meta');
-        } else {
-            ui_require_css_file('tree');
-        }
-
+        ui_require_css_file('tree');
         ui_require_css_file('fixed-bottom-box');
 
         // WARNING: Do not edit. This chunk must be in the constructor.
@@ -244,6 +239,10 @@ class TreeViewWidget extends Widget
                     $values['agentStatus'] = AGENT_STATUS_UNKNOWN;
                 break;
 
+                case 4:
+                    $values['agentStatus'] = AGENT_STATUS_ALERT_FIRED;
+                break;
+
                 case 5:
                     $values['agentStatus'] = AGENT_STATUS_NOT_INIT;
                 break;
@@ -295,6 +294,10 @@ class TreeViewWidget extends Widget
 
                 case 6:
                     $values['moduleStatus'] = AGENT_MODULE_STATUS_NOT_NORMAL;
+                break;
+
+                case 'fired':
+                    $values['moduleStatus'] = 'fired';
                 break;
 
                 default:
@@ -394,13 +397,14 @@ class TreeViewWidget extends Widget
 
         // Agents status.
         $fields = [
-            AGENT_STATUS_ALL        => __('All'),
-            AGENT_STATUS_NORMAL     => __('Normal'),
-            AGENT_STATUS_WARNING    => __('Warning'),
-            AGENT_STATUS_CRITICAL   => __('Critical'),
-            AGENT_STATUS_UNKNOWN    => __('Unknown'),
-            AGENT_STATUS_NOT_INIT   => __('Not init'),
-            AGENT_STATUS_NOT_NORMAL => __('Not normal'),
+            AGENT_STATUS_ALL         => __('All'),
+            AGENT_STATUS_NORMAL      => __('Normal'),
+            AGENT_STATUS_WARNING     => __('Warning'),
+            AGENT_STATUS_CRITICAL    => __('Critical'),
+            AGENT_STATUS_UNKNOWN     => __('Unknown'),
+            AGENT_STATUS_NOT_INIT    => __('Not init'),
+            AGENT_STATUS_NOT_NORMAL  => __('Not normal'),
+            AGENT_STATUS_ALERT_FIRED => __('Fired alerts'),
         ];
 
         $inputs[] = [
@@ -435,6 +439,7 @@ class TreeViewWidget extends Widget
             AGENT_MODULE_STATUS_UNKNOWN      => __('Unknown'),
             AGENT_MODULE_STATUS_NOT_INIT     => __('Not init'),
             AGENT_MODULE_STATUS_NOT_NORMAL   => __('Not normal'),
+            'fired'                          => __('Fired alerts'),
         ];
 
         if (is_metaconsole() === false) {
@@ -535,7 +540,7 @@ class TreeViewWidget extends Widget
 
         $searchAgent = '';
         if (empty($this->values['filterAgent']) === false) {
-            $searchAgent = $this->values['filterAgent'];
+            $searchAgent = io_safe_output($this->values['filterAgent']);
         }
 
         $statusModule = -1;
@@ -547,7 +552,7 @@ class TreeViewWidget extends Widget
 
         $searchModule = '';
         if (empty($this->values['filterModule']) === false) {
-            $searchModule = $this->values['filterModule'];
+            $searchModule = io_safe_output($this->values['filterModule']);
         }
 
         $searchGroup = 0;
@@ -559,11 +564,7 @@ class TreeViewWidget extends Widget
         $height = $size['height'];
 
         // Css Files.
-        if (is_metaconsole() === true) {
-            \ui_require_css_file('tree_meta', 'include/styles/', true);
-        } else {
-            \ui_require_css_file('tree', 'include/styles/', true);
-        }
+        \ui_require_css_file('tree', 'include/styles/', true);
 
         if ($config['style'] == 'pandora_black' && !is_metaconsole()) {
             \ui_require_css_file('pandora_black', 'include/styles/', true);
@@ -576,19 +577,11 @@ class TreeViewWidget extends Widget
             'include/javascript/i18n/'
         );
 
-        if (is_metaconsole() === true) {
-            \ui_require_javascript_file(
-                'TreeControllerMeta',
-                'include/javascript/tree/',
-                true
-            );
-        } else {
-            \ui_require_javascript_file(
-                'TreeController',
-                'include/javascript/tree/',
-                true
-            );
-        }
+        \ui_require_javascript_file(
+            'TreeController',
+            'include/javascript/tree/',
+            true
+        );
 
         \ui_require_javascript_file(
             'fixed-bottom-box',

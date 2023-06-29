@@ -12,8 +12,8 @@ span.subtitle-2 {
   border: 0 !important;
 }
 
-input[type="text"],
-input[type="number"] {
+input[type="text"]:not(.w100p-important),
+input[type="number"]:not(.w100p-important) {
   width: 220px;
 }
 

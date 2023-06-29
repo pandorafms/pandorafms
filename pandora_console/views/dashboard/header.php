@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -159,7 +159,7 @@ if ($public_dashboard_hash !== false) {
 }
 
 $comboRefreshCountdown['text'] = '<div class="dashboard-countdown display_in"></div>';
-$comboRefresh['text'] = '<form id="refr-form" method="post" class="mrgn_top_13px" action="'.$urlRefresh.'">';
+$comboRefresh['text'] = '<form id="refr-form" method="post" class="mrgn_top_13px"  action="'.$urlRefresh.'">';
 $comboRefresh['text'] .= __('Refresh').':';
 $comboRefresh['text'] .= html_print_select(
     \get_refresh_time_array(),
@@ -216,11 +216,12 @@ $enable_disable['text'] = html_print_div(
 // New Widget.
 $newWidget['text'] = '<a href="#" id="add-widget" class="invisible">';
 $newWidget['text'] .= html_print_image(
-    'images/add.png',
+    'images/plus@svg.svg',
     true,
     [
         'title' => __('Add Cell'),
-        'class' => 'invert_filter',
+        'class' => 'main_menu_icon invert_filter',
+        'style' => 'margin-top:5px;',
     ]
 );
 $newWidget['text'] .= '</a>';
@@ -260,7 +261,7 @@ if (isset($config['public_dashboard']) === true
         }
     }
 } else {
-    if (check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
+    if ($dashboardUser !== $config['id_user'] && check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
         $buttons = [
             'back_to_dashboard_list' => $back_to_dashboard_list,
             'fullscreen'             => $fullscreen,
@@ -283,7 +284,7 @@ if (isset($config['public_dashboard']) === true
     }
 }
 
-if ($publicLink === false) {
+if ($config['pure'] === false) {
     ui_print_standard_header(
         $dashboardName,
         '',
@@ -296,6 +297,12 @@ if ($publicLink === false) {
                 'link'  => '',
                 'label' => __('Dashboard'),
             ],
+        ],
+        [
+            'id_element' => $dashboardId,
+            'url'        => 'operation/dashboard/dashboard&dashboardId='.$dashboardId,
+            'label'      => $dashboardName,
+            'section'    => 'Dashboard_',
         ]
     );
 } else {

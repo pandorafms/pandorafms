@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1885,7 +1885,7 @@ if ($create_alert || $update_alert) {
     $table->cellpadding = 4;
     $table->cellspacing = 4;
     $table->width = '100%';
-    $table->class = 'databox data';
+    $table->class = 'info_table';
     $table->align = [];
 
     $table->head[0] = '<span title="'.__('Position').'">'.__('P.').'</span>';
@@ -1983,7 +1983,7 @@ if ($create_alert || $update_alert) {
                             [
                                 'alt'   => __('Duplicate'),
                                 'title' => __('Duplicate'),
-                                'class' => 'main_menu_icon invert_filter',
+                                'class' => 'main_menu_icon',
                             ]
                         ),
                     ],
@@ -2001,7 +2001,7 @@ if ($create_alert || $update_alert) {
                             [
                                 'alt'    => __('Update'),
                                 'border' => 0,
-                                'class'  => 'main_menu_icon invert_filter',
+                                'class'  => 'main_menu_icon',
                             ]
                         ),
                     ],
@@ -2031,6 +2031,7 @@ if ($create_alert || $update_alert) {
                             true,
                             [
                                 'title' => __('Delete action'),
+                                'class' => 'main_menu_icon',
                             ]
                         ),
                         'onClick' => 'delete_snmp_alert('.$row['id_as'].')',
@@ -2205,7 +2206,7 @@ if ($create_alert || $update_alert) {
 }
 
 ui_require_javascript_file('pandora', 'include/javascript/', true);
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -2327,19 +2328,7 @@ $(document).ready (function () {
         }
     });
 
-    var added_config = {
-        "selector": "textarea.tiny-mce-editor",
-        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        "theme_advanced_buttons1" : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
-        "theme_advanced_buttons2" : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-        "force_p_newlines": false,
-        "forced_root_block": '',
-        "inline_styles": true,
-        "valid_children": "+body[style]",
-        "element_format": "html",
-    }
-
-    defineTinyMCE(added_config);
+    defineTinyMCE('textarea.tiny-mce-editor');
 
     $('#button-button_back').on('click', function(){
         window.location = '<?php echo ui_get_full_url('index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert'); ?>';

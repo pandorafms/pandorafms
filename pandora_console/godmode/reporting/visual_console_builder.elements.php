@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -859,7 +859,7 @@ ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
 ui_require_jquery_file('ajaxqueue');
 ui_require_jquery_file('bgiframe');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ?>
 
 <script type="text/javascript">
@@ -888,23 +888,8 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
             return false;
         });
 
-        var added_config = {
-            "selector": "#tinyMCE_editor",
-            "elements": "tinyMCE_editor",
-            "plugins": "noneditable",
-            "theme_advanced_buttons1": "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
-            "valid_children": "+body[style]",
-            "theme_advanced_font_sizes": "true",
-            "content_css": <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
-            "editor_deselector": "noselected",
-            "inline_styles": true,
-            "nowrap": true,
-            "width": "400",
-            "height": "200",
-            "body_class": "tinyMCEBody",
-        }
+        defineTinyMCE('#tinyMCE_editor');
 
-        defineTinyMCE(added_config);
         $("#dialog_label_editor").hide ()
             .dialog ({
                 title: "<?php echo __('Edit label'); ?>",

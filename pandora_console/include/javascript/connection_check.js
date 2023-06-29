@@ -4,16 +4,17 @@
  *        Connection Check
  * --------------------------------------
  */
-
-checkConnection(1);
+$(document).ready(function() {
+  checkConnection(get_php_value("check_conexion_interval"));
+});
 
 /**
  * Performs connection tests every minutes and add connection listeners
  * @param {integer} time in minutes
  */
 
-function checkConnection(minutes) {
-  var cicle = minutes * 60 * 1000;
+function checkConnection(seconds) {
+  var cicle = seconds * 1000;
   var checkConnection = setInterval(handleConnection, cicle);
 
   // Connection listeters.
@@ -48,7 +49,7 @@ function handleConnection() {
       // If test connection file is not found, do not show message.
       if (err.status != 404) {
         connected = false;
-        msg = err;
+        msg = err.statusText;
       } else {
         connected = true;
       }

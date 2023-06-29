@@ -160,9 +160,6 @@ final class DonutGraph extends Item
             if (empty($graphData) === true) {
                 $data['html'] = graph_nodata_image(['width' => $width, 'height' => $height]);
             } else {
-                array_pop($graphData['labels']);
-                array_pop($graphData['data']);
-
                 $options = [
                     'waterMark' => false,
                     'legend'    => [
@@ -235,7 +232,6 @@ final class DonutGraph extends Item
                 'label'     => __('Module'),
                 'arguments' => [
                     'type'                    => 'autocomplete_module',
-                    'fields'                  => $fields,
                     'name'                    => 'moduleId',
                     'selected'                => $values['moduleId'],
                     'return'                  => true,

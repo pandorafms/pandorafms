@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -40,24 +40,24 @@ class Home
 
         $items = [];
 
-        // In home
+        // In home.
         $items['tactical'] = [
             'name'      => __('Tactical view'),
             'filename'  => 'tactical.php',
             'menu_item' => true,
-            'icon'      => 'ui-icon-tactical_view ui-widget-icon-floatbeginning',
+            'icon'      => 'ui-icon-menu-op_monitoring ui-widget-icon-floatbeginning ui-icon-menu-square',
         ];
         $items['events'] = [
             'name'      => __('Events'),
             'filename'  => 'events.php',
             'menu_item' => true,
-            'icon'      => 'ui-icon-events ui-widget-icon-floatbeginning',
+            'icon'      => 'ui-icon-menu-op_events ui-widget-icon-floatbeginning ui-icon-menu-square',
         ];
         $items['groups'] = [
             'name'      => __('Groups'),
             'filename'  => 'groups.php',
             'menu_item' => true,
-            'icon'      => 'ui-icon-groups ui-widget-icon-floatbeginning',
+            'icon'      => 'ui-icon-menu-group ui-widget-icon-floatbeginning ui-icon-menu-square',
         ];
 
         if ((bool) $system->getConfig('legacy_vc', false) === false) {
@@ -66,7 +66,7 @@ class Home
                 'name'      => __('Visual consoles'),
                 'filename'  => 'visualmaps.php',
                 'menu_item' => true,
-                'icon'      => 'ui-icon-visual_console ui-widget-icon-floatbeginning',
+                'icon'      => 'ui-icon-menu-visual_console ui-widget-icon-floatbeginning ui-icon-menu-square',
             ];
         }
 
@@ -74,22 +74,38 @@ class Home
             'name'      => __('Alerts'),
             'filename'  => 'alerts.php',
             'menu_item' => true,
-            'icon'      => 'ui-icon-alerts ui-widget-icon-floatbeginning',
+            'icon'      => 'ui-icon-menu-op_alerts ui-widget-icon-floatbeginning ui-icon-menu-square',
         ];
 
         $items['agents'] = [
             'name'      => __('Agents'),
             'filename'  => 'agents.php',
             'menu_item' => true,
-            'icon'      => 'ui-icon-agents ui-widget-icon-floatbeginning',
+            'icon'      => 'ui-icon-menu-agent_ms ui-widget-icon-floatbeginning ui-icon-menu-square',
         ];
 
         $items['modules'] = [
             'name'      => __('Modules'),
             'filename'  => 'modules.php',
             'menu_item' => true,
-            'icon'      => 'ui-icon-modules ui-widget-icon-floatbeginning',
+            'icon'      => 'ui-icon-menu-brick ui-widget-icon-floatbeginning ui-icon-menu-square',
         ];
+
+        $items['server_status'] = [
+            'name'      => __('Server status'),
+            'filename'  => 'server_status.php',
+            'menu_item' => true,
+            'icon'      => 'ui-icon-menu-server-status ui-widget-icon-floatbeginning ui-icon-menu-square',
+        ];
+
+        if ((int) $system->getConfig('enterprise_installed', false) === 1) {
+            $items['services'] = [
+                'name'      => __('Services'),
+                'filename'  => 'services.php',
+                'menu_item' => true,
+                'icon'      => 'ui-icon-menu-services ui-widget-icon-floatbeginning ui-icon-menu-square',
+            ];
+        }
 
         // Not in home.
         $items['agent'] = [
@@ -115,6 +131,7 @@ class Home
             $this->loadPagesItems();
         }
 
+        $ui->contentAddHtml('<div class="menu-buttons">');
         foreach ($this->pagesItems as $page => $data) {
             if ($data['menu_item']) {
                 $options = [
@@ -127,6 +144,8 @@ class Home
                 $ui->contentAddHtml($ui->createButton($options));
             }
         }
+
+        $ui->contentAddHtml('</div>');
     }
 
 
@@ -143,11 +162,11 @@ class Home
         } else {
             $left_button = $ui->createHeaderButton(
                 [
-                    'icon'  => 'ui-icon-back',
+                    'icon'  => 'ui-icon-logout',
                     'pos'   => 'left',
                     'text'  => __('Logout'),
                     'href'  => 'index.php?action=logout',
-                    'class' => 'header-button-left',
+                    'class' => 'header-button-left logout-text',
                 ]
             );
         }
@@ -161,6 +180,7 @@ class Home
         $ui->createHeader(__('Home'), $left_button, $user_logged);
         $ui->showFooter(false);
         $ui->beginContent();
+        $ui->contentAddHtml('<div class="search-home">');
             $ui->beginForm('index.php?page=agents');
             $options = [
                 'name'        => 'free_search',
@@ -169,11 +189,13 @@ class Home
             ];
             $ui->formAddInputSearch($options);
             $ui->endForm();
+            $ui->contentAddHtml('</div>');
 
             // List of buttons
             $this->loadButtons($ui);
 
             if (!empty($error)) {
+                $error['dialog_id'] = 'error-dialog';
                 $ui->addDialog($error);
             }
 

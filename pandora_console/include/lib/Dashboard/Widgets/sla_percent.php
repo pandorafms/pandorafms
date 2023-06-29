@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -289,6 +289,10 @@ class SLAPercentWidget extends Widget
             $values['period'] = $decoder['period'];
         }
 
+        if (isset($decoder['horizontal']) === true) {
+            $values['horizontal'] = $decoder['horizontal'];
+        }
+
         return $values;
     }
 
@@ -404,6 +408,18 @@ class SLAPercentWidget extends Widget
             ],
         ];
 
+        // Horizontal.
+        $inputs[] = [
+            'label'     => __('Horizontal').ui_print_help_tip(__('If not, layout is vertical'), true),
+            'arguments' => [
+                'wrapper' => 'div',
+                'name'    => 'horizontal',
+                'type'    => 'switch',
+                'value'   => $values['horizontal'],
+                'return'  => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -425,6 +441,7 @@ class SLAPercentWidget extends Widget
         $values['period'] = \get_parameter('period', 0);
         $values['sizeValue'] = \get_parameter('sizeValue', '');
         $values['sizeLabel'] = \get_parameter('sizeLabel', '');
+        $values['horizontal'] = \get_parameter_switch('horizontal');
 
         return $values;
     }
@@ -494,21 +511,44 @@ class SLAPercentWidget extends Widget
         $sizeLabel = (isset($this->values['sizeLabel']) === true) ? $this->values['sizeLabel'] : 30;
         $sizeValue = (isset($this->values['sizeValue']) === true) ? $this->values['sizeValue'] : 30;
 
-        $output .= '<div class="container-center">';
+        $uuid = uniqid();
+
+        $output .= '<div class="container-center" id="container-'.$uuid.'">';
+
+        $orientation = '';
+        $margin_bottom = '';
+        if ((int) $this->values['horizontal'] === 1) {
+            $orientation = 'flex aligni_center';
+        } else {
+            $orientation = 'grid';
+            $margin_bottom = 'mrgn_btn_20px';
+        }
+
         // General div.
-        $output .= '<div class="container-icon">';
+        $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
         // Div value.
-        $output .= '<div style="flex: 0 1 '.$sizeValue.'px; font-size:'.$sizeValue.'px;">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px '.$margin_bottom.'" style="flex: 0 1 '.$sizeValue.'px; line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px;">';
         $output .= $sla_array['sla_fixed'].'%';
         $output .= '</div>';
 
         if (empty($label) === false) {
             // Div Label.
-            $output .= '<div style="flex: 1 1; font-size:'.$sizeLabel.'px; text-align: left;">'.$label.'</div>';
+            $output .= '<div class="pdd_l_15px pdd_r_15px" style="flex: 1 1; line-height: '.$sizeLabel.'px; font-size:'.$sizeLabel.'px; text-align: left;">'.$label.'</div>';
         }
 
         $output .= '</div>';
         $output .= '</div>';
+
+        $output .= '<script>
+        var containerWidth = document.querySelector("#container-'.$uuid.'").offsetWidth;
+        var generalWidth = document.querySelector("#general-'.$uuid.'").offsetWidth;
+
+        if (generalWidth >= containerWidth) {
+            $("#container-'.$uuid.'").css("align-items", "flex-start");
+        } else {
+            $("#container-'.$uuid.'").css("align-items", "center");
+        }
+        </script>';
         return $output;
     }
 

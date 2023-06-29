@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -397,7 +397,7 @@ class SingleGraphWidget extends Widget
         $module_name = \modules_get_agentmodule_name($this->values['moduleId']);
         $units_name = \modules_get_unit($this->values['moduleId']);
 
-        $trickHight = 10;
+        $trickHight = 0;
         if ($this->values['showLegend'] === 1) {
             // Needed for legend.
             $trickHight = 40;
@@ -405,7 +405,7 @@ class SingleGraphWidget extends Widget
 
         $params = [
             'agent_module_id' => $this->values['moduleId'],
-            'width'           => ((int) $size['width'] - 5),
+            'width'           => '100%',
             'height'          => ((int) $size['height'] - $trickHight),
             'period'          => $this->values['period'],
             'title'           => $module_name,
@@ -418,7 +418,7 @@ class SingleGraphWidget extends Widget
             'dashboard'       => true,
         ];
 
-        $output = '<div class="container-center">';
+        $output = '<div class="container-center widget-mrgn-0px">';
         $output .= \grafico_modulo_sparse($params);
         $output .= '</div>';
         return $output;

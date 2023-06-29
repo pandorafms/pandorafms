@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 20012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 20012 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -45,18 +45,18 @@ ob_start('ui_process_page_head');
 enterprise_include('index.php');
 
 $url_css = ui_get_full_url('include/styles/visual_maps.css', false, false, false);
-echo '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />';
+echo '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'" type="text/css" />';
 
 html_print_input_hidden('homeurl', $config['homeurl']);
 
 $url_css_modal = ui_get_full_url('include/styles/register.css', false, false, false);
-echo '<link rel="stylesheet" href="'.$url_css_modal.'" type="text/css" />';
+echo '<link rel="stylesheet" href="'.$url_css_modal.'?v='.$config['current_package'].'" type="text/css" />';
 // Connection lost alert.
 ui_require_javascript_file('connection_check', 'include/javascript/', true);
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 require_once 'include/functions_visual_map.php';
 

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -771,7 +771,7 @@ class AgentsAlerts extends HTML
         $headerInputs = [];
 
         $headerInputs[] = [
-            'label'     => __('Group'),
+            'label'     => '<span class="font-title-font">'.__('Group').'</span>',
             'id'        => 'select-group-id',
             'arguments' => [
                 'name'        => 'group-id',
@@ -788,8 +788,9 @@ class AgentsAlerts extends HTML
         ];
 
         $headerInputs[] = [
-            'label'     => __('Show modules without alerts'),
+            'label'     => '<span class="font-title-font label-alert-agent">'.__('Show modules without alerts').'</span>',
             'id'        => 'txt-use-agent-ip',
+            'class'     => 'display-grid mrgn_lft_15px mrgn_btn_5px',
             'arguments' => [
                 'name'            => 'show-modules-without-alerts',
                 'checked'         => $this->showWithoutAlertModules,

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -38,6 +38,7 @@ if (check_login()) {
     enterprise_include_once('include/functions_metaconsole.php');
 
     $get_plugin_macros = get_parameter('get_plugin_macros');
+    $get_module_macros = get_parameter('get_module_macros');
     $search_modules = get_parameter('search_modules');
     $get_module_detail = get_parameter('get_module_detail', 0);
     $get_module_autocomplete_input = (bool) get_parameter(
@@ -113,6 +114,28 @@ if (check_login()) {
         $macros = [];
         $macros['base64'] = base64_encode($plugin_macros);
         $macros['array'] = json_decode($plugin_macros, true);
+
+        echo json_encode($macros);
+        return;
+    }
+
+    if ($get_module_macros && $get_module_macros > 0) {
+        if (https_is_running()) {
+            header('Content-type: application/json');
+        }
+
+        $module_id = $get_module_macros;
+
+        $module_macros = db_get_value(
+            'macros',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $module_id
+        );
+
+        $macros = [];
+        $macros['base64'] = base64_encode($module_macros);
+        $macros['array'] = json_decode($module_macros, true);
 
         echo json_encode($macros);
         return;
@@ -583,7 +606,7 @@ if (check_login()) {
         }
 
         if (empty($table->data)) {
-            ui_print_error_message(__('No available data to showaaaa'));
+            ui_print_error_message(__('No available data to show'));
         } else {
             ui_pagination(
                 count($count),
@@ -1058,8 +1081,8 @@ if (check_login()) {
                     $policyInfo = policies_info_module_policy($module['id_policy_module']);
                     $adopt = policies_is_module_adopt($module['id_agente_modulo']);
 
-                    if ($linked === true) {
-                        if ($adopt === true) {
+                    if ((bool) $linked === true) {
+                        if ((bool) $adopt === true) {
                             $img = 'images/policies_brick.png';
                             $title = '('.__('Adopted').') '.$name_policy;
                         } else {
@@ -1067,7 +1090,7 @@ if (check_login()) {
                             $title = $name_policy;
                         }
                     } else {
-                        if ($adopt === true) {
+                        if ((bool) $adopt === true) {
                             $img = 'images/policies_not_brick.png';
                             $title = '('.__('Unlinked').') ('.__('Adopted').') '.$name_policy;
                         } else {
@@ -1152,10 +1175,13 @@ if (check_login()) {
                 $title
             );
 
+            if (strlen($module['ip_target']) !== 0) {
+                $title .= '<br/>IP: '.$module['ip_target'];
+            }
+
             $last_status_change_text = __('Time elapsed since last status change: ');
             $last_status_change_text .= (empty($module['last_status_change']) === false) ? human_time_comparation($module['last_status_change']) : __('N/A');
 
-            $data[4] .= ui_print_status_image($status, htmlspecialchars($title), true, false, false, true, $last_status_change_text);
             if ($show_context_help_first_time === false) {
                 $show_context_help_first_time = true;
 
@@ -1163,6 +1189,8 @@ if (check_login()) {
                     $data[4] .= clippy_context_help('module_unknow');
                 }
             }
+
+            $data[4] .= ui_print_status_image($status, htmlspecialchars($title), true, false, false, true, $last_status_change_text);
 
             // Module thresholds.
             $data[5] = '';
@@ -1279,16 +1307,18 @@ if (check_login()) {
                     if ((int) $module['flag'] === 0) {
                         $additionalLinkAction = '&amp;flag=1';
                         $linkCaption = __('Force checks');
+                        $imgaction = 'images/force@svg.svg';
                     } else {
                         $additionalLinkAction = '';
                         $linkCaption = __('Refresh');
+                        $imgaction = 'images/go-back@svg.svg';
                     }
 
                     $moduleActionButtons[] = html_print_anchor(
                         [
-                            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$addedLinkParams.'"',
+                            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$additionalLinkAction.'"',
                             'content' => html_print_image(
-                                'images/go-back@svg.svg',
+                                $imgaction,
                                 true,
                                 [ 'class' => 'main_menu_icon' ]
                             ),
@@ -1390,7 +1420,7 @@ if (check_login()) {
                     false,
                     'offset',
                     true,
-                    'pagination-bottom',
+                    '',
                     'pagination_list_modules(offset_param)',
                     [
                         'count'  => '',
@@ -1573,7 +1603,7 @@ if (check_login()) {
                             $value['thresholds']
                         );
 
-                        $resultData = '<span style="color:'.$status['color'].'">';
+                        $resultData = '<span class="widget-module-tabs-data" style="color:'.$status['color'].'">';
                         if ($vdata !== null && $vdata !== '' && $vdata !== false) {
                             if (isset($formatData) === true
                                 && (bool) $formatData === true
@@ -1683,6 +1713,7 @@ if (check_login()) {
         $length = ($length != '-1') ? $length : '18446744073709551615';
         $order = get_datatable_order(true);
         $nodes = get_parameter('nodes', 0);
+        $disabled_modules = (bool) get_parameter('disabled_modules', false);
 
         $where = '';
         $recordsTotal = 0;
@@ -1692,11 +1723,27 @@ if (check_login()) {
             $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
         }
 
+        if (str_contains($status, '6') === true) {
+            $expl = explode(',', $status);
+            $exist = array_search('6', $expl);
+            if (isset($exist) === true) {
+                unset($expl[$exist]);
+            }
+
+            array_push($expl, '1', '2');
+
+            $status = implode(',', $expl);
+        }
+
         $where .= sprintf(
             'tagente_estado.estado IN (%s)
             AND tagente_modulo.delete_pending = 0',
-            $status
+            $status,
         );
+
+        if ($disabled_modules === false) {
+            $where .= ' AND tagente_modulo.disabled = 0';
+        }
 
         if (is_metaconsole() === false) {
             $order_by = '';
@@ -1750,7 +1797,9 @@ if (check_login()) {
                 INNER JOIN tagente
                     ON tagente_modulo.id_agente = tagente.id_agente 
                 INNER JOIN tagente_estado
-                    ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo'
+                    ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                WHERE %s',
+                $where
             );
             $recordsTotal = db_get_value_sql($sql_count);
 
@@ -1792,6 +1841,32 @@ if (check_login()) {
                 } catch (\Exception $e) {
                     // Unexistent modules.
                     $node->disconnect();
+                }
+            }
+
+            if (in_array(0, $servers_ids) === true) {
+                $sql = sprintf(
+                    'SELECT
+                    tagente_modulo.nombre,
+                    tagente.alias,
+                    tagente.id_agente,
+                    tagente_estado.last_status_change,
+                    tagente_estado.estado
+                    FROM tagente_modulo
+                    INNER JOIN tagente
+                        ON tagente_modulo.id_agente = tagente.id_agente 
+                    INNER JOIN tagente_estado
+                        ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                    WHERE %s',
+                    $where
+                );
+
+                $res_sql = db_get_all_rows_sql($sql);
+
+                foreach ($res_sql as $row_sql) {
+                    $row_sql['server_name'] = __('Metaconsole');
+                    $row_sql['server_url'] = $config['homeurl'];
+                    array_push($data, $row_sql);
                 }
             }
 
@@ -1852,7 +1927,9 @@ if (check_login()) {
 
                 $sql_count = sprintf(
                     'SELECT COUNT(*) AS "total"
-                    FROM temp_modules_status'
+                    FROM temp_modules_status
+                    WHERE %s',
+                    $where
                 );
 
                 $recordsTotal = db_get_value_sql($sql_count);
@@ -2021,6 +2098,7 @@ if (check_login()) {
         if ($result === false) {
             echo 'error';
         } else {
+            ui_update_name_fav_element($id, 'Modules', $values['ag_modulename']);
             echo 'ok';
         }
     }
@@ -2044,6 +2122,14 @@ if (check_login()) {
         if ($monitor_filters === false) {
             echo 'error';
         } else {
+            db_process_sql_delete(
+                'tfavmenu_user',
+                [
+                    'id_element' => $id,
+                    'section'    => 'Modules',
+                    'id_user'    => $config['id_user'],
+                ]
+            );
             echo 'ok';
         }
     }

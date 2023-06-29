@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -283,6 +283,14 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
         if (empty($message['force_class']) === false) {
             $force_class = $message['force_class'];
         }
+
+        if (isset($message['autoclose']) === true) {
+            if ($message['autoclose'] === true) {
+                $autoclose = true;
+            } else {
+                $autoclose = false;
+            }
+        }
     } else {
         $text_message = $message;
     }
@@ -385,7 +393,12 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageCreated = html_print_table($messageTable, true);
     $autocloseTime = ((int) $config['notification_autoclose_time'] * 1000);
 
-    $classes[] = 'info_box_container';
+    if (empty($message['div_class']) === false) {
+        $classes[] = $message['div_class'];
+    } else {
+        $classes[] = 'info_box_container';
+    }
+
     $classes[] = (($autoclose === true) && ($autocloseTime > 0)) ? ' info_box_autoclose' : '';
 
     // This session var is defined in index.
@@ -699,7 +712,18 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
 
     $output = '';
 
-    $icon = ($id_group > 0) ? (string) db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group) : 'unknown@groups.svg';
+    $icon = 'world@svg.svg';
+    if ($id_group > 0) {
+        $icon = db_get_value('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+        if (empty($icon) === true) {
+            $icon = 'unknown@groups.svg';
+        }
+    }
+
+    $extension = pathinfo($icon, PATHINFO_EXTENSION);
+    if (empty($extension) === true) {
+        $icon .= '.png';
+    }
 
     // Don't show link in metaconsole.
     if (is_metaconsole() === true) {
@@ -718,7 +742,23 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
         $output .= '<span title="'.groups_get_name($id_group, true).'">'.groups_get_name($id_group, true).'&nbsp;</span>';
     } else {
         if (empty($icon) === true) {
-            $output .= '<span title="'.groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
+            $output .= '<span title="'.groups_get_name($id_group, true).'">';
+            $output .= '</span>';
+            $output .= html_print_image(
+                'images/unknown@groups.svg',
+                true,
+                [
+                    'style' => $style,
+                    'class' => 'main_menu_icon invert_filter '.$class,
+                    'alt'   => groups_get_name($id_group, true),
+                    'title' => groups_get_name($id_group, true),
+                ],
+                false,
+                false,
+                false,
+                true
+            );
+            $output .= '</span>';
         } else {
             if (empty($class) === true) {
                 $class = 'bot';
@@ -727,14 +767,18 @@ function ui_print_group_icon($id_group, $return=false, $path='', $style='', $lin
                 }
             }
 
-            $icon = (str_contains($icon, '.svg') === true) ? $icon : $icon.'.svg';
+            $icon = (str_contains($icon, '.svg') === true || str_contains($icon, '.png') === true) ? $icon : $icon.'.svg';
+            $folder = '';
+            if (str_contains($icon, '.png')) {
+                $folder = 'groups_small/';
+            }
 
             $output .= html_print_image(
-                'images/'.$icon,
+                'images/'.$folder.$icon,
                 true,
                 [
                     'style' => $style,
-                    'class' => 'main_menu_icon '.$class,
+                    'class' => 'main_menu_icon invert_filter '.$class,
                     'alt'   => groups_get_name($id_group, true),
                     'title' => groups_get_name($id_group, true),
                 ],
@@ -841,12 +885,23 @@ function ui_print_os_icon(
     }
 
     if (isset($options['class']) === false) {
-        $options['class'] = 'main_menu_icon';
+        $options['class'] = 'main_menu_icon invert_filter';
     }
 
     $no_in_meta = (is_metaconsole() === false);
 
     $icon = (string) db_get_value('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
+    $extension = pathinfo($icon, PATHINFO_EXTENSION);
+    if (empty($extension) === true) {
+        $icon .= '.png';
+    }
+
+    if (empty($extension) === true || $extension === 'png'
+        || $extension === 'jpg' || $extension === 'gif' && $subfolder === '.'
+    ) {
+        $subfolder = 'os_icons';
+    }
+
     $os_name = get_os_name($id_os);
     if (empty($icon) === true) {
         if ($only_src) {
@@ -930,15 +985,48 @@ function ui_print_type_agent_icon(
     if ((int) $id_os === SATELLITE_OS_ID) {
         // Satellite.
         $options['title'] = __('Satellite');
-        $output = html_print_image('images/satellite@os.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/satellite@os.svg',
+            true,
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
+            false,
+            false,
+            false,
+            true
+        );
     } else if ($remote_contact === $contact && $remote === 0 && empty($version) === true) {
         // Network.
         $options['title'] = __('Network');
-        $output = html_print_image('images/network-server@os.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/network-server@os.svg',
+            true,
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
+            false,
+            false,
+            false,
+            true
+        );
     } else {
         // Software.
         $options['title'] = __('Software');
-        $output = html_print_image('images/data-server@svg.svg', true, ['class' => 'main_menu_icon invert_filter'], false, false, false, true);
+        $output = html_print_image(
+            'images/data-server@svg.svg',
+            true,
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'padding-right: 10px;',
+            ],
+            false,
+            false,
+            false,
+            true
+        );
     }
 
     return $output;
@@ -1055,11 +1143,11 @@ function ui_format_alert_row(
                 'agent_name'      => 3,
                 'module_name'     => 4,
                 'description'     => 5,
-                'template'        => 5,
-                'action'          => 6,
-                'last_fired'      => 7,
-                'status'          => 8,
-                'validate'        => 9,
+                'template'        => 6,
+                'action'          => 7,
+                'last_fired'      => 8,
+                'status'          => 9,
+                'validate'        => 10,
             ];
         } else {
             $index = [
@@ -1067,13 +1155,13 @@ function ui_format_alert_row(
                 'standby'         => 1,
                 'force_execution' => 2,
                 'agent_name'      => 3,
-                'module_name'     => 3,
-                'description'     => 4,
-                'template'        => 4,
-                'action'          => 5,
-                'last_fired'      => 6,
-                'status'          => 7,
-                'validate'        => 8,
+                'module_name'     => 4,
+                'description'     => 5,
+                'template'        => 6,
+                'action'          => 7,
+                'last_fired'      => 8,
+                'status'          => 9,
+                'validate'        => 10,
             ];
         }
     } else {
@@ -1084,24 +1172,24 @@ function ui_format_alert_row(
                 'agent_name'      => 2,
                 'module_name'     => 3,
                 'description'     => 4,
-                'template'        => 4,
-                'action'          => 5,
-                'last_fired'      => 6,
-                'status'          => 7,
-                'validate'        => 8,
+                'template'        => 5,
+                'action'          => 6,
+                'last_fired'      => 7,
+                'status'          => 8,
+                'validate'        => 9,
             ];
         } else {
             $index = [
                 'standby'         => 0,
                 'force_execution' => 1,
                 'agent_name'      => 2,
-                'module_name'     => 2,
-                'description'     => 3,
-                'template'        => 3,
-                'action'          => 4,
-                'last_fired'      => 5,
-                'status'          => 6,
-                'validate'        => 7,
+                'module_name'     => 3,
+                'description'     => 4,
+                'template'        => 5,
+                'action'          => 6,
+                'last_fired'      => 7,
+                'status'          => 8,
+                'validate'        => 9,
             ];
         }
     }
@@ -1193,20 +1281,22 @@ function ui_format_alert_row(
 
         $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
         $module_linked = policies_is_module_linked($alert['id_agent_module']);
-        if (is_array($policyInfo) === false && $module_linked === false) {
+        if ((is_array($policyInfo) === false && $module_linked === false)
+            || (is_array($policyInfo) === false && $module_linked === '1')
+        ) {
             $data[$index['policy']] = '';
         } else {
             $module_linked = policies_is_module_linked($alert['id_agent_module']);
             if ($module_linked === '0') {
                 $img = 'images/unlinkpolicy.png';
             } else {
-                $img = 'images/policies_mc.png';
+                $img = 'images/policy@svg.svg';
             }
 
             if (is_metaconsole() === false) {
-                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             } else {
-                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
         }
 
@@ -1232,50 +1322,64 @@ function ui_format_alert_row(
                 $additionUrl = '';
             }
 
-            $forceExecButtons[] = html_print_button(
-                $forceTitle,
-                'force_execution_'.$alert['id'],
-                false,
-                'window.location.assign("'.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl.'");',
-                [ 'mode' => 'link' ],
+            $forceExecButtons['force_check'] = html_print_anchor(
+                [
+                    'href'    => $url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl,
+                    'content' => html_print_image(
+                        'images/force@svg.svg',
+                        true,
+                        [
+                            'title' => $forceTitle,
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    ),
+                ],
                 true
             );
         }
 
-        $forceExecButtons[] = html_print_button(
-            __('View'),
-            'view_template_'.$alert['id'],
-            false,
-            '',
+        $forceExecButtons['template'] = html_print_anchor(
             [
-                'mode'  => 'link',
-                'class' => 'template_details',
-                'href'  => 'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'],
+                'href'    => 'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'],
+                'style'   => 'margin-left: 5px;',
+                'class'   => 'template_details',
+                'content' => html_print_image(
+                    'images/details.svg',
+                    true,
+                    ['class' => 'main_menu_icon invert_filter']
+                ),
             ],
             true
         );
     } else {
-        $forceExecButtons[] = html_print_button(
-            __('View'),
-            'view_template_'.$alert['id'],
-            false,
-            '',
+        $forceExecButtons['template'] = html_print_anchor(
             [
-                'mode'  => 'link',
-                'class' => 'template_details',
-                'href'  => ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'],
+                'href'    => ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'],
+                'style'   => 'margin-left: 5px;',
+                'class'   => 'template_details',
+                'content' => html_print_image(
+                    'images/details.svg',
+                    true,
+                    ['class' => 'main_menu_icon invert_filter']
+                ),
             ],
             true
         );
     }
 
-    $data[$index['force_execution']] = html_print_div(
-        [
-            'class'   => 'table_action_buttons flex',
-            'content' => implode('', $forceExecButtons),
-        ],
-        true
-    );
+    if (isset($forceExecButtons['force_check'])) {
+        $data[$index['force_execution']] = html_print_div(
+            [
+                'class'   => 'table_action_buttons flex',
+                'content' => $forceExecButtons['force_check'],
+            ],
+            true
+        );
+    }
+
+    if (isset($forceExecButtons['template'])) {
+        $data[$index['template']] = $forceExecButtons['template'];
+    }
 
     $data[$index['agent_name']] = $disabledHtmlStart;
     if ($agent == 0) {
@@ -1979,7 +2083,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_css = ui_get_full_url($filename, false, false, false);
-        $output .= '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
+        $output .= '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'" type="text/css" />'."\n\t";
     }
 
     /*
@@ -2036,7 +2140,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_js = ui_get_full_url($filename, false, false, false);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+        $output .= '<script type="text/javascript" src="'.$url_js.'?v='.$config['current_package'].'"></script>'."\n\t";
     }
 
     /*
@@ -2081,7 +2185,7 @@ function ui_process_page_head($string, $bitfield)
         array_push($loaded, $name);
 
         $url_js = ui_get_full_url($filename, false, false, false);
-        $output .= '<script type="text/javascript" src="'.$url_js.'"></script>'."\n\t";
+        $output .= '<script type="text/javascript" src="'.$url_js.'?v='.$config['current_package'].'"></script>'."\n\t";
     }
 
     /*
@@ -2352,7 +2456,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $anchorHref = 'javascript: ".$script_modified.";';
+            $anchorHref = 'javascript: '.$script_modified.';';
         } else {
             $anchorHref = $url.'&amp;'.$offset_name.'='.$offset_page;
         }
@@ -2397,7 +2501,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $nextHref = 'javascript: ".$script_modified.";';
+            $nextHref = 'javascript: '.$script_modified.';';
         } else {
             $nextHref = $url.'&amp;'.$offset_name.'='.$offset_next_page;
         }
@@ -2429,7 +2533,7 @@ function ui_pagination(
                 $script_modified
             );
 
-            $lastHref = 'javascript: ".$script_modified.";';
+            $lastHref = 'javascript: '.$script_modified.';';
         } else {
             $lastHref = $url.'&amp;'.$offset_name.'='.$offset_lastpage;
         }
@@ -3573,6 +3677,11 @@ function ui_print_datatable(array $parameters)
         $parameters['csv'] = 1;
     }
 
+    $dom_elements = '"plfrtiB"';
+    if (isset($parameters['dom_elements'])) {
+        $dom_elements = '"'.$parameters['dom_elements'].'"';
+    }
+
     $filter = '';
     // Datatable filter.
     if (isset($parameters['form']) && is_array($parameters['form'])) {
@@ -3707,7 +3816,7 @@ function ui_print_datatable(array $parameters)
 
     // Base table.
     $table = '<table id="'.$table_id.'" ';
-    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'class="'.$parameters['class'].' invisible"';
     $table .= 'style="'.$parameters['style'].'">';
     $table .= '<thead><tr class="datatables_thead_tr">';
 
@@ -3735,6 +3844,34 @@ function ui_print_datatable(array $parameters)
     }
 
     $table .= '</tr></thead>';
+
+    if (isset($parameters['data_element']) === true) {
+        $table .= '<tbody>';
+        foreach ($parameters['data_element'] as $row) {
+            $table .= '<tr>';
+            foreach ($row as $td_data) {
+                $table .= '<td>'.$td_data.'</td>';
+            }
+
+            $table .= '</tr>';
+        }
+
+        $table .= '</tbody>';
+
+        $js = '<script>
+            $.fn.dataTable.ext.classes.sPageButton = "pandora_pagination mini-pandora-pagination"
+            var table = $("#'.$table_id.'").DataTable({
+                "dom": "'.$parameters['dom_elements'].'"
+            });
+            $("div.spinner-fixed").hide();
+            $("table#'.$table_id.'").removeClass("invisible");
+            $("#'.$table_id.'_filter > label > input").addClass("mini-search-input");
+            if (table.page.info().pages == 1) {
+                $("#'.$table_id.'_paginate").hide();
+            }
+        </script>';
+    }
+
     $table .= '</table>';
 
     $pagination_class = 'pandora_pagination';
@@ -3758,246 +3895,286 @@ function ui_print_datatable(array $parameters)
         $export_columns = ',columns: \'th:not(:last-child)\'';
     }
 
-    if (isset($parameters['ajax_url'])) {
-        $type_data = 'ajax: {
-            url: "'.ui_get_full_url('ajax.php', false, false, false).'",
-            type: "POST",
-            dataSrc: function (json) {
-                if($("#'.$form_id.'_search_bt") != undefined) {
-                    $("#'.$form_id.'_loading").remove();
-                }
+    if (isset($parameters['data_element']) === false || isset($parameters['print_pagination_search_csv'])) {
+        if (isset($parameters['ajax_url'])) {
+            $type_data = 'ajax: {
+                url: "'.ui_get_full_url('ajax.php', false, false, false).'",
+                type: "POST",
+                dataSrc: function (json) {
+                    if($("#'.$form_id.'_search_bt") != undefined) {
+                        $("#'.$form_id.'_loading").remove();
+                    }
 
-                if (json.error) {
-                    console.error(json.error);
-                    $("#error-'.$table_id.'").html(json.error);
-                    $("#error-'.$table_id.'").dialog({
-                        title: "Filter failed",
-                        width: 630,
-                        resizable: true,
-                        draggable: true,
-                        modal: false,
-                        closeOnEscape: true,
-                        buttons: {
-                            "Ok" : function () {
-                                $(this).dialog("close");
+                    if (json.error) {
+                        console.error(json.error);
+                        $("#error-'.$table_id.'").html(json.error);
+                        $("#error-'.$table_id.'").dialog({
+                            title: "Filter failed",
+                            width: 630,
+                            resizable: true,
+                            draggable: true,
+                            modal: false,
+                            closeOnEscape: true,
+                            buttons: {
+                                "Ok" : function () {
+                                    $(this).dialog("close");
+                                }
                             }
-                        }
-                    }).parent().addClass("ui-state-error");
-                } else {';
+                        }).parent().addClass("ui-state-error");
+                    } else {';
 
-        if (isset($parameters['ajax_return_operation']) === true
-            && empty($parameters['ajax_return_operation']) === false
-            && isset($parameters['ajax_return_operation_function']) === true
-            && empty($parameters['ajax_return_operation_function']) === false
-        ) {
-            $type_data .= '
-        if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
-            '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
-        }
-    ';
-        }
+            if (isset($parameters['ajax_return_operation']) === true
+                && empty($parameters['ajax_return_operation']) === false
+                && isset($parameters['ajax_return_operation_function']) === true
+                && empty($parameters['ajax_return_operation_function']) === false
+            ) {
+                $type_data .= '
+            if (json.'.$parameters['ajax_return_operation'].' !== undefined) {
+                '.$parameters['ajax_return_operation_function'].'(json.'.$parameters['ajax_return_operation'].');
+            }
+        ';
+            }
 
-        if (isset($parameters['ajax_postprocess'])) {
+            if (isset($parameters['ajax_postprocess'])) {
+                $type_data .= '
+                    if (json.data) {
+                        json.data.forEach(function(item) {
+                            '.$parameters['ajax_postprocess'].'
+                        });
+                    } else {
+                        json.data = {};
+                    }';
+            }
+
             $type_data .= '
-                if (json.data) {
-                    json.data.forEach(function(item) {
-                        '.$parameters['ajax_postprocess'].'
+                        return json.data;
+                    }
+                },
+                data: function (data) {
+                    if($("#button-'.$form_id.'_search_bt") != undefined) {
+                        var loading = \''.html_print_image(
+                        'images/spinner.gif',
+                        true,
+                        [
+                            'id'    => $form_id.'_loading',
+                            'class' => 'loading-search-datatables-button',
+                        ]
+                    ).'\';
+                        $("#button-'.$form_id.'_search_bt").parent().append(loading);
+                    }
+
+                    inputs = $("#'.$form_id.' :input");
+
+                    values = {};
+                    inputs.each(function() {
+                        values[this.name] = $(this).val();
+                    })
+
+                    $.extend(data, {
+                        filter: values,'."\n";
+
+            if (is_array($parameters['ajax_data'])) {
+                foreach ($parameters['ajax_data'] as $k => $v) {
+                    $type_data .= $k.':'.json_encode($v).",\n";
+                }
+            }
+
+            $type_data .= 'page: "'.$parameters['ajax_url'].'"
                     });
-                } else {
-                    json.data = {};
-                }';
-        }
 
-        $type_data .= '
-                    return json.data;
+                    return data;
                 }
-            },
-            data: function (data) {
-                if($("#button-'.$form_id.'_search_bt") != undefined) {
-                    var loading = \''.html_print_image(
-                    'images/spinner.gif',
-                    true,
-                    [
-                        'id'    => $form_id.'_loading',
-                        'class' => 'loading-search-datatables-button',
-                    ]
-                ).'\';
-                    $("#button-'.$form_id.'_search_bt").parent().append(loading);
-                }
-
-                inputs = $("#'.$form_id.' :input");
-
-                values = {};
-                inputs.each(function() {
-                    values[this.name] = $(this).val();
-                })
-
-                $.extend(data, {
-                    filter: values,'."\n";
-
-        if (is_array($parameters['ajax_data'])) {
-            foreach ($parameters['ajax_data'] as $k => $v) {
-                $type_data .= $k.':'.json_encode($v).",\n";
-            }
-        }
-
-        $type_data .= 'page: "'.$parameters['ajax_url'].'"
-                });
-
-                return data;
-            }
-        },';
-    } else {
-        $type_data = 'data: '.json_encode($parameters['data_element']).',';
-    }
-
-    $serverside = 'true';
-    if (isset($parameters['data_element'])) {
-        $serverside = 'false';
-    }
-
-    // Javascript controller.
-    $js = '<script type="text/javascript">
-    $(document).ready(function(){
-        $.fn.dataTable.ext.errMode = "none";
-        $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
-
-        var settings_datatable = {
-            drawCallback: function(settings) {';
-
-    if (!isset($parameters['data_element'])) {
-        $js .= 'if (dt_'.$table_id.'.page.info().pages > 1) {
-                    $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
-                } else {
-                    $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
-                }';
-    }
-
-    if (isset($parameters['drawCallback'])) {
-        $js .= $parameters['drawCallback'];
-    }
-
-    $dom_elements = '"plfrtiB"';
-    if (isset($parameters['dom_elements'])) {
-        $dom_elements = '"'.$parameters['dom_elements'].'"';
-    }
-
-    $searching = 'false';
-    if (isset($parameters['searching']) && $parameters['searching'] === true) {
-        $searching = 'true';
-    }
-
-    $ordering = 'true';
-    if (isset($parameters['ordering']) && $parameters['ordering'] === false) {
-        $ordering = 'false';
-    }
-
-    $js .= '},';
-
-    $languaje = substr(get_user_language(), 0, 2);
-
-    $js .= '
-            processing: true,
-            serverSide: '.$serverside.',
-            paging: '.$parameters['paging'].',
-            pageLength: '.$parameters['default_pagination'].',
-            searching: '.$searching.',
-            responsive: true,
-            dom: '.$dom_elements.',
-            language: {
-                url: "/pandora_console/include/javascript/i18n/dataTables.'.$languaje.'.json",
-                processing:"'.$processing.'",
-                zeroRecords:"'.$zeroRecords.'",
-                emptyTable:"'.$emptyTable.'",
-            },
-            buttons: '.$parameters['csv'].'== 1 ? [
-                {
-                    extend: "csv",
-                    text : "'.__('Export current page to CSV').'",
-                    titleAttr: "'.__('Export current page to CSV').'",
-                    title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
-                    fieldSeparator: "'.$config['csv_divider'].'",
-                    action: function ( e, dt, node, config ) {
-                        blockResubmit(node);
-                        // Call the default csvHtml5 action method to create the CSV file
-                        $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
-                    },
-                    exportOptions : {
-                        modifier : {
-                            // DataTables core
-                            order : "current",
-                            page : "All",
-                            search : "applied"
-                        }'.$export_columns.'
-                    },
-                }
-            ] : [],
-            lengthMenu: '.json_encode($pagination_options).',
-            columnDefs: [
-                { className: "no-class", targets: "_all" },
-                { bSortable: false, targets: '.$no_sortable_columns.' }
-            ],
-            ordering: '.$ordering.',
-            initComplete: function(settings, json) {
-                // Move elements to table_action_buttons bar.
-                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-                $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
-
-                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
-                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
-                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
-                $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
-            },
-            columns: [';
-
-    foreach ($parameters['datacolumns'] as $data) {
-        if (is_array($data)) {
-            $js .= '{data : "'.$data['text'].'",className: "'.$data['class'].'"},';
+            },';
         } else {
-            $js .= '{data : "'.$data.'",className: "no-class"},';
+            $type_data = 'data: '.json_encode($parameters['data_element']).',';
         }
-    }
 
-            $js .= '
-            ],
-            order: [[ '.$order.' ]],';
-            $js .= $type_data;
-            $js .= '
-        };
+        $serverside = 'true';
+        if (isset($parameters['data_element'])) {
+            $serverside = 'false';
+        }
 
-        dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
+        // Javascript controller.
+        $js = '<script type="text/javascript">
+        $(document).ready(function(){
+            $.fn.dataTable.ext.errMode = "none";
+            $.fn.dataTable.ext.classes.sPageButton = "'.$pagination_class.'";
 
-        $("#button-'.$form_id.'_search_bt").click(function (){
-            dt_'.$table_id.'.draw().page(0)
+            var settings_datatable = {
+                drawCallback: function(settings) {';
+
+        if (!isset($parameters['data_element'])) {
+            $js .= 'if (dt_'.$table_id.'.page.info().pages > 1) {
+                        $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
+                    } else {
+                        $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
+                    }';
+        }
+
+        $js .= 'if ($("#'.$table_id.' tr td").length == 1) {
+                    $(".datatable-msg-info-'.$table_id.'").show();
+                    $(".datatable-msg-info-'.$table_id.'").removeClass(\'invisible_important\');
+                    $("table#'.$table_id.'").hide();
+                    $("div.dataTables_paginate").hide();
+                    $("div.dataTables_info").hide();
+                    $("div.dataTables_length").hide();
+                    $("div.dt-buttons").hide();
+
+                    if (dt_'.$table_id.'.page.info().pages > 1) {
+                        $(".dataTables_paginate.paging_simple_numbers").show()
+                    }
+                } else {
+                    $(".datatable-msg-info-'.$table_id.'").hide();
+                    $("table#'.$table_id.'").show();
+                    $("div.dataTables_paginate").show();
+                    $("div.dataTables_info").hide();
+                    $("div.dataTables_length").show();
+                    $("div.dt-buttons").show();
+
+                    if (dt_'.$table_id.'.page.info().pages == 1) {
+                        $(".dataTables_paginate.paging_simple_numbers").hide()
+                    }
+                }';
+
+        if (isset($parameters['drawCallback'])) {
+            $js .= $parameters['drawCallback'];
+        }
+
+        $searching = 'false';
+        if (isset($parameters['searching']) && $parameters['searching'] === true) {
+            $searching = 'true';
+        }
+
+        $ordering = 'true';
+        if (isset($parameters['ordering']) && $parameters['ordering'] === false) {
+            $ordering = 'false';
+        }
+
+        $js .= '},';
+
+        $languaje = substr(get_user_language(), 0, 2);
+
+        $js .= '
+                processing: true,
+                serverSide: '.$serverside.',
+                paging: '.$parameters['paging'].',
+                pageLength: '.$parameters['default_pagination'].',
+                searching: '.$searching.',
+                responsive: true,
+                dom: '.$dom_elements.',
+                language: {
+                    url: "/pandora_console/include/javascript/i18n/dataTables.'.$languaje.'.json",
+                    processing:"'.$processing.'",
+                    zeroRecords:"'.$zeroRecords.'",
+                    emptyTable:"'.$emptyTable.'",
+                },
+                buttons: '.$parameters['csv'].'== 1 ? [
+                    {
+                        extend: "csv",
+                        text : "'.__('Export current page to CSV').'",
+                        titleAttr: "'.__('Export current page to CSV').'",
+                        title: "export_'.$parameters['id'].'_current_page_'.date('Y-m-d').'",
+                        fieldSeparator: "'.$config['csv_divider'].'",
+                        action: function ( e, dt, node, config ) {
+                            blockResubmit(node);
+                            // Call the default csvHtml5 action method to create the CSV file
+                            $.fn.dataTable.ext.buttons.csvHtml5.action.call(this, e, dt, node, config);
+                        },
+                        exportOptions : {
+                            modifier : {
+                                // DataTables core
+                                order : "current",
+                                page : "All",
+                                search : "applied"
+                            }'.$export_columns.'
+                        },
+                    }
+                ] : [],
+                lengthMenu: '.json_encode($pagination_options).',
+                columnDefs: [
+                    { className: "no-class", targets: "_all" },
+                    { bSortable: false, targets: '.$no_sortable_columns.' }
+                ],
+                ordering: '.$ordering.',
+                initComplete: function(settings, json) {
+                    // Move elements to table_action_buttons bar.
+                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+                    $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
+
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));
+                    $("div.spinner-fixed").hide();
+                },
+                columns: [';
+
+        foreach ($parameters['datacolumns'] as $data) {
+            if (is_array($data)) {
+                $js .= '{data : "'.$data['text'].'",className: "'.$data['class'].'"},';
+            } else {
+                $js .= '{data : "'.$data.'",className: "no-class"},';
+            }
+        }
+
+                $js .= '
+                ],
+                order: [[ '.$order.' ]],';
+                $js .= $type_data;
+                $js .= '
+            };
+
+            dt_'.$table_id.' = $("#'.$table_id.'").DataTable(settings_datatable);
+
+            $("#button-'.$form_id.'_search_bt").click(function (){
+                dt_'.$table_id.'.draw().page(0)
+            });
+            ';
+
+        if (isset($parameters['caption']) === true
+            && empty($parameters['caption']) === false
+        ) {
+            $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
+            $js .= '$(".datatables_thead_tr").css("height", 0);';
+        }
+
+        if (isset($parameters['csv']) === true) {
+            $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
+                if ( indicator ) {
+                    console.log('a');
+                }
+                else {
+                    console.log('b');
+                }";
+        }
+
+        $js .= '$("table#'.$table_id.'").removeClass("invisible");
+            });';
+        $js .= '
+        $(function() {
+            $(document).on("preInit.dt", function (ev, settings) {
+                $("div.dataTables_length").hide();
+                $("div.dt-buttons").hide();
+            });
         });
+
         ';
 
-    if (isset($parameters['caption']) === true
-        && empty($parameters['caption']) === false
-    ) {
-        $js .= '$("#'.$table_id.'").append("<caption>'.$parameters['caption'].'</caption>");';
-        $js .= '$(".datatables_thead_tr").css("height", 0);';
+        $js .= '</script>';
     }
-
-    if (isset($parameters['csv']) === true) {
-        $js."'$('#".$table_id."').on( 'buttons-processing', function ( e, indicator ) {
-            if ( indicator ) {
-                console.log('a');
-            }
-            else {
-                console.log('b');
-            }";
-    }
-
-    $js .= '});';
-
-    $js .= '</script>';
 
     // Order.
+    $info_msg_arr = [];
+    $info_msg_arr['message'] = $emptyTable;
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
+
+    $spinner = '<div class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
+
+    $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
     $err_msg = '<div id="error-'.$table_id.'"></div>';
-    $output = $err_msg.$filter.$extra.$table.$js;
+    $output = $info_msg.$err_msg.$filter.$extra.$spinner.$table.$js;
     if (is_ajax() === false) {
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');
@@ -4019,7 +4196,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
         // Load tables.css.
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
@@ -4028,7 +4205,7 @@ function ui_print_datatable(array $parameters)
             false,
             false
         );
-        $output .= '"/>';
+        $output .= '?v='.$config['current_package'].'"/>';
         if (is_metaconsole() === true) {
             // Load meta_tables.css.
             $output .= '<link rel="stylesheet" href="';
@@ -4038,7 +4215,7 @@ function ui_print_datatable(array $parameters)
                 false,
                 false
             );
-            $output .= '"/>';
+            $output .= '?v='.$config['current_package'].'"/>';
         }
 
         // Load datatables.js.
@@ -4323,28 +4500,6 @@ function ui_toggle(
     $rotateA = '90deg';
     $rotateB = '180deg';
 
-    if (empty($img_a) === false) {
-        $image_a = html_print_image(
-            $img_a,
-            true,
-            [ 'style' => 'rotate: '.$rotateA ],
-            true
-        );
-    } else {
-        $image_a = '';
-    }
-
-    if (empty($img_b) === false) {
-        $image_b = html_print_image(
-            $img_b,
-            true,
-            [ 'style' => 'rotate: '.$rotateB ],
-            true
-        );
-    } else {
-        $image_b = '';
-    }
-
     // Options.
     $style = 'overflow:hidden;width: -webkit-fill-available;width: -moz-available;';
     $style = 'overflow:hidden;';
@@ -4401,7 +4556,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'float-left main_menu_icon',
+                    'class' => 'float-left main_menu_icon mrgn_right_10px invert_filter',
                     'style' => 'object-fit: contain; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
@@ -4433,7 +4588,7 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'class' => 'main_menu_icon',
+                    'class' => 'main_menu_icon mrgn_right_10px invert_filter',
                     'style' => 'object-fit: contain; float:right; margin-right:10px; rotate:'.$imageRotate,
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
@@ -4463,37 +4618,38 @@ function ui_toggle(
         $output .= '	var is_metaconsole = '.(int) is_metaconsole().";\n";
         $output .= '	/* <![CDATA[ */'."\n";
         $output .= "	$(document).ready (function () {\n";
+        $output .= '	    var switch_enable = '.(int) $switch.";\n";
         $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
-        $output .= '            if (is_metaconsole == 0) {';
-        $output .= '                if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "			    }\n";
-        $output .= "			    else {\n";
-        $output .= '			    	hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "			    	$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "			    }\n";
-        $output .= "		    }\n";
-        $output .= "		});\n";
-        $output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
-        $output .= '			if (hide_tgl_ctrl_'.$uniqid.") {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'relative');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
-        $output .= $class_table;
+        $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
         $output .= "			}\n";
         $output .= "			else {\n";
-        $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('height', 0);\n";
-        $output .= "				$('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
-        $output .= "				$('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
-        $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= '			    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "			    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
         $output .= "			}\n";
         $output .= "		});\n";
+        $output .= '        if (switch_enable === 0) {';
+        $output .= "		    $('#tgl_ctrl_".$uniqid."').click(function() {\n";
+        $output .= '			    if (hide_tgl_ctrl_'.$uniqid.") {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 0;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', true);\n";
+        $output .= $class_table;
+        $output .= "			    }\n";
+        $output .= "			    else {\n";
+        $output .= '				    hide_tgl_ctrl_'.$uniqid." = 1;\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('height', 0);\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'absolute');\n";
+        $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateB."');\n";
+        $output .= "				    $('#checkbox-".$switch_name."').prop('checked', false);\n";
+        $output .= "			    }\n";
+        $output .= "		    });\n";
+        $output .= "	    }\n";
         $output .= "	});\n";
         $output .= '/* ]]> */';
         $output .= '</script>';
@@ -4678,7 +4834,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
         $url = substr_replace($url, '', $pos, 5);
     }
 
-    $url = htmlspecialchars($url);
+    $url = (isset($params['alert_flag']) && $params['alert_flag']) ? $url : htmlspecialchars($url);
 
     if (! $relative) {
         return ui_get_full_url($url, false, false, false);
@@ -4957,7 +5113,8 @@ function ui_print_standard_header(
     string $help='',
     bool $godmode=false,
     array $options=[],
-    array $breadcrumbs=[]
+    array $breadcrumbs=[],
+    array $fav_menu_config=[]
 ) {
     // For standard breadcrumbs.
     ui_require_css_file('discovery');
@@ -4982,28 +5139,22 @@ function ui_print_standard_header(
         $applyBreadcrumbs,
         true
     );
-    // Create the header.
-    // if (is_metaconsole() === true) {
-    // $output = ui_meta_print_header(
-    // $title,
-    // false,
-    // $options
-    // );
-    // } else {
-        $output = ui_print_page_header(
-            $title,
-            $icon,
-            true,
-            $help,
-            $godmode,
-            $options,
-            false,
-            '',
-            GENERIC_SIZE_TEXT,
-            '',
-            $headerInformation->printHeader(true)
-        );
-    // }
+
+    $output = ui_print_page_header(
+        $title,
+        $icon,
+        true,
+        $help,
+        $godmode,
+        $options,
+        false,
+        '',
+        GENERIC_SIZE_TEXT,
+        '',
+        $headerInformation->printHeader(true),
+        false,
+        $fav_menu_config
+    );
     if ($return !== true) {
         echo $output;
     } else {
@@ -5042,8 +5193,11 @@ function ui_print_page_header(
     $numChars=GENERIC_SIZE_TEXT,
     $alias='',
     $breadcrumbs='',
-    $hide_left_small=false
+    $hide_left_small=false,
+    $fav_menu_config=[]
 ) {
+    global $config;
+
     $title = io_safe_input_html($title);
     if (($icon == '') && ($godmode == true)) {
         $icon = 'images/gm_setup.png';
@@ -5057,13 +5211,18 @@ function ui_print_page_header(
         $type = 'view';
         $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator';
+        $div_style = '';
     } else {
         $type = 'view';
         $type2 = 'menu_tab_frame_view';
         $separator_class = 'separator_view';
+        $div_style = '';
+        if ($config['pure'] === true) {
+            $div_style = 'top:0px;';
+        }
     }
 
-    $buffer = '<div id="'.$type2.'"  >';
+    $buffer = '<div id="'.$type2.'" style="'.$div_style.'" >';
 
     if (!empty($breadcrumbs)) {
         $buffer .= '<div class="menu_tab_left_bc">';
@@ -5096,6 +5255,17 @@ function ui_print_page_header(
     if (is_metaconsole() === false) {
         if ($help != '') {
             $buffer .= "<div class='head_help head_tip'>".ui_print_help_icon($help, true, '', '', false, '', true).'</div>';
+        }
+    }
+
+    if (is_array($fav_menu_config) === true && is_metaconsole() === false) {
+        if (count($fav_menu_config) > 0) {
+            $buffer .= ui_print_fav_menu(
+                $fav_menu_config['id_element'],
+                $fav_menu_config['url'],
+                $fav_menu_config['label'],
+                $fav_menu_config['section']
+            );
         }
     }
 
@@ -5454,6 +5624,9 @@ function ui_print_agent_autocomplete_input($parameters)
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
+        $background_results = 'background: #111;';
+    } else {
+        $background_results = 'background: #a8e7eb;';
     }
 
     $icon_image = html_print_image($icon_agent, true, false, true);
@@ -5935,14 +6108,14 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change .= '
         function setInputBackground(inputId, image) {
             $("#"+inputId)
-            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+            .attr("style", "background-image: url(\'"+image+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
         }
 
         $(document).ready(function () {
             $("#'.$input_id.'").focusout(function (e) {
                 setTimeout(() => {
                     let iconImage = "'.$icon_image.'";
-                    $("#'.$input_id.'").attr("style", "background-image: url(\'"+iconImage+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                    $("#'.$input_id.'").attr("style", "background-image: url(\'"+iconImage+"\'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
                 }, 100);
             });
         });
@@ -6127,7 +6300,7 @@ function ui_print_agent_autocomplete_input($parameters)
 							.appendTo(ul);
 						break;
 					case \'alias\':
-						return $("<li style=\'background: #a8e7eb;\'></li>")
+						return $("<li style=\"'.$background_results.'\"></li>")
 							.data("item.autocomplete", item)
 							.append(text)
 							.appendTo(ul);
@@ -6216,7 +6389,7 @@ function ui_print_agent_autocomplete_input($parameters)
 			if (select_item_click) {
                 select_item_click = 0;
                 $("#'.$input_id.'")
-                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 				return;
 			} else {
                 // Clear selectbox if item is not selected.
@@ -6231,7 +6404,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 			//Set loading
 			$("#'.$input_id.'")
-                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+                .attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 			var term = input_value; //Word to search
 			
 			'.$javascript_change_ajax_params_text.'
@@ -6248,7 +6421,7 @@ function ui_print_agent_autocomplete_input($parameters)
 				success: function (data) {
 						if (data.length < 2) {
 							//Set icon
-							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$inputStyles.'");
+							$("#'.$input_id.'").attr("style", "background-image: url(\"'.$spinner_image.'\"); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$inputStyles.'");
 							return;
 						}
 
@@ -6298,7 +6471,7 @@ function ui_print_agent_autocomplete_input($parameters)
 
 						//Set icon
 						$("#'.$input_id.'")
-                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; background-size: 20px; '.$inputStyles.'")
+                            .attr("style", "background: url(\"'.$icon_image.'\") 97% center no-repeat; background-size: 20px; width:100%; '.$inputStyles.'")
 						return;
 					}
 				});
@@ -6317,7 +6490,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; '.$text_color.' '.$inputStyles.'';
+    $attrs['style'] = 'background-image: url('.$icon_image.'); background-repeat: no-repeat; background-position: 97% center; background-size: 20px; width:100%; '.$text_color.' '.$inputStyles.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';
@@ -6818,7 +6991,7 @@ function ui_get_favicon()
     global $config;
 
     if (empty($config['custom_favicon'])) {
-        return (!is_metaconsole()) ? 'images/pandora.ico' : 'enterprise/meta/images/favicon_meta.ico';
+        return (!is_metaconsole()) ? 'images/pandora.ico' : '/images/custom_favicon/favicon_meta.ico';
     }
 
     return 'images/custom_favicon/'.$config['custom_favicon'];
@@ -6840,6 +7013,11 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
     $arrow_up = 'images/sort_up_black.png';
     $arrow_down = 'images/sort_down_black.png';
 
+    if (is_metaconsole()) {
+        $arrow_up = 'images/sort_up_black.png';
+        $arrow_down = 'images/sort_down_black.png';
+    }
+
     // Green arrows for the selected.
     if ($selectUp === true) {
         $arrow_up = 'images/sort_up_green.png';
@@ -6847,11 +7025,6 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
 
     if ($selectDown === true) {
         $arrow_down = 'images/sort_down_green.png';
-    }
-
-    if (is_metaconsole()) {
-        $arrow_up = 'images/sort_up.png';
-        $arrow_down = 'images/sort_down.png';
     }
 
     return '<span class="sort_arrow">
@@ -6905,23 +7078,20 @@ function ui_print_comments($comments)
         }
     }
 
-    $last_comment = [];
-    foreach ($comments_array as $comm) {
-        // Show the comments more recent first.
-        if (is_array($comm)) {
-            $order_utimestamp = array_reduce(
-                $comm,
-                function ($carry, $item) {
-                    $carry[$item['utimestamp']] = $item;
-                    return $carry;
-                }
-            );
+    $order_utimestamp = array_reduce(
+        $comments_array,
+        function ($carry, $item) {
+            foreach ($item as $k => $v) {
+                $carry[$v['utimestamp']] = $v;
+            }
 
-            $key_max_utimestamp = max(array_keys($order_utimestamp));
-
-            $last_comment = $order_utimestamp[$key_max_utimestamp];
+            return $carry;
         }
-    }
+    );
+
+    $key_max_utimestamp = max(array_keys($order_utimestamp));
+
+    $last_comment = $order_utimestamp[$key_max_utimestamp];
 
     if (empty($last_comment) === true) {
         return '';
@@ -6986,7 +7156,7 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
     echo '<div id="message_dialog_'.$id.'" title="'.$title.'" style="'.$style.'">';
         echo '<div class="content_dialog">';
             echo '<div class="icon_message_dialog">';
-                echo html_print_image($img, true, ['alt' => $title, 'border' => 0]);
+                echo html_print_image($img, true, ['alt' => $title, 'border' => 0, 'class' => 'icon_connection_check']);
             echo '</div>';
             echo '<div class="content_message_dialog">';
                 echo '<div class="text_message_dialog">';
@@ -7021,20 +7191,6 @@ function ui_query_result_editor($name='default')
         [
             'id'    => $name.'_editor',
             'class' => 'query_result_editor',
-        ],
-        true
-    );
-
-    $editorSubContainer .= html_print_div(
-        [
-            'class'   => 'action-buttons edit-button',
-            'content' => html_print_submit_button(
-                __('Execute query'),
-                'execute_query',
-                false,
-                ['icon' => 'next'],
-                true
-            ),
         ],
         true
     );
@@ -7096,6 +7252,9 @@ function ui_query_result_editor($name='default')
             'content' => ui_get_full_url(false, false, false, false),
         ]
     );
+
+    html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update']);
+
 }
 
 
@@ -7267,22 +7426,19 @@ function ui_get_inventory_module_add_form(
     $table = new stdClass();
     $table->id = 'inventory-module-form';
     $table->width = '100%';
-    $table->class = 'databox filters';
-    $table->style['module-title'] = 'font-weight: bold;';
-    $table->style['interval-title'] = 'font-weight: bold;';
-    $table->style['target-title'] = 'font-weight: bold;';
-    $table->style['chkbx-custom-fields-title'] = 'font-weight: bold;';
-    $table->style['username-title'] = 'font-weight: bold;';
-    $table->style['password-title'] = 'font-weight: bold;';
+    $table->class = 'databox filters filter-table-adv';
+    $table->size['module'] = '50%';
+    $table->size['interval'] = '50%';
+    $table->size['target'] = '50%';
+    $table->size['chkbx-custom-fields'] = '50%';
+    $table->size['username'] = '50%';
+    $table->size['password'] = '50%';
     $table->rowstyle = [];
     $table->rowstyle['hidden-custom-field-row'] = 'display: none;';
-    $table->colspan = [];
-    $table->colspan['custom-fields-row'] = [];
-    $table->colspan['custom-fields-row']['custom-fields-column'] = 4;
+    $table->rowstyle['custom-fields-button'] = 'display: none;';
     $table->data = [];
 
     $row = [];
-    $row['module-title'] = __('Module');
     if (empty($inventory_module_id)) {
         if (empty($os_id)) {
             $sql = 'SELECT mi.id_module_inventory AS id, mi.name AS name, co.name AS os
@@ -7314,119 +7470,260 @@ function ui_get_inventory_module_add_form(
             }
         }
 
-        $row['module-input'] = html_print_select($inventory_modules, 'id_module_inventory', 0, '', __('Select inventory module'), 0, true, false, false);
+        $row['module'] = html_print_label_input_block(
+            __('Module'),
+            html_print_select(
+                $inventory_modules,
+                'id_module_inventory',
+                0,
+                '',
+                __('Select inventory module'),
+                '',
+                true,
+                false,
+                false,
+                'w100p',
+                false,
+                'width: 100%',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                true
+            )
+        );
     } else {
-        $row['module-input'] = db_get_sql('SELECT name FROM tmodule_inventory WHERE id_module_inventory = '.$inventory_module_id);
+        $row['module'] = html_print_label_input_block(
+            __('Module'),
+            db_get_sql('SELECT name FROM tmodule_inventory WHERE id_module_inventory = '.$inventory_module_id)
+        );
     }
 
-    $row['interval-title'] = __('Interval');
-    $row['interval-input'] = html_print_extended_select_for_time('interval', $interval, '', '', '', false, true);
+    $row['interval'] = html_print_label_input_block(
+        __('Interval'),
+        html_print_extended_select_for_time(
+            'interval',
+            $interval,
+            '',
+            '',
+            '',
+            false,
+            true,
+            false,
+            true,
+            'w100p'
+        )
+    );
 
     $table->data['first-row'] = $row;
 
     $row = [];
 
     if ($target !== false) {
-        $row['target-title'] = __('Target');
-        $row['target-input'] = html_print_input_text('target', $target, '', 25, 40, true);
+        $row['target'] = html_print_label_input_block(
+            __('Target'),
+            html_print_input_text(
+                'target',
+                $target,
+                '',
+                25,
+                40,
+                true,
+                false,
+                false,
+                '',
+                'w100p'
+            )
+        );
     }
 
-    $row['chkbx-custom-fields-title'] = __('Use custom fields');
-    $row['chkbx-custom-fields-input'] = html_print_checkbox('custom_fields_enabled', 1, $custom_fields_enabled, true);
+    $row['chkbx-custom-fields'] = html_print_label_input_block(
+        __('Use custom fields'),
+        html_print_checkbox(
+            'custom_fields_enabled',
+            1,
+            $custom_fields_enabled,
+            true
+        )
+    );
 
     $table->data['second-row'] = $row;
 
     $row = [];
-    $row['username-title'] = __('Username');
-    $row['username-input'] = html_print_input_text('username', $username, '', 25, 40, true);
-    $row['password-title'] = __('Password');
-    $row['password-input'] = html_print_input_password('password', $password, '', 25, 40, true);
+    $row['username'] = html_print_label_input_block(
+        __('Username'),
+        html_print_input_text(
+            'username',
+            $username,
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        )
+    );
+
+    $row['password'] = html_print_label_input_block(
+        __('Password'),
+        html_print_input_password(
+            'password',
+            $password,
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            'w100p'
+        )
+    );
 
     $table->data['userpass-row'] = $row;
 
     $row = [];
-    $row['hidden-title'] = '';
-    $row['hidden-input'] = html_print_input_hidden('hidden-custom-field-name', '', true);
-    $row['hidden-input'] .= html_print_input_hidden('hidden-custom-field-is-secure', 0, true);
-    $row['hidden-input'] .= html_print_input_text('hidden-custom-field-input', '', '', 25, 40, true);
-    $row['hidden-input'] .= '<span>&nbsp;</span>';
-    $row['hidden-input'] .= html_print_image(
-        'images/delete.svg',
-        true,
-        [
-            'border' => '0',
-            'title'  => __('Remove'),
-            'style'  => 'cursor: pointer;',
-            'class'  => 'remove-custom-field invert_filter',
-        ]
-    );
 
-    $table->data['hidden-custom-field-row'] = $row;
+    $table->data['hidden-custom-field-row'] = html_print_label_input_block(
+        '',
+        '<div class="agent_details_agent_data">'.html_print_input_hidden(
+            'hidden-custom-field-name',
+            '',
+            true
+        ).html_print_input_hidden(
+            'hidden-custom-field-is-secure',
+            0,
+            true
+        ).html_print_input_text(
+            'hidden-custom-field-input',
+            '',
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        ).html_print_image(
+            'images/delete.svg',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Remove'),
+                'style'  => 'cursor: pointer;',
+                'class'  => 'remove-custom-field invert_filter main_menu_icon',
+            ]
+        ).'</div>'
+    );
+    $table->colspan['hidden-custom-field-row'][0] = 2;
 
     if ($custom_fields_enabled) {
         foreach ($custom_fields as $i => $field) {
-            $row = [];
-            $row['title'] = '<b>'.$field['name'].'</b>';
-            $row['input'] = html_print_input_hidden(
-                'custom_fields['.$i.'][name]',
-                $field['name'],
-                true
-            );
-            $row['input'] .= html_print_input_hidden(
-                'custom_fields['.$i.'][secure]',
-                $field['secure'],
-                true
-            );
             if ($field['secure']) {
-                $row['input'] .= html_print_input_password(
+                $secure = html_print_input_password(
                     'custom_fields['.$i.'][value]',
-                    $field['value'],
+                    io_safe_input($field['value']),
                     '',
-                    25,
+                    false,
                     40,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'off',
+                    false,
+                    'w100p'
                 );
             } else {
-                $row['input'] .= html_print_input_text(
+                $secure = html_print_input_text(
                     'custom_fields['.$i.'][value]',
-                    $field['value'],
+                    io_safe_input($field['value']),
                     '',
-                    25,
+                    false,
                     40,
-                    true
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w100p'
                 );
             }
 
-            $row['input'] .= '<span>&nbsp;</span>';
-            $row['input'] .= html_print_image(
-                'images/delete.svg',
-                true,
-                [
-                    'border' => '0',
-                    'title'  => __('Remove'),
-                    'style'  => 'cursor: pointer;',
-                    'class'  => 'remove-custom-field invert_filter',
-                ]
+            $table->colspan['custom-field-row-'.$i][0] = 2;
+            $table->data['custom-field-row-'.$i] = html_print_label_input_block(
+                $field['name'],
+                '<div class="agent_details_agent_data">'.html_print_input_hidden(
+                    'custom_fields['.$i.'][name]',
+                    $field['name'],
+                    true
+                ).html_print_input_hidden(
+                    'custom_fields['.$i.'][secure]',
+                    $field['secure'],
+                    true
+                ).$secure.html_print_image(
+                    'images/delete.svg',
+                    true,
+                    [
+                        'border' => '0',
+                        'title'  => __('Remove'),
+                        'style'  => 'cursor: pointer;',
+                        'class'  => 'remove-custom-field invert_filter main_menu_icon',
+                    ]
+                ).'</div>'
             );
-
-            $table->data['custom-field-row-'.$i] = $row;
         }
     }
 
     $row = [];
-    $row['custom-fields-column'] = '<b>'.__('Field name').'</b>'.'&nbsp;&nbsp;'.html_print_input_text('field-name', '', '', 25, 40, true).'&nbsp;&nbsp;&nbsp;'.html_print_checkbox('field-is-password', 1, false, true).__("It's a password").'&nbsp;&nbsp;&nbsp;'.html_print_button(__('Add field'), 'add-field', false, '', 'class="sub add"', true);
+    $row['custom-fields-column'] = html_print_label_input_block(
+        __('Field name'),
+        '<div class="flex">'.html_print_input_text(
+            'field-name',
+            '',
+            '',
+            25,
+            40,
+            true,
+            false,
+            false,
+            '',
+            'w60p mrgn_right_10px'
+        ).html_print_checkbox(
+            'field-is-password',
+            1,
+            false,
+            true
+        ).'&nbsp;'.__("It's a password").'</div>'
+    );
 
     $table->data['custom-fields-row'] = $row;
 
+    $row = [];
+    $row['custom-fields-button-title'] = '';
+    $row['custom-fields-button'] = html_print_button(
+        __('Add field'),
+        'add-field',
+        false,
+        '',
+        [
+            'class' => 'mini float-right',
+            'icon'  => 'plus',
+        ],
+        true
+    );
+
+    $table->data['custom-fields-button'] = $row;
+
     ob_start();
 
-    echo '<form name="modulo" method="post" action="'.$form_action.'">';
+    echo '<form id="policy_inventory_module_edit_form" name="modulo" method="post" action="'.$form_action.'" class="max_floating_element_size">';
     echo html_print_table($table);
-    echo '<div class="action-buttons w100p">';
     echo $form_buttons;
-    echo '</div>';
     echo '</form>';
-
     ?>
 
 <script type="text/javascript">
@@ -7436,46 +7733,50 @@ function ui_get_inventory_module_add_form(
             $("#inventory-module-form-userpass-row").hide();
             $("#inventory-module-form-custom-fields-row").show();
             $("tr[id^=inventory-module-form-custom-field-row-]").show();
+            $('#inventory-module-form-custom-fields-button').show();
         } else {
             $("#inventory-module-form-userpass-row").show();
             $("#inventory-module-form-custom-fields-row").hide();
             $("tr[id^=inventory-module-form-custom-field-row-]").hide();
+            $('#inventory-module-form-custom-fields-button').hide();
         }
     }
 
     function add_row_for_custom_field (fieldName, isSecure) {
         var custom_fields_num = $("tr[id^=inventory-module-form-custom-field-row-]").length;
         $("#inventory-module-form-hidden-custom-field-row")
-            .clone()
-            .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)
-            .children("#inventory-module-form-hidden-custom-field-row-hidden-title")
-                .prop("id", "inventory-module-form-custom-field-row-title-" + custom_fields_num)
-                .html("<b>" + fieldName + "</b>")
-                .parent()
-            .children("#inventory-module-form-hidden-custom-field-row-hidden-input")
-                .prop("id", "inventory-module-form-custom-field-row-input-" + custom_fields_num)
-                .prop("colspan", 2)
-                .children("input[name=hidden-custom-field-name]")
+        .clone()
+        .prop("id", "inventory-module-form-custom-field-row-" + custom_fields_num)
+        .children("[id^='inventory-module-form-hidden-custom-field-row']") // go to TD
+            .prop("id", "inventory-module-form-hidden-custom-field-row-"+ custom_fields_num)
+                .children() // go to DIV
+                    .find('label')
+                        .html(fieldName)
+                .parent() // up to DIV padre
+                .find('div') //go to DIV no label
+                    .children("[id^=hidden-hidden-custom-field-name]")
                     .prop("id", "custom-field-name-" + custom_fields_num)
                     .prop("name", "custom_fields[" + custom_fields_num + "][name]")
-                    .val(fieldName)
+                    .prop("value", fieldName)
                     .parent()
-                .children("input[name=hidden-custom-field-is-secure]")
-                    .prop("id", "custom-field-is-secure-" + custom_fields_num)
-                    .prop("name", "custom_fields[" + custom_fields_num + "][secure]")
-                    .val(isSecure ? 1 : 0)
-                    .parent()
-                .children("input[name=hidden-custom-field-input]")
-                    .prop("id", "custom-field-input-" + custom_fields_num)
-                    .prop("type", isSecure ? "password" : "text")
-                    .prop("name", "custom_fields[" + custom_fields_num + "][value]")
-                    .parent()
-                .children("img.remove-custom-field")
-                    .click(remove_custom_field)
-                    .parent()
-                .parent()
-            .insertBefore($("#inventory-module-form-custom-fields-row"))
-            .show();
+                    .children("input[name=hidden-custom-field-is-secure]")
+                        .prop("id", "custom-field-is-secure-" + custom_fields_num)
+                        .prop("name", "custom_fields[" + custom_fields_num + "][secure]")
+                        .val(isSecure ? 1 : 0)
+                        .parent()
+                    .children("input[name=hidden-custom-field-input]")
+                        .prop("id", "custom-field-input-" + custom_fields_num)
+                        .prop("type", isSecure ? "password" : "text")
+                        .prop("name", "custom_fields[" + custom_fields_num + "][value]")
+                        .parent()
+                    .children("img.remove-custom-field")
+                        .click(remove_custom_field)
+                        .parent()
+                        .parent()
+                .parent() // up to TD
+            .parent() // up to TR
+        .insertBefore($("#inventory-module-form-custom-fields-row"))
+        .show();
     }
 
     function add_custom_field () {
@@ -7617,4 +7918,66 @@ function ui_print_status_div($status)
     }
 
     return $return;
+}
+
+
+function ui_print_fav_menu($id_element, $url, $label, $section)
+{
+    global $config;
+    $label = io_safe_output($label);
+    if (strlen($label) > 18) {
+        $label = io_safe_input(substr($label, 0, 18).'...');
+    }
+
+    $fav = db_get_row_filter(
+        'tfavmenu_user',
+        [
+            'url'     => $url,
+            'id_user' => $config['id_user'],
+        ],
+        ['*']
+    );
+    $config_fav_menu = [
+        'id_element' => $id_element,
+        'url'        => $url,
+        'label'      => $label,
+        'section'    => $section,
+    ];
+
+    $output = '<span class="fav-menu">';
+    $output .= html_print_input_image(
+        'fav-menu-action',
+        (($fav !== false) ? 'images/star_fav_menu.png' : 'images/star_dark.png'),
+        base64_encode(json_encode($config_fav_menu)),
+        '',
+        true,
+        [
+            'onclick' => 'favMenuAction(this)',
+            'class'   => (($fav !== false) ? 'active' : ''),
+        ]
+    );
+    $output .= '</span>';
+    $output .= '<div id="dialog-fav-menu">';
+    $output .= '<p><b>'.__('Title').'</b></p>';
+    $output .= html_print_input_text('label_fav_menu', '', '', 25, 255, true, false, true);
+    $output .= '</div>';
+    return $output;
+}
+
+
+function ui_update_name_fav_element($id_element, $section, $label)
+{
+    $label = io_safe_output($label);
+    if (strlen($label) > 18) {
+        $label = io_safe_input(substr($label, 0, 18).'...');
+    }
+
+    db_process_sql_update(
+        'tfavmenu_user',
+        ['label' => $label],
+        [
+            'section'    => $section,
+            'id_element' => $id_element,
+        ]
+    );
 }

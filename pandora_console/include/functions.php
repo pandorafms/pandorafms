@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -3548,6 +3548,37 @@ function update_config_token($cfgtoken, $cfgvalue)
 }
 
 
+function update_check_config_token($cfgtoken, $cfgvalue)
+{
+    global $config;
+    db_process_sql('START TRANSACTION');
+    if (isset($config[$cfgtoken])) {
+        delete_config_token($cfgtoken);
+    }
+
+    $insert = db_process_sql(sprintf("INSERT INTO tconfig (token, value) VALUES ('%s', '%s')", $cfgtoken, $cfgvalue));
+    db_process_sql('COMMIT');
+    if ($insert) {
+        $config[$cfgtoken] = $cfgvalue;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+function delete_config_token($cfgtoken)
+{
+    $delete = db_process_sql(sprintf('DELETE FROM tconfig WHERE token = "%s"', $cfgtoken));
+
+    if ($delete) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 function get_number_of_mr($package, $ent, $offline)
 {
     global $config;
@@ -3896,7 +3927,14 @@ function series_type_graph_array($data, $show_elements_graph)
         $type_graph = $show_elements_graph['type_graph'];
     }
 
-    $color_series = color_graph_array();
+    if (isset($show_elements_graph['array_colors']) === true
+        && empty($show_elements_graph['array_colors']) === false
+        && is_array($show_elements_graph['array_colors']) === true
+    ) {
+        $color_series = $show_elements_graph['array_colors'];
+    } else {
+        $color_series = color_graph_array();
+    }
 
     if ($show_elements_graph['id_widget_dashboard']) {
         $opcion = unserialize(
@@ -4038,7 +4076,7 @@ function series_type_graph_array($data, $show_elements_graph)
                     $name_legend .= ' * '.$value['weight'].') ';
                 }
 
-                $data_return['legend'][$key] = $name_legend;
+                $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.$name_legend.'</span>';
                 if ((int) $value['min'] === PHP_INT_MAX) {
                     $value['min'] = 0;
                 }
@@ -4047,28 +4085,28 @@ function series_type_graph_array($data, $show_elements_graph)
                     $value['max'] = 0;
                 }
 
-                $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
+                $data_return['legend'][$key] .= '<span class="legend-font-small">'.__('Min').' </span><span class="bolder">'.remove_right_zeros(
                     number_format(
                         $value['min'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '.__('Max:').remove_right_zeros(
+                ).' '.$value['unit'].'</span>&nbsp;<span class="legend-font-small">'.__('Max').' </span><span class="bolder">'.remove_right_zeros(
                     number_format(
                         $value['max'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '._('Avg:').remove_right_zeros(
+                ).' '.$value['unit'].'</span>&nbsp;<span class="legend-font-small">'._('Avg.').' </span><span class="bolder">'.remove_right_zeros(
                     number_format(
                         $value['avg'],
                         $config['graph_precision'],
                         $config['csv_decimal_separator'],
                         $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
-                ).' '.$str;
+                ).' '.$value['unit'].'</span>&nbsp;'.$str;
 
                 if ($show_elements_graph['compare'] == 'overlapped'
                     && $key == 'sum2'
@@ -4110,9 +4148,9 @@ function series_type_graph_array($data, $show_elements_graph)
                     $name_legend .= $value['module_name'].': ';
                 }
 
-                $data_return['legend'][$key] = $name_legend;
+                $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.$name_legend.'</span>';
                 if ($show_elements_graph['type_mode_graph']) {
-                    $data_return['legend'][$key] .= __('Min:');
+                    $data_return['legend'][$key] .= '<span class="legend-font-small">'.__('Min:').' </span><span class="bolder">';
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['min'],
@@ -4120,8 +4158,8 @@ function series_type_graph_array($data, $show_elements_graph)
                             $config['decimal_separator'],
                             $config['thousand_separator']
                         )
-                    );
-                    $data_return['legend'][$key] .= ' '.__('Max:');
+                    ).' '.$value['unit'];
+                    $data_return['legend'][$key] .= '</span>&nbsp;<span class="legend-font-small">'.__('Max:').' </span><span class="bolder">';
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['max'],
@@ -4129,8 +4167,8 @@ function series_type_graph_array($data, $show_elements_graph)
                             $config['decimal_separator'],
                             $config['thousand_separator']
                         )
-                    );
-                    $data_return['legend'][$key] .= ' '._('Avg:');
+                    ).' '.$value['unit'];
+                    $data_return['legend'][$key] .= '</span>&nbsp;<span class="legend-font-small">'._('Avg:').' </span><span class="bolder">';
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['avg'],
@@ -4138,7 +4176,7 @@ function series_type_graph_array($data, $show_elements_graph)
                             $config['decimal_separator'],
                             $config['thousand_separator']
                         )
-                    ).' '.$str;
+                    ).' '.$value['unit'].' </span>&nbsp;'.$str;
                 }
 
                 if ($show_elements_graph['compare'] == 'overlapped'
@@ -4152,21 +4190,21 @@ function series_type_graph_array($data, $show_elements_graph)
             } else if (strpos($key, 'event') !== false) {
                 $data_return['series_type'][$key] = 'points';
                 if ($show_elements_graph['show_events']) {
-                    $data_return['legend'][$key] = __('Events').' '.$str;
+                    $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.__('Events').'</span>'.$str;
                 }
 
                 $data_return['color'][$key] = $color_series['event'];
             } else if (strpos($key, 'alert') !== false) {
                 $data_return['series_type'][$key] = 'points';
                 if ($show_elements_graph['show_alerts']) {
-                    $data_return['legend'][$key] = __('Alert').' '.$str;
+                    $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.__('Alert').'</span>'.$str;
                 }
 
                 $data_return['color'][$key] = $color_series['alert'];
             } else if (strpos($key, 'unknown') !== false) {
                 $data_return['series_type'][$key] = 'unknown';
                 if ($show_elements_graph['show_unknown']) {
-                    $data_return['legend'][$key] = __('Unknown').' '.$str;
+                    $data_return['legend'][$key] = '<span style="font-size: 9pt; font-weight: bolder;">'.__('Unknown').'</span>'.$str;
                 }
 
                 $data_return['color'][$key] = $color_series['unknown'];
@@ -4174,7 +4212,7 @@ function series_type_graph_array($data, $show_elements_graph)
                 $data_return['series_type'][$key] = 'percentil';
                 if ($show_elements_graph['percentil']) {
                     if ($show_elements_graph['unit']) {
-                        $name_legend = __('Percentil').' ';
+                        $name_legend = '<span style="font-size: 9pt; font-weight: bolder;">'.__('Percentil').'</span>';
                         $name_legend .= $config['percentil'].'º ';
                         $name_legend .= __('of module').' ';
                         $name_legend .= $value['agent_alias'].' / ';
@@ -4265,6 +4303,8 @@ function generator_chart_to_pdf(
             'data_module_list' => $module_list,
             'data_combined'    => $params_combined,
             'id_user'          => $config['id_user'],
+            'slicebar'         => $_SESSION['slicebar'],
+            'slicebar_value'   => $config[$_SESSION['slicebar']],
         ];
     } else {
         $data = [
@@ -4272,9 +4312,12 @@ function generator_chart_to_pdf(
             'session_id'     => $session_id,
             'type_graph_pdf' => $type_graph_pdf,
             'id_user'        => $config['id_user'],
+            'slicebar'       => $_SESSION['slicebar'],
+            'slicebar_value' => $config[$_SESSION['slicebar']],
         ];
     }
 
+    unset($data['data']['graph_data']);
     // If not install chromium avoid 500 convert tu images no data to show.
     $chromium_dir = io_safe_output($config['chromium_path']);
     $result_ejecution = exec($chromium_dir.' --version');
@@ -6437,4 +6480,23 @@ function nms_check_api()
         returnError('license_error');
         return true;
     }
+}
+
+
+/**
+ * Simply return a string enclosed in quote delimiter to be used in csv exports.
+ *
+ * @param string $str String to be formatted.
+ *
+ * @return string Formatted string.
+ */
+function csv_format_delimiter(?string $str)
+{
+    if ($str === null) {
+        return $str;
+    }
+
+    // Due to the ticket requirements, double quote is used as fixed string delimiter.
+    // TODO: a setup option that enables user to choose a delimiter character would probably be desirable in the future.
+    return '"'.$str.'"';
 }

@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -80,6 +80,12 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
         if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             enterprise_hook('applications_menu');
             enterprise_hook('cloud_menu');
+        }
+
+        if ((bool) check_acl($config['id_user'], 0, 'RW') === true
+            || (bool) check_acl($config['id_user'], 0, 'RM') === true
+            || (bool) check_acl($config['id_user'], 0, 'PM') === true
+        ) {
             enterprise_hook('console_task_menu');
         }
     }
@@ -177,9 +183,8 @@ if ($access_console_node === true) {
         $sub2['godmode/modules/manage_module_templates']['text'] = __('Module templates');
         $sub2['godmode/modules/manage_module_templates']['id'] = 'module_templates';
         $sub2['godmode/modules/private_enterprise_numbers']['text'] = __('Private Enterprise Numbers');
+        enterprise_hook('local_components_menu');
         $sub2['godmode/modules/private_enterprise_numbers']['id'] = 'private_Enterprise_Numbers';
-        $sub2['enterprise/godmode/modules/local_components']['text'] = __('Local components');
-        $sub2['enterprise/godmode/modules/local_components']['id'] = 'local_components';
         $sub2['godmode/modules/manage_network_components']['text'] = __('Remote components');
         $sub2['godmode/modules/manage_network_components']['id'] = 'network_components';
         $sub['templates']['sub2'] = $sub2;
@@ -260,7 +265,6 @@ if ($access_console_node === true) {
 
     if ((bool) check_acl($config['id_user'], 0, 'LW') === true
         || (bool) check_acl($config['id_user'], 0, 'LM') === true
-        || (bool) check_acl($config['id_user'], 0, 'AD') === true
     ) {
         $menu_godmode['galertas']['text'] = __('Alerts');
         $menu_godmode['galertas']['sec2'] = 'godmode/alerts/alert_list';
@@ -306,6 +310,13 @@ if ($access_console_node === true) {
         if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             $sub['godmode/servers/modificar_server']['text'] = __('Manage servers');
             $sub['godmode/servers/modificar_server']['id'] = 'Manage_servers';
+        }
+
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true
+            || is_user_admin($config['id_user']) === true
+        ) {
+            $sub['godmode/consoles/consoles']['text'] = __('Manage consoles');
+            $sub['godmode/consoles/consoles']['id'] = 'Manage consoles';
         }
 
         // This subtabs are only for Pandora Admin.
@@ -363,6 +374,11 @@ if ($access_console_node === true) {
             if ((bool) $config['activate_netflow'] === true) {
                 $sub2['godmode/setup/setup&section=net']['text'] = __('Netflow');
                 $sub2['godmode/setup/setup&section=net']['refr'] = 0;
+            }
+
+            if ((bool) $config['activate_sflow'] === true) {
+                $sub2['godmode/setup/setup&section=sflow']['text'] = __('Sflow');
+                $sub2['godmode/setup/setup&section=sflow']['refr'] = 0;
             }
         }
 
@@ -441,8 +457,8 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
         }
     }
 
-    $sub['godmode/events/configuration_sounds']['text'] = __('Accoustic console setup');
-    $sub['godmode/events/configuration_sounds']['id'] = 'Accoustic console setup';
+    $sub['godmode/events/configuration_sounds']['text'] = __('Acoustic console setup');
+    $sub['godmode/events/configuration_sounds']['id'] = 'Acoustic console setup';
     $sub['godmode/events/configuration_sounds']['pages'] = ['godmode/events/configuration_sounds'];
 
     $menu_godmode['gextensions']['sub'] = $sub;

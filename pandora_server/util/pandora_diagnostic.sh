@@ -48,7 +48,17 @@ ps aux | grep pandora >> $OUTFILE
 echo "-----------------------------------------------------------------" >> $OUTFILE
 echo "MySQL Configuration file" >> $OUTFILE
 echo "-----------------------------------------------------------------" >> $OUTFILE
-cat /etc/mysql/my.cnf >> $OUTFILE
+
+# Search for my.cnf file in directories in order (search in root /etc if it was not found in previous paths)
+MY_CNF=$(find /etc/mysql /usr/local/mysql /usr/local/etc /etc -name my.cnf 2>/dev/null | head -n 1)
+
+# Check if my.cnf file was found
+if [ -z "$MY_CNF" ]; then
+  echo "ERROR: my.cnf file not found."
+  exit 1
+fi
+
+cat $MY_CNF >> $OUTFILE
 
 echo "-----------------------------------------------------------------" >> $OUTFILE
 echo "Pandora FMS Server Configuration file" >> $OUTFILE

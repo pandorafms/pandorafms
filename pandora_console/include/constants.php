@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Constants definitions.
  *
@@ -9,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -439,6 +440,7 @@ define('SERVER_TYPE_MIGRATION', 20);
 define('SERVER_TYPE_ALERT', 21);
 define('SERVER_TYPE_CORRELATION', 22);
 define('SERVER_TYPE_NCM', 23);
+define('SERVER_TYPE_NETFLOW', 24);
 
 // REPORTS.
 define('REPORT_TOP_N_MAX', 1);
@@ -703,6 +705,11 @@ define('HA_ACTION_ENABLE', 6);
 define('HA_ACTION_CLEANUP', 7);
 define('HA_ACTION_RESYNC', 8);
 
+define('HA_RESYNC', 1);
+define('HA_DISABLE', 5);
+define('HA_ENABLE', 6);
+
+
 define('HA_UNINITIALIZED', 0);
 define('HA_ONLINE', 1);
 define('HA_PENDING', 2);
@@ -806,6 +813,7 @@ define('AUDIT_LOG_SERVICE_MANAGEMENT', 'Service management');
 define('AUDIT_LOG_INCIDENT_MANAGEMENT', 'Incident management');
 define('AUDIT_LOG_UMC', 'Warp Manager');
 define('AUDIT_LOG_NMS_VIOLATION', 'NMS Violation');
+define('AUDIT_LOG_ENTERPRISE_VIOLATION', 'Enterprise Violation');
 
 // MIMEs.
 define(
@@ -864,6 +872,8 @@ define(
 
 // Pandora FMS Enterprise license.
 define('LICENSE_FILE', 'customer_key');
+// Pandora HA database list.
+define('PANDORA_HA_FILE', 'pandora_ha_hosts.conf');
 
 // Home screen values for user definition.
 define('HOME_SCREEN_DEFAULT', 'default');

@@ -538,14 +538,14 @@ final class ModuleGraph extends Item
             // Choose Type module graph if graph normal or custom.
             $inputs[] = [
                 'wrapper'       => 'div',
-                'class'         => 'flex-row-vcenter',
+                'class'         => 'flex',
                 'direct'        => 1,
                 'block_content' => [
                     [
                         'label'     => __('Module Graph'),
                         'arguments' => [
                             'type'         => 'radio_button',
-                            'attributes'   => 'class="btn" style="flex: 1;"',
+                            'attributes'   => 'class="btn mrgn_right_20px" style="flex: 1;"',
                             'name'         => 'choosetype',
                             'value'        => 'module',
                             'checkedvalue' => $checkedModule,

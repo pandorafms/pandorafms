@@ -5,7 +5,7 @@
 // |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
 //
 // ============================================================================
-// Copyright (c) 2007-2021 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2007-2023 Pandora FMS, http://www.pandorafms.com
 // This code is NOT free software. This code is NOT licenced under GPL2 licence
 // You cannnot redistribute it without written permission of copyright holder.
 // ============================================================================
@@ -46,7 +46,7 @@ $custom_fields = array_map(
     function ($field) {
         $field['secure'] = (bool) $field['secure'];
         if ($field['secure']) {
-            $field['value'] = io_input_password($field['value']);
+            $field['value'] = io_input_password(io_safe_output($field['value']));
         }
 
         return $field;
@@ -75,7 +75,7 @@ if ($add_inventory_module) {
             'interval'            => $interval,
             'username'            => $username,
             'password'            => $password,
-            'custom_fields'       => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode($custom_fields)) : '',
+            'custom_fields'       => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode(io_safe_output($custom_fields), JSON_UNESCAPED_UNICODE)) : '',
         ];
 
         $result = db_process_sql_insert('tagent_module_inventory', $values);
@@ -119,7 +119,7 @@ if ($add_inventory_module) {
         'interval'      => $interval,
         'username'      => $username,
         'password'      => $password,
-        'custom_fields' => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode($custom_fields)) : '',
+        'custom_fields' => $custom_fields_enabled && !empty($custom_fields) ? base64_encode(json_encode(io_safe_output($custom_fields, true), JSON_UNESCAPED_UNICODE)) : '',
     ];
 
     $result = db_process_sql_update('tagent_module_inventory', $values, ['id_agent_module_inventory' => $id_agent_module_inventory, 'id_agente' => $id_agente]);
@@ -180,14 +180,26 @@ if ($load_inventory_module) {
 $form_buttons = '';
 if ($load_inventory_module) {
     $form_buttons .= html_print_input_hidden('id_agent_module_inventory', $id_agent_module_inventory, true);
-    $form_buttons .= html_print_submit_button(__('Update'), 'update_inventory_module', false, 'class="sub next"', true);
+    $form_buttons .= html_print_submit_button(
+        __('Update'),
+        'update_inventory_module',
+        false,
+        ['icon' => 'wand'],
+        true
+    );
 } else {
-    $form_buttons .= html_print_submit_button(__('Add'), 'add_inventory_module', false, 'class="sub next"', true);
+    $form_buttons .= html_print_submit_button(
+        __('Add'),
+        'add_inventory_module',
+        false,
+        ['icon' => 'wand'],
+        true
+    );
 }
 
 echo ui_get_inventory_module_add_form(
     'index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente,
-    $form_buttons,
+    html_print_action_buttons($form_buttons, [], true),
     $load_inventory_module,
     $id_os,
     $target,
@@ -213,10 +225,10 @@ if (db_get_num_rows($sql) == 0) {
 } else {
     $table = new stdClass();
     $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'databox info_table max_floating_element_size';
     $table->data = [];
     $table->head = [];
-    $table->styleTable = 'margin-top: 20px;';
+    $table->styleTable = '';
     $table->head[0] = "<span title='".__('Policy')."'>".__('P.').'</span>';
     $table->head[1] = __('Name');
     $table->head[2] = __('Description');
@@ -225,8 +237,9 @@ if (db_get_num_rows($sql) == 0) {
     $table->head[5] = __('Actions');
     $table->align = [];
     $table->align[5] = 'left';
-
+    $i = 0;
     foreach ($result as $row) {
+        $table->cellclass[$i++][5] = 'table_action_buttons';
         $data = [];
 
         $sql = sprintf('SELECT id_policy FROM tpolicy_modules_inventory WHERE id = %d', $row['id_policy_module_inventory']);
@@ -255,7 +268,7 @@ if (db_get_num_rows($sql) == 0) {
         $data[5] .= '</b></a>&nbsp;&nbsp;';
         // Force refresh module
         $data[5] .= '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'&force_inventory_module='.$row['id_agent_module_inventory'].'">';
-        $data[5] .= html_print_image('images/change-active.svg', true, ['border' => '0', 'title' => __('Force'), 'class' => 'main_menu_icon invert_filter']).'</b></a>';
+        $data[5] .= html_print_image('images/force@svg.svg', true, ['border' => '0', 'title' => __('Force'), 'class' => 'main_menu_icon invert_filter']).'</b></a>';
         array_push($table->data, $data);
     }
 

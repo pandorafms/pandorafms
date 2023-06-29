@@ -1,9 +1,9 @@
 <?php
 // phpcs:disable Squiz.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -220,11 +220,11 @@ class Ui
         if ($left_button === false) {
             $left_button = $this->createHeaderButton(
                 [
-                    'icon'  => 'ui-icon-back',
+                    'icon'  => 'ui-icon-logout',
                     'pos'   => 'left',
                     'text'  => __('Logout'),
                     'href'  => 'index.php?action=logout',
-                    'class' => 'header-button-left',
+                    'class' => 'header-button-left logout-text',
                 ]
             );
         }
@@ -413,12 +413,13 @@ class Ui
     }
 
 
-    public function contentBeginCollapsible($title='&nbsp;')
+    public function contentBeginCollapsible($title='&nbsp;', $class='')
     {
         $this->endCollapsible = false;
         $this->collapsible = [];
         $this->collapsible['items'] = [];
         $this->collapsible['title'] = $title;
+        $this->collapsible['class'] = $class;
     }
 
 
@@ -432,7 +433,7 @@ class Ui
     {
         $this->endCollapsible = true;
 
-        $html = "<div data-role='collapsible' "." data-collapsed-icon='arrow-d' "." data-expanded-icon='arrow-u' data-mini='true' "." data-theme='a' data-content-theme='c'>\n";
+        $html = "<div class='".$this->collapsible['class']."' data-role='collapsible' "." data-collapsed-icon='arrow-d' "." data-expanded-icon='arrow-u' data-mini='true' "." data-theme='a' data-content-theme='c'>\n";
         $html .= '<h4>'.$this->collapsible['title']."</h4>\n";
 
         $html .= "<ul data-role='listview' data-theme='c'>\n";
@@ -511,8 +512,13 @@ class Ui
             $html .= "<label for='".$options['id']."'>".$options['label']."</label>\n";
         }
 
-        // Erase other options and only for the input
+        // Erase other options and only for the input.
         unset($options['label']);
+
+        if ($options['type'] === 'password') {
+            $html .= '<div class="relative container-div-input-password">';
+            $options['style'] .= 'background-image: url("'.ui_get_full_url('/').'/images/enable.svg");';
+        }
 
         $html .= '<input ';
         foreach ($options as $option => $value) {
@@ -520,6 +526,26 @@ class Ui
         }
 
         $html .= ">\n";
+
+        if ($options['type'] === 'password') {
+            $html .= '<div class="show-hide-pass" onclick="show_hide_password(event, \''.ui_get_full_url('/').'\')"></div>';
+            $html .= '</div>';
+            $html .= '
+            <script>
+                function show_hide_password(e, url) {
+                    let inputPass = e.target.previousElementSibling.firstChild;
+                    console.log(inputPass);
+                
+                    if (inputPass.type === "password") {
+                        inputPass.type = "text";
+                        inputPass.style.backgroundImage = "url(" + url + "/images/disable.svg)";
+                    } else {
+                        inputPass.type = "password";
+                        inputPass.style.backgroundImage = "url(" + url + "/images/enable.svg)";
+                    }
+                }
+            </script>';
+        }
 
         $html .= "</fieldset>\n";
         $html .= "</div>\n";
@@ -756,6 +782,10 @@ class Ui
 
         $dialogHtml .= "</div>\n";
         $dialogHtml .= "</div>\n";
+
+        if ($options['return_html_dialog'] === true) {
+            return $dialogHtml;
+        }
 
         $this->dialogs[$type][] = $dialogHtml;
     }

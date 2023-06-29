@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -72,8 +72,14 @@ if (is_metaconsole() === false) {
             ],
             [
                 'link'  => '',
-                'label' => __('Tactic group'),
+                'label' => __('Tactical group view'),
             ],
+        ],
+        [
+            'id_element' => $id_group,
+            'url'        => 'gagent&sec2=godmode/groups/tactical&id_group='.$id_group,
+            'label'      => groups_get_name($id_group),
+            'section'    => 'Groups',
         ]
     );
 }
@@ -92,16 +98,15 @@ if (count($groups) > 0) {
 
 
 echo '<div id="tactic_view">';
-echo '<table style="width: 100%;">';
-echo '<tr>';
-echo '<td class="tactical_group_left_column">';
+echo '<div class="tactical_group_left_columns">';
+echo '<div class="tactical_group_left_column">';
 $table_col1 = new stdClass();
 $table_col1->class = 'no-class';
 $table_col1->data = [];
 $table_col1->rowclass[] = '';
 $table_col1->headstyle[0] = 'text-align:center;';
 $table_col1->width = '100%';
-$table_col1->data[0][0] = groups_get_heat_map_agents($id_groups, 450, 100);
+$table_col1->data[0][0] = groups_get_heat_map_agents($id_groups, 330, 100);
 $table_col1->data[1][0] = tactical_groups_get_agents_and_monitoring($id_groups);
 
 $distribution_by_so = '<table cellpadding=0 cellspacing=0 class="databox pies graph-distribution-so" width=100%><tr><td style="width:50%;">';
@@ -124,8 +129,8 @@ ui_toggle(
     false
 );
 
-echo '</td>';
-echo '<td class="tactical_group_left_column">';
+echo '</div>';
+echo '<div class="tactical_group_left_column">';
 $table_col2 = new stdClass();
 $table_col2->class = 'no-class';
 $table_col2->data = [];
@@ -152,8 +157,9 @@ ui_toggle(
     false,
     false
 );
-echo '</td>';
-echo '<td class="tactical_group_right_column">';
+echo '</div>';
+echo '</div>';
+echo '<div class="tactical_group_right_column">';
 $table_col3 = new stdClass();
 $table_col3->class = 'no-class';
 $table_col3->data = [];
@@ -173,7 +179,7 @@ try {
         __('Alias'),
         __('Status'),
         __('Alerts'),
-        __('Ultimo contacto remoto'),
+        __('Last remote contact'),
     ];
 
     // Load datatables user interface.
@@ -181,7 +187,7 @@ try {
         [
             'id'                  => 'list_agents_tactical',
             'class'               => 'info_table',
-            'style'               => 'width: 100%',
+            'style'               => 'width: 99%',
             'columns'             => $columns,
             'column_names'        => $columnNames,
             'return'              => true,
@@ -190,6 +196,7 @@ try {
                 'method'   => 'getAgentsByGroup',
                 'id_group' => $id_group,
             ],
+            'dom_elements'        => 'lpfti',
             'no_sortable_columns' => [-1],
             'order'               => [
                 'field'     => 'alias',
@@ -209,9 +216,8 @@ ui_toggle(
     false,
     false
 );
-echo '</td>';
-echo '</tr>';
-echo '</table>';
+echo '</div>';
+echo '</div>';
 echo '<div id="modal-info-agent"></div>'
 
 ?>

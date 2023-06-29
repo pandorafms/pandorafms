@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -187,23 +187,20 @@ html_print_div(
         'class'   => 'agent_details_line',
         'content' => ui_toggle(
             $html_toggle,
-            '<span class="subsection_header_title">'.__('List of modules').'</span>'.$help_not_init.ui_print_help_tip(
-                __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
-                true
-            ).reporting_tiny_stats(
+            '<span class="subsection_header_title">'.__('List of modules').' '.$help_not_init.reporting_tiny_stats(
                 $agent,
                 true,
                 'modules',
                 ':',
                 true,
-            ),
+            ).'</span>',
             'status_monitor_agent',
             false,
             false,
             true,
-            'box-flat agent_details_col',
+            '',
             'white-box-content',
-            'width_available'
+            'box-flat white_table_graph w100p'
         ),
     ],
 );
@@ -446,9 +443,9 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
                             opacity: 0.5,
                             background: "black"
                         },
-                        width: 650,
+                        width: "auto",
                         height: 500
-                    })
+                    }).css({"min-width": "650px"})
                     .show ();
                     refresh_pagination_callback (module_id, id_agent, "",module_name);
                     datetime_picker_callback();
@@ -543,93 +540,107 @@ function print_form_filter_monitors(
     $form_text = '';
     $table = new stdClass();
     $table->class = 'filter-table-adv';
-    $table->id = 'module_filter_agent_view';
-    $table->styleTable = 'border-radius: 0;padding: 0;margin: 0 0 10px;';
+    // $table->id = 'module_filter_agent_view';
+    // $table->styleTable = 'border-radius: 0;padding: 0;margin: 0 0 10px;';
     $table->width = '100%';
-    $table->cellstyle[0][0] = 'width: 0';
-    $table->cellstyle[0][1] = 'width: 0';
-    $table->cellstyle[0][2] = 'width: 0';
+    $table->size[0] = '25%';
+    $table->size[1] = '25%';
+    $table->size[2] = '25%';
+    $table->size[3] = '15%';
+    $table->size[4] = '10%';
     // Captions.
-    $table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
-    $table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
-    $table->data[0][0] .= __('Status:');
-    $table->data[0][1] = __('Free text for search (*):').ui_print_help_tip(
-        __('Search by module name, list matches.'),
-        true
-    );
-    $table->data[0][2] = __('Module group');
-    $table->data[0][3] = __('Show in hierachy mode');
-    // Inputs.
-    $table->data[1][0] = html_print_select(
-        $status_list,
-        'status_filter_monitor',
-        $status_filter_monitor,
-        '',
-        '',
-        0,
-        true
-    );
-    $table->data[1][1] = html_print_input_text(
-        'status_text_monitor',
-        $status_text_monitor,
-        '',
-        '',
-        100,
-        true
-    );
-    $table->data[1][2] = html_print_select(
-        $rows_select,
-        'status_module_group',
-        $status_module_group,
-        '',
-        '',
-        0,
-        true
-    );
-    $table->data[1][3] = html_print_switch(
-        [
-            'name'     => 'status_hierachy_mode',
-            'value'    => $all_events_24h,
-            'onchange' => 'change_module_filter()',
-            'id'       => 'checkbox-status_hierachy_mode',
-        ]
+    $table->data[0][0] = html_print_label_input_block(
+        html_print_input_hidden('filter_monitors', 1, true).html_print_input_hidden(
+            'monitors_change_filter',
+            1,
+            true
+        ).__('Status:'),
+        html_print_select(
+            $status_list,
+            'status_filter_monitor',
+            $status_filter_monitor,
+            '',
+            '',
+            0,
+            true,
+            false,
+            true,
+            'w100p',
+            false,
+            'width:100%'
+        )
     );
 
-    $filtersButtons = [];
+    $table->data[0][1] = html_print_label_input_block(
+        __('Free text for search (*):').ui_print_help_tip(
+            __('Search by module name, list matches.'),
+            true
+        ),
+        html_print_input_text(
+            'status_text_monitor',
+            $status_text_monitor,
+            '',
+            '',
+            100,
+            true
+        )
+    );
 
-    $filtersButtons[] = html_print_button(
+    $table->data[0][2] = html_print_label_input_block(
+        __('Module group'),
+        html_print_select(
+            $rows_select,
+            'status_module_group',
+            $status_module_group,
+            '',
+            '',
+            0,
+            true,
+            false,
+            true,
+            'w100p',
+            false,
+            'width:100%'
+        )
+    );
+
+    $table->data[0][3] = html_print_label_input_block(
+        __('Show in hierachy mode'),
+        html_print_switch(
+            [
+                'name'     => 'status_hierachy_mode',
+                'value'    => $all_events_24h,
+                'onchange' => 'change_module_filter()',
+                'id'       => 'checkbox-status_hierachy_mode',
+            ]
+        )
+    );
+
+    $table->data[0][4] = html_print_button(
         __('Filter'),
         'filter',
         false,
         'filter_modules();',
         [
-            'icon' => 'search',
-            'mode' => 'secondary mini',
+            'icon'  => 'search',
+            'mode'  => 'secondary mini',
+            'style' => 'margin-left: 15px',
         ],
         true
-    );
-
-    $filtersButtons[] = html_print_button(
+    ).html_print_button(
         __('Reset'),
         'filter',
         false,
         'reset_filter_modules();',
         [
-            'icon' => 'fail',
+            'icon' => 'force',
             'mode' => 'secondary mini',
         ],
         true
     );
+    $table->cellstyle[0][4] = 'width:20%;display: flex;flex-direction: row-reverse;justify-content: flex-end;height: 60px;align-items: flex-end;width:10%;';
 
-    $table->data[1][4] = html_print_div(
-        [
-            'class'   => 'action-buttons',
-            'content' => implode('', $filtersButtons),
-        ],
-        true
-    );
-
-    $form_text .= html_print_table($table, true);
+    $form_text = html_print_table($table, true);
 
     // TODO. Unused code.
     if ($status_filter_monitor === -1 && empty($status_text_monitor) === true && $status_module_group === -1) {

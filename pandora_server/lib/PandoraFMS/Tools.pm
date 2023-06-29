@@ -78,6 +78,7 @@ our @EXPORT = qw(
 	PROVISIONINGSERVER
 	MIGRATIONSERVER
 	NCMSERVER
+	NETFLOWSERVER
 	METACONSOLE_LICENSE
 	OFFLINE_LICENSE
 	DISCOVERY_HOSTDEVICES
@@ -202,6 +203,7 @@ use constant MIGRATIONSERVER => 20;
 use constant ALERTSERVER => 21;
 use constant CORRELATIONSERVER => 22;
 use constant NCMSERVER => 23;
+use constant NETFLOWSERVER => 24;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -2844,6 +2846,8 @@ sub get_server_name {
 	return "MIGRATIONSERVER" if ($server_type eq MIGRATIONSERVER);
 	return "ALERTSERVER" if ($server_type eq ALERTSERVER);
 	return "CORRELATIONSERVER" if ($server_type eq CORRELATIONSERVER);
+	return "NCMSERVER" if ($server_type eq NCMSERVER);
+	return "NETFLOWSERVER" if ($server_type eq NETFLOWSERVER);
 
 	return "UNKNOWN";
 }

@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -484,7 +484,7 @@ if (is_metaconsole() === false) {
         $buttons = [
             'list'    => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/load@svg.svg', true, ['title' => __('List alerts'), 'class' => 'main_menu_icon invert_filter']).'</a>',
+                'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('List alerts'), 'class' => 'main_menu_icon invert_filter']).'</a>',
             ],
             'builder' => [
                 'active' => false,
@@ -497,44 +497,48 @@ if (is_metaconsole() === false) {
         $buttons = '';
     }
 
-    if ($tab === 'list') {
-        ui_print_standard_header(
-            __('Alerts'),
-            'images/gm_alerts.png',
-            false,
-            '',
-            true,
-            $buttons,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Manage alerts'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('List'),
-                ],
-            ]
-        );
-    } else {
-        ui_print_standard_header(
-            __('Alerts'),
-            'images/gm_alerts.png',
-            false,
-            '',
-            true,
-            $buttons,
-            [
-                [
-                    'link'  => '',
-                    'label' => __('Manage alerts'),
-                ],
-                [
-                    'link'  => '',
-                    'label' => __('Create'),
-                ],
-            ]
-        );
+    if ($_GET['sec2'] !== 'operation/cluster/cluster') {
+        if ($tab !== 'alert') {
+            if ($tab === 'list') {
+                ui_print_standard_header(
+                    __('Alerts'),
+                    'images/gm_alerts.png',
+                    false,
+                    '',
+                    true,
+                    $buttons,
+                    [
+                        [
+                            'link'  => '',
+                            'label' => __('Manage alerts'),
+                        ],
+                        [
+                            'link'  => '',
+                            'label' => __('List'),
+                        ],
+                    ]
+                );
+            } else {
+                ui_print_standard_header(
+                    __('Alerts'),
+                    'images/gm_alerts.png',
+                    false,
+                    '',
+                    true,
+                    $buttons,
+                    [
+                        [
+                            'link'  => '',
+                            'label' => __('Manage alerts'),
+                        ],
+                        [
+                            'link'  => '',
+                            'label' => __('Create'),
+                        ],
+                    ]
+                );
+            }
+        }
     }
 } else {
     alerts_meta_print_header();

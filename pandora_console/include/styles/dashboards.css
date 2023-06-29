@@ -22,7 +22,7 @@
 }
 
 #menu_tab {
-  margin: 0px;
+  margin: 0;
 }
 
 #menu_tab li.nomn.tab_operation img,
@@ -127,6 +127,8 @@ h1 {
 .grid-stack-item .grid-stack-item-content .header-widget div:first-child {
   flex: 1;
   text-align: center;
+  font-family: "lato-bold";
+  font-size: 14px;
 }
 
 .grid-stack-item .grid-stack-item-content .header-widget div:not(:first-child) {
@@ -140,7 +142,9 @@ h1 {
   img {
   cursor: pointer;
 }
-
+#modal-add-widget {
+  min-height: 566px !important;
+}
 #modal-add-widget .container-list-widgets {
   display: flex;
   flex-direction: row;
@@ -271,6 +275,10 @@ li#div-textarea label {
   width: 100%;
 }
 
+.container-center:has(div.parent_graph) {
+  display: initial;
+}
+
 .widget-groups-status {
   display: flex;
   flex-direction: row;
@@ -377,7 +385,8 @@ table.group_modules_status_box tr td > span {
   padding-left: 10px;
 }
 
-table.group_modules_status_box tr td div {
+table.group_modules_status_box tr td div,
+table.widget_groups_status tr td div {
   background-color: #82b92e;
   width: 90%;
   padding: 3px;
@@ -424,12 +433,21 @@ li#search_input_widget {
   top: 2px;
 }
 
-div#dashboard-controls {
+.select2-search--dropdown .select2-search__field {
+  width: auto;
+}
+
+div#dashboard-controls-slides {
+  width: 720px !important;
+}
+
+div#dashboard-controls,
+div#dashboard-controls-slides {
   position: fixed;
   z-index: 1;
   top: 10px;
   right: 10px;
-  width: 800px;
+  width: 450px;
   height: 70px;
   display: flex;
   flex-direction: row;
@@ -441,27 +459,32 @@ div#dashboard-controls {
   padding: 0px 10px;
 }
 
-div#dashboard-controls div {
-  flex: 0.5;
+div#dashboard-controls div,
+div#dashboard-controls-slides div {
+  margin-left: 10px;
   text-align: center;
 }
 
-div#dashboard-controls div#dashboard-slides-form-countdown {
+div#dashboard-controls div#dashboard-slides-form-countdown,
+div#dashboard-controls-slides div#dashboard-slides-form-countdown {
   flex: 7;
 }
 
-div#dashboard-controls div#dashboard-slides-name {
+div#dashboard-controls div#dashboard-slides-name,
+div#dashboard-controls-slides div#dashboard-slides-name {
   flex: 3;
 }
 
-div#dashboard-controls div.dashboard-mode {
+div#dashboard-controls div.dashboard-mode,
+div#dashboard-controls-slides div.dashboard-mode {
   flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
-div#dashboard-controls div.dashboard-mode a {
+div#dashboard-controls div.dashboard-mode a,
+div#dashboard-controls-slides div.dashboard-mode a {
   margin: 0px;
 }
 
@@ -790,4 +813,74 @@ form.modal-dashboard
 
 .select2-selection__rendered {
   max-height: 75px !important;
+}
+
+.content-widget .info_table {
+  margin-bottom: 0px;
+}
+
+.div-state-agent {
+  width: 5px;
+  height: 20px;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+.dataTables_length > label > select {
+  height: 30px;
+  min-height: 30px;
+  margin: 5px;
+}
+
+.dataTables_paginate.paging_simple_numbers {
+  margin-top: 10px;
+  height: 40px;
+}
+
+.info_table.events tr > td {
+  height: 1em !important;
+  text-align: initial;
+}
+
+.event.flex-row.h100p.nowrap .mini-criticity {
+  margin-left: 7px;
+}
+
+.tree-controller-recipient {
+  width: -webkit-fill-available !important;
+}
+
+.services_table {
+  padding: 0px;
+  background-color: #fff;
+  border: 0px;
+  width: 90%;
+}
+
+div.widget-mrgn-0px > div.parent_graph {
+  margin: 0px;
+}
+
+div.content-widget
+  > div.container-center
+  > div.centered.w90p
+  > div#container_show_stats
+  > canvas {
+  height: 310px;
+}
+
+div.basic-chart-title {
+  position: absolute;
+  width: calc(100% - 20px);
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+}
+
+div.basic-chart-title span {
+  font-size: 20px;
+  font-weight: bold;
 }

@@ -652,11 +652,19 @@ var TreeController = {
                 typeof element.icon != "undefined" &&
                 element.icon.length > 0
               ) {
+                var extension = element.icon.split(".").pop();
                 $content.append(
                   '<div class="node-icon"><div class="node-icon-container"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    "images/" +
-                    element.icon +
+                    (controller.baseURL.indexOf("meta") !== -1
+                      ? "../../images/"
+                      : "images/") +
+                    (extension === "png" || extension === element.icon
+                      ? "groups_small/"
+                      : "") +
+                    (extension === element.icon
+                      ? element.icon + ".png"
+                      : element.icon) +
                     '" class="invert_filter"/></div></div>'
                 );
               } else if (
@@ -679,7 +687,10 @@ var TreeController = {
                 var $deleteBtn = $(
                   '<a style="float: right; margin-top: 5px;"><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/delete.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/></a>'
+                    (controller.meta != undefined && controller.meta == 1
+                      ? "../../images/"
+                      : "images/") +
+                    'delete.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/></a>'
                 );
                 $deleteBtn.click(function(event) {
                   var ok_function = function() {
@@ -703,7 +714,10 @@ var TreeController = {
                 var $updateicon = $(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/edit.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/>'
+                    (controller.meta != undefined && controller.meta == 1
+                      ? "../../images/"
+                      : "images/") +
+                    'edit.svg" class="main_menu_icon invert_filter" style="width:18px; padding: 0 5px;"/>'
                 );
                 var $updatebtn = $(
                   '<a style="float: right; margin-top: 5px;" href = "' +
@@ -906,7 +920,8 @@ var TreeController = {
 
                 if (
                   typeof element.elementDescription !== "undefined" &&
-                  element.elementDescription != ""
+                  element.elementDescription != "" &&
+                  element.elementDescription != null
                 ) {
                   $content.append(
                     '<span class="node-service-name" style="">' +
@@ -1070,7 +1085,10 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/module-graph.svg" /> '
+                        (controller.baseURL.indexOf("meta") !== -1
+                          ? "../../images/"
+                          : "images/") +
+                        'module-graph.svg" /> '
                     );
                   }
 
@@ -1115,7 +1133,10 @@ var TreeController = {
                         (controller.baseURL.length > 0
                           ? controller.baseURL
                           : "") +
-                        'images/simple-value.svg" /> '
+                        (controller.baseURL.indexOf("meta") !== -1
+                          ? "../../images/"
+                          : "images/") +
+                        'simple-value.svg" /> '
                     );
                     $dataImage
                       .addClass("module-data")
@@ -1361,7 +1382,6 @@ var TreeController = {
                     .removeClass("leaf-closed")
                     .removeClass("leaf-error")
                     .addClass("leaf-loading");
-
                   $.ajax({
                     url: controller.ajaxURL,
                     type: "POST",
@@ -1393,6 +1413,53 @@ var TreeController = {
                             data.tree.length > 0) ||
                           $group.length > 0
                         ) {
+                          if (controller.filter.statusModule === "fired") {
+                            var newData = { success: data.success, tree: [] };
+
+                            data.tree.forEach(element => {
+                              // Agents.
+                              if (
+                                typeof element.counters !== "undefined" &&
+                                element.counters.alerts > 0
+                              ) {
+                                var treeTmp = element;
+
+                                treeTmp.counters.critical = 0;
+                                treeTmp.counters.not_init = 0;
+                                treeTmp.counters.ok = 0;
+                                treeTmp.counters.unknown = 0;
+                                treeTmp.counters.warning = 0;
+                                treeTmp.counters.total =
+                                  element.counters.alerts;
+
+                                treeTmp.critical_count = 0;
+                                treeTmp.normal_count = 0;
+                                treeTmp.notinit_count = 0;
+                                treeTmp.unknown_count = 0;
+                                treeTmp.warning_count = 0;
+                                treeTmp.total_count = element.fired_count;
+
+                                treeTmp.state_critical = 0;
+                                treeTmp.state_normal = 0;
+                                treeTmp.state_notinit = 0;
+                                treeTmp.state_unknown = 0;
+                                treeTmp.state_warning = 0;
+                                treeTmp.state_total = element.fired_count;
+
+                                newData.tree.push(treeTmp);
+                                data = newData;
+                              }
+
+                              // Modules.
+                              if (element.alerts > 0) {
+                                var treeTmp = element;
+
+                                newData.tree.push(treeTmp);
+                                data = newData;
+                              }
+                            });
+                          }
+
                           $node.addClass("leaf-open");
 
                           if ($group.length <= 0) {
@@ -1493,6 +1560,34 @@ var TreeController = {
         this.reload();
       },
       init: function(data) {
+        if (data.filter.statusModule === "fired") {
+          const newData = {
+            ajaxUrl: data.ajaxURL,
+            baseURL: data.baseURL,
+            counterTitle: data.counterTitle,
+            detailRecipient: data.detailRecipient,
+            emptyMessage: data.emptyMessage,
+            filter: data.filter,
+            foundMessage: data.foundMessage,
+            page: data.page,
+            recipient: data.recipient,
+            tree: []
+          };
+          data.tree.forEach(element => {
+            if (element.counters.alerts > 0) {
+              element.counters.critical = 0;
+              element.counters.not_init = 0;
+              element.counters.ok = 0;
+              element.counters.unknown = 0;
+              element.counters.warning = 0;
+              element.counters.total = element.counters.alerts;
+
+              newData.tree.push(element);
+            }
+          });
+
+          data = newData;
+        }
         if (
           typeof data.recipient !== "undefined" &&
           data.recipient.length > 0

@@ -899,8 +899,11 @@ sub serve_client() {
 			serve_proxy_connection ();	
 		} else {
 			serve_connection ();
-		}
+		}	
 	};
+	if($@) {
+		print_info($@);
+	}
 
 	$t_client_socket->shutdown (2);
 	$t_client_socket->close ();

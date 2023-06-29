@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -523,11 +523,13 @@ class CustomNetScan extends Wizard
 
                 // Schedule.
                 $form['inputs'][] = [
-                    'label'     => __('Interval').ui_print_help_tip(
-                        __('Manual interval means that it will be executed only On-demand'),
+                    'label'           => __('Interval').ui_print_help_tip(
+                        __('Manual interval means that it will be executed only On-demand').', '.__('The minimum recomended interval for Recon Task is 5 minutes'),
                         true
                     ),
-                    'arguments' => [
+                    'class'           => 'input-interval',
+                    'extra-container' => true,
+                    'arguments'       => [
                         'type'     => 'select',
                         'selected' => $interv_manual,
                         'fields'   => [
@@ -537,7 +539,7 @@ class CustomNetScan extends Wizard
                         'name'     => 'interval_manual_defined',
                         'return'   => true,
                     ],
-                    'extra'     => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
+                    'extra'           => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
                         'interval',
                         $this->task['interval_sweep'],
                         '',
@@ -547,9 +549,6 @@ class CustomNetScan extends Wizard
                         true,
                         false,
                         false
-                    ).ui_print_help_tip(
-                        __('The minimum recomended interval for Recon Task is 5 minutes'),
-                        true
                     ).'</span>',
                 ];
 

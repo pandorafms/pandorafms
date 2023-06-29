@@ -9,8 +9,8 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ==========================================================
@@ -672,14 +672,14 @@ foreach ($simple_alerts as $alert) {
         '[&hellip;]',
         ''
     );
-    $data[2] .= ' <a class="template_details patatas"
+    $data[2] .= ' <a class="template_details"
 		href="'.ui_get_full_url(false, false, false, false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">';
         $data[2] .= html_print_image(
-            'images/zoom.png',
+            'images/details.svg',
             true,
             [
                 'id'    => 'template-details-'.$alert['id_alert_template'],
-                'class' => 'img_help action_button_img invert_filter',
+                'class' => 'img_help main_menu_icon invert_filter',
             ]
         );
     $data[2] .= '</a> ';
@@ -753,11 +753,11 @@ foreach ($simple_alerts as $alert) {
                 'delete',
                 'images/delete.svg',
                 1,
-                'padding:0px; margin-left:5px; margin-right:5px;',
+                'padding:0px; margin-left:5px; margin-right:5px; width: 22px;',
                 true,
                 [
                     'title' => __('Delete action'),
-                    'class' => 'action_button_img invert_filter',
+                    'class' => 'main_menu_icon invert_filter',
                 ]
             );
             $data[3] .= html_print_input_hidden('delete_action', 1, true);
@@ -772,7 +772,7 @@ foreach ($simple_alerts as $alert) {
                 true,
                 [
                     'title'   => __('Update action'),
-                    'class'   => 'action_button_img invert_filter',
+                    'class'   => 'main_menu_icon invert_filter',
                     'onclick' => 'show_display_update_action(\''.$action['id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action_id.'\',\''.$alert['id_agent_module'].'\')',
                 ]
             );
@@ -903,19 +903,16 @@ foreach ($simple_alerts as $alert) {
         $data[3] .= '</div>';
     }
 
-    $table_alert_list->cellclass[] = [
-        1 => 'table_action_buttons',
-        4 => 'table_action_buttons',
-    ];
+    $table_alert_list->cellclass[] = [4 => 'table_action_buttons'];
     $data[4] = '<form class="disable_alert_form display_in" action="'.$url.'" method="post" >';
     if ($alert['disabled']) {
         $data[4] .= html_print_input_image(
             'enable',
             'images/lightbulb_off.png',
             1,
-            'padding:0px',
+            'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'filter_none main_menu_icon']
+            ['class' => 'invert_filter main_menu_icon']
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -923,7 +920,7 @@ foreach ($simple_alerts as $alert) {
             'disable',
             'images/lightbulb.png',
             1,
-            'padding:0px;',
+            'padding:0px; width: 22px; height: 22px;',
             true,
             ['class' => 'main_menu_icon']
         );
@@ -941,7 +938,7 @@ foreach ($simple_alerts as $alert) {
                 'standby_off',
                 'images/bell.png',
                 1,
-                'padding:0px;',
+                'padding:0px; width: 22px; height: 22px;',
                 true,
                 ['class' => 'invert_filter main_menu_icon']
             );
@@ -951,7 +948,7 @@ foreach ($simple_alerts as $alert) {
                 'standby_on',
                 'images/bell_pause.png',
                 1,
-                'padding:0px;',
+                'padding:0px; width: 22px; height: 22px;',
                 true,
                 ['class' => 'invert_filter main_menu_icon']
             );
@@ -967,17 +964,19 @@ foreach ($simple_alerts as $alert) {
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
             $module_linked = policies_is_module_linked($alert['id_agent_module']);
-            if (is_array($policyInfo) === false && $module_linked === false) {
+            if ((is_array($policyInfo) === false && $module_linked === false)
+                || (is_array($policyInfo) === false && $module_linked === '1')
+            ) {
                 $data[$index['policy']] = '';
             } else {
                 $module_linked = policies_is_module_linked($alert['id_agent_module']);
                 if ($module_linked === '0') {
                     $img = 'images/unlinkpolicy.png';
                 } else {
-                    $img = 'images/policies_mc.png';
+                    $img = 'images/policy@svg.svg';
                 }
 
-                $data[1] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
+                $data[1] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name'], 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
         }
     }
@@ -1033,7 +1032,7 @@ foreach ($simple_alerts as $alert) {
 
             $data[4] .= html_print_input_image(
                 'update',
-                'images/builder.png',
+                'images/builder@svg.svg',
                 1,
                 '',
                 true,
@@ -1312,10 +1311,10 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                     },
                     open: function() {
                         $(`#update_action-div-${alert_id}`).css('overflow', 'hidden');
-                        $(`#action_select_ajax-${alert_id}`).select2({
-                            tags: true,
-                            dropdownParent: $(`#update_action-div-${alert_id}`)
-                        });
+                        //$(`#action_select_ajax-${alert_id}`).select2({
+                        //    tags: true,
+                        //    dropdownParent: $(`#update_action-div-${alert_id}`)
+                        //});
                     },
                     width: 600,
                     height: 350

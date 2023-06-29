@@ -16,8 +16,8 @@
  * |___| |___._|__|__|_____||_____|__| |___._| |___| |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -28,6 +28,7 @@
  * ============================================================================
  */
 
+global $config;
 $product_name = get_product_name(); ?>
 <head>
 
@@ -39,8 +40,8 @@ $product_name = get_product_name(); ?>
         }
     </script>
     <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
-    <link rel="stylesheet" href="<?php $asset('resources/styles/jquery-ui.min.css'); ?>">
-    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
+    <link rel="stylesheet" href="<?php $asset('resources/styles/jquery-ui.min.css'); ?>?v=<?php echo $config['current_package']; ?>">
+    <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>?v=<?php echo $config['current_package']; ?>">
 </head>
 
 <div id="registration_wizard" title="
@@ -85,7 +86,7 @@ $product_name = get_product_name(); ?>
                 __('Cancel'),
                 'cancel_registration',
                 false,
-                'class="lato ui-widget
+                'id="submit-cancel_registration" class="lato ui-widget
             ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel"',
                 true
             );
@@ -97,7 +98,7 @@ $product_name = get_product_name(); ?>
                 __('OK!'),
                 'register',
                 false,
-                'class="lato ui-widget
+                'id="submit-register" class="lato ui-widget
             ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
                 true
             );

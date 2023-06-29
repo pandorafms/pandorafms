@@ -31,7 +31,7 @@ ul.subsubmenu li,
 input.search_input,
 .filters input,
 input#text-id_parent.ac_input,
-input,
+input:not(div.login_pass > input):not(div.login_nick > input),
 textarea,
 select,
 .edit_user_comments #textarea_comments,
@@ -39,7 +39,7 @@ select,
 .selection,
 button.sub,
 .select2-container .select2-selection--single,
-.select2-container .select2-selection--multiple {
+.select2-container {
   background-color: #111 !important;
   color: #fff !important;
 }
@@ -252,7 +252,7 @@ tr.group_view_data,
 .group_view_data,
 ol.steps li span,
 ol.steps li a {
-  color: #fff;
+  color: #fff !important;
 }
 
 /* Tabs icons change color */
@@ -394,7 +394,7 @@ table.black_table_modal_alternate tr:nth-child(even) td {
 
 .info_table tr:first-child > th,
 .info_table th {
-  background-color: #222;
+  background-color: #222 !important;
   color: #fff;
 }
 
@@ -464,12 +464,6 @@ ul.tree-group
   div.node-content
   img:not(.module-status):not(.agent-status):not(.agent-alerts-fired) {
   filter: invert(100%);
-}
-
-/* login.css */
-div.login_nick input,
-div.login_pass input {
-  background-color: #111 !important;
 }
 
 /* user edit */
@@ -631,19 +625,7 @@ div#form_activate_licence #code {
 #menu_tab_frame,
 #menu_tab_frame_view,
 #menu_tab_frame_view_bc {
-  /*
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-    */
   border-bottom: 1px solid #82b92e;
-  /*  
-                                                                                                                                                                        width: 100%;
-  padding-right: 0px;
-  margin-bottom: 20px;
-  height: 53px;
-  box-sizing: border-box;
-  */
   background-color: #111 !important;
 }
 
@@ -674,7 +656,7 @@ div.nf {
   margin-left: 7px;
   padding: 8px 1px 6px 25px;
 }
-/*Font header feedback*/
+
 form#modal_form_feedback {
   padding: 10px;
 }
@@ -754,7 +736,7 @@ div#main_pure {
 div#main,
 div#container,
 body.pure {
-  background-color: #111;
+  background-color: #111 !important;
 }
 
 form ul.form_flex {
@@ -771,7 +753,7 @@ form ul.form_flex {
 
 .invert_filter,
 .labels {
-  filter: invert(100%);
+  filter: invert(100%) !important;
 }
 
 .info_table .invert_filter,
@@ -1116,6 +1098,7 @@ select,
   border: 1px solid #707070;
   background-color: #222 !important;
   color: #fff !important;
+  border-radius: 0;
 }
 
 .white_table_graph {
@@ -1248,12 +1231,7 @@ a.pandora_pagination:hover {
   background-color: #555 !important;
 }
 .dt-button.buttons-csv.buttons-html5 {
-  filter: invert(100%);
-  background-color: transparent;
-}
-
-.info_table.events > tbody > tr > td {
-  border-bottom: 2px solid #707070;
+  box-shadow: 0px 3px 6px #111;
 }
 
 .info_table tr th,
@@ -1303,9 +1281,12 @@ a.pandora_pagination:hover {
   filter: brightness(0) contrast(50%) !important;
 }
 
-input[type="image"] {
+/*
+input:not(div.login_pass > input):not(div.login_nick > input[type="image"]) {
   background-color: transparent !important;
+  color: inherit !important;
 }
+*/
 
 .databox_color {
   background-color: transparent !important;
@@ -1411,6 +1392,7 @@ p.trademark-copyright {
 #tab-database {
   height: 80%;
   overflow: auto;
+  width: 96%;
 }
 
 button.buttonButton,
@@ -1453,14 +1435,24 @@ button.submitButton.secondary:hover > div {
 }
 
 select[multiple] option:checked,
-select[multiple] option:active {
-  background: #008d86;
+select[multiple] option:active,
+select[multiple] option:hover {
+  background: #008d86 !important;
+}
+
+.select2-search.select2-search--dropdown,
+.select2-results > .select2-results__options > .select2-results__option {
+  background-color: #222;
 }
 
 .select2-results
   > .select2-results__options
   > .select2-results__option.select2-results__option--highlighted {
   background-color: #008d86;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  color: var(--secondary-color) !important;
 }
 
 .filter_summary > div,
@@ -1480,13 +1472,6 @@ span.select2-dropdown.select2-dropdown--below {
   z-index: 1200;
 }
 
-div.fixed_filter_bar,
-div.white_table_graph_header {
-  border-radius: 0;
-  border-left: 0px;
-  border-right: 0px;
-}
-
 div.white_table_graph {
   border-radius: 0;
 }
@@ -1500,10 +1485,133 @@ div.white_box.white_box_opened.no_border {
   border-radius: 0px;
 }
 
-table.filter-table-adv td > div label {
+table.filter-table-adv td > div label:not(.inputFile) {
   color: white !important;
 }
 
 #principal_action_buttons {
   background: #111111;
+}
+div.fixed-bottom-box,
+div.fixed-bottom-box
+  > div.fixed-bottom-box-head
+  > div.fixed-bottom-box-head-body {
+  background-color: #111111 !important;
+}
+
+.filter_table,
+.white_table_graph_fixed table {
+  background-color: transparent;
+}
+
+span.select2 {
+  border-radius: 6px;
+}
+
+.ui-dialog .tips_header.ui-dialog-titlebar {
+  color: white !important;
+  background-color: #222222 !important;
+}
+
+#tips_window_modal > div.window > div.description > #title_tip,
+#tips_window_modal > div.window > div.description > #text_tip {
+  color: white !important;
+}
+
+.agent_details_header span.subsection_header_title {
+  color: #fff;
+}
+
+pre code.hljs {
+  background-color: #222222;
+  color: #fff;
+}
+
+a.autorefresh_txt,
+#refrcounter {
+  color: #ffffff;
+  font-size: 8.5pt;
+}
+
+.container-custom-graph {
+  background-color: #222;
+}
+
+.header-widget {
+  background-color: #222;
+}
+
+.grid-stack-item-content {
+  box-shadow: 0px 0px 15px -10px #888;
+  border-radius: 0px 0px 0px 0px;
+}
+
+/* xxx */
+.table_section {
+  padding: 0;
+  margin-top: 16px;
+  border: 1px solid #3f3f3f;
+  height: 100%;
+}
+
+.white_box,
+.white-box-content {
+  border: 0px;
+  background-color: #222 !important;
+  color: #fff !important;
+}
+
+.info_table,
+.filter_table {
+  border: 1px solid #333 !important;
+}
+
+.info_table.events > tbody > tr > td {
+  border-bottom: 1px solid #333 !important;
+}
+
+.info_table,
+.filter_table {
+  border: 1px solid #333;
+}
+
+a.pandora_pagination,
+.filter_summary > div,
+.border_bt,
+.pagination .page_number {
+  border: 1px solid #2b2b2b !important;
+}
+
+.white_box,
+.white-box-content {
+  border: 1px solid #333;
+}
+
+.tree-node div.node-content {
+  background-color: #000;
+}
+
+.node-content {
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.box-flat {
+  border: 1px solid #333;
+}
+
+.white_table_graph_header {
+  border: 1px solid #333;
+}
+
+.info_table > tbody > tr > td {
+  border-bottom: 1px solid #3f3f3f;
+}
+
+.font-title-font {
+  color: #fff;
+}
+
+#visual-console-container a p {
+  color: #3f3f3f;
 }

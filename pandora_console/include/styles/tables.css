@@ -236,7 +236,8 @@
 .table_action_buttons > a,
 .table_action_buttons > img,
 .table_action_buttons > button,
-.table_action_buttons > form {
+.table_action_buttons > form,
+.table_action_buttons > div {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -248,7 +249,8 @@
 .info_table > tbody > tr:hover .table_action_buttons > a,
 .info_table > tbody > tr:hover .table_action_buttons > img,
 .info_table > tbody > tr:hover .table_action_buttons > button,
-.info_table > tbody > tr:hover .table_action_buttons > form {
+.info_table > tbody > tr:hover .table_action_buttons > form,
+.info_table > tbody > tr:hover .table_action_buttons > div {
   visibility: visible;
 }
 
@@ -311,7 +313,7 @@ table.dataTable.info_table.no-footer {
 
 a.pandora_pagination {
   background-color: #f6f7fb;
-  padding: 11px;
+  padding: 9px;
   color: #000;
   border: 1px solid #cacaca;
   border-left: none;
@@ -320,6 +322,9 @@ a.pandora_pagination {
   font-size: 11pt;
   line-height: 35px;
   cursor: pointer;
+}
+a.pandora_pagination:first-child {
+  border-left: 1px solid #cacaca;
 }
 a.pandora_pagination.next {
   border-top-right-radius: 8px;
@@ -360,7 +365,7 @@ a.pandora_pagination.current:hover {
   background-color: transparent;
   color: var(--primary-color);
   font-size: 20px;
-  height: 42px;
+  height: 38px;
   /* height: 32px; */
   width: 80px;
   margin-left: 10px;
@@ -460,9 +465,6 @@ a.pandora_pagination.current:hover {
 .table_action_buttons input[type="image"],
 .action_button_img {
   border-radius: 4px;
-  /*border: 1px solid #dcdcdc !important;*/
-  padding: 1px !important;
-  /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);*/
 }
 
 /* This class is for only one icon to be a button type. */
@@ -559,6 +561,16 @@ table.filter-table-adv td > div label {
   margin-bottom: 10px;
 }
 
+div.filter-table-adv-manual > div.inline,
+table.filter-table-adv td > div.inline {
+  display: block;
+}
+
+div.filter-table-adv-manual > div.inline input,
+table.filter-table-adv td > div.inline input {
+  margin-top: 10px;
+}
+
 table.filter-table-adv td > div.add-input-reverse {
   flex-direction: row-reverse;
   justify-content: flex-end;
@@ -575,6 +587,10 @@ table.filter-table-adv td input[type="radio"] {
   height: 20px;
 }
 
+table.filter-table-adv div.select-with-sibling {
+  display: flex;
+  align-items: center;
+}
 table.databox.filter-table-adv {
   padding: 10px;
 }
@@ -728,6 +744,10 @@ tr.datos2 > td.datos2 > div > div > label {
   line-height: 16px;
 }
 
+td[id^="basic_thresholds-"] .switch_radio_button > label[id^="label-radius"] {
+  line-height: 26px;
+}
+
 .mgn_tp_0_imp {
   margin-top: 0px !important;
 }
@@ -797,4 +817,51 @@ div.margin-top-50p {
 div[id^="auto-os-"] > img {
   width: 20px;
   height: 20px;
+}
+
+.w22px {
+  width: 22px;
+}
+
+table#simple.floating_form tr[id^="simple-plugin_"],
+table#simple.floating_form tr[id^="simple-macro_field"] {
+  display: grid;
+  margin-bottom: 10px;
+}
+
+table#simple.floating_form tr[id^="simple-macro_field"] > td > input {
+  width: 50%;
+}
+
+td.FF-thresholds-pdd {
+  padding: 0px !important;
+  padding-left: 13px !important;
+}
+
+div.grid-stack-item-content a.pandora_pagination,
+a.mini-pandora-pagination {
+  padding: 7px;
+  font-size: 9pt;
+}
+
+input.mini-search-input {
+  height: 30px;
+}
+
+td#password_manage-captions_newpassword-0,
+td#password_manage-fields_newpassword-0,
+td#password_manage-captions_repeatpassword-0,
+td#password_manage-fields_repeatpassword-0,
+td#password_manage-captions_currentpassword-0,
+td#password_manage-fields_currentpassword-0,
+td#advanced-passwordManage_table-0,
+td#home_screen_table-captions_homescreen-0,
+td#home_screen_table-fields_homescreen-0,
+td#advanced-homescreen_table-0 {
+  padding: 0px;
+}
+
+td.w75p#rightcolumn {
+  margin-right: 0%;
+  vertical-align: baseline;
 }

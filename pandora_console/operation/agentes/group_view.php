@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -192,7 +192,7 @@ echo '<table width="100%" class="info_table">';
             echo "<span id='sumary' class='yellow_background'>".$total_agent_warning.'%</span>';
             echo "<span id='sumary' class='green_background'>".$total_agent_ok.'%</span>';
             echo "<span id='sumary' class='bg_B2B2B2'>".$total_agent_unknown.'%</span>';
-            echo "<span id='sumary' class='blue'>".$total_not_init.'%</span>';
+            echo "<span id='sumary' class='bg_4a83f3'>".$total_not_init.'%</span>';
         echo '</td>';
         echo "<td align='center'>";
             echo "<span id='sumary' class='red_background'>".$total_critical.'%</span>';
@@ -230,6 +230,9 @@ if (empty($result_groups) === false) {
     echo '<table class="info_table mrgn_top_10px" border="0" width="100%">';
         echo '<thead>';
         echo '<tr>';
+            echo '<th colspan=14>'.__('Total items').': '.$count.'</th>';
+        echo '</tr>';
+        echo '<tr>';
             echo '<th colspan=2 ></th>';
             echo '<th colspan=6>'.__('Agents').'</th>';
             echo '<th colspan=6>'.__('Modules').'</th>';
@@ -238,13 +241,13 @@ if (empty($result_groups) === false) {
         echo '<tr>';
             echo "<th class='w26px'>".__('Force').'</th>';
             echo "<th width='30%' class='mw60px' style='text-align: justify'>".__('Group').'/'.__('Tags').'</th>';
-            echo "<th width='10%' class='mw60px center'>".__('Total').'</th>';
+            echo "<th class='center'>".__('Total').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Unknown').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Not init').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Normal').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Warning').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Critical').'</th>';
-            echo "<th width='10%' class='mw60px center'>".__('Unknown').'</th>';
+            echo "<th class='center'>".__('Unknown').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Not init').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Normal').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Warning').'</th>';
@@ -295,7 +298,7 @@ if (empty($result_groups) === false) {
         echo "<td class='group_view_data center vertical_middle'>";
         if (!isset($data['_is_tag_']) && check_acl($config['id_user'], $data['_id_'], 'AW')) {
             echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$data['_id_'].'">'.html_print_image(
-                'images/change-active.svg',
+                'images/force@svg.svg',
                 true,
                 [
                     'border' => '0',
@@ -321,7 +324,11 @@ if (empty($result_groups) === false) {
             $link = "<a href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']."'>";
         } else {
             $deep = groups_get_group_deep($data['_id_']);
-            $link = "<a href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+            if ($data['_id_'] === '0') {
+                $link = "<a href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+            } else {
+                $link = "<a href='index.php?sec=view&sec2=godmode/groups/tactical&id_group=".$data['_id_']."'>";
+            }
         }
 
         $group_name = '<b><span>'.ui_print_truncate_text($data['_name_'], 50).'</span></b>';

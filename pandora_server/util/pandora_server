@@ -32,9 +32,11 @@ fi
 # this script to another name, editing PANDORA_HOME to the new .conf 
 
 export PANDORA_HOME="/etc/pandora/pandora_server.conf"
+export PANDORA_HOME_EXTRA="/etc/pandora/conf.d"
 export PANDORA_DAEMON=/usr/bin/pandora_server
 export PANDORA_HA=/usr/bin/pandora_ha
 export PID_DIR=/var/run
+declare -A SERVERS_NAMES
 
 # Environment variables
 if [ -f /etc/pandora/pandora_server.env ]; then
@@ -94,6 +96,95 @@ function pidof_pandora_ha () {
 	echo $PANDORA_PID
 }
 
+function pidof_secondary_server () {
+	# $1 is mandatory to check secondary server conf file
+	# This sets COLUMNS to XXX chars, because if command is run 
+	# in a "strech" term, ps aux don't report more than COLUMNS
+	# characters and this will not work. 
+	COLUMNS=300
+	local conf_file=$1
+	SEC_PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON" | grep "$conf_file" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	echo $SEC_PANDORA_PID
+}
+
+function extra_confs () {
+	
+	# Check server name, from primary conf file.
+	local primary_server_name=$(grep servername $PANDORA_HOME | grep -v '^#' | tail -1 | awk '{ print $2 }')
+	[ "$primary_server_name" ] || primary_server_name=$(hostname) 
+	SERVERS_NAMES["$PANDORA_HOME"]=$primary_server_name 
+	
+	# Read all extra confs discarting .templates
+	if [[ -d $PANDORA_HOME_EXTRA ]]; then 
+		local EXTRA_CONF=($(ls $PANDORA_HOME_EXTRA | grep .conf | grep -v .template))
+	else
+		return 0
+	fi
+
+	# Return 0 if no extra confs found
+	if [[ ${#EXTRA_CONF[@]} = 0 ]]; then
+   		return 0
+	fi
+
+	# Loop all secondary servers confs 
+	for conf in ${EXTRA_CONF[@]} ; do
+		tmp_server_name=$(grep servername $PANDORA_HOME_EXTRA/$conf | grep -v '^#' | tail -1 | awk '{ print $2 }')
+		SERVERS_NAMES["$PANDORA_HOME_EXTRA/$conf"]=$tmp_server_name	
+	done
+	
+	INCLUDE_EXTRA_CONFS=1 
+}
+
+function check_extra_confs () {
+		[ "$1" ]  || echo Error no defined conf found  
+		local tmp_server_name=''
+		local mastery=''
+
+		tmp_server_name=$(grep servername $1 | grep -v '^#' | tail -1 | awk '{ print $2 }')
+		# Check servername
+		if [ "$tmp_server_name" == '' ]; then
+			echo "Error: The config file $1 has no sever name defined, servername is mandatory for secondary servers"
+			rc_exit
+		fi
+
+		if [ "$tmp_server_name" == "$SERVERS_NAMES[$PANDORA_HOME]" ]; then
+			echo "Error: The config file $1 has the same servername as the primary server, servername should be unique for secondary servers"
+			rc_exit
+		fi
+
+		# check other confs servernames (todo)
+		local _count=0
+		for name in ${!SERVERS_NAMES[@]}; do
+			[[  ${SERVERS_NAMES[$name]} == $tmp_server_name ]] && _count=`expr $_count + 1`
+			if [[ $_count -gt 1 ]] ; then 
+				echo  "Error: The config file $1 has the same servername as the another secondary server, servername should be unique for secondary servers"
+				rc_exit
+			fi
+		done
+
+		# Check mastery
+		mastery=$(grep master $1 | grep -v '^#' | tail -1 | awk '{ print $2 }')
+		if [[ $mastery -ne 0 ]]; then
+			echo "Error: The config file $1 has the same servername master value higer than 0, master should be disable for secondary servers"
+			rc_exit
+		fi
+
+}
+
+function server_status () {
+		local _couter=0
+		for key in ${!SERVERS_NAMES[@]}; do
+			unset SEC_PID
+			SEC_PID=$(pidof_secondary_server $key)
+			if [ -z "$SEC_PID" ] ; then
+				echo "${SERVERS_NAMES[$key]} ($key) Server is not running."
+				_couter=`expr $_couter + 1` 
+			else
+				echo "${SERVERS_NAMES[$key]} ($key) Server is running with PID: $SEC_PID." 
+			fi
+		done
+		[[ $_couter -gt 0 ]] && rc_failed 7 || rc_status -v
+}
 
 # Main script
 
@@ -103,6 +194,8 @@ then
 	rc_failed 5 # program is not installed
 	rc_exit
 fi
+
+extra_confs # check for config files
 
 case "$1" in
 	start)
@@ -166,78 +259,81 @@ case "$1" in
 		if [ -z "$PANDORA_PID" ]
 		then
 			echo "$PANDORA_RB_PRODUCT_NAME HA is not running."
-			rc_failed 7 # program is not running
+			server_status
+			rc_failed 7  # program is not running
 		else
 			echo "$PANDORA_RB_PRODUCT_NAME HA is running with PID $PANDORA_PID."
-			rc_status
+			server_status
+			rc_status -v
 		fi
 	;;
 	start-server)
-		PANDORA_PID=`pidof_pandora`
-		if [ ! -z "$PANDORA_PID" ]
-		then
-			echo "$PANDORA_RB_PRODUCT_NAME Server is currently running on this machine with PID ($PANDORA_PID)."
-			rc_exit # running start on a service already running
-		fi
+		_count=0
+		for key in ${!SERVERS_NAMES[@]}; do
+			[[ $key != "/etc/pandora/pandora_server.conf" ]] && check_extra_confs $key
+			unset SEC_PID
+			SEC_PID=$(pidof_secondary_server $key)
+			if [ ! -z "$SEC_PID" ] ; then
+				echo "${SERVERS_NAMES[$key]} ($key) Server is currently running on this machine with PID ($SEC_PID)."
+				continue
+			else
 
-		export PERL_LWP_SSL_VERIFY_HOSTNAME=0
-		$PANDORA_DAEMON $PANDORA_HOME -D
-		sleep 1
+				export PERL_LWP_SSL_VERIFY_HOSTNAME=0
+				$PANDORA_DAEMON $key -D
+				sleep 1
+				unset SEC_PID
+				SEC_PID=$(pidof_secondary_server $key)
+				if [ ! -z "$SEC_PID" ] ; then
+					echo "${SERVERS_NAMES[$key]} Server is now running with PID $SEC_PID"		
+				else
+					echo "Cannot ${SERVERS_NAMES[$key]} start Server. Aborted."
+					echo "Check ${SERVERS_NAMES[$key]} log files at '/var/log/pandora/pandora_server.error' & 'pandora_server.log'"
+					_count=`expr $_count + 1`
+				fi
+			fi
+		done
 
-		PANDORA_PID=`pidof_pandora`
-		
-		if [ ! -z "$PANDORA_PID" ]
-		then
-			echo "$PANDORA_RB_PRODUCT_NAME Server is now running with PID $PANDORA_PID"
+		if [[ _count -gt 0 ]]; then 
+			rc_failed 7
+		else  
 			rc_status -v
-		else
-			echo "Cannot start $PANDORA_RB_PRODUCT_NAME Server. Aborted."
-			echo "Check $PANDORA_RB_PRODUCT_NAME log files at '/var/log/pandora/pandora_server.error & pandora_server.log'"
-			rc_failed 7 # program is not running
-		fi
+		fi  
 	;;
 		
 	stop-server)
-		PANDORA_PID=`pidof_pandora`
-		if [ -z "$PANDORA_PID" ]
-		then
-			echo "$PANDORA_RB_PRODUCT_NAME Server is not running, cannot stop it."
-			rc_exit # running stop on a service already stopped or not running
-		else
-			echo "Stopping $PANDORA_RB_PRODUCT_NAME Server"
-			kill $PANDORA_PID > /dev/null 2>&1
-			COUNTER=0
-
-			while [ $COUNTER -lt $MAXWAIT ]
-	 		do
- 				_PID=`pidof_pandora`
-				if [ "$_PID" != "$PANDORA_PID" ]
- 				then
-					COUNTER=$MAXWAIT
-				fi
-				COUNTER=`expr $COUNTER + 1`
-				sleep 1
-			done
-		
-			# Send a KILL -9 signal to process, if it's alive after 60secs, we need
-			# to be sure is really dead, and not pretending...
-			if [ "$_PID" = "$PANDORA_PID" ]
-			then
-				kill -9 $PANDORA_PID   > /dev/null 2>&1
+		_couter=0
+		for key in ${!SERVERS_NAMES[@]}; do
+			unset PANDORA_PID
+			PANDORA_PID=$(pidof_secondary_server $key)
+			if [ -z "$PANDORA_PID" ] ; then
+				echo "${SERVERS_NAMES[$key]} ($key) Server is not running, cannot stop it."
+			else
+				echo "Stopping ${SERVERS_NAMES[$key]} ($key) Server"
+				kill $PANDORA_PID > /dev/null 2>&1
+				COUNTER=0
+				while [ $COUNTER -lt $MAXWAIT ]
+					do
+						_PID=$(pidof_secondary_server $key)
+						if [ "$_PID" != "$PANDORA_PID" ]
+						then
+							COUNTER=$MAXWAIT
+						fi
+						COUNTER=`expr $COUNTER + 1`
+						sleep 1
+					done
+					# Send a KILL -9 signal to process, if it's alive after 60secs, we need
+					# to be sure is really dead, and not pretending...
+					if [ "$_PID" = "$PANDORA_PID" ]
+					then
+						kill -9 $PANDORA_PID   > /dev/null 2>&1
+					fi	
 			fi
-			rc_status -v
-		fi
+
+		done
+		rc_status -v
 	;;
 	status-server)
-		PANDORA_PID=`pidof_pandora`
-		if [ -z "$PANDORA_PID" ]
-		then
-			echo "$PANDORA_RB_PRODUCT_NAME Server is not running."
-			rc_failed 7 # program is not running
-		else
-			echo "$PANDORA_RB_PRODUCT_NAME Server is running with PID $PANDORA_PID."
-			rc_status
-		fi
+		server_status
 	;;
 	force-reload-server|restart-server)
 		$0 stop-server

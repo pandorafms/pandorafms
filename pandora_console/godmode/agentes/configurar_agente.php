@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -228,7 +228,7 @@ if ($create_agent) {
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
 
-    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+    $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
     if ($fields === false) {
@@ -343,7 +343,7 @@ if ($create_agent) {
                 'agents_update_secondary_groups',
                 [
                     $id_agente,
-                    explode(',', $secondary_groups),
+                    $secondary_groups,
                     [],
                 ]
             );
@@ -808,7 +808,7 @@ if ($id_agente) {
     $pure = (int) get_parameter('pure');
     if ($pure === 0) {
         ui_print_standard_header(
-            __('Agent setup view'),
+            __('Agent setup view').' ( '.strtolower(agents_get_alias($id_agente)).' )',
             'images/agent.png',
             false,
             $helper,
@@ -992,7 +992,7 @@ if ($update_agent) {
     $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
-    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+    $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
 
@@ -1185,15 +1185,31 @@ if ($update_agent) {
 				"Quiet":"'.(int) $quiet.'",
 				"Cps":"'.(int) $cps.'"}';
 
+
+            $secondary_groups_selected = enterprise_hook(
+                'agents_get_secondary_groups',
+                [$id_agente]
+            );
+
+            $delete_secondary_groups = [];
+            foreach ($secondary_groups_selected['plain'] as $v_selected) {
+                if (in_array($v_selected, $secondary_groups) === false) {
+                    array_push($delete_secondary_groups, $v_selected);
+                }
+            }
+
             // Create the secondary groups.
             enterprise_hook(
                 'agents_update_secondary_groups',
                 [
                     $id_agente,
-                    explode(',', $secondary_groups),
-                    [],
+                    $secondary_groups,
+                    $delete_secondary_groups,
+                    true,
                 ]
             );
+
+            ui_update_name_fav_element($id_agente, 'Agents', $alias);
 
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
@@ -1503,10 +1519,55 @@ if ($update_module === true || $create_module === true) {
     $critical_instructions = (string) get_parameter('critical_instructions');
     $warning_instructions = (string) get_parameter('warning_instructions');
     $unknown_instructions = (string) get_parameter('unknown_instructions');
-    $critical_inverse = (int) get_parameter('critical_inverse');
-    $warning_inverse = (int) get_parameter('warning_inverse');
-    $percentage_critical = (int) get_parameter('percentage_critical');
-    $percentage_warning = (int) get_parameter('percentage_warning');
+    // Warning thresholds.
+    $warning_threshold_check_type = get_parameter('warning_thresholds_checks');
+    if ($warning_threshold_check_type === 'normal_warning') {
+        $percentage_warning = 0;
+        $warning_inverse = 0;
+    } else if ($warning_threshold_check_type === 'warning_inverse') {
+        $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
+        $percentage_warning = 0;
+    } else {
+        $percentage_warning = (int) get_parameter('warning_inverse_string_sent');
+        $warning_inverse = 0;
+    }
+
+    // Critical thresholds.
+    $critical_threshold_check_type = get_parameter('critical_thresholds_checks');
+    if ($critical_threshold_check_type === 'normal_critical') {
+        $percentage_critical = 0;
+        $critical_inverse = 0;
+    } else if ($critical_threshold_check_type === 'critical_inverse') {
+        $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
+        $percentage_critical = 0;
+    } else {
+        $percentage_critical = (int) get_parameter('critical_inverse_string_sent');
+        $critical_inverse = 0;
+    }
+
+    // Inverse string checkbox.
+    if ($id_module_type === MODULE_TYPE_GENERIC_DATA_STRING
+        || $id_module_type === MODULE_TYPE_ASYNC_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_TCP_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_CMD_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_SNMP_STRING
+    ) {
+        // Warning inverse string checkbox.
+        $warning_string_checkbox = get_parameter('warning_inverse_string');
+        if (!empty($warning_string_checkbox) && $warning_string_checkbox === 'warning_inverse_string') {
+            $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
+        } else {
+            $warning_inverse = 0;
+        }
+
+        // Critial inverse string checkbox.
+        $critical_string_checkbox = get_parameter('critical_inverse_string');
+        if (!empty($critical_string_checkbox) && $critical_string_checkbox === 'critical_inverse_string') {
+            $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
+        } else {
+            $critical_inverse = 0;
+        }
+    }
 
     $id_category = (int) get_parameter('id_category');
 
@@ -1968,10 +2029,10 @@ if ($create_module) {
 
 // MODULE ENABLE/DISABLE
 // =====================.
-if ($enable_module) {
+/*
+    if ($enable_module) {
     $result = modules_change_disabled($enable_module, 0);
     $module_name = modules_get_agentmodule_name($enable_module);
-
     // Write for conf disable if remote_config.
     $configuration_data = enterprise_hook(
         'config_agents_get_module_from_conf',
@@ -1985,10 +2046,8 @@ if ($enable_module) {
 
     // Force Update when disabled for save disabled in conf.
     $old_configuration_data = $configuration_data;
-
     // Successfull action.
     $success_action = $result;
-
     $success_action = $result;
     if ($result === NOERR) {
         db_pandora_audit(
@@ -2001,9 +2060,11 @@ if ($enable_module) {
             'Fail to enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
-}
+    }
 
-if ($disable_module) {
+    if ($disable_module) {
+
+    hd($disable_module, true);
     $result = modules_change_disabled($disable_module, 1);
     $module_name = modules_get_agentmodule_name($disable_module);
 
@@ -2027,18 +2088,20 @@ if ($disable_module) {
 
 
     if ($result === NOERR) {
+        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
+        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
-}
-
+    }
+*/
 // Fix to stop the module from being added to the agent's conf
 // when an error occurred while updating or inserting. or enable disable module.
 if ($update_module || $create_module
@@ -2455,14 +2518,20 @@ switch ($tab) {
                         }]
                     });
             }
-    });
+        });
+
+        $("#network_component").change(function (e) {
+            setTimeout(() => {
+                $('#snmp_version').trigger("change");
+            }, 100);
+        });
     });
 
     // Change description when edit port
-    $( "#text-tcp_port" ).change(function() {
+    /*$( "#text-tcp_port" ).change(function() {
         $( "#textarea_description" ).text(`Checks port ${$( "#text-tcp_port" ).val()} is opened`);
-    });
-    
+    });*/
+
     // Set the position and width of the subtab
     /*
     function agent_wizard_tab_setup() {        

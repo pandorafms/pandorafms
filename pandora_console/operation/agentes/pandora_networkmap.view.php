@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -517,6 +517,7 @@ if (is_ajax() === true) {
                 $return['error'] = false;
                 error_log('Failed to reset map '.$map_id);
             } else {
+                ui_update_name_fav_element($map_id, 'Network_map', $new_values['name']);
                 $return['error'] = true;
             }
         } else {
@@ -2412,6 +2413,12 @@ if ($networkmap === false) {
                     'link'  => '',
                     'label' => __('Network maps'),
                 ],
+            ],
+            [
+                'id_element' => $networkmap['id'],
+                'url'        => 'operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$networkmap['id'],
+                'label'      => $networkmap['name'],
+                'section'    => 'Network_map',
             ]
         );
     }

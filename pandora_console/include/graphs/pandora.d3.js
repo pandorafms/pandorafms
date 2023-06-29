@@ -825,9 +825,8 @@ function sunburst(recipient, data, width, height, tooltip = true) {
   if (height === "auto") {
     height = width;
   }
-  // var width = 960,
-  // 	height = 700;
-  var radius = Math.min(width, height) / 2;
+
+  var radius = Math.min(width, height) / 2 - 40;
 
   var x = d3.scale.linear().range([0, 2 * Math.PI]);
 
@@ -857,7 +856,11 @@ function sunburst(recipient, data, width, height, tooltip = true) {
       return Math.max(0, y(d.y));
     })
     .outerRadius(function(d) {
-      return Math.max(0, y(d.y + d.dy));
+      if (d.children || d.depth === 4) {
+        return Math.max(0, y(d.y + d.dy));
+      } else {
+        return Math.max(0, y(d.y + d.dy)) + 20;
+      }
     });
 
   var g = svg
@@ -879,6 +882,7 @@ function sunburst(recipient, data, width, height, tooltip = true) {
         : color((d.children ? d : d.parent).name);
     })
     .style("cursor", "pointer")
+    .style("stroke-width", "0.2")
     .on("click", click)
     .on("mouseover", tooltip === "1" ? over_user : "")
     .on("mouseout", out_user)
@@ -888,23 +892,38 @@ function sunburst(recipient, data, width, height, tooltip = true) {
     if (d.type === "central_service") {
       return 0;
     }
+
     var ang = ((x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI) * 180;
-    return ang > 90 ? 180 + ang : ang;
+    if (calculate_angle(d) < 20) {
+      return ang;
+    } else {
+      return Math.trunc(ang) == 90 || Math.trunc(ang) == 89
+        ? ang - 90
+        : 90 + ang;
+    }
   }
 
   var text = g
     .append("text")
     .attr("transform", function(d) {
-      return (
-        "translate(" +
-        arc.centroid(d) +
-        ")rotate(" +
-        computeTextRotation(d) +
-        ")"
-      );
+      if (typeof d.show_name != "undefined" && d.show_name) {
+        return (
+          "translate(" +
+          arc.centroid(d) +
+          ")rotate(" +
+          computeTextRotation(d) +
+          ")"
+        );
+      }
     })
     .attr("x", function(d) {
-      return computeTextRotation(d) > 180 ? -40 : -30;
+      if (typeof d.show_name != "undefined" && d.show_name) {
+        if (calculate_angle(d) < 20) {
+          return (d.name.length + 15) * -1;
+        } else {
+          return (d.name.length + 25) * -1;
+        }
+      }
     })
     .attr("dx", "6") // margin
     .attr("dy", function(d) {
@@ -914,17 +933,30 @@ function sunburst(recipient, data, width, height, tooltip = true) {
       return ".35em";
     }) // vertical-align
     .attr("opacity", function(d) {
-      if (
-        (typeof d.show_name != "undefined" && d.show_name) ||
-        d.type === "central_service"
-      )
+      if (typeof d.show_name != "undefined" && d.show_name) {
         return 1;
-      else return 0;
+      } else {
+        return 0;
+      }
     })
     .text(function(d) {
+      if (d.name.length > 20) {
+        var resta = d.name.length - 12;
+        var string = d.name.slice(
+          d.name.length / 2 - resta / 2,
+          d.name.length / 2 + resta / 2
+        );
+        var split = d.name.split(`${string}`);
+        return `${split[0]}...${split[1]}`;
+      }
       return d.name;
     })
-    .style("font-size", "10px")
+    .style("font-size", "11px")
+    .style("fill", function(d) {
+      if (d.color !== "#82b92e") {
+        return "white";
+      }
+    })
     // Makes svg elements invisible to events
     .style("pointer-events", "none");
 
@@ -972,7 +1004,11 @@ function sunburst(recipient, data, width, height, tooltip = true) {
                 );
               })
               .attr("x", function(d) {
-                return computeTextRotation(d) > 180 ? -40 : -30;
+                if (calculate_angle(d) < 20) {
+                  return (d.name.length + 15) * -1;
+                } else {
+                  return (d.name.length + 25) * -1;
+                }
               })
               .transition()
               .duration(250)
@@ -1073,6 +1109,15 @@ function sunburst(recipient, data, width, height, tooltip = true) {
 
   function hide_tooltip() {
     $("#tooltip").hide();
+  }
+
+  function calculate_angle(d) {
+    var start_angle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+    start_angle = (start_angle * 180) / Math.PI;
+    var end_angle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+    end_angle = (end_angle * 180) / Math.PI;
+
+    return end_angle - start_angle;
   }
 }
 
@@ -2167,7 +2212,7 @@ function print_circular_progress_bar(
 
   var numberText = circle
     .append("text")
-    .attr("fill", label_color)
+    .attr("fill", "#333333")
     .style("font-weight", "bold")
     .style("font-size", numberSize)
     .attr("text-anchor", "middle")
@@ -2175,7 +2220,7 @@ function print_circular_progress_bar(
 
   var percentText = circle
     .append("text")
-    .attr("fill", label_color)
+    .attr("fill", "#333333")
     .style("font-weight", "bold")
     .style("font-size", unitSize)
     .text(unit)

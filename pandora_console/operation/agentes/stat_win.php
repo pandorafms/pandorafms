@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -65,10 +65,10 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
 }
 
 global $config;
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+echo '<link rel="stylesheet" href="../../include/styles/pandora.css?v='.$config['current_package'].'" type="text/css"/>';
 
 if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
-    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
+    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css?v='.$config['current_package'].'" type="text/css"/>';
 }
 
 
@@ -97,7 +97,7 @@ ui_print_message_dialog(
     $conn_title,
     $conn_text,
     'connection',
-    '/images/error_1.png'
+    '/images/fail@svg.svg'
 );
 
 ?>
@@ -114,16 +114,16 @@ ui_print_message_dialog(
         ?>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title><?php echo __('%s Graph', get_product_name()).' ('.$alias.' - '.$label; ?>)</title>
-        <link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-        <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
-        <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
-        <link rel="stylesheet" href="../../include/styles/select2.min.css" type="text/css" />
-        <script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
-        <script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
-        <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
-        <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
-        <script type='text/javascript' src='../../include/javascript/select2.min.js'></script>
-        <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
+        <link rel="stylesheet" href="../../include/styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="../../include/styles/select2.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <script type='text/javascript' src='../../include/javascript/pandora_ui.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/jquery.current.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/jquery.pandora.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/select2.min.js?v=<?php echo $config['current_package']; ?>'></script>
+        <script type='text/javascript' src='../../include/javascript/pandora.js?v=<?php echo $config['current_package']; ?>'></script>
         <?php
         require_once $config['homedir'].'/include/graphs/functions_flot.php';
             echo include_javascript_dependencies_flot_graph(true, '../');
@@ -265,7 +265,7 @@ ui_print_message_dialog(
             );
 
             $table->data[0][0] = __('Refresh time');
-            $table->data[0][1] = html_print_extended_select_for_time(
+            $table->data[0][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
                 'refresh',
                 $refresh,
                 '',
@@ -273,7 +273,7 @@ ui_print_message_dialog(
                 0,
                 7,
                 true
-            );
+            ).'</div>';
 
             $table->data[0][2] = __('Show events');
             $disabled = false;
@@ -293,7 +293,11 @@ ui_print_message_dialog(
                 '',
                 10,
                 20,
-                true
+                true,
+                false,
+                false,
+                '',
+                'small-input'
             );
 
             $table->data[1][2] = __('Show alerts');
@@ -311,7 +315,11 @@ ui_print_message_dialog(
                 '',
                 10,
                 10,
-                true
+                true,
+                false,
+                false,
+                '',
+                'small-input'
             );
 
             $table->data[2][2] = __('Show unknown graph');
@@ -323,7 +331,7 @@ ui_print_message_dialog(
             );
 
             $table->data[3][0] = __('Time range');
-            $table->data[3][1] = html_print_extended_select_for_time(
+            $table->data[3][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
                 'period',
                 $period,
                 '',
@@ -331,7 +339,7 @@ ui_print_message_dialog(
                 0,
                 7,
                 true
-            );
+            ).'</div>';
 
             $table->data[3][2] = '';
             $table->data[3][3] = '';
@@ -345,7 +353,7 @@ ui_print_message_dialog(
                 $options[3] = 'x3';
                 $options[4] = 'x4';
                 $options[5] = 'x5';
-                $table->data[4][1] = html_print_select(
+                $table->data[4][1] = '<div class="small-input-select2">'.html_print_select(
                     $options,
                     'zoom',
                     $zoom,
@@ -355,7 +363,7 @@ ui_print_message_dialog(
                     true,
                     false,
                     false
-                );
+                ).'</div>';
 
                 $table->data[4][2] = __('Show percentil');
                 $table->data[4][3] = html_print_checkbox_switch(
@@ -412,7 +420,11 @@ ui_print_message_dialog(
                 '',
                 10,
                 20,
-                true
+                true,
+                false,
+                false,
+                '',
+                'small-input'
             );
 
             $table->data[0][2] = __('Begin time');
@@ -422,11 +434,15 @@ ui_print_message_dialog(
                 '',
                 10,
                 10,
-                true
+                true,
+                false,
+                false,
+                '',
+                'small-input'
             );
 
             $table->data[1][0] = __('Time range');
-            $table->data[1][1] = html_print_extended_select_for_time(
+            $table->data[1][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
                 'period',
                 $period,
                 '',
@@ -434,7 +450,7 @@ ui_print_message_dialog(
                 0,
                 7,
                 true
-            );
+            ).'</div>';
 
             $table->data[1][2] = __('Time compare (Separated)');
             $table->data[1][3] = html_print_checkbox_switch(

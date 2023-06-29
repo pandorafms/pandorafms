@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -92,6 +92,10 @@ if ($update) {
     // If the option to select all of one group or module type is checked.
     if ($force) {
         if ($force === 'type') {
+            if (empty($modules_) === true) {
+                $modules_ = [];
+            }
+
             $type_condition = '';
             if ($module_type != 0) {
                 $type_condition = "AND tam.id_tipo_modulo = $module_type";
@@ -114,8 +118,10 @@ if ($update) {
 
             foreach ($agents_ as $id_agent) {
                 $filter = [
-                    'id_agente'      => $id_agent,
-                    'delete_pending' => 0,
+                    'id_agente'        => $id_agent,
+                    'delete_pending'   => 0,
+                    'id_policy_module' => 0,
+                    'policy_linked'    => 0,
                 ];
                 if ($module_type != 0) {
                     $filter['id_tipo_modulo'] = $module_type;
@@ -129,6 +135,7 @@ if ($update) {
                 foreach ($module_name as $mod_name) {
                     $result = process_manage_edit($mod_name['nombre'], $id_agent, $module_status, $modules_selection_mode);
                     $count++;
+                    $modules_[] = $mod_name['nombre'];
                     $success += (int) $result;
                 }
             }
@@ -137,12 +144,18 @@ if ($update) {
                 $error_msg = __('Error updating the modules from a module type');
             }
         } else if ($force === 'group') {
+            if (empty($modules_) === true) {
+                $modules_ = [];
+            }
+
             $agents_ = array_keys(agents_get_group_agents($group_select, false, 'none'));
 
             foreach ($agents_ as $id_agent) {
                 $filter = [
-                    'id_agente'      => $id_agent,
-                    'delete_pending' => 0,
+                    'id_agente'        => $id_agent,
+                    'delete_pending'   => 0,
+                    'id_policy_module' => 0,
+                    'policy_linked'    => 0,
                 ];
                 $module_name = db_get_all_rows_filter('tagente_modulo', $filter, 'nombre');
                 if ($module_name === false) {
@@ -152,6 +165,7 @@ if ($update) {
                 foreach ($module_name as $mod_name) {
                     $result = process_manage_edit($mod_name['nombre'], $id_agent, $module_status, $modules_selection_mode);
                     $count++;
+                    $modules_[] = $mod_name['nombre'];
                     $success += (int) $result;
                 }
             }
@@ -184,6 +198,9 @@ if ($update) {
         __('Successfully updated').'('.$success.'/'.$count.')',
         $error_msg
     );
+    if (empty($modules_) === true || is_array($modules_) === false) {
+        $modules_ = [];
+    }
 
     $info = '{"Modules":"'.implode(',', $modules_).'","Agents":"'.implode(',', $agents_).'"}';
     if ($success > 0) {
@@ -808,7 +825,7 @@ $table->data['edit1'][1] = '<table width="100%">';
                 1
             );
 
-            $table->data['edit3'][2] = __('SMNP community');
+            $table->data['edit3'][2] = __('SNMP community');
             $table->data['edit3'][3] = html_print_input_text(
                 'snmp_community',
                 '',
@@ -1262,10 +1279,12 @@ $table->data['edit1'][1] = '<table width="100%">';
                 $preload
             );
 
+            $table->data['exclude_policy_modules'][0] = html_print_input_hidden('exclude_policy_modules', 1);
+
             echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
             html_print_table($table);
 
-            attachActionButton('update', 'update', $table->width);
+            attachActionButton('update', 'update', $table->width, false, $SelectAction);
 
             echo '</form>';
 
@@ -1399,7 +1418,8 @@ $(document).ready (function () {
             "truncate_module_names": 1,
             "get_distinct_name" : 1,
             "indexed" : 0,
-            "safe_name" : 1
+            "safe_name" : 1,
+            "exclude_policy_modules" : 1
         };
 
         if (this.value != '0')
@@ -2248,7 +2268,11 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             // Any module.
             $modules = db_get_all_rows_filter(
                 'tagente_modulo',
-                ['id_agente' => $agents_select],
+                [
+                    'id_agente'        => $agents_select,
+                    'id_policy_module' => 0,
+                    'policy_linked'    => 0,
+                ],
                 [
                     'id_agente_modulo',
                     'id_tipo_modulo',

@@ -418,21 +418,10 @@ function initialiceLayout(data) {
       onsubmit: {
         page: data.page,
         method: "saveWidgetIntoCell",
-        dataType: "json",
-        preaction: function() {
-          if (tinyMCE != undefined && tinyMCE.editors.length > 0 && widgetId) {
-            // Content tiny.
-            var label = tinyMCE.activeEditor.getContent();
-            $("#textarea_text").val(label);
-          }
-        }
+        dataType: "json"
       },
       ajax_callback: update_widget_to_cell,
-      onsubmitClose: 1,
-      beforeClose: function() {
-        tinyMCE.remove("#textarea_text");
-        tinyMCE.execCommand("mceRemoveControl", true, "textarea_text");
-      }
+      onsubmitClose: 1
     });
   }
 
@@ -806,7 +795,9 @@ function dashboardLoadNetworkMap(settings) {
       auth_hash: settings.auth_hash,
       id_user: settings.id_user,
       ignore_acl: 1,
-      node: settings.node
+      node: settings.node,
+      dashboard: 1,
+      size: settings.size
     },
     dataType: "html",
     success: function(data) {
@@ -1436,45 +1427,7 @@ function dashboardLoadVC(settings) {
 // eslint-disable-next-line no-unused-vars
 function dashboardInitTinyMce(url) {
   // Initialice.
-  tinyMCE.init({
-    selector: "#textarea_text",
-    theme: "advanced",
-    content_css: url + "include/styles/pandora.css",
-    theme_advanced_font_sizes:
-      "4pt=.visual_font_size_4pt, " +
-      "6pt=.visual_font_size_6pt, " +
-      "8pt=.visual_font_size_8pt, " +
-      "10pt=.visual_font_size_10pt, " +
-      "12pt=.visual_font_size_12pt, " +
-      "14pt=.visual_font_size_14pt, " +
-      "18pt=.visual_font_size_18pt, " +
-      "24pt=.visual_font_size_24pt, " +
-      "28pt=.visual_font_size_28pt, " +
-      "36pt=.visual_font_size_36pt, " +
-      "48pt=.visual_font_size_48pt, " +
-      "60pt=.visual_font_size_60pt, " +
-      "72pt=.visual_font_size_72pt, " +
-      "84pt=.visual_font_size_84pt, " +
-      "96pt=.visual_font_size_96pt, " +
-      "116pt=.visual_font_size_116pt, " +
-      "128pt=.visual_font_size_128pt, " +
-      "140pt=.visual_font_size_140pt, " +
-      "154pt=.visual_font_size_154pt, " +
-      "196pt=.visual_font_size_196pt",
-    theme_advanced_toolbar_location: "top",
-    theme_advanced_toolbar_align: "left",
-    theme_advanced_buttons1:
-      "bold,italic, |,justifyleft, justifycenter, justifyright, |, undo, redo, |, image, link",
-    theme_advanced_buttons2: "fontselect, forecolor, fontsizeselect, |,code",
-    theme_advanced_buttons3: "",
-    theme_advanced_statusbar_location: "none",
-    body_class: "",
-    forced_root_block: false,
-    force_p_newlines: false,
-    force_br_newlines: true,
-    convert_newlines_to_brs: false,
-    remove_linebreaks: true
-  });
+  UndefineTinyMCE("#textarea_text");
 }
 
 function debounce(func, wait, immediate) {
@@ -1558,5 +1511,35 @@ function showManualThresholds(element) {
   } else {
     $(".dashboard-input-threshold-warning").addClass("invisible_important");
     $(".dashboard-input-threshold-critical").addClass("invisible_important");
+  }
+}
+
+/**
+ * @return {void}
+ */
+// eslint-disable-next-line no-unused-vars
+function type_change() {
+  var type = document.getElementById("type").value;
+
+  switch (type) {
+    case "2":
+      $("#li_tags").hide();
+      $("#li_groups").hide();
+      $("#li_module_groups").show();
+      break;
+
+    case "1":
+      $("#li_tags").show();
+      $("#li_groups").hide();
+      $("#li_module_groups").hide();
+      break;
+
+    default:
+    case "3":
+    case "0":
+      $("#li_tags").hide();
+      $("#li_groups").show();
+      $("#li_module_groups").hide();
+      break;
   }
 }

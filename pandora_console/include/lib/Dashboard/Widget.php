@@ -423,7 +423,12 @@ class Widget
                 case 'EventCardboard':
                 case 'ModulesByStatus':
                 case 'AvgSumMaxMinModule':
+                case 'BasicChart':
                     $className .= '\\'.$name;
+                break;
+
+                case 'heatmap':
+                    $className .= '\HeatmapWidget';
                 break;
 
                 default:

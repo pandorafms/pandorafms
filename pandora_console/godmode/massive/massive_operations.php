@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -70,15 +70,12 @@ $options_agents = [
 ];
 
 if (check_acl($config['id_user'], 0, 'UM')) {
+    $options_users['edit_users'] = __('Edit users in bulk');
     if (is_metaconsole() === false) {
         $options_users = [
             'add_profiles'    => __('Bulk profile add'),
             'delete_profiles' => __('Bulk profile delete'),
         ];
-    }
-
-    if (users_is_admin() === true) {
-        $options_users['edit_users'] = __('Edit users in bulk');
     }
 } else {
     $options_users = [];
@@ -220,7 +217,7 @@ $alertstab = [
         true,
         [
             'title' => __('Alerts operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_alerts',
@@ -232,7 +229,7 @@ $userstab = [
         true,
         [
             'title' => __('Users operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_users',
@@ -244,7 +241,7 @@ $agentstab = [
         true,
         [
             'title' => __('Agents operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_agents',
@@ -256,7 +253,7 @@ $modulestab = [
         true,
         [
             'title' => __('Modules operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_modules',
@@ -268,7 +265,7 @@ $pluginstab = [
         true,
         [
             'title' => __('Plugins operations'),
-            'class' => 'invert_filter',
+            'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>',
     'active' => $tab == 'massive_plugins',
@@ -306,21 +303,61 @@ $onheader['snmp'] = $snmptab;
 $onheader['satellite'] = $satellitetab;
 $onheader['services'] = $servicestab;
 
+
 // Header.
 if (is_metaconsole() === false) {
-    ui_print_page_header(
-        __('Bulk operations').' &raquo; '.$options[$option],
+    ui_print_standard_header(
+        __('Bulk operations').' - '.$options[$option],
         'images/gm_massive_operations.png',
         false,
         $help_header,
-        true,
-        $onheader,
         false,
-        'massivemodal'
+        [
+            $agentstab,
+            $modulestab,
+            $pluginstab,
+            $userstab,
+            $alertstab,
+            $policiestab,
+            $snmptab,
+            $satellitetab,
+            $servicestab,
+        ],
+        [
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Bulk operations'),
+            ],
+        ]
     );
 } else {
-    massive_meta_print_header();
+    ui_print_standard_header(
+        __('Bulk operations').' - '.$options[$option],
+        'images/gm_massive_operations.png',
+        false,
+        $help_header,
+        false,
+        [
+            $userstab,
+            $agentstab,
+        ],
+        [
+            [
+                'link'  => '',
+                'label' => __('Configuration'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Bulk operations'),
+            ],
+        ]
+    );
 }
+
 
 // Checks if the PHP configuration is correctly.
 if ((get_cfg_var('max_execution_time') != 0)
@@ -395,37 +432,38 @@ if (is_management_allowed() === false) {
         $text_warning = __('any node');
     }
 
-    ui_print_warning_message(
-        __(
-            'This node is configured with centralized mode. To delete agents go to %s',
-            $text_warning
-        )
-    );
+    if ($option == 'delete_agents') {
+        ui_print_warning_message(
+            __(
+                'This node is configured with centralized mode. To delete agents go to %s',
+                $text_warning
+            )
+        );
+    }
 }
 
-echo '<br />';
-echo '<form method="post" id="form_options" action="'.$url.'">';
-echo '<table border="0"><tr><td>';
-echo __('Action');
-echo '</td><td>';
-html_print_select(
+$tip = '';
+if ($option === 'edit_agents' || $option === 'edit_modules') {
+    $tip = ui_print_help_tip(__('The blank fields will not be updated'), true);
+}
+
+global $SelectAction;
+
+$SelectAction = '<form id="form_necesario" method="post" id="form_options" action="'.$url.'">';
+$SelectAction .= '<span class="mrgn_lft_10px mrgn_right_10px">'._('Action').'</span>';
+$SelectAction .= html_print_select(
     $options,
     'option',
     $option,
     'this.form.submit()',
     '',
     0,
-    false,
+    true,
     false,
     false
-);
-if ($option === 'edit_agents' || $option === 'edit_modules') {
-    ui_print_help_tip(__('The blank fields will not be updated'));
-}
+).$tip;
 
-echo '</td></tr></table>';
-echo '</form>';
-echo '<br />';
+$SelectAction .= '</form>';
 
 switch ($option) {
     case 'delete_alerts':

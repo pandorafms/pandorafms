@@ -1,8 +1,8 @@
 <?php
 /**
- * Pandora FMS- http://pandorafms.com
+ * Pandora FMS- https://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2023 Pandora FMS
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,13 +50,23 @@ echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2" method="
 switch ($action) {
     case 'create_connection_map':
         // Header.
-        ui_print_page_header(
+        ui_print_standard_header(
             __('Create new map connection'),
             '',
             false,
             'map_connection_tab',
             true,
-            $buttons
+            $buttons,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Setup'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Setup').' - '.__('Gis'),
+                ],
+            ]
         );
 
         $mapConnection_name = '';
@@ -77,13 +87,23 @@ switch ($action) {
 
     case 'edit_connection_map':
         // Header.
-        ui_print_page_header(
+        ui_print_standard_header(
             __('Edit map connection'),
             '',
             false,
             'map_connection_tab',
             true,
-            $buttons
+            $buttons,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Setup'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Setup').' - '.__('Gis'),
+                ],
+            ]
         );
 
         $idConnectionMap = get_parameter('id_connection_map');

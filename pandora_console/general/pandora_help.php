@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -25,7 +25,7 @@ echo __('%s help system', get_product_name());
 </title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 </head>
-<?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
+<?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css?v='.$config['current_package'].'" type="text/css">'; ?>
 <body class="height_100p bg_333">
 <?php
 $id = get_parameter('id');

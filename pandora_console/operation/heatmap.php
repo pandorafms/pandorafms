@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -41,6 +41,7 @@ if ($agent_a === false && $agent_w === false) {
 }
 
 require_once $config['homedir'].'/include/class/Heatmap.class.php';
+use PandoraFMS\Heatmap;
 
 $pure = (bool) get_parameter('pure', false);
 $type = get_parameter('type', 0);
@@ -60,6 +61,8 @@ if ($group_sent === true) {
 } else {
     $group = (int) get_parameter('group', true);
 }
+
+$dashboard = (bool) get_parameter('dashboard', false);
 
 $is_ajax = is_ajax();
 if ($is_ajax === false && $pure === false) {
@@ -146,13 +149,13 @@ if ($is_ajax === false && $pure === false) {
 
 if ($is_ajax === false && $pure === true) {
     // Floating menu - Start.
-    echo '<div id="heatmap-controls" class="zindex999">';
+    echo '<div id="heatmap-controls" class="zindex999" style="max-height: 85px">';
 
     echo '<div id="menu_tab" method="post">';
     echo '<ul class="mn white-box-content box-shadow flex-row">';
 
     // Name.
-    echo '<li class="nomn">';
+    echo '<li class="nomn mx_height85">';
 
     html_print_div(
         [
@@ -164,7 +167,7 @@ if ($is_ajax === false && $pure === true) {
     echo '</li>';
 
     // Countdown.
-    echo '<li class="nomn">';
+    echo '<li class="nomn mx_height85">';
     echo '<div class="heatmap-refr">';
 
     echo '<div id="heatmap-refr-form">';
@@ -191,6 +194,7 @@ if ($is_ajax === false && $pure === true) {
     html_print_input_hidden('type', $type);
     html_print_input_hidden('search', $search);
     html_print_input_hidden('filter', implode(',', $filter));
+    html_print_input_hidden('dashboard', $dashboard);
     echo '</form>';
     echo '</div>';
     echo '</div>';
@@ -229,7 +233,7 @@ if ($is_ajax === false && $pure === true) {
 // Control call flow.
 try {
     // Heatmap construct.
-    $heatmap = new Heatmap($type, $filter, $randomId, $refresh, $width, $height, $search, $group);
+    $heatmap = new Heatmap($type, $filter, $randomId, $refresh, $width, $height, $search, $group, $dashboard);
 } catch (Exception $e) {
     if (is_ajax() === true) {
         echo json_encode(['error' => '[Heatmap]'.$e->getMessage() ]);
@@ -278,7 +282,7 @@ if ($is_ajax === true) {
                 draggable: false,
                 modal: true,
                 closeOnEscape: true,
-                height: 410,
+                height: 500,
                 width: 330,
                 title: '<?php echo __('Config'); ?>',
                 position: {

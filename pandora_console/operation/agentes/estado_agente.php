@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -278,7 +278,7 @@ $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $searchForm = '';
-$searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
+$searchForm .= '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente">';
 
 $table = new stdClass();
 $table->width = '100%';
@@ -375,10 +375,12 @@ $table->data[1][0] = html_print_label_input_block(
     html_print_select($fields, 'os', $os, '', 'All', 0, true)
 );
 
-$pre_fields = policies_get_policies(false, ['id', 'name']);
-$fields = [];
-foreach ($pre_fields as $value) {
-    $fields[$value['id']] = $value['name'];
+if (function_exists('policies_get_policies') === true) {
+    $pre_fields = policies_get_policies(false, ['id', 'name']);
+    $fields = [];
+    foreach ($pre_fields as $value) {
+        $fields[$value['id']] = $value['name'];
+    }
 }
 
 $table->data[1][1] = html_print_label_input_block(
@@ -769,7 +771,14 @@ if ($search != '') {
     if (empty($id) === false) {
         $aux = $id[0]['id_agent'];
         $search_sql = sprintf(
-            ' AND ( `nombre` LIKE "%%%s%%" OR tagente.id_agente = %d',
+            ' AND ( nombre LIKE "%%%s%%"
+             OR alias LIKE "%%%s%%"
+             OR comentarios LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%")
+             OR tagente.id_agente = %d',
+            $search,
+            $search,
+            $search,
             $search,
             $aux
         );
@@ -1030,9 +1039,10 @@ $tableAgents->head[2] = '<span>'.__('OS').'</span>';
 $tableAgents->head[2] .= ui_get_sorting_arrows($url_up_os, $url_down_os, $selectOsUp, $selectOsDown);
 $tableAgents->size[2] = '5%';
 
-$tableAgents->head[3] = '<span>'.__('Interval').'</span>';
-$tableAgents->head[3] .= ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
-$tableAgents->size[3] = '7%';
+/*
+    $tableAgents->head[3] = '<span>'.__('Interval').'</span>';
+    $tableAgents->head[3] .= ui_get_sorting_arrows($url_up_interval, $url_down_interval, $selectIntervalUp, $selectIntervalDown);
+$tableAgents->size[3] = '7%';*/
 
 $tableAgents->head[4] = '<span>'.__('Group').'</span>';
 $tableAgents->head[4] .= ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown);
@@ -1064,7 +1074,7 @@ $tableAgents->size[11] = '6%';
 $tableAgents->align = [];
 
 $tableAgents->align[2] = 'left';
-$tableAgents->align[3] = 'left';
+// $tableAgents->align[3] = 'left';
 $tableAgents->align[4] = 'left';
 $tableAgents->align[5] = 'left';
 $tableAgents->align[6] = 'left';
@@ -1157,21 +1167,21 @@ foreach ($agents as $agent) {
 
     $data[0] .= '</div>';
 
-    $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]').'</span>';
+    $data[1] = '<span class="'.$custom_font_size.'">'.ui_print_truncate_text($agent['description'], 'description', false, true, true, '[&hellip;]', 'font-size:6.5pt').'</span>';
 
     $data[2] = '';
 
     $data[2] = html_print_div(
         [
-            'class'   => 'invert_filter main_menu_icon',
             'content' => ui_print_os_icon($agent['id_os'], false, true),
         ],
         true
     );
 
-    $data[3] = '<span>'.human_time_description_raw(
+    /*
+        $data[3] = '<span>'.human_time_description_raw(
         $agent['intervalo']
-    ).'</span>';
+    ).'</span>';*/
     $data[4] = '<a href="'.$config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent['id_grupo'].'">';
     $data[4] .= ui_print_group_icon(
         $agent['id_grupo'],
@@ -1300,7 +1310,7 @@ if (empty($tableAgents->data) === false) {
         true,
         'offset',
         false,
-        'dataTables_paginate paging_simple_numbers'
+        'paging_simple_numbers'
     );
 
     unset($table);

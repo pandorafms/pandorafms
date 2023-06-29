@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -32,9 +32,9 @@ html_print_div(
             'latest_events_agent',
             false,
             true,
-            'box-flat agent_details_col',
-            'white-box-content',
-            'width_available'
+            '',
+            'box-flat white-box-content no_border',
+            'box-flat white_table_graph w100p'
         ),
     ],
 );

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -67,7 +67,7 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
     $l10n->load_tables();
 }
 
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+echo '<link rel="stylesheet" href="../../include/styles/pandora.css?v='.$config['current_package'].'" type="text/css"/>';
 if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     ui_require_css_file('pandora_black', 'include/styles/', true);
 }
@@ -93,14 +93,14 @@ if ($refresh > 0) {
 ?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo __('%s Interface Graph', get_product_name()).' ('.agents_get_alias($agent_id).' - '.$interface_name; ?>)</title>
-<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/select2.min.css" type="text/css" />
-<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
-<script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
-<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
-<script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
-<script type='text/javascript' src='../../include/javascript/select2.min.js'></script>
+<link rel="stylesheet" href="../../include/styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/select2.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
+<script type='text/javascript' src='../../include/javascript/pandora.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/jquery.current.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/jquery.pandora.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/jquery-ui.min.js?v=<?php echo $config['current_package']; ?>'></script>
+<script type='text/javascript' src='../../include/javascript/select2.min.js?v=<?php echo $config['current_package']; ?>'></script>
 <?php
 require_once $config['homedir'].'/include/graphs/functions_flot.php';
     echo include_javascript_dependencies_flot_graph(true, '../');
@@ -167,7 +167,7 @@ $table->class = 'table_modal_alternate';
 
 $data = [];
 $data[0] = __('Refresh time');
-$data[1] = html_print_extended_select_for_time(
+$data[1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
     'refresh',
     $refresh,
     '',
@@ -175,7 +175,7 @@ $data[1] = html_print_extended_select_for_time(
     0,
     7,
     true
-);
+).'</div>';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -187,7 +187,11 @@ $data[1] = html_print_input_text(
     '',
     15,
     255,
-    true
+    true,
+    false,
+    false,
+    '',
+    'small-input'
 );
 $data[1] .= html_print_image(
     '/images/calendar_view_day.png',
@@ -196,6 +200,7 @@ $data[1] .= html_print_image(
         'onclick' => "scwShow(scwID('text-start_date'),this);",
         'style'   => 'vertical-align: bottom;',
         'class'   => 'invert_filter',
+        'style'   => 'vertical-align: middle;',
     ],
     false,
     false,
@@ -207,13 +212,24 @@ $table->rowclass[] = '';
 
 $data = [];
 $data[0] = __('Begin time');
-$data[1] = html_print_input_text('start_time', $start_time, '', 10, 10, true);
+$data[1] = html_print_input_text(
+    'start_time',
+    $start_time,
+    '',
+    10,
+    10,
+    true,
+    false,
+    false,
+    '',
+    'small-input'
+);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = [];
 $data[0] = __('Time range');
-$data[1] = html_print_extended_select_for_time(
+$data[1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
     'period',
     $period,
     '',
@@ -221,7 +237,7 @@ $data[1] = html_print_extended_select_for_time(
     0,
     7,
     true
-);
+).'</div>';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -278,7 +294,10 @@ $form_table .= html_print_submit_button(
     __('Reload'),
     'submit',
     false,
-    'class="sub upd"',
+    [
+        'class' => 'float-right mini',
+        'icon'  => 'upd',
+    ],
     true
 );
 $form_table .= '</div>';
@@ -291,34 +310,24 @@ if (empty($server_id) === false) {
     $menu_form .= html_print_input_hidden('server', $server_id, true);
 }
 
-$menu_form .= '<div class="module_graph_menu_dropdown mrgn_top_20px">';
-$menu_form .= '<div id="module_graph_menu_header" class="module_graph_menu_header">';
-$menu_form .= html_print_image(
-    'images/arrow_down_green.png',
-    true,
-    [
-        'class' => 'module_graph_menu_arrow',
-        'float' => 'left',
-    ],
-    false,
-    false,
-    true
-);
-$menu_form .= '<span style="flex: 2; justify-content:center;" class="flex-row">';
-$menu_form .= '<b>'.__('Graph configuration menu').'</b>';
-$menu_form .= ui_print_help_tip(
-    __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
-    true
-);
-$menu_form .= '</span>';
-$menu_form .= '</div>';
-$menu_form .= '<div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">';
 $menu_form .= $form_table;
-$menu_form .= '</div>';
-$menu_form .= '</div>';
 $menu_form .= '</form>';
 
-echo $menu_form;
+ui_toggle(
+    $menu_form,
+    '<span class="subsection_header_title">'.__('Graph configuration menu').ui_print_help_tip(
+        __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+        true
+    ).'</span>',
+    __('Graph configuration menu'),
+    'update',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar top_0px_important toggle-traffic-graph'
+);
+
 
 // Hidden div to forced title.
 html_print_div(

@@ -8,8 +8,8 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.769"
-PI_BUILD="230313"
+PI_VERSION="7.0NG.772"
+PI_BUILD="230629"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -26,6 +26,7 @@ PANDORA_SERVER=/etc/init.d/pandora_server
 TENTACLE_SERVER=/etc/init.d/tentacle_serverd
 PANDORA_CFG_FILE=$PANDORA_CFG_DIR/pandora_server.conf
 PANDORA_CFG_FILE_DIST=conf/pandora_server.conf.new
+PANDORA_CFG_FILE_DIST_SEC=conf/pandora_server_sec.conf.template
 PANDORA_INIT_SCRIPT=util/pandora_server
 TENTACLE_CFG_DIR=/etc/tentacle
 TENTACLE_CFG_FILE=$TENTACLE_CFG_DIR/tentacle_server.conf
@@ -213,7 +214,7 @@ install () {
 			echo "The complete installation guide is at: https://pandorafms.com/docs/"
 			echo " "
 			echo "Debian-based distribution do:"
-			echo "	# apt-get install snmp snmpd libjson-perllibio-socket-inet6-perl libsocket6-perl libxml-simple-perl libxml-twig-perl libnetaddr-ip-perl libdbi-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 snmp-mibs-downloader"
+			echo "	# apt-get install snmp snmpd libjson-perllibio-socket-inet6-perl libsocket6-perl libxml-simple-perl libxml-twig-perl libnetaddr-ip-perl libdbi-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client snmp-mibs-downloader"
 			echo " "
 			echo "For CentOS / RHEL do: "
 			echo " "
@@ -225,13 +226,13 @@ install () {
 	perl-HTML-Encoding perl-HTML-Tree perl-NetAddr-IP perl-IO-Socket-INET6 perl-Socket6
 	perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 			echo " "
-			echo "	You also will need to install (optionally) xprobe2 and wmiclient from rpm (download from our website)"
+			echo "	You also will need to install (optionally) wmiclient from rpm (download from our website)"
 			echo " "
 			echo "For FreeBSD do : "
 			echo " "
 			echo "  Install following tools from ports or packages."
 			echo "  Recommended: p5-DBI p5-NetAddr-IP p5-XML-Simple p5-XML-Twig p5-HTML-Parser p5-DBD-mysql p5-Socket6 p5-IO-Socket-INET6 p5-JSON"
-			echo "  Optional: nmap xprobe"
+			echo "  Optional: nmap"
 			echo " "
 			echo "  And install Geo::IP manually."
 			echo " "
@@ -308,6 +309,8 @@ install () {
 	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/collections
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/netflow 2> /dev/null
 	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/sflow 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/sflow
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/trans 2> /dev/null
 	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/trans
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/commands 2> /dev/null
@@ -347,6 +350,12 @@ install () {
 		cp $PANDORA_CFG_FILE_DIST $DESTDIR$PANDORA_CFG_FILE
 		chmod 770 $DESTDIR$PANDORA_CFG_FILE
 	fi
+
+	echo "Creating sec setup directory in $PANDORA_CFG_DIR/conf.d"
+	mkdir -p $DESTDIR$PANDORA_CFG_DIR/conf.d 2> /dev/null
+	echo cp $PANDORA_CFG_FILE_DIST_SEC $DESTDIR$PANDORA_CFG_DIR/conf.d/
+	cp $PANDORA_CFG_FILE_DIST_SEC $DESTDIR$PANDORA_CFG_DIR/conf.d/
+
 
 	echo "Installing Pandora Server manual"
 	[ -d $DESTDIR$MANDIR ] || mkdir -p $DESTDIR$MANDIR

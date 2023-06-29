@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -114,7 +114,7 @@ ui_print_standard_header(
 if (is_management_allowed() === false) {
     if (is_metaconsole() === false) {
         $url = '<a target="_blank" href="'.ui_get_meta_url(
-            'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
+            'index.php?sec=advanced&sec2=advanced/massive_operations&tab=massive_agents'
         ).'">'.__('metaconsole').'</a>';
     } else {
         $url = __('any node');
@@ -229,7 +229,7 @@ if ($enable_agent > 0) {
     );
 }
 
-if ($disable_agent > 0) {
+if ($disable_agent > 0 && $agent_to_delete === 0) {
     $result = db_process_sql_update('tagente', ['disabled' => 1], ['id_agente' => $disable_agent]);
     $alias = io_safe_output(agents_get_alias($disable_agent));
 
@@ -302,93 +302,125 @@ foreach ($pre_fields as $key => $value) {
 
 // Filter table.
 $filterTable = new stdClass();
-$filterTable->class = 'fixed_filter_bar';
+$filterTable->class = 'filter-table-adv w100p';
+$filterTable->size[0] = '20%';
+$filterTable->size[1] = '20%';
+$filterTable->size[2] = '20%';
+$filterTable->size[3] = '20%';
+$filterTable->size[4] = '20%';
 $filterTable->data = [];
-$filterTable->cellstyle[0][0] = 'width:0';
-$filterTable->cellstyle[0][1] = 'width:0';
-$filterTable->cellstyle[0][2] = 'width:0';
-$filterTable->cellstyle[0][3] = 'width:0';
 
-$filterTable->data[0][0] = __('Group');
-$filterTable->data[1][0] = html_print_select_groups(
-    false,
-    'AR',
-    $return_all_group,
-    'ag_group',
-    $ag_group,
-    'this.form.submit();',
-    '',
-    0,
-    true,
-    false,
-    true,
-    '',
-    false
+$filterTable->data[0][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'AR',
+        $return_all_group,
+        'ag_group',
+        $ag_group,
+        'this.form.submit();',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
 
-$filterTable->data[0][1] = __('Recursion');
-$filterTable->data[1][1] = html_print_checkbox_switch(
-    'recursion',
-    1,
-    $recursion,
-    true,
-    false,
-    'this.form.submit()'
+$filterTable->data[0][1] = html_print_label_input_block(
+    __('Recursion'),
+    '<div class="mrgn_top_10px">'.html_print_checkbox_switch(
+        'recursion',
+        1,
+        $recursion,
+        true,
+        false,
+        'this.form.submit()'
+    ).'</div>'
 );
 
-$filterTable->data[0][2] = __('Show agents');
-$filterTable->data[1][2] = html_print_select(
-    $showAgentFields,
-    'disabled',
-    $disabled,
-    'this.form.submit()',
-    '',
-    0,
-    true
+$filterTable->data[0][2] = html_print_label_input_block(
+    __('Show agents'),
+    html_print_select(
+        $showAgentFields,
+        'disabled',
+        $disabled,
+        'this.form.submit()',
+        '',
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
 );
 
-$filterTable->data[0][3] = __('Operating System');
-$filterTable->data[1][3] = html_print_select(
-    $fields,
-    'os',
-    $os,
-    'this.form.submit()',
-    'All',
-    0,
-    true
+$filterTable->data[0][3] = html_print_label_input_block(
+    __('Operating System'),
+    html_print_select(
+        $fields,
+        'os',
+        $os,
+        'this.form.submit()',
+        'All',
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
 );
 
-$filterTable->data[0][4] = __('Free search');
-$filterTable->data[0][4] .= ui_print_help_tip(
-    __('Search filter by alias, name, description, IP address or custom fields content'),
-    true
-);
-$filterTable->data[1][4] = html_print_input_text(
-    'search',
-    $search,
-    '',
-    12,
-    255,
-    true
+$filterTable->data[0][4] = html_print_label_input_block(
+    __('Free search').ui_print_help_tip(
+        __('Search filter by alias, name, description, IP address or custom fields content'),
+        true
+    ),
+    html_print_input_text(
+        'search',
+        $search,
+        '',
+        12,
+        255,
+        true
+    )
 );
 
-$filterTable->cellstyle[1][5] = 'vertical-align: bottom';
-$filterTable->data[1][5] = html_print_submit_button(
+$filterTable->colspan[1][0] = 5;
+$filterTable->data[1][0] = html_print_submit_button(
     __('Filter'),
     'srcbutton',
     false,
     [
         'icon'  => 'search',
-        'class' => 'float-right',
-        'mode'  => 'secondary mini',
+        'class' => 'float-right mrgn_right_10px',
+        'mode'  => 'mini',
     ],
     true
 );
 
 // Print filter table.
-echo '<form method=\'post\'	action=\'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\'>';
-html_print_table($filterTable);
-echo '</form>';
+$form = '<form method=\'post\'	action=\'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\'>';
+ui_toggle(
+    $form.html_print_table($filterTable, true).'</form>',
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'filter',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
+);
+
+
+require_once 'godmode/agentes/agent_deploy.php';
 
 // Data table.
 $selected = true;
@@ -534,7 +566,14 @@ if ($search != '') {
     if ($id != '') {
         $aux = $id[0]['id_agent'];
         $search_sql = sprintf(
-            ' AND ( `nombre` LIKE "%%%s%%" OR tagente.id_agente = %d',
+            ' AND ( nombre LIKE "%%%s%%"
+             OR alias LIKE "%%%s%%"
+             OR comentarios LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%")
+             OR tagente.id_agente = %d',
+            $search,
+            $search,
+            $search,
             $search,
             $aux
         );
@@ -726,7 +765,9 @@ if ($agents !== false) {
         }
 
         if (empty($agent['alias']) === true) {
-            $agent['alias'] = $agent['nombre'];
+            $agent['alias'] = io_safe_output($agent['nombre']);
+        } else {
+            $agent['alias'] = io_safe_output($agent['alias']);
         }
 
         $additionalDataAgentName = [];
@@ -747,7 +788,7 @@ if ($agents !== false) {
         }
 
         if ((bool) $agent['disabled'] === true) {
-            $additionalDataAgentName[] = ui_print_help_tip(__('Disabled'));
+            $additionalDataAgentName[] = ui_print_help_tip(__('Disabled'), true);
         }
 
         if ((bool) $agent['quiet'] === true) {
@@ -765,7 +806,7 @@ if ($agents !== false) {
         // Agent name column (1). Agent name.
         $agentNameColumn = html_print_anchor(
             [
-                'href'    => ui_get_full_url($agentNameUrl),
+                'href'    => ui_get_full_url($agentViewUrl),
                 'title'   => $agent['nombre'],
                 'content' => ui_print_truncate_text($agent['alias'], 'agent_medium').implode('', $additionalDataAgentName),
             ],
@@ -837,7 +878,6 @@ if ($agents !== false) {
         // Operating System icon column.
         $osIconColumn = html_print_div(
             [
-                'class'   => 'main_menu_icon invert_filter',
                 'content' => ui_print_os_icon($agent['id_os'], false, true),
             ],
             true
@@ -856,7 +896,6 @@ if ($agents !== false) {
         // Group icon and name column.
         $agentGroupIconColumn = html_print_div(
             [
-                'class'   => 'main_menu_icon invert_filter',
                 'content' => ui_print_group_icon($agent['id_grupo'], true),
             ],
             true
@@ -876,14 +915,14 @@ if ($agents !== false) {
 
         if ((bool) $agent['disabled'] === true) {
             $agentDisableEnableTitle = __('Enable agent');
-            $agentDisableEnableAction = 'enable_agent';
+            $agentDisableEnableAction = 'enable';
             $agentDisableEnableCaption = __('You are going to enable a cluster agent. Are you sure?');
-            $agentDisableEnableIcon = 'change-pause.svg';
+            $agentDisableEnableIcon = 'change-active.svg';
         } else {
             $agentDisableEnableTitle = __('Disable agent');
-            $agentDisableEnableAction = 'disable_agent';
+            $agentDisableEnableAction = 'disable';
             $agentDisableEnableCaption = __('You are going to disable a cluster agent. Are you sure?');
-            $agentDisableEnableIcon = 'change-active.svg';
+            $agentDisableEnableIcon = 'change-pause.svg';
         }
 
         $agentActionButtons[] = html_print_menu_button(
@@ -974,7 +1013,7 @@ if ($agents !== false) {
         true,
         'offset',
         false,
-        'dataTables_paginate paging_simple_numbers'
+        'paging_simple_numbers'
     );
 
     /*
@@ -991,23 +1030,35 @@ if ($agents !== false) {
 
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     // Create agent button.
-    echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+    echo '<form id="create-agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente"></form>';
+
+    $buttons = html_print_button(
+        __('Create agent'),
+        'crt-2',
+        false,
+        '',
+        [
+            'icon'    => 'next',
+            'onClick' => "document.getElementById('create-agent').submit();",
+        ],
+        true
+    ).html_print_button(
+        __('Deploy agent'),
+        'modal_deploy_agent',
+        false,
+        '',
+        [],
+        true
+    );
 
     html_print_action_buttons(
-        html_print_submit_button(
-            __('Create agent'),
-            'crt-2',
-            false,
-            [ 'icon' => 'next' ],
-            true
-        ),
+        $buttons,
         [
             'type'          => 'data_table',
             'class'         => 'fixed_action_buttons',
             'right_content' => $tablePagination,
         ]
     );
-    echo '</form>';
 }
 
 ?>

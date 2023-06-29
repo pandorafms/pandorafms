@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -63,7 +63,7 @@ if (empty($idVisualConsole) === true) {
     $idVisualConsole = get_parameter('id', 0);
 }
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $action_name_parameter = 'action';
 } else {
     $action_name_parameter = 'action2';
@@ -92,7 +92,6 @@ $activeTab = get_parameterBetweenListValues(
     ],
     'data'
 );
-
 
 // Visual console creation tab and actions.
 if (empty($idVisualConsole)) {
@@ -136,7 +135,6 @@ $pure = (int) get_parameter('pure', 0);
 $refr = (int) get_parameter('refr', $config['vc_refr']);
 
 $id_layout = 0;
-
 
 // Save/Update data in DB
 global $statusProcessInDB;
@@ -295,6 +293,7 @@ switch ($activeTab) {
                         }
 
                         if ($result !== false) {
+                            ui_update_name_fav_element($idVisualConsole, 'Visual_Console', $values['name']);
                             db_pandora_audit(
                                 AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
                                 sprintf('Update visual console #%s', $idVisualConsole)
@@ -636,15 +635,20 @@ switch ($activeTab) {
                 } else {
                     if (is_metaconsole() === true) {
                         $agents_ids = [];
+                        $servers_ids = [];
                         foreach ($id_agents as $id_agent_id) {
                             $server_and_agent = explode('|', $id_agent_id);
 
                             $agents_ids[] = $server_and_agent[1];
+                            $servers_ids[] = $server_and_agent[0];
                         }
 
                         $rows = db_get_all_rows_filter(
                             'tmetaconsole_agent',
-                            ['id_tagente' => $agents_ids]
+                            [
+                                'id_tagente'            => $agents_ids,
+                                'id_tmetaconsole_setup' => $servers_ids,
+                            ]
                         );
 
                         $agents = [];
@@ -689,7 +693,9 @@ switch ($activeTab) {
 
                                     foreach ($modules_serial as $data_serialized) {
                                         $data = explode('|', $data_serialized);
-                                        $id_modules[] = $data[0];
+                                        if ($id_server == $data[2]) {
+                                            $id_modules[] = $data[0];
+                                        }
                                     }
                                 }
                             } else {
@@ -786,7 +792,7 @@ if (isset($config['vc_refr']) and $config['vc_refr'] != 0) {
     $view_refresh = '300';
 }
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $url_base = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action=';
     $url_view = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$idVisualConsole.'&refr='.$view_refresh;
 } else {
@@ -798,14 +804,18 @@ if (!defined('METACONSOLE')) {
 $hash = User::generatePublicHash();
 
 $buttons = [];
-
 $buttons['consoles_list'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Visual consoles list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['public_link'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public Visual Console'), 'class' => 'main_menu_icon invert_filter']).'</a>',
+    'text'   => '<a href="'.ui_get_full_url(
+        'operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user'],
+        false,
+        false,
+        false
+    ).'">'.html_print_image('images/item-icon.svg', true, ['title' => __('Show link to public Visual Console'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 $buttons['data'] = [
     'active' => false,
@@ -830,7 +840,7 @@ $buttons['wizard'] = [
 if ($config['legacy_vc']) {
     $buttons['editor'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder.png', true, ['title' => __('Builder'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder@svg.svg', true, ['title' => __('Builder'), 'class' => 'invert_filter']).'</a>',
     ];
 }
 
@@ -839,7 +849,7 @@ $buttons['view'] = [
     'text'   => '<a href="'.$url_view.'">'.html_print_image('images/enable.svg', true, ['title' => __('View'), 'class' => 'main_menu_icon invert_filter']).'</a>',
 ];
 
-if ($idVisualConsole === false) {
+if (empty($idVisualConsole) === true) {
     $buttons = ['data' => $buttons['data']];
     // Show only the data tab
     // If it is a fail try, reset the values
@@ -850,9 +860,8 @@ if ($idVisualConsole === false) {
 $buttons[$activeTab]['active'] = true;
 
 $tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
-
 ui_print_standard_header(
-    $visualConsoleName,
+    ($visualConsoleName ?? ''),
     'images/visual_console.png',
     false,
     $tab_builder,

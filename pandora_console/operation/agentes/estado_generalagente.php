@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -164,8 +164,8 @@ $table_status->width = '100%';
 $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;
 $table_status->class = 'floating_form';
-$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter';
+$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
 
 $agentStatusGraph = html_print_div(
     [
@@ -331,16 +331,7 @@ if ((bool) $has_remote_conf) {
     }
 }
 
-// $table_agent_count_modules .= ui_print_help_tip(__('Agent statuses are re-calculated by the server, they are not  shown in real time.'), true);
-/*
-    $table_agent = html_print_div(
-    [
-        'class'   => 'agent_details_header',
-        'content' => $table_agent_header,
-    ],
-    true
-    );
-*/
+
 $table_agent = $agentStatusHeader.'
     <div class="agent_details_content">
         <div class="agent_details_graph">
@@ -350,26 +341,6 @@ $table_agent = $agentStatusHeader.'
             '.$alive_animation.html_print_table($table_status, true).'
         </div>
     </div>';
-
-
-    /*
-        $table_agent = '
-        <div class="agent_details_header">
-        '.$table_agent_header.'
-        </div>
-        <div class="agent_details_content">
-        <div class="agent_details_graph">
-            '.$table_agent_graph.'
-            <div class="agent_details_bullets">
-                '.$table_agent_count_modules.'
-            </div>
-        </div>
-        <div class="agent_details_info">
-            '.$alive_animation.$table_agent_os.$table_agent_ip.$table_agent_version.$table_agent_description.$remote_cfg.'
-        </div>
-        </div>';
-
-    */
 
 
 /*
@@ -386,8 +357,8 @@ $table_contact->width = '100%';
 $table_contact->cellspacing = 0;
 $table_contact->cellpadding = 0;
 $table_contact->class = 'floating_form';
-$table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end;';
-$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter';
+$table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
 
 $agentContactCaption = html_print_div(
     [
@@ -483,8 +454,7 @@ $data[1] = ui_progress(
             'refresh_contact' => 1,
         ],
 
-    ],
-    'line-height: 13px;'
+    ]
 );
 $table_contact->data[] = $data;
 
@@ -541,23 +511,18 @@ $table_contact->data[] = $data;
 
 $data_opcional = new stdClass();
 $data_opcional->id = 'agent_data_main';
+$data_opcional->width = '100%';
 $data_opcional->class = 'floating_form';
-$data_opcional->cellspacing = 0;
-$data_opcional->cellpadding = 0;
-$data_opcional->style[0] = 'height: 46px; width: 25%; padding-right: 5px;text-align: end;';
-$data_opcional->style[1] = 'height: 46px; width: 75%; padding-left: 5px;';
 // Gis and url address.
 $agentAdditionalContent = '';
 // Position Information.
 if ((bool) $config['activate_gis'] === true) {
-    $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
     $dataPositionAgent = gis_get_data_last_position_agent(
         $agent['id_agente']
     );
+    if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_longitude'] !== '') {
+        $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
 
-    if ($dataPositionAgent === false) {
-        $data_opcional->data['agent_position'][1] = __('There is no GIS data.');
-    } else {
         $dataOptionalOutput = html_print_anchor(
             [
                 'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente,
@@ -625,8 +590,6 @@ foreach ($fields as $field) {
         $data = [];
 
         $data[0] = '<b>'.$field['name'].ui_print_help_tip(__('Custom field'), true).'</b>';
-        $custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
-
         if ($custom_value[0]['is_password_type']) {
                 $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
         } else if ($field['is_link_enabled'] === '1') {
@@ -643,6 +606,7 @@ foreach ($fields as $field) {
 
             $data[1] = '<a href="'.$link_url.'">'.$link_text.'</a>';
         } else {
+            $custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
             $data[1] = $custom_value[0]['description'];
         }
 
@@ -710,7 +674,7 @@ if ((bool) $config['agentaccess'] === true && $access_agent > 0) {
 
     $agentAccessRate = html_print_div(
         [
-            'class'   => 'box-flat agent_details_col mrgn_lft_20px',
+            'class'   => 'box-flat agent_details_col mrgn_lft_20px w50p',
             'id'      => 'table_access_rate',
             'content' => $agentAccessRateHeader.$agentAccessRateContent,
         ],
@@ -786,18 +750,7 @@ if (empty($network_interfaces) === false) {
     $table_interface->class = 'info_table';
     $table_interface->width = '100%';
     $table_interface->style = [];
-    $table_interface->style['interface_status'] = 'width: 30px;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_event_graph'] = 'width: 35%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->align['interface_event_graph'] = 'right';
-    $table_interface->style['interface_event_graph'] = 'width: 3%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_name'] = 'width: 30%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->align['interface_name'] = 'left';
-    $table_interface->align['interface_ip'] = 'left';
-    $table_interface->align['last_contact'] = 'left';
-    $table_interface->style['last_contact'] = 'width: 20%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_ip'] = 'width: 8%;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_mac'] = 'width: 12%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['interface_event_graph'] = 'width: 35%;';
 
     $table_interface->head = [];
     $options = [
@@ -839,58 +792,22 @@ if (empty($network_interfaces) === false) {
             $graph_link = '';
         }
 
-        $events_limit = 5000;
-        $user_groups = users_get_groups($config['id_user'], 'ER');
-        $user_groups_ids = array_keys($user_groups);
-        if (empty($user_groups) === true) {
-            $groups_condition = ' 1 = 0 ';
-        } else {
-            $groups_condition = ' id_grupo IN ('.implode(',', $user_groups_ids).') ';
-        }
+        $content = [
+            'id_agent_module' => $interface['status_module_id'],
+            'id_group'        => $id_group,
+            'period'          => SECONDS_1DAY,
+            'time_from'       => '00:00:00',
+            'time_to'         => '00:00:00',
+            'sizeForTicks'    => 250,
+            'height_graph'    => 40,
+            [
+                ['id_agent_module' => $interface['status_module_id']],
+            ]
+        ];
 
-        if ((bool) check_acl($config['id_user'], 0, 'PM') === false) {
-            $groups_condition .= ' AND id_grupo != 0';
-        }
-
-        $status_condition = ' AND (estado = 0 OR estado = 1) ';
-        $unixtime = (get_system_time() - SECONDS_1DAY);
-        // Last hour.
-        $time_condition = 'AND (utimestamp > '.$unixtime.')';
-        // Tags ACLs.
-        if ($id_group > 0 && in_array(0, $user_groups_ids)) {
-            $group_array = (array) $id_group;
-        } else {
-            $group_array = $user_groups_ids;
-        }
-
-        $acl_tags = tags_get_acl_tags(
-            $config['id_user'],
-            $group_array,
-            'ER',
-            'event_condition',
-            'AND',
-            '',
-            true,
-            [],
-            true
-        );
-
-        $id_modules_array = [];
-        $id_modules_array[] = $interface['status_module_id'];
-
-        $unixtime = (get_system_time() - SECONDS_1DAY);
-        // Last hour.
-        $time_condition = 'WHERE (te.utimestamp > '.$unixtime.')';
-
-        $sqlEvents = sprintf(
-            'SELECT *
-			FROM tevento te
-			INNER JOIN tagente_estado tae
-				ON te.id_agentmodule = tae.id_agente_modulo
-					AND tae.id_agente_modulo IN (%s)
-			%s',
-            implode(',', $id_modules_array),
-            $time_condition
+        $e_graph = \reporting_module_histogram_graph(
+            ['datetime' => time()],
+            $content
         );
 
         $sqlLast_contact = sprintf(
@@ -904,21 +821,6 @@ if (empty($network_interfaces) === false) {
         $last_contact = array_shift($last_contact);
         $last_contact = array_shift($last_contact);
 
-        $events = db_get_all_rows_sql($sqlEvents);
-        $text_event_header = __('Events info (24hr.)');
-        if (!$events) {
-            $no_events = ['color' => ['criticity' => 2]];
-            $e_graph = reporting_get_event_histogram(
-                $no_events,
-                $text_event_header
-            );
-        } else {
-            $e_graph = reporting_get_event_histogram(
-                $events,
-                $text_event_header
-            );
-        }
-
         $data = [];
         $data['interface_name'] = '<strong>'.$interface_name.'</strong>';
         $data['interface_status'] = $interface['status_image'];
@@ -926,7 +828,7 @@ if (empty($network_interfaces) === false) {
         $data['interface_ip'] = $interface['ip'];
         $data['interface_mac'] = $interface['mac'];
         $data['last_contact'] = __('Last contact: ').$last_contact;
-        $data['interface_event_graph'] = $e_graph;
+        $data['interface_event_graph'] = $e_graph['chart'];
 
         $table_interface->data[] = $data;
     }
@@ -1038,7 +940,7 @@ $agentEventsGraph = html_print_div(
 
 $agentEvents = html_print_div(
     [
-        'class'   => 'box-flat agent_details_col',
+        'class'   => 'box-flat agent_details_col w50p',
         'content' => $agentEventsHeader.$agentEventsGraph,
     ],
     true
@@ -1057,19 +959,13 @@ if (isset($data_opcional) === false || isset($data_opcional->data) === false || 
         false,
         false,
         true,
-        'box-flat agent_details_col agent_details_toggle agent_details_first_row w100p',
-        'mrgn_right_20px',
-        'w100p'
+        '',
+        'white-box-content',
+        'box-flat white_table_graph w100p'
     );
 }
 
 $agentIncidents = (isset($table_incident) === false) ? '' : html_print_table($table_incident, true);
-/*
-    echo '<div class="agent_details_first_row">
-    <div class="box-flat agent_details_col mrgn_lft_20px mrgn_right_20px">'.$table_agent.'</div>
-    <div class="box-flat agent_details_col mrgn_right_20px">'.$agent_contact.'</div>
-    </div>'.$agent_info;
-*/
 
 html_print_div(
     [

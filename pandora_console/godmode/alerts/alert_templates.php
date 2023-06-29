@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -122,7 +122,7 @@ $sec = (is_metaconsole() === true) ? 'advanced' : 'galertas';
 // case delete_templete action is performed.
 if (!$delete_template) {
     // Header.
-    if (is_metaconsole() === true) {
+    if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
         ui_print_standard_header(
@@ -133,6 +133,10 @@ if (!$delete_template) {
             true,
             [],
             [
+                [
+                    'link'  => '',
+                    'label' => __('Alerts'),
+                ],
                 [
                     'link'  => '',
                     'label' => __('Alert templates'),
@@ -283,6 +287,7 @@ $url = ui_get_url_refresh(
         'offset'        => false,
         'search_string' => $search_string,
         'search_type'   => $search_type,
+        'alert_flag'    => true,
     ],
     true,
     false

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -60,8 +60,10 @@ function visual_map_print_button_editor_refactor(
         $disabled,
         '',
         [
-            'class' => $class,
-            'mode'  => 'onlyIcon',
+            'class'                          => $class,
+            'mode'                           => 'onlyIcon',
+            'data-title'                     => $label,
+            'data-use_title_for_force_title' => '1',
         ],
         false,
         true
@@ -118,8 +120,12 @@ if ($aclRead === false && $aclWrite === false && $aclManage === false) {
 
 // Render map.
 $options = [];
+$baseUrlList = 'index.php?sec=network&sec2=godmode/reporting/map_builder';
+if (is_metaconsole() === true) {
+    $baseUrlList = 'index.php?sec=screen&sec2=screens/screens&action=visualmap';
+}
 
-$options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder">'.html_print_image(
+$options['consoles_list']['text'] = '<a href="'.$baseUrlList.'">'.html_print_image(
     'images/logs@svg.svg',
     true,
     [
@@ -142,11 +148,17 @@ if ($aclWrite === true || $aclManage === true) {
     );
 
     $baseUrl = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action='.$action;
+    if (is_metaconsole() === true) {
+        $baseUrl = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&action2='.$action;
+    }
 
     $hash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
 
     $options['public_link']['text'] = '<a href="'.ui_get_full_url(
-        'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user']
+        'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user'],
+        false,
+        false,
+        false
     ).'" target="_blank">'.html_print_image(
         'images/item-icon.svg',
         true,
@@ -240,6 +252,12 @@ if (!$config['pure']) {
                 'link'  => '',
                 'label' => __('Visual console'),
             ],
+        ],
+        [
+            'id_element' => $visualConsoleId,
+            'url'        => 'operation/visual_console/render_view&id='.$visualConsoleId,
+            'label'      => $visualConsoleName,
+            'section'    => 'Visual_Console',
         ]
     );
 }
@@ -254,45 +272,45 @@ if ($pure === false) {
         echo '<div id ="edit-vc" class="fixed_filter_bar">';
         echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
         echo '<div class="toolbox-buttons">';
-        $class_camera = 'camera_min link-create-item';
-        $class_percentile = 'percentile_item_min link-create-item';
-        $class_module_graph = 'graph_min link-create-item';
-        $class_donut = 'donut_graph_min link-create-item';
-        $class_bars = 'bars_graph_min link-create-item';
-        $class_value = 'binary_min link-create-item';
-        $class_sla = 'auto_sla_graph_min link-create-item';
-        $class_label = 'label_min link-create-item';
-        $class_icon = 'icon_min link-create-item';
-        $class_clock = 'clock_min link-create-item';
-        $class_group = 'group_item_min link-create-item';
-        $class_box = 'box_item link-create-item';
-        $class_line = 'line_item link-create-item';
-        $class_cloud = 'color_cloud_min link-create-item';
-        $class_nlink = 'network_link_min link-create-item';
-        $class_odometer = 'odometer_min link-create-item';
-        $class_basic_chart = 'basic_chart_min link-create-item';
-        $class_delete = 'delete_item delete_min';
-        $class_copy = 'copy_item';
+        $class_camera = 'camera_min link-create-item forced_title';
+        $class_percentile = 'percentile_item_min link-create-item forced_title';
+        $class_module_graph = 'graph_min link-create-item forced_title';
+        $class_donut = 'donut_graph_min link-create-item forced_title';
+        $class_bars = 'bars_graph_min link-create-item forced_title';
+        $class_value = 'binary_min link-create-item forced_title';
+        $class_sla = 'auto_sla_graph_min link-create-item forced_title';
+        $class_label = 'label_min link-create-item forced_title';
+        $class_icon = 'icon_min link-create-item forced_title';
+        $class_clock = 'clock_min link-create-item forced_title';
+        $class_group = 'group_item_min link-create-item forced_title';
+        $class_box = 'box_item link-create-item forced_title';
+        $class_line = 'line_item link-create-item forced_title';
+        $class_cloud = 'color_cloud_min link-create-item forced_title';
+        $class_nlink = 'network_link_min link-create-item forced_title';
+        $class_odometer = 'odometer_min link-create-item forced_title';
+        $class_basic_chart = 'basic_chart_min link-create-item forced_title';
+        $class_delete = 'delete_item forced_title';
+        $class_copy = 'copy_item forced_title';
         if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
-            $class_camera = 'camera_min_white link-create-item';
-            $class_percentile = 'percentile_item_min_white link-create-item';
-            $class_module_graph = 'graph_min_white link-create-item';
-            $class_donut = 'donut_graph_min_white link-create-item';
-            $class_bars = 'bars_graph_min_white link-create-item';
-            $class_value = 'binary_min_white link-create-item';
-            $class_sla = 'auto_sla_graph_min_white link-create-item';
-            $class_label = 'label_min_white link-create-item';
-            $class_icon = 'icon_min_white link-create-item';
-            $class_clock = 'clock_min_white link-create-item';
-            $class_group = 'group_item_min_white link-create-item';
-            $class_box = 'box_item_white link-create-item';
-            $class_line = 'line_item_white link-create-item';
-            $class_cloud = 'color_cloud_min_white link-create-item';
-            $class_nlink = 'network_link_min_white link-create-item';
-            $class_odometer = 'odometer_min_white link-create-item';
-            $class_basic_chart = 'basic_chart_min_white link-create-item';
-            $class_delete = 'delete_item_white delete_min_white';
-            $class_copy = 'copy_item_white';
+            $class_camera .= ' invert_filter forced_title';
+            $class_percentile .= ' invert_filter forced_title';
+            $class_module_graph .= ' invert_filter forced_title';
+            $class_donut .= ' invert_filter forced_title';
+            $class_bars .= ' invert_filter forced_title';
+            $class_value .= ' invert_filter forced_title';
+            $class_sla .= ' invert_filter forced_title';
+            $class_label .= ' invert_filter forced_title';
+            $class_icon .= ' invert_filter forced_title';
+            $class_clock .= ' invert_filter forced_title';
+            $class_group .= ' invert_filter forced_title';
+            $class_box .= ' invert_filter forced_title';
+            $class_line .= ' invert_filter forced_title';
+            $class_cloud .= ' invert_filter forced_title';
+            $class_nlink .= ' invert_filter forced_title';
+            $class_odometer .= ' invert_filter forced_title';
+            $class_basic_chart .= ' invert_filter forced_title';
+            $class_delete .= ' invert_filter forced_title';
+            $class_copy .= ' invert_filter forced_title';
         }
 
         visual_map_print_button_editor_refactor(
@@ -408,7 +426,7 @@ if ($pure === false) {
                 echo html_print_label(__('Force'), 'force-mode', true);
                 echo '<a id ="force_check" href="">';
                 echo html_print_image(
-                    'images/change-active.svg',
+                    'images/force@svg.svg',
                     true,
                     [
                         'title' => __('Force remote checks'),
@@ -552,7 +570,7 @@ if (users_can_manage_group_all('AR') === false) {
 }
 
 $ignored_params['refr'] = '';
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ui_require_javascript_file('pandora_visual_console');
 include_javascript_d3();
 visual_map_load_client_resources();

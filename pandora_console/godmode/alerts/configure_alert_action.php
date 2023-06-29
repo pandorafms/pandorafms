@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -144,7 +144,7 @@ if ($disabled) {
 $name = '';
 $id_command = '';
 $group = 0;
-$action_threshold = 0;
+$action_threshold = '0';
 // All group is 0.
 if ($id) {
     $action = alerts_get_alert_action($id);
@@ -284,7 +284,7 @@ $table->data[1][0] = html_print_label_input_block(
 );
 
 $table->data[1][1] = html_print_label_input_block(
-    __('Threshold'),
+    __('Threshold').ui_print_help_tip(__('An alert action is executed only once within this time interval, regardless of how many times the alert is triggered.'), true),
     html_print_extended_select_for_time(
         'action_threshold',
         $action_threshold,
@@ -457,7 +457,7 @@ if ($is_management_allowed === true) {
 echo '</form>';
 
 ui_require_javascript_file('pandora_alerts');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ?>
 
 <script type="text/javascript">
@@ -712,7 +712,6 @@ $(document).ready (function () {
                         old_recovery_value =
                             $("[name=field" + i + "_recovery_value]").val();
                     }
-                    
                     // Replace the old column with the new
                     $table_macros_field.replaceWith(field_row);
                     if (old_value != '' || old_recovery_value != '') {
@@ -720,12 +719,14 @@ $(document).ready (function () {
                         if (inputType == 'radio') {
                             if(old_value == 'text/plain'){
                                 if ($("[name=field" + i + "_value]").val() == 'text/plain') {
-                                    $("[name=field" + i + "_value]").attr('checked','checked');
+                                    $("[name=field" + i + "_value][value='text/plain']").attr('checked','checked');
+                                    $("[name=field" + i + "_value][value='text/html']").removeAttr("checked")
                                 }
                             }
                             else{
-                                if($("[name=field" + i + "_value]").val() == 'text/html') {
-                                    $("[name=field" + i + "_value]").attr('checked','checked');
+                                $("[name=field" + i + "_value]").val()
+                                if ($("[name=field" + i + "_value]").val() == 'text/html') {
+                                    $("[name=field" + i + "_value][value='text/html']").attr('checked','checked');
                                 }
                             }
                             if(old_recovery_value == 'text/plain'){
@@ -809,18 +810,10 @@ $(document).ready (function () {
 
                     $('#field5_value').on('change', function() {
                         ajax_get_integria_custom_fields($(this).val());
-                    }); 
+                    });
                 }
 
-                var added_config = {
-                    "selector": "textarea.tiny-mce-editor",
-                    "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-                    "theme_advanced_buttons1": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
-                    "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-                    "valid_children": "+body[style]",
-                    "width": "90%",
-                }
-                defineTinyMCE(added_config);
+                defineTinyMCE('textarea.tiny-mce-editor');
 
                 render_command_preview(original_command);
                 render_command_recovery_preview(original_command);

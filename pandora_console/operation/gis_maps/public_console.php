@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 20012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 20012 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -206,10 +206,10 @@ if ($layers != false) {
 
             $status = agents_get_status($idAgent);
             $icon = gis_get_agent_icon_map($idAgent, true, $status);
-            $icon = ui_get_full_url($icon);
             $icon_size = getimagesize($icon);
             $icon_width = $icon_size[0];
             $icon_height = $icon_size[1];
+            $icon = ui_get_full_url($icon);
 
             // Is a group item
             if (!empty($groupsByAgentId[$idAgent])) {
@@ -278,7 +278,7 @@ if ($layers != false) {
     $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
     ui_require_javascript_file('connection_check');
     set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
-    ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+    ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 }
 
 // Resize GIS map on fullscreen

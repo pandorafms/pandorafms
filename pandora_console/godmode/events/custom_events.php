@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -125,14 +125,15 @@ foreach ($fields_available as $key => $available) {
 }
 
 $table->data[0][0] = '<b>'.__('Fields available').'</b>';
-$table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
+$table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px; height: auto');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     'images/arrow@svg.svg',
     true,
     [
         'id'    => 'right',
         'title' => __('Add fields to select'),
-        'style' => 'rotate: 180deg; width: 40px',
+        'style' => 'rotate: 180deg;',
+        'class' => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
@@ -141,7 +142,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
     [
         'id'    => 'left',
         'title' => __('Delete fields to select'),
-        'style' => 'width: 40px',
+        'style' => '',
     ]
 ).'</a>';
 
@@ -159,7 +160,7 @@ $table->data[1][2] = '<div class="flex_justify">'.html_print_select(
     false,
     '',
     false,
-    'width: 300px'
+    'width: 300px; height: auto'
 );
 
 $table->data[1][2] .= '<div id="sort_arrows" class="flex-column">';
@@ -169,6 +170,7 @@ $table->data[1][2] .= '<a href="javascript:">'.html_print_image(
     [
         'onclick' => 'sortUpDown(\'up\');',
         'title'   => __('Move up selected fields'),
+        'class'   => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 $table->data[1][2] .= '<a href="javascript:">'.html_print_image(
@@ -177,6 +179,7 @@ $table->data[1][2] .= '<a href="javascript:">'.html_print_image(
     [
         'onclick' => 'sortUpDown(\'down\');',
         'title'   => __('Move down selected fields'),
+        'class'   => 'main_menu_icon invert_filter',
     ]
 ).'</a>';
 $table->data[1][2] .= '</div></div>';

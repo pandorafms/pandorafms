@@ -232,6 +232,11 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
     }
   }
 
+  var exclude_policy_modules = 0;
+  if ($("#hidden-exclude_policy_modules").val() === "1") {
+    exclude_policy_modules = 1;
+  }
+
   jQuery.post(
     homedir + "/ajax.php",
     {
@@ -248,7 +253,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       status_module: module_status,
       id_group: id_group,
       pendingdelete:
-        event.target != undefined ? event.target.dataset.pendingdelete : 0 // Get pendingdelete attribute from target
+        event.target != undefined ? event.target.dataset.pendingdelete : 0, // Get pendingdelete attribute from target
+      exclude_policy_modules
     },
     function(data) {
       $("#module").empty();

@@ -949,22 +949,22 @@ if ($get_agent_alerts_datatable === true) {
                         $tmp->force = $row[2];
                         $tmp->agent_name = $row[3];
                         $tmp->agent_module_name = $row[4];
-                        $tmp->template_name = $row[5];
-                        $tmp->action = $row[6];
-                        $tmp->last_fired = $row[7];
-                        $tmp->status = $row[8];
-                        $tmp->validate = $row[9];
+                        $tmp->template_name = $row[5].$row[6];
+                        $tmp->action = $row[7];
+                        $tmp->last_fired = $row[8];
+                        $tmp->status = $row[9];
+                        $tmp->validate = $row[10];
                     } else {
                         // Open.
                         $tmp->standby = $row[0];
                         $tmp->force = $row[1];
                         $tmp->agent_name = $row[2];
                         $tmp->agent_module_name = $row[3];
-                        $tmp->template_name = $row[4];
-                        $tmp->action = $row[5];
-                        $tmp->last_fired = $row[6];
-                        $tmp->status = $row[7];
-                        $tmp->validate = $row[8];
+                        $tmp->template_name = $row[4].$row[5];
+                        $tmp->action = $row[6];
+                        $tmp->last_fired = $row[7];
+                        $tmp->status = $row[8];
+                        $tmp->validate = $row[9];
                     }
 
                     $carry[] = $tmp;

@@ -1411,6 +1411,7 @@ switch ($action) {
                         ];
 
 
+
                         $report = db_get_row_filter(
                             'treport',
                             ['id_report' => $idReport]
@@ -1520,21 +1521,28 @@ switch ($action) {
                 $good_format = false;
                 switch ($action) {
                     case 'update':
+
                         $values = [];
-                        $server_id = get_parameter('server_id', 0);
-                        if (is_metaconsole() === true
-                            && empty($server_id) === false
-                        ) {
-                            $connection = metaconsole_get_connection_by_id(
-                                $server_id
-                            );
-                            metaconsole_connect($connection);
-                            $values['server_name'] = $connection['server_name'];
+                        $values['type'] = get_parameter('type', null);
+                        if (is_metaconsole() === true && $values['type'] === 'inventory') {
+                            $values['server_name'] = get_parameter('combo_server');
+                        } else {
+                            $server_id = get_parameter('server_id', 0);
+                            if (is_metaconsole() === true
+                                && empty($server_id) === false
+                            ) {
+                                $connection = metaconsole_get_connection_by_id(
+                                    $server_id
+                                );
+                                metaconsole_connect($connection);
+                                $values['server_name'] = $connection['server_name'];
+                            }
                         }
+
 
                         $values['id_report'] = $idReport;
                         $values['description'] = get_parameter('description');
-                        $values['type'] = get_parameter('type', null);
+
                         $values['recursion'] = get_parameter('recursion', null);
                         $values['show_extended_events'] = get_parameter(
                             'include_extended_events',
@@ -1757,9 +1765,14 @@ switch ($action) {
                                     'inventory_modules'
                                 );
                                 $es['inventory_regular_expression'] = get_parameter('inventory_regular_expression', '');
+                                if (is_metaconsole() === true) {
+                                    $es['inventory_server'] = get_parameter('combo_server');
+                                }
+
                                 $description = get_parameter('description');
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
+
                             break;
 
                             case 'inventory_changes':
@@ -2579,6 +2592,7 @@ switch ($action) {
                                 $es['inventory_regular_expression'] = get_parameter('inventory_regular_expression', '');
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
+
                             break;
 
                             case 'event_report_log':

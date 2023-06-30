@@ -1954,7 +1954,7 @@ $class = 'databox filters';
                         $modulegroup,
                         $id_agents,
                         !$selection_a_m,
-                        true
+                        false
                     );
                 }
 

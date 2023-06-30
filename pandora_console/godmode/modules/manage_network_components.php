@@ -597,8 +597,7 @@ $search_string = (string) get_parameter('search_string');
 $offset = (int) get_parameter('offset');
 $url = ui_get_url_refresh(
     [
-        'offset'          => $offset,
-        'search_string'   => $search_string,
+        'search_string'   => urlencode(io_safe_output($search_string)),
         'search_id_group' => $search_id_group,
         'id'              => $id,
     ],
@@ -678,7 +677,8 @@ $table->data[0][] = html_print_label_input_block(
     )
 );
 
-$toggleFilters = '<form class="filters_form" method="POST" action="'.$url.'">';
+$filter_action_url = 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&search_string='.urlencode(io_safe_output($search_string)).'&search_id_group'.$search_id_group.'&pure='.$pure;
+$toggleFilters = '<form class="filters_form" method="POST" action="'.$filter_action_url.'">';
 $toggleFilters .= html_print_table($table, true);
 $toggleFilters .= html_print_div(
     [
@@ -725,7 +725,7 @@ $total_components = network_components_get_network_components(
     'COUNT(*) AS total'
 );
 $total_components = $total_components[0]['total'];
-$offset_delete = ($offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
+$offset_delete = ($offset > 0 && $offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
 $filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = network_components_get_network_components(

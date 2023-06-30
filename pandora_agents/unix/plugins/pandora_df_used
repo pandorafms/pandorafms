@@ -58,7 +58,7 @@ else
 		if (substr($fs,0,1) eq '-')
 		{
 			my $mount_name=substr($fs,1,);
-			my @mount_all= split /\n/, `df -khTP | tail -n +2 | awk '{print \$7}'| grep -i "$mount_name"`; 
+			my @mount_all= split /\n/, `df -khTP | tail -n +2 | awk '{print $7}'| grep -i "$mount_name"`; 
 			foreach (@mount_all){
 				$excluded_filesystems{$_} = '-1%';
 			}

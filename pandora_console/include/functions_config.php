@@ -2839,7 +2839,7 @@ function config_process_config()
     }
 
     if (!isset($config['email_from_dir'])) {
-        config_update_value('email_from_dir', 'pandora@pandorafms.com/community/');
+        config_update_value('email_from_dir', 'pandora@pandorafms.com');
     }
 
     if (!isset($config['email_from_name'])) {

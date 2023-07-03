@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1056,6 +1056,7 @@ class Tree
         $agent_search_filter = $this->getAgentSearchFilter();
         $agent_status_filter = $this->getAgentStatusFilter();
         $module_search_filter = $this->getModuleSearchFilter();
+        $module_status_filter = $this->getModuleStatusFilter();
         $module_status_inner = '';
         $module_search_inner = '';
         $module_search_filter = '';
@@ -1063,9 +1064,9 @@ class Tree
         if (!empty($this->filter['searchModule'])) {
             $module_search_inner = '
                 INNER JOIN tagente_estado tae
-                    ON tae.id_agente_modulo = tam.id_agente_modulo';
-            $module_search_filter = "AND tam.disabled = 0
-                AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
+                    ON tae.id_agente_modulo = tam_inner.id_agente_modulo';
+            $module_search_filter = "AND tam_inner.disabled = 0
+                AND tam_inner.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }
 
         $sql_model = "SELECT %s FROM

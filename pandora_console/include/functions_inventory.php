@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2007-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -63,7 +63,12 @@ function inventory_get_data(
         array_push($where, 'id_agente IN ('.implode(',', $agents_ids).')');
     }
 
+    foreach ($inventory_module_name as $key => $module_name) {
+        $inventory_module_name[$key] = io_safe_output($module_name);
+    }
+
     if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name[0] !== 0
         && $inventory_module_name !== ''
         && $inventory_module_name !== 'all'
     ) {
@@ -707,17 +712,6 @@ function inventory_get_datatable(
 ) {
     global $config;
 
-    if ($utimestamp === 0) {
-        $data_last = db_get_row_sql(
-            sprintf(
-                'SELECT `utimestamp`, `timestamp`
-                    FROM tagente_datos_inventory
-                    ORDER BY utimestamp DESC'
-            )
-        );
-        $utimestamp = $data_last['utimestamp'];
-    }
-
     $offset = (int) get_parameter('offset');
 
     $where = [];
@@ -754,7 +748,7 @@ function inventory_get_datatable(
     }
 
     if ($utimestamp > 0) {
-        array_push($where, 'tagente_datos_inventory.utimestamp = '.$utimestamp.' ');
+        array_push($where, 'tagente_datos_inventory.utimestamp <= '.$utimestamp.' ');
     }
 
     $sql = sprintf(
@@ -773,12 +767,21 @@ function inventory_get_datatable(
             ON tagente.id_agente = tagent_module_inventory.id_agente
 
         WHERE %s
-        ORDER BY tmodule_inventory.id_module_inventory 
-        LIMIT %d, %d',
-        implode(' AND ', $where),
-        $offset,
-        $config['block_size']
+        ORDER BY tmodule_inventory.id_module_inventory
+        ',
+        implode(' AND ', $where)
     );
+
+    if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name !== ''
+        && $inventory_module_name !== 'all'
+    ) {
+        $sql .= sprintf(
+            'LIMIT %d, %d',
+            $offset,
+            $config['block_size']
+        );
+    }
 
     $rows = db_get_all_rows_sql($sql);
 
@@ -804,13 +807,31 @@ function inventory_get_datatable(
         $agent_data = [];
         $rows_tmp = [];
         foreach ($rows as $row) {
-            $agent_data[$row['id_agente']][] = $row;
+            $replace_agent_data = false;
+            if (isset($agent_data[$row['id_agente']]) === true) {
+                foreach ($agent_data[$row['id_agente']] as $key => $compare_data) {
+                    if ($compare_data['id_module_inventory'] === $row['id_module_inventory']
+                        && $row['last_update'] > $compare_data['last_update']
+                    ) {
+                        $agent_data[$row['id_agente']][$key] = $row;
+                        $replace_agent_data = true;
+                    }
+                }
+            }
+
+            if ($replace_agent_data === false) {
+                $agent_data[$row['id_agente']][] = $row;
+            }
         }
 
         foreach ($agent_data as $id_agent => $data_agent) {
             $rows_tmp['agent'] = $data_agent[0]['name_agent'];
 
             foreach ($data_agent as $key => $agent_row) {
+                if (isset($rows_tmp['agent']) === false) {
+                    $rows_tmp['agent'] = $agent_row['name_agent'];
+                }
+
                 $data_agent[$key]['timestamp'] = $agent_row['last_update_timestamp'];
                 $data_agent[$key]['utimestamp'] = $agent_row['last_update'];
 

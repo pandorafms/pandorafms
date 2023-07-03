@@ -352,7 +352,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         }
 
         // Button for feedback pandora.
-        if (enterprise_installed() && $config['activate_feedback'] !== false) {
+        if (enterprise_installed() && $config['activate_feedback']) {
             $header_feedback = '<div id="feedback-icon-header">';
             $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
             $header_feedback .= '<div id="msg-header" class="invisible"></div>';

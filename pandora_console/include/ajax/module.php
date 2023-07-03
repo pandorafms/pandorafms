@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1713,6 +1713,7 @@ if (check_login()) {
         $length = ($length != '-1') ? $length : '18446744073709551615';
         $order = get_datatable_order(true);
         $nodes = get_parameter('nodes', 0);
+        $disabled_modules = (bool) get_parameter('disabled_modules', false);
 
         $where = '';
         $recordsTotal = 0;
@@ -1737,8 +1738,12 @@ if (check_login()) {
         $where .= sprintf(
             'tagente_estado.estado IN (%s)
             AND tagente_modulo.delete_pending = 0',
-            $status
+            $status,
         );
+
+        if ($disabled_modules === false) {
+            $where .= ' AND tagente_modulo.disabled = 0';
+        }
 
         if (is_metaconsole() === false) {
             $order_by = '';

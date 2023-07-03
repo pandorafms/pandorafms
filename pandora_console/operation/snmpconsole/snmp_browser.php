@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -72,29 +72,34 @@ if ($config['pure']) {
     $link['text'] .= '</a>';
 }
 
-// Header.
-ui_print_standard_header(
-    __('SNMP Browser'),
-    'images/op_snmp.png',
-    false,
-    'snmp_browser_view',
-    false,
-    [$link],
-    [
+// Control from managent polices.
+$type = get_parameter('type', false);
+$page = get_parameter('page', false);
+if (empty($page) && $type !== 'networkserver') {
+    // Header.
+    ui_print_standard_header(
+        __('SNMP Browser'),
+        'images/op_snmp.png',
+        false,
+        'snmp_browser_view',
+        false,
+        [$link],
         [
-            'link'  => '',
-            'label' => __('Monitoring'),
-        ],
-        [
-            'link'  => '',
-            'label' => __('SNMP'),
-        ],
-    ]
-);
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('SNMP'),
+            ],
+        ]
+    );
 
-// SNMP tree container.
-if (!isset($_GET['tab'])) {
-    snmp_browser_print_container(false, '100%', '60%', '', true, true);
+    // SNMP tree container.
+    if (!isset($_GET['tab'])) {
+        snmp_browser_print_container(false, '100%', '60%', '', true, true);
+    }
 }
 
 // Div for modal.
@@ -742,9 +747,20 @@ function show_add_module() {
                                 });
                         }
                 }
-            ],   
+            ],
         });
     }
 }
-    
+
+function use_oid() {
+    $("#text-snmp_oid").val($("#hidden-snmp_oid").val());
+
+    $("#snmp_data").empty();
+
+    $("#snmp_data").css("display", "none");
+    $(".forced_title_layer").css("display", "none");
+
+    $("#snmp_browser_container").dialog("close");
+}
+
 </script>

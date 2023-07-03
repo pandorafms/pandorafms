@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1624,7 +1624,7 @@ function local_ldap_search(
     }
 
     $dn = ' -b '.escapeshellarg($dn);
-    $ldapsearch_command = 'ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
+    $ldapsearch_command = 'timeout '.$ldap_search_time.' ldapsearch -LLL -o ldif-wrap=no -o nettimeout='.$ldap_search_time.' -x'.$ldap_host.$ldap_version.' -E pr=10000/noprompt '.$ldap_admin_user.$ldap_admin_pass.$dn.$filter.$tls.' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"';
     $shell_ldap_search = explode("\n", shell_exec($ldapsearch_command));
     foreach ($shell_ldap_search as $line) {
         $values = explode('=>', $line);

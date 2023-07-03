@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1460,7 +1460,7 @@ class HostDevices extends Wizard
             }
 
             include_once $config['homedir'].'/include/class/CredentialStore.class.php';
-            $available_keys = CredentialStore::getKeys('CUSTOM');
+            $available_keys = CredentialStore::getKeys('WMI');
             if (check_acl($config['id_user'], 0, 'UM')) {
                 $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
                     'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox'
@@ -1482,7 +1482,7 @@ class HostDevices extends Wizard
                             'arguments' => [
                                 'type'     => 'select',
                                 'name'     => 'auth_strings[]',
-                                'fields'   => CredentialStore::getKeys('CUSTOM'),
+                                'fields'   => CredentialStore::getKeys('WMI'),
                                 'selected' => explode(
                                     ',',
                                     $this->task['auth_strings']

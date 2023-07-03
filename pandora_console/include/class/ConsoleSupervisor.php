@@ -169,6 +169,7 @@ class ConsoleSupervisor
          *  NOTIF.PHP.DISABLE_FUNCTIONS
          *  NOTIF.PHP.CHROMIUM
          *  NOTIF.PHP.VERSION
+         *  NOTIF.PHP.VERSION.SUPPORT
          */
 
         $this->checkPHPSettings();
@@ -377,6 +378,7 @@ class ConsoleSupervisor
          *  NOTIF.PHP.DISABLE_FUNCTIONS
          *  NOTIF.PHP.CHROMIUM
          *  NOTIF.PHP.VERSION
+         *  NOTIF.PHP.VERSION.SUPPORT
          */
 
         $this->checkPHPSettings();
@@ -853,6 +855,7 @@ class ConsoleSupervisor
             case 'NOTIF.PHP.DISABLE_FUNCTIONS':
             case 'NOTIF.PHP.CHROMIUM':
             case 'NOTIF.PHP.VERSION':
+            case 'NOTIF.PHP.VERSION.SUPPORT':
             case 'NOTIF.HISTORYDB':
             case 'NOTIF.PANDORADB':
             case 'NOTIF.PANDORADB.HISTORICAL':
@@ -1807,14 +1810,14 @@ class ConsoleSupervisor
             $url = 'https://www.php.net/supported-versions.php';
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.VERSION',
+                    'type'    => 'NOTIF.PHP.VERSION.SUPPORT',
                     'title'   => __('PHP UPDATE REQUIRED'),
                     'message' => __('You should update your PHP version because it will be out of official support').'<br>'.__('Current PHP version: ').PHP_VERSION,
                     'url'     => $url,
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.PHP.VERSION');
+            $this->cleanNotifications('NOTIF.PHP.VERSION.SUPPORT');
         }
     }
 

@@ -539,6 +539,33 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         element.style.display = "none"
     }
 
+    function notifications_clean_all() {
+        let wrapper_inner = document.getElementById('notification-wrapper-inner');
+        while (wrapper_inner.firstChild) {
+            wrapper_inner.removeChild(wrapper_inner.firstChild);
+        }
+    }
+
+    function mark_all_notification_as_read() {
+        jQuery.post ("ajax.php",
+            {
+                "page" : "godmode/setup/setup_notifications",
+                "mark_all_notification_as_read" : 1
+            },
+            function (data, status) {
+                notifications_clean_all();
+                location.reload();
+            },
+            "json"
+        )
+        .fail(function(xhr, textStatus, errorThrown){
+            console.error(
+                "Failed to mark al notification as read. Error: ",
+                xhr.responseText
+            );
+        });
+    }
+
     function click_on_notification_toast(event) {
         var match = /notification-(.*)-id-([0-9]+)/.exec(event.target.id);
         if (!match) {

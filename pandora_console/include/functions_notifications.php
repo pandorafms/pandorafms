@@ -136,6 +136,7 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.PHP.DISABLE_FUNCTIONS',
             'NOTIF.PHP.CHROMIUM',
             'NOTIF.PHP.VERSION',
+            'NOTIF.PHP.VERSION.SUPPORT',
             'NOTIF.HISTORYDB',
             'NOTIF.PANDORADB',
             'NOTIF.PANDORADB.HISTORICAL',
@@ -1025,9 +1026,20 @@ function notifications_print_dropdown()
         $mess = [];
     }
 
+    $notification_menu = html_print_menu_button(
+        [
+            'href'    => 'javascript:',
+            'class'   => 'notification_menu_actions',
+            'text'    => __('Mark all as read'),
+            'onClick' => 'mark_all_notification_as_read()',
+        ],
+        true
+    );
+
     return sprintf(
         "<div id='notification-wrapper'>
             <div id='notification-wrapper-inner'>
+            <div class='menu_tab notification_menu'>%s</div>
                 %s
             </div>
         </div>
@@ -1037,6 +1049,7 @@ function notifications_print_dropdown()
         >
         </div>
         ",
+        $notification_menu,
         array_reduce(
             $mess,
             function ($carry, $message) {
@@ -1114,7 +1127,7 @@ function notifications_print_dropdown_element($message_info)
                 </p>
             </div>
         </a>",
-        $action.';click_on_notification_toast(event)',
+        $action.'; click_on_notification_toast(event)',
         $message_info['id_mensaje'],
         messages_get_url($message_info['id_mensaje']),
         $target,

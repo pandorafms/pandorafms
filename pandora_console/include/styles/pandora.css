@@ -12289,3 +12289,8 @@ tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
 }
+
+.notification_menu {
+  padding-top: 10px;
+  padding-left: 15px;
+}

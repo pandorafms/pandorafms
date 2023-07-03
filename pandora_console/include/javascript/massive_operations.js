@@ -110,6 +110,18 @@ function form_controls_massive_operations_agents(metaconsole) {
     $("#id_group").trigger("change");
   });
 
+  var os_agent;
+  $("#os_agent").change(function() {
+    os_agent = this.value;
+    $("#id_group").trigger("change");
+  });
+
+  var os_agent_version;
+  $("#text-os_agent_version").keyup(function() {
+    os_agent_version = this.value;
+    $("#id_group").trigger("change");
+  });
+
   if (metaconsole == 1) {
     $("#nodes").change(function() {
       disabled = $("#disabled").val();
@@ -142,6 +154,13 @@ function form_controls_massive_operations_agents(metaconsole) {
     },
     disabled: function() {
       return disabled;
+    },
+    os_agent: function() {
+      return os_agent;
+    },
+    os_agent_version: function() {
+      console.log(os_agent_version);
+      return os_agent_version;
     }
   };
 

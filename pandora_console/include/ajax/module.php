@@ -1252,7 +1252,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/event-history.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Event history'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1267,7 +1270,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/module-graph.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Module graph'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1284,7 +1290,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/simple-value.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Module detail'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true
@@ -1320,7 +1329,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 $imgaction,
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Force remote check'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1337,7 +1349,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/edit.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Edit configuration'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true

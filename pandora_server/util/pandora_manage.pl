@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.770 Build 230427";
+my $version = "7.0NG.772 Build 230703";
 
 # save program name for logging
 my $progname = basename($0);
@@ -2933,7 +2933,7 @@ sub cli_delete_module() {
 				next;
 			}
 		
-			pandora_delete_module($dbh,$id_module,$conf);
+			pandora_delete_module($dbh, $id_module, $conf, 1);
 		}
 	} else {
 		print_log "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
@@ -2943,7 +2943,7 @@ sub cli_delete_module() {
 		my $id_module = get_agent_module_id($dbh,$module_name,$id_agent);
 		exist_check($id_module,'module',$module_name);
 		
-		pandora_delete_module($dbh,$id_module,$conf);
+		pandora_delete_module($dbh, $id_module, $conf, 1);
 	}
 }
 
@@ -4504,7 +4504,7 @@ sub cli_create_event() {
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data, undef, undef, $server_id);
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 		}
 	} else {
 		if (! $agent_name) {
@@ -4551,7 +4551,7 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data, undef, undef, $server_id);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 
 	}
 }

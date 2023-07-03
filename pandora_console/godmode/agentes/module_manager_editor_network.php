@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -28,6 +28,7 @@
 
 global $config;
 require_once $config['homedir'].'/include/class/CredentialStore.class.php';
+require_once $config['homedir'].'/operation/snmpconsole/snmp_browser.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
 $snmp_browser_path = (is_metaconsole() === true) ? '../../' : '';
 $snmp_browser_path .= 'include/javascript/pandora_snmp_browser.js';
@@ -89,14 +90,9 @@ push_table_simple($data, 'caption_target_ip');
 $data = [];
 // Show agent_for defect.
 if ($page === 'enterprise/godmode/policies/policy_modules') {
-    if (empty($ip_target) === false && $ip_target !== 'auto') {
+    if ($ip_target !== 'auto' && $ip_target !== 'force_pri') {
         $custom_ip_target = $ip_target;
         $ip_target = 'custom';
-    } else if (empty($ip_target) === true) {
-        $ip_target = 'force_pri';
-        $custom_ip_target = '';
-    } else {
-        $custom_ip_target = '';
     }
 
     $target_ip_values = [];
@@ -310,7 +306,7 @@ $data[2] .= html_print_button(
     __('SNMP Walk'),
     'snmp_walk',
     false,
-    'snmpBrowserWindow()',
+    'snmpBrowserWindow('.$id_agente.')',
     [ 'mode' => 'link' ],
     true
 );
@@ -390,14 +386,16 @@ $data[1] = html_print_input_text(
 $data[2] = __('Auth password').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_auth_pass',
-    '',
+    $snmp3_auth_pass,
     '',
     15,
     60,
     true,
     $disabledBecauseInPolicy,
     false,
-    $largeclassdisabledBecauseInPolicy
+    $largeclassdisabledBecauseInPolicy,
+    'off',
+    true
 );
 $data[3] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_mmen', true);
 if ($snmp_version != 3) {
@@ -412,14 +410,16 @@ $data[1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_pr
 $data[2] = __('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_privacy_pass',
-    '',
+    $snmp3_privacy_pass,
     '',
     15,
     60,
     true,
     $disabledBecauseInPolicy,
     false,
-    $largeclassdisabledBecauseInPolicy
+    $largeclassdisabledBecauseInPolicy,
+    'off',
+    true
 );
 
 if ($snmp_version != 3) {
@@ -720,9 +720,13 @@ $(document).ready (function () {
     });
 
     var custom_ip_target = "<?php echo $custom_ip_target; ?>";
-    if(custom_ip_target == ''){
+    var ip_target = "<?php echo $ip_target; ?>";
+    if(ip_target === 'custom'){
+        $("#text-custom_ip_target").show();
+    } else {
         $("#text-custom_ip_target").hide();
     }
+
     $('#ip_target').change(function() {
         if($(this).val() === 'custom') {
             $("#text-custom_ip_target").show();
@@ -731,12 +735,6 @@ $(document).ready (function () {
             $("#text-custom_ip_target").hide();
         }
     });
-
-    // Add input password values with js to hide it in browser inspector.
-    $('#password-snmp3_auth_pass').val('<?php echo $snmp3_auth_pass; ?>');
-    $('#password-snmp3_privacy_pass').val('<?php echo $snmp3_privacy_pass; ?>');
-
-    observerInputPassword();
 });
 
 

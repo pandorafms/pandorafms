@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1525,8 +1525,8 @@ if ($update_module === true || $create_module === true) {
         $percentage_warning = 0;
         $warning_inverse = 0;
     } else if ($warning_threshold_check_type === 'warning_inverse') {
-         $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
-         $percentage_warning = 0;
+        $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
+        $percentage_warning = 0;
     } else {
         $percentage_warning = (int) get_parameter('warning_inverse_string_sent');
         $warning_inverse = 0;
@@ -1538,15 +1538,20 @@ if ($update_module === true || $create_module === true) {
         $percentage_critical = 0;
         $critical_inverse = 0;
     } else if ($critical_threshold_check_type === 'critical_inverse') {
-         $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
-         $percentage_critical = 0;
+        $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
+        $percentage_critical = 0;
     } else {
         $percentage_critical = (int) get_parameter('critical_inverse_string_sent');
         $critical_inverse = 0;
     }
 
     // Inverse string checkbox.
-    if ($id_module_type === MODULE_TYPE_GENERIC_DATA_STRING || $id_module_type === MODULE_TYPE_ASYNC_STRING) {
+    if ($id_module_type === MODULE_TYPE_GENERIC_DATA_STRING
+        || $id_module_type === MODULE_TYPE_ASYNC_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_TCP_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_CMD_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_SNMP_STRING
+    ) {
         // Warning inverse string checkbox.
         $warning_string_checkbox = get_parameter('warning_inverse_string');
         if (!empty($warning_string_checkbox) && $warning_string_checkbox === 'warning_inverse_string') {
@@ -2024,10 +2029,10 @@ if ($create_module) {
 
 // MODULE ENABLE/DISABLE
 // =====================.
-if ($enable_module) {
+/*
+    if ($enable_module) {
     $result = modules_change_disabled($enable_module, 0);
     $module_name = modules_get_agentmodule_name($enable_module);
-
     // Write for conf disable if remote_config.
     $configuration_data = enterprise_hook(
         'config_agents_get_module_from_conf',
@@ -2041,10 +2046,8 @@ if ($enable_module) {
 
     // Force Update when disabled for save disabled in conf.
     $old_configuration_data = $configuration_data;
-
     // Successfull action.
     $success_action = $result;
-
     $success_action = $result;
     if ($result === NOERR) {
         db_pandora_audit(
@@ -2057,9 +2060,11 @@ if ($enable_module) {
             'Fail to enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
-}
+    }
 
-if ($disable_module) {
+    if ($disable_module) {
+
+    hd($disable_module, true);
     $result = modules_change_disabled($disable_module, 1);
     $module_name = modules_get_agentmodule_name($disable_module);
 
@@ -2083,18 +2088,20 @@ if ($disable_module) {
 
 
     if ($result === NOERR) {
+        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
+        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
-}
-
+    }
+*/
 // Fix to stop the module from being added to the agent's conf
 // when an error occurred while updating or inserting. or enable disable module.
 if ($update_module || $create_module
@@ -2521,10 +2528,10 @@ switch ($tab) {
     });
 
     // Change description when edit port
-    $( "#text-tcp_port" ).change(function() {
+    /*$( "#text-tcp_port" ).change(function() {
         $( "#textarea_description" ).text(`Checks port ${$( "#text-tcp_port" ).val()} is opened`);
-    });
-    
+    });*/
+
     // Set the position and width of the subtab
     /*
     function agent_wizard_tab_setup() {        

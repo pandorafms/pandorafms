@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -643,17 +643,19 @@ class AvgSumMaxMinModule extends Widget
         $output .= '<div class="container-center" id="container-'.$uuid.'">';
 
         $orientation = '';
+        $extraClass = '';
         if ((int) $this->values['horizontal'] === 1) {
             $orientation = 'flex aligni_center';
         } else {
             $orientation = 'grid';
+            $extraClass = 'mrgn_btn_20px';
         }
 
         // General div.
         $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
 
         // Div value.
-        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_20px" style="line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px;'.$text_color.'">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px '.$extraClass.'" style="line-height: '.$sizeValue.'px; font-size:'.$sizeValue.'px;'.$text_color.'">';
 
         if (is_numeric($data) === true) {
             $dataDatos = remove_right_zeros(

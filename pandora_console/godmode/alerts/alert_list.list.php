@@ -9,8 +9,8 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ==========================================================
@@ -912,7 +912,7 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'filter_none main_menu_icon']
+            ['class' => 'invert_filter main_menu_icon']
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -1032,7 +1032,7 @@ foreach ($simple_alerts as $alert) {
 
             $data[4] .= html_print_input_image(
                 'update',
-                'images/builder.png',
+                'images/builder@svg.svg',
                 1,
                 '',
                 true,
@@ -1311,10 +1311,10 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                     },
                     open: function() {
                         $(`#update_action-div-${alert_id}`).css('overflow', 'hidden');
-                        $(`#action_select_ajax-${alert_id}`).select2({
-                            tags: true,
-                            dropdownParent: $(`#update_action-div-${alert_id}`)
-                        });
+                        //$(`#action_select_ajax-${alert_id}`).select2({
+                        //    tags: true,
+                        //    dropdownParent: $(`#update_action-div-${alert_id}`)
+                        //});
                     },
                     width: 600,
                     height: 350

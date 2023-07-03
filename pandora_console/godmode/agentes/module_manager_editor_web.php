@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -102,6 +102,9 @@ if (isset($id_agent_module) === true && $id_agent_module !== 0) {
 
 if ($id_policy_module > 0) {
     $module = enterprise_hook('policies_get_module', [$id_policy_module]);
+    $plugin_parameter = $module['plugin_parameter'];
+} else if ($id_agent_module > 0) {
+    $module = modules_get_agentmodule($id_agent_module);
     $plugin_parameter = $module['plugin_parameter'];
 } else {
     $plugin_parameter = '';
@@ -190,7 +193,7 @@ $actionButtons .= html_print_button(
     __('Debug'),
     'btn_debugModule',
     $disableDebug,
-    'loadDebugWindow()',
+    '',
     [
         'icon' => 'cog',
         'mode' => 'mini secondary ',

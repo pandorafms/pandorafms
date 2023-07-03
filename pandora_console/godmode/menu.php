@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -80,6 +80,12 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
         if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             enterprise_hook('applications_menu');
             enterprise_hook('cloud_menu');
+        }
+
+        if ((bool) check_acl($config['id_user'], 0, 'RW') === true
+            || (bool) check_acl($config['id_user'], 0, 'RM') === true
+            || (bool) check_acl($config['id_user'], 0, 'PM') === true
+        ) {
             enterprise_hook('console_task_menu');
         }
     }
@@ -259,7 +265,6 @@ if ($access_console_node === true) {
 
     if ((bool) check_acl($config['id_user'], 0, 'LW') === true
         || (bool) check_acl($config['id_user'], 0, 'LM') === true
-        || (bool) check_acl($config['id_user'], 0, 'AD') === true
     ) {
         $menu_godmode['galertas']['text'] = __('Alerts');
         $menu_godmode['galertas']['sec2'] = 'godmode/alerts/alert_list';
@@ -452,8 +457,8 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
         }
     }
 
-    $sub['godmode/events/configuration_sounds']['text'] = __('Accoustic console setup');
-    $sub['godmode/events/configuration_sounds']['id'] = 'Accoustic console setup';
+    $sub['godmode/events/configuration_sounds']['text'] = __('Acoustic console setup');
+    $sub['godmode/events/configuration_sounds']['id'] = 'Acoustic console setup';
     $sub['godmode/events/configuration_sounds']['pages'] = ['godmode/events/configuration_sounds'];
 
     $menu_godmode['gextensions']['sub'] = $sub;
@@ -546,21 +551,23 @@ if ($access_console_node === true) {
         }
     }
 
-    $menu_godmode['links']['text'] = __('Links');
-    $menu_godmode['links']['sec2'] = '';
-    $menu_godmode['links']['id'] = 'god-links';
+    /*
+        $menu_godmode['links']['text'] = __('Links');
+        $menu_godmode['links']['sec2'] = '';
+        $menu_godmode['links']['id'] = 'god-links';
 
-    $sub = [];
-    $rows = db_get_all_rows_in_table('tlink', 'name');
-    foreach ($rows as $row) {
+        $sub = [];
+        $rows = db_get_all_rows_in_table('tlink', 'name');
+        foreach ($rows as $row) {
         // Audit //meter en extensiones.
         $sub[$row['link']]['text'] = $row['name'];
         $sub[$row['link']]['id'] = $row['name'];
         $sub[$row['link']]['type'] = 'direct';
         $sub[$row['link']]['subtype'] = 'new_blank';
-    }
+        }
 
-    $menu_godmode['links']['sub'] = $sub;
+        $menu_godmode['links']['sub'] = $sub;
+    */
 }
 
 // Warp Manager.

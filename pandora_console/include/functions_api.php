@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -8610,7 +8610,7 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
         return;
     }
 
-    $new_configuration_data = io_safe_output(urldecode($configuration_data_serialized['data']));
+    $new_configuration_data = io_safe_output(base64_decode($configuration_data_serialized['data']));
 
     // Get current configuration.
     $old_configuration_data = config_agents_get_module_from_conf($id_agent, io_safe_output($module_name));
@@ -9612,6 +9612,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
     $values['metaconsole_access_node'] = $other['data'][13];
+    $values['api_token'] = api_token_generate();
 
     if (empty($password) === true) {
         returnError('Password cannot be empty.');
@@ -9708,6 +9709,8 @@ function api_set_update_user($id, $thrash2, $other, $thrash3)
         if (!update_user_password($id, $other['data'][4])) {
             returnError('The user could not be updated. Password info incorrect.');
             return;
+        } else {
+            $values['api_token'] = api_token_generate();
         }
     }
 
@@ -13090,10 +13093,18 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento,estado FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
+
             if ($validation) {
                 foreach ($validation as $val) {
+                    if ((bool) $config['keep_in_process_status_extra_id'] === true
+                        && (int) $val['estado'] === EVENT_STATUS_INPROCESS
+                        && (int) $values['status'] === 0
+                    ) {
+                        $values['status'] = 2;
+                    }
+
                     api_set_validate_event_by_id($val['id_evento']);
                 }
             }

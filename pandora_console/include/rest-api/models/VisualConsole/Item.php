@@ -1865,6 +1865,10 @@ class Item extends CachedModel
 
                 $save = array_merge($dataModelEncode, $dataEncode);
 
+                if (!empty($save['label'])) {
+                    $save['label'] = io_safe_output(io_safe_input(str_replace("'", "\'", $save['label'])));
+                }
+
                 $result = \db_process_sql_update(
                     'tlayout_data',
                     $save,

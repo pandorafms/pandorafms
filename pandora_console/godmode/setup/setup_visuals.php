@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -69,6 +69,10 @@ echo '<form id="form_setup" class="max_floating_element_size" method="post">';
 html_print_input_hidden('update_config', 1);
 
 $performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
+echo "<div id='dialog-legacy-vc' title='".__('Legacy visual console Information')."' class='invisible'>";
+echo "<p class='center'>".__('Visual console in legacy mode will no longer be supported as of LTS 772').'</p>';
+echo '</div>';
 
 // ----------------------------------------------------------------------
 // BEHAVIOUR CONFIGURATION
@@ -421,7 +425,7 @@ $table_styles->data[$row][] = html_print_label_input_block(
 );
 
 $table_styles->data[$row][] = html_print_label_input_block(
-    __('Custom background logo'),
+    __('Custom background login'),
     html_print_div(
         [
             'class'   => 'select-with-sibling',
@@ -1119,8 +1123,13 @@ for ($i = 1; $i <= $graphColorAmount; $i++) {
     $row = ($i % 2 === 0) ? ($row + 1) : $row;
 }
 
+$tip = ui_print_help_tip(
+    __('Decimal data resolution setting for SLA and other reports is not available in the Community version.'),
+    true
+);
+
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Data precision'),
+    ($disabled_graph_precision) ? __('Data precision').$tip : __('Data precision'),
     html_print_input(
         [
             'type'                                        => 'number',
@@ -1138,7 +1147,7 @@ $table_chars->data[$row][] = html_print_label_input_block(
 );
 
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Data precision in graphs'),
+    ($disabled_graph_precision) ? __('Data precision in graphs').$tip : __('Data precision in graphs'),
     html_print_input(
         [
             'type'                                        => 'number',
@@ -2243,9 +2252,22 @@ $(document).ready (function () {
     // Show the cache expiration conf or not.
     $("input[name=legacy_vc]").change(function (e) {
         if ($(this).prop("checked") === true) {
-            $("select#vc_default_cache_expiration_select").closest("tr").hide();
+            $("select#vc_default_cache_expiration_select").closest("td").hide();
+            $("#dialog-legacy-vc").dialog({
+                modal: true,
+                width: 500,
+                buttons:[
+                    {
+                        class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next',
+                        text: "<?php echo __('OK'); ?>",
+                        click: function(){
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
         } else {
-            $("select#vc_default_cache_expiration_select").closest("tr").show();
+            $("select#vc_default_cache_expiration_select").closest("td").show();
         }
     }).change();
 

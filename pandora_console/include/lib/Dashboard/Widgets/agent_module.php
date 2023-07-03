@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -279,13 +279,26 @@ class AgentModuleWidget extends Widget
             $return_all_group = true;
         }
 
+        $mgroup = '';
+        if (isset($this->values['mGroup']) === false) {
+            $sql = sprintf(
+                'SELECT id_group FROM tdashboard WHERE id = %d',
+                $this->dashboardId
+            );
+
+            $group_dahsboard = db_get_value_sql($sql);
+            if ($group_dahsboard > 0) {
+                $mgroup = $group_dahsboard;
+            }
+        }
+
         $inputs[] = [
             'class'     => 'flex flex-row',
             'id'        => 'select_multiple_modules_filtered',
             'arguments' => [
                 'type'                     => 'select_multiple_modules_filtered',
                 'uniqId'                   => $this->cellId,
-                'mGroup'                   => (isset($this->values['mGroup']) === true) ? $this->values['mGroup'] : '',
+                'mGroup'                   => (isset($this->values['mGroup']) === true) ? $this->values['mGroup'] : $mgroup,
                 'mRecursion'               => (isset($this->values['mRecursion']) === true) ? $this->values['mRecursion'] : '',
                 'mModuleGroup'             => (isset($this->values['mModuleGroup']) === true) ? $this->values['mModuleGroup'] : '',
                 'mAgents'                  => (isset($this->values['mAgents']) === true) ? $this->values['mAgents'] : '',

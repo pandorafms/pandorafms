@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -563,11 +563,11 @@ if ($access_console_node === true) {
             $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
         }
 
-        // Accoustic console.
+        // Acoustic console.
         $data_sound = base64_encode(
             json_encode(
                 [
-                    'title'        => __('Accoustic console'),
+                    'title'        => __('Acoustic console'),
                     'start'        => __('Start'),
                     'stop'         => __('Stop'),
                     'noAlert'      => __('No alert'),
@@ -580,8 +580,8 @@ if ($access_console_node === true) {
         );
 
         $javascript = 'javascript: openSoundEventModal(`'.$data_sound.'`);';
-        $sub[$javascript]['text'] = __('Accoustic console');
-        $sub[$javascript]['id'] = 'Accoustic console Modal';
+        $sub[$javascript]['text'] = __('Acoustic console');
+        $sub[$javascript]['id'] = 'Acoustic console Modal';
         $sub[$javascript]['type'] = 'direct';
 
         echo '<div id="modal-sound" style="display:none;"></div>';
@@ -628,6 +628,27 @@ if ($favorite_menu !== false) {
 }
 
 
+// Links.
+$rows = db_get_all_rows_in_table('tlink', 'name');
+// $rows = [];
+if (!empty($rows)) {
+    $menu_operation['links']['text'] = __('Links');
+    $menu_operation['links']['sec2'] = '';
+    $menu_operation['links']['id'] = 'god-links';
+
+    $sub = [];
+    foreach ($rows as $row) {
+        // Audit //meter en extensiones.
+        $sub[$row['link']]['text'] = $row['name'];
+        $sub[$row['link']]['id'] = $row['name'];
+        $sub[$row['link']]['type'] = 'direct';
+        $sub[$row['link']]['subtype'] = 'new_blank';
+    }
+
+    $menu_operation['links']['sub'] = $sub;
+}
+
+
 
 
 // Workspace.
@@ -637,7 +658,7 @@ $menu_operation['workspace']['id'] = 'oper-users';
 
 // ANY user can view him/herself !
 // Users.
-$query_paramameters_user = '&edit_user=1&pure=0&id_user='.$config['id_user'];
+$query_paramameters_user = '&edit_user=1&pure=0';
 
 $sub = [];
 $sub['godmode/users/configure_user'.$query_paramameters_user]['text'] = __('Edit my user');
@@ -784,6 +805,8 @@ if ($access_console_node === true) {
 
     // ~ }
 }
+
+
 
 // Save operation menu array to use in operation/extensions.php view
 $operation_menu_array = $menu_operation;

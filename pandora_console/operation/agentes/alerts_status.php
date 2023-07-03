@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -271,29 +271,27 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
     }
 }
 
-if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
-    array_push(
-        $column_names,
-        ['text' => 'Module'],
-        ['text' => 'Template'],
-        [
-            'title' => __('Action'),
-            'text'  => __('Action'),
-            'style' => 'min-width: 15%;',
-        ],
-        ['text' => 'Last fired'],
-        ['text' => 'Status']
-    );
+array_push(
+    $column_names,
+    ['text' => 'Module'],
+    ['text' => 'Template'],
+    [
+        'title' => __('Action'),
+        'text'  => __('Action'),
+        'style' => 'min-width: 15%;',
+    ],
+    ['text' => 'Last fired'],
+    ['text' => 'Status']
+);
 
-    $columns = array_merge(
-        $columns,
-        ['agent_module_name'],
-        ['template_name'],
-        ['action'],
-        ['last_fired'],
-        ['status']
-    );
-}
+$columns = array_merge(
+    $columns,
+    ['agent_module_name'],
+    ['template_name'],
+    ['action'],
+    ['last_fired'],
+    ['status']
+);
 
 if (is_metaconsole() === false) {
     if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
@@ -381,7 +379,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'form'                => [
                 'inputs'    => [
                     [
@@ -423,7 +421,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'form'                => [
                 'html' => printFormFilterAlert(
@@ -447,7 +445,7 @@ if (is_metaconsole() === false) {
         if ($agent_view_page === true) {
             html_print_div(
                 [
-                    'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
+                    'class'   => 'action-buttons pdd_r_5px w100p',
                     'content' => html_print_submit_button(
                         __('Validate'),
                         'alert_validate',

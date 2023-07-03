@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -3548,6 +3548,25 @@ function update_config_token($cfgtoken, $cfgvalue)
 }
 
 
+function update_check_config_token($cfgtoken, $cfgvalue)
+{
+    global $config;
+    db_process_sql('START TRANSACTION');
+    if (isset($config[$cfgtoken])) {
+        delete_config_token($cfgtoken);
+    }
+
+    $insert = db_process_sql(sprintf("INSERT INTO tconfig (token, value) VALUES ('%s', '%s')", $cfgtoken, $cfgvalue));
+    db_process_sql('COMMIT');
+    if ($insert) {
+        $config[$cfgtoken] = $cfgvalue;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 function delete_config_token($cfgtoken)
 {
     $delete = db_process_sql(sprintf('DELETE FROM tconfig WHERE token = "%s"', $cfgtoken));
@@ -4284,6 +4303,8 @@ function generator_chart_to_pdf(
             'data_module_list' => $module_list,
             'data_combined'    => $params_combined,
             'id_user'          => $config['id_user'],
+            'slicebar'         => $_SESSION['slicebar'],
+            'slicebar_value'   => $config[$_SESSION['slicebar']],
         ];
     } else {
         $data = [
@@ -4291,6 +4312,8 @@ function generator_chart_to_pdf(
             'session_id'     => $session_id,
             'type_graph_pdf' => $type_graph_pdf,
             'id_user'        => $config['id_user'],
+            'slicebar'       => $_SESSION['slicebar'],
+            'slicebar_value' => $config[$_SESSION['slicebar']],
         ];
     }
 
@@ -6457,4 +6480,23 @@ function nms_check_api()
         returnError('license_error');
         return true;
     }
+}
+
+
+/**
+ * Simply return a string enclosed in quote delimiter to be used in csv exports.
+ *
+ * @param string $str String to be formatted.
+ *
+ * @return string Formatted string.
+ */
+function csv_format_delimiter(?string $str)
+{
+    if ($str === null) {
+        return $str;
+    }
+
+    // Due to the ticket requirements, double quote is used as fixed string delimiter.
+    // TODO: a setup option that enables user to choose a delimiter character would probably be desirable in the future.
+    return '"'.$str.'"';
 }

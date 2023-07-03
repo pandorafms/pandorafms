@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1600,9 +1600,15 @@ function graphic_combined_module(
 
                 if (is_metaconsole()) {
                     metaconsole_restore_db();
-                    $server = metaconsole_get_connection_by_id(
-                        isset($agent_module_id['server']) ? $agent_module_id['server'] : $source['id_server']
-                    );
+                    if (isset($agent_module_id['server'])) {
+                        $id_server = $agent_module_id['server'];
+                    } else if (isset($agent_module_id['id_server'])) {
+                        $id_server = $agent_module_id['id_server'];
+                    } else {
+                        $id_server = $source['id_server'];
+                    }
+
+                    $server = metaconsole_get_connection_by_id($id_server);
                     if (metaconsole_connect($server) != NOERR) {
                         continue;
                     }
@@ -4404,8 +4410,8 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $ttl=1, $
     foreach ($data['sources'] as $key => $value) {
         $i = 0;
         foreach ($data['data'] as $k => $v) {
-            $chart['netflow_'.$key]['data'][$i][0] = ($k * 1000);
-            $chart['netflow_'.$key]['data'][$i][1] = $v[$key];
+            $chart[$key]['data'][$i][0] = ($k * 1000);
+            $chart[$key]['data'][$i][1] = $v[$key];
             $i++;
         }
     }
@@ -5241,7 +5247,7 @@ function graph_monitor_wheel($width=550, $height=600, $filter=false)
         'name'     => __('Main node'),
         'type'     => 'center_node',
         'children' => iterate_group_array($data_groups, $data_agents),
-        'color'    => '#3F3F3F',
+        'color'    => ($config['style'] === 'pandora_black') ? '#111' : '#FFF',
     ];
 
     if (empty($graph_data['children'])) {

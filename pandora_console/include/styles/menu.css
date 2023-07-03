@@ -26,7 +26,7 @@
 }
 
 #div_display::-webkit-scrollbar:vertical {
-  width: 5px;
+  width: 0px;
 }
 
 #div_display::-webkit-scrollbar-button:increment,
@@ -57,7 +57,7 @@
 }
 
 #div_management::-webkit-scrollbar:vertical {
-  width: 5px;
+  width: 0px;
 }
 
 #div_management::-webkit-scrollbar-button:increment,

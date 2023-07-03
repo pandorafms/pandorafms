@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -149,7 +149,11 @@ if (is_ajax() === true) {
                         $tmp->alias .= $server['server_name'].' &raquo; ';
                     }
 
-                    $id = $agent['id_agente'];
+                    if (is_metaconsole() === true) {
+                        $id = !empty($agent['id_agente']) ? $agent['id_agente'] : $agent['id_tagente'];
+                    } else {
+                        $id = !empty($agent['id_agente']) ? $agent['id_agente'] : $agent['id_agent'];
+                    }
 
                     $tmp->alias .= $agent['alias'];
                     $ip = '<em>'.__('N/A').'</em>';
@@ -198,7 +202,7 @@ if (is_ajax() === true) {
                     $interval = human_time_description_raw($agent['intervalo'], false, 'large');
                     $last_contact = ui_print_timestamp($agent['ultimo_contacto'], true);
                     // $last_contact .= ' / '.date_w_fixed_tz($agent['ultimo_contacto_remoto']);
-                    $last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
+                    $last_status_change_agent = agents_get_last_status_change($id);
                     $time_elapsed = !empty($last_status_change_agent) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
 
                     $sql_fields = 'SELECT tcf.name, tcd.description, tcf.is_password_type
@@ -675,10 +679,9 @@ $table->data[1][1] = html_print_label_input_block(
 if (is_metaconsole() === false) {
     $dates = inventory_get_dates(
         $inventory_module,
-        $inventory_agent,
+        $inventory_id_agent,
         $inventory_id_group
     );
-
     $table->data[1][2] = html_print_label_input_block(
         __('Date'),
         html_print_select(
@@ -690,7 +693,7 @@ if (is_metaconsole() === false) {
             0,
             true,
             false,
-            true,
+            false,
             '',
             false,
             'width:100%;'
@@ -1041,9 +1044,9 @@ if ($inventory_module !== 'basic') {
         <?php
         if ($order_by_agent === true) {
             foreach ($rows as $agent_rows) {
-                $data = [];
                 $modules = '';
                 foreach ($agent_rows['row'] as $key_row => $row) {
+                    $data = [];
                     $columns = explode(';', io_safe_output($row['data_format']));
                     array_push($columns, 'Timestamp');
 

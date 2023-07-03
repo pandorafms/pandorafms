@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -658,6 +658,10 @@ class EventsListWidget extends Widget
 
         $table_id = 'dashboard_list_events_'.$this->cellId;
 
+        // Public dashboard.
+        $hash = get_parameter('auth_hash', '');
+        $id_user = get_parameter('id_user', '');
+
         // Print datatable.
         $output .= ui_print_datatable(
             [
@@ -671,6 +675,9 @@ class EventsListWidget extends Widget
                     'filter'         => $filter,
                     'length'         => $this->values['limit'],
                     'groupRecursion' => (bool) $this->values['groupRecursion'],
+                    'auth_hash'      => $hash,
+                    'auth_class'     => 'PandoraFMS\Dashboard\Manager',
+                    'id_user'        => $id_user,
                 ],
                 'default_pagination'             => $this->values['limit'],
                 'pagination_options'             => [

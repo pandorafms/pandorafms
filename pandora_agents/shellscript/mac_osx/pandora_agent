@@ -172,7 +172,7 @@ function configure_agent {
 	if [ "$CRON_MODE" == "0" ]
 	then
 		# Script banner at start
-		echo "Pandora FMS Agent $AGENT_VERSION (c) Pandora FMS 2003-2009"
+		echo "Pandora FMS Agent $AGENT_VERSION (c) Pandora FMS 2003-2023"
 		echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 		echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 		echo " "

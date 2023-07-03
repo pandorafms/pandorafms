@@ -3,7 +3,7 @@ package PandoraFMS::InventoryServer;
 ##########################################################################
 # Pandora FMS Inventory Server.
 ##########################################################################
-# Copyright (c) 2007-2021 Pandora FMS
+# Copyright (c) 2007-2023 Pandora FMS
 # This code is not free or OpenSource. Please don't redistribute.
 ##########################################################################
 

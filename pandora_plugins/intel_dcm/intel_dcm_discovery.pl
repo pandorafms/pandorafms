@@ -70,7 +70,7 @@ sub update_recon_task ($$$) {
 ##########################################################################
 sub show_help {
 	print "\nSpecific Pandora FMS Intel DCM Discovery\n";
-	print "(c) Pandora FMS 2011 <info\@pandorafms.com>\n\n";
+	print "(c) Pandora FMS 2011-2023 <info\@pandorafms.com>\n\n";
 	print "Usage:\n\n";
 	print "   $0 <task_id> <group_id> <create_incident_flag> more params, see doc\n\n";
 	exit;

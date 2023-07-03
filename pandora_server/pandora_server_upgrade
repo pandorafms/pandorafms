@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pandora FMS Server Upgrader (c) 2008-2010 Pandora FMS
+# Pandora FMS Server Upgrader (c) 2008-2023 Pandora FMS
 # Linux Version (generic), for SuSe and Debian/Ubuntu only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
@@ -66,7 +66,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 6.0 Server Upgrade (c) 2009-2015 Pandora FMS"
+echo "Pandora FMS 6.0 Server Upgrade (c) 2009-2023 Pandora FMS"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 

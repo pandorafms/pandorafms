@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pandora FMS 4.0dev Console Upgrade (c) 2009-2011 Pandora FMS
+# Pandora FMS 4.0dev Console Upgrade (c) 2009-2023 Pandora FMS
 # Please see http://www.pandorafms.com
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
@@ -155,7 +155,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS $PI_VERSION Console Upgrade (c) 2009-2015 Pandora FMS"
+echo "Pandora FMS $PI_VERSION Console Upgrade (c) 2009-2023 Pandora FMS"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
 

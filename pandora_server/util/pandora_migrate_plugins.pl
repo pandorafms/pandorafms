@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS Plugins migrate tool
 ###############################################################################
-# Copyright (c) 2010-2021 Pandora FMS
+# Copyright (c) 2010-2023 Pandora FMS
 #
 # This program is Free Software, licensed under the terms of GPL License v2
 ###############################################################################
@@ -99,7 +99,7 @@ sub pandora_load_credentials ($) {
 	$conf->{"quiet"}=0;	# Daemon 0 by default
 
 
-	print "\nPandora FMS Plugins migrate tool $version Copyright (c) 2010-2021 Pandora FMS\n";
+	print "\nPandora FMS Plugins migrate tool $version Copyright (c) 2010-2023 Pandora FMS\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 
 	# Load config file from command line

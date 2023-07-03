@@ -1,6 +1,6 @@
 /* Library to create a Windows service for Win32.
 
-   Copyright (c) 2006-2021 Pandora FMS.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
    Based on Snort code.
   

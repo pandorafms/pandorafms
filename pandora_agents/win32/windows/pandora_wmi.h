@@ -1,7 +1,7 @@
 /* Class to manage the Windows Management Instrumentation(WMI).
    It depends on disphelper library (http://disphelper.sourceforge.net)
 
-   Copyright (c) 2006-2021 Pandora FMS.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /* Misc utils for string.
-   Copyright (c) 2006-2021 Pandora FMS.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
    
    Stringtok (C) pedwards@jaj.com  May 1999

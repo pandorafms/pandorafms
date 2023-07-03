@@ -4,7 +4,7 @@
 //|___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
 //
 // ============================================================================
-// Copyright (c) 2007-2021 Pandora FMS, http:// https://pandorafms.com
+// Copyright (c) 2007-2023 Pandora FMS, http:// https://pandorafms.com
 // This code is NOT free software. This code is NOT licenced under GPL2 licence
 // You cannnot redistribute it without written permission of copyright holder.
 // ============================================================================

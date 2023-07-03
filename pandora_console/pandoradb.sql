@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2005-2021 Pandora FMS, http:// https://pandorafms.com
+-- Copyright (c) 2005-2023 Pandora FMS, http:// https://pandorafms.com
 -- Please see http://pandora.sourceforge.net for full contribution list
 
 -- This program is free software; you can redistribute it and/or

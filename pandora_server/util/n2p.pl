@@ -1,7 +1,7 @@
 #!/usr/bin/perl -s
 ################################################################################
 #
-# Copyright (c) 2007-2021 Pandora FMS.
+# Copyright (c) 2007-2023 Pandora FMS.
 #
 # n2p.pl	Reads Nagios 2.x configuration files and replicates the setup
 # 		using an installed Pandora FMS 1.3.

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Copyright (c) 2007-2021 Pandora FMS.
+# Copyright (c) 2007-2023 Pandora FMS.
 use strict;
 use IO::Socket;
 

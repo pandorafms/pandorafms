@@ -1,7 +1,7 @@
 /* Pandora cpuusage module. These modules check if a cpuusage is running in the
    system.
 
-   Copyright (c) 2006-2021 Pandora FMS.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify

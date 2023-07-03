@@ -1,6 +1,6 @@
 /* Pandora wmiquery module header file.
 
-   Copyright (c) 2008-2021 Pandora FMS.
+   Copyright (c) 2008-2023 Pandora FMS.
    Written by Ramon Novoa.
 
    This program is free software; you can redistribute it and/or modify

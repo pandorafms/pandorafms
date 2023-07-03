@@ -774,9 +774,16 @@ sub pandora_sendmail {
 		$mail{Message} = encode("UTF-8", $mail{Message});
 		$mail{'Content-Type'} = 'text/plain; charset="UTF-8"';
 	}
-	
+ 
 	if ($pa_config->{"mta_user"} ne ""){
-		$mail{auth} = {user=>$pa_config->{"mta_user"}, password=>$pa_config->{"mta_pass"}, method=>$pa_config->{"mta_auth"}, required=>1 };
+		$mail{auth} = {
+			user=>$pa_config->{"mta_user"},
+			password=>PandoraFMS::Core::pandora_output_password(
+				$pa_config,
+				safe_output($pa_config->{"mta_pass"})
+			),
+			method=>$pa_config->{"mta_auth"}, required=>1
+		};
 	}
 
 	eval {

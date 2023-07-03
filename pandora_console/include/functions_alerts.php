@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -3115,7 +3115,7 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
                 $fields[] = $table.'.id_agente as agent';
                 $group_array[] = $table.'.id_agente';
                 $names_search = agents_get_alias_array(
-                    array_values($filters['agents'])
+                    array_values(($filters['agents'] ?? []))
                 );
 
                 if (is_metaconsole() === true) {

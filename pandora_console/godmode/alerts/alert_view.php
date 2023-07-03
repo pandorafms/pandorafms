@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -342,14 +342,34 @@ if (count($actions) == 1 && isset($actions[0])) {
             if (count($table->head) <= count($action['escalation'])) {
                 if ($k == count($action['escalation'])) {
                     if ($k == 1) {
-                        $table->head[$k] = __('Every time that the alert is fired');
+                        $table->head[$kaction] = __('Every time that the alert is fired');
                     } else {
-                        $table->head[$k] = '>#'.($k - 1);
+                        $table->head[$kaction] = '>#'.($kaction - 1);
                     }
                 } else {
-                    $table->head[$k] = '#'.$k;
+                    $table->head[$kaction] = '#'.($kaction);
+                    if ($v > 0) {
+                        $table->data[$kaction][($kaction + 1)] = html_print_image(
+                            'images/tick.png',
+                            true,
+                            ['class' => 'invert_filter']
+                        );
+                    } else {
+                        $table->data[$kkaction][($kaction + 1)] = html_print_image(
+                            'images/blade.png',
+                            true
+                        );
+                    }
                 }
             }
+        }
+
+        $table->head[($kaction + 1)] = '#'.($kaction);
+        if (count($action['escalation']) === 0) {
+            $table->data[$kaction][($kaction + 2)] = html_print_image(
+                'images/blade.png',
+                true
+            );
         }
 
         $action_threshold = ($action['module_action_threshold'] > 0) ? $action['module_action_threshold'] : $action['action_threshold'];
@@ -364,7 +384,7 @@ if (count($actions) == 1 && isset($actions[0])) {
             );
         }
 
-        $table->head[($k + 1)] = __('Threshold');
+        $table->head[($kaction + 1)] = __('Threshold');
     }
 }
 

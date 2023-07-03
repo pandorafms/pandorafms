@@ -6378,18 +6378,21 @@ sub pandora_installation_monitoring($$) {
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente)) FROM tagente');
 	push(@modules, $module);
 	undef $module;
+
 	# Total amount of modules
 	$module->{'name'} = "total_modules";
 	$module->{'description'} = 'Total modules';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente_modulo)) FROM tagente_modulo');
 	push(@modules, $module);
 	undef $module;
+
 	# Total groups
 	$module->{'name'} = "total_groups";
 	$module->{'description'} = 'Total groups';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_grupo)) FROM tgrupo');
 	push(@modules, $module);
 	undef $module;
+
 	# Total module data records
 	$module->{'name'} = "total_data";
 	$module->{'description'} = 'Total module data records';
@@ -6404,6 +6407,7 @@ sub pandora_installation_monitoring($$) {
 	$module->{'interval'} = '86400';
 	push(@modules, $module);
 	undef $module;
+
 	# Total agent access record
 	$module->{'name'} = "total_access_data";
 	$module->{'description'} = 'Total agent access records';
@@ -6411,28 +6415,104 @@ sub pandora_installation_monitoring($$) {
 	push(@modules, $module);
 	undef $module;
 
-	print Dumper(@modules);
+	# Tables fragmentation
+	$module->{'name'} = "tables_fragmentation";
+	$module->{'description'} = 'Tables fragmentation';
+	$module->{'data'} = get_db_value(
+		$dbh,
+		"SELECT
+				MAX( (data_free / data_length) / 100) AS frag_percent_max
+		FROM
+				information_schema.tables
+		WHERE
+				table_schema not in ('information_schema', 'mysql')
+				AND table_name NOT IN ('tagent_access, tevento')"
+	);
+	$module->{'unit'} = '%';
+	push(@modules, $module); 
+	undef $module;
+
+	# License Usage
+	$module->{'name'} = "license_usage";
+	$module->{'description'} = 'License Usage';
+	$module->{'unit'} = '%';
+	my $license_usage = enterprise_hook('get_license_usage',[$dbh]);
+	if(! defined($license_usage)) {
+		$module->{'data'} = 0;
+	} else {
+		$module->{'data'} = $license_usage;
+	}
+	push(@modules, $module); 
+	undef $module;
+
+	# General info about queries
+	my $select = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_select');
+	my $insert = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_insert');
+	my $update = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_update');
+	my $replace = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_replace');
+	my $delete = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_delete');
+	my $data_size = get_db_value($dbh, 'SELECT SUM(data_length)/(1024*1024) FROM information_schema.TABLES');
+	my $index_size = get_db_value($dbh, 'SELECT SUM(index_length)/(1024*1024) FROM information_schema.TABLES');
+	my $writes = $insert + $update + $replace + $delete;
+
+	# Mysql Questions - Reads
+	$module->{'name'} = "mysql_questions_reads";
+	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
+	$module->{'data'} = $select;
+	$module->{'unit'} = 'qu';
+	push(@modules, $module); 
+	undef $module;
+
+	# Mysql Questions - Writes
+	my $question_writes = 0;
+	if(($writes + $select) > 0) {
+		$question_writes = (($writes * 10000) / ($select + $writes)) / 100;
+	}
+	$module->{'name'} = "mysql_questions_writes";
+	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';
+	$module->{'data'} = $question_writes;
+	$module->{'unit'} = 'qu';
+	push(@modules, $module); 
+	undef $module;
+
+	# Mysql Size of data
+	$module->{'name'} = "mysql_size_of_data";
+	$module->{'description'} = 'MySQL: Size of data (MB): Size of stored data in megabytes';
+	$module->{'data'} = $data_size;
+	$module->{'unit'} = 'MB';
+	push(@modules, $module); 
+	undef $module;
+
+	# Mysql Size of indexed
+	$module->{'name'} = "mysql_size_of_indexes";
+	$module->{'description'} = 'Size of indexes (MB): Size of stored indexes in megabytes';
+	$module->{'data'} = $index_size;
+	$module->{'unit'} = 'MB';
+	push(@modules, $module); 
+	undef $module;
+
+	# Build xml modules.
 	foreach my $module_data (@modules) {
 		$xml_output .=" <module>";
 		$xml_output .=" <name>" .$module_data->{'name'}. "</name>";
 		$xml_output .=" <data>" . $module_data->{'data'} . "</data>";
 
-		if(defined($module->{'description'})) {
-			$xml_output .=" <description>" .$module_data->{'decription'}. "</description>";
+		if(defined($module_data->{'description'})) {
+			$xml_output .=" <description>" .$module_data->{'description'}. "</description>";
 		}
-		if(defined($module->{'type'})) {
+		if(defined($module_data->{'type'})) {
 			$xml_output .=" <type>" .$module_data->{'type'}. "</type>";
 		} else {
 			$xml_output .=" <type>generic_data</type>";
 		}
-		if(defined($module->{'unit'})) {
+		if(defined($module_data->{'unit'})) {
 			$xml_output .=" <unit>" .$module_data->{'unit'}. "</unit>";
 		}
-		if(defined($module->{'module_parent'})) {
+		if(defined($module_data->{'module_parent'})) {
 			$xml_output .=" <module_parent>" .$module_data->{'module_parent'}. "</module_parent>";
 		}
-		if(defined($module->{'interval'})) {
-			$xml_output .=" <moduintervalle_parent>" .$module_data->{'interval'}. "</interval>";
+		if(defined($module_data->{'interval'})) {
+			$xml_output .=" <interval>" .$module_data->{'interval'}. "</interval>";
 		}
 
 		$xml_output .=" </module>";

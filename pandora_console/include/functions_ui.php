@@ -1510,35 +1510,36 @@ function ui_format_alert_row(
         }
 
         // Edit.
-        $tableActionButtons[] = html_print_input_image(
-            'update_action',
-            '/images/edit.svg',
-            1,
-            'padding:0px;',
-            true,
-            [
-                'title'   => __('Update action'),
-                'class'   => 'main_menu_icon invert_filter',
-                'onclick' => 'show_display_update_action(\''.$action['id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action['id'].'\',\''.$alert['agent_name'].'\')',
-            ]
-        );
-        $tableActionButtons[] = html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
-        $tableActionButtons[] = '<form class="delete_alert_form display_in" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list" method="post" >';
-        $tableActionButtons[] = html_print_input_image(
-            'delete',
-            'images/delete.svg',
-            1,
-            '',
-            true,
-            [
-                'title' => __('Delete'),
-                'class' => 'invert_filter main_menu_icon',
-            ]
-        );
-        $tableActionButtons[] = html_print_input_hidden('delete_alert', 1, true);
-        $tableActionButtons[] = html_print_input_hidden('id_alert', $alert['id'], true);
-        $tableActionButtons[] = html_print_input_hidden('id_agent', $alert['agent_name'], true);
-        $tableActionButtons[] = '</form>';
+        if (check_acl($config['id_user'], $id_group, 'LW')
+            || check_acl($config['id_user'], $id_group, 'LM')
+        ) {
+            $tableActionButtons[] = html_print_input_image(
+                'update_action',
+                '/images/edit.svg',
+                1,
+                'padding:0px;',
+                true,
+                [
+                    'title'   => __('Update action'),
+                    'class'   => 'main_menu_icon invert_filter',
+                    'onclick' => 'show_display_update_action(\''.$action['id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action['id'].'\',\''.$alert['agent_name'].'\')',
+                ]
+            );
+            $tableActionButtons[] = html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
+        }
+
+        if (check_acl($config['id_user'], $id_group, 'LM')
+        ) {
+            $tableActionButtons[] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_alert=1&id_alert='.$alert['id'].'&id_agent='.$alert['agent_name'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert?').'\')) return false;">'.html_print_image(
+                'images/delete.svg',
+                true,
+                [
+                    'alt'   => __('Delete'),
+                    'title' => __('Delete'),
+                    'class' => 'main_menu_icon invert_filter vertical_baseline',
+                ]
+            ).'</a>';
+        }
 
         $data[$index['actions']] = html_print_div(
             [

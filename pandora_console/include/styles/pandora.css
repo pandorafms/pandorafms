@@ -7299,6 +7299,9 @@ div.graph div.legend table {
 .vertical_middle {
   vertical-align: middle;
 }
+.vertical_baseline {
+  vertical-align: baseline !important;
+}
 
 .mrg_btt_7 {
   margin-bottom: 7px;

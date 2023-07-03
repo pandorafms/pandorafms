@@ -634,6 +634,12 @@ select:-internal-list-box {
   white-space: nowrap;
 }
 
+.nowrap_max180px {
+  width: 10px;
+  max-width: 180px;
+  white-space: nowrap;
+}
+
 .wrap {
   flex-wrap: wrap;
 }
@@ -648,6 +654,10 @@ select:-internal-list-box {
 
 .inline_flex {
   display: inline-flex;
+}
+
+.align-center {
+  align-items: center;
 }
 
 .relative {
@@ -783,6 +793,10 @@ select:-internal-list-box {
 
 .w100p {
   width: 100%;
+}
+
+.w100pi {
+  width: 100% !important;
 }
 
 /*
@@ -7162,6 +7176,10 @@ div.graph div.legend table {
   margin-bottom: 35px;
 }
 
+.mrgn_btn_35px_imp {
+  margin-bottom: 35px !important;
+}
+
 .mrgn_btn_40px {
   margin-bottom: 40px;
 }
@@ -10663,6 +10681,11 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.force {
+  mask: url(../../images/force@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/force@svg.svg) no-repeat center / contain;
+}
+
 button div.upload_file {
   mask: url(../../images/upload_file.png) no-repeat center / contain;
   -webkit-mask: url(../../images/upload_file.png) no-repeat center / contain;
@@ -11528,6 +11551,12 @@ span.subsection_header_title.secondary {
   margin-left: 0px;
 }
 
+.table-about p span i {
+  color: #454545;
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .table-about p.about-last-p {
   padding-bottom: 17px;
 }
@@ -11858,6 +11887,10 @@ div.relative > div > div#ui-datepicker-div {
 
 .container-div-input-password:has(.w400px-important) {
   width: 400px;
+}
+
+#message_dialog_connection {
+  height: auto !important;
 }
 
 #module_relations > thead > tr {
@@ -12234,4 +12267,34 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 #grid_img {
   position: absolute;
   margin-top: -2px;
+}
+
+div#visual-console-container * {
+  font-size: unset;
+  line-height: unset;
+}
+
+.combo-oid-button {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:first-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:first-child {
+  padding-bottom: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:last-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:last-child {
+  padding-top: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
+  width: 100% !important;
 }

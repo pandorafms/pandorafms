@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -30,16 +30,6 @@
 // Begin.
 if (defined('__PAN_XHPROF__') === false) {
     define('__PAN_XHPROF__', 0);
-}
-
-require 'vendor/autoload.php';
-
-if (__PAN_XHPROF__ === 1) {
-    if (function_exists('tideways_xhprof_enable') === true) {
-        tideways_xhprof_enable();
-    } else {
-        error_log('Cannot find tideways_xhprof_enable function');
-    }
 }
 
 // Needed for InfoBox count.
@@ -140,6 +130,16 @@ if ((file_exists('include/config.php') === false)
     $login_screen = 'error_noconfig';
     include 'general/error_screen.php';
     exit;
+}
+
+require 'vendor/autoload.php';
+
+if (__PAN_XHPROF__ === 1) {
+    if (function_exists('tideways_xhprof_enable') === true) {
+        tideways_xhprof_enable();
+    } else {
+        error_log('Cannot find tideways_xhprof_enable function');
+    }
 }
 
 /*
@@ -755,7 +755,7 @@ if (isset($config['id_user']) === false) {
         header('Location: '.ui_get_full_url('index.php'.$redirect_url));
         exit;
         // Always exit after sending location headers.
-    } else if (isset($_GET['loginhash']) === true) {
+    } else if (isset($_GET['loginhash']) === true || isset($_POST['loginhash']) === true) {
         // Hash login process.
         $loginhash_data = get_parameter('loginhash_data', '');
         $loginhash_user = str_rot13(get_parameter('loginhash_user', ''));

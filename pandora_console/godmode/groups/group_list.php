@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -107,6 +107,8 @@ if (is_ajax() === true) {
         // Ids of agents to be include in the SQL clause as id_agent IN ().
         $filter_agents_json = (string) get_parameter('filter_agents_json', '');
         $status_agents = (int) get_parameter('status_agents', AGENT_STATUS_ALL);
+        $os_agent = (int) get_parameter('os_agent', 0);
+        $os_agent_version = (string) get_parameter('os_agent_version', '');
         // Juanma (22/05/2014) Fix: If setted remove void agents from result
         // (by default and for compatibility show void agents).
         $show_void_agents = (int) get_parameter('show_void_agents', 1);
@@ -150,6 +152,14 @@ if (is_ajax() === true) {
 
         if ($status_agents != AGENT_STATUS_ALL) {
             $filter['status'] = $status_agents;
+        }
+
+        if ($os_agent !== 0) {
+            $filter['id_os'] = $os_agent;
+        }
+
+        if ($os_agent_version !== '') {
+            $filter['os_version'] = $os_agent_version;
         }
 
         if ($id_os !== 0) {

@@ -83,4 +83,6 @@ ADD COLUMN `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '' AFTER `me
 ALTER TABLE `tusuario`
 ADD COLUMN `metaconsole_default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `default_event_filter`;
 
+UPDATE tconfig SET value = 'Renaissance' WHERE token LIKE 'lts_name';
+
 COMMIT;

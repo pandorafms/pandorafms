@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -443,9 +443,9 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
                             opacity: 0.5,
                             background: "black"
                         },
-                        width: 650,
+                        width: "auto",
                         height: 500
-                    })
+                    }).css({"min-width": "650px"})
                     .show ();
                     refresh_pagination_callback (module_id, id_agent, "",module_name);
                     datetime_picker_callback();
@@ -633,7 +633,7 @@ function print_form_filter_monitors(
         false,
         'reset_filter_modules();',
         [
-            'icon' => 'fail',
+            'icon' => 'force',
             'mode' => 'secondary mini',
         ],
         true

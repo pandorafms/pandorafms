@@ -55,5 +55,4 @@ then
 fi
 
 # execution
-nmap -T5 -p $PORT -sU $HOST | grep open | wc -l 2> /dev/null
-
+nmap -T5 -p $PORT -sU $HOST | grep open |grep -v filtered| wc -l 2> /dev/null

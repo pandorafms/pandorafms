@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -201,8 +201,9 @@ if (is_metaconsole() === true) {
         $buttons[$tab]['active'] = true;
     }
 
+    $edit_user = get_parameter('edit_user');
     ui_print_standard_header(
-        (empty($id) === false) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
+        ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         'images/gm_users.png',
         false,
         '',
@@ -385,9 +386,8 @@ if ($create_user === true) {
     // Generate new API token.
     $values['api_token'] = api_token_generate();
     // Validate the user ID if it already exists.
-    $user_exists = get_user_info($id);
-
-    if (empty($id) === true) {
+    $user_exists = get_user_info($values['id_user']);
+    if (empty($values['id_user']) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
         $user_info = $values;
@@ -1073,9 +1073,11 @@ if (!$new_user) {
         'show_api_token',
         false,
         sprintf(
-            'javascript:showAPIToken("%s", "%s")',
+            'javascript:showAPIToken("%s", "%s", "%s", "%s")',
             __('API Token'),
-            base64_encode(__('Your API Token is:').'&nbsp;<br><span class="font_12pt bolder">'.users_get_API_token($id).'</span><br>&nbsp;'.__('Please, avoid share this string with others.')),
+            __('Your API Token is:'),
+            base64_encode(users_get_API_token($id)),
+            __('Please, avoid share this string with others.'),
         ),
         [
             'mode'  => 'link',

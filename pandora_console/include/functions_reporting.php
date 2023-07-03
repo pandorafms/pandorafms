@@ -7735,7 +7735,7 @@ function reporting_sql_auxiliary($report, $content, $pdf=false)
         }
 
         $result = db_get_all_rows_sql($sql, $historical_db);
-        
+
         if ($result !== false) {
             foreach ($result as $row) {
                 $data_row = [];
@@ -14861,7 +14861,13 @@ function reporting_get_stats_servers($filter=[])
             'class' => 'main_menu_icon invert_filter',
         ]
     );
-    $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';
+    $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
+    if ($config['event_view_hr']) {
+        $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+    }
+
+    $system_events = db_get_value_sql($sql_count_event);
+    $tdata[1] = '<span class="big_data" id="total_events">'.$system_events.'</span>';
 
     if (isset($system_events) && $system_events > 50000 && !enterprise_installed()) {
         $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise left' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title main_menu_icon' data-use_title_for_force_title='1' src='images/alert-yellow@svg.svg'></div>";

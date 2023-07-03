@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -341,14 +341,7 @@ if ($type >= MODULE_TYPE_REMOTE_SNMP && $type <= MODULE_TYPE_REMOTE_SNMP_PROC) {
 }
 
 if ($is_management_allowed === true && $create_component) {
-    $name_check = db_get_value(
-        'name',
-        'tnetwork_component',
-        'name',
-        $name
-    );
-
-    if ($name && !$name_check) {
+    if ($name) {
         $id = network_components_create_network_component(
             $name,
             $type,
@@ -429,14 +422,8 @@ if ($is_management_allowed === true && $create_component) {
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail try to create remote component'
         );
-
-        if ($name_check !== false) {
-            // If name exists, advice about it.
-            ui_print_error_message(__('Could not be created because the component exists'));
-        } else {
-            // Other cases.
-            ui_print_error_message(__('Could not be created'));
-        }
+        // Other cases.
+        ui_print_error_message(__('Could not be created'));
 
         include_once 'godmode/modules/manage_network_components_form.php';
         return;
@@ -610,8 +597,7 @@ $search_string = (string) get_parameter('search_string');
 $offset = (int) get_parameter('offset');
 $url = ui_get_url_refresh(
     [
-        'offset'          => $offset,
-        'search_string'   => $search_string,
+        'search_string'   => urlencode(io_safe_output($search_string)),
         'search_id_group' => $search_id_group,
         'id'              => $id,
     ],
@@ -691,7 +677,8 @@ $table->data[0][] = html_print_label_input_block(
     )
 );
 
-$toggleFilters = '<form class="filters_form" method="POST" action="'.$url.'">';
+$filter_action_url = 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&search_string='.urlencode(io_safe_output($search_string)).'&search_id_group'.$search_id_group.'&pure='.$pure;
+$toggleFilters = '<form class="filters_form" method="POST" action="'.$filter_action_url.'">';
 $toggleFilters .= html_print_table($table, true);
 $toggleFilters .= html_print_div(
     [
@@ -738,7 +725,7 @@ $total_components = network_components_get_network_components(
     'COUNT(*) AS total'
 );
 $total_components = $total_components[0]['total'];
-$offset_delete = ($offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
+$offset_delete = ($offset > 0 && $offset >= ($total_components - 1)) ? ($offset - $config['block_size']) : $offset;
 $filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = network_components_get_network_components(

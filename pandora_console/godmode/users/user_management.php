@@ -633,7 +633,7 @@ $homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
 $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
     $homeScreenValues,
     'section',
-    array_search($user_info['section'], $homeScreenValues),
+    $user_info['section'],
     'show_data_section();',
     '',
     -1,

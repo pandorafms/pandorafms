@@ -755,7 +755,7 @@ function flot_slicesbar_graph(
             'date_to'            => $date_to,
             'server_id'          => $server_id,
         ];
-        // TO-DO Cambiar esto para que se pase por POST, NO SE PUEDE PASAR POR GET.
+
         update_check_config_token($tokem_config, json_encode($graph_data));
         $_SESSION['slicebar'] = $tokem_config;
         $_SESSION['slicebar_value'] = json_encode($graph_data);

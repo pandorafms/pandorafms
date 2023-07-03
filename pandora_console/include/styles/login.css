@@ -351,6 +351,7 @@ span.span1 {
   font-family: "lato-bolder";
   color: #fff;
   margin-right: 30px;
+  text-shadow: 20px 15px 7px rgba(9, 9, 9, 0.8);
 }
 
 span.span2 {

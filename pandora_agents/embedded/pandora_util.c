@@ -1,5 +1,5 @@
 //     Pandora FMS Embedded Agent
-//     (c) Pandora FMS 2011
+//     (c) Pandora FMS 2011-2023
 //     (c) Sancho Lerena <slerena@artica.es>
 
 //     This program is free software; you can redistribute it and/or modify

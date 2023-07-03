@@ -2,7 +2,7 @@
 #
 # Pandora FMS log migration tool
 #
-# Pandora FMS 2017
+# Pandora FMS 2017-2023
 # 2017/09/07 v1 (c) Fco de Borja Sanchez <fborja.sanchez@artica.es>
 #
 ########################################################################

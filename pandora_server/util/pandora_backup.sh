@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Pandora FMS Command line Backup Tool
-# (c) Sancho Lerena <slerena@gmail.com>, Pandora FMS 2009
+# (c) Sancho Lerena <slerena@gmail.com>, Pandora FMS 2009-2023
 
 function help {
 	echo ""

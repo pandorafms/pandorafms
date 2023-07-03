@@ -730,7 +730,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $tmp->event_type = '<div class="flex_justify">'.events_print_type_img($tmp->event_type, true).'</div>';
+                        $tmp->event_type = '<div class="mrgn_lft_25px">'.events_print_type_img($tmp->event_type, true).'</div>';
 
                         // Module status.
                         // Event severity prepared.

@@ -3,7 +3,7 @@
 ########################################################################
 # Pandora FMS - Remote Event Tool (via WEB API) 
 ########################################################################
-# Copyright (c) 2021 Pandora FMS
+# Copyright (c) 2021-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2

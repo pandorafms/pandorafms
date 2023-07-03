@@ -8,7 +8,7 @@
 #
 # Usage: nagios_plugin_wrapper <module_name> <nagios plugin execution with its parameters>
 ##########################################################################
-# Copyright (c) 2010 Pandora FMS
+# Copyright (c) 2010-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

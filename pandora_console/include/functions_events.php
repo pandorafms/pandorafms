@@ -2690,9 +2690,10 @@ function events_print_type_img(
 
         case 'going_up_warning':
             $icon = 'images/module_warning.png';
-            $style .= ' event_module_background_state icon_background_warning';
+            // $style .= ' event_module_background_state icon_background_warning';
         case 'going_down_warning':
-            $style .= ' event_module_background_state icon_background_warning';
+            $icon = 'images/module_warning.png';
+            // $style .= ' event_module_background_state icon_background_warning';
         break;
 
         case 'going_unknown':

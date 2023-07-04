@@ -12289,3 +12289,7 @@ tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
 }
+
+.group_view_table > tbody > tr > td {
+  width: 350px !important;
+}

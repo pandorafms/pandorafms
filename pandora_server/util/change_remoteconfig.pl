@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# (c) Artica Soluciones Tecnologicas 2010
+# (c) Pandora FMS 2010-2023
 # This script is licensed under GPL v2 licence.
 
 use strict;

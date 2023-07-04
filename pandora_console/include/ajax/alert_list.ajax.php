@@ -571,6 +571,11 @@ if ($show_update_action_menu) {
                 );
             $data .= '</td>';
         $data .= '</tr>';
+
+    if (isset($action_option['module_action_threshold']) === false) {
+        $action_option['module_action_threshold'] = '300';
+    }
+
         $data .= '<tr class="datos2">';
             $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
                 $data .= __('Threshold').ui_print_help_tip(__('If a value of 0 is assigned, the Threshold of the action will be used.'), true);
@@ -591,7 +596,7 @@ if ($show_update_action_menu) {
                     false,
                     '',
                     false,
-                    true
+                    false
                 );
             $data .= '</td>';
         $data .= '</tr>';

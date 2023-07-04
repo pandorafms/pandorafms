@@ -281,6 +281,19 @@ if ($delete_alert) {
 }
 
 if ($add_action) {
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_name = explode(' ', io_safe_output(get_parameter('id_agent')))[0];
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
     $id_action = (int) get_parameter('action_select');
     $id_alert_module = (int) get_parameter('id_alert_module');
     $fires_min = (int) get_parameter('fires_min');
@@ -317,6 +330,12 @@ if ($add_action) {
         '',
         true
     );
+
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+        echo '<script>window.location.assign("index.php?sec=estado&sec2=operation/agentes/alerts_status")</script>';
+    }
 }
 
 if ($update_action) {
@@ -421,6 +440,7 @@ if ($delete_action) {
     if (is_metaconsole()) {
         // Restore db connection.
         metaconsole_restore_db();
+        echo '<script>window.location.assign("index.php?sec=estado&sec2=operation/agentes/alerts_status")</script>';
     }
 }
 

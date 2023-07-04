@@ -656,4 +656,21 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
         }
     });
 }
+
+function show_add_action(id_alert) {
+    $("#add_action-div-" + id_alert).hide ()
+        .dialog ({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            width: 700,
+            title: '<?php echo __('Add action'); ?>',
+            modal: true,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            }
+        })
+        .show ();
+}
 </script>

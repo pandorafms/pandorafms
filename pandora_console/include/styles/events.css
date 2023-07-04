@@ -553,3 +553,8 @@ div#main_pure:has(.events-pure) {
 .margn-b-50px {
   margin-bottom: 50px !important;
 }
+
+div#sunburst > svg {
+  width: 750px;
+  height: 750px;
+}

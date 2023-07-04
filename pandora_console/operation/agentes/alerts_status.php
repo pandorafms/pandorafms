@@ -473,6 +473,7 @@ $html_content = ob_get_clean();
 
 if ($agent_view_page === true) {
     // Create controlled toggle content.
+    $alerts_count = alerts_get_alerts(0, '', 'all', -1, $true, true, $agent['id_agente']);
     html_print_div(
         [
             'class'   => 'agent_details_line',
@@ -481,7 +482,7 @@ if ($agent_view_page === true) {
                 '<span class="subsection_header_title">'.__('Full list of alerts').'</span>',
                 'status_monitor_agent',
                 !$alerts_defined,
-                false,
+                ($alerts_count > 0) ? false : true,
                 true,
                 '',
                 '',

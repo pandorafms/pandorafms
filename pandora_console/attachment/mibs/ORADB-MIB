@@ -1,0 +1,1179 @@
+
+ORADB-MIB DEFINITIONS ::= BEGIN
+
+
+IMPORTS
+	DisplayString
+		FROM RFC1213-MIB
+	OBJECT-TYPE
+		FROM RFC-1212
+	Counter, experimental, enterprises
+		FROM RFC1155-SMI
+	rdbmsDbIndex
+		FROM RDBMS-MIB
+        applIndex
+                FROM APPLICATION-MIB;
+
+DateAndTime ::= OCTET STRING (SIZE (8 .. 11))
+TruthValue  ::= INTEGER { true(1), false(2) }
+
+oracle OBJECT IDENTIFIER ::= { enterprises 111 }
+
+oraDbMIB OBJECT IDENTIFIER ::= { oracle  4 }
+
+oraDbObjects OBJECT IDENTIFIER ::= { oraDbMIB  1 }
+
+oraDbSysTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF OraDbSysEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Oracle-specific performance information global to a database."
+    ::= { oraDbObjects  1 }
+
+oraDbSysEntry OBJECT-TYPE
+    SYNTAX  OraDbSysEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Selected info from the v$sysstat table on instance performance.
+           Variables are included here
+           because they have been found particularly useful in 
+           tuning an Oracle instance.  In many cases, the variable should
+           only be considered in conjunction with other variables, often
+           as a ratio.  Frequently, hints on these are given in the 
+           descriptions, but Oracle tuning documentation should always
+           be consulted, particularly the Oracle University course on 
+           tuning V7 applications."
+    INDEX   { applIndex }
+    ::= { oraDbSysTable  1 }
+
+OraDbSysEntry ::=
+    SEQUENCE {
+        oraDbSysConsistentChanges
+            Counter,
+
+        oraDbSysConsistentGets
+            Counter,
+
+        oraDbSysDbBlockChanges
+            Counter,
+
+        oraDbSysDbBlockGets
+            Counter,
+
+        oraDbSysFreeBufferInspected
+            Counter,
+
+        oraDbSysFreeBufferRequested
+            Counter,
+
+        oraDbSysParseCount
+            Counter,
+
+        oraDbSysPhysReads
+            Counter,
+
+        oraDbSysPhysWrites
+            Counter,
+
+        oraDbSysRedoEntries
+            Counter,
+
+        oraDbSysRedoLogSpaceRequests
+            Counter,
+
+        oraDbSysRedoSyncWrites
+            Counter,
+
+        oraDbSysSortsDisk
+            Counter,
+
+        oraDbSysSortsMemory
+            Counter,
+
+        oraDbSysSortsRows
+            Counter,
+
+        oraDbSysTableFetchRowid
+            Counter,
+
+        oraDbSysTableFetchContinuedRow
+            Counter,
+
+        oraDbSysTableScanBlocks
+            Counter,
+
+        oraDbSysTableScanRows
+            Counter,
+
+        oraDbSysTableScansLong
+            Counter,
+
+        oraDbSysTableScansShort
+            Counter,
+
+        oraDbSysUserCalls
+            Counter,
+
+        oraDbSysUserCommits
+            Counter,
+
+        oraDbSysUserRollbacks
+            Counter,
+
+        oraDbSysWriteRequests
+            Counter
+    }
+
+oraDbSysConsistentChanges OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'consistent changes' parameter from v$sysstat"
+    ::= { oraDbSysEntry  1 }
+
+oraDbSysConsistentGets OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'consistent gets' parameter from v$sysstat"
+    ::= { oraDbSysEntry  2 }
+
+oraDbSysDbBlockChanges OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'Db block changes' parameter from v$sysstat"
+    ::= { oraDbSysEntry  3 }
+
+oraDbSysDbBlockGets OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'db block gets' parameter from v$sysstat"
+    ::= { oraDbSysEntry  4 }
+
+oraDbSysFreeBufferInspected OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'free buffer inspected' parameter from v$sysstat"
+    ::= { oraDbSysEntry  5 }
+
+oraDbSysFreeBufferRequested OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'free buffer requested' parameter from v$sysstat"
+    ::= { oraDbSysEntry  6 }
+
+oraDbSysParseCount OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'parse count' parameter from v$sysstat"
+    ::= { oraDbSysEntry  7 }
+
+oraDbSysPhysReads OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'physical reads' parameter from v$sysstat"
+    ::= { oraDbSysEntry  8 }
+
+oraDbSysPhysWrites OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'physical writes' parameter from v$sysstat"
+    ::= { oraDbSysEntry  9 }
+
+oraDbSysRedoEntries OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'redo entries' parameter from v$sysstat"
+    ::= { oraDbSysEntry  10 }
+
+oraDbSysRedoLogSpaceRequests OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'redo log space requests' parameter from v$sysstat"
+    ::= { oraDbSysEntry  11 }
+
+oraDbSysRedoSyncWrites OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'redo synch writes' parameter from v$sysstat"
+    ::= { oraDbSysEntry  12 }
+
+oraDbSysSortsDisk OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'sorts (disk)' parameter from v$sysstat"
+    ::= { oraDbSysEntry  13 }
+
+oraDbSysSortsMemory OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'sorts (memory)' parameter from v$sysstat"
+    ::= { oraDbSysEntry  14 }
+
+oraDbSysSortsRows OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'sorts (rows)' parameter from v$sysstat"
+    ::= { oraDbSysEntry  15 }
+
+oraDbSysTableFetchRowid OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'table fetch by rowid' parameter from v$sysstat"
+    ::= { oraDbSysEntry  16 }
+
+oraDbSysTableFetchContinuedRow OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'table fetch continued row' parameter from v$sysstat"
+    ::= { oraDbSysEntry  17 }
+
+oraDbSysTableScanBlocks OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'table scan blocks gotten' parameter from v$sysstat"
+    ::= { oraDbSysEntry  18 }
+
+oraDbSysTableScanRows OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'table scan rows gotten' parameter from v$sysstat"
+    ::= { oraDbSysEntry  19 }
+
+oraDbSysTableScansLong OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'table scans (long tables)' parameter from v$sysstat"
+    ::= { oraDbSysEntry  20 }
+
+oraDbSysTableScansShort OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'table scans (short tables)' parameter from v$sysstat"
+    ::= { oraDbSysEntry  21 }
+
+oraDbSysUserCalls OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'user calls' parameter from v$sysstat"
+    ::= { oraDbSysEntry  22 }
+
+oraDbSysUserCommits OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'user commits' parameter from v$sysstat"
+    ::= { oraDbSysEntry  23 }
+
+oraDbSysUserRollbacks OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'user rollbacks' parameter from v$sysstat"
+    ::= { oraDbSysEntry  24 }
+
+oraDbSysWriteRequests OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "the 'write requests' parameter from v$sysstat"
+    ::= { oraDbSysEntry  25 }
+
+oraDbTablespaceTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF OraDbTablespaceEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Information on tablespaces within an Oracle database."
+    ::= { oraDbObjects  2 }
+
+oraDbTablespaceEntry OBJECT-TYPE
+    SYNTAX  OraDbTablespaceEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Information for each tablespace within an Oracle database."
+    INDEX   { rdbmsDbIndex,  oraDbTablespaceIndex }
+    ::= { oraDbTablespaceTable  1 }
+
+OraDbTablespaceEntry ::=
+    SEQUENCE {
+        oraDbTablespaceIndex
+            INTEGER,
+
+        oraDbTablespaceName
+            DisplayString,
+
+        oraDbTablespaceSizeAllocated
+            INTEGER (-2147483648..2147483647),
+
+        oraDbTablespaceSizeUsed
+            INTEGER (-2147483648..2147483647),
+
+        oraDbTablespaceState
+            INTEGER,
+
+        oraDbTablespaceLargestAvailableChunk
+            INTEGER (-2147483648..2147483647)
+    }
+
+oraDbTablespaceIndex OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "A numeric index, unique among tablespaces within a single
+           Oracle database."
+    ::= { oraDbTablespaceEntry  1 }
+
+oraDbTablespaceName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The name of this tablespace."
+    ::= { oraDbTablespaceEntry  2 }
+
+oraDbTablespaceSizeAllocated OBJECT-TYPE
+    SYNTAX  INTEGER (-2147483648..2147483647)
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The amount of disk space, in kilobytes, allocated for this
+           tablespace.  This is the sum of the sizes of the data files
+           associated with the tablespace."
+    ::= { oraDbTablespaceEntry  3 }
+
+oraDbTablespaceSizeUsed OBJECT-TYPE
+    SYNTAX  INTEGER (-2147483648..2147483647)
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The amount of disk space, in kilobytes, which is actually in
+           use for storing data."
+    ::= { oraDbTablespaceEntry  4 }
+
+oraDbTablespaceState OBJECT-TYPE
+    SYNTAX  INTEGER {
+    online(1),
+    offline(2),
+    invalid(3)
+}
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The current accessibility of this tablespace.  If a
+           tablespace is offline(2), then SQL statements cannot
+           reference objects contained in the tablespace.  An invalid(3)
+           tablespace is one that has been dropped."
+    ::= { oraDbTablespaceEntry  5 }
+
+oraDbTablespaceLargestAvailableChunk OBJECT-TYPE
+    SYNTAX  INTEGER (-2147483648..2147483647)
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The size, in kilobytes, of the largest contiguous set of free
+           data blocks in the tablespace."
+    ::= { oraDbTablespaceEntry  6 }
+
+oraDbDataFileTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF OraDbDataFileEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Information on data files within an Oracle database."
+    ::= { oraDbObjects  3 }
+
+oraDbDataFileEntry OBJECT-TYPE
+    SYNTAX  OraDbDataFileEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Information for each data file within an Oracle database."
+    INDEX   { rdbmsDbIndex,  oraDbDataFileIndex }
+    ::= { oraDbDataFileTable  1 }
+
+OraDbDataFileEntry ::=
+    SEQUENCE {
+        oraDbDataFileIndex
+            INTEGER,
+
+        oraDbDataFileName
+            DisplayString,
+
+        oraDbDataFileSizeAllocated
+            INTEGER (-2147483648..2147483647),
+
+        oraDbDataFileDiskReads
+            Counter,
+
+        oraDbDataFileDiskWrites
+            Counter,
+
+        oraDbDataFileDiskReadBlocks
+            Counter,
+
+        oraDbDataFileDiskWrittenBlocks
+            Counter,
+
+        oraDbDataFileDiskReadTimeTicks
+            Counter,
+
+        oraDbDataFileDiskWriteTimeTicks
+            Counter
+    }
+
+oraDbDataFileIndex OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "A numeric index, unique among data files associated with a
+           single tablespace."
+    ::= { oraDbDataFileEntry  1 }
+
+oraDbDataFileName OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The fully-qualified name of this datafile."
+    ::= { oraDbDataFileEntry  2 }
+
+oraDbDataFileSizeAllocated OBJECT-TYPE
+    SYNTAX  INTEGER (-2147483648..2147483647)
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The allocated size, in kilobytes, of this data file."
+    ::= { oraDbDataFileEntry  3 }
+
+oraDbDataFileDiskReads OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The total number of reads issued against this data file since
+           startup."
+    ::= { oraDbDataFileEntry  4 }
+
+oraDbDataFileDiskWrites OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The total number of writes issued against this data file since
+           startup."
+    ::= { oraDbDataFileEntry  5 }
+
+oraDbDataFileDiskReadBlocks OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The total number of physical blocks read from this data file
+           since startup."
+    ::= { oraDbDataFileEntry  6 }
+
+oraDbDataFileDiskWrittenBlocks OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The total number of physical blocks written to this data file
+           since startup."
+    ::= { oraDbDataFileEntry  7 }
+
+oraDbDataFileDiskReadTimeTicks OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The time spent reading from this data file since startup IF
+           the database parameter TIMED_STATISTICS is TRUE.  If
+           TIMED_STATISTICS is FALSE, then the value will be zero."
+    ::= { oraDbDataFileEntry  8 }
+
+oraDbDataFileDiskWriteTimeTicks OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The time spent writing to this data file since startup IF
+           the database parameter TIMED_STATISTICS is TRUE.  If
+           TIMED_STATISTICS is FALSE, then the value will be zero."
+    ::= { oraDbDataFileEntry  9 }
+
+oraDbLibraryCacheTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF OraDbLibraryCacheEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Information on libraryCache performance."
+    ::= { oraDbObjects  4 }
+
+oraDbLibraryCacheEntry OBJECT-TYPE
+    SYNTAX  OraDbLibraryCacheEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "LibraryCache information for each Oracle database."
+    INDEX   { applIndex,  oraDbLibraryCacheIndex }
+    ::= { oraDbLibraryCacheTable  1 }
+
+OraDbLibraryCacheEntry ::=
+    SEQUENCE {
+        oraDbLibraryCacheIndex
+            INTEGER,
+
+        oraDbLibraryCacheNameSpace
+            DisplayString,
+
+        oraDbLibraryCacheGets
+            Counter,
+
+        oraDbLibraryCacheGetHits
+            Counter,
+
+        oraDbLibraryCachePins
+            Counter,
+
+        oraDbLibraryCachePinHits
+            Counter,
+
+        oraDbLibraryCacheReloads
+            Counter,
+
+        oraDbLibraryCacheInvalidations
+            Counter
+    }
+
+oraDbLibraryCacheIndex OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "A unique integer for each row of the table."
+    ::= { oraDbLibraryCacheEntry  1 }
+
+oraDbLibraryCacheNameSpace OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The namespace of the v$librarycache table that this
+           row relates to."
+    ::= { oraDbLibraryCacheEntry  2 }
+
+oraDbLibraryCacheGets OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the system requests handles to library
+           objects in this namespace."
+    ::= { oraDbLibraryCacheEntry  3 }
+
+oraDbLibraryCacheGetHits OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the handles are already allocated in 
+           the cache."
+    ::= { oraDbLibraryCacheEntry  4 }
+
+oraDbLibraryCachePins OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the system issues pin requests
+           for objects in the cache in order to access them."
+    ::= { oraDbLibraryCacheEntry  5 }
+
+oraDbLibraryCachePinHits OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the objects the system is pinning
+           are already allocated and initialized in the cache."
+    ::= { oraDbLibraryCacheEntry  6 }
+
+oraDbLibraryCacheReloads OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the library objects have to be reinitialized
+           and reloaded with data because they have been aged out or
+           invalidated"
+    ::= { oraDbLibraryCacheEntry  7 }
+
+oraDbLibraryCacheInvalidations OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times that non-persistent library objects
+           (like shared SQL areas) have been invalidated."
+    ::= { oraDbLibraryCacheEntry  8 }
+
+oraDbLibraryCacheSumTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF OraDbLibraryCacheSumEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Information on library cache performance, summed over all
+           library caches in a single database instance."
+    ::= { oraDbObjects  5 }
+
+oraDbLibraryCacheSumEntry OBJECT-TYPE
+    SYNTAX  OraDbLibraryCacheSumEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "LibraryCache information, summed over all library caches,
+           for each Oracle database."
+    INDEX   { applIndex }
+    ::= { oraDbLibraryCacheSumTable  1 }
+
+OraDbLibraryCacheSumEntry ::=
+    SEQUENCE {
+        oraDbLibraryCacheSumGets
+            Counter,
+
+        oraDbLibraryCacheSumGetHits
+            Counter,
+
+        oraDbLibraryCacheSumPins
+            Counter,
+
+        oraDbLibraryCacheSumPinHits
+            Counter,
+
+        oraDbLibraryCacheSumReloads
+            Counter,
+
+        oraDbLibraryCacheSumInvalidations
+            Counter
+    }
+
+oraDbLibraryCacheSumGets OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the system requests handles to library
+           objects, summed over all library caches in the instance."
+    ::= { oraDbLibraryCacheSumEntry  1 }
+
+oraDbLibraryCacheSumGetHits OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the handles are already allocated in 
+           the cache, summed over all library caches in the instance."
+    ::= { oraDbLibraryCacheSumEntry  2 }
+
+oraDbLibraryCacheSumPins OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the system issues pin requests
+           for objects in a cache in order to access them,
+           summed over all library caches in the instance."
+    ::= { oraDbLibraryCacheSumEntry  3 }
+
+oraDbLibraryCacheSumPinHits OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the objects the system is pinning
+           are already allocated and initialized in a cache,
+           summed over all library caches in the instance."
+    ::= { oraDbLibraryCacheSumEntry  4 }
+
+oraDbLibraryCacheSumReloads OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times the library objects have to be reinitialized
+           and reloaded with data because they have been aged out or
+           invalidated, summed over all library caches in the instance."
+    ::= { oraDbLibraryCacheSumEntry  5 }
+
+oraDbLibraryCacheSumInvalidations OBJECT-TYPE
+    SYNTAX  Counter
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "Number of times that non-persistent library objects
+           (like shared SQL areas) have been invalidated, summed over
+           all library caches in the instance."
+    ::= { oraDbLibraryCacheSumEntry  6 }
+
+oraDbSGATable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF OraDbSGAEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Summary information on the System Global Area"
+    ::= { oraDbObjects  6 }
+
+oraDbSGAEntry OBJECT-TYPE
+    SYNTAX  OraDbSGAEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "A single entry from the v$sga table"
+    INDEX   { applIndex }
+    ::= { oraDbSGATable  1 }
+
+OraDbSGAEntry ::=
+    SEQUENCE {
+        oraDbSGAFixedSize
+            INTEGER,
+
+        oraDbSGAVariableSize
+            INTEGER,
+
+        oraDbSGADatabaseBuffers
+            INTEGER,
+
+        oraDbSGARedoBuffers
+            INTEGER
+    }
+
+oraDbSGAFixedSize OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           ""
+    ::= { oraDbSGAEntry  1 }
+
+oraDbSGAVariableSize OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           ""
+    ::= { oraDbSGAEntry  2 }
+
+oraDbSGADatabaseBuffers OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           ""
+    ::= { oraDbSGAEntry  3 }
+
+oraDbSGARedoBuffers OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           ""
+    ::= { oraDbSGAEntry  4 }
+
+oraDbConfigTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF OraDbConfigEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Oracle-specific configuration information global to a database."
+    ::= { oraDbObjects  7 }
+
+oraDbConfigEntry OBJECT-TYPE
+    SYNTAX  OraDbConfigEntry
+    ACCESS  not-accessible
+    STATUS  mandatory
+    DESCRIPTION
+           "Oracle-specific configuration information.  This table only
+           lists a few init.ora parameters that are particularly
+           relevant to the task of monitoring database performance.  By
+           giving them easy-to-use, fixed object-ids, we make it easier
+           to graph them along with the dynamic performance values that
+           they affect.  A complete list of parameters can be found in
+           the Internet standard MIB 'rdbmsSrvParam' objects."
+    INDEX   { applIndex }
+    ::= { oraDbConfigTable  1 }
+
+OraDbConfigEntry ::=
+    SEQUENCE {
+        oraDbConfigDbBlockBuffers
+            INTEGER,
+
+        oraDbConfigDbBlockCkptBatch
+            INTEGER,
+
+        oraDbConfigDbBlockSize
+            INTEGER,
+
+        oraDbConfigDbFileSimWrites
+            INTEGER,
+
+        oraDbConfigDbMultiBlockReadCount
+            INTEGER,
+
+        oraDbConfigDistLockTimeout
+            INTEGER,
+
+        oraDbConfigDistRecoveryConnectHold
+            INTEGER,
+
+        oraDbConfigDistTransactions
+            INTEGER,
+
+        oraDbConfigLogArchiveBufferSize
+            INTEGER,
+
+        oraDbConfigLogArchiveBuffers
+            INTEGER,
+
+        oraDbConfigLogBuffer
+            INTEGER,
+
+        oraDbConfigLogCheckpointInterval
+            INTEGER,
+
+        oraDbConfigLogCheckpointTimeout
+            INTEGER,
+
+        oraDbConfigLogFiles
+            INTEGER,
+
+        oraDbConfigMaxRollbackSegments
+            INTEGER,
+
+        oraDbConfigMTSMaxDispatchers
+            INTEGER,
+
+        oraDbConfigMTSMaxServers
+            INTEGER,
+
+        oraDbConfigMTSServers
+            INTEGER,
+
+        oraDbConfigOpenCursors
+            INTEGER,
+
+        oraDbConfigOpenLinks
+            INTEGER,
+
+        oraDbConfigOptimizerMode
+            DisplayString,
+
+        oraDbConfigProcesses
+            INTEGER,
+
+        oraDbConfigSerializable
+            TruthValue,
+
+        oraDbConfigSessions
+            INTEGER,
+
+        oraDbConfigSharedPool
+            INTEGER,
+
+        oraDbConfigSortAreaRetainedSize
+            INTEGER,
+
+        oraDbConfigSortAreaSize
+            INTEGER,
+
+        oraDbConfigTransactions
+            INTEGER,
+
+        oraDbConfigTransactionsPerRollback
+            INTEGER
+    }
+
+oraDbConfigDbBlockBuffers OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The DB_BLOCK_BUFFERS parameter from the init.ora file "
+    ::= { oraDbConfigEntry  1 }
+
+oraDbConfigDbBlockCkptBatch OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The DB_BLOCK_CHECKPOINT_BATCH  parameter from the init.ora file "
+    ::= { oraDbConfigEntry  2 }
+
+oraDbConfigDbBlockSize OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The DB_BLOCK_SIZE parameter from the init.ora file "
+    ::= { oraDbConfigEntry  3 }
+
+oraDbConfigDbFileSimWrites OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The DB_FILE_SIMULTANEOUS_WRITES parameter from the init.ora file "
+    ::= { oraDbConfigEntry  4 }
+
+oraDbConfigDbMultiBlockReadCount OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The DB_MULTIBLOCK_READ_COUNT  parameter from the init.ora file "
+    ::= { oraDbConfigEntry  5 }
+
+oraDbConfigDistLockTimeout OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The DISTRIBUTED_LOCK_TIMEOUT parameter from the init.ora file "
+    ::= { oraDbConfigEntry  6 }
+
+oraDbConfigDistRecoveryConnectHold OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The DISTRIBUTED_RECOVERY_CONNECT_HOLD parameter from the
+            init.ora file "
+    ::= { oraDbConfigEntry  7 }
+
+oraDbConfigDistTransactions OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The DISTRIBUTED_TRANSACTIONS  parameter from the init.ora file "
+    ::= { oraDbConfigEntry  8 }
+
+oraDbConfigLogArchiveBufferSize OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The LOG_ARCHIVE_BUFFER_SIZE parameter from the init.ora file "
+    ::= { oraDbConfigEntry  9 }
+
+oraDbConfigLogArchiveBuffers OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The LOG_ARCHIVE_BUFFERS parameter from the init.ora file "
+    ::= { oraDbConfigEntry  10 }
+
+oraDbConfigLogBuffer OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The LOG_BUFFER parameter from the init.ora file "
+    ::= { oraDbConfigEntry  11 }
+
+oraDbConfigLogCheckpointInterval OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The LOG_CHECKPOINT_INTERVAL parameter from the init.ora file "
+    ::= { oraDbConfigEntry  12 }
+
+oraDbConfigLogCheckpointTimeout OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The LOG_CHECKPOINT_TIMEOUT parameter from the init.ora file "
+    ::= { oraDbConfigEntry  13 }
+
+oraDbConfigLogFiles OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The LOG_FILES parameter from the init.ora file "
+    ::= { oraDbConfigEntry  14 }
+
+oraDbConfigMaxRollbackSegments OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The MAX_ROLLBACK_SEGMENTS parameter from the init.ora file "
+    ::= { oraDbConfigEntry  15 }
+
+oraDbConfigMTSMaxDispatchers OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The MTS_MAX_DISPATCHERS parameter from the init.ora file "
+    ::= { oraDbConfigEntry  16 }
+
+oraDbConfigMTSMaxServers OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The MTS_MAX_SERVERS  parameter from the init.ora file "
+    ::= { oraDbConfigEntry  17 }
+
+oraDbConfigMTSServers OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The MTS_SERVERS  parameter from the init.ora file "
+    ::= { oraDbConfigEntry  18 }
+
+oraDbConfigOpenCursors OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The OPEN_CURSORS parameter from the init.ora file "
+    ::= { oraDbConfigEntry  19 }
+
+oraDbConfigOpenLinks OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The OPEN_LINKS parameter from the init.ora file "
+    ::= { oraDbConfigEntry  20 }
+
+oraDbConfigOptimizerMode OBJECT-TYPE
+    SYNTAX  DisplayString
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The  OPTIMIZER_MODE parameter from the init.ora file "
+    ::= { oraDbConfigEntry  21 }
+
+oraDbConfigProcesses OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The PROCESSES parameter from the init.ora file "
+    ::= { oraDbConfigEntry  22 }
+
+oraDbConfigSerializable OBJECT-TYPE
+    SYNTAX  TruthValue
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The SERIALIZABLE parameter from the init.ora file "
+    ::= { oraDbConfigEntry  23 }
+
+oraDbConfigSessions OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The SESSIONS  parameter from the init.ora file "
+    ::= { oraDbConfigEntry  24 }
+
+oraDbConfigSharedPool OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The SHARED_POOL parameter from the init.ora file "
+    ::= { oraDbConfigEntry  25 }
+
+oraDbConfigSortAreaSize OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The SORT_AREA_SIZE parameter from the init.ora file "
+    ::= { oraDbConfigEntry  26 }
+
+oraDbConfigSortAreaRetainedSize OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The SORT_AREA_RETAINED_SIZE  parameter from the init.ora file "
+    ::= { oraDbConfigEntry  27 }
+
+oraDbConfigTransactions OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The TRANSACTIONS parameter from the init.ora file "
+    ::= { oraDbConfigEntry  28 }
+
+oraDbConfigTransactionsPerRollback OBJECT-TYPE
+    SYNTAX  INTEGER
+    ACCESS  read-only
+    STATUS  mandatory
+    DESCRIPTION
+           "The TRANSACTIONS_PER_ROLLBACK parameter from the init.ora file "
+    ::= { oraDbConfigEntry  29 }
+
+END

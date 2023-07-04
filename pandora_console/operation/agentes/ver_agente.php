@@ -67,6 +67,7 @@ if (is_ajax()) {
     $agents_inserted = get_parameter('agents_inserted', []);
     $id_group = (int) get_parameter('id_group');
     $pendingdelete = (bool) get_parameter('pendingdelete');
+    $get_node_agent = (bool) get_parameter('get_node_agent', false);
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -1307,6 +1308,18 @@ if (is_ajax()) {
 
         echo json_encode($agents2);
         return;
+    }
+
+    if ($get_node_agent === true) {
+        $id = get_parameter('id', 0);
+        if (empty($id) === false) {
+            $result = db_get_value_sql(
+                'SELECT id_tmetaconsole_setup FROM tmetaconsole_agent WHERE id_agente = '.$id
+            );
+
+            echo json_encode($result);
+            return;
+        }
     }
 
     return;

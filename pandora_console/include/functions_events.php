@@ -2689,6 +2689,8 @@ function events_print_type_img(
         break;
 
         case 'going_up_warning':
+            $icon = 'images/module_warning.png';
+            $style .= ' event_module_background_state icon_background_warning';
         case 'going_down_warning':
             $style .= ' event_module_background_state icon_background_warning';
         break;
@@ -2851,16 +2853,15 @@ function events_print_type_img_pdf(
         break;
 
         case 'new_agent':
-            $svg = '<svg width="15" height="15" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                <title>Dark / 20 / agents@svg</title>
-                <desc>Created with Sketch.</desc>
-                <g id="Dark-/-20-/-agents" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <g id="Group" transform="translate(0.000000, 1.000000)">
-                        <rect id="Rectangle" fill="#3F3F3F" x="-20" y="6" width="25" height="6" rx="1"></rect>
-                        <polyline points="3 4 6.9967103 -2.30926389e-14 15 -2.30926389e-14 19 4 19 14 15 18 6.9967103 18 3 14.0223656" style="fill:white;stroke:#3F3F3F;stroke-width:2" stroke-linecap="round" stroke-linejoin="round" />
-                    </g>
-                </g>
-            </svg>';
+            $svg = html_print_image(
+                '/images/agents.svg',
+                true,
+                [
+                    'class' => 'image_status invert_filter',
+                    'width' => 16,
+                    'title' => 'agents',
+                ]
+            );
         break;
 
         case 'configuration_change':

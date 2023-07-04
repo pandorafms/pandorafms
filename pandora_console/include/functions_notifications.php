@@ -1015,6 +1015,101 @@ function notifications_print_user_switch($source, $user, $label)
 
 
 /**
+ * Generates an HTML of notification filter types.
+ *
+ * @return string HTML filter notification.
+ */
+function notification_filter()
+{
+    $types_list[] = 'All';
+    $notification_types = db_get_all_rows_sql('SELECT DISTINCT subtype FROM tmensajes');
+    if ($notification_types !== false) {
+        foreach ($notification_types as $notification_type) {
+            $type = explode('.', $notification_type['subtype'])[1];
+            $types_list[] = $type;
+        }
+    }
+
+    $notification_filter = "<ul id='menu-filter_notification'>";
+
+    $notification_filter .= "<li>
+                                <input type='checkbox' name='filter_menu' id='filter_menu'>
+                                <label for='filter_menu' id='filter_menu_label'>".__('Filter').'</label>';
+
+    $notification_filter .= "<ul class='sublevel-filter_notification'>";
+    foreach ($types_list as $type) {
+        if ($type === 'All') {
+            $checked = 'checked';
+        } else {
+            $checked = '';
+        }
+
+        switch ($type) {
+            case 'HISTORYDB':
+                $type_name = 'HISTORY DB';
+            break;
+
+            case 'PANDORADB':
+                $type_name = 'PANDORA DB';
+            break;
+
+            case 'UPDATEMANAGER':
+                $type_name = 'UPDATE MANAGER';
+            break;
+
+            case 'ALLOWOVERRIDE':
+                $type_name = 'ALLOW OVERRIDE';
+            break;
+
+            default:
+                $type_name = $type;
+            break;
+        }
+
+        $notification_filter .= "<li><div class='item-filter'>
+                                <input type='checkbox' 
+                                class='checkbox_filter_notifications' 
+                                value=".$type." 
+                                name='filter_".$type."' 
+                                ".$checked."
+                                id='filter_".$type."'>
+                                <label for='filter_".$type."'>".$type_name.'</label>
+                                </div>
+                            </li>';
+    }
+
+    $notification_filter .= "<li><div class='item-filter'>";
+    $notification_filter .= html_print_div(
+        [
+            'class'   => 'action-buttons w100p',
+            'content' => html_print_submit_button(
+                __('Filter'),
+                'btn_submit',
+                false,
+                [
+                    'class'   => 'mini sub filter',
+                    'icon'    => 'search mini',
+                    'onClick' => 'filter_notification()',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+
+    $notification_filter .= '</div>
+                            </li>';
+
+    $notification_filter .= '</ul>';
+
+    $notification_filter .= '</li>';
+
+    $notification_filter .= '</ul>';
+    return $notification_filter;
+}
+
+
+/**
  * Generates the dropdown notifications menu.
  *
  * @return string HTML with dropdown menu.
@@ -1035,11 +1130,15 @@ function notifications_print_dropdown()
         ],
         true
     );
+    $notification_filter = notification_filter();
 
     return sprintf(
         "<div id='notification-wrapper'>
             <div id='notification-wrapper-inner'>
-            <div class='menu_tab notification_menu'>%s</div>
+                <div class='notificaion_menu_container'>
+                    <div class='menu_tab filter_notification'>%s</div>
+                    <div class='menu_tab notification_menu'>%s</div>
+                </div>
                 %s
             </div>
         </div>
@@ -1049,6 +1148,7 @@ function notifications_print_dropdown()
         >
         </div>
         ",
+        $notification_filter,
         $notification_menu,
         array_reduce(
             $mess,
@@ -1109,11 +1209,13 @@ function notifications_print_dropdown_element($message_info)
         $message_info['subject'] = io_safe_input($img);
     }
 
+    $type = explode('.', $message_info['subtype'])[1];
     return sprintf(
         "<a
             class='notification-item'
             onclick='%s'
             id='notification-item-id-%s'
+            value='%s'
             href='%s'
             target='%s'
         >
@@ -1129,6 +1231,7 @@ function notifications_print_dropdown_element($message_info)
         </a>",
         $action.'; click_on_notification_toast(event)',
         $message_info['id_mensaje'],
+        $type,
         messages_get_url($message_info['id_mensaje']),
         $target,
         html_print_image('images/info.svg', true, ['style' => 'height: 40px;margin-left: -20px;margin-top: -40px;']),

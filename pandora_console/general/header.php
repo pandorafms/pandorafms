@@ -566,6 +566,27 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         });
     }
 
+    function filter_notification() {
+        let notification_type = '';
+        $('.notification-item').hide();
+        $(".checkbox_filter_notifications:checkbox:checked").each(function() {
+            notification_type = $(this).val();
+            console.log(notification_type);
+            $('.notification-item[value='+notification_type+']').show();
+            if (notification_type == 'All'){
+                $('.notification-item').show();
+            }
+        });
+
+        if (notification_type == 'All'){
+            $('.notification-item').show();
+        }
+
+        if (notification_type == ''){
+            $('.notification-item').hide();
+        }
+    }
+
     function click_on_notification_toast(event) {
         var match = /notification-(.*)-id-([0-9]+)/.exec(event.target.id);
         if (!match) {

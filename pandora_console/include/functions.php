@@ -324,7 +324,7 @@ function human_milliseconds_to_string($seconds)
     }
 
     // get the seconds
-    $seconds = (intval($seconds / 100) % 60);
+    $seconds = ((intval($seconds) / 100) % 60);
     if ($seconds > 0) {
         $ret .= "$seconds seconds";
     }

@@ -1462,25 +1462,19 @@ function ui_format_alert_row(
 
             $actionText .= ui_print_help_tip(__('The default actions will be executed every time that the alert is fired and no other action is executed'), true);
             // Is possible manage actions if have LW permissions in the agent group of the alert module.
-            if (check_acl($config['id_user'], $id_group, 'LW') || check_acl($config['id_user'], $id_group, 'LM')) {
-                $actionText .= '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list" class="delete_link display_in">';
-                $actionText .= html_print_input_image(
-                    'delete',
+            if (check_acl($config['id_user'], $id_group, 'LM')) {
+                $actionText .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_action=1&id_alert='.$alert['id'].'&id_agent='.$agente['alias'].'&id_action='.$action['original_id'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert action?').'\')) return false;">'.html_print_image(
                     'images/delete.svg',
-                    1,
-                    'padding:0px; margin-left:5px; margin-right:5px; width: 22px;',
                     true,
                     [
+                        'alt'   => __('Delete action'),
                         'title' => __('Delete action'),
-                        'class' => 'main_menu_icon invert_filter',
+                        'class' => 'main_menu_icon invert_filter vertical_baseline',
                     ]
-                );
+                ).'</a>';
+            }
 
-                $actionText .= html_print_input_hidden('id_agent', $agente['alias'], true);
-                $actionText .= html_print_input_hidden('delete_action', 1, true);
-                $actionText .= html_print_input_hidden('id_alert', $alert['id'], true);
-                $actionText .= html_print_input_hidden('id_action', $action['original_id'], true);
-                $actionText .= '</form>';
+            if (check_acl($config['id_user'], $id_group, 'LW')) {
                 $actionText .= html_print_input_image(
                     'update_action',
                     '/images/edit.svg',
@@ -1570,23 +1564,18 @@ function ui_format_alert_row(
         $tableActionButtons[] = '';
 
         // Edit.
-        if (check_acl($config['id_user'], $id_group, 'LW')
-            || check_acl($config['id_user'], $id_group, 'LM')
-        ) {
+        if (check_acl($config['id_user'], $id_group, 'LM')) {
             $tableActionButtons[] = html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
 
-            if (check_acl($config['id_user'], $id_group, 'LM')
-            ) {
-                $tableActionButtons[] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_alert=1&id_alert='.$alert['id'].'&id_agent='.$alert['agent_name'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert?').'\')) return false;">'.html_print_image(
-                    'images/delete.svg',
-                    true,
-                    [
-                        'alt'   => __('Delete'),
-                        'title' => __('Delete'),
-                        'class' => 'main_menu_icon invert_filter vertical_baseline',
-                    ]
-                ).'</a>';
-            }
+            $tableActionButtons[] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_alert=1&id_alert='.$alert['id'].'&id_agent='.$alert['agent_name'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert?').'\')) return false;">'.html_print_image(
+                'images/delete.svg',
+                true,
+                [
+                    'alt'   => __('Delete'),
+                    'title' => __('Delete'),
+                    'class' => 'main_menu_icon invert_filter vertical_baseline',
+                ]
+            ).'</a>';
 
             $tableActionButtons[] = '<a href="javascript:show_add_action(\''.$alert['id'].'\');">'.html_print_image(
                 'images/plus-black.svg',

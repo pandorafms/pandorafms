@@ -566,7 +566,17 @@ function planned_downtimes_stop($downtime)
         break;
 
         case 'periodically':
-        return false;
+            $values = [
+                'executed' => 0,
+                'date_to'  => time(),
+            ];
+
+            $result = db_process_sql_update(
+                'tplanned_downtime',
+                $values,
+                ['id' => $id_downtime]
+            );
+        break;
 
         default:
             // Nothing to do.

@@ -6446,19 +6446,19 @@ sub pandora_installation_monitoring($$) {
 	undef $module;
 
 	# General info about queries
-	my $select = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_select');
-	my $insert = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_insert');
-	my $update = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_update');
-	my $replace = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_replace');
-	my $delete = get_db_value($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_delete');
+	my $select = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_select');
+	my $insert = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_insert');
+	my $update = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_update');
+	my $replace = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_replace');
+	my $delete = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_delete');
 	my $data_size = get_db_value($dbh, 'SELECT SUM(data_length)/(1024*1024) FROM information_schema.TABLES');
 	my $index_size = get_db_value($dbh, 'SELECT SUM(index_length)/(1024*1024) FROM information_schema.TABLES');
-	my $writes = $insert + $update + $replace + $delete;
+	my $writes = $insert->{'Value'} + $update->{'Value'} + $replace->{'Value'} + $delete->{'Value'} ;
 
 	# Mysql Questions - Reads
 	$module->{'name'} = "mysql_questions_reads";
 	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
-	$module->{'data'} = $select;
+	$module->{'data'} = $select->{'Value'};
 	$module->{'unit'} = 'qu';
 	push(@modules, $module); 
 	undef $module;
@@ -6488,6 +6488,17 @@ sub pandora_installation_monitoring($$) {
 	$module->{'description'} = 'Size of indexes (MB): Size of stored indexes in megabytes';
 	$module->{'data'} = $index_size;
 	$module->{'unit'} = 'MB';
+	push(@modules, $module); 
+	undef $module;
+
+	# Mysql process list
+	my $command = 'mysql -u '.$pa_config->{'dbuser'}.' -p"'.$pa_config->{'dbpass'}.'" -e "show processlist"';
+	print Dumper($command);
+	my $process_list = `$command 2>$DEVNULL`;		
+	$module->{'name'} = 'mysql_transactions_list';
+	$module->{'description'} = 'MySQL: Transactions list';
+	$module->{'data'} = '<![CDATA['.$process_list.']]>';
+	$module->{'type'} = 'generic_data_string';
 	push(@modules, $module); 
 	undef $module;
 

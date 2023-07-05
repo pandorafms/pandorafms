@@ -6923,6 +6923,10 @@ div.graph div.legend table {
 /*
 * MARGIN LEFT
 */
+.mrgn_lft-20px {
+  margin-left: -20px !important;
+}
+
 .mrgn_lft_05em {
   margin-left: 0.5em;
 }
@@ -12259,6 +12263,11 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .toggle-traffic-graph {
   margin: 0px !important;
+}
+
+#grid_img {
+  position: absolute;
+  margin-top: -2px;
 }
 
 div#visual-console-container * {

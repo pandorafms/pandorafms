@@ -4831,7 +4831,12 @@ function html_print_input_file($name, $return=false, $options=false)
                 let inputFilename = document.getElementById("span-'.$name.'");
                 inputElement.addEventListener("change", ()=>{
                     let inputImage = document.querySelector("input[type=file]").files[0];
-                inputFilename.innerText = inputImage.name;
+                    if (inputImage.name.length >= 45) {
+                        let name = inputImage.name.substring(0, 20) + "..." + inputImage.name.substring((inputImage.name.length-17), inputImage.name.length);
+                        inputFilename.innerText = name;
+                    } else {
+                        inputFilename.innerText = inputImage.name;
+                    }
                 });';
     $output .= '</script>';
 

@@ -42,18 +42,45 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
 // Include JS timepicker.
 ui_include_time_picker();
 
-// Query params and other initializations.
-$time_greater = get_parameter('time_greater', date(TIME_FORMAT));
-$date_greater = get_parameter('date_greater', date(DATE_FORMAT));
-$utimestamp_greater = strtotime($date_greater.' '.$time_greater);
-$is_period = (bool) get_parameter('is_period', false);
-$period = (int) get_parameter('period', SECONDS_1HOUR);
-$time_lower = get_parameter('time_lower', date(TIME_FORMAT, ($utimestamp_greater - $period)));
-$date_lower = get_parameter('date_lower', date(DATE_FORMAT, ($utimestamp_greater - $period)));
-$utimestamp_lower = ($is_period) ? ($utimestamp_greater - $period) : strtotime($date_lower.' '.$time_lower);
-if (!$is_period) {
-    $period = ($utimestamp_greater - $utimestamp_lower);
+
+// Calculate range dates.
+$custom_date = get_parameter('custom_date', '0');
+$date = get_parameter('date', SECONDS_1DAY);
+if ($custom_date === '1') {
+    $date_init = get_parameter('date_init');
+    $time_init = get_parameter('time_init');
+    $date_end = get_parameter('date_end');
+    $time_end = get_parameter('time_end');
+    $date_from = strtotime($date_init.' '.$time_init);
+    $date_to = strtotime($date_end.' '.$time_end);
+} else if ($custom_date === '2') {
+    $date_text = get_parameter('date_text');
+    $date_units = get_parameter('date_units');
+    $period = ($date_text * $date_units);
+    $date_to = strtotime(date('Y-m-d H:i:s'));
+    $date_from = (strtotime($date_to) - $period);
+} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($date === 'this_week') {
+        $date_from = strtotime('last monday');
+        $date_to = strtotime($date_from.' +6 days');
+    } else if ($date === 'this_month') {
+        $date_from = strtotime('first day of this month');
+        $date_to = strtotime('last day of this month');
+    } else if ($date === 'past_month') {
+        $date_from = strtotime('first day of previous month');
+        $date_to = strtotime('last day of previous month');
+    } else if ($date === 'past_week') {
+        $date_from = strtotime('monday', strtotime('last week'));
+        $date_to = strtotime('sunday', strtotime('last week'));
+    }
+} else {
+    $date_to = strtotime(date('Y-m-d H:i:s'));
+    $date_from = ($date_to - $date);
 }
+
+// Query params and other initializations.
+$utimestamp_greater = $date_to;
+$utimestamp_lower = $date_from;
 
 $top = (int) get_parameter('top', 10);
 $main_value = ((bool) get_parameter('remove_filter', 0)) ? '' : get_parameter('main_value', '');
@@ -65,9 +92,6 @@ $order_by = get_parameter('order_by', 'bytes');
 if (!in_array($order_by, ['bytes', 'pkts', 'flows'])) {
     $order_by = 'bytes';
 }
-
-$style_end = ($is_period) ? 'display: none;' : '';
-$style_period = ($is_period) ? '' : 'display: none;';
 
 // Build the table.
 $table = new stdClass();
@@ -112,83 +136,7 @@ $table->data[0][] = html_print_label_input_block(
 
 $table->data[1][] = html_print_label_input_block(
     __('Start date'),
-    html_print_div(
-        [
-            'id'      => 'end_date_container',
-            'content' => html_print_input_text(
-                'date_lower',
-                $date_lower,
-                '',
-                10,
-                10,
-                true
-            ).html_print_input_text(
-                'time_lower',
-                $time_lower,
-                '',
-                7,
-                8,
-                true
-            ),
-        ],
-        true
-    ).html_print_div(
-        [
-            'id'      => 'period_container',
-            'style'   => 'display: none;',
-            'content' => html_print_label_input_block(
-                '',
-                html_print_extended_select_for_time(
-                    'period',
-                    $period,
-                    '',
-                    '',
-                    0,
-                    false,
-                    true
-                ),
-            ),
-        ],
-        true
-    )
-);
-
-$table->data[1][] = html_print_label_input_block(
-    __('End date'),
-    html_print_div(
-        [
-            'id'      => '',
-            'class'   => '',
-            'content' => html_print_input_text(
-                'date_greater',
-                $date_greater,
-                '',
-                10,
-                10,
-                true
-            ).html_print_input_text(
-                'time_greater',
-                $time_greater,
-                '',
-                7,
-                8,
-                true
-            ),
-        ],
-        true
-    )
-);
-
-$table->data[2][] = html_print_label_input_block(
-    __('Defined period'),
-    html_print_checkbox_switch(
-        'is_period',
-        1,
-        ($is_period === true) ? 1 : 0,
-        true,
-        false,
-        'network_report_click_period(event)'
-    )
+    html_print_select_date_range('date', true)
 );
 
 echo '<form method="post">';
@@ -254,8 +202,6 @@ $data = netflow_get_top_summary(
 $hidden_main_link = [
     'time_greater' => $time_greater,
     'date_greater' => $date_greater,
-    'is_period'    => $is_period,
-    'period'       => $period,
     'time_lower'   => $time_lower,
     'date_lower'   => $date_lower,
     'top'          => $top,
@@ -466,10 +412,4 @@ $("#text-time_lower, #text-time_greater").timepicker({
 $("#text-date_lower, #text-date_greater").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 
-function network_report_click_period(event) {
-    var is_period = document.getElementById(event.target.id).checked;
-
-    document.getElementById('period_container').style.display = !is_period ? 'none' : 'block';
-    document.getElementById('end_date_container').style.display = is_period ? 'none' : 'block';
-}
 </script>

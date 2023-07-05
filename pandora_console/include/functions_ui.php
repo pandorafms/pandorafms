@@ -3728,7 +3728,11 @@ function ui_print_datatable(array $parameters)
         $filter .= '<ul class="datatable_filter content filter_table no_border">';
 
         foreach ($parameters['form']['inputs'] as $input) {
-            $filter .= html_print_input(($input + ['return' => true]), 'li');
+            if ($input['type'] === 'date_range') {
+                $filter .= '<li><label>'.$input['label'].'</label>'.html_print_select_date_range('date', true).'</li>';
+            } else {
+                $filter .= html_print_input(($input + ['return' => true]), 'li');
+            }
         }
 
         $filter .= '</ul>';

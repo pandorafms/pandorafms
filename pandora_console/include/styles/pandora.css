@@ -12107,8 +12107,9 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 70%;
 }
 
 .step {
@@ -12140,7 +12141,7 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
 }
 

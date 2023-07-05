@@ -732,9 +732,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $event_type = '<div class="event_module_background_state forced_title" style="background: ';
-                        $event_type .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">&nbsp;</div>';
-                        $tmp->event_type = $event_type;
+                        $tmp->event_type = '<div class="mrgn_lft_25px">'.events_print_type_img($tmp->event_type, true).'</div>';
 
                         // Module status.
                         // Event severity prepared.

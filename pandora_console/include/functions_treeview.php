@@ -652,10 +652,11 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['title'] = __('Agent name');
     $row['data'] = html_print_anchor(
         [
-            'href'    => $urlAgent,
+            'href'    => 'javascript:void(0)',
             'title'   => __('Click here for view this agent'),
             'class'   => 'font_11',
             'content' => $cellName,
+            'onClick' => "sendHash('".$urlAgent."')",
         ],
         true
     );
@@ -1017,7 +1018,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     echo "
         <script>
             function sendHash(url) {
-                window.location = url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."';
+                window.open(url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."', '_blank');
  
             }
 

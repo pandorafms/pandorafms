@@ -207,7 +207,7 @@ $table->data[0][0] = html_print_label_input_block(
         true,
         '',
         false,
-        'overflow-x: auto;overflow-y: hidden;white-space: nowrap;'
+        'overflow-x: auto;overflow-y: hidden;white-space: nowrap;max-width: 1136px;'
     )
 );
 

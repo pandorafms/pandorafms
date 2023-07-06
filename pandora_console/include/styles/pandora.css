@@ -8384,6 +8384,11 @@ div.graph div.legend table {
   justify-content: end;
 }
 
+.justify-content-between {
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
 .span_priority {
   width: 20px;
   height: 10px;
@@ -11910,6 +11915,32 @@ span.help_icon_15px > img {
   width: 65px !important;
   height: 65px !important;
   margin-top: 10px;
+}
+.order-arrows option {
+  position: relative;
+}
+.order-arrows option::before {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  top: 5px;
+  background-image: url(../../images/darrowup.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
+
+.order-arrows option::after {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  bottom: 6px;
+  background-image: url(../../images/darrowdown.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
 }
 
 /* ==== Spinner ==== */

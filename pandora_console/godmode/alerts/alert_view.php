@@ -326,9 +326,22 @@ if (count($actions) == 1 && isset($actions[0])) {
         }
 
         foreach ($action['escalation'] as $k => $v) {
-            if (count($table->head) >= count($action['escalation'])) {
-                if ($k === count($action['escalation'])) {
-                    if ($k === 1) {
+            if ($v > 0) {
+                $table->data[$kaction][$k] .= html_print_image(
+                    'images/tick.png',
+                    true,
+                    ['class' => 'invert_filter']
+                );
+            } else {
+                $table->data[$kaction][$k] = html_print_image(
+                    'images/blade.png',
+                    true
+                );
+            }
+
+            if (count($table->head) <= count($action['escalation'])) {
+                if ($k == count($action['escalation'])) {
+                    if ($k == 1) {
                         $table->head[$kaction] = __('Every time that the alert is fired');
                     } else {
                         $table->head[$kaction] = '>#'.($kaction - 1);

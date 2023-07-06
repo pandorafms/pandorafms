@@ -508,6 +508,7 @@ class EventsListWidget extends Widget
                 'order'    => true,
                 'nothing'  => false,
                 'sort'     => false,
+                'style'    => 'width: 93%;',
             ],
         ];
 

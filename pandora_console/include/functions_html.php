@@ -6081,7 +6081,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 }
             }
 
-            $output .= '<div class="row">';
+            $output .= '<div>';
             $output .= html_print_select(
                 ((isset($data['selected']) === true) ? $data['selected'] : ''),
                 $data['name'],
@@ -6109,7 +6109,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['form']) === true) ? $data['form'] : ''),
                 ((isset($data['order']) === true) ? $data['order'] : false)
             );
-            $output .= '<div class="flex justify-content-between mt-2">';
+            $output .= '<div class="flex justify-content-between mrgn_top_5px">';
             $output .= html_print_button(
                 __('Add'),
                 'add_column',

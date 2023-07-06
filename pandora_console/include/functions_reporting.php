@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -452,7 +452,8 @@ function reporting_make_reporting_data(
             case 'sql':
                 $report['contents'][] = reporting_sql(
                     $report,
-                    $content
+                    $content,
+                    $pdf
                 );
             break;
 
@@ -3470,7 +3471,7 @@ function reporting_agent_module_status($report, $content)
 
     $agents = json_decode(
         io_safe_output(
-            base64_decode($external_source['id_agents'])
+            base64_decode($external_source['id_agent'])
         ),
         true
     );
@@ -4198,6 +4199,7 @@ function reporting_group_report($report, $content)
     if (is_metaconsole() === true) {
         if (isset($content['server_name']) === true
             && empty($content['server_name']) === false
+            && $content['server_name'] !== 'all'
         ) {
             $id_meta = metaconsole_get_id_server($content['server_name']);
             $server = metaconsole_get_connection_by_id($id_meta);
@@ -4253,7 +4255,9 @@ function reporting_group_report($report, $content)
                     $data_node = reporting_groups_nodes($content);
                     $count_events += $data_node['count_events'];
                     foreach ($data_node['group_stats'] as $key => $value) {
-                        $group_stats[$key] += $value;
+                        if (array_key_exists($key, $group_stats)) {
+                            $group_stats[$key] += $value;
+                        }
                     }
 
                     if (is_metaconsole() === true) {
@@ -7538,7 +7542,7 @@ function reporting_text($report, $content)
  *
  * @return array
  */
-function reporting_sql($report, $content)
+function reporting_sql($report, $content, $pdf=false)
 {
     global $config;
 
@@ -7567,10 +7571,10 @@ function reporting_sql($report, $content)
     if (is_metaconsole() === true && $content['server_name'] === 'all') {
         $sync = new Synchronizer();
         $results = $sync->apply(
-            function ($node) use ($report, $content) {
+            function ($node) use ($report, $content, $pdf) {
                 try {
                     $node->connect();
-                    $rs = reporting_sql_auxiliary($report, $content);
+                    $rs = reporting_sql_auxiliary($report, $content, $pdf);
                     $node->disconnect();
                 } catch (Exception $e) {
                     return [
@@ -7620,7 +7624,7 @@ function reporting_sql($report, $content)
                 $node->connect();
             }
 
-            $query_result = reporting_sql_auxiliary($report, $content);
+            $query_result = reporting_sql_auxiliary($report, $content, $pdf);
             $return = array_merge($return, $query_result);
 
             if (is_metaconsole() === true && $id_server > 0) {
@@ -7645,8 +7649,10 @@ function reporting_sql($report, $content)
  *
  * @return array
  */
-function reporting_sql_auxiliary($report, $content)
+function reporting_sql_auxiliary($report, $content, $pdf=false)
 {
+    global $config;
+
     if ($content['treport_custom_sql_id'] != 0) {
         $sql = io_safe_output(
             db_get_value_filter(
@@ -7657,6 +7663,46 @@ function reporting_sql_auxiliary($report, $content)
         );
     } else {
         $sql = $content['external_source'];
+    }
+
+    if ($pdf === true && isset($config['limit_sql_pdf']) === true && $config['limit_sql_pdf'] > 0) {
+        $pattern_limit_offset = '/LIMIT\s+(\d+)(?:\s*,\s*(\d+))?/i';
+
+        if (preg_match($pattern_limit_offset, $sql, $matches_limit_offset)) {
+            // Item query contains a LIMIT clause.
+            $limit1 = (int) $matches_limit_offset[1];
+
+            if (isset($matches_limit_offset[2]) === true && $matches_limit_offset[2] !== '') {
+                // The LIMIT clause has a second limit value in the form of LIMIT X, Y.
+                $limit2 = (int) $matches_limit_offset[2];
+
+                if ($config['limit_sql_pdf'] < $limit2) {
+                    // Overwrite the second limit value only if $config['limit_sql_pdf'] is less than the original limit.
+                    $new_limit2 = $config['limit_sql_pdf'];
+                    $sql = preg_replace($pattern_limit_offset, " LIMIT $limit1, $new_limit2", $sql);
+                }
+            } else {
+                // The LIMIT clause is a simple LIMIT in the form of LIMIT X.
+                if ($config['limit_sql_pdf'] < $limit1) {
+                    // Overwrite the limit value only if $config['limit_sql_pdf'] is less than the original limit.
+                    $new_limit1 = $config['limit_sql_pdf'];
+                    $sql = preg_replace($pattern_limit_offset, " LIMIT $new_limit1", $sql);
+                }
+            }
+        } else {
+            $limit_str = ' LIMIT '.$config['limit_sql_pdf'];
+
+            // Check if SQL ends with semicolon or "\G".
+            if (substr(trim($sql), -1) === ';') {
+                $sql = rtrim($sql, ';');
+                $sql .= $limit_str.';';
+            } else if (substr(trim($sql), -2) === '\\G') {
+                $sql = rtrim($sql, '\G');
+                $sql .= $limit_str.'\G';
+            } else {
+                $sql .= $limit_str;
+            }
+        }
     }
 
     // Check if SQL macro exists.
@@ -7689,6 +7735,7 @@ function reporting_sql_auxiliary($report, $content)
         }
 
         $result = db_get_all_rows_sql($sql, $historical_db);
+
         if ($result !== false) {
             foreach ($result as $row) {
                 $data_row = [];
@@ -7711,7 +7758,7 @@ function reporting_sql_auxiliary($report, $content)
         }
     } else {
         $return['correct'] = 0;
-        $return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
+        $return['error'] = __('Illegal query: Due to security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
     }
 
     return $return;
@@ -12299,29 +12346,29 @@ function reporting_get_stats_modules_status($data, $graph_width=250, $graph_heig
     $tdata = [];
     $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_CRITICAL, 'title' => __('Monitor critical')], true);
     $tdata[1] = $data['monitor_critical'] <= 0 ? '-' : $data['monitor_critical'];
-    $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="big_data line_heigth_initial" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_CRITICAL.' !important;" class="big_data line_heigth_initial" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_WARNING_DARK, 'title' => __('Monitor warning')], true);
     $tdata[3] = $data['monitor_warning'] <= 0 ? '-' : $data['monitor_warning'];
-    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="big_data line_heigth_initial" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
+    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.' !important;" class="big_data line_heigth_initial" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
     $tdata = [];
     $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_NORMAL, 'title' => __('Monitor normal')], true);
     $tdata[1] = $data['monitor_ok'] <= 0 ? '-' : $data['monitor_ok'];
-    $tdata[1] = '<a style="color: '.COL_NORMAL.';" class="big_data" href="'.$urls['monitor_ok'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_NORMAL.' !important;" class="big_data" href="'.$urls['monitor_ok'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_UNKNOWN, 'title' => __('Monitor unknown')], true);
     $tdata[3] = $data['monitor_unknown'] <= 0 ? '-' : $data['monitor_unknown'];
-    $tdata[3] = '<a style="color: '.COL_UNKNOWN.';" class="big_data line_heigth_initial" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
+    $tdata[3] = '<a style="color: '.COL_UNKNOWN.' !important;" class="big_data line_heigth_initial" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
     $tdata = [];
     $tdata[0] = html_print_div(['class' => 'main_menu_icon module_background_state', 'style' => 'background-color: '.COL_NOTINIT, 'title' => __('Monitor not init')], true);
     $tdata[1] = $data['monitor_not_init'] <= 0 ? '-' : $data['monitor_not_init'];
-    $tdata[1] = '<a style="color: '.COL_NOTINIT.';" class="big_data line_heigth_initial" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_NOTINIT.' !important;" class="big_data line_heigth_initial" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = $tdata[3] = '';
     $table_mbs->rowclass[] = '';
@@ -14696,11 +14743,11 @@ function reporting_get_agentmodule_sla_day($id_agent_module, $period=0, $min_val
 }
 
 
-function reporting_get_stats_servers()
+function reporting_get_stats_servers($filter=[])
 {
     global $config;
 
-    $server_performance = servers_get_performance();
+    $server_performance = servers_get_performance($filter);
 
     // Alerts table
     $table_srv = html_get_predefined_table();
@@ -14814,7 +14861,13 @@ function reporting_get_stats_servers()
             'class' => 'main_menu_icon invert_filter',
         ]
     );
-    $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';
+    $sql_count_event = 'SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento  ';
+    if ($config['event_view_hr']) {
+        $sql_count_event .= 'WHERE utimestamp > (UNIX_TIMESTAMP(NOW()) - '.($config['event_view_hr'] * SECONDS_1HOUR).')';
+    }
+
+    $system_events = db_get_value_sql($sql_count_event);
+    $tdata[1] = '<span class="big_data" id="total_events">'.$system_events.'</span>';
 
     if (isset($system_events) && $system_events > 50000 && !enterprise_installed()) {
         $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise left' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title main_menu_icon' data-use_title_for_force_title='1' src='images/alert-yellow@svg.svg'></div>";
@@ -14836,6 +14889,9 @@ function reporting_get_stats_servers()
                 $output .= 'var parameters = {};';
                 $output .= 'parameters["page"] = "include/ajax/events";';
                 $output .= 'parameters["total_events"] = 1;';
+        if (empty($filter) === false && empty($filter['groups']) === false) {
+            $output .= 'parameters["filter_groups"] = "'.$filter['groups'].'";';
+        }
 
                 $output .= '$.ajax({type: "GET",url: "'.ui_get_full_url('ajax.php', false, false, false).'",data: parameters,';
                     $output .= 'success: function(data) {';

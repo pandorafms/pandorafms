@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -22,6 +22,7 @@ if (!isset($id_agente)) {
 require_once 'include/functions_events.php';
 ui_require_css_file('events');
 
+$event_count = db_get_row('tevento', 'id_agente', $id_agente);
 html_print_div(
     [
         'class'   => 'agent_details_line',
@@ -30,7 +31,7 @@ html_print_div(
             '<span class="subsection_header_title">'.__('Latest events for this agent').'</span>',
             __('Latest events for this agent'),
             'latest_events_agent',
-            false,
+            ($event_count) ? false : true,
             true,
             '',
             'box-flat white-box-content no_border',

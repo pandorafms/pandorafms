@@ -105,8 +105,8 @@ export default class Percentile extends Item<PercentileProps> {
   protected createDomElement(): HTMLElement {
     const colors = {
       background: "#000000",
-      progress: this.props.color || "#F0F0F0",
-      text: this.props.labelColor || "#444444"
+      progress: this.props.color || "#000000",
+      text: this.props.labelColor || "#bcbcbc"
     };
     // Progress.
     const progress = this.getProgress();
@@ -148,10 +148,10 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("font-size", "15");
           text.setAttribute("font-family", "lato");
           text.setAttribute("font-weight", "bold");
-          text.setAttribute(
-            "transform",
-            `translate(${this.props.width / 2}, 17.5)`
-          );
+          text.setAttribute("text-anchor", `middle`);
+          text.setAttribute("alignment-baseline", `middle`);
+          text.setAttribute("x", `50%`);
+          text.setAttribute("y", `50%`);
           text.setAttribute("fill", colors.text);
 
           if (this.props.valueType === "value") {

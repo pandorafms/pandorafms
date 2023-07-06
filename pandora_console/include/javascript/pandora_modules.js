@@ -496,7 +496,7 @@ function configure_modules_form() {
           data["unit"] == "" ? "" : data["unit"]
         );
 
-        $("#checkbox-critical_inverse").prop(
+        $("#checkbox-critical_inverse_string").prop(
           "checked",
           data["critical_inverse"]
         );
@@ -1553,10 +1553,10 @@ function changePlugin() {
   if (executionType == EXECUTION_TYPE_NETWORK) {
     displayShow = "none";
   } else {
-    displayShow = "table-row";
+    displayShow = "grid";
   }
 
-  var cntMacrosToGo = 4;
+  var cntMacrosToGo = 2;
   var cntMacrosLine = 0;
   var thisIdLine = "";
   // Clear older macros rows.
@@ -1589,7 +1589,7 @@ function changePlugin() {
       description = "unknown";
     }
 
-    if (cntMacrosToGo == 4) {
+    if (cntMacrosToGo == 2) {
       cntMacrosToGo = 0;
       cntMacrosLine++;
       thisIdLine =

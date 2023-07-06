@@ -1,9 +1,9 @@
 <?php
 /**
- * Pandora FMS - http://pandorafms.com
+ * Pandora FMS - https://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
@@ -352,7 +352,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         }
 
         // Button for feedback pandora.
-        if (enterprise_installed()) {
+        if (enterprise_installed() && $config['activate_feedback']) {
             $header_feedback = '<div id="feedback-icon-header">';
             $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
             $header_feedback .= '<div id="msg-header" class="invisible"></div>';

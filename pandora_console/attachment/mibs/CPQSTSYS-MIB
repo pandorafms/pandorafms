@@ -1,0 +1,4058 @@
+-- ****************************************************************************
+--
+--                            Storage Systems
+--         Management Information Base for SNMP Network Management
+--
+--
+--      Copyright 1992,2007 Hewlett-Packard Development Company, L.P.
+--      Hewlett-Packard Company shall not be liable for technical or
+--      editorial errors or omissions contained herein. The information in
+--      this document is provided "as is" without warranty of any kind and
+--      is subject to change without notice. The warranties for HP products
+--      are set forth in the express limited warranty statements
+--      accompanying such products. Nothing herein should be construed as
+--      constituting an additional warranty.
+--
+--      Confidential computer software. Valid license from HP required for
+--      possession, use or copying. Consistent with FAR 12.211 and 12.212,
+--      Commercial Computer Software, Computer Software Documentation, and
+--      Technical Data for Commercial Items are licensed to the U.S.
+--      Government under vendor's standard commercial license.
+--
+--      Refer to the READMIB.RDM file for more information about the
+--      organization of the information in the Compaq Enterprise.
+--
+--      The Compaq Enterprise number is 232.
+--      The ASN.1 prefix to, and including the Compaq Enterprise is:
+--           1.3.6.1.4.1.232
+--
+-- ****************************************************************************
+
+CPQSTSYS-MIB DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        compaq                  FROM CPQHOST-MIB
+--      enterprises             FROM RFC1155-SMI
+        Counter                 FROM RFC1155-SMI
+        DisplayString           FROM RFC1213-MIB
+        OBJECT-TYPE             FROM RFC-1212
+        TRAP-TYPE               FROM RFC-1215
+        sysName                 FROM RFC1213-MIB
+        cpqHoTrapFlags          FROM CPQHOST-MIB;
+
+--  compaq            OBJECT IDENTIFIER ::= { enterprises 232 }
+
+    cpqSsStorageSys   OBJECT IDENTIFIER ::= { compaq 8 }
+    cpqSsMibRev       OBJECT IDENTIFIER ::= { cpqSsStorageSys 1 }
+    cpqSsDrvBox       OBJECT IDENTIFIER ::= { cpqSsStorageSys 2 }
+    cpqSsTrap         OBJECT IDENTIFIER ::= { cpqSsStorageSys 3 }
+    cpqSsRaidSystem   OBJECT IDENTIFIER ::= { cpqSsStorageSys 4 }
+    cpqSsBoxExtended  OBJECT IDENTIFIER ::= { cpqSsDrvBox 2 }
+
+-- ****************************************************************************
+--   Storage System MIB Revision
+--   ===========================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsMibRev Group             (1.3.6.1.4.1.232.8.1)
+--
+--
+--      An agent conforming to this document will return a cpqSsMibRevMajor
+--      of one (1) and a cpqSsMibRevMinor of thirty one (31).
+--
+--    Implementation of the MibRev group is mandatory.
+--
+-- ****************************************************************************
+
+    cpqSsMibRevMajor OBJECT-TYPE
+        SYNTAX  INTEGER (1..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "The Major Revision level.
+         A change in the major revision level represents a major change in
+         the architecture of the MIB.  A change in the major revision level
+         may indicate a significant change in the information supported
+         and/or the meaning of the supported information, correct
+         interpretation of data may require a MIB document with the same
+         major revision level."
+    ::= { cpqSsMibRev 1 }
+
+    cpqSsMibRevMinor OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "The Minor Revision level.
+         A change in the minor revision level may represent some minor
+         additional support; no changes to any pre-existing information
+         has occurred."
+    ::= { cpqSsMibRev 2 }
+
+    cpqSsMibCondition OBJECT-TYPE
+        SYNTAX  INTEGER {
+            other(1),
+            ok(2),
+            degraded(3),
+            failed(4)
+            }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+            "The overall condition (status) of the system represented by
+            this MIB."
+        ::= { cpqSsMibRev 3 }
+
+-- ****************************************************************************
+--   Storage System Drive Box Group
+--   ==============================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsDrvBoxTable             (1.3.6.1.4.1.232.8.2.1)
+--
+--  Implementation of the Drive Box group is mandatory.
+--
+-- ****************************************************************************
+
+    cpqSsDrvBoxTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsDrvBoxEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Table."
+    ::= { cpqSsDrvBox 1 }
+
+    cpqSsDrvBoxEntry OBJECT-TYPE
+        SYNTAX  CpqSsDrvBoxEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Entry."
+    INDEX   { cpqSsBoxCntlrIndex, cpqSsBoxBusIndex }
+    ::= { cpqSsDrvBoxTable 1 }
+
+        CpqSsDrvBoxEntry ::= SEQUENCE
+        {
+              cpqSsBoxCntlrIndex            INTEGER,
+              cpqSsBoxBusIndex              INTEGER,
+              cpqSsBoxType                  INTEGER,
+              cpqSsBoxModel                 DisplayString,
+              cpqSsBoxFWRev                 DisplayString,
+              cpqSsBoxVendor                DisplayString,
+              cpqSsBoxFanStatus             INTEGER,
+              cpqSsBoxCondition             INTEGER,
+              cpqSsBoxTempStatus            INTEGER,
+              cpqSsBoxSidePanelStatus       INTEGER,
+              cpqSsBoxFltTolPwrSupplyStatus INTEGER,
+              cpqSsBoxBackPlaneVersion      INTEGER,
+              cpqSsBoxTotalBays             INTEGER,
+              cpqSsBoxPlacement             INTEGER,
+              cpqSsBoxDuplexOption          INTEGER,
+              cpqSsBoxBoardRevision         INTEGER,
+              cpqSsBoxSerialNumber          DisplayString,
+              cpqSsBoxCntlrHwLocation       DisplayString,
+              cpqSsBoxBackplaneSpeed        INTEGER,
+              cpqSsBoxConnectionType        INTEGER,
+              cpqSsBoxHostConnector         DisplayString,
+              cpqSsBoxBoxOnConnector        INTEGER,
+              cpqSsBoxLocationString        DisplayString
+        }
+
+    cpqSsBoxCntlrIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Controller Index.
+
+        The controller index indicates to which adapter card instance
+        this table entry belongs."
+    ::= { cpqSsDrvBoxEntry 1 }
+
+    cpqSsBoxBusIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Bus Index.
+
+        The bus index indicates to which bus instance on an adapter card
+        this table entry belongs."
+    ::= { cpqSsDrvBoxEntry 2 }
+
+    cpqSsBoxType OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          proLiant(2),
+          proLiant2(3),
+          proLiant2Internal(4),
+          proLiant2DuplexTop(5),
+          proLiant2DuplexBottom(6),
+          proLiant2InternalDuplexTop(7),
+          proLiant2InternalDuplexBottom(8)
+        }
+        ACCESS  read-only
+        STATUS  deprecated
+        DESCRIPTION
+        "Drive Box Type.
+
+        This is the type of drive box.  The following types are defined:
+
+            other(1)
+              The agent does not recognize this drive storage system.
+
+            proLiant(2)
+              This is a ProLiant Storage System.
+
+            proLiant2(3)
+              This is a ProLiant-2 Storage System.
+
+            proLiant2Internal(4)
+              This is an internal ProLiant-2 Storage System that is found
+              in some servers.
+
+            proLiant2DuplexTop(5)
+              This is the top portion of a ProLiant-2 Storage System that
+              has dual SCSI busses which are duplexed.
+
+            proLiant2DuplexBottom(6)
+              This is the bottom portion of a ProLiant-2 Storage System that
+              has dual SCSI busses which are duplexed.
+
+            proLiant2InternalDuplexTop(7)
+              This is the top portion of a ProLiant Server into which the
+              internal SCSI busses are duplexed.
+
+            proLiant2InternalDuplexBottom(8)
+              This is the bottom portion of a ProLiant Server into which the
+              internal SCSI busses are duplexed."
+    ::= { cpqSsDrvBoxEntry 3 }
+
+    cpqSsBoxModel OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..17))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Model.
+
+        This is a description of the drive box's model.
+        This can be used for identification purposes."
+    ::= { cpqSsDrvBoxEntry 4 }
+
+    cpqSsBoxFWRev OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..8))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Firmware Revision.
+
+        This is the revision level of the drive box.
+        This can be used for identification purposes."
+    ::= { cpqSsDrvBoxEntry 5 }
+
+    cpqSsBoxVendor OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..9))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Vendor
+
+        This is the drive box's vendor name.
+        This can be used for identification purposes."
+    ::= { cpqSsDrvBoxEntry 6 }
+
+    cpqSsBoxFanStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          failed(3),
+          noFan(4),
+          degraded(5)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Fan Status.
+
+         This is the current status of the fans in the drive box.
+         This value will be one of the following:
+            other(1)
+              Fan monitoring is not supported by this system
+              or it is not supported by the driver.
+
+            ok(2)
+              All fans are working normally.
+
+            failed(3)
+              One or more storage system fans have failed.  The fan(s) should
+              be replaced immediately to avoid hardware damage.
+
+            noFan(4)
+              This unit does not support fan monitoring.
+
+            degraded(5)
+              At least one storage system fan has failed, but there is still
+              sufficient cooling capacity to allow the system to continue.
+              The fan should be replaced."
+
+    ::= { cpqSsDrvBoxEntry 7 }
+
+    cpqSsBoxCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "SCSI Drive Box Condition.
+
+        This is the overall condition of the drive box.
+        The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The storage system is operating normally.  No user
+              action is required.
+
+            degraded(3)
+              The storage system is degraded. You need to check the
+              temperature status or power supply status of this
+              storage system.  Additionally, if the side panel for
+              the storage system is removed, the air flow changes
+              could result in improper cooling of the drives and affect
+              the temperature status.
+
+            failed(4)
+              The storage system has failed."
+    ::= { cpqSsDrvBoxEntry 8 }
+
+    cpqSsBoxTempStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+            other(1),
+            ok(2),
+            degraded(3),
+            failed(4),
+            noTemp(5)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+            "The temperature of the drive system.
+
+            This value will be one of the following:
+            other(1)
+              Temperature monitoring is not supported by this system
+              or it is not supported by the driver.
+
+            ok(2)
+              The temperature is within normal operating range.
+
+            degraded(3)
+              The temperature is outside of normal operating range.
+
+            failed(4)
+              The temperature could permanently damage the system.
+              The storage system will automatically shutdown if this
+              condition is detected.
+
+            noTemp(5)
+              This unit does not support temperature monitoring."
+
+    ::= { cpqSsDrvBoxEntry 9 }
+
+    cpqSsBoxSidePanelStatus OBJECT-TYPE
+            SYNTAX  INTEGER
+            {
+                other(1),
+                sidePanelInPlace(2),
+                sidePanelRemoved(3),
+                noSidePanelStatus(4)
+            }
+            ACCESS  read-only
+            STATUS  mandatory
+            DESCRIPTION
+            "Drive Box Side Panel Status.
+
+            This value will be one of the following:
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            sidePanelInPlace(2)
+              The side panel is properly installed on the storage system.
+
+            sidePanelRemoved(3)
+              The side panel is not properly installed on the storage system.
+
+            noSidePanelStatus(4)
+              This unit does not support side panel status monitoring."
+
+    ::= { cpqSsDrvBoxEntry 10 }
+
+    cpqSsBoxFltTolPwrSupplyStatus OBJECT-TYPE
+            SYNTAX  INTEGER
+            {
+              other(1),
+              ok(2),
+              degraded(3),
+              failed(4),
+              noFltTolPower(5)
+            }
+            ACCESS  read-only
+            STATUS  mandatory
+            DESCRIPTION
+            "This value specifies the overall status of the fault tolerant
+             power supply sub-system in a drive box.
+
+            This value will be one of the following:
+            other(1)
+              The power supply status cannot be determined.
+
+            ok(2)
+              There are no detected power supply failures.
+
+            degraded(3)
+              One of the power supply units in a fault tolerant power
+              supply has failed.
+
+            failed(4)
+              No failure conditions can currently be determined.
+
+            noFltTolPower(5)
+              This unit does not support fault tolerant power supply
+              monitoring."
+
+    ::= { cpqSsDrvBoxEntry 11 }
+
+    cpqSsBoxBackPlaneVersion OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          proLiant(2),
+          proLiant2(3),
+          proLiant3(4),
+          proLiant4(5),
+          proLiant5(6)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Back Plane Version.
+
+        This is the version of the drive box back plane.  The following
+        types are defined:
+
+            other(1)
+               The agent does not recognize this drive storage system back
+               plane.
+
+            proLiant(2)
+              This is a ProLiant Storage System.
+
+            proLiant2(3)
+              This is a ProLiant-2 Storage System.
+
+            proLiant3(4)
+              This is a ProLiant-3 Storage System.
+
+            proLiant4(5)
+              This is a 4th generation Proliant Storage System.
+
+            proLiant5(6)
+              This is a 5th generation ProLiant Storage System."
+    ::= { cpqSsDrvBoxEntry 12 }
+
+
+    cpqSsBoxTotalBays OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Total Bays.
+
+            This is the total number of bays in this storage system."
+    ::= { cpqSsDrvBoxEntry 13 }
+
+
+    cpqSsBoxPlacement OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           internal(2),
+           external(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Placement.
+
+            The following values are defined:
+
+            other(1)
+              The agent is unable to determine if this storage system is
+              located internal or external to the system chassis.
+
+            internal(2)
+              The storage system is located in the system chassis.
+
+            external(3)
+              The storage system is located outside the system chassis
+              in an expansion box."
+    ::= { cpqSsDrvBoxEntry 14 }
+
+
+    cpqSsBoxDuplexOption OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           notDuplexed(2),
+           duplexTop(3),
+           duplexBottom(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Duplex Option.
+
+            The following values are defined:
+
+            other(1)
+              The agent is unable to determine if this storage system is
+              duplexed.
+
+            notDuplexed(2)
+              This storage system is not duplexed.
+
+            duplexTop(3)
+              This is the top portion of a duplexed storage system.
+
+            duplexBottom(4)
+              This is the bottom portion of a duplexed storage system."
+    ::= { cpqSsDrvBoxEntry 15 }
+
+    cpqSsBoxBoardRevision OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Board Revision.
+
+            This is the board revision of this storage system backplane."
+    ::= { cpqSsDrvBoxEntry 16 }
+
+    cpqSsBoxSerialNumber OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Serial Number.
+
+            This is the drive box's serial number which is normally display
+            on the front panel.  This can be used for identification
+            purposes."
+    ::= { cpqSsDrvBoxEntry 17 }
+
+    cpqSsBoxCntlrHwLocation OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..255))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "A text description of the hardware location of the controller
+            to which this box is attached.  A NULL string indicates that
+            the hardware location could not be determined or is irrelevant."
+    ::= { cpqSsDrvBoxEntry 18 }
+
+    cpqSsBoxBackplaneSpeed OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           ultra3(2),
+           ultra320(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Backplane Speed.
+
+            The following values are defined:
+
+            other(1)
+              The agent is unable to determine the backplane speed for this
+              storage system.
+
+            ultra3(2)
+              This storage system is capable of Ultra3 speeds.
+
+            ultra320(3)
+              This storage system is capable of Ultra320 speeds."
+    ::= { cpqSsDrvBoxEntry 19 }
+
+    cpqSsBoxConnectionType OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           scsiAttached(2),
+           sasAttached(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Connection Type.
+
+            The following values are defined:
+
+            other(1)
+              The agent is unable to determine the type of connection to
+              this storage system.
+
+            scsiAttached(2)
+              This storage system is attached to the host via SCSI.
+
+            sasAttached(3)
+              This storage system is attached to the host via SAS."
+    ::= { cpqSsDrvBoxEntry 20 }
+
+    cpqSsBoxHostConnector OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..4))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Host Connector.
+
+            This is the host connector to which the drive box is attached.
+            If the host connector cannot be determined, the agent will
+            return a NULL string."
+    ::= { cpqSsDrvBoxEntry 21 }
+
+    cpqSsBoxBoxOnConnector OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box, Box on Connector.
+
+            The box on connector indicates which box instance this table
+            entry belongs.  The instances start at one and increment for
+            each box attached to a connector.  If the value cannot be
+            determined or does not apply, -1 is returned."
+    ::= { cpqSsDrvBoxEntry 22 }
+
+    cpqSsBoxLocationString OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..255))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Location String.
+
+            This string describes the location of the drive box in relation
+            to the controller to which it is attached.  If the location
+            string cannot be determined, the agent will return a NULL string."
+    ::= { cpqSsDrvBoxEntry 23 }
+
+
+-- ****************************************************************************
+--   Storage System Chassis Group
+--   ============================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsBoxExtended Group       (1.3.6.1.4.1.232.8.2.2)
+--         cpqSsChassisTable           (1.3.6.1.4.1.232.8.2.2.1)
+--
+-- ****************************************************************************
+
+    cpqSsChassisTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsChassisEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Table."
+    ::= { cpqSsBoxExtended 1 }
+
+    cpqSsChassisEntry OBJECT-TYPE
+        SYNTAX  CpqSsChassisEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Entry."
+    INDEX   { cpqSsChassisIndex }
+    ::= { cpqSsChassisTable 1 }
+
+        CpqSsChassisEntry ::= SEQUENCE
+        {
+              cpqSsChassisIndex                    INTEGER,
+              cpqSsChassisConnectionType           INTEGER,
+              cpqSsChassisSerialNumber             DisplayString,
+              cpqSsChassisName                     DisplayString,
+              cpqSsChassisSystemBoardSerNum        DisplayString,
+              cpqSsChassisSystemBoardRev           DisplayString,
+              cpqSsChassisPowerBoardSerNum         DisplayString,
+              cpqSsChassisPowerBoardRev            DisplayString,
+              cpqSsChassisScsiBoardSerNum          DisplayString,
+              cpqSsChassisScsiBoardRev             DisplayString,
+              cpqSsChassisOverallCondition         INTEGER,
+              cpqSsChassisPowerSupplyCondition     INTEGER,
+              cpqSsChassisFanCondition             INTEGER,
+              cpqSsChassisTemperatureCondition     INTEGER,
+              cpqSsChassisFcaCntlrCondition        INTEGER,
+              cpqSsChassisFcaLogicalDriveCondition INTEGER,
+              cpqSsChassisFcaPhysDrvCondition      INTEGER,
+              cpqSsChassisTime                     INTEGER,
+              cpqSsChassisModel                    INTEGER,
+              cpqSsChassisBackplaneCondition       INTEGER,
+              cpqSsChassisFcaTapeDrvCondition      INTEGER,
+              cpqSsChassisRsoStatus                INTEGER,
+              cpqSsChassisRsoCondition             INTEGER,
+              cpqSsChassisScsiIoModuleType         INTEGER,
+              cpqSsChassisPreferredPathMode        INTEGER,
+              cpqSsChassisProductId                DisplayString
+        }
+
+    cpqSsChassisIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Index.
+
+        The chassis index uniquely identifies a storage system chassis."
+    ::= { cpqSsChassisEntry 1 }
+
+    cpqSsChassisConnectionType OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          fibreAttached(2),
+          scsiAttached(3),
+          iScsiAttached(4),
+          sasAttached(5)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Connection Type.
+
+        The following values are defined:
+
+            other(1)
+              The agent is unable to determine the type of connection to
+              this chassis.
+
+            fibreAttached(2)
+              This chassis is attached to the server via Fibre Channel.
+
+            scsiAttached(3)
+              This chassis is attached to the server via SCSI.
+
+            iScsiAttached(4)
+              This chassis is attached to the server via iSCSI.
+
+            sasAttached(5)
+              This chassis is attached to the server via SAS."
+    ::= { cpqSsChassisEntry 2 }
+
+    cpqSsChassisSerialNumber OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Serial Number.
+
+        This is the storage system chassis's serial number which is normally
+        displayed on the front panel.  This can be used for identification
+        purposes."
+    ::= { cpqSsChassisEntry 3 }
+
+    cpqSsChassisName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Name.
+
+        This is a user defined name for this storage system chassis."
+    ::= { cpqSsChassisEntry 4 }
+
+    cpqSsChassisSystemBoardSerNum OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis System Controller Board Serial Number.
+
+        This is the system controller board's serial number.  This can be
+        used for identification purposes."
+    ::= { cpqSsChassisEntry 5 }
+
+    cpqSsChassisSystemBoardRev OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..8))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis System Controller Board Revision.
+
+        This is the system controller board revision."
+    ::= { cpqSsChassisEntry 6 }
+
+    cpqSsChassisPowerBoardSerNum OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Power Backplane Board Serial Number.
+
+        This is the power backplane board's serial number.  This can be used
+        for identification purposes."
+    ::= { cpqSsChassisEntry 7 }
+
+    cpqSsChassisPowerBoardRev OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..8))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Power Backplane Board Revision.
+
+        This is the power backplane board revision."
+    ::= { cpqSsChassisEntry 8 }
+
+    cpqSsChassisScsiBoardSerNum OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis SCSI Drive Backplane Board Serial
+         Number.
+
+        This is the SCSI drive backplane board's serial number.  This can be
+        used for identification purposes."
+    ::= { cpqSsChassisEntry 9 }
+
+    cpqSsChassisScsiBoardRev OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..8))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis SCSI Drive Backplane Board Revision.
+
+        This is the SCSI drive backplane board revision."
+    ::= { cpqSsChassisEntry 10 }
+
+    cpqSsChassisOverallCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Overall Condition.
+
+        This is the condition of the storage system chassis and all of its
+        components.  The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The storage system is operating normally.  No user
+              action is required.
+
+            degraded(3)
+              The storage system chassis is degraded.
+
+            failed(4)
+              The storage system chassis is failed."
+    ::= { cpqSsChassisEntry 11 }
+
+    cpqSsChassisPowerSupplyCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Condition.
+
+        This is the aggregate condition of all power supplies in
+        the storage system chassis.  The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              All power supplies are operating normally.
+
+            degraded(3)
+              At least one power supply is degraded or failed.
+
+            failed(4)
+              All power supplies are failed."
+    ::= { cpqSsChassisEntry 12 }
+
+    cpqSsChassisFanCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Condition.
+
+        This is the aggregate condition of all fan modules in the
+        storage system chassis.  The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              All fan modules are operating normally.
+
+            degraded(3)
+              At least one fan module is degraded.
+
+            failed(4)
+              At least one fan module is failed."
+    ::= { cpqSsChassisEntry 13 }
+
+    cpqSsChassisTemperatureCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Condition.
+
+        This is the aggregate condition of all the temperatur sensors
+        in the storage system chassis.  The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              All temperature sensors are reading within normal limits.
+
+            degraded(3)
+              At least one temperature sensor is reading degraded.
+
+            failed(4)
+              At least one temperature sensor is reading failed."
+    ::= { cpqSsChassisEntry 14 }
+
+    cpqSsChassisFcaCntlrCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Channel Array Controller Condition.
+
+        This is the aggregate condition of all Fibre Channel Array controllers
+        in the storage system chassis.  The following values are defined:
+
+            other(1)
+              The condition cannot be determined or is not supported on
+              this storage system.
+
+            ok(2)
+              All Fibre Channel Array Controllers are operating normally.
+
+            degraded(3)
+              At least one Fibre Channel Array Controller is degraded or
+              failed.
+
+            failed(4)
+              All Fibre Channel Array Controllers are failed."
+    ::= { cpqSsChassisEntry 15 }
+
+    cpqSsChassisFcaLogicalDriveCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Channel Array Logical Drive Condition.
+
+        This is the aggregate condition of all Fibre Channel Array Logical
+        Drives in this storage system chassis.
+        The following values are defined:
+
+            other(1)
+              The condition cannot be determined or is not supported on
+              this storage system.
+
+            ok(2)
+              All Fibre Channel Array Controllers Logical Drives are
+              operating normally.
+
+            degraded(3)
+              At least one Fibre Channel Array Controller Logical Drive
+              is degraded.
+
+            failed(4)
+              At least one Fibre Channel Array Controller Logical Drive
+              is failed."
+    ::= { cpqSsChassisEntry 16 }
+
+    cpqSsChassisFcaPhysDrvCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Channel Array Physical Drive Condition.
+
+        This is the aggregate condition of all Fibre Channel Array Physical
+        Drives in this storage system chassis.
+        The following values are defined:
+
+            other(1)
+              The condition cannot be determined or is not supported on
+              this storage system.
+
+            ok(2)
+              All Fibre Channel Array Controllers Physical Drives are
+              operating normally.
+
+            degraded(3)
+              At least one Fibre Channel Array Controller Physical Drive
+              is degraded.
+
+            failed(4)
+              At least one Fibre Channel Array Controller Physical Drive
+              is failed."
+    ::= { cpqSsChassisEntry 17 }
+
+    cpqSsChassisTime OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Time.
+
+        This is the storage system chassis's time in tenths of seconds.
+        If the chassis time is not supported, the agent will return 0."
+    ::= { cpqSsChassisEntry 18 }
+
+    cpqSsChassisModel OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ra4x00(2),
+          msa1000(3),
+          smartArrayClusterStorage(4),
+          enterpriseModularArray(5),
+          enterpriseVirtualArray(6),
+          msa500G2(7),
+          msa20(8),
+          msa1500cs(9),
+          msa1510i(10)          
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Model.
+
+        The following values are defined:
+
+            other(1)
+              The agent is unable to determine the model of this chassis.
+
+            ra4x00(2)
+              Compaq StorageWorks RAID Array 4000/4100.
+
+            msa1000(3)
+              Compaq StorageWorks Modular Smart Array 1000.
+
+            smartArrayClusterStorage(4)
+              HP StorageWorks Modular Smart Array 500
+              (Formerly Smart Array Cluster Storage).
+
+            enterpriseModularArray(5)
+              Compaq StorageWorks Enterprise/Modular RAID Array.
+
+            enterpriseVirtualArray(6)
+              Compaq StorageWorks Enterprise Virtual Array.
+
+            msa500G2(7)
+              HP StorageWorks Modular Smart Array 500 G2.
+
+            msa20(8)
+              HP StorageWorks Modular Smart Array 20.
+
+            msa1500cs(9)
+              HP StorageWorks Modular Smart Array 1500 CS.
+
+            msa1510i(10)
+              HP StorageWorks Modular Smart Array 1510i.
+
+            Reserved(11)
+              
+            Reserved(12)"
+    ::= { cpqSsChassisEntry 19 }
+
+    cpqSsChassisBackplaneCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Condition.
+
+        This is the aggregate condition of all the backplanes for the
+        storage system chassis.  The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              All backplanes are operating normally.
+
+            degraded(3)
+              At least one storage system is degraded.
+
+            failed(4)
+              At least one storage system is failed."
+    ::= { cpqSsChassisEntry 20 }
+
+    cpqSsChassisFcaTapeDrvCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Array Tape Drive Condition.
+
+        This is the aggregate condition of all tape drives in this storage
+        system chassis.
+        The following values are defined:
+
+            other(1)
+              The condition cannot be determined or is not supported on
+              this storage system.
+
+            ok(2)
+              All tape drives are operating normally.
+
+            degraded(3)
+              At least one tape drive is degraded.
+
+            failed(4)
+              At least one tape drive is failed."
+    ::= { cpqSsChassisEntry 21 }
+
+    cpqSsChassisRsoStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          notSupported(2),
+          notConfigured(3),
+          disabled(4),
+          daemonDownDisabled(5),
+          ok(6),
+          daemonDownActive(7),
+          noSecondary(8),
+          daemonDownNoSecondary(9),
+          linkDown(10),
+          daemonDownLinkDown(11),
+          secondaryRunningAuto(12),
+          secondaryRunningUser(13),
+          evTimeoutError(14)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Recovery Server Option Status.
+
+        The following values are defined:
+
+            other(1)
+              The recovery server option status cannot be determined for
+              this storage system.
+
+            notSupported(2)
+              The recovery server option is not supported for this storage
+              system.
+
+            notConfigured(3)
+              The recovery server option is supported, but is not
+              configured on this storage system.
+
+            disabled(4)
+              The recovery server option is configured as primary, but
+              has been disabled by software.
+
+            daemonDownDisabled(5)
+              The recovery server option operating system daemon is no
+              longer running.  The last status of RSO was disabled(4).
+
+            ok(6)
+              The recovery server option is configured as primary and
+              everything is working correctly.
+
+            daemonDownActive(7)
+              The recovery server option operating system daemon is no
+              longer running.  The last status of RSO was ok(6).
+
+            noSecondary(8)
+              The recovery server option is configured as primary, but
+              communication with the standby server has not been established.
+
+            daemonDownNoSecondary(9)
+              The recovery server option operating system daemon is no
+              longer running.  The last status of RSO was noSecondary(8).
+
+            linkDown(10)
+              The recovery server option is configured as primary, but
+              communication with the standby server has failed.
+
+            daemonDownLinkDown(11)
+              The recovery server option operating system daemon is no
+              longer running.  The last status of RSO was linkDown(10).
+
+            secondaryRunningAuto(12)
+              The recovery server option is configured and the standby
+              server is running.  The secondary server assumed control
+              after communication with the primary server failed.
+
+            secondaryRunningUser(13)
+              The recovery server option is configured and the standby
+              server is running.  A user forced the secondary server to
+              assume control.
+
+            evTimeoutError(14)
+              The recovery server option environment variable cannot be
+              accessed."
+    ::= { cpqSsChassisEntry 22 }
+
+    cpqSsChassisRsoCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Recovery Server Option Condition.
+
+        This is the condition of the recovery server option.  The
+        following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The recovery server option is operating normally.  No user
+              action is required.
+
+            degraded(3)
+              The recovery server option is degraded.
+
+            failed(4)
+              The recovery server option is failed."
+    ::= { cpqSsChassisEntry 23 }
+
+    cpqSsChassisScsiIoModuleType OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          io2port(2),
+          io4portUpgradeFirmware(3),
+          io4port(4),
+          io2port320(5),
+          io4port320(6),
+          io1port320(7)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis SCSI I/O Module Type.
+
+        The following values are defined:
+
+            other(1)
+              The agent does not recognize SCSI I/O module type.  You may
+              need to upgrade your software.
+
+            io2port(2)
+              A 2-Port Ultra3 SCSI I/O Module is installed.
+
+            io4portUpgradeFirmware(3)
+              A 4-Port Shared Storage Module for Smart Array Cluster Storage
+              is installed, but the current controller firmware does not
+              support it.  Upgrade your controller firmware.
+
+            io4port(4)
+              A 4-Port Shared Storage Module for Smart Array Cluster Storage
+              is installed.
+
+            io2port320(5)
+              A 2-Port Ultra320 SCSI I/O Module is installed.
+
+            io4port320(6)
+              A 4-Port Ultra320 SCSI I/O Module is installed.
+
+            io1port320(7)
+              A 1-Port Ultra320 SCSI I/O Module is installed."
+    ::= { cpqSsChassisEntry 24 }
+
+     cpqSsChassisPreferredPathMode OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+            other(1),
+            notActiveActive(2),
+            automatic(3),
+            manual(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+            "Array Controller Preferred Path Mode.
+
+            This is the storage system active/active preferred path mode.
+            The following values are valid:
+
+            other (1)
+              Indicates that the agent does not recognize the preferred path
+              mode of the storage system.  You may need to upgrade the agent.
+
+            notActiveActive (2)
+              The storage system is not configured as active/active.
+
+            automatic (3)
+              The storage system automatically selects the preferred path
+              for each logical drive based on host I/O patterns.
+
+            manual (4)
+              The preferred path for each logical drive is manually
+              configured by the storage system administrator."
+        ::= { cpqSsChassisEntry 25 }
+
+    cpqSsChassisProductId OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Chassis Product Identifier.
+
+        This is the storage system chassis's product identifier.  This can
+        be used for identification purposes.  If the product identifier can
+        not be determined, the agent will return a NULL string."
+    ::= { cpqSsChassisEntry 26 }
+
+
+-- ****************************************************************************
+--   Storage System I/O Slot Table
+--   =============================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsBoxExtended Group       (1.3.6.1.4.1.232.8.2.2)
+--         cpqSsIoSlotTable            (1.3.6.1.4.1.232.8.2.2.2)
+--
+-- ****************************************************************************
+
+    cpqSsIoSlotTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsIoSlotEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System I/O Slot Table."
+    ::= { cpqSsBoxExtended 2 }
+
+    cpqSsIoSlotEntry OBJECT-TYPE
+        SYNTAX  CpqSsIoSlotEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System I/O Slot Entry."
+    INDEX   { cpqSsIoSlotChassisIndex, cpqSsIoSlotIndex }
+    ::= { cpqSsIoSlotTable 1 }
+
+        CpqSsIoSlotEntry ::= SEQUENCE
+        {
+              cpqSsIoSlotChassisIndex       INTEGER,
+              cpqSsIoSlotIndex              INTEGER,
+              cpqSsIoSlotControllerType     INTEGER
+        }
+
+    cpqSsIoSlotChassisIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System I/O Slot Chassis Index.
+
+        The chassis index uniquely identifies a storage system chassis."
+    ::= { cpqSsIoSlotEntry 1 }
+
+    cpqSsIoSlotIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System I/O Slot Index.
+
+        This index uniquely identifies a storage system I/O Slot."
+    ::= { cpqSsIoSlotEntry 2 }
+
+    cpqSsIoSlotControllerType OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          notInstalled(2),
+          unknownBoard(3),
+          fibreArray(4),
+          scsiArray(5),
+          noSlot(6),
+          iScsiArray(7),
+          sasArray(8)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System I/O Slot Controller Type.
+
+         The following values are defined:
+
+            other(1)
+              The agent is unable to determine if anything is installed in
+              this storage system I/O slot.
+
+            notInstalled(2)
+              Nothing is installed in this storage system I/O slot.
+
+            unknownBoardInstalled(3)
+              An unknown controller is installed in this storage system
+              I/O slot.
+
+            fibreArray(4)
+              A Fibre Channel Array controller is installed in this storage
+              system I/O slot.
+
+            scsiArray(5)
+              A SCSI Array controller is installed in this storage system
+              I/O slot.
+
+            noSlot(6)
+              The slot does not exist on this chassis.
+
+            iScsiArray(7)
+              An  iSCSI Array controller is installed in this storage system
+              I/O slot.
+
+            sasArray(8)
+              A SAS Array controller is installed in this storage system
+              I/O slot."
+    ::= { cpqSsIoSlotEntry 3 }
+
+
+-- ****************************************************************************
+--   Storage System Power Supply Table
+--   =================================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsBoxExtended Group       (1.3.6.1.4.1.232.8.2.2)
+--         cpqSsPowerSupplyTable       (1.3.6.1.4.1.232.8.2.2.3)
+--
+-- ****************************************************************************
+
+    cpqSsPowerSupplyTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsPowerSupplyEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Table."
+    ::= { cpqSsBoxExtended 3 }
+
+    cpqSsPowerSupplyEntry OBJECT-TYPE
+        SYNTAX  CpqSsPowerSupplyEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Entry."
+    INDEX   { cpqSsPowerSupplyChassisIndex, cpqSsPowerSupplyIndex }
+    ::= { cpqSsPowerSupplyTable 1 }
+
+        CpqSsPowerSupplyEntry ::= SEQUENCE
+        {
+              cpqSsPowerSupplyChassisIndex       INTEGER,
+              cpqSsPowerSupplyIndex              INTEGER,
+              cpqSsPowerSupplyBay                INTEGER,
+              cpqSsPowerSupplyStatus             INTEGER,
+              cpqSsPowerSupplyUpsStatus          INTEGER,
+              cpqSsPowerSupplyCondition          INTEGER,
+              cpqSsPowerSupplySerialNumber       DisplayString,
+              cpqSsPowerSupplyBoardRevision      DisplayString,
+              cpqSsPowerSupplyFirmwareRevision   DisplayString
+        }
+
+    cpqSsPowerSupplyChassisIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Chassis Index.
+
+        The chassis index uniquely identifies a storage system chassis."
+    ::= { cpqSsPowerSupplyEntry 1 }
+
+    cpqSsPowerSupplyIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Bay.
+
+        This index uniquely identifies a power supply bay."
+    ::= { cpqSsPowerSupplyEntry 2 }
+
+    cpqSsPowerSupplyBay OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          powerBay1(2),
+          powerBay2(3),
+          composite(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Bay.
+
+        The following values are defined:
+
+            other(1)
+              The agent does not recognize the bay.  You may need to upgrade
+              your software.
+
+            powerBay1(2)
+              The power supply is installed in the first power supply bay.
+
+            powerBay2(3)
+              The power supply is installed in the second power supply bay.
+
+            composite(4)
+              The power supply information is a composite of all power
+              supplies in the storage system."
+    ::= { cpqSsPowerSupplyEntry 3 }
+
+    cpqSsPowerSupplyStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          notInstalled(2),
+          ok(3),
+          failed(4),
+          degraded(5)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Status.
+
+         The following values are defined:
+
+            other(1)
+              The agent is unable to determine if this storage system power
+              supply bay is occupied.
+
+            notInstalled(2)
+              Nothing is installed in this power supply bay.
+
+            ok(3)
+              A power supply is installed and operating normally.
+
+            failed(4)
+              A power supply is installed and is no longer operating.
+              Replace the power supply.
+
+            degraded(5)
+              For composite power supplies, this indicates that at least one
+              power supply has failed or lost power."
+    ::= { cpqSsPowerSupplyEntry 4 }
+
+    cpqSsPowerSupplyUpsStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          noUps(2),
+          ok(3),
+          powerFailed(4),
+          batteryLow(5)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Uninterruptible Power Supply (UPS)
+        Status.
+
+         The following values are defined:
+
+            other(1)
+              The agent is unable to determine if this power supply is
+              attached to an Uninterruptible Power Supply (UPS).
+
+            noUps(2)
+              No UPS is attached to the power supply.
+
+            ok(3)
+              A UPS is attached to the power supply and is operating
+              normally.
+
+            powerFailed(4)
+              A UPS is attached to the power supply and the AC power has
+              failed.
+
+            batteryLow(5)
+              A UPS is attached to the power supply, the AC power has
+              failed and the UPS battery is low."
+    ::= { cpqSsPowerSupplyEntry 5 }
+
+    cpqSsPowerSupplyCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Condition.
+
+        This is the condition of the storage system chassis and all of
+        its components.  The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The power supply is operating normally.  No user action is
+              required.
+
+            degraded(3)
+              The power supply is degraded. You need to check the power
+              supply or its attached UPS for problems.
+
+            failed(4)
+              The power supply has failed."
+    ::= { cpqSsPowerSupplyEntry 6 }
+
+    cpqSsPowerSupplySerialNumber OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Serial Number.
+
+        This is the power supply's serial number.  This can be used
+        for identification purposes.  If the serial number is not supported,
+        the agent will return a NULL string."
+    ::= { cpqSsPowerSupplyEntry 7 }
+
+    cpqSsPowerSupplyBoardRevision OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..8))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Board Revision.
+
+        This is the power supply board revision.  If the board revision is
+        not supported, the agent will return a NULL string."
+    ::= { cpqSsPowerSupplyEntry 8 }
+
+    cpqSsPowerSupplyFirmwareRevision OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..8))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Power Supply Firmware Revision.
+
+        This is the power supply firmware revision.  If the firmware revision
+        is not supported, the agent will return a NULL string."
+    ::= { cpqSsPowerSupplyEntry 9 }
+
+
+-- ****************************************************************************
+--   Storage System Fan Module Table
+--   ===============================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsBoxExtended Group       (1.3.6.1.4.1.232.8.2.2)
+--         cpqSsFanModuleTable         (1.3.6.1.4.1.232.8.2.2.4)
+--
+-- ****************************************************************************
+
+    cpqSsFanModuleTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsFanModuleEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Table."
+    ::= { cpqSsBoxExtended 4 }
+
+    cpqSsFanModuleEntry OBJECT-TYPE
+        SYNTAX  CpqSsFanModuleEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Entry."
+    INDEX   { cpqSsFanModuleChassisIndex, cpqSsFanModuleIndex }
+    ::= { cpqSsFanModuleTable 1 }
+
+        CpqSsFanModuleEntry ::= SEQUENCE
+        {
+              cpqSsFanModuleChassisIndex       INTEGER,
+              cpqSsFanModuleIndex              INTEGER,
+              cpqSsFanModuleStatus             INTEGER,
+              cpqSsFanModuleCondition          INTEGER,
+              cpqSsFanModuleLocation           INTEGER,
+              cpqSsFanModuleSerialNumber       DisplayString,
+              cpqSsFanModuleBoardRevision      DisplayString
+        }
+
+    cpqSsFanModuleChassisIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Chassis Index.
+
+        The chassis index uniquely identifies a storage system chassis."
+    ::= { cpqSsFanModuleEntry 1 }
+
+    cpqSsFanModuleIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Index.
+
+        This index uniquely identifies a storage system fan module."
+    ::= { cpqSsFanModuleEntry 2 }
+
+    cpqSsFanModuleStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          notInstalled(2),
+          ok(3),
+          degraded(4),
+          failed(5)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Status.
+
+         The following values are defined:
+
+            other(1)
+              The agent is unable to determine if this storage system fan
+              module is installed.
+
+            notInstalled(3)
+              The fan module is not installed.
+
+            ok(2)
+              The fan module is installed and operating normally.
+
+            degraded(4)
+              The fan module degraded.
+
+            failed(5)
+              The fan module is failed.  Replace the fan module."
+    ::= { cpqSsFanModuleEntry 3 }
+
+    cpqSsFanModuleCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Condition.
+
+        This is the condition of the storage system fan module.
+        The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The fan module is operating normally.  No user action is
+              required.
+
+            degraded(3)
+              The fan module is degraded. You need to check the fan module
+              for problems.
+
+            failed(4)
+              The fan module has failed.  Replace the fan module."
+    ::= { cpqSsFanModuleEntry 4 }
+
+    cpqSsFanModuleLocation OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          fanBay(2),
+          composite(3),
+          fanBay2(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Location.
+
+         The following values are defined:
+
+            other(1)
+              The agent is unable to determine the location of this storage
+              system fan module.
+
+            fanBay(2)
+              This fan module is installed in the first fan bay.
+
+            composite(3)
+              The fan information is a composite of all fans in the storage
+              system.
+
+            fanBay2(4)
+              This fan module is installed in the second fan bay."
+    ::= { cpqSsFanModuleEntry 5 }
+
+    cpqSsFanModuleSerialNumber OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Serial Number.
+
+        This is the fan module's serial number.  This can be used
+        for identification purposes."
+    ::= { cpqSsFanModuleEntry 6 }
+
+    cpqSsFanModuleBoardRevision OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..8))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Board Revision.
+
+        This is the fan module board revision."
+    ::= { cpqSsFanModuleEntry 7 }
+
+
+-- ****************************************************************************
+--   Storage System Temperature Sensor Table
+--   =======================================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsBoxExtended Group       (1.3.6.1.4.1.232.8.2.2)
+--         cpqSsTempSensorTable        (1.3.6.1.4.1.232.8.2.2.5)
+--
+-- ****************************************************************************
+
+    cpqSsTempSensorTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsTempSensorEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Sensor Table."
+    ::= { cpqSsBoxExtended 5 }
+
+    cpqSsTempSensorEntry OBJECT-TYPE
+        SYNTAX  CpqSsTempSensorEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Sensor Entry."
+    INDEX   { cpqSsTempSensorChassisIndex, cpqSsTempSensorIndex }
+    ::= { cpqSsTempSensorTable 1 }
+
+        CpqSsTempSensorEntry ::= SEQUENCE
+        {
+              cpqSsTempSensorChassisIndex       INTEGER,
+              cpqSsTempSensorIndex              INTEGER,
+              cpqSsTempSensorStatus             INTEGER,
+              cpqSsTempSensorCondition          INTEGER,
+              cpqSsTempSensorLocation           INTEGER,
+              cpqSsTempSensorCurrentValue       INTEGER,
+              cpqSsTempSensorLimitValue         INTEGER,
+              cpqSsTempSensorHysteresisValue    INTEGER
+        }
+
+    cpqSsTempSensorChassisIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Sensor Chassis Index.
+
+        The chassis index uniquely identifies a storage system chassis."
+    ::= { cpqSsTempSensorEntry 1 }
+
+    cpqSsTempSensorIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Sensor Index.
+
+        This index uniquely identifies a temperature sensor."
+    ::= { cpqSsTempSensorEntry 2 }
+
+    cpqSsTempSensorStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Sensor Status.
+
+         The following values are defined:
+
+            other(1)
+              The agent is unable to determine if the storage system
+              temperature sensor status.
+
+            ok(2)
+              The temperature is OK.
+
+            degraded(3)
+              The temperature is degraded.
+
+            failed(4)
+              The temperature is failed."
+    ::= { cpqSsTempSensorEntry 3 }
+
+    cpqSsTempSensorCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Condition.
+
+        This is the condition of the storage system temperature sensor.
+        The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The temperature is within normal operating range.  No user
+              action is required.
+
+            degraded(3)
+              The temperature is outside of normal operating range.
+
+            failed(4)
+              The temperature could permanently damage the system.
+              The storage system will automatically shutdown if this
+              condition is detected."
+    ::= { cpqSsTempSensorEntry 4 }
+
+    cpqSsTempSensorLocation OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          fanBay(2),
+          backplane(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fan Module Location.
+
+         The following values are defined:
+
+            other(1)
+              The agent is unable to determine the location of this storage
+              system temperature sensor.
+
+            fanBay(2)
+              This temperature sensor is located on the fan module in the
+              fan bay.
+
+            backplane(3)
+              This temperature is located on the SCSI drive backplane."
+    ::= { cpqSsTempSensorEntry 5 }
+
+    cpqSsTempSensorCurrentValue OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Sensor Current Value.
+
+        The current value of the temperature sensor in degrees Celsius."
+    ::= { cpqSsTempSensorEntry 6 }
+
+    cpqSsTempSensorLimitValue OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Sensor Limit Value.
+
+        The limit value of the temperature sensor in degrees Celsius."
+    ::= { cpqSsTempSensorEntry 7 }
+
+    cpqSsTempSensorHysteresisValue OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Temperature Sensor Hysteresis Value.
+
+        The hysteresis value of the temperature sensor in degrees Celsius."
+    ::= { cpqSsTempSensorEntry 8 }
+
+
+-- ****************************************************************************
+--   Storage System SCSI Backplane Table
+--   ===================================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsBoxExtended Group       (1.3.6.1.4.1.232.8.2.2)
+--         cpqSsBackplaneTable         (1.3.6.1.4.1.232.8.2.2.6)
+--
+-- ****************************************************************************
+
+    cpqSsBackplaneTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsBackplaneEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Backplane Table."
+    ::= { cpqSsBoxExtended 6 }
+
+    cpqSsBackplaneEntry OBJECT-TYPE
+        SYNTAX  CpqSsBackplaneEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Backplane Entry."
+    INDEX   { cpqSsBackplaneChassisIndex, cpqSsBackplaneIndex }
+    ::= { cpqSsBackplaneTable 1 }
+
+        CpqSsBackplaneEntry ::= SEQUENCE
+        {
+              cpqSsBackplaneChassisIndex       INTEGER,
+              cpqSsBackplaneIndex              INTEGER,
+              cpqSsBackplaneFWRev              DisplayString,
+              cpqSsBackplaneDriveBays          INTEGER,
+              cpqSsBackplaneDuplexOption       INTEGER,
+              cpqSsBackplaneCondition          INTEGER,
+              cpqSsBackplaneVersion            INTEGER,
+              cpqSsBackplaneVendor             DisplayString,
+              cpqSsBackplaneModel              DisplayString,
+              cpqSsBackplaneFanStatus          INTEGER,
+              cpqSsBackplaneTempStatus         INTEGER,
+              cpqSsBackplaneFtpsStatus         INTEGER,
+              cpqSsBackplaneSerialNumber       DisplayString,
+              cpqSsBackplanePlacement          INTEGER,
+              cpqSsBackplaneBoardRevision      INTEGER,
+              cpqSsBackplaneSpeed              INTEGER,
+              cpqSsBackplaneConnectionType     INTEGER,
+              cpqSsBackplaneConnector          DisplayString,
+              cpqSsBackplaneOnConnector        INTEGER,
+              cpqSsBackplaneLocationString     DisplayString
+        }
+
+    cpqSsBackplaneChassisIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Chassis Index.
+
+        The chassis index uniquely identifies a storage system chassis."
+    ::= { cpqSsBackplaneEntry 1 }
+
+    cpqSsBackplaneIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Index.
+
+        This index uniquely identifies a storage system backplane."
+    ::= { cpqSsBackplaneEntry 2 }
+
+    cpqSsBackplaneFWRev OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..8))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Firmware Revision.
+
+        This is the revision level of storage system backplane."
+    ::= { cpqSsBackplaneEntry 3 }
+
+    cpqSsBackplaneDriveBays OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Drive Bays.
+
+        This is the number of bays on this storage system backplane."
+    ::= { cpqSsBackplaneEntry 4 }
+
+    cpqSsBackplaneDuplexOption OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           notDuplexed(2),
+           duplexTop(3),
+           duplexBottom(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Duplex Option.
+
+        The following values are defined:
+
+            other (1)
+              The agent is unable to determine if this storage
+              system is duplexed.
+
+            notDuplexed(2)
+              This storage system is not duplexed.
+
+            duplexTop(3)
+              This is the top portion of a duplexed storage system.
+
+            duplexBottom(4)
+              This is the bottom portion of a duplexed storage system."
+    ::= { cpqSsBackplaneEntry 5 }
+
+    cpqSsBackplaneCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Condition.
+
+        This is the overall condition of the backplane.
+        The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The storage system is operating normally.  No user
+              action is required.
+
+            degraded(3)
+              The storage system is degraded. You need to check the
+              temperature status or power supply status of this
+              storage system.
+
+            failed(4)
+              The storage system has failed."
+    ::= { cpqSsBackplaneEntry 6 }
+
+    cpqSsBackplaneVersion OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Version.
+
+        This is the version of the drive box back plane."
+    ::= { cpqSsBackplaneEntry 7 }
+
+    cpqSsBackplaneVendor OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..9))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Vendor
+
+        This is the storage box's vendor name.
+        This can be used for identification purposes."
+    ::= { cpqSsBackplaneEntry 8 }
+
+    cpqSsBackplaneModel OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..17))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Model.
+
+        This is a description of the storage system's model.
+        This can be used for identification purposes."
+    ::= { cpqSsBackplaneEntry 9 }
+
+    cpqSsBackplaneFanStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          notInstalled(2),
+          ok(3),
+          degraded(4),
+          failed(5),
+          notSupported(6),
+          degraded-Fan1Failed(7),
+          degraded-Fan2Failed(8)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Fan Status.
+
+         This is the current status of the fans in the storage system.
+         This value will be one of the following:
+
+            other(1)
+              The agent is unable to determine if this storage system has
+              fan monitoring.
+
+            notInstalled(2)
+              This unit does not support fan monitoring.
+
+            ok(3)
+              All fans are working normally.
+
+            degraded(4)
+              At least one storage system fan has failed, but there is still
+              sufficient cooling capacity to allow the system to continue.
+              The fan should be replaced.
+
+            failed(5)
+              One or more storage system fans have failed.  The fan(s) should
+              be replaced immediately to avoid hardware damage.
+
+            notSupported(6)
+              The storage system does not support reporting fan status
+              through this backplane.  The fan status is reported through the
+              first backplane on this storage system.
+
+            degraded-Fan1Failed(7)
+              Fan 1 has failed, but there is still sufficient cooling
+              capacity to allow the system to continue. The fan should be
+              replaced.
+
+            degraded-Fan2Failed(8)
+              Fan 2 has failed, but there is still sufficient cooling
+              capacity to allow the system to continue. The fan should be
+              replaced."
+
+    ::= { cpqSsBackplaneEntry 10 }
+
+    cpqSsBackplaneTempStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          noTemp(2),
+          ok(3),
+          degraded(4),
+          failed(5),
+          notSupported(6)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Fan Status.
+
+         This value will be one of the following:
+
+            other(1)
+              The agent is unable to determine if this storage system has
+              temperature monitoring.
+
+            noTemp(2)
+              This unit does not support temperature monitoring.
+
+            ok(3)
+              The temperature is within normal operating range.
+
+            degraded(4)
+              The temperature is outside of normal operating range.
+
+            failed(5)
+              The temperature could permanently damage the system.
+
+            notSupported(6)
+              The storage system does not support reporting temperature
+              status through this backplane.  The temperature status is
+              reported through the first backplane on this storage system."
+    ::= { cpqSsBackplaneEntry 11 }
+
+    cpqSsBackplaneFtpsStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          noFltTolPower(2),
+          ok(3),
+          degraded(4),
+          failed(5),
+          notSupported(6),
+          noFltTolPower-Bay1Missing(7),
+          noFltTolPower-Bay2Missing(8)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Fault Tolerant Power Supply Status.
+
+            This value specifies the overall status of the redundant power
+            supply in a drive box.  This value will be one of the following:
+
+            other(1)
+              The agent is unable to determine if this storage system has
+              redundant power supplies.
+
+            noFltTolPower(2)
+              This unit does not have a redundant supply.
+
+            ok(3)
+              There are no detected power supply failures.
+
+            degraded(4)
+              One of the power supply units has failed.
+
+            failed(5)
+              All of the power supplies have failed.  A status of failed can
+              not currently be determined.
+
+            notSupported(6)
+              The storage system does not support reporting fault tolerant
+              power supply status through this backplane.  The fault tolerant
+              power supply status is reported through the first backplane on
+              this storage system.
+
+            noFltTolPower-Bay1Missing(7),
+              This unit does not have a redundant supply.  The power supply
+              in bay 1 is missing.
+
+            noFltTolPower-Bay2Missing(8)
+              This unit does not have a redundant supply.  The power supply
+              in bay 2 is missing."
+    ::= { cpqSsBackplaneEntry 12 }
+
+    cpqSsBackplaneSerialNumber OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Backplane Serial Number.
+
+        This is the storage system backplane serial number which is normally
+        displayed on the front bezel.  This can be used for identification
+        purposes."
+    ::= { cpqSsBackplaneEntry 13 }
+
+    cpqSsBackplanePlacement OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           internal(2),
+           external(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Storage System Backplane Placement.
+
+            The following values are defined:
+
+            other(1)
+              The agent is unable to determine if this storage system is
+              located internal or external to the system chassis.
+
+            internal(2)
+              The storage system is located in the system chassis.
+
+            external(3)
+              The storage system is located outside the system chassis
+              in an expansion box."
+    ::= { cpqSsBackplaneEntry 14 }
+
+    cpqSsBackplaneBoardRevision OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Storage System Backplane Board Revision.
+
+            This is the board revision of this storage system backplane."
+    ::= { cpqSsBackplaneEntry 15 }
+
+    cpqSsBackplaneSpeed OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           ultra3(2),
+           ultra320(3),
+           sata(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Storage System Backplane Speed.
+
+            The following values are defined:
+
+            other(1)
+              The agent is unable to determine the backplane speed for this
+              storage system.
+
+            ultra3(2)
+              This storage system is capable of Ultra3 speeds.
+
+            ultra320(3)
+              This storage system is capable of Ultra320 speeds.
+
+            sata(4)
+              This storage system is capable of SATA speeds."
+    ::= { cpqSsBackplaneEntry 16 }
+
+
+    cpqSsBackplaneConnectionType OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           scsiAttached(2),
+           sasAttached(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Backlane Box Connection Type.
+
+            The following values are defined:
+
+            other(1)
+              The agent is unable to determine the type of connection to
+              this backplane.
+
+            scsiAttached(2)
+              This backplane is attached to the host via SCSI.
+
+            sasAttached(3)
+              This backplane is attached to the host via SAS."
+    ::= { cpqSsBackplaneEntry 17 }
+
+    cpqSsBackplaneConnector OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..4))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Backplane Connector.
+
+            This is the connector to which the backplane is attached.
+            If the backplane connector cannot be determined, the agent will
+            return a NULL string."
+    ::= { cpqSsBackplaneEntry 18 }
+
+    cpqSsBackplaneOnConnector OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Backplane on Connector.
+
+            The backplane on connector indicates to which backplane instance
+            this table entry belongs.  The instances start at one and
+            increment for each backplane attached to a connector."
+    ::= { cpqSsBackplaneEntry 19 }
+
+    cpqSsBackplaneLocationString OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..255))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Backplane Location String.
+
+            This string describes the location of the backplane in relation
+            to the controller to which it is attached.  If the location
+            string cannot be determined, the agent will return a NULL string."
+    ::= { cpqSsBackplaneEntry 20 }
+
+
+-- ****************************************************************************
+--   Storage System Fibre Attachment Table
+--   =====================================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsBoxExtended Group       (1.3.6.1.4.1.232.8.2.2)
+--         cpqSsFibreAttachmentTable   (1.3.6.1.4.1.232.8.2.2.7)
+--
+-- The Storage System Fibre Attachment Group contains associations between
+-- Fibre channel host controllers and the Fibre devices that are attached to
+-- them.  Since there can be multiple paths to some Fibre devices, there may
+-- be multiple entries for a given device.
+--
+-- ****************************************************************************
+
+    cpqSsFibreAttachmentTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsFibreAttachmentEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Attachment Table."
+    ::= { cpqSsBoxExtended 7 }
+
+    cpqSsFibreAttachmentEntry OBJECT-TYPE
+        SYNTAX  CpqSsFibreAttachmentEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Attachment Entry."
+    INDEX   { cpqSsFibreAttachmentIndex }
+    ::= { cpqSsFibreAttachmentTable 1 }
+
+        CpqSsFibreAttachmentEntry ::= SEQUENCE
+        {
+              cpqSsFibreAttachmentIndex               INTEGER,
+              cpqSsFibreAttachmentHostControllerIndex INTEGER,
+              cpqSsFibreAttachmentHostControllerPort  INTEGER,
+              cpqSsFibreAttachmentDeviceType          INTEGER,
+              cpqSsFibreAttachmentDeviceIndex         INTEGER,
+              cpqSsFibreAttachmentDevicePort          INTEGER
+        }
+
+    cpqSsFibreAttachmentIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Attachment Index.
+
+        The index uniquely identifies a Fibre Attachment association entry."
+    ::= { cpqSsFibreAttachmentEntry 1 }
+
+    cpqSsFibreAttachmentHostControllerIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Attachment Host Controller Index.
+
+        The host controller index indicates which host controller is
+        associated with this entry.  This is equal to cpqFcaHostCntlrIndex,
+        from the Fibre Channel Host Controller Table."
+    ::= { cpqSsFibreAttachmentEntry 2 }
+
+    cpqSsFibreAttachmentHostControllerPort OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Attachment Host Controller Port.
+
+        This is the Fibre port number of the host controller.  For each host
+        controller, the port number starts at 1 and increments for each port.
+        This is currently set to 1."
+    ::= { cpqSsFibreAttachmentEntry 3 }
+
+    cpqSsFibreAttachmentDeviceType OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+           other(1),
+           storageBox(2),
+           tapeController(3),
+           fibreChannelSwitch(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Attachment Device Type.
+
+        This is the type of device associated with this entry.
+        The following values are defined:
+
+        other(1)
+         The agent is unable to determine if the type of this device.
+
+        storageBox(2)
+         The device is a Fibre attached storage system.
+
+        tapeController(3)
+         The device is a Fibre attached tape controller.
+
+        fibreChannelSwitch(4)
+         The device is a Fibre channel switch."
+    ::= { cpqSsFibreAttachmentEntry 4 }
+
+    cpqSsFibreAttachmentDeviceIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Attachment Device Index.
+
+        The is the index for the Fibre attached device.  For a Fibre
+        attached storage system, this is equal to cpqSsChassisIndex from the
+        Storage System Chassis Table.  For a Fibre attached tape controller,
+        this is equal to cpqFcTapeCntlrIndex from the Fibre Channel Tape
+        Controller Table.  For a Fibre channel switch, this is equal to
+        cpqFcSwitchIndex from the Fibre Channel Switch Table."
+    ::= { cpqSsFibreAttachmentEntry 5 }
+
+    cpqSsFibreAttachmentDevicePort OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System Fibre Attachment Device Port.
+
+        This is the Fibre port on a device.  For a Fibre attached storage
+        system, this is equal to cpqFcaCntlrBoxIoSlot from the Fibre Channel
+        Array Controller Table.  For a Fibre attached tape controller,
+        this is currently set to 1.  For a Fibre channel switch, this is
+        currently set to 1."
+    ::= { cpqSsFibreAttachmentEntry 6 }
+
+
+-- ****************************************************************************
+--   Storage System Scsi Attachment Table
+--   ====================================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsBoxExtended Group       (1.3.6.1.4.1.232.8.2.2)
+--         cpqSsScsiAttachmentTable    (1.3.6.1.4.1.232.8.2.2.8)
+--
+-- The Storage System Scsi Attachment Group contains associations between
+-- internal array controllers and the external arrays that are attached to
+-- them.  Since there can be multiple paths to some external arrays, there
+-- may be multiple entries for a given device.
+--
+-- ****************************************************************************
+
+    cpqSsScsiAttachmentTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsScsiAttachmentEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Table."
+    ::= { cpqSsBoxExtended 8 }
+
+    cpqSsScsiAttachmentEntry OBJECT-TYPE
+        SYNTAX  CpqSsScsiAttachmentEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Entry."
+    INDEX   { cpqSsScsiAttachmentIndex }
+    ::= { cpqSsScsiAttachmentTable 1 }
+
+        CpqSsScsiAttachmentEntry ::= SEQUENCE
+        {
+              cpqSsScsiAttachmentIndex             INTEGER,
+              cpqSsScsiAttachmentControllerIndex   INTEGER,
+              cpqSsScsiAttachmentControllerPort    INTEGER,
+              cpqSsScsiAttachmentControllerTarget  INTEGER,
+              cpqSsScsiAttachmentControllerLun     INTEGER,
+              cpqSsScsiAttachmentChassisIndex      INTEGER,
+              cpqSsScsiAttachmentChassisIoSlot     INTEGER,
+              cpqSsScsiAttachmentPathStatus        INTEGER,
+              cpqSsScsiAttachmentPathCondition     INTEGER
+        }
+
+    cpqSsScsiAttachmentIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Index.
+
+        The index uniquely identifies a SCSI Attachment association entry."
+    ::= { cpqSsScsiAttachmentEntry 1 }
+
+    cpqSsScsiAttachmentControllerIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Controller Index.
+
+        The controller index indicates which internal array controller is
+        associated with this entry.  This is equal to cpqDaCntlrIndex,
+        from the Array Controller Table."
+    ::= { cpqSsScsiAttachmentEntry 2 }
+
+    cpqSsScsiAttachmentControllerPort OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Controller Port.
+
+        The controller port indicates which SCSI port of an internal
+        controller is associated with this entry."
+    ::= { cpqSsScsiAttachmentEntry 3 }
+
+    cpqSsScsiAttachmentControllerTarget OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Controller Target.
+
+        The controller target indicates which SCSI target is associated with
+        this entry."
+    ::= { cpqSsScsiAttachmentEntry 4 }
+
+    cpqSsScsiAttachmentControllerLun OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Controller Lun.
+
+        The controller Lun indicates which SCSI Lun is associated with this
+        entry."
+    ::= { cpqSsScsiAttachmentEntry 5 }
+
+    cpqSsScsiAttachmentChassisIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Chassis Index.
+
+        The is the index for the SCSI attached storage system.  This is equal
+        to cpqSsChassisIndex from the Storage System Chassis Table."
+    ::= { cpqSsScsiAttachmentEntry 6 }
+
+    cpqSsScsiAttachmentChassisIoSlot OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Chassis I/O Slot.
+
+        This is the I/O slot in the SCSI attached storage system.  This is
+        equal to cpqFcaCntlrBoxIoSlot from the Fibre Channel Array Controller
+        Table."
+    ::= { cpqSsScsiAttachmentEntry 7 }
+
+    cpqSsScsiAttachmentPathStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          offline(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Path Status.
+
+        This is the status of this path to the chassis.  The following
+        values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The path is operating normally.
+
+            offline(3)
+              The path is offline."
+    ::= { cpqSsScsiAttachmentEntry 8 }
+
+    cpqSsScsiAttachmentPathCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "Storage System SCSI Attachment Path Condition.
+
+        This is the condition of this path to the chassis."
+    ::= { cpqSsScsiAttachmentEntry 9 }
+
+-- ****************************************************************************
+--   Storage System Drive Box Access Path Group
+--   ==========================================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsDrvBox Group             (1.3.6.1.4.1.232.8.2)
+--        cpqSsDrvBoxPathTable         (1.3.6.1.4.1.232.8.2.3)
+--
+-- ****************************************************************************
+
+    cpqSsDrvBoxPathTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsDrvBoxPathEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Access Path Table."
+    ::= { cpqSsDrvBox 3 }
+
+    cpqSsDrvBoxPathEntry OBJECT-TYPE
+        SYNTAX  CpqSsDrvBoxPathEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "Drive Box Access Path Entry."
+    INDEX   { cpqSsDrvBoxPathCntlrIndex, cpqSsDrvBoxPathBoxIndex,
+              cpqSsDrvBoxPathIndex }
+    ::= { cpqSsDrvBoxPathTable 1 }
+
+    CpqSsDrvBoxPathEntry ::= SEQUENCE
+    {
+        cpqSsDrvBoxPathCntlrIndex      INTEGER,
+        cpqSsDrvBoxPathBoxIndex        INTEGER,
+        cpqSsDrvBoxPathIndex           INTEGER,
+        cpqSsDrvBoxPathStatus          INTEGER,
+        cpqSsDrvBoxPathCurrentRole     INTEGER,
+        cpqSsDrvBoxPathHostConnector   DisplayString,
+        cpqSsDrvBoxPathBoxOnConnector  INTEGER,
+        cpqSsDrvBoxPathLocationString  DisplayString
+    }
+
+    cpqSsDrvBoxPathCntlrIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+            "Drive Box Access Path Controller Index.
+
+            The controller index indicates to which adapter card instance
+            this table entry belongs."
+        ::= { cpqSsDrvBoxPathEntry 1 }
+
+    cpqSsDrvBoxPathBoxIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+            "Drive Box Access Path Box Index.
+
+            The box index indicates to which box instance on an adapter card
+            this table entry belongs. The value of this index is the same as
+            cpqSsDrvBoxBusIndex used under the drive box table."
+        ::= { cpqSsDrvBoxPathEntry 2 }
+
+    cpqSsDrvBoxPathIndex OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+            "Drive Box Access Path Index.
+
+            This path index keeps track of multiple instances of access
+            paths from a controller to a storage box. This number, along with
+            the cpqSsDrvBoxPathCntlrIndex and cpqSsDrvBoxPathDrvIndex uniquely
+            identify a specific storage box access path"
+        ::= { cpqSsDrvBoxPathEntry 3 }
+
+     cpqSsDrvBoxPathStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+            other(1),
+            ok(2),
+            linkDown(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+            "Drive Box Access Path Status.
+
+            This shows the status of the drive box access path.  The
+            following values are valid:
+
+            Other (1)
+              Indicates that the instrument agent can not determine the
+              status of this access path.
+
+            OK (2)
+              Indicates the access path is functioning properly.
+
+            Link Down (3)
+              Indicates that the controller can no longer access the drive box
+              through this path."
+        ::= { cpqSsDrvBoxPathEntry 4 }
+
+     cpqSsDrvBoxPathCurrentRole OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+            other(1),
+            active(2),
+            alternate(3)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+            "Drive Box Access Path Current Role.
+
+            This shows the current role of drive box acess path.  The
+            following values are valid:
+
+            Other (1)
+              Indicates that the instrument agent does not recognize the
+              role of this access path.
+
+            Active (2)
+              Indicates that this path is currently the default active
+              I/O path to access the drive box from the controller.
+
+            Alternate (3)
+              Indicates that this path is currently the alternate I/O
+              path to access the physical drive from the controller."
+        ::= { cpqSsDrvBoxPathEntry 5 }
+
+     cpqSsDrvBoxPathHostConnector OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..4))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Access Path Host Connector.
+
+            This is the host connector to which the access path is ultimately
+            attached.  If the host connector cannot be determined, the agent
+            will return a NULL string."
+        ::= { cpqSsDrvBoxPathEntry 6 }
+
+     cpqSsDrvBoxPathBoxOnConnector OBJECT-TYPE
+        SYNTAX  INTEGER
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Access Path Box on Connector.
+
+            The box on connector indicates to which box instance this
+            access path belongs."
+        ::= { cpqSsDrvBoxPathEntry 7 }
+
+     cpqSsDrvBoxPathLocationString OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..255))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+           "Drive Box Access Path Location String.
+
+            This string describes drive box access path in relation to the
+            controller to which it is attached.  If the location string
+            cannot be determined, the agent will return a NULL string."
+        ::= { cpqSsDrvBoxPathEntry 8 }
+
+
+-- ****************************************************************************
+--   Storage System Trap Group
+--   =========================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsTrap Group               (1.3.6.1.4.1.232.8.3)   (deprecated)
+--
+--
+--  The trap group maintains information about the number of traps issued
+--  from the storageSys enterprise.  The trap group also maintains a table of
+--  the last several traps issued.  This table is intended to give a
+--  management application some recent status information immediately upon
+--  accessing the agent.
+--
+--  Implementation of the Trap group is optional for agents.
+--  The trap group has been deprecated for Insight v2.00 Agents.
+--
+-- ****************************************************************************
+
+    cpqSsTrapPkts OBJECT-TYPE
+        SYNTAX  Counter
+        ACCESS  read-only
+        STATUS  deprecated
+        DESCRIPTION
+          "The total number of trap packets issued by the enterprise since
+           the instrument agent was loaded."
+        ::= { cpqSsTrap 1 }
+
+    cpqSsTrapLogMaxSize OBJECT-TYPE
+        SYNTAX  INTEGER (0..2147483647)
+        ACCESS  read-only
+        STATUS  deprecated
+        DESCRIPTION
+           "The maximum number of entries that will currently be kept in
+            the trap log.  If the maximum size has been reached and a new
+            trap occurs the oldest trap will be removed."
+       ::= { cpqSsTrap 2 }
+
+-- ****************************************************************************
+--   Storage System Trap Log Table
+--   =============================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsTrap Group               (1.3.6.1.4.1.232.8.3)     (deprecated)
+--        cpqSsTrapLogTable            (1.3.6.1.4.1.232.8.3.3)   (deprecated)
+--
+-- ****************************************************************************
+
+    cpqSsTrapLogTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsTrapLogEntry
+        ACCESS  not-accessible
+        STATUS  deprecated
+        DESCRIPTION
+           "An ordered list of trap log entries (conceptually a queue).
+            The trap log entries will be kept in the order in which they
+            were generated with the most recent trap at index 1 and the
+            oldest trap entry at index trapLogMaxSize.  If the maximum
+            number size has been reached and a new trap occurs the oldest
+            trap will be removed when the new trap is added so the
+            trapMaxLogSize is not exceeded."
+       ::= { cpqSsTrap 3 }
+
+    cpqSsTrapLogEntry OBJECT-TYPE
+        SYNTAX  CpqSsTrapLogEntry
+        ACCESS  not-accessible
+        STATUS  deprecated
+        DESCRIPTION
+           "A description of a trap event."
+        INDEX   { cpqSsTrapLogIndex }
+        ::= { cpqSsTrapLogTable 1 }
+
+        CpqSsTrapLogEntry ::= SEQUENCE
+        {
+              cpqSsTrapLogIndex        INTEGER,
+              cpqSsTrapType            INTEGER,
+              cpqSsTrapTime            OCTET STRING
+        }
+
+    cpqSsTrapLogIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..2147483647)
+        ACCESS  read-only
+        STATUS  deprecated
+        DESCRIPTION
+           "The value of this object uniquely identifies this trapLogEntry
+            at this time.  The most recent trap will have an index of 1 and
+            the oldest trap will have an index of trapLogMaxSize.  Because of
+            the queue-like nature of the trapLog this particular trap event's
+            index will change as new traps are issued."
+        ::= { cpqSsTrapLogEntry 1 }
+
+    cpqSsTrapType OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+              cpqSsFanStatusChange(1),
+              cpqSs2FanStatusChange(8001),
+              cpqSsTempFailed(8002),
+              cpqSsTempDegraded(8003),
+              cpqSsTempOk(8004),
+              cpqSsSidePanelInPlace(8005),
+              cpqSsSidePanelRemoved(8006)
+        }
+        ACCESS  read-only
+        STATUS  deprecated
+        DESCRIPTION
+           "The type of the trap event that this entry describes.  This
+            number refers to an entry in a list of traps enumerating the
+            possible traps the agent may issue."
+    ::= { cpqSsTrapLogEntry 2 }
+
+    cpqSsTrapTime OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE (6))
+        ACCESS  read-only
+        STATUS  deprecated
+        DESCRIPTION
+           "The time of the trap event that this entry describes.  The time
+            is given in year (first octet), month, day of month, hour,
+            minute, second (last octet) order.  Each octet gives the value in
+            BCD."
+        ::= { cpqSsTrapLogEntry 3 }
+
+
+-- ****************************************************************************
+--   RAID Storage System Group
+--   ==============================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--      cpqSsStorageSys Group          (1.3.6.1.4.1.232.8)
+--       cpqSsRaidSystem Group         (1.3.6.1.4.1.232.8.4)
+--        cpqSsRaidSystemTable         (1.3.6.1.4.1.232.8.4.1)
+--
+--  Implementation of the RAID Storage System group is mandatory.
+--
+-- ****************************************************************************
+
+    cpqSsRaidSystemTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF CpqSsRaidSystemEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "RAID Storage System Table."
+    ::= { cpqSsRaidSystem 1 }
+
+    cpqSsRaidSystemEntry OBJECT-TYPE
+        SYNTAX  CpqSsRaidSystemEntry
+        ACCESS  not-accessible
+        STATUS  mandatory
+        DESCRIPTION
+        "RAID Storage System Entry."
+    INDEX   { cpqSsRaidSystemIndex }
+    ::= { cpqSsRaidSystemTable 1 }
+
+        CpqSsRaidSystemEntry ::= SEQUENCE
+        {
+              cpqSsRaidSystemIndex                    INTEGER,
+              cpqSsRaidSystemName                     DisplayString,
+              cpqSsRaidSystemStatus                   INTEGER,
+              cpqSsRaidSystemCondition                INTEGER,
+              cpqSsRaidSystemCntlr1SerialNumber       DisplayString,
+              cpqSsRaidSystemCntlr2SerialNumber       DisplayString
+        }
+
+    cpqSsRaidSystemIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..255)
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "RAID Storage System Index.
+
+        The RAID Storage System index indicates to which storage system instance
+        this table entry belongs."
+
+    ::= { cpqSsRaidSystemEntry 1 }
+
+    cpqSsRaidSystemName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..255))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "RAID Storage System Name.
+
+        This is a description of the RAID Storage System's name.
+        This can be used for identification purposes."
+
+    ::= { cpqSsRaidSystemEntry 2 }
+
+    cpqSsRaidSystemStatus OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          agentNotRunning(2),
+          good(3),
+          warning(4),
+          communicationLoss(5)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "RAID Storage System Status.
+
+         This is the current status of the RAID Storage System.
+         This value will be one of the following:
+
+            other(1)
+              Indicates that the agent does not recognize the state of the
+              RAID Storage System.  You may need to upgrade the agent.
+
+            agentNotRunning(2)
+              Indicates that the Storage Work agent is not running.  You need
+              to restart the Storage Work agent.
+
+            good(3)
+              Indicates that the system is operating properly.
+
+            warning(4)
+              At least one component of the system failed.
+
+            communicationLoss(5)
+              The RAID Storage System has a cable or communication problem.
+              Please check all cable connects to the host server."
+
+
+    ::= { cpqSsRaidSystemEntry 3 }
+
+    cpqSsRaidSystemCondition OBJECT-TYPE
+        SYNTAX  INTEGER
+        {
+          other(1),
+          ok(2),
+          degraded(3),
+          failed(4)
+        }
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "RAID Storage System Condition.
+
+        This is the overall condition of the storage system.
+        The following values are defined:
+
+            other(1)
+              The agent does not recognize the status.  You may need to
+              upgrade your software.
+
+            ok(2)
+              The storage system is operating normally.  No user
+              action is required.
+
+            degraded(3)
+              The storage system is degraded. At least one component
+              of the storage system failed.
+
+            failed(4)
+              The storage system has failed."
+
+    ::= { cpqSsRaidSystemEntry 4 }
+
+    cpqSsRaidSystemCntlr1SerialNumber OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "RAID Storage System Controller 1 Serial Number.
+
+        This is the controller number 1's serial number which is normally
+        display on the front panel.  This can be used for
+        identification purposes."
+
+    ::= { cpqSsRaidSystemEntry 5 }
+
+    cpqSsRaidSystemCntlr2SerialNumber OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..24))
+        ACCESS  read-only
+        STATUS  mandatory
+        DESCRIPTION
+        "RAID Storage System Controller 2 Serial Number.
+
+        This is the controller number 2's serial number which is normally
+        display on the front panel.  This can be used for
+        identification purposes."
+
+    ::= { cpqSsRaidSystemEntry 6 }
+
+
+-- ****************************************************************************
+--   Storage System Trap Definitions
+--   ===============================
+--
+-- The compaq enterprise               (1.3.6.1.4.1.232)
+--
+--  The SNMP trap messages must not be bigger than 484 octets (bytes).
+--
+--  Trap support in an SNMP agent implementation is optional.  An SNMP
+--  agent implementation may support all, some, or none of the traps.
+--  If traps are supported, The user should be provided with the option of
+--  disabling traps.
+--
+-- **************************************************************************
+
+    cpqSsFanStatusChange TRAP-TYPE
+        ENTERPRISE cpqSsStorageSys
+        VARIABLES  { cpqSsBoxFanStatus }
+        DESCRIPTION
+           "Storage System fan status change.
+
+            The agent has detected a change in the Fan Status of a storage
+            system.  The variable cpqSsBoxFanStatus indicates the current
+            fan status."
+
+              --#TYPE "Fan Status Change (1)"
+              --#SUMMARY "Storage System fan status changed to %d."
+              --#ARGUMENTS {0}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 1
+
+    cpqSs2FanStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { cpqSsBoxFanStatus }
+        DESCRIPTION
+           "Storage System fan status change.
+
+            The agent has detected a change in the Fan Status of a storage
+            system.  The variable cpqSsBoxFanStatus indicates the current
+            fan status."
+
+              --#TYPE "Fan Status Change (8001)"
+              --#SUMMARY "Storage System fan status changed to %d."
+              --#ARGUMENTS {0}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 8001
+
+    cpqSsTempFailed TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { cpqSsBoxTempStatus }
+        DESCRIPTION
+           "Storage System temperature failure.
+
+            The agent has detected that a temperature status has been set
+            to failed.  The storage system will be shutdown."
+
+              --#TYPE "Storage System Temperature Failure (8002)"
+              --#SUMMARY "Storage System will be shutdown."
+              --#ARGUMENTS {}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#STATE   NONOPERATIONAL
+
+        ::= 8002
+
+    cpqSsTempDegraded TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { cpqSsBoxTempStatus }
+        DESCRIPTION
+           "Storage System temperature degraded.
+
+            The agent has detected a temperature status that has been set to
+            degraded.  The storage system's temperature is outside of the
+            normal operating range."
+
+              --#TYPE "Storage System Temp Degraded (8003)"
+              --#SUMMARY "Temp is outside of normal range."
+              --#ARGUMENTS {}
+              --#SEVERITY MAJOR
+              --#TIMEINDEX 99
+              --#STATE   DEGRADED
+
+        ::= 8003
+
+    cpqSsTempOk TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { cpqSsBoxTempStatus }
+        DESCRIPTION
+           "Storage System temperature ok.
+
+            The temperature status has been set to OK.  The storage
+            system's temperature has returned to normal operating range.
+            It may be reactivated by the administrator."
+
+              --#TYPE "Storage System Temp OK (8004)"
+              --#SUMMARY "Storage System temperature ok."
+              --#ARGUMENTS {}
+              --#SEVERITY INFORMATIONAL
+              --#TIMEINDEX 99
+              --#STATE OPERATIONAL
+
+        ::= 8004
+
+    cpqSsSidePanelInPlace TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { cpqSsBoxSidePanelStatus }
+        DESCRIPTION
+           "Storage System side panel is in place.
+
+            The side panel status has been set to in place.  The storage
+            system's side panel has returned to a properly installed state."
+
+              --#TYPE "Storage System side panel is in place (8005)"
+              --#SUMMARY "Side panel is re-installed on unit."
+              --#ARGUMENTS {}
+              --#SEVERITY INFORMATIONAL
+              --#TIMEINDEX 99
+              --#STATE OPERATIONAL
+
+        ::= 8005
+
+
+    cpqSsSidePanelRemoved TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { cpqSsBoxSidePanelStatus }
+        DESCRIPTION
+           "Storage System side panel is removed.
+
+            The side panel status has been set to removed.  The storage
+            system's side panel is not in a properly installed state. This
+            situation may result in improper cooling of the drives in the
+            storage system due to air flow changes caused by the missing
+            side panel."
+
+              --#TYPE "Storage System side panel is removed (8006)"
+              --#SUMMARY "Side panel is removed from unit."
+              --#ARGUMENTS {}
+              --#SEVERITY MAJOR
+              --#TIMEINDEX 99
+              --#STATE DEGRADED
+
+        ::= 8006
+
+    cpqSsPwrSupplyDegraded TRAP-TYPE
+        ENTERPRISE compaq
+        DESCRIPTION
+            "A storage system power supply status has been set to degraded."
+
+        --#TYPE "Power Supply Degraded (8007)"
+        --#SUMMARY "A storage system power supply unit has become degraded"
+        --#ARGUMENTS {}
+        --#SEVERITY CRITICAL
+        --#TIMEINDEX 99
+        --#STATE   DEGRADED
+
+        ::= 8007
+
+
+    cpqSs3FanStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxFanStatus }
+        DESCRIPTION
+           "Storage System fan status change.
+
+            The agent has detected a change in the Fan Status of a storage
+            system.  The variable cpqSsBoxFanStatus indicates the current
+            fan status.
+
+            User Action: If the fan status is degraded or failed, replace
+            any failed fans."
+
+              --#TYPE "Fan Status Change (8008)"
+              --#SUMMARY "Storage System fan status changed to %d."
+              --#ARGUMENTS {2}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 8008
+
+    cpqSs3TempFailed TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxTempStatus }
+        DESCRIPTION
+           "Storage System temperature failure.
+
+            The agent has detected that a temperature status has been set to
+            failed.  The storage system will be shutdown.
+
+            User Action: Shutdown the storage system as soon as possible.
+            Insure that the storage system environment is being cooled
+            properly and that no components are overheated."
+
+              --#TYPE "Storage System Temperature Failure (8009)"
+              --#SUMMARY "Storage System will be shutdown."
+              --#ARGUMENTS {}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#STATE   NONOPERATIONAL
+
+        ::= 8009
+
+    cpqSs3TempDegraded TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxTempStatus }
+        DESCRIPTION
+           "Storage System temperature degraded.
+
+            The agent has detected a temperature status that has been set to
+            degraded.  The storage system's temperature is outside of the
+            normal operating range.
+
+            User Action: Shutdown the storage system as soon as possible.
+            Insure that the storage system environment is being cooled
+            properly and that no components are overheated."
+
+              --#TYPE "Storage System Temp Degraded (8010)"
+              --#SUMMARY "Temp is outside of normal range."
+              --#ARGUMENTS {}
+              --#SEVERITY MAJOR
+              --#TIMEINDEX 99
+              --#STATE   DEGRADED
+
+        ::= 8010
+
+    cpqSs3TempOk TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxTempStatus }
+        DESCRIPTION
+           "Storage System temperature ok.
+
+            The temperature status has been set to OK.  The storage
+            system's temperature has returned to normal operating range.
+            It may be reactivated by the administrator.
+
+            User Action: None."
+
+              --#TYPE "Storage System Temp OK (8011)"
+              --#SUMMARY "Storage System temperature ok."
+              --#ARGUMENTS {}
+              --#SEVERITY INFORMATIONAL
+              --#TIMEINDEX 99
+              --#STATE OPERATIONAL
+
+        ::= 8011
+
+    cpqSs3SidePanelInPlace TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxSidePanelStatus }
+        DESCRIPTION
+           "Storage System side panel is in place.
+
+            The side panel status has been set to in place.  The storage
+            system's side panel has returned to a properly installed state.
+
+            User Action: None."
+
+              --#TYPE "Storage System side panel is in place (8012)"
+              --#SUMMARY "Side panel is re-installed on unit."
+              --#ARGUMENTS {}
+              --#SEVERITY INFORMATIONAL
+              --#TIMEINDEX 99
+              --#STATE OPERATIONAL
+
+        ::= 8012
+
+
+    cpqSs3SidePanelRemoved TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxSidePanelStatus }
+        DESCRIPTION
+           "Storage System side panel is removed.
+
+            The side panel status has been set to removed.  The storage
+            system's side panel is not in a properly installed state. This
+            situation may result in improper cooling of the drives in the
+            storage system due to air flow changes caused by the missing
+            side panel.
+
+            User Action: Replace the storage system side panel."
+
+              --#TYPE "Storage System side panel is removed (8013)"
+              --#SUMMARY "Side panel is removed from unit."
+              --#ARGUMENTS {}
+              --#SEVERITY MAJOR
+              --#TIMEINDEX 99
+              --#STATE DEGRADED
+
+        ::= 8013
+
+    cpqSs3PwrSupplyDegraded TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags }
+        DESCRIPTION
+            "A storage system power supply status has been set to degraded."
+
+        --#TYPE "Power Supply Degraded (8014)"
+        --#SUMMARY "A storage system power supply unit has become degraded"
+        --#ARGUMENTS {}
+        --#SEVERITY CRITICAL
+        --#TIMEINDEX 99
+        --#STATE   DEGRADED
+        ::= 8014
+
+    cpqSs4PwrSupplyDegraded TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxFltTolPwrSupplyStatus }
+        DESCRIPTION
+            "A storage system power supply status has been set to degraded.
+
+            User Action: Take action to restore power or replace any failed
+            storage system power supply."
+
+        --#TYPE "Power Supply Degraded (8015)"
+        --#SUMMARY "A storage system power supply unit has become degraded"
+        --#ARGUMENTS {}
+        --#SEVERITY CRITICAL
+        --#TIMEINDEX 99
+        --#STATE   DEGRADED
+
+        ::= 8015
+
+
+    cpqSsExFanStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsFanModuleLocation,
+                     cpqSsFanModuleStatus }
+        DESCRIPTION
+           "Storage system fan status change.
+
+            The agent has detected a change in the Fan Module Status of a
+            storage system.  The variable cpqSsFanModuleStatus indicates the
+            current fan status.
+
+            User Action: If the fan status is degraded or failed, replace
+            any failed fans."
+
+              --#TYPE "Fan Status Change (8016)"
+              --#SUMMARY "Storage system fan status changed to %d."
+              --#ARGUMENTS {5}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 8016
+
+    cpqSsExPowerSupplyStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsPowerSupplyBay,
+                     cpqSsPowerSupplyStatus }
+        DESCRIPTION
+           "Storage system power supply status change.
+
+            The agent has detected a change in the power supply status of a
+            storage system.  The variable cpqSsPowerSupplyStatus indicates
+            the current status.
+
+            User Action: If the power supply status is failed, take action to
+            restore power or replace the failed power supply."
+
+              --#TYPE "Power Supply Status Change (8017)"
+              --#SUMMARY "Storage system power supply status changed to %d."
+              --#ARGUMENTS {5}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 8017
+
+    cpqSsExPowerSupplyUpsStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsPowerSupplyBay,
+                     cpqSsPowerSupplyUpsStatus }
+        DESCRIPTION
+           "Storage system power supply UPS status change.
+
+            The agent has detected a change status of a UPS attached to a
+            storage system power supply.  The variable
+            cpqSsPowerSupplyUpsStatus indicates the current status.
+
+            User Action: If the UPS status is powerFailed(4) or batteryLow(5),
+            take action to restore power to the UPS."
+
+              --#TYPE "Power Supply UPS Status Change (8018)"
+              --#SUMMARY "Storage system power supply UPS status changed to %d."
+              --#ARGUMENTS {5}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 8018
+
+    cpqSsExTempSensorStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsTempSensorLocation,
+                     cpqSsTempSensorStatus, cpqSsTempSensorCurrentValue }
+        DESCRIPTION
+           "Storage system temperature sensor status change.
+
+            The agent has detected a change in the status of a storage
+            system temperature sensor.  The variable cpqSsTempSensorStatus
+            indicates the current status.
+
+            User Action: If the temperature status is degraded or failed,
+            shutdown the storage system as soon as possible.  Insure that
+            the storage system environment is being cooled properly and that
+            no components are overheated."
+
+              --#TYPE "Temperature Sensor Status Change (8019)"
+              --#SUMMARY "Storage system temperature sensor status changed to %d."
+              --#ARGUMENTS {5}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8019
+
+    cpqSsEx2FanStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsFanModuleLocation,
+                     cpqSsFanModuleStatus, cpqSsFanModuleSerialNumber,
+                     cpqSsFanModuleBoardRevision }
+        DESCRIPTION
+           "Storage system fan status change.
+
+            The agent has detected a change in the fan module status of a
+            storage system.  The variable cpqSsFanModuleStatus indicates the
+            current fan status.
+
+            User Action: If the fan status is degraded or failed, replace
+            any failed fans."
+
+              --#TYPE "Fan Status Change (8020)"
+              --#SUMMARY "Storage system fan status changed to %d."
+              --#ARGUMENTS {5}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8020
+
+    cpqSsEx2PowerSupplyStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsPowerSupplyBay,
+                     cpqSsPowerSupplyStatus, cpqSsPowerSupplySerialNumber,
+                     cpqSsPowerSupplyBoardRevision,
+                     cpqSsPowerSupplyFirmwareRevision }
+        DESCRIPTION
+           "Storage system power supply status change.
+
+            The agent has detected a change in the power supply status of a
+            storage system.  The variable cpqSsPowerSupplyStatus indicates
+            the current status.
+
+            User Action: If the power supply status is failed, take action to
+            restore power or replace the failed power supply."
+
+              --#TYPE "Power Supply Status Change (8021)"
+              --#SUMMARY "Storage system power supply status changed to %d."
+              --#ARGUMENTS {5}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8021
+
+    cpqSsExBackplaneFanStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsBackplaneIndex,
+                     cpqSsBackplaneVendor, cpqSsBackplaneModel,
+                     cpqSsBackplaneSerialNumber, cpqSsBackplaneFanStatus }
+        DESCRIPTION
+           "Storage system fan status change.
+
+            The agent has detected a change in the fan status of a storage
+            system.  The variable cpqSsBackplaneFanStatus indicates the
+            current fan status.
+
+            User Action: If the fan status is degraded or failed, replace
+            any failed fans."
+
+              --#TYPE "Storage System Fan Status Change (8022)"
+              --#SUMMARY "Storage system fan status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8022
+
+    cpqSsExBackplaneTempStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsBackplaneIndex,
+                     cpqSsBackplaneVendor, cpqSsBackplaneModel,
+                     cpqSsBackplaneSerialNumber, cpqSsBackplaneTempStatus }
+        DESCRIPTION
+           "Storage system temperature status change.
+
+            The agent has detected a change in the status of the temperature
+            in a storage system.  The variable cpqSsBackplaneTempStatus
+            indicates the current status.
+
+            User Action: If the temperature status is degraded or failed,
+            shutdown the storage system as soon as possible.  Insure that
+            the storage system environment is being cooled properly and that
+            no components are overheated."
+
+              --#TYPE "Storage System Temperature Status Change (8023)"
+              --#SUMMARY "Storage system temperature status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8023
+
+    cpqSsExBackplanePowerSupplyStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime, cpqSsBackplaneIndex,
+                     cpqSsBackplaneVendor, cpqSsBackplaneModel,
+                     cpqSsBackplaneSerialNumber, cpqSsBackplaneFtpsStatus }
+        DESCRIPTION
+           "Storage system power supply status change.
+
+            The agent has detected a change in the power supply status of a
+            storage system.  The variable cpqSsBackplaneFtpsStatus indicates
+            the current status.
+
+            User Action: If the power supply status is degraded, take action to
+            restore power or replace the failed power supply."
+
+              --#TYPE "Power Supply Status Change (8024)"
+              --#SUMMARY "Storage system power supply status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8024
+
+    cpqSsExRecoveryServerStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsChassisName,
+                     cpqSsChassisTime,  cpqSsChassisRsoStatus,
+                     cpqSsChassisIndex }
+        DESCRIPTION
+           "Storage system recovery server option status change.
+
+            The agent has detected a change in the recovery server option
+            status of a storage system.  The variable cpqSsChassisRsoStatus
+            indicates the current status.
+
+            User Action: If the RSO status is noSecondary(6) or linkDown(7),
+            insure the secondary server is operational and all cables are
+            connected properly.  If the RSO status is secondaryRunningAuto(8)
+            or secondaryRunningUser(9), examine the the primary server for
+            failed components."
+
+              --#TYPE "Recovery Server Option Status Change (8025)"
+              --#SUMMARY "Storage system recovery server option status changed to %d."
+              --#ARGUMENTS {4}
+              --#SEVERITY MAJOR
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8025
+
+    cpqSs5FanStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxCntlrHwLocation,
+                     cpqSsBoxCntlrIndex, cpqSsBoxBusIndex, cpqSsBoxVendor,
+                     cpqSsBoxModel, cpqSsBoxSerialNumber, cpqSsBoxFanStatus }
+        DESCRIPTION
+           "Storage System fan status change.
+
+            The agent has detected a change in the Fan Status of a storage
+            system.  The variable cpqSsBoxFanStatus indicates the current
+            fan status.
+
+            User Action: If the fan status is degraded or failed, replace
+            any failed fans."
+
+              --#TYPE "Fan Status Change (8026)"
+              --#SUMMARY "Storage System fan status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 8026
+
+    cpqSs5TempStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxCntlrHwLocation,
+                     cpqSsBoxCntlrIndex, cpqSsBoxBusIndex, cpqSsBoxVendor,
+                     cpqSsBoxModel, cpqSsBoxSerialNumber, cpqSsBoxTempStatus }
+        DESCRIPTION
+           "Storage System temperature status change.
+
+            The agent has detected a change in the temperature status of a
+            storage system.  The variable cpqSsBoxTempStatus indicates the
+            current temperature status.
+
+            User Action: If the temperature status is degraded or failed,
+            shutdown the storage system as soon as possible.  Insure that
+            the storage system environment is being cooled properly and that
+            no components are overheated."
+
+              --#TYPE "Temperature Status Change (8027)"
+              --#SUMMARY "Storage System temperature status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 8027
+
+    cpqSs5PwrSupplyStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxCntlrHwLocation,
+                     cpqSsBoxCntlrIndex, cpqSsBoxBusIndex, cpqSsBoxVendor,
+                     cpqSsBoxModel, cpqSsBoxSerialNumber,
+                     cpqSsBoxFltTolPwrSupplyStatus }
+        DESCRIPTION
+            "Storage system power supply status change.
+
+            The agent has detected a change in the power supply status of a
+            storage system.  The variable cpqSsBoxFltTolPwrSupplyStatus
+            indicates the current power supply status.
+
+            User Action: If the power supply status is degraded, take action
+            to restore power or replace the failed power supply."
+
+              --#TYPE "Power Supply Status Change (8028)"
+              --#SUMMARY "Storage system power supply status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+
+        ::= 8028
+
+    cpqSs6FanStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxCntlrHwLocation,
+                     cpqSsBoxCntlrIndex, cpqSsBoxBusIndex, cpqSsBoxVendor,
+                     cpqSsBoxModel, cpqSsBoxSerialNumber,
+                     cpqSsBoxFanStatus, cpqSsBoxLocationString }
+        DESCRIPTION
+           "Storage System fan status change.
+
+            The agent has detected a change in the Fan Status of a storage
+            system.  The variable cpqSsBoxFanStatus indicates the current
+            fan status.
+
+            User Action: If the fan status is degraded or failed, replace
+            any failed fans."
+
+              --#TYPE "Fan Status Change (8029)"
+              --#SUMMARY "Storage System fan status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8029
+
+    cpqSs6TempStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxCntlrHwLocation,
+                     cpqSsBoxCntlrIndex, cpqSsBoxBusIndex, cpqSsBoxVendor,
+                     cpqSsBoxModel, cpqSsBoxSerialNumber,
+                     cpqSsBoxTempStatus, cpqSsBoxLocationString }
+        DESCRIPTION
+           "Storage System temperature status change.
+
+            The agent has detected a change in the temperature status of a
+            storage system.  The variable cpqSsBoxTempStatus indicates the
+            current temperature status.
+
+            User Action: If the temperature status is degraded or failed,
+            shutdown the storage system as soon as possible.  Insure that
+            the storage system environment is being cooled properly and that
+            no components are overheated."
+
+              --#TYPE "Temperature Status Change (8030)"
+              --#SUMMARY "Storage System temperature status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8030
+
+    cpqSs6PwrSupplyStatusChange TRAP-TYPE
+        ENTERPRISE compaq
+        VARIABLES  { sysName, cpqHoTrapFlags, cpqSsBoxCntlrHwLocation,
+                     cpqSsBoxCntlrIndex, cpqSsBoxBusIndex, cpqSsBoxVendor,
+                     cpqSsBoxModel, cpqSsBoxSerialNumber,
+                     cpqSsBoxFltTolPwrSupplyStatus, cpqSsBoxLocationString }
+        DESCRIPTION
+            "Storage system power supply status change.
+
+            The agent has detected a change in the power supply status of a
+            storage system.  The variable cpqSsBoxFltTolPwrSupplyStatus
+            indicates the current power supply status.
+
+            User Action: If the power supply status is degraded, take action
+            to restore power or replace the failed power supply."
+
+              --#TYPE "Power Supply Status Change (8031)"
+              --#SUMMARY "Storage system power supply status changed to %d."
+              --#ARGUMENTS {8}
+              --#SEVERITY CRITICAL
+              --#TIMEINDEX 99
+              --#VARBINDSEVERITY 2
+
+        ::= 8031
+
+END

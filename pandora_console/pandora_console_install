@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Pandora FMS Console Installer (c) 2008-2015 Artica ST
+# Pandora FMS Console Installer (c) 2008-2023 Pandora FMS
 # Linux/FreeBSD/NetBSD Version (generic), for SuSe, Debian/Ubuntu,
 # RHEL/CentOS, Fedora, FreeBSD and NetBSD only
 # other Linux distros could not work properly without modifications
@@ -9,7 +9,7 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.771"
+PI_VERSION="7.0NG.772"
 FORCE=0
 DESTDIR=""
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`

@@ -1610,7 +1610,7 @@ require 'include/php_to_js_values.php';
 
                     $(".ui-widget-overlay").css("background", "#000");
                     $(".ui-widget-overlay").css("opacity", 0.6);
-                    $(".ui-draggable").css("cursor", "inherit");
+                    //$(".ui-draggable").css("cursor", "inherit");
 
                 } catch (error) {
                     console.log(error);

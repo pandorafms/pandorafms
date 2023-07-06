@@ -2304,7 +2304,7 @@ div#main_pure {
   position: static;
 }
 
-.ui-draggable {
+.ui-draggable-handle {
   cursor: move;
 }
 

@@ -2661,7 +2661,7 @@ if (check_acl(
         'submit_event_response',
         false,
         'execute_event_response(true);',
-        [ 'icon' => 'cog' ],
+        [ 'icon' => 'cog'],
         true
     );
 
@@ -2675,6 +2675,43 @@ if (check_acl(
         true,
         false,
         false
+    );
+
+    // Acoustic console.
+    $data_sound = base64_encode(
+        json_encode(
+            [
+                'title'        => __('Acoustic console'),
+                'start'        => __('Start'),
+                'stop'         => __('Stop'),
+                'noAlert'      => __('No alert'),
+                'silenceAlarm' => __('Silence alarm'),
+                'url'          => ui_get_full_url('ajax.php'),
+                'page'         => 'include/ajax/events',
+                'urlSound'     => 'include/sounds/',
+            ]
+        )
+    );
+
+    $elements .= html_print_button(
+        __('Sound Events'),
+        'sound_events_button',
+        false,
+        'openSoundEventsDialog("'.$data_sound.'")',
+        [
+            'icon'  => 'sound',
+            'style' => 'margin-right: 25% !important',
+        ],
+        true
+    );
+
+    $elements .= html_print_button(
+        'hidden',
+        'sound_events_button_hidden',
+        false,
+        'openSoundEventModal("'.$data_sound.'")',
+        ['style' => 'display:none'],
+        true
     );
 
     html_print_action_buttons(

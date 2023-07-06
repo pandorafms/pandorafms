@@ -55,7 +55,7 @@ function show_event_dialog(event, dialog_page) {
           title: event.evento,
           resizable: true,
           draggable: true,
-          modal: true,
+          modal: false,
           minWidth: 875,
           minHeight: 600,
           close: function() {
@@ -943,6 +943,105 @@ function process_buffers(buffers) {
   }
 }
 
+function openSoundEventsDialog(settings) {
+  settings = JSON.parse(atob(settings));
+
+  // Check modal exists and is open.
+  if (
+    $("#modal-sound").hasClass("ui-dialog-content") &&
+    $("#modal-sound").dialog("isOpen")
+  ) {
+    return;
+  }
+  // Initialize modal.
+  $("#modal-sound")
+    .empty()
+    .dialog({
+      title: settings.title,
+      resizable: false,
+      modal: false,
+      width: 600,
+      height: 600,
+      open: function() {
+        $.ajax({
+          method: "post",
+          url: settings.url,
+          data: {
+            page: settings.page,
+            drawConsoleSound: 1
+          },
+          dataType: "html",
+          success: function(data) {
+            $("#modal-sound").append(data);
+            $("#tabs-sound-modal").tabs({
+              disabled: [1]
+            });
+
+            // Test sound.
+            $("#button-melody_sound").click(function() {
+              var sound = false;
+              if ($("#id_sound_event").length == 0) {
+                sound = true;
+              }
+
+              test_sound_button(sound, settings.urlSound);
+            });
+
+            // Play Stop.
+            $("#button-start-search").click(function() {
+              var mode = $("#hidden-mode_alert").val();
+              var action = false;
+              if (mode == 0) {
+                action = true;
+              }
+
+              action_events_sound(action, settings);
+            });
+
+            // Silence Alert.
+            $("#button-no-alerts").click(function() {
+              if ($("#button-no-alerts").hasClass("silence-alerts") === true) {
+                // Remove audio.
+                remove_audio();
+
+                // Clean events.
+                $("#tabs-sound-modal .elements-discovered-alerts ul").empty();
+                $("#tabs-sound-modal .empty-discovered-alerts").removeClass(
+                  "invisible_important"
+                );
+
+                // Clean progress.
+                $("#progressbar_time").empty();
+
+                // Change img button.
+                $("#button-no-alerts")
+                  .removeClass("silence-alerts")
+                  .addClass("alerts");
+                // Change value button.
+                $("#button-no-alerts").val(settings.noAlert);
+                $("#button-no-alerts > span").text(settings.noAlert);
+
+                // Background button.
+                $(".container-button-alert").removeClass("fired");
+
+                // New progress.
+                listen_event_sound(settings);
+              }
+            });
+          },
+          error: function(error) {
+            console.error(error);
+          }
+        });
+      },
+      close: function() {
+        remove_audio();
+        $(this).dialog("destroy");
+      }
+    })
+    .show();
+}
+
 function openSoundEventModal(settings) {
   if ($("#hidden-metaconsole_activated").val() === "1") {
     var win = open(
@@ -1045,10 +1144,12 @@ function add_audio(urlSound) {
       sound +
       "' autoplay='true' hidden='true' loop='false'>"
   );
+  $("#button-sound_events_button").addClass("animation-blink");
 }
 
 function remove_audio() {
   $(".actions-sound-modal audio").remove();
+  $("#button-sound_events_button").removeClass("animation-blink");
 }
 
 function listen_event_sound(settings) {
@@ -1229,3 +1330,230 @@ function removeElement(name_select, id_modal) {
       .append(option);
   });
 }
+/*
+#############################################################################
+##
+## + Compacts the Modal Sound Dialog to a tiny toolbar
+## + Dynamically adds a button which can reduce/reapply the dialog size
+## + If alarm gets raised & minimized, the dialog window maximizes and the toolbar flashes red for 10 seconds. 
+## - Works fine until a link/action gets clicked. The Toolbar shifts to the bottom of the Modal-Sound Dialog.
+##
+#############################################################################
+*/
+
+$(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
+  const requestBody = ajaxOptions.data;
+  if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+    console.log("AJAX request sent with drawConsoleSound=1:", ajaxOptions.url);
+
+    // Find the dialog element by the aria-describedby attribute
+    var dialog = $('[aria-describedby="modal-sound"]');
+
+    // Select the close button within the dialog
+    var closeButton = dialog.find(".ui-dialog-titlebar-close");
+
+    // Add the minimize button before the close button
+    var minimizeButton = $("<button>", {
+      class:
+        "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize",
+      type: "button",
+      title: "Minimize",
+      style: "float: right;margin-right: 1.5em;"
+    }).insertBefore(closeButton);
+
+    // Add the minimize icon to the minimize button
+    $("<span>", {
+      class: "ui-button-icon ui-icon ui-icon-minusthick",
+      style: "background-color: #fff;"
+    }).appendTo(minimizeButton);
+
+    $("<span>", {
+      class: "ui-button-icon-space"
+    })
+      .html(" ")
+      .appendTo(minimizeButton);
+
+    // Add the disengage button before the minimize button
+    var disengageButton = $("<button>", {
+      class:
+        "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage",
+      type: "button",
+      title: "Disengage",
+      style: "float: right;margin-right: 3.2em;"
+    }).insertBefore(minimizeButton);
+
+    // Add the disengage icon to the disengage button
+    $("<span>", {
+      class: "ui-button-icon ui-icon ui-icon-circle-triangle-n",
+      style: "background-color: #fff;"
+    }).appendTo(disengageButton);
+
+    $("<span>", {
+      class: "ui-button-icon-space"
+    })
+      .html(" ")
+      .appendTo(disengageButton);
+
+    // Define the minimize button functionality
+    minimizeButton.click(function(e) {
+      if (!dialog.data("isMinimized")) {
+        $(".ui-widget-overlay").hide();
+        console.log("Minimize Window");
+        dialog.data("originalPos", dialog.position());
+        dialog.data("originalSize", {
+          width: dialog.width(),
+          height: dialog.height()
+        });
+        dialog.data("isMinimized", true);
+
+        dialog.animate(
+          {
+            height: "40px",
+            top: 0,
+            top: $(window).height() - 50
+          },
+          200
+        );
+        dialog.css({ height: "" });
+
+        dialog.find(".ui-dialog-content").hide();
+      } else {
+        console.log("Restore Window");
+        $(".ui-widget-overlay").show();
+        dialog.find(".ui-dialog-content").show();
+        dialog.data("isMinimized", false);
+        dialog.animate(
+          {
+            height: dialog.data("originalSize").height + "px",
+            top: dialog.data("originalPos").top + "px"
+          },
+          200
+        );
+      }
+    });
+
+    disengageButton.click(function() {
+      $(".ui-dialog-titlebar-close").trigger("click");
+      $("#button-sound_events_button_hidden").trigger("click");
+    });
+
+    // Listener to check if the dialog content contains <li> elements
+    var dialogContent = dialog.find(".ui-dialog-content");
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        var addedNodes = mutation.addedNodes;
+        for (var i = 0; i < addedNodes.length; i++) {
+          if (addedNodes[i].nodeName.toLowerCase() === "li") {
+            console.log("The dialog content contains an <li> tag.");
+            if (dialog.data("isMinimized")) {
+              console.log("Restore Window");
+              $(".ui-widget-overlay").show();
+              dialog.data("isMinimized", false);
+              dialog.animate(
+                {
+                  height: dialog.data("originalSize").height + "px",
+                  top: dialog.data("originalPos").top + "px"
+                },
+                200
+              );
+            }
+
+            var $el = $('[aria-describedby="modal-sound"]').find(
+              ".ui-dialog-title"
+            );
+            var flashingDuration = 10000; // 10 seconds
+
+            $("<style>")
+              .text(
+                `
+              @keyframes flashRed {
+                from { background-color: initial; }
+                to { background-color: red; }
+              }
+              .red-flash { animation: flashRed 0.5s alternate infinite; }
+            `
+              )
+              .appendTo("head");
+
+            $el.addClass("red-flash");
+
+            setTimeout(() => {
+              $el.removeClass("red-flash");
+              $("style")
+                .last()
+                .remove();
+            }, flashingDuration);
+            break;
+          }
+        }
+      });
+    });
+
+    // Configure and start observing the dialog content for changes
+    var config = { childList: true, subtree: true };
+    observer.observe(dialogContent[0], config);
+  }
+});
+
+/*
+#############################################################################
+##
+## + Compacts the Modal Sound Dialog popup and removes the widget-overlay 
+##
+##
+#############################################################################
+*/
+$(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
+  const requestBody = ajaxOptions.data;
+  if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+    console.log("AJAX request sent with drawConsoleSound=1:", ajaxOptions.url);
+
+    // Find the dialog element by the aria-describedby attribute
+    var dialog = $('[aria-describedby="modal-sound"]');
+    dialog.css({
+      // "backgroundColor":"black",
+      // "color":"white"
+    });
+
+    // Set CSS properties for #modal-sound
+    $("#modal-sound").css({
+      height: "auto",
+      margin: "0px"
+    });
+
+    // Set CSS properties for #tabs-sound-modal
+    $("#tabs-sound-modal").css({
+      "margin-top": "0px",
+      padding: "0px",
+      "font-weight": "bolder"
+    });
+
+    // Set CSS properties for #actions-sound-modal
+    $("#actions-sound-modal").css({
+      "margin-bottom": "0px"
+    });
+
+    // Hide the overlay with specific class and z-index
+    $('.ui-widget-overlay.ui-front[style="z-index: 10000;"]').css(
+      "display",
+      "none"
+    );
+
+    // Handle the 'change' event for #modal-sound, simply to compact the size of the img "No alerts discovered"
+    // An image should always have a size assigned!!!
+    $("#modal-sound").on("change", function() {
+      // Find the image within the specific div
+      var image = $(this).find(
+        'img.invert_filter.forced_title[data-title="No alerts discovered"][alt="No alerts discovered"]'
+      );
+
+      // Set the desired width and height
+      var width = 48;
+      var height = 48;
+
+      // Resize the image
+      image.width(width);
+      image.height(height);
+    });
+  }
+});

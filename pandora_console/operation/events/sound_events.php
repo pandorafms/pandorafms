@@ -405,6 +405,7 @@ function add_audio(urlSound) {
 
 function remove_audio() {
     $(".actions-sound-modal audio").remove();
+    buttonBlink();
 }
 
 function listen_event_sound() {
@@ -435,7 +436,6 @@ function check_event_sound() {
                 $("#tabs-sound-modal .empty-discovered-alerts").addClass(
                 "invisible_important"
                 );
-
                 // Change img button.
                 $("#button-no-alerts")
                 .removeClass("alerts")
@@ -446,7 +446,7 @@ function check_event_sound() {
 
                 // Background button.
                 $(".container-button-alert").addClass("fired");
-
+                
                 // Remove audio.
                 remove_audio();
                 var urlSound = '../../include/sounds/'+$('#sound_id :selected').val();

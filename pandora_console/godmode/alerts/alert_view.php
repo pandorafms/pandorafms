@@ -262,7 +262,7 @@ $data[1] = '';
 $table_conditions->data[] = $data;
 
 $data[0] = __('Use special days list');
-$data[1] = (isset($alert['special_day']) && $alert['special_day'] == 1) ? __('Yes') : __('No');
+$data[1] = (isset($template['special_day']) && (int) $template['special_day'] !== 0) ? __('Yes') : __('No');
 $table_conditions->data[] = $data;
 
 $data[0] = __('Time threshold');

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Pandora FMS Embedded Agent Installer (c) 2011 Artica ST
+# Pandora FMS Embedded Agent Installer (c) 2011-2023 Pandora FMS
 # Embedded Version (generic), for Busybox enviroments only
 # Please see http://www.pandorafms.org
 # v4.0 Build 110121

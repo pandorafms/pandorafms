@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# (c) Ártica ST 2014 <info@artica.es>
+# (c) Pandora FMS 2014-2023 <info@pandorafms.com>
 # Module for network topology discovery.
 
 package PandoraFMS::Recon::Base;

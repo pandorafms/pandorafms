@@ -1562,13 +1562,13 @@ function alerts_delete_alert_agent_module_action($id_alert_agent_module_action)
  *
  * @return mixed Actions associated or false if something goes wrong.
  */
-function alerts_get_alert_agent_module_actions($id_alert_agent_module, $fields=false, $server_id=-1)
+function alerts_get_alert_agent_module_actions($id_alert_agent_module, $fields=false, $server_id=-1, $ignore_metaconsole=false)
 {
     if (empty($id_alert_agent_module)) {
         return false;
     }
 
-    if (defined('METACONSOLE')) {
+    if (defined('METACONSOLE') && $ignore_metaconsole === false) {
         $server = db_get_row('tmetaconsole_setup', 'id', $server_id);
 
         if (metaconsole_connect($server) == NOERR) {
@@ -1602,6 +1602,7 @@ function alerts_get_alert_agent_module_actions($id_alert_agent_module, $fields=f
         $action['fires_min'] = $element['fires_min'];
         $action['fires_max'] = $element['fires_max'];
         $action['module_action_threshold'] = $element['module_action_threshold'];
+        $action['original_id'] = $element['id'];
 
         if (isset($element['id'])) {
             $retval[$element['id']] = $action;

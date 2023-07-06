@@ -353,8 +353,7 @@ if ($create_user === true) {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    $values['section'] = $homeScreenValues[$values['section']];
-
+    // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;
         $values['last_pass_change'] = date('Y/m/d H:i:s', get_system_time());
@@ -370,6 +369,9 @@ if ($create_user === true) {
     $values['middlename'] = get_parameter('middlename', 0);
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
+
+    // Previously defined.
+    $values['autorefresh_white_list'] = $autorefresh_white_list;
 
     // eHorus user level conf.
     if ((bool) $config['ehorus_user_level_conf'] === true) {
@@ -645,8 +647,7 @@ if ($update_user) {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    $values['section'] = $homeScreenValues[$values['section']];
-
+    // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true && is_metaconsole() === true) {
         if (users_is_admin() === true) {
             $values['metaconsole_access'] = get_parameter('metaconsole_access');
@@ -1832,7 +1833,6 @@ if (is_metaconsole() === false) {
         });
 
         $("#button-uptbutton").click (function () {
-            console.log('aaaaaaaaaaaaa');
             if($("#autorefresh_list option").length > 0) {
                 $('#autorefresh_list option').prop('selected', true);
             }

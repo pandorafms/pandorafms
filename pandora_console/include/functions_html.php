@@ -768,7 +768,8 @@ function html_print_select(
     $select2_enable=true,
     $select2_multiple_enable=false,
     $select2_multiple_enable_all=false,
-    $form=''
+    $form='',
+    $order=false,
 ) {
     $output = "\n";
 
@@ -803,6 +804,10 @@ function html_print_select(
         } else {
             $attributes .= ' size="10"';
         }
+    }
+
+    if ($multiple === true && $order === true) {
+        $class .= ' order-arrows';
     }
 
     if (!empty($class)) {
@@ -1126,6 +1131,49 @@ function html_print_select(
             }';
         }
 
+        $output .= '</script>';
+    }
+
+    if ($multiple === true && $order === true) {
+        $output .= '<script>';
+        $output .= '
+                    if(typeof draggingOption === "undefined") {
+                        let draggingOption = null;
+                    } else {
+                        draggingOption = null;
+                    }
+                    document.getElementById("'.$id.'").addEventListener("mousedown", e => {
+                    if (e.target.tagName === "OPTION") {
+                        draggingOption = e.target;
+                        document.getElementById("'.$id.'").classList.add("dragging");
+                    }
+                    });
+    
+                    document.getElementById("'.$id.'").addEventListener("mousemove", e => {
+                    if (typeof draggingOption !== "undefined") {
+                        if(draggingOption) {
+                            e.preventDefault();
+                            const targetOption = document.elementFromPoint(e.clientX, e.clientY);
+                            if (targetOption && targetOption.tagName === "OPTION") {
+                            const boundingRect = targetOption.getBoundingClientRect();
+                            if (e.clientY < boundingRect.top + boundingRect.height / 2) {
+                                document.getElementById("'.$id.'").insertBefore(draggingOption, targetOption);
+                            } else {
+                                document.getElementById("'.$id.'").insertBefore(draggingOption, targetOption.nextSibling);
+                            }
+                            }
+                        }
+                    }
+                    });
+    
+                    document.getElementById("'.$id.'").addEventListener("mouseup", e => {
+                    if (typeof draggingOption !== "undefined") {
+                        if(draggingOption) {
+                            document.getElementById("'.$id.'").classList.remove("dragging");
+                            draggingOption = null;
+                        }
+                    }
+                    });';
         $output .= '</script>';
     }
 
@@ -4423,7 +4471,7 @@ function html_print_checkbox_switch_extended(
         $name.($idcounter[$name] ? $idcounter[$name] : '')
     );
 
-    $output = '<label class="p-switch pdd_0px'.$classParent.'">';
+    $output = '<label class="p-switch pdd_0px '.$classParent.'">';
     $output .= '<input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
@@ -4831,7 +4879,12 @@ function html_print_input_file($name, $return=false, $options=false)
                 let inputFilename = document.getElementById("span-'.$name.'");
                 inputElement.addEventListener("change", ()=>{
                     let inputImage = document.querySelector("input[type=file]").files[0];
-                inputFilename.innerText = inputImage.name;
+                    if (inputImage.name.length >= 45) {
+                        let name = inputImage.name.substring(0, 20) + "..." + inputImage.name.substring((inputImage.name.length-17), inputImage.name.length);
+                        inputFilename.innerText = name;
+                    } else {
+                        inputFilename.innerText = inputImage.name;
+                    }
                 });';
     $output .= '</script>';
 
@@ -5523,7 +5576,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['truncate_size']) === true) ? $data['truncate_size'] : false),
                 ((isset($data['select2_enable']) === true) ? $data['select2_enable'] : true),
                 ((isset($data['select2_multiple_enable']) === true) ? $data['select2_multiple_enable'] : false),
-                ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false)
+                ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false),
+                ((isset($data['form']) === true) ? $data['form'] : ''),
+                ((isset($data['order']) === true) ? $data['order'] : false)
             );
         break;
 
@@ -6035,6 +6090,94 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             // 'module-multiple-text',
             // json_encode($agents_select)
             // );
+        break;
+
+        case 'select_add_elements':
+            if (empty($data['selected']) === false) {
+                foreach ($data['selected'] as $key => $value) {
+                     unset($data['fields'][$key]);
+                }
+            }
+
+            $output .= '<div>';
+            $output .= html_print_select(
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                $data['name'],
+                '',
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : ''),
+                ((isset($data['select_all']) === true) ? $data['select_all'] : false),
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['truncate_size']) === true) ? $data['truncate_size'] : false),
+                ((isset($data['select2_enable']) === true) ? $data['select2_enable'] : true),
+                ((isset($data['select2_multiple_enable']) === true) ? $data['select2_multiple_enable'] : false),
+                ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false),
+                ((isset($data['form']) === true) ? $data['form'] : ''),
+                ((isset($data['order']) === true) ? $data['order'] : false)
+            );
+            $output .= '<div class="flex justify-content-between mrgn_top_5px">';
+            $output .= html_print_button(
+                __('Add'),
+                'add_column',
+                false,
+                'addElement("'.$data['name'].'", "modal_'.$data['name'].'")',
+                [
+                    'style' => 'max-width: fit-content; min-width: auto; height: 30px; border: 0px;',
+                    'class' => 'sub',
+                    'icon'  => 'plus',
+                ],
+                true,
+                false,
+                false,
+                ''
+            );
+            $output .= html_print_button(
+                __('Remove'),
+                'remove_column',
+                false,
+                'removeElement("'.$data['name'].'", "modal_'.$data['name'].'")',
+                [
+                    'style' => 'max-width: fit-content; min-width: auto; height: 30px; border: 0px;',
+                    'class' => 'sub',
+                    'icon'  => 'delete',
+                ],
+                true,
+                false,
+                false,
+                ''
+            );
+            $output .= '<div id="modal_'.$data['name'].'" class="modal-select-add-elements" style="display: none;">';
+            $output .= html_print_select(
+                $data['fields'],
+                $data['name'].'_select_modal',
+                '',
+                '',
+                '',
+                0,
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width: 80%'
+            );
+            $output .= '</div>';
+            $output .= '</div>';
+            $output .= '</div>';
+            ?>
+            <?php
         break;
 
         default:

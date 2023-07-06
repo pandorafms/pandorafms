@@ -226,29 +226,47 @@ if ($read_message) {
 }
 
 if ($send_mes === true) {
-    if (empty($dst_user) === true && empty($dst_group) === true) {
+    if (empty($dst_user) === true && empty($dst_group) === true && $dst_group !== '0') {
         // The user or group must be selected for send the message.
         ui_print_error_message(__('User or group must be selected.'));
     } else {
-        // Create message (destination user).
-        $return = messages_create_message(
-            $config['id_user'],
-            [$dst_user],
-            [],
-            $subject,
-            $message
-        );
+        if (empty($dst_user) === true) {
+            // Create message (destination user).
+            $return = messages_create_message(
+                $config['id_user'],
+                [],
+                [$dst_group],
+                $subject,
+                $message
+            );
 
-        $user_name = get_user_fullname($dst_user);
-        if (empty($user_name) === true) {
-            $user_name = $dst_user;
+            ui_print_result_message(
+                $return,
+                __('Message successfully sent to users'),
+                __('Error sending message to users')
+            );
+        } else {
+            // Create message (destination user).
+            $return = messages_create_message(
+                $config['id_user'],
+                [$dst_user],
+                [],
+                $subject,
+                $message
+            );
+
+            $user_name = get_user_fullname($dst_user);
+            if (empty($user_name) === true) {
+                $user_name = $dst_user;
+            }
+
+            ui_print_result_message(
+                $return,
+                __('Message successfully sent to user %s', $user_name),
+                __('Error sending message to user %s', $user_name)
+            );
         }
 
-        ui_print_result_message(
-            $return,
-            __('Message successfully sent to user %s', $user_name),
-            __('Error sending message to user %s', $user_name)
-        );
 
         // If is a reply, is not necessary do more.
         if ($replied === true) {

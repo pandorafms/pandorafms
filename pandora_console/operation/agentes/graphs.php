@@ -176,7 +176,7 @@ foreach ($modules_boolean as $i => $m) {
 
 
 $list_modules = ($modules_networkmap_no_proc + $modules_others + $modules_boolean);
-sort($list_modules);
+asort($list_modules);
 // ----------------------------------------------------------------------
 if (empty($modules)) {
     // Selected the first 6 modules.

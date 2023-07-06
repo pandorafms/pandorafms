@@ -316,6 +316,8 @@ if (count($actions) == 1 && isset($actions[0])) {
         ['class' => 'invert_filter']
     );
 } else {
+    $table->head[1] = __('Every time that the alert is fired');
+    $table->head[2] = __('Threshold');
     foreach ($actions as $kaction => $action) {
         $table->data[$kaction][0] = $action['name'];
         if ((int) $kaction === 0) {
@@ -327,13 +329,13 @@ if (count($actions) == 1 && isset($actions[0])) {
 
         foreach ($action['escalation'] as $k => $v) {
             if ($v > 0) {
-                $table->data[$kaction][$k] .= html_print_image(
+                $table->data[$kaction][2] .= html_print_image(
                     'images/tick.png',
                     true,
                     ['class' => 'invert_filter']
                 );
             } else {
-                $table->data[$kaction][$k] = html_print_image(
+                $table->data[$kaction][2] = html_print_image(
                     'images/blade.png',
                     true
                 );
@@ -364,7 +366,7 @@ if (count($actions) == 1 && isset($actions[0])) {
             }
         }
 
-        $table->head[($kaction + 1)] = '#'.($kaction);
+        // $table->head[($kaction + 1)] = ''.($kaction);
         if (count($action['escalation']) === 0) {
             $table->data[$kaction][($kaction + 2)] = html_print_image(
                 'images/blade.png',
@@ -375,16 +377,16 @@ if (count($actions) == 1 && isset($actions[0])) {
         $action_threshold = ($action['module_action_threshold'] > 0) ? $action['module_action_threshold'] : $action['action_threshold'];
 
         if ($action_threshold == 0) {
-            $table->data[$kaction][($k + 1)] = __('No');
+            $table->data[$kaction][3] = __('No');
         } else {
-            $table->data[$kaction][($k + 1)] = human_time_description_raw(
+            $table->data[$kaction][1] = human_time_description_raw(
                 $action_threshold,
                 true,
                 'tiny'
             );
         }
 
-        $table->head[($kaction + 1)] = __('Threshold');
+        // $table->head[($kaction + 1)] = __('Threshold');
     }
 }
 

@@ -634,6 +634,12 @@ select:-internal-list-box {
   white-space: nowrap;
 }
 
+.nowrap_max180px {
+  width: 10px;
+  max-width: 180px;
+  white-space: nowrap;
+}
+
 .wrap {
   flex-wrap: wrap;
 }
@@ -648,6 +654,10 @@ select:-internal-list-box {
 
 .inline_flex {
   display: inline-flex;
+}
+
+.align-center {
+  align-items: center;
 }
 
 .relative {
@@ -783,6 +793,10 @@ select:-internal-list-box {
 
 .w100p {
   width: 100%;
+}
+
+.w100pi {
+  width: 100% !important;
 }
 
 /*
@@ -6909,6 +6923,10 @@ div.graph div.legend table {
 /*
 * MARGIN LEFT
 */
+.mrgn_lft-20px {
+  margin-left: -20px !important;
+}
+
 .mrgn_lft_05em {
   margin-left: 0.5em;
 }
@@ -8364,6 +8382,11 @@ div.graph div.legend table {
 .flex_justify_end {
   display: flex;
   justify-content: end;
+}
+
+.justify-content-between {
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 
 .span_priority {
@@ -10663,6 +10686,11 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.force {
+  mask: url(../../images/force@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/force@svg.svg) no-repeat center / contain;
+}
+
 button div.upload_file {
   mask: url(../../images/upload_file.png) no-repeat center / contain;
   -webkit-mask: url(../../images/upload_file.png) no-repeat center / contain;
@@ -11888,6 +11916,32 @@ span.help_icon_15px > img {
   height: 65px !important;
   margin-top: 10px;
 }
+.order-arrows option {
+  position: relative;
+}
+.order-arrows option::before {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  top: 5px;
+  background-image: url(../../images/darrowup.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
+
+.order-arrows option::after {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  bottom: 6px;
+  background-image: url(../../images/darrowdown.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
 
 /* ==== Spinner ==== */
 .spinner-fixed {
@@ -12088,8 +12142,9 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 70%;
 }
 
 .step {
@@ -12121,7 +12176,7 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
 }
 
@@ -12241,7 +12296,37 @@ div.parent_graph > p.legend_background > table > tbody > tr {
   margin: 0px !important;
 }
 
+#grid_img {
+  position: absolute;
+  margin-top: -2px;
+}
+
 div#visual-console-container * {
   font-size: unset;
   line-height: unset;
+}
+
+.combo-oid-button {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:first-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:first-child {
+  padding-bottom: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:last-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:last-child {
+  padding-top: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
+  width: 100% !important;
 }

@@ -82,7 +82,7 @@ check_pre_pandora () {
     export MYSQL_PWD=$DBPASS
     
     echo -en "${cyan}Checking environment ... ${reset}"
-    rpm -qa | grep 'pandorafms_' &>> /dev/null && local fail=true
+    rpm -qa | grep 'pandorafms_' | grep -v pandorafms_agent_* | grep -v "pandorawmic"  &>> /dev/null && local fail=true
     [ -d "$PANDORA_CONSOLE" ] && local fail=true
     [ -f /usr/bin/pandora_server ] && local fail=true
     echo "use $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST &>> /dev/null && local fail=true

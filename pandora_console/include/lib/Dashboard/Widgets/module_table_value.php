@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -351,12 +351,12 @@ class ModuleTableValueWidget extends Widget
         ];
 
         $fields = [
-            '&#x0a;' => __('Carriage Return'),
-            '|'      => __('Vertical Bar'),
-            ';'      => __('Semicolon'),
-            ':'      => __('Colon'),
-            ','      => __('Commas'),
-            '&#x20;' => __('Blank'),
+            htmlentities('&#x0a;&#x0a;', ENT_QUOTES) => __('Carriage Return'),
+            '|'                                      => __('Vertical Bar'),
+            ';'                                      => __('Semicolon'),
+            ':'                                      => __('Colon'),
+            ','                                      => __('Commas'),
+            htmlentities('&#x20;', ENT_QUOTES)       => __('Blank'),
         ];
 
         $inputs[] = [
@@ -407,11 +407,11 @@ class ModuleTableValueWidget extends Widget
         $size_text = $this->values['sizeLabel'];
 
         $data_module = modules_get_last_value($id_module);
-        $value = (string) $data_module;
+        $value = nl2br((string) $data_module);
 
         $value = str_replace(
-            io_safe_output($this->values['separator']),
-            '<br/>',
+            '<br />',
+            nl2br(io_safe_output(html_entity_decode($this->values['separator']))),
             $value
         );
 

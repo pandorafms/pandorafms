@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This library is the client side of the Update Manager project from Artica PFMS.
+This library is the client side of the Update Manager project from Pandora FMS.
 
 Allows update files in _on-premise_ PHP projects and apply database upgrades on them.
 

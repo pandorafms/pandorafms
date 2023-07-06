@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -473,6 +473,7 @@ $html_content = ob_get_clean();
 
 if ($agent_view_page === true) {
     // Create controlled toggle content.
+    $alerts_count = alerts_get_alerts(0, '', 'all', -1, $true, true, $agent['id_agente']);
     html_print_div(
         [
             'class'   => 'agent_details_line',
@@ -481,7 +482,7 @@ if ($agent_view_page === true) {
                 '<span class="subsection_header_title">'.__('Full list of alerts').'</span>',
                 'status_monitor_agent',
                 !$alerts_defined,
-                false,
+                ($alerts_count > 0) ? false : true,
                 true,
                 '',
                 '',

@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -262,6 +262,10 @@ function config_update_config()
 
                     if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
                         $error_update[] = __('Enable Sflow');
+                    }
+
+                    if (config_update_value('activate_feedback', (bool) get_parameter('activate_feedback'), true) === false) {
+                        $error_update[] = __('Enable Feedback');
                     }
 
                     if (config_update_value('general_network_path', get_parameter('general_network_path'), true) === false) {
@@ -950,6 +954,10 @@ function config_update_config()
 
                     if (config_update_value('max_execution_event_response', get_parameter('max_execution_event_response'), true) === false) {
                         $error_update[] = __('Max execution event response');
+                    }
+
+                    if (config_update_value('limit_sql_pdf', get_parameter('limit_sql_pdf'), true) === false) {
+                        $error_update[] = __('Rows limit for SQL report item PDF');
                     }
 
                     if (config_update_value('row_limit_csv', get_parameter('row_limit_csv'), true) === false) {
@@ -2209,6 +2217,10 @@ function config_process_config()
         config_update_value('max_execution_event_response', 10);
     }
 
+    if (!isset($config['limit_sql_pdf'])) {
+        config_update_value('limit_sql_pdf', 5000);
+    }
+
     if (!isset($config['max_number_of_events_per_node'])) {
         config_update_value('max_number_of_events_per_node', 100000);
     }
@@ -2831,7 +2843,7 @@ function config_process_config()
     }
 
     if (!isset($config['email_from_dir'])) {
-        config_update_value('email_from_dir', 'pandora@pandorafms.org');
+        config_update_value('email_from_dir', 'pandora@pandorafms.com');
     }
 
     if (!isset($config['email_from_name'])) {
@@ -3348,6 +3360,10 @@ function config_process_config()
 
     if (!isset($config['autoupdate'])) {
         config_update_value('autoupdate', 1);
+    }
+
+    if (!isset($config['activate_feedback'])) {
+        config_update_value('activate_feedback', true);
     }
 
     if (!isset($config['api_password'])) {

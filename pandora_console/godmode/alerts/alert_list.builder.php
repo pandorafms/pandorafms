@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -166,10 +166,10 @@ $table->data[1][1] = html_print_label_input_block(
 );
 
 $table->data[2][0] = html_print_label_input_block(
-    __('Threshold'),
+    __('Threshold').ui_print_help_tip(__('It takes precedence over the action\'s threshold configuration.'), true),
     html_print_extended_select_for_time(
         'module_action_threshold',
-        0,
+        '0',
         '',
         '',
         '',

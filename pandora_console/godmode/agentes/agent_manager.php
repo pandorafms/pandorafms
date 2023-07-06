@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -757,13 +757,14 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         false,
         true,
         'w540px'
-    ).html_print_image(
+    ).'<div class="flex mrgn_top_6px mrgn_btn_5px">'.html_print_image(
         $path_ok,
         true,
         [
             'id'    => 'icon_ok',
             'style' => 'display:'.$display_icons.';',
-            'width' => '40',
+            'width' => '30',
+            'class' => 'mrgn_right_5px',
         ]
     ).html_print_image(
         $path_bad,
@@ -771,7 +772,8 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_bad',
             'style' => 'display:'.$display_icons.';',
-            'width' => '40',
+            'width' => '30',
+            'class' => 'mrgn_right_5px',
         ]
     ).html_print_image(
         $path_warning,
@@ -779,9 +781,10 @@ $tableAdvancedAgent->data['agent_icon'][] = html_print_label_input_block(
         [
             'id'    => 'icon_warning',
             'style' => 'display:'.$display_icons.';',
-            'width' => '40',
+            'width' => '30',
+            'class' => 'mrgn_right_5px',
         ]
-    )
+    ).'</div>'
 );
 
 // Url address.
@@ -962,7 +965,7 @@ foreach ($fields as $field) {
             true
         );
     } else if ($field['is_link_enabled']) {
-        list($link_text, $link_url) = json_decode($custom_value, true);
+        list($link_text, $link_url) = json_decode(io_safe_output($custom_value), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $link_text = '';

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -214,10 +214,33 @@ function get_table_inputs_masive_agents($params)
         );
     }
 
-    $table->data[3][0] = __('Agents');
-    $table->data[3][0] .= '<span id="agent_loading" class="invisible">';
-    $table->data[3][0] .= html_print_image('images/spinner.png', true);
-    $table->data[3][0] .= '</span>';
+    $os_list = os_get_os(true);
+
+    $table->data[3][0] = __('OS');
+    $table->data[3][1] = html_print_select(
+        $os_list,
+        'os_agent',
+        'selected',
+        '',
+        __('All'),
+        '',
+        true
+    );
+
+    $table->data[3][2] = __('OS Version');
+    $table->data[3][3] = html_print_input_text(
+        'os_agent_version',
+        '',
+        __('Select OS version'),
+        35,
+        255,
+        true
+    );
+
+    $table->data[4][0] = __('Agents');
+    $table->data[4][0] .= '<span id="agent_loading" class="invisible">';
+    $table->data[4][0] .= html_print_image('images/spinner.png', true);
+    $table->data[4][0] .= '</span>';
 
     $agents = [];
     if (is_metaconsole() === false) {
@@ -228,7 +251,7 @@ function get_table_inputs_masive_agents($params)
         );
     }
 
-    $table->data[3][1] = html_print_select(
+    $table->data[4][1] = html_print_select(
         $agents,
         'id_agents[]',
         0,

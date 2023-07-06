@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -458,9 +458,11 @@ if (is_ajax() === true) {
             }
 
             if (empty($events) === false) {
+                $redirection_form_id = 0;
+
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -730,9 +732,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $event_type = '<div class="event_module_background_state forced_title" style="background: ';
-                        $event_type .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">&nbsp;</div>';
-                        $tmp->event_type = $event_type;
+                        $tmp->event_type = '<div class="mrgn_lft_25px">'.events_print_type_img($tmp->event_type, true).'</div>';
 
                         // Module status.
                         // Event severity prepared.
@@ -1015,11 +1015,37 @@ if (is_ajax() === true) {
                             $url_link = $server_url;
                             $url_link .= '/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
                             $url_link_hash = $hashdata;
+
+                            parse_str($url_link_hash, $url_hash_array);
+
+                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' method='POST' action='".$url_link.$tmp->id_agente."'>";
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash',
+                                $url_hash_array['loginhash'],
+                                true
+                            );
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash_data',
+                                $url_hash_array['loginhash_data'],
+                                true
+                            );
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash_user',
+                                $url_hash_array['loginhash_user'],
+                                true
+                            );
+                            $redirection_form .= '</form>';
                         }
 
                         // Agent name link.
                         if ($tmp->id_agente > 0) {
-                            $draw_agent_name = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            if ($tmp->meta === true) {
+                                $draw_agent_name = $redirection_form;
+                                $draw_agent_name .= "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-table-redirection-".$redirection_form_id."\").submit();' href='#'>";
+                            } else {
+                                $draw_agent_name = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            }
+
                             $draw_agent_name .= $tmp->agent_name;
                             $draw_agent_name .= '</a>';
                             $tmp->agent_name = $draw_agent_name;
@@ -1029,7 +1055,13 @@ if (is_ajax() === true) {
 
                         // Agent ID link.
                         if ($tmp->id_agente > 0) {
-                            $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            if ($tmp->meta === true) {
+                                $draw_agent_id = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-table-redirection-".$redirection_form_id."\").submit();' href='#'>";
+                                $redirection_form_id++;
+                            } else {
+                                $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            }
+
                             $draw_agent_id .= $tmp->id_agente;
                             $draw_agent_id .= '</a>';
                             $tmp->id_agente = $draw_agent_id;
@@ -1560,7 +1592,7 @@ if ($pure) {
         ]
     ).'</a>';
 
-    // Accoustic console.
+    // Acoustic console.
     $sound_event['active'] = false;
 
     // Sound Events.
@@ -1583,7 +1615,7 @@ if ($pure) {
         'images/sound_console@svg.svg',
         true,
         [
-            'title' => __('Accoustic console'),
+            'title' => __('Acoustic console'),
             'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
@@ -1633,7 +1665,7 @@ if ($pure) {
     switch ($section) {
         case 'sound_event':
             $onheader['sound_event']['active'] = true;
-            $section_string = __('Accoustic console');
+            $section_string = __('Acoustic console');
         break;
 
         case 'history':
@@ -2390,6 +2422,14 @@ try {
         $fields[$evento_id] = [
             'text'  => 'evento',
             'class' => 'mw250px',
+        ];
+    }
+
+    $comment_id = array_search('user_comment', $fields);
+    if ($comment_id !== false) {
+        $fields[$comment_id] = [
+            'text'  => 'user_comment',
+            'class' => 'nowrap_max180px',
         ];
     }
 

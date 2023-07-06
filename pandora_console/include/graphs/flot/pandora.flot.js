@@ -1975,25 +1975,27 @@ function pandoraFlotArea(
         !(type == 1 && /percentil/.test(index) == true) &&
         !(type == 3 && /percentil/.test(index) == true)
       ) {
-        data_base.push({
-          id: "serie_" + i,
-          data: value.data,
-          label: index,
-          color: color[index]["color"],
-          lines: {
-            show: line_show,
-            fill: filled,
-            lineWidth: lineWidth,
-            steps: steps_chart
-          },
-          points: {
-            show: points_show,
-            radius: radius,
-            fillColor: fill_points,
-            fill: filled
-          },
-          legend: legend.index
-        });
+        if (color[index] !== null) {
+          data_base.push({
+            id: "serie_" + i,
+            data: value.data,
+            label: index,
+            color: color[index]["color"],
+            lines: {
+              show: line_show,
+              fill: filled,
+              lineWidth: lineWidth,
+              steps: steps_chart
+            },
+            points: {
+              show: points_show,
+              radius: radius,
+              fillColor: fill_points,
+              fill: filled
+            },
+            legend: legend.index
+          });
+        }
       }
     }
     i++;

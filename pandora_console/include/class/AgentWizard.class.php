@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -325,7 +325,7 @@ class AgentWizard extends HTML
         $this->wizardSection = get_parameter('wizard_section', 'snmp_explorer');
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
-        $this->targetIp = get_parameter('targetIp', '');
+        $this->targetIp = io_safe_input(trim(io_safe_output(get_parameter('targetIp', ''))));
         $this->wmiBinary = $config['wmiBinary'];
         $this->defaultSNMPValues = (array) json_decode(io_safe_output($config['agent_wizard_defaults']));
 
@@ -1645,13 +1645,13 @@ class AgentWizard extends HTML
                     } else if (preg_match('/module-critical-max/', $k) > 0) {
                         $result[$value]['criticalMax'] = $data[$k];
                     } else if (preg_match('/module-critical-inv/', $k) > 0) {
-                        $result[$value]['criticalInv'] = $data[$k.'_sent'];
+                        $result[$value]['criticalInv'] = $data[$k];
                     } else if (preg_match('/module-warning-inv/', $k) > 0) {
-                        $result[$value]['warningInv'] = $data[$k.'_sent'];
+                        $result[$value]['warningInv'] = $data[$k];
                     } else if (preg_match('/module-warning-perc/', $k) > 0) {
-                        $result[$value]['warningPerc'] = $data[$k.'_sent'];
+                        $result[$value]['warningPerc'] = $data[$k];
                     } else if (preg_match('/module-critical-perc/', $k) > 0) {
-                         $result[$value]['criticalPerc'] = $data[$k.'_sent'];
+                         $result[$value]['criticalPerc'] = $data[$k];
                     } else if (preg_match('/module-type/', $k) > 0) {
                         $result[$value]['moduleType'] = $data[$k];
                     } else if (preg_match('/module-unit/', $k) > 0) {
@@ -4360,7 +4360,7 @@ class AgentWizard extends HTML
                             true,
                             false,
                             'change_control(this, \''.$uniqueId.'\')',
-                            false,
+                            true,
                             'form="form-create-modules"'
                         ),
                     ],
@@ -4376,7 +4376,7 @@ class AgentWizard extends HTML
                             true,
                             false,
                             'change_control(this, \''.$uniqueId.'\')',
-                            false,
+                            true,
                             'form="form-create-modules"'
                         ),
                     ],
@@ -4442,7 +4442,7 @@ class AgentWizard extends HTML
                             true,
                             false,
                             'change_control(this, \''.$uniqueId.'\')',
-                            false,
+                            true,
                             'form="form-create-modules"'
                         ),
                     ],
@@ -4459,7 +4459,7 @@ class AgentWizard extends HTML
                             true,
                             false,
                             'change_control(this,\''.$uniqueId.'\')',
-                            false,
+                            true,
                             'form="form-create-modules"'
                         ),
                     ],
@@ -6240,22 +6240,24 @@ class AgentWizard extends HTML
             function change_control(checkbox, uniqueId) {
                 var checkbox_name = $(checkbox).attr('name');
 
-                if($(checkbox).prop('checked', true)) {
-                   if(checkbox_name.match(/warning-inv/gm) !== null) {
-                        $('#checkbox-module-warning-perc-'+uniqueId.replace('/','\\/')).prop('checked', false);
-                   }
+                if(checkbox_name.match(/warning-inv/gm) !== null) {
+                    $('#checkbox-module-warning-perc-'+uniqueId.replace('/','\\/')).prop('checked', false);
+                    $('#checkbox-'+checkbox_name).val(1)
+                }
 
-                   if(checkbox_name.match(/critical-inv/gm) !== null) {
-                        $('#checkbox-module-critical-perc-'+uniqueId.replace('/','\\/')).prop('checked', false);
-                    }
+                if(checkbox_name.match(/warning-perc/gm) !== null) {
+                    $('#checkbox-module-warning-inv-'+uniqueId.replace('/','\\/')).prop('checked', false);
+                    $('#checkbox-'+checkbox_name).val(1)
+                }
 
-                    if(checkbox_name.match(/warning-perc/gm) !== null) {
-                        $('#checkbox-module-warning-inv-'+uniqueId.replace('/','\\/')).prop('checked', false);
-                    }
+                if(checkbox_name.match(/critical-inv/gm) !== null) {
+                    $('#checkbox-module-critical-perc-'+uniqueId.replace('/','\\/')).prop('checked', false);
+                    $('#checkbox-'+checkbox_name).val(1)
+                }
 
-                    if(checkbox_name.match(/critical-perc/gm) !== null) {
-                        $('#checkbox-module-critical-inv-'+uniqueId.replace('/','\\/')).prop('checked', false);
-                    }
+                if(checkbox_name.match(/critical-perc/gm) !== null) {
+                    $('#checkbox-module-critical-inv-'+uniqueId.replace('/','\\/')).prop('checked', false);
+                    $('#checkbox-'+checkbox_name).val(1)
                 }
 
             }

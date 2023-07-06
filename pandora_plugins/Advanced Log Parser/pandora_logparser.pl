@@ -2,15 +2,15 @@
 ###############################################################################
 # Pandora FMS Agent Plugin for ADVANCED log parsing 
 # Copyright (c) 2011-2015  Sancho Lerena  <slerena@artica.es>
-# Copyright (c) 2011-2015  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2011-2023 Pandora FMS.
 #   _______        __   __               _______ _______
 #  |   _   |.----.|  |_|__|.----.---.-. |     __|_     _|
 #  |       ||   _||   _|  ||  __|  _  | |__     | |   |
 #  |___|___||__|  |____|__||____|___._| |_______| |___|
 #
 #
-#        ARTICA SOLUCIONES TECNOLOGICAS
-#        http://www.artica.es
+#        Pandora FMS
+#        http:// https://pandorafms.com
 #
 # v1r3
 # Change log (v1r3 - Ago 2015)

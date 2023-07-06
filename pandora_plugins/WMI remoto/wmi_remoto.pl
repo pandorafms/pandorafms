@@ -6,7 +6,7 @@
 # - % CPU Use
 # - % Disk Use
 #
-# Artica ST 
+# Pandora FMS 
 # Copyright (C) 2013 mario.pulido@artica.es
 #
 # License: GPLv2+

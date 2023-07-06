@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Update binary tool
-# Copyright (c) 2010 Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2010-2023 Pandora FMS.
 # Copyright (c) Sancho Lerena <slerena@artica.es>
 
 use strict;

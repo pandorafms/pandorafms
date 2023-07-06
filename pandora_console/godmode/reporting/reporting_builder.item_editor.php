@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1235,7 +1235,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers,
-                    'combo_server_sql',
+                    'combo_server',
                     $server_name,
                     ''
                 );
@@ -1256,7 +1256,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers_all_opt,
-                    'combo_server',
+                    'combo_server_sql',
                     $server_name,
                     '',
                     $nothing,
@@ -1993,7 +1993,7 @@ $class = 'databox filters';
                         $modulegroup,
                         $id_agents,
                         !$selection_a_m,
-                        true
+                        false
                     );
                 }
 
@@ -4178,7 +4178,7 @@ function print_SLA_list($width, $action, $idItem=null)
                 </th>
                 <th class="header sla_list_sla_limit_col" scope="col">
                 <?php
-                echo __('SLA Limit (%)');
+                echo __('SLA Limit (%)').ui_print_help_tip(__('Enter possible range of values in SLA.'), true);
                 ?>
                 </th>
                 <th class="header sla_list_action_col" scope="col">
@@ -5378,7 +5378,7 @@ $(document).ready (function () {
                 break;
             case 'inventory':
             case 'inventory_changes':
-                if ($("select#inventory_modules>option:selected").val() == 0) {
+                if ($("select#inventory_modules>option:selected").val() == -1) {
                     dialog_message('#message_no_module');
                     return false;
                 }
@@ -5891,7 +5891,7 @@ function addSLARow() {
 
     if ((((idAgent != '') && (idAgent > 0))
         && ((idModule != '') && (idModule > 0)))
-        || serviceId != null)
+        && (slaLimit != '') || serviceId != null)
     {
             if (nameAgent != '') {
                 //Truncate nameAgent
@@ -6839,6 +6839,8 @@ function chooseType() {
             $("#row_dyn_height").show();
             $("#row_servers").show();
             $("#row_historical_db_check").show();
+            $("#sql_example").hide();
+            $("#sql_entry").show();
             break;
 
         case 'url':
@@ -7049,7 +7051,7 @@ function chooseType() {
 
         case 'group_report':
             $("#row_group").show();
-            $("#row_servers").show();
+            $("#row_servers_all_opt").show();
             $("#row_description").show();
             $("#row_historical_db_check").hide();
             break;
@@ -7224,9 +7226,6 @@ function chooseType() {
             $('#row_regular_expression').show();
             $("#row_date").show();
 
-            $("#id_agents")
-                .change(event_change_id_agent_inventory);
-            $("#id_agents").trigger('change');
 
             $("#row_servers").show();
 
@@ -7248,11 +7247,15 @@ function chooseType() {
                     false,
                     false,
                     false,
-                    false
+                    false,
                 ).'"';
+                echo ', "false", '.json_encode($id_agents).'';
                 ?>
                 );
             });
+
+            $("#combo_server").trigger('change');
+            
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');
@@ -7277,6 +7280,9 @@ function chooseType() {
                 ?>
                 );
             });
+            $("#id_agents").change(event_change_id_agent_inventory);
+            $("#id_agents").trigger('change');
+
             $("#id_agents").change(function() {
                 $('#hidden-date_selected').val('');
                 updateInventoryDates(
@@ -7303,7 +7309,7 @@ function chooseType() {
                 ?>
                 );
             });
-
+            
             if (!$("#hidden-date_selected").val())
                 updateInventoryDates(
                 <?php

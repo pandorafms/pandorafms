@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2005-2021 Artica Soluciones Tecnológicas, http://www.artica.es
+-- Copyright (c) 2005-2023 Pandora FMS, http:// https://pandorafms.com
 -- Please see http://pandora.sourceforge.net for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -1701,6 +1701,8 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
   `maintenance_mode` TEXT,
+  `grid_color` VARCHAR(45) NOT NULL DEFAULT '#cccccc',
+  `grid_size` VARCHAR(45) NOT NULL DEFAULT '10',
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3667,6 +3669,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
   `maintenance_mode` TEXT,
+  `grid_color` VARCHAR(45) NOT NULL DEFAULT '#cccccc',
+  `grid_size` VARCHAR(45) NOT NULL DEFAULT '10',
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3697,6 +3701,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
   `label_position` VARCHAR(50) NOT NULL DEFAULT 'down',
   `border_color` VARCHAR(200) DEFAULT '',
   `fill_color` VARCHAR(200) DEFAULT '',
+  `recursive_group` TINYINT NOT NULL DEFAULT '0',
   `show_statistics` TINYINT NOT NULL DEFAULT 0,
   `linked_layout_node_id` INT NOT NULL DEFAULT 0,
   `linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',

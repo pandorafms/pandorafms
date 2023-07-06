@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1525,8 +1525,8 @@ if ($update_module === true || $create_module === true) {
         $percentage_warning = 0;
         $warning_inverse = 0;
     } else if ($warning_threshold_check_type === 'warning_inverse') {
-         $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
-         $percentage_warning = 0;
+        $warning_inverse = (int) get_parameter('warning_inverse_string_sent');
+        $percentage_warning = 0;
     } else {
         $percentage_warning = (int) get_parameter('warning_inverse_string_sent');
         $warning_inverse = 0;
@@ -1538,8 +1538,8 @@ if ($update_module === true || $create_module === true) {
         $percentage_critical = 0;
         $critical_inverse = 0;
     } else if ($critical_threshold_check_type === 'critical_inverse') {
-         $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
-         $percentage_critical = 0;
+        $critical_inverse = (int) get_parameter('critical_inverse_string_sent');
+        $percentage_critical = 0;
     } else {
         $percentage_critical = (int) get_parameter('critical_inverse_string_sent');
         $critical_inverse = 0;
@@ -1550,6 +1550,7 @@ if ($update_module === true || $create_module === true) {
         || $id_module_type === MODULE_TYPE_ASYNC_STRING
         || $id_module_type === MODULE_TYPE_REMOTE_TCP_STRING
         || $id_module_type === MODULE_TYPE_REMOTE_CMD_STRING
+        || $id_module_type === MODULE_TYPE_REMOTE_SNMP_STRING
     ) {
         // Warning inverse string checkbox.
         $warning_string_checkbox = get_parameter('warning_inverse_string');

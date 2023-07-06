@@ -2,7 +2,7 @@
 ###############################################################################
 #
 # Copyright (c) 2012  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2012  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2012-2023 Pandora FMS.
 #
 # grep_log_module Perl script to search log files for a matching pattern. The
 #                 last searched position is saved in an index file so that
@@ -22,6 +22,11 @@
 
 use strict;
 use File::Basename;
+BEGIN {
+	eval {
+		require MIME::Base64;
+	};
+}
 
 # Output format (module or log_module).
 my $Output = 'log_module';
@@ -52,6 +57,37 @@ my $Idx_size = 0;
 
 # Regular expression to be matched
 my $Reg_exp = '';
+
+# Define encode_base64 if it is not available via MIME::Base64.
+my $encode_sub = defined(&MIME::Base64::encode_base64) ? \&MIME::Base64::encode_base64 : sub {
+	my ($str, $endl) = @_;
+
+	my @ALPHABET = ('A'..'Z', 'a'..'z', 0..9, '+', '/');
+	my $str_len = length($str);
+	my $str_base64 = '';
+	
+	for (my $i = 0; $i < $str_len; $i += 3) {
+		my $chunk = substr($str, $i, 3);
+		my $chunk_len = length($chunk);
+
+		my $num = 0;
+		$num |= ord(substr($chunk, 0, 1)) << 16 if ($chunk_len >= 1);
+		$num |= ord(substr($chunk, 1, 1)) << 8  if ($chunk_len >= 2);
+		$num |= ord(substr($chunk, 2, 1))       if ($chunk_len == 3);
+		
+		my $enc_1 = ($num & 0xfc0000) >> 18;
+		my $enc_2 = ($num & 0x03f000) >> 12;
+		my $enc_3 = ($num & 0x000fc0) >> 6;
+		my $enc_4 = ($num & 0x00003f);
+		
+		$str_base64 .= $ALPHABET[$enc_1];
+		$str_base64 .= $ALPHABET[$enc_2];
+		$str_base64 .= $chunk_len >= 2 ? $ALPHABET[$enc_3] : '=';
+		$str_base64 .= $chunk_len == 3 ? $ALPHABET[$enc_4] : '=';
+	}
+	
+	return $str_base64;
+};
 
 ###############################################################################
 # SUB error_msg
@@ -213,11 +249,9 @@ sub print_log (@) {
 	if ($Output eq 'log_module') {
 		my $output = "<log_module>\n";
 		$output .= "<source><![CDATA[" . $Module_name . "]]></source>\n";
+		$output .= "<encoding>base64</encoding>\n";
 		$output .= "<data><![CDATA[";
-		foreach my $line (@data) {
-			$line =~ s/\]\]/]]]]><![CDATA[/g;
-			$output .= $line;
-		}
+		$output .= &$encode_sub(join('', @data), '');
 		$output .= "]]></data>";
 		$output .= "</log_module>\n";
 

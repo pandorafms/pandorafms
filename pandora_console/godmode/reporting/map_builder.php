@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2007-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -168,8 +168,8 @@ if ($delete_layout || $copy_layout) {
 
     // ACL for the visual console
     // $vconsole_read = check_acl ($config['id_user'], $group_id, "VR");
-    $vconsole_write = check_acl_restricted_all($config['id_user'], $group_id, 'VW');
-    $vconsole_manage = check_acl_restricted_all($config['id_user'], $group_id, 'VM');
+    $vconsole_write = check_acl_restricted_all($config['id_user'], $group_id, 'VW', true);
+    $vconsole_manage = check_acl_restricted_all($config['id_user'], $group_id, 'VM', true);
 
     if (!$vconsole_write && !$vconsole_manage) {
         db_pandora_audit(

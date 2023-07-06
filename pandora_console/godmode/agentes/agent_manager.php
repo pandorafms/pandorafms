@@ -212,7 +212,7 @@ $groups = users_get_groups($config['id_user'], 'AR', false);
 // Get modules.
 $modules = db_get_all_rows_sql(
     'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
-								WHERE id_agente = '.$id_parent
+								WHERE id_agente = '.$id_agente
 );
 $modules_values = [];
 $modules_values[0] = __('Any');

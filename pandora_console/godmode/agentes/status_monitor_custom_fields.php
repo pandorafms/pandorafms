@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -27,7 +27,7 @@ if (! check_acl($config['id_user'], 0, 'AR')
     return;
 }
 
-$update = get_parameter('upd_button', '');
+$update = get_parameter('update_button', '');
 $default = (int) get_parameter('default', 0);
 
 // Header.
@@ -186,7 +186,7 @@ $generalTitleContent[] = html_print_div([ 'class' => 'section_table_title', 'con
 $titledata[0] = html_print_div(['class' => 'flex-row-center', 'content' => implode('', $generalTitleContent) ], true);
 $table->data['general_title'] = $titledata;
 $table->data[0][0] = '<span class="font-title-font">'.__('Fields available').'</span>';
-$table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px');
+$table->data[1][0] = html_print_select($fields_available, 'fields_available[]', true, '', '', 0, true, true, false, '', false, 'width: 300px; height: auto');
 $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     'images/darrowright.png',
     true,
@@ -220,7 +220,7 @@ $table->data[1][2] = html_print_select(
     false,
     '',
     false,
-    'width: 300px'
+    'width: 300px; height: auto'
 );
 
 echo '<form id="custom_status_monitor" method="post" action="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields&amp;pure='.$config['pure'].'" class="max_floating_element_size">';
@@ -284,7 +284,7 @@ $(document).ready (function () {
         }
     });
     
-    $("#submit-upd_button").click(function () {
+    $("#button-update_button").click(function () {
         $("#fields_selected").find("option[value='0']").remove();
         $('#fields_selected option').map(function() {
             $(this).prop('selected', true);

@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -99,6 +99,19 @@ if ($update_alert) {
 }
 
 if ($create_alert) {
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_name = explode(' ', io_safe_output(get_parameter('id_agent')))[0];
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
     $id_alert_template = (int) get_parameter('template');
     $id_agent_module = (int) get_parameter('id_agent_module');
 
@@ -203,9 +216,28 @@ if ($create_alert) {
             }
         }
     }
+
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+        echo '<script>window.location.assign("index.php?sec=estado&sec2=operation/agentes/alerts_status")</script>';
+    }
 }
 
 if ($delete_alert) {
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_name = explode(' ', io_safe_output(get_parameter('id_agent')))[0];
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
     $id_alert_agent_module = (int) get_parameter('id_alert');
 
     $temp = db_get_row('talert_template_modules', 'id', $id_alert_agent_module);
@@ -241,9 +273,27 @@ if ($delete_alert) {
         '',
         true
     );
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+        echo '<script>window.location.assign("index.php?sec=estado&sec2=operation/agentes/alerts_status")</script>';
+    }
 }
 
 if ($add_action) {
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_name = explode(' ', io_safe_output(get_parameter('id_agent')))[0];
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
     $id_action = (int) get_parameter('action_select');
     $id_alert_module = (int) get_parameter('id_alert_module');
     $fires_min = (int) get_parameter('fires_min');
@@ -280,9 +330,28 @@ if ($add_action) {
         '',
         true
     );
+
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+        echo '<script>window.location.assign("index.php?sec=estado&sec2=operation/agentes/alerts_status")</script>';
+    }
 }
 
 if ($update_action) {
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_name = explode(' ', io_safe_output(get_parameter('id_agent')))[0];
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
     $alert_id = (int) get_parameter('alert_id');
     $id_action = (int) get_parameter('action_select_ajax-'.$alert_id);
     $id_module_action = (int) get_parameter('id_module_action_ajax');
@@ -321,9 +390,28 @@ if ($update_action) {
         '',
         true
     );
+
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+        echo '<script>window.location.assign("index.php?sec=estado&sec2=operation/agentes/alerts_status")</script>';
+    }
 }
 
 if ($delete_action) {
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_name = explode(' ', io_safe_output(get_parameter('id_agent')))[0];
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
     $id_action = (int) get_parameter('id_action');
     $id_alert = (int) get_parameter('id_alert');
 
@@ -348,6 +436,12 @@ if ($delete_action) {
         '',
         true
     );
+
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+        echo '<script>window.location.assign("index.php?sec=estado&sec2=operation/agentes/alerts_status")</script>';
+    }
 }
 
 if ($enable_alert) {

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1143,11 +1143,12 @@ function ui_format_alert_row(
                 'agent_name'      => 3,
                 'module_name'     => 4,
                 'description'     => 5,
-                'template'        => 5,
-                'action'          => 6,
-                'last_fired'      => 7,
-                'status'          => 8,
-                'validate'        => 9,
+                'template'        => 6,
+                'action'          => 7,
+                'last_fired'      => 8,
+                'status'          => 9,
+                'validate'        => 10,
+                'actions'         => 11,
             ];
         } else {
             $index = [
@@ -1155,13 +1156,13 @@ function ui_format_alert_row(
                 'standby'         => 1,
                 'force_execution' => 2,
                 'agent_name'      => 3,
-                'module_name'     => 3,
-                'description'     => 4,
-                'template'        => 4,
-                'action'          => 5,
-                'last_fired'      => 6,
-                'status'          => 7,
-                'validate'        => 8,
+                'module_name'     => 4,
+                'description'     => 5,
+                'template'        => 6,
+                'action'          => 7,
+                'last_fired'      => 8,
+                'status'          => 9,
+                'validate'        => 10,
             ];
         }
     } else {
@@ -1172,24 +1173,24 @@ function ui_format_alert_row(
                 'agent_name'      => 2,
                 'module_name'     => 3,
                 'description'     => 4,
-                'template'        => 4,
-                'action'          => 5,
-                'last_fired'      => 6,
-                'status'          => 7,
-                'validate'        => 8,
+                'template'        => 5,
+                'action'          => 6,
+                'last_fired'      => 7,
+                'status'          => 8,
+                'validate'        => 9,
             ];
         } else {
             $index = [
                 'standby'         => 0,
                 'force_execution' => 1,
                 'agent_name'      => 2,
-                'module_name'     => 2,
-                'description'     => 3,
-                'template'        => 3,
-                'action'          => 4,
-                'last_fired'      => 5,
-                'status'          => 6,
-                'validate'        => 7,
+                'module_name'     => 3,
+                'description'     => 4,
+                'template'        => 5,
+                'action'          => 6,
+                'last_fired'      => 7,
+                'status'          => 8,
+                'validate'        => 9,
             ];
         }
     }
@@ -1322,7 +1323,7 @@ function ui_format_alert_row(
                 $additionUrl = '';
             }
 
-            $forceExecButtons[] = html_print_anchor(
+            $forceExecButtons['force_check'] = html_print_anchor(
                 [
                     'href'    => $url.'&amp;id_alert='.$alert['id'].'&amp;refr=60'.$additionUrl,
                     'content' => html_print_image(
@@ -1338,9 +1339,10 @@ function ui_format_alert_row(
             );
         }
 
-        $forceExecButtons[] = html_print_anchor(
+        $forceExecButtons['template'] = html_print_anchor(
             [
                 'href'    => 'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'],
+                'style'   => 'margin-left: 5px;',
                 'class'   => 'template_details',
                 'content' => html_print_image(
                     'images/details.svg',
@@ -1351,9 +1353,10 @@ function ui_format_alert_row(
             true
         );
     } else {
-        $forceExecButtons[] = html_print_anchor(
+        $forceExecButtons['template'] = html_print_anchor(
             [
                 'href'    => ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'],
+                'style'   => 'margin-left: 5px;',
                 'class'   => 'template_details',
                 'content' => html_print_image(
                     'images/details.svg',
@@ -1365,13 +1368,19 @@ function ui_format_alert_row(
         );
     }
 
-    $data[$index['force_execution']] = html_print_div(
-        [
-            'class'   => 'table_action_buttons flex',
-            'content' => implode('', $forceExecButtons),
-        ],
-        true
-    );
+    if (isset($forceExecButtons['force_check'])) {
+        $data[$index['force_execution']] = html_print_div(
+            [
+                'class'   => 'table_action_buttons flex',
+                'content' => $forceExecButtons['force_check'],
+            ],
+            true
+        );
+    }
+
+    if (isset($forceExecButtons['template'])) {
+        $data[$index['template']] = $forceExecButtons['template'];
+    }
 
     $data[$index['agent_name']] = $disabledHtmlStart;
     if ($agent == 0) {
@@ -1409,7 +1418,8 @@ function ui_format_alert_row(
             );
         }
 
-        $data[$index['module_name']] = ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', '');
+        $alert_module_name = isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']);
+        $data[$index['module_name']] = ui_print_truncate_text($alert_module_name, 'module_small', false, true, true, '[&hellip;]', '');
     }
 
     $data[$index['agent_name']] .= $disabledHtmlEnd;
@@ -1423,7 +1433,24 @@ function ui_format_alert_row(
 
     $data[$index['description']] .= $disabledHtmlStart.ui_print_truncate_text(io_safe_output($description), 'description', false, true, true, '[&hellip;]', '').$disabledHtmlEnd;
 
-    $actions = alerts_get_alert_agent_module_actions($alert['id'], false, $alert['server_data']['id']);
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $connection = metaconsole_get_connection($agente['server_name']);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
+    $actions = alerts_get_alert_agent_module_actions($alert['id'], false, -1, true);
+
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+    }
 
     if (empty($actions) === false || $actionDefault != '') {
         $actionText = '<div><ul class="action_list">';
@@ -1433,18 +1460,61 @@ function ui_format_alert_row(
                 $actionText .= ' ('.$action['fires_min'].' / '.$action['fires_max'].')';
             }
 
+            $actionText .= ui_print_help_tip(__('The default actions will be executed every time that the alert is fired and no other action is executed'), true);
+            // Is possible manage actions if have LW permissions in the agent group of the alert module.
+            if (check_acl($config['id_user'], $id_group, 'LM')) {
+                $actionText .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_action=1&id_alert='.$alert['id'].'&id_agent='.$agente['alias'].'&id_action='.$action['original_id'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert action?').'\')) return false;">'.html_print_image(
+                    'images/delete.svg',
+                    true,
+                    [
+                        'alt'   => __('Delete action'),
+                        'title' => __('Delete action'),
+                        'class' => 'main_menu_icon invert_filter vertical_baseline',
+                    ]
+                ).'</a>';
+            }
+
+            if (check_acl($config['id_user'], $id_group, 'LW')) {
+                $actionText .= html_print_input_image(
+                    'update_action',
+                    '/images/edit.svg',
+                    1,
+                    'padding:0px;',
+                    true,
+                    [
+                        'title'   => __('Update action'),
+                        'class'   => 'main_menu_icon invert_filter',
+                        'onclick' => 'show_display_update_action(\''.$action['original_id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action['original_id'].'\',\''.$alert['agent_name'].'\')',
+                    ]
+                );
+                $actionText .= html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
+            }
+
+            $actionText .= '<div id="update_action-div-'.$alert['id'].'" class="invisible">';
+            $actionText .= '</div>';
             $actionText .= '</li></span></div>';
         }
 
         $actionText .= '</ul></div>';
 
-        if ($actionDefault != '') {
-            $actionText .= db_get_sql(
+        if ($actionDefault !== '' && $actionDefault !== false) {
+            $actionDefault_name = db_get_sql(
                 sprintf(
                     'SELECT name FROM talert_actions WHERE id = %d',
                     $actionDefault
                 )
-            ).' <i>('.__('Default').')</i>';
+            );
+            foreach ($actions as $action) {
+                if ($actionDefault_name === $action['name']) {
+                    $hide_actionDefault = true;
+                } else {
+                    $hide_actionDefault = false;
+                }
+            }
+
+            if ($hide_actionDefault !== true) {
+                $actionText .= $actionDefault_name.' <i>('.__('Default').')</i>';
+            }
         }
     }
 
@@ -1467,6 +1537,182 @@ function ui_format_alert_row(
     }
 
     $data[$index['status']] = ui_print_status_image($status, $title, true);
+    $data[$index['status']] .= '<div id="update_action-div-'.$alert['id'].'" class="invisible">';
+
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $connection = metaconsole_get_connection($agente['server_name']);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+
+        $action = db_get_all_rows_filter(
+            'talert_template_module_actions',
+            ['id_alert_template_module' => $alert['id']],
+            'id'
+        )[0];
+
+        if (is_metaconsole()) {
+            // Restore db connection.
+            metaconsole_restore_db();
+        }
+
+        $tableActionButtons[] = '';
+
+        // Edit.
+        if (check_acl($config['id_user'], $id_group, 'LM')) {
+            $tableActionButtons[] = html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
+
+            $tableActionButtons[] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_alert=1&id_alert='.$alert['id'].'&id_agent='.$alert['agent_name'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert?').'\')) return false;">'.html_print_image(
+                'images/delete.svg',
+                true,
+                [
+                    'alt'   => __('Delete'),
+                    'title' => __('Delete'),
+                    'class' => 'main_menu_icon invert_filter vertical_baseline',
+                ]
+            ).'</a>';
+
+            $tableActionButtons[] = '<a href="javascript:show_add_action(\''.$alert['id'].'\');">'.html_print_image(
+                'images/plus-black.svg',
+                true,
+                [
+                    'title' => __('Add action'),
+                    'class' => 'invert_filter main_menu_icon',
+                    'style' => 'margin-bottom: 12px;',
+                ]
+            ).'</a>';
+        }
+
+        $data[$index['actions']] = html_print_div(
+            [
+                'style'   => 'padding-top: 8px;',
+                'content' => implode('', $tableActionButtons),
+            ],
+            true
+        );
+    }
+
+    // Is possible manage actions if have LW permissions in the agent group of the alert module.
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW') || check_acl($config['id_user'], $template_group, 'LM')) {
+        if (check_acl($config['id_user'], $template_group, 'LW')) {
+            $own_groups = users_get_groups($config['id_user'], 'LW', true);
+        } else if (check_acl($config['id_user'], $template_group, 'LM')) {
+            $own_groups = users_get_groups($config['id_user'], 'LM', true);
+        }
+
+        $filter_groups = '';
+        $filter_groups = implode(',', array_keys($own_groups));
+        if ($filter_groups != null) {
+            $actions = alerts_get_alert_actions_filter(true, 'id_group IN ('.$filter_groups.')');
+        }
+
+        $data[$index['actions']] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible">';
+            $data[$index['actions']] .= '<form id="add_action_form-'.$alert['id'].'" method="post" style="height:85%;" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list">';
+                $data[$index['actions']] .= '<table class="w100p bg_color222 filter-table-adv">';
+                    $data[$index['actions']] .= html_print_input_hidden('add_action', 1, true);
+                    $data[$index['actions']] .= html_print_input_hidden('id_agent', $agente['alias'], true);
+                    $data[$index['actions']] .= html_print_input_hidden('id_alert_module', $alert['id'], true);
+
+        if (! $id_agente) {
+            $data[$index['actions']] .= '<tr class="datos2">';
+                $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
+                    __('Agent'),
+                    ui_print_truncate_text($agente['alias'], 'agent_small', false, true, true, '[&hellip;]')
+                ).'</td>';
+                $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
+                    __('Module'),
+                    ui_print_truncate_text($alert_module_name, 'module_small', false, true, true, '[&hellip;]')
+                ).'</td>';
+            $data[$index['actions']] .= '</tr>';
+        }
+
+                    $data[$index['actions']] .= '<tr class="datos2">';
+                        $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
+                            __('Action'),
+                            html_print_select(
+                                $actions,
+                                'action_select',
+                                '',
+                                '',
+                                __('None'),
+                                0,
+                                true,
+                                false,
+                                true,
+                                '',
+                                false,
+                                'width:100%'
+                            )
+                        ).'</td>';
+
+                        $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
+                            __('Number of alerts match from'),
+                            '<div class="inline">'.html_print_input_text(
+                                'fires_min',
+                                0,
+                                '',
+                                4,
+                                10,
+                                true,
+                                false,
+                                false,
+                                '',
+                                'w40p'
+                            ).' '.__('to').' '.html_print_input_text(
+                                'fires_max',
+                                0,
+                                '',
+                                4,
+                                10,
+                                true,
+                                false,
+                                false,
+                                '',
+                                'w40p'
+                            ).'</div>'
+                        ).'</td>';
+                    $data[$index['actions']] .= '</tr>';
+                    $data[$index['actions']] .= '<tr class="datos2">';
+                        $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
+                            __('Threshold'),
+                            html_print_extended_select_for_time(
+                                'module_action_threshold',
+                                0,
+                                '',
+                                '',
+                                '',
+                                false,
+                                true,
+                                false,
+                                true,
+                                '',
+                                false,
+                                false,
+                                '',
+                                false,
+                                true
+                            )
+                        ).'</td>';
+                    $data[$index['actions']] .= '</tr>';
+                $data[$index['actions']] .= '</table>';
+                $data[$index['actions']] .= html_print_submit_button(
+                    __('Add'),
+                    'addbutton',
+                    false,
+                    [
+                        'icon'  => 'next',
+                        'class' => 'mini float-right',
+                    ],
+                    true
+                );
+            $data[$index['actions']] .= '</form>';
+        $data[$index['actions']] .= '</div>';
+    }
 
     return $data;
 }
@@ -3635,6 +3881,8 @@ function ui_print_datatable(array $parameters)
     } else {
         $pagination_options = [
             [
+                // There is a limit of (2^32)^2 (18446744073709551615) rows in a MyISAM table, show for show all use max nrows.
+                // -1 Retun error or only 1 row.
                 $parameters['default_pagination'],
                 5,
                 10,
@@ -3643,7 +3891,7 @@ function ui_print_datatable(array $parameters)
                 200,
                 500,
                 1000,
-                -1,
+                18446744073709551615,
             ],
             [
                 $parameters['default_pagination'],
@@ -4826,7 +5074,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
         $url = substr_replace($url, '', $pos, 5);
     }
 
-    $url = htmlspecialchars($url);
+    $url = (isset($params['alert_flag']) && $params['alert_flag']) ? $url : htmlspecialchars($url);
 
     if (! $relative) {
         return ui_get_full_url($url, false, false, false);
@@ -7005,6 +7253,11 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
     $arrow_up = 'images/sort_up_black.png';
     $arrow_down = 'images/sort_down_black.png';
 
+    if (is_metaconsole()) {
+        $arrow_up = 'images/sort_up_black.png';
+        $arrow_down = 'images/sort_down_black.png';
+    }
+
     // Green arrows for the selected.
     if ($selectUp === true) {
         $arrow_up = 'images/sort_up_green.png';
@@ -7012,11 +7265,6 @@ function ui_get_sorting_arrows($url_up, $url_down, $selectUp, $selectDown)
 
     if ($selectDown === true) {
         $arrow_down = 'images/sort_down_green.png';
-    }
-
-    if (is_metaconsole()) {
-        $arrow_up = 'images/sort_up.png';
-        $arrow_down = 'images/sort_down.png';
     }
 
     return '<span class="sort_arrow">

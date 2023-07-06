@@ -2,7 +2,7 @@
 ###############################################################################
 #
 # Copyright (c) 2012  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2012  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2012-2023 Pandora FMS.
 #
 # grep_log_module Perl script to search log files for a matching pattern. The
 #                 last searched position is saved in an index file so that

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -70,15 +70,12 @@ $options_agents = [
 ];
 
 if (check_acl($config['id_user'], 0, 'UM')) {
+    $options_users['edit_users'] = __('Edit users in bulk');
     if (is_metaconsole() === false) {
         $options_users = [
             'add_profiles'    => __('Bulk profile add'),
             'delete_profiles' => __('Bulk profile delete'),
         ];
-    }
-
-    if (users_is_admin() === true) {
-        $options_users['edit_users'] = __('Edit users in bulk');
     }
 } else {
     $options_users = [];
@@ -435,12 +432,14 @@ if (is_management_allowed() === false) {
         $text_warning = __('any node');
     }
 
-    ui_print_warning_message(
-        __(
-            'This node is configured with centralized mode. To delete agents go to %s',
-            $text_warning
-        )
-    );
+    if ($option == 'delete_agents') {
+        ui_print_warning_message(
+            __(
+                'This node is configured with centralized mode. To delete agents go to %s',
+                $text_warning
+            )
+        );
+    }
 }
 
 $tip = '';

@@ -15744,6 +15744,8 @@ function api_get_cluster_items($cluster_id)
  */
 function api_set_create_event_filter($name, $thrash1, $other, $thrash3)
 {
+    global $config;
+
     if ($name == '') {
         returnError(
             'The event filter could not be created. Event filter name cannot be left blank.'

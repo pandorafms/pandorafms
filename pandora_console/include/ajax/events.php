@@ -100,76 +100,10 @@ if ($get_comments === true) {
         return __('Failed to retrieve comments');
     }
 
-    $eventsGrouped = [];
-    // Consider if the event is grouped.
-    $whereGrouped = '1=1';
-    if ($group_rep === EVENT_GROUP_REP_EVENTS && $event_rep > 1) {
-        // Default grouped message filtering (evento and estado).
-        $whereGrouped = sprintf(
-            '`evento` = "%s"',
-            $event['evento']
-        );
-
-        // If id_agente is reported, filter the messages by them as well.
-        if ((int) $event['id_agente'] > 0) {
-            $whereGrouped .= sprintf(
-                ' AND `id_agente` = %d',
-                (int) $event['id_agente']
-            );
-        }
-
-        if ((int) $event['id_agentmodule'] > 0) {
-            $whereGrouped .= sprintf(
-                ' AND `id_agentmodule` = %d',
-                (int) $event['id_agentmodule']
-            );
-        }
-    } else if ($group_rep === EVENT_GROUP_REP_EXTRAIDS) {
-        $whereGrouped = sprintf(
-            '`id_extra` = "%s"',
-            io_safe_output($event['id_extra'])
-        );
-    } else {
-        $whereGrouped = sprintf('`id_evento` = %d', $event['id_evento']);
-    }
-
-    try {
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node = new Node($event['server_id']);
-            $node->connect();
-        }
-
-        $sql = sprintf(
-            'SELECT `user_comment`
-            FROM tevento
-            WHERE %s',
-            $whereGrouped
-        );
-
-        // Get grouped comments.
-        $eventsGrouped = db_get_all_rows_sql($sql);
-    } catch (\Exception $e) {
-        // Unexistent agent.
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node->disconnect();
-        }
-
-        $eventsGrouped = [];
-    } finally {
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node->disconnect();
-        }
-    }
+    $eventsGrouped = event_get_comment($event, $group_rep, $event_rep);
 
     // End of get_comments.
     echo events_page_comments($event, true, $eventsGrouped);
-
     return;
 }
 

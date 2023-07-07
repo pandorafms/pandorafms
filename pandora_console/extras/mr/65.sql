@@ -10,4 +10,6 @@ ADD COLUMN `grid_size` VARCHAR(45) NOT NULL DEFAULT '10' AFTER `grid_color`;
 
 DELETE FROM tconfig WHERE token = 'refr';
 
+ALTER TABLE `tusuario`  ADD COLUMN `session_max_time_expire` INT NOT NULL DEFAULT 0 AFTER `auth_token_secret`;
+
 COMMIT;

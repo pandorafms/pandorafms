@@ -17,6 +17,7 @@ enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_users.php';
 
 $searchAgents = get_parameter('search_agents', 0);
+$stringSearchSQL = get_parameter('stringSearchSQL');
 $order = get_datatable_order(true);
 if (empty($order)) {
     $order = [];
@@ -77,11 +78,11 @@ if ($searchAgents) {
         $id = db_get_all_rows_sql($sql);
     if ($id != '') {
         $aux = $id[0]['id_agent'];
-        $search_sql = " t1.nombre LIKE '%%cd ".$stringSearchSQL."%%' OR
+        $search_sql = " t1.nombre LIKE '%%".$stringSearchSQL."%%' OR
             t2.nombre LIKE '%%".$stringSearchSQL."%%' OR
             t1.alias LIKE '%%".$stringSearchSQL."%%' OR
             t1.comentarios LIKE '%%".$stringSearchSQL."%%' OR
-            t1.id_agente = $aux";
+            t1.id_agente =".$aux;
 
         $idCount = count($id);
 
@@ -163,6 +164,7 @@ if ($searchAgents) {
         $totalAgents = db_get_value_sql(
             'SELECT COUNT(DISTINCT id_agente) AS agent_count '.$sql
         );
+        $_SESSION['totalAgents'] = $totalAgents;
     }
 
     foreach ($agents as $key => $agent) {

@@ -52,7 +52,8 @@ $table->style[15] = 'font-weight: bold; text-align: left;';
 
 
 $table->data[0][0] = html_print_image('images/agent.png', true, ['title' => __('Agents found'), 'class' => 'invert_filter']);
-$table->data[0][1] = "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalAgents).'</a>';
+$table->data[0][1] = "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $_SESSION['totalAgents']).'</a>';
+unset($_SESSION['totalAgents']);
 $table->data[0][2] = html_print_image('images/module.png', true, ['title' => __('Modules found'), 'class' => 'invert_filter']);
 $table->data[0][3] = "<a href='index.php?search_category=modules&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalModules).'</a>';
 

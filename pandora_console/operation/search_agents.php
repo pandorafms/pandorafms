@@ -54,7 +54,10 @@ try {
             'columns'             => $columns,
             'column_names'        => $column_names,
             'ajax_url'            => 'operation/search_agents.getdata',
-            'ajax_data'           => ['search_agents' => 1],
+            'ajax_data'           => [
+                'search_agents'   => 1,
+                'stringSearchSQL' => $stringSearchSQL,
+            ],
             'order'               => [
                 'field'     => 'alias',
                 'direction' => 'asc',

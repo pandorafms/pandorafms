@@ -1,6 +1,6 @@
 <?php
-// Copyright (c) 2011-2011 Ártica Soluciones Tecnológicas
-// http://www.pandorafms.com  <info@artica.es>
+// Copyright (c) 2011-2023 Pandora FMS
+// http://www.pandorafms.com  <info@pandorafms.com>
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # (c) 2021 Sancho Lerena
-# (c) Artica Soluciones Tecnologicas
+# (c) Pandora FMS
 
 # Packet loss ICMP measurement remote plugin
 

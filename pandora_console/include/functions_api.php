@@ -7833,24 +7833,26 @@ function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
     }
 
     if (!empty($other['data'][0])) {
-        $agents = $other['data'];
+        $agents = explode(';', $other['data'][0]);
         $results = false;
         foreach ($agents as $agent) {
-            if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
-                $res = db_process_sql_insert(
-                    'tplanned_downtime_agents',
-                    [
-                        'id_agent'          => $agent,
-                        'id_downtime'       => $id,
-                        'all_modules'       => 0,
-                        'manually_disabled' => 0,
-                    ]
-                );
-                if ($res) {
-                    $results = true;
+            if (!empty($agent)) {
+                if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
+                    $res = db_process_sql_insert(
+                        'tplanned_downtime_agents',
+                        [
+                            'id_agent'          => $agent,
+                            'id_downtime'       => $id,
+                            'all_modules'       => 0,
+                            'manually_disabled' => 0,
+                        ]
+                    );
+                    if ($res) {
+                        $results = true;
+                    }
+                } else {
+                    returnError(" Agent $agent is already at the planned downtime.");
                 }
-            } else {
-                returnError(" Agent $agent is already at the planned downtime.");
             }
         }
 
@@ -11643,7 +11645,7 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11667,7 +11669,7 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], $group, 'PM')) {
+    if (!check_acl($config['id_user'], $group, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11702,7 +11704,7 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11726,7 +11728,7 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], $group, 'PM')) {
+    if (!check_acl($config['id_user'], $group, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11759,7 +11761,7 @@ function api_get_user_profiles_info($thrash1, $thrash2, $thrash3, $returnType)
 {
     global $config;
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -16972,7 +16974,7 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
-    if (!check_acl($config['id_user'], 0, 'AW')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }

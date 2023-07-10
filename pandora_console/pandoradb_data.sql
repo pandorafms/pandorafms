@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2014-2023 Artica PFMS
+-- Copyright (c) 2014-2023 Pandora FMS
 -- Please see http://www.pandorafms.com 
 
 -- Database Data for Pandora FMS NG

@@ -203,21 +203,27 @@ try {
 
                 switch ($key) {
                     case 'module_status':
-                        echo csv_format_delimiter(events_translate_module_status(
-                            $row[$key]
-                        ));
+                        echo csv_format_delimiter(
+                            events_translate_module_status(
+                                $row[$key]
+                            )
+                        );
                     break;
 
                     case 'event_type':
-                        echo csv_format_delimiter(events_translate_event_type(
-                            $row[$key]
-                        ));
+                        echo csv_format_delimiter(
+                            events_translate_event_type(
+                                $row[$key]
+                            )
+                        );
                     break;
 
                     case 'criticity':
-                        echo csv_format_delimiter(events_translate_event_criticity(
-                            $row[$key]
-                        ));
+                        echo csv_format_delimiter(
+                            events_translate_event_criticity(
+                                $row[$key]
+                            )
+                        );
                     break;
 
                     case 'custom_data':

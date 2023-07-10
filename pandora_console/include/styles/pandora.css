@@ -6923,6 +6923,10 @@ div.graph div.legend table {
 /*
 * MARGIN LEFT
 */
+.mrgn_lft-20px {
+  margin-left: -20px !important;
+}
+
 .mrgn_lft_05em {
   margin-left: 0.5em;
 }
@@ -7298,6 +7302,9 @@ div.graph div.legend table {
 
 .vertical_middle {
   vertical-align: middle;
+}
+.vertical_baseline {
+  vertical-align: baseline !important;
 }
 
 .mrg_btt_7 {
@@ -8378,6 +8385,11 @@ div.graph div.legend table {
 .flex_justify_end {
   display: flex;
   justify-content: end;
+}
+
+.justify-content-between {
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 
 .span_priority {
@@ -11907,6 +11919,32 @@ span.help_icon_15px > img {
   height: 65px !important;
   margin-top: 10px;
 }
+.order-arrows option {
+  position: relative;
+}
+.order-arrows option::before {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  top: 5px;
+  background-image: url(../../images/darrowup.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
+
+.order-arrows option::after {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  bottom: 6px;
+  background-image: url(../../images/darrowdown.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
 
 /* ==== Spinner ==== */
 .spinner-fixed {
@@ -12107,8 +12145,9 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 70%;
 }
 
 .step {
@@ -12140,7 +12179,7 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
 }
 
@@ -12258,6 +12297,11 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .toggle-traffic-graph {
   margin: 0px !important;
+}
+
+#grid_img {
+  position: absolute;
+  margin-top: -2px;
 }
 
 div#visual-console-container * {

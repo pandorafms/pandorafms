@@ -201,6 +201,25 @@ class TopNWidget extends Widget
             $values['period'] = SECONDS_1DAY;
         }
 
+        // Type graph.
+        $fields = [
+            'bar_vertical'   => __('Vertical bars'),
+            'bar_horizontal' => __('Horizontal bars'),
+            'pie'            => __('Pie'),
+        ];
+
+        $inputs[] = [
+            'label'     => __('Type of graph'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $fields,
+                'name'     => 'type_graph',
+                'selected' => $values['type_graph'],
+                'return'   => true,
+                'sort'     => false,
+            ],
+        ];
+
         // Agent.
         $inputs[] = [
             'label'     => __('Agent').ui_print_help_tip(
@@ -294,6 +313,25 @@ class TopNWidget extends Widget
             ],
         ];
 
+        // Legend.
+        $fields = [
+            'agent_module' => __('Agent & module'),
+            'agent'        => __('Agent'),
+            'module'       => __('Module'),
+        ];
+
+        $inputs[] = [
+            'label'     => __('Legend'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $fields,
+                'name'     => 'legend',
+                'selected' => $values['legend'],
+                'return'   => true,
+                'sort'     => false,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -314,6 +352,8 @@ class TopNWidget extends Widget
         $values['quantity'] = \get_parameter('quantity', 5);
         $values['order'] = \get_parameter('order', 1);
         $values['display'] = \get_parameter('display', REPORT_TOP_N_AVG);
+        $values['type_graph'] = \get_parameter('type_graph', 'bar_horizontal');
+        $values['legend'] = \get_parameter('legend', 'agent_module');
 
         return $values;
     }
@@ -476,13 +516,28 @@ class TopNWidget extends Widget
 
         foreach ($modules as $module) {
             $module['aliasAgent'] = ui_print_truncate_text($module['aliasAgent'], 20, false, true, false);
-            $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
+            switch ($this->values['legend']) {
+                case 'agent_module':
+                    $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
+                break;
+
+                case 'agent':
+                    $item_name = $module['aliasAgent'];
+                break;
+
+                case 'module':
+                    $item_name = $module['nameModule'];
+                break;
+
+                default:
+                    $item_name = $module['aliasAgent'].' - '.$module['nameModule'];
+                break;
+            }
+
             $labels[] = io_safe_output($item_name);
 
-            $data_hbar[] = [
-                'x' => $module[$display],
-                'y' => io_safe_output($item_name),
-            ];
+            $data[] = $module[$display];
+
             // Calculation of max-min values for show in graph.
             $calc = (ceil((5 * (float) $module[$display]) / 100) + $module[$display]);
             // Set of max-min values for graph.
@@ -502,27 +557,65 @@ class TopNWidget extends Widget
             $valueMax += 10;
         }
 
-        $height = (count($data_hbar) * 25 + 35);
+        $height = (count($data) * 25 + 35);
         $output .= '<div class="container-center">';
         $options = [
             'height' => $height,
-            'axis'   => 'y',
             'legend' => ['display' => false],
-            'scales' => [
+            'labels' => $labels,
+        ];
+
+        if ($this->values['type_graph'] !== 'pie') {
+            $options['scales'] = [
                 'x' => [
                     'grid' => ['display' => false],
                 ],
                 'y' => [
                     'grid' => ['display' => false],
                 ],
-            ],
-            'labels' => $labels,
-        ];
+            ];
+        }
 
-        $output .= vbar_graph(
-            $data_hbar,
-            $options
-        );
+        switch ($this->values['type_graph']) {
+            case 'bar_horizontal':
+                $options['axis'] = 'y';
+                $output .= vbar_graph(
+                    $data,
+                    $options
+                );
+            break;
+
+            case 'pie':
+                $empty = true;
+                foreach ($data as $key => $value) {
+                    if ($value > 0) {
+                        $empty = false;
+                        break;
+                    }
+                }
+
+                if ($empty === true) {
+                    $output .= html_print_image(
+                        'images/no_data_toshow.png',
+                        true,
+                        [ 'style' => 'width: 60%;' ]
+                    );
+                } else {
+                    $output .= pie_graph(
+                        $data,
+                        $options
+                    );
+                }
+            break;
+
+            default:
+                $output .= vbar_graph(
+                    $data,
+                    $options
+                );
+            break;
+        }
+
         $output .= '</div>';
 
         return $output;

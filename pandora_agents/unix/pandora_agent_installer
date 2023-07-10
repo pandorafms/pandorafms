@@ -2,7 +2,7 @@
 
 # **********************************************************************
 # Pandora FMS Agent Installer for Unix (generic installer)
-# (c) 2008-2015 Artica ST
+# (c) 2008-2023 Pandora FMS
 # (c) 2008-2010 Sancho Lerena <slerena@gmail.com>
 # 
 # This is a generic installer for all Unix-like systems.(AIX, HP-UX, SunOS, Linux, FreeBSD, NetBSD)
@@ -10,7 +10,7 @@
 # **********************************************************************
 
 PI_VERSION="7.0NG.772"
-PI_BUILD="230629"
+PI_BUILD="230710"
 OS_NAME=`uname -s`
 
 FORCE=0

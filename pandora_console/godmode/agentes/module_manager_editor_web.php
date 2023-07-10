@@ -113,7 +113,8 @@ if ($id_policy_module > 0) {
 $plugin_parameter_split = explode('&#x0a;', $plugin_parameter);
 $plugin_parameter_final_split = '';
 
-foreach ($plugin_parameter_split as $key => $value) {
+$new_plugin_parameter_split = array_filter($plugin_parameter_split, 'strlen');
+foreach ($new_plugin_parameter_split as $key => $value) {
     if (strpos($value, 'http_auth_user') === false && strpos($value, 'http_auth_pass') === false) {
         $plugin_parameter_final_split .= $value.'&#x0a;';
     }
@@ -317,8 +318,7 @@ foreach ($texts as $code => $text) {
                 return;
             }
 
-            $(plugin_parameter).val(
-                'task_begin\ncookie 0\nresource 0\ntask_end');
+            $(plugin_parameter).val('task_begin\ncookie 0\nresource 0\ntask_end');
 
             $('#button-btn_loadbasic').attr('disabled', 'disabled');
 

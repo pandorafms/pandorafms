@@ -4353,7 +4353,7 @@ function events_page_details($event, $server_id=0)
         } else if (can_user_access_node() && is_metaconsole()) {
             // Workaround to pass login hash data in POST body instead of directly in the URL.
             parse_str($hashstring, $url_hash_array);
-            $redirection_form = "<form id='agent-redirection' method='POST' action='".$serverstring."index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event['id_agente']."'>";
+            $redirection_form = "<form id='agent-redirection' method='POST' action='".$serverstring.'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$event['id_agente']."'>";
             $redirection_form .= html_print_input_hidden(
                 'loginhash',
                 $url_hash_array['loginhash'],

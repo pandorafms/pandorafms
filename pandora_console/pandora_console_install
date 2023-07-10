@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Pandora FMS Console Installer (c) 2008-2015 Artica ST
+# Pandora FMS Console Installer (c) 2008-2023 Pandora FMS
 # Linux/FreeBSD/NetBSD Version (generic), for SuSe, Debian/Ubuntu,
 # RHEL/CentOS, Fedora, FreeBSD and NetBSD only
 # other Linux distros could not work properly without modifications

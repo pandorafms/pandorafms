@@ -84,7 +84,7 @@ check_cmd_status () {
 check_pre_pandora () {
 
     echo -en "${cyan}Checking environment ... ${reset}"
-    rpm -qa | grep -v "pandorawmic" | grep 'pandorafms_'  &>> /dev/null && local fail=true
+    rpm -qa | grep 'pandorafms_' | grep -v pandorafms_agent_* | grep -v "pandorawmic"  &>> /dev/null && local fail=true
     [ -d "$PANDORA_CONSOLE" ] && local fail=true
     [ -f /usr/bin/pandora_server ] && local fail=true
 

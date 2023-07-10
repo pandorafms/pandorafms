@@ -1,7 +1,7 @@
 /* Class to manage the Windows Management Instrumentation(WMI).
    It depends on disphelper library (http://disphelper.sourceforge.net)
 
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -99,7 +99,7 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 	string        query;
 	char         *state;
 	string        str_state;
-	int           retval;
+	int           retval = -1;
 
 	query = "SELECT * FROM Win32_Service WHERE Name = \"" + service_name + "\"";
 
@@ -112,23 +112,27 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%s", &state, quickfix,
 				    L".State");
-			str_state = state;
-			if (str_state == "Running") {
-				retval = 1;
-			}
-			else {
-				retval = 0;
+			if (retval == -1) {
+				str_state = state;
+				if (str_state == "Running") {
+					retval = 1;
+				}
+				else {
+					retval = 0;
+				}
 			}
 			dhFreeString (state);
-
-			return retval;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("isServiceRunning error. %s", errstr.c_str ());
 	}
 
-	pandoraDebug ("Service %s not found.", service_name.c_str ());
-	return 0;
+	if (retval == -1) {
+		pandoraDebug ("Service %s not found.", service_name.c_str ());
+		return 0;
+	}
+
+	return retval;
 }
 
 /** 
@@ -1261,7 +1265,7 @@ Pandora_Wmi::getSystemAddress () {
 	CDispPtr      wmi_svc =  NULL, nic_info = NULL;
     VARIANT ip_addresses;
 	char         *caption  = NULL, *mac_address = NULL;
-	string        ret = "";
+	string        str_addr, ret = "";
 
  	try {
 
@@ -1274,12 +1278,12 @@ Pandora_Wmi::getSystemAddress () {
 		    dhGetValue (L"%v", &ip_addresses, nic_info_item,
 				    L".IPAddress");
 			
-		    if (&ip_addresses != NULL)
+		    if (&ip_addresses != NULL && ret == "")
 		    {
-               ret = getIPs(&ip_addresses);
-			   if(ret != "0.0.0.0") {
-					break;
-			   }
+				str_addr = getIPs(&ip_addresses);
+				if (str_addr != "0.0.0.0") {
+					ret = str_addr;
+				}
             }			
 		} NEXT_THROW (nic_info_item);
 	} catch (string errstr) {

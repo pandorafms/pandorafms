@@ -9,12 +9,12 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ==========================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnológicas S.L
+ * Copyright (c) 2005-2023 Pandora FMS
  * This code is NOT free software. This code is NOT licenced under GPL2 licence
  * You cannot redistribute it without written permission of copyright holder.
  * ============================================================================
@@ -228,12 +228,25 @@ if ($get_agent_alerts_agent_view) {
     } else {
         $whereAlertSimple .= sprintf(
             ' AND id_agent_module IN (
-            SELECT tam.id_agente_modulo
-            FROM tagente_modulo tam
-            WHERE tam.id_agente IN (SELECT ta.id_agente
-                FROM tagente ta LEFT JOIN tagent_secondary_group tasg ON
-                    ta.id_agente = tasg.id_agent
-                    WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)))) ',
+                SELECT tam.id_agente_modulo
+                FROM tagente_modulo tam
+                WHERE tam.id_agente IN (
+                    SELECT
+                        ta.id_agente
+                    FROM
+                        tagente ta
+                    WHERE
+                        ta.id_grupo IN (%s)
+                )
+                OR tam.id_agente IN (
+                    SELECT
+                        DISTINCT(tasg.id_agent)
+                    FROM
+                        tagent_secondary_group tasg
+                    WHERE
+                        tasg.id_group IN (%s)
+                )
+            ) ',
             implode(',', $id_groups),
             implode(',', $id_groups)
         );
@@ -406,6 +419,19 @@ if ($get_actions_module) {
 }
 
 if ($show_update_action_menu) {
+    if (is_metaconsole()) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_name = explode(' ', io_safe_output(get_parameter('id_agent')))[0];
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                echo json_encode(false);
+                // Restore db connection.
+                metaconsole_restore_db();
+                return;
+            }
+        }
+    }
+
     if (! check_acl($config['id_user'], 0, 'LW')) {
         db_pandora_audit(
             AUDIT_LOG_ACL_VIOLATION,
@@ -436,7 +462,12 @@ if ($show_update_action_menu) {
         $id_action
     );
 
-    $data .= '<form id="update_action-'.$id_alert.'" method="post" style="height:85%;">';
+    if (is_metaconsole()) {
+        $data .= '<form id="update_action-'.$id_alert.'" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list">';
+    } else {
+        $data .= '<form id="update_action-'.$id_alert.'" method="post" style="height:85%;">';
+    }
+
     $data .= '<table class="w100p bg_color222" style="height:100%;">';
         $data .= html_print_input_hidden(
             'update_action',
@@ -451,6 +482,11 @@ if ($show_update_action_menu) {
         $data .= html_print_input_hidden(
             'id_module_action_ajax',
             $id_action,
+            true
+        );
+        $data .= html_print_input_hidden(
+            'id_agent',
+            $server_name,
             true
         );
     if (! $id_agente) {
@@ -535,9 +571,14 @@ if ($show_update_action_menu) {
                 );
             $data .= '</td>';
         $data .= '</tr>';
+
+    if (isset($action_option['module_action_threshold']) === false) {
+        $action_option['module_action_threshold'] = '300';
+    }
+
         $data .= '<tr class="datos2">';
             $data .= '<td class="datos2 bolder pdd_6px font_10pt">';
-                $data .= __('Threshold');
+                $data .= __('Threshold').ui_print_help_tip(__('If a value of 0 is assigned, the Threshold of the action will be used.'), true);
             $data .= '</td>';
             $data .= '<td class="datos2">';
                 $data .= html_print_extended_select_for_time(
@@ -555,7 +596,7 @@ if ($show_update_action_menu) {
                     false,
                     '',
                     false,
-                    true
+                    false
                 );
             $data .= '</td>';
         $data .= '</tr>';
@@ -571,6 +612,11 @@ if ($show_update_action_menu) {
         true
     );
     $data .= '</form>';
+    if (is_metaconsole()) {
+        // Restore db connection.
+        metaconsole_restore_db();
+    }
+
     echo $data;
     return;
 }
@@ -833,12 +879,20 @@ if ($get_agent_alerts_datatable === true) {
         } else {
             $whereAlertSimple .= sprintf(
                 ' AND id_agent_module IN (
-            SELECT tam.id_agente_modulo
-            FROM tagente_modulo tam
-            WHERE tam.id_agente IN (SELECT ta.id_agente
-                FROM tagente ta LEFT JOIN tagent_secondary_group tasg ON
-                    ta.id_agente = tasg.id_agent
-                    WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)))) ',
+                    SELECT tam.id_agente_modulo
+                    FROM tagente_modulo tam
+                    WHERE
+                    tam.id_agente IN (
+                        SELECT ta.id_agente
+                        FROM tagente ta
+                        WHERE ta.id_grupo IN (%s)
+                    )
+                    OR tam.id_agente IN (
+                        SELECT DISTINCT(tasg.id_agent)
+                        FROM tagent_secondary_group tasg
+                        WHERE tasg.id_group IN (%s)
+                    )
+                ) ',
                 implode(',', $id_groups),
                 implode(',', $id_groups)
             );
@@ -928,22 +982,23 @@ if ($get_agent_alerts_datatable === true) {
                         $tmp->force = $row[2];
                         $tmp->agent_name = $row[3];
                         $tmp->agent_module_name = $row[4];
-                        $tmp->template_name = $row[5];
-                        $tmp->action = $row[6];
-                        $tmp->last_fired = $row[7];
-                        $tmp->status = $row[8];
-                        $tmp->validate = $row[9];
+                        $tmp->template_name = $row[5].$row[6];
+                        $tmp->action = $row[7];
+                        $tmp->last_fired = $row[8];
+                        $tmp->status = $row[9];
+                        $tmp->validate = $row[10];
+                        $tmp->actions = $row[11];
                     } else {
                         // Open.
                         $tmp->standby = $row[0];
                         $tmp->force = $row[1];
                         $tmp->agent_name = $row[2];
                         $tmp->agent_module_name = $row[3];
-                        $tmp->template_name = $row[4];
-                        $tmp->action = $row[5];
-                        $tmp->last_fired = $row[6];
-                        $tmp->status = $row[7];
-                        $tmp->validate = $row[8];
+                        $tmp->template_name = $row[4].$row[5];
+                        $tmp->action = $row[6];
+                        $tmp->last_fired = $row[7];
+                        $tmp->status = $row[8];
+                        $tmp->validate = $row[9];
                     }
 
                     $carry[] = $tmp;

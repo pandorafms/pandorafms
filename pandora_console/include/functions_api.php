@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -7833,24 +7833,26 @@ function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
     }
 
     if (!empty($other['data'][0])) {
-        $agents = $other['data'];
+        $agents = explode(';', $other['data'][0]);
         $results = false;
         foreach ($agents as $agent) {
-            if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
-                $res = db_process_sql_insert(
-                    'tplanned_downtime_agents',
-                    [
-                        'id_agent'          => $agent,
-                        'id_downtime'       => $id,
-                        'all_modules'       => 0,
-                        'manually_disabled' => 0,
-                    ]
-                );
-                if ($res) {
-                    $results = true;
+            if (!empty($agent)) {
+                if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
+                    $res = db_process_sql_insert(
+                        'tplanned_downtime_agents',
+                        [
+                            'id_agent'          => $agent,
+                            'id_downtime'       => $id,
+                            'all_modules'       => 0,
+                            'manually_disabled' => 0,
+                        ]
+                    );
+                    if ($res) {
+                        $results = true;
+                    }
+                } else {
+                    returnError(" Agent $agent is already at the planned downtime.");
                 }
-            } else {
-                returnError(" Agent $agent is already at the planned downtime.");
             }
         }
 
@@ -8610,7 +8612,7 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
         return;
     }
 
-    $new_configuration_data = io_safe_output(urldecode($configuration_data_serialized['data']));
+    $new_configuration_data = io_safe_output(base64_decode($configuration_data_serialized['data']));
 
     // Get current configuration.
     $old_configuration_data = config_agents_get_module_from_conf($id_agent, io_safe_output($module_name));
@@ -9612,6 +9614,7 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
     $values['section'] = $other['data'][11];
     $values['session_time'] = $other['data'][12];
     $values['metaconsole_access_node'] = $other['data'][13];
+    $values['api_token'] = api_token_generate();
 
     if (empty($password) === true) {
         returnError('Password cannot be empty.');
@@ -9708,6 +9711,8 @@ function api_set_update_user($id, $thrash2, $other, $thrash3)
         if (!update_user_password($id, $other['data'][4])) {
             returnError('The user could not be updated. Password info incorrect.');
             return;
+        } else {
+            $values['api_token'] = api_token_generate();
         }
     }
 
@@ -11640,7 +11645,7 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11664,7 +11669,7 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], $group, 'PM')) {
+    if (!check_acl($config['id_user'], $group, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11699,7 +11704,7 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11723,7 +11728,7 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], $group, 'PM')) {
+    if (!check_acl($config['id_user'], $group, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11756,7 +11761,7 @@ function api_get_user_profiles_info($thrash1, $thrash2, $thrash3, $returnType)
 {
     global $config;
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -16969,7 +16974,7 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
-    if (!check_acl($config['id_user'], 0, 'AW')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }

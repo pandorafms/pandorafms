@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -146,6 +146,10 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
         $id_news = (int) get_parameter('id_news', 0);
 
         $result = db_get_row('tnews', 'id_news', $id_news);
+
+        if ($result['text'] == '&amp;lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;font-size:&#x20;13px;&quot;&amp;gt;Hello,&#x20;congratulations,&#x20;if&#x20;you&apos;ve&#x20;arrived&#x20;here&#x20;you&#x20;already&#x20;have&#x20;an&#x20;operational&#x20;monitoring&#x20;console.&#x20;Remember&#x20;that&#x20;our&#x20;forums&#x20;and&#x20;online&#x20;documentation&#x20;are&#x20;available&#x20;24x7&#x20;to&#x20;get&#x20;you&#x20;out&#x20;of&#x20;any&#x20;trouble.&#x20;You&#x20;can&#x20;replace&#x20;this&#x20;message&#x20;with&#x20;a&#x20;personalized&#x20;one&#x20;at&#x20;Admin&#x20;tools&#x20;-&amp;amp;gt;&#x20;Site&#x20;news.&amp;lt;/p&amp;gt;&#x20;') {
+            header('Location: '.ui_get_full_url('index.php?sec=gextensions&sec2=godmode/setup/news'));
+        }
 
         if ($result !== false) {
             $subject = $result['subject'];
@@ -355,42 +359,37 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
         echo '</tr></thead>';
 
 
-        $color = 1;
         foreach ($rows as $row) {
-            if ($color == 1) {
-                $tdcolor = 'datos';
-                $color = 0;
+            if ($row['text'] == '&amp;lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;font-size:&#x20;13px;&quot;&amp;gt;Hello,&#x20;congratulations,&#x20;if&#x20;you&apos;ve&#x20;arrived&#x20;here&#x20;you&#x20;already&#x20;have&#x20;an&#x20;operational&#x20;monitoring&#x20;console.&#x20;Remember&#x20;that&#x20;our&#x20;forums&#x20;and&#x20;online&#x20;documentation&#x20;are&#x20;available&#x20;24x7&#x20;to&#x20;get&#x20;you&#x20;out&#x20;of&#x20;any&#x20;trouble.&#x20;You&#x20;can&#x20;replace&#x20;this&#x20;message&#x20;with&#x20;a&#x20;personalized&#x20;one&#x20;at&#x20;Admin&#x20;tools&#x20;-&amp;amp;gt;&#x20;Site&#x20;news.&amp;lt;/p&amp;gt;&#x20;') {
+                echo '<tr><td><b>'.__('Welcome to Pandora FMS Console').'</b></td>';
             } else {
-                $tdcolor = 'datos2';
-                $color = 1;
+                echo "<tr><td><b><a href='index.php?sec=gsetup&sec2=godmode/setup/news&form_edit=1&id_news=".$row['id_news']."'>".$row['subject'].'</a></b></td>';
             }
-
-            echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/news&form_edit=1&id_news=".$row['id_news']."'>".$row['subject'].'</a></b></td>';
 
             if ($row['modal']) {
-                echo "<td class='$tdcolor'>".__('Modal').'</b></td>';
+                echo '<td>'.__('Modal').'</b></td>';
             } else {
-                echo "<td class='$tdcolor'>".__('Board').'</b></td>';
+                echo '<td>'.__('Board').'</b></td>';
             }
 
-            echo "<td class='$tdcolor'>".$row['author'].'</b></td>';
+            echo '<td>'.$row['author'].'</b></td>';
             $utimestamp = time_w_fixed_tz($row['timestamp']);
-            echo "<td class='$tdcolor'>".date($config['date_format'], $utimestamp).'</b></td>';
+            echo '<td>'.date($config['date_format'], $utimestamp).'</b></td>';
             if ($row['expire']) {
                 $expire_utimestamp = time_w_fixed_tz($row['expire_timestamp']);
                 $expire_in_secs = ($expire_utimestamp - $utimestamp);
 
                 if ($expire_in_secs <= 0) {
-                    echo "<td class='$tdcolor'>".__('Expired').'</b></td>';
+                    echo '<td>'.__('Expired').'</b></td>';
                 } else {
                     $expire_in = human_time_description_raw($expire_in_secs, false, 'large');
-                    echo "<td class='$tdcolor'>".$expire_in.'</b></td>';
+                    echo '<td>'.$expire_in.'</b></td>';
                 }
             } else {
-                echo "<td class='$tdcolor'>".__('No').'</b></td>';
+                echo '<td>'.__('No').'</b></td>';
             }
 
-            echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter']).'</a></td></tr>';
+            echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter main_menu_icon']).'</a></td></tr>';
         }
 
         echo '</table>';

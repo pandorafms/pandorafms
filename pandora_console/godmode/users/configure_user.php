@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -54,9 +54,26 @@ if ($enterprise_include === true) {
     enterprise_include_once('meta/include/functions_users_meta.php');
 }
 
+$homeScreenValues = [
+    HOME_SCREEN_DEFAULT        => __('Default'),
+    HOME_SCREEN_VISUAL_CONSOLE => __('Visual console'),
+    HOME_SCREEN_EVENT_LIST     => __('Event list'),
+    HOME_SCREEN_GROUP_VIEW     => __('Group view'),
+    HOME_SCREEN_TACTICAL_VIEW  => __('Tactical view'),
+    HOME_SCREEN_ALERT_DETAIL   => __('Alert detail'),
+    HOME_SCREEN_EXTERNAL_LINK  => __('External link'),
+    HOME_SCREEN_OTHER          => __('Other'),
+    HOME_SCREEN_DASHBOARD      => __('Dashboard'),
+];
+
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 $id = get_parameter('id', get_parameter('id_user', ''));
+
+if (empty($id) === true) {
+    $id = $config['id_user'];
+}
+
 // Check if we are the same user for edit or we have a proper profile for edit users.
 if ($id !== $config['id_user']) {
     if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
@@ -73,97 +90,18 @@ if ($id !== $config['id_user']) {
 // ID given as parameter.
 $pure = get_parameter('pure', 0);
 $user_info = get_user_info($id);
+
+if (is_metaconsole() === true) {
+    $user_info['section'] = $user_info['metaconsole_section'];
+    $user_info['data_section'] = $user_info['metaconsole_data_section'];
+    $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
+}
+
 $is_err = false;
 
 if (is_ajax() === true) {
     $delete_profile = (bool) get_parameter('delete_profile');
     $get_user_profile = (bool) get_parameter('get_user_profile');
-
-    if ($delete_profile === true) {
-        $id2 = (string) get_parameter('id_user');
-        $id_up = (int) get_parameter('id_user_profile');
-
-        $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
-        $id_perfil = $perfilUser['id_perfil'];
-        $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
-
-        db_pandora_audit(
-            AUDIT_LOG_USER_MANAGEMENT,
-            'Deleted profile for user '.io_safe_output($id2),
-            false,
-            false,
-            'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
-        );
-
-        $return = profile_delete_user_profile($id2, $id_up);
-        ui_print_result_message(
-            $return,
-            __('Successfully deleted'),
-            __('Could not be deleted')
-        );
-
-
-        $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
-        $user_is_global_admin = users_is_admin($id2);
-
-        if ($has_profile === false && $user_is_global_admin === false) {
-            $result = delete_user($id2);
-
-            if ($result === true) {
-                db_pandora_audit(
-                    AUDIT_LOG_USER_MANAGEMENT,
-                    __('Deleted user %s', io_safe_output($id_user))
-                );
-            }
-
-            ui_print_result_message(
-                $result,
-                __('Successfully deleted'),
-                __('There was a problem deleting the user')
-            );
-
-            // Delete the user in all the consoles.
-            if (is_metaconsole() === true) {
-                $servers = metaconsole_get_servers();
-                foreach ($servers as $server) {
-                    // Connect to the remote console.
-                    metaconsole_connect($server);
-
-                    // Delete the user.
-                    $result = delete_user($id_user);
-                    if ($result === true) {
-                        db_pandora_audit(
-                            AUDIT_LOG_USER_MANAGEMENT,
-                            __('Deleted user %s from metaconsole', io_safe_output($id_user))
-                        );
-                    }
-
-                    // Restore the db connection.
-                    metaconsole_restore_db();
-
-                    // Log to the metaconsole too.
-                    if ($result === true) {
-                        db_pandora_audit(
-                            AUDIT_LOG_USER_MANAGEMENT,
-                            __(
-                                'Deleted user %s from %s',
-                                io_safe_input($id_user),
-                                io_safe_input($server['server_name'])
-                            )
-                        );
-                    }
-
-                    ui_print_result_message(
-                        $result,
-                        __('Successfully deleted from %s', io_safe_input($server['server_name'])),
-                        __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
-                    );
-                }
-            }
-        }
-
-        return;
-    }
 
     if ($get_user_profile === true) {
         $profile_id = (int) get_parameter('profile_id');
@@ -263,8 +201,9 @@ if (is_metaconsole() === true) {
         $buttons[$tab]['active'] = true;
     }
 
+    $edit_user = get_parameter('edit_user');
     ui_print_standard_header(
-        (empty($id) === false) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
+        ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         'images/gm_users.png',
         false,
         '',
@@ -296,7 +235,7 @@ if ((bool) $config['user_can_update_info'] === true) {
     $view_mode = true;
 }
 
-$delete_profile = (is_ajax() === true) ? (bool) get_parameter('delete_profile') : false;
+$delete_profile = (bool) get_parameter('delete_profile');
 $new_user = (bool) get_parameter('new_user');
 $create_user = (bool) get_parameter('create_user');
 $add_profile = (bool) get_parameter('add_profile');
@@ -414,6 +353,7 @@ if ($create_user === true) {
         $values['data_section'] = get_parameter('data_section');
     }
 
+    // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;
         $values['last_pass_change'] = date('Y/m/d H:i:s', get_system_time());
@@ -430,6 +370,9 @@ if ($create_user === true) {
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
 
+    // Previously defined.
+    $values['autorefresh_white_list'] = $autorefresh_white_list;
+
     // eHorus user level conf.
     if ((bool) $config['ehorus_user_level_conf'] === true) {
         $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
@@ -444,10 +387,18 @@ if ($create_user === true) {
 
     // Generate new API token.
     $values['api_token'] = api_token_generate();
-
-    if (empty($id) === true) {
+    // Validate the user ID if it already exists.
+    $user_exists = get_user_info($values['id_user']);
+    if (empty($values['id_user']) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
+        $user_info = $values;
+        $password_new = '';
+        $password_confirm = '';
+        $new_user = true;
+    } else if (isset($user_exists['id_user'])) {
+        $is_err = true;
+        ui_print_error_message(__('User ID already exists'));
         $user_info = $values;
         $password_new = '';
         $password_confirm = '';
@@ -696,20 +647,37 @@ if ($update_user) {
         $values['data_section'] = get_parameter('data_section');
     }
 
+    // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true && is_metaconsole() === true) {
-        $values['metaconsole_access'] = get_parameter('metaconsole_access');
-        $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
-        $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
+        if (users_is_admin() === true) {
+            $values['metaconsole_access'] = get_parameter('metaconsole_access');
+            $values['metaconsole_agents_manager'] = get_parameter('metaconsole_agents_manager', '0');
+            $values['metaconsole_access_node'] = get_parameter('metaconsole_access_node', '0');
+        } else {
+            $values['metaconsole_access'] = $user_info['metaconsole_access'];
+            $values['metaconsole_agents_manager'] = $user_info['metaconsole_agents_manager'];
+            $values['metaconsole_access_node'] = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
+        }
     }
 
     $values['not_login'] = (bool) get_parameter('not_login', false);
     $values['local_user'] = (bool) get_parameter('local_user', false);
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
+
+    $force_update_session_expire = false;
+    if ($values['session_time'] !== $user_info['session_time']) {
+        $force_update_session_expire = true;
+    }
+
     // Previously defined.
     $values['autorefresh_white_list'] = $autorefresh_white_list;
 
     $res1 = update_user($id, $values);
+
+    if ($force_update_session_expire === true) {
+        config_prepare_expire_time_session(true);
+    }
 
     if ($config['user_can_update_password']) {
         $password_new = (string) get_parameter('password_new', '');
@@ -748,6 +716,10 @@ if ($update_user) {
                                     ]
                                 );
                                 $res3 = save_pass_history($id, $password_new);
+
+                                // Generate new API token.
+                                $newToken = api_token_generate();
+                                $res4 = update_user($id, ['api_token' => $newToken]);
                             }
 
                             ui_print_result_message(
@@ -772,6 +744,10 @@ if ($update_user) {
                                     'utimestamp'  => time(),
                                 ]
                             );
+
+                            // Generate new API token.
+                            $newToken = api_token_generate();
+                            $res4 = update_user($id, ['api_token' => $newToken]);
                         }
 
                         ui_print_result_message(
@@ -884,6 +860,89 @@ if ($update_user) {
     }
 
     $user_info = $values;
+}
+
+if ($delete_profile) {
+    $id2 = (string) get_parameter('id_user');
+    $id_up = (int) get_parameter('id_user_profile');
+    $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
+    $id_perfil = $perfilUser['id_perfil'];
+    $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
+
+    db_pandora_audit(
+        AUDIT_LOG_USER_MANAGEMENT,
+        'Deleted profile for user '.io_safe_output($id2),
+        false,
+        false,
+        'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
+    );
+
+    $return = profile_delete_user_profile($id2, $id_up);
+    ui_print_result_message(
+        $return,
+        __('Successfully deleted'),
+        __('Could not be deleted')
+    );
+
+
+    $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
+    $user_is_global_admin = users_is_admin($id2);
+
+    if ($has_profile === false && $user_is_global_admin === false) {
+        $result = delete_user($id2);
+
+        if ($result === true) {
+            db_pandora_audit(
+                AUDIT_LOG_USER_MANAGEMENT,
+                __('Deleted user %s', io_safe_output($id_user))
+            );
+        }
+
+        ui_print_result_message(
+            $result,
+            __('Successfully deleted'),
+            __('There was a problem deleting the user')
+        );
+
+        // Delete the user in all the consoles.
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            foreach ($servers as $server) {
+                // Connect to the remote console.
+                metaconsole_connect($server);
+
+                // Delete the user.
+                $result = delete_user($id_user);
+                if ($result === true) {
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_MANAGEMENT,
+                        __('Deleted user %s from metaconsole', io_safe_output($id_user))
+                    );
+                }
+
+                // Restore the db connection.
+                metaconsole_restore_db();
+
+                // Log to the metaconsole too.
+                if ($result === true) {
+                    db_pandora_audit(
+                        AUDIT_LOG_USER_MANAGEMENT,
+                        __(
+                            'Deleted user %s from %s',
+                            io_safe_input($id_user),
+                            io_safe_input($server['server_name'])
+                        )
+                    );
+                }
+
+                ui_print_result_message(
+                    $result,
+                    __('Successfully deleted from %s', io_safe_input($server['server_name'])),
+                    __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
+                );
+            }
+        }
+    }
 }
 
 if ((int) $status !== -1) {
@@ -1026,9 +1085,11 @@ if (!$new_user) {
         'show_api_token',
         false,
         sprintf(
-            'javascript:showAPIToken("%s", "%s")',
+            'javascript:showAPIToken("%s", "%s", "%s", "%s")',
             __('API Token'),
-            base64_encode(__('Your API Token is:').'&nbsp;<br><span class="font_12pt bolder">'.users_get_API_token($id).'</span><br>&nbsp;'.__('Please, avoid share this string with others.')),
+            __('Your API Token is:'),
+            base64_encode(users_get_API_token($id)),
+            __('Please, avoid share this string with others.'),
         ),
         [
             'mode'  => 'link',
@@ -1441,6 +1502,10 @@ foreach ($event_filter_data as $filter) {
     $event_filter[$filter['id_filter']] = $filter['id_name'];
 }
 
+if (is_metaconsole() === true && empty($user_info['metaconsole_default_event_filter']) !== true) {
+    $user_info['default_event_filter'] = $user_info['metaconsole_default_event_filter'];
+}
+
 $default_event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Default event filter').'</p>';
 $default_event_filter .= html_print_select(
     $event_filter,
@@ -1571,7 +1636,8 @@ $autorefresh_list_out['operation/events/events'] = 'Events';
 if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
     $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
-    if ($autorefresh_list === null) {
+    if ($autorefresh_list === null || $autorefresh_list === 0) {
+        $autorefresh_list = [];
         $autorefresh_list[0] = __('None');
     } else {
         $aux = [];
@@ -1778,7 +1844,6 @@ if (is_metaconsole() === false) {
         });
 
         $("#button-uptbutton").click (function () {
-            console.log('aaaaaaaaaaaaa');
             if($("#autorefresh_list option").length > 0) {
                 $('#autorefresh_list option').prop('selected', true);
             }

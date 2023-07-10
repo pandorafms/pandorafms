@@ -480,6 +480,10 @@ function umShowUpdateDetails(update) {
   }
 }
 
+function changelog() {
+  window.open("https://pandorafms.com/en/changelog/", "_blank").focus();
+}
+
 function umToggleUpdateList() {
   if (typeof toggleUpdateList == "function") {
     toggleUpdateList();

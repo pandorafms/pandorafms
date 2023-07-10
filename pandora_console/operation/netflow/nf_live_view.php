@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -85,7 +85,7 @@ if (is_ajax() === true) {
 
 // Read filter configuration.
 $filter_id = (int) get_parameter('filter_id', 0);
-$filter['id_name'] = get_parameter('name', '');
+$filter['id_name'] = get_parameter('new_filter_name', '');
 $filter['id_group'] = (int) get_parameter('assign_group', 0);
 $filter['aggregate'] = get_parameter('aggregate', '');
 $filter['ip_dst'] = get_parameter('ip_dst', '');
@@ -161,6 +161,10 @@ if ($is_windows === true) {
 if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
     // Save filter args.
     $filter['filter_args'] = netflow_get_filter_arguments($filter, true);
+
+    if ($filter['id_name'] === '') {
+        $filter['id_name'] = 'Netflow_Filter_'.time();
+    }
 
     $filter_id = db_process_sql_insert('tnetflow_filter', $filter);
     if ($filter_id === false) {
@@ -379,6 +383,9 @@ $advanced_toggle .= '<td colspan="2">'.html_print_checkbox_switch(
     false,
     'displayMonitoringFilter()',
 ).'</td>';
+
+$advanced_toggle .= '<td><b>'.__('New filter name').'</b></td>';
+$advanced_toggle .= '<td>'.html_print_input_text('new_filter_name', '', false, 40, 80, true).'</td>';
 
 $advanced_toggle .= '<tr id="netlofw_monitoring_filters">';
 $advanced_toggle .= "<td style='font-weight:bold;'>".__('Netflow monitoring interval').ui_print_help_tip(__('Netflow monitoring interval in secs.'), true).'</td>';
@@ -719,6 +726,12 @@ ui_include_time_picker();
 <style>
     .parent_graph {
         margin: 0 auto !important;
+    }
+    .menu_graph{
+        display: none;
+    }
+    .parent_graph{
+        width: 97% !important;
     }
 </style>
 

@@ -1,5 +1,5 @@
 /* Common functions to any Pandora program.
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
    
    This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ using namespace Pandora;
 using namespace Pandora_Strutils;
 
 #define PATH_SIZE    _MAX_PATH+1
-#define PANDORA_VERSION ("7.0NG.771 Build 230511")
+#define PANDORA_VERSION ("7.0NG.772 Build 230710")
 
 string pandora_path;
 string pandora_dir;

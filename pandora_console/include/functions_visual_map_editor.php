@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -130,18 +130,16 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'datos',
                 'box_item',
             ];
-            $form_items['border_color_row']['html'] = '<td align="left" valign="top"  >'.__('Border color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
+            $form_items['border_color_row']['html'] = '<td align="left" valign="top"  >'.__('Border color').'</td>';
+            $form_items['border_color_row']['html'] .= '<td align="left"  >';
+            $form_items['border_color_row']['html'] .= html_print_input_color(
                 'border_color',
                 '#000000',
                 'text-border_color',
                 '',
-                7,
-                7,
-                false,
-                '',
-                'class="border_color"',
                 true
-            ).'</td>';
+            );
+            $form_items['border_color_row']['html'] .= '</td>';
 
             $form_items['border_width_row'] = [];
             $form_items['border_width_row']['items'] = [
@@ -157,18 +155,16 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'box_item',
                 'clock',
             ];
-            $form_items['fill_color_row']['html'] = '<td align="left" valign="top"  >'.__('Fill color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
+            $form_items['fill_color_row']['html'] = '<td align="left" valign="top"  >'.__('Fill color').'</td>';
+            $form_items['fill_color_row']['html'] .= '<td align="left"  >';
+            $form_items['fill_color_row']['html'] .= html_print_input_color(
                 'fill_color',
                 '#000000',
                 'text-fill_color',
                 '',
-                7,
-                7,
-                false,
-                '',
-                'class="fill_color"',
                 true
-            ).'</td>';
+            );
+            $form_items['fill_color_row']['html'] .= '</td>';
 
             $form_items['module_graph_size_row'] = [];
             $form_items['module_graph_size_row']['items'] = [
@@ -375,18 +371,16 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
 
             $form_items['grid_color_row'] = [];
             $form_items['grid_color_row']['items'] = ['bars_graph'];
-            $form_items['grid_color_row']['html'] = '<td align="left" valign="top"  >'.__('Grid color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
+            $form_items['grid_color_row']['html'] = '<td align="left" valign="top">'.__('Grid color').'</td>';
+            $form_items['grid_color_row']['html'] .= '<td align="left"  >';
+            $form_items['grid_color_row']['html'] .= html_print_input_color(
                 'grid_color',
                 '#000000',
                 'text-grid_color',
                 '',
-                7,
-                7,
-                false,
-                '',
-                'class="grid_color"',
                 true
-            ).'</td>';
+            );
+            $form_items['grid_color_row']['html'] .= '</td>';
 
             $form_items['radio_choice_graph'] = [];
             $form_items['radio_choice_graph']['items'] = [
@@ -500,18 +494,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
 
             $form_items['resume_color_row'] = [];
             $form_items['resume_color_row']['items'] = ['donut_graph'];
-            $form_items['resume_color_row']['html'] = '<td align="left" valign="top"  >'.__('Resume data color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
+            $form_items['resume_color_row']['html'] = '<td align="left" valign="top"  >';
+            $form_items['resume_color_row']['html'] .= __('Resume data color');
+            $form_items['resume_color_row']['html'] .= '</td>';
+            $form_items['resume_color_row']['html'] .= '<td align="left"  >';
+            $form_items['resume_color_row']['html'] .= html_print_input_color(
                 'resume_color',
                 '#000000',
                 'text-resume_color',
                 '',
-                7,
-                7,
-                false,
-                '',
-                'class="resume_color"',
                 true
-            ).'</td>';
+            );
+            $form_items['resume_color_row']['html'] .= '</td>';
 
             $event_times = [
                 86400 => __('24h'),
@@ -637,24 +631,60 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'background',
                 'datos',
             ];
-            $form_items['background_row_2']['html'] = '<td align="left">'.__('Original Size').'</td>
-				<td align="left">'.html_print_button(__('Apply'), 'original_false', false, "setAspectRatioBackground('original')", 'class="sub vs_button_ghost"', true).'</td>';
+            $form_items['background_row_2']['html'] = '<td align="left">'.__('Original Size').'</td>';
+            $form_items['background_row_2']['html'] .= '<td align="left">';
+            $form_items['background_row_2']['html'] .= html_print_button(
+                __('Apply'),
+                'original_false',
+                false,
+                'setAspectRatioBackground("original", '.$visualConsole_id.')',
+                [
+                    'icon' => 'cog',
+                    'mode' => 'mini secondary',
+                ],
+                true
+            );
+            $form_items['background_row_2']['html'] .= '</td>';
 
             $form_items['background_row_3'] = [];
             $form_items['background_row_3']['items'] = [
                 'background',
                 'datos',
             ];
-            $form_items['background_row_3']['html'] = '<td align="left">'.__('Aspect ratio').'</td>
-				<td align="left">'.html_print_button(__('Proportional Width'), 'original_false', false, "setAspectRatioBackground('width')", 'class="sub vs_button_ghost"', true).'</td>';
+            $form_items['background_row_3']['html'] = '<td align="left">'.__('Aspect ratio').'</td>';
+            $form_items['background_row_3']['html'] .= '<td align="left">';
+            $form_items['background_row_3']['html'] .= html_print_button(
+                __('Proportional Width'),
+                'original_false',
+                false,
+                'setAspectRatioBackground("width", '.$visualConsole_id.')',
+                [
+                    'icon' => 'cog',
+                    'mode' => 'mini secondary',
+                ],
+                true
+            );
+            $form_items['background_row_3']['html'] .= '</td>';
 
             $form_items['background_row_4'] = [];
             $form_items['background_row_4']['items'] = [
                 'background',
                 'datos',
             ];
-            $form_items['background_row_4']['html'] = '<td align="left"></td>
-				<td align="left">'.html_print_button(__('Height proportional'), 'original_false', false, "setAspectRatioBackground('height')", 'class="sub vs_button_ghost"', true).'</td>';
+            $form_items['background_row_4']['html'] = '<td align="left"></td>';
+            $form_items['background_row_4']['html'] .= '<td align="left">';
+            $form_items['background_row_4']['html'] .= html_print_button(
+                __('Height proportional'),
+                'original_false',
+                false,
+                'setAspectRatioBackground("height", '.$visualConsole_id.')',
+                [
+                    'icon' => 'cog',
+                    'mode' => 'mini secondary',
+                ],
+                true
+            );
+            $form_items['background_row_4']['html'] .= '</td>';
 
             $form_items['percentile_bar_row_1'] = [];
             $form_items['percentile_bar_row_1']['items'] = [
@@ -665,11 +695,31 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'bars_graph',
                 'clock',
             ];
-            $form_items['percentile_bar_row_1']['html'] = '<td align="left">'.__('Widtzzzzh').html_print_input_text('width_percentile', 0, '', 3, 5, true).'</td>';
+            $form_items['percentile_bar_row_1']['html'] = '<td align="left">'.__('Width').'</td>';
+            $form_items['percentile_bar_row_1']['html'] .= '<td align="left">';
+            $form_items['percentile_bar_row_1']['html'] .= html_print_input_text(
+                'width_percentile',
+                0,
+                '',
+                3,
+                5,
+                true
+            );
+            $form_items['percentile_bar_row_1']['html'] .= '</td>';
 
             $form_items['height_bars_graph_row'] = [];
             $form_items['height_bars_graph_row']['items'] = ['bars_graph'];
-            $form_items['height_bars_graph_row']['html'] = '<td align="left">'.__('Height').html_print_input_text('bars_graph_height', 0, '', 3, 5, true).'</td>';
+            $form_items['height_bars_graph_row']['html'] = '<td align="left">'.__('Height').'</td>';
+            $form_items['height_bars_graph_row']['html'] .= '<td align="left">';
+            $form_items['height_bars_graph_row']['html'] .= html_print_input_text(
+                'bars_graph_height',
+                0,
+                '',
+                3,
+                5,
+                true
+            );
+            $form_items['height_bars_graph_row']['html'] .= '</td>';
 
             $form_items['percentile_bar_row_2'] = [];
             $form_items['percentile_bar_row_2']['items'] = [
@@ -735,16 +785,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'datos',
             ];
             $form_items['percentile_item_row_5']['html'] = '<td align="left">'.__('Element color').'</td>
-				<td align="left">'.html_print_input_text_extended(
+				<td align="left">'.html_print_input_color(
                 'percentile_color',
                 '#ffffff',
                 'text-percentile_color',
                 '',
-                7,
-                7,
-                false,
-                '',
-                'class="percentile_color"',
                 true
             ).'</td>';
 
@@ -755,16 +800,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'datos',
             ];
             $form_items['percentile_item_row_6']['html'] = '<td align="left">'.__('Value color').'</td>
-				<td align="left">'.html_print_input_text_extended(
+				<td align="left">'.html_print_input_color(
                 'percentile_label_color',
                 '#ffffff',
                 'text-percentile_label_color',
                 '',
-                7,
-                7,
-                false,
-                '',
-                'class="percentile_label_color"',
                 true
             ).'</td>';
 
@@ -815,8 +855,16 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             // End of Color Cloud rows
             $form_items['show_on_top_row'] = [];
             $form_items['show_on_top_row']['items'] = ['group_item'];
-            $form_items['show_on_top_row']['html'] = '<td align="left"  >'.__('Always show on top').'</td>
-				<td align="left"  >'.html_print_checkbox('show_on_top', 1, '', true).ui_print_help_tip(__('It allows the element to be superimposed to the rest of items of the visual console'), true).'</td>';
+            $form_items['show_on_top_row']['html'] = '<td align="left"  >';
+            $form_items['show_on_top_row']['html'] .= __('Always show on top');
+            $form_items['show_on_top_row']['html'] .= ui_print_help_tip(
+                __('It allows the element to be superimposed to the rest of items of the visual console'),
+                true
+            );
+            $form_items['show_on_top_row']['html'] .= '</td>';
+            $form_items['show_on_top_row']['html'] .= '<td align="left"  >';
+            $form_items['show_on_top_row']['html'] .= html_print_checkbox('show_on_top', 1, '', true);
+            $form_items['show_on_top_row']['html'] .= '</td>';
 
             $show_last_value = [
                 '0' => __('Hide last value on boolean modules'),
@@ -875,11 +923,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
 
             $form_items['button_update_row'] = [];
             $form_items['button_update_row']['items'] = ['datos'];
-            $form_items['button_update_row']['html'] = '<td align="left" colspan="2" style="text-align: right;">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Update'), 'update_button', false, 'update_button_palette_callback();', 'class="sub upd"', true).'</td>';
+            $form_items['button_update_row']['html'] = '<td align="left" colspan="2"><div class="flex flex-end">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', [ 'icon' => 'delete', 'mode' => 'secondary'], true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Update'), 'update_button', false, 'update_button_palette_callback();', [ 'icon' => 'upd'], true).'</div></td>';
 
             $form_items['button_create_row'] = [];
             $form_items['button_create_row']['items'] = ['datos'];
-            $form_items['button_create_row']['html'] = '<td align="left" colspan="2"  style="text-align: right;">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Create'), 'create_button', false, 'create_button_palette_callback();', 'class="sub wand"', true).'</td>';
+            $form_items['button_create_row']['html'] = '<td align="left" colspan="2" ><div class="flex flex-end">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', [ 'icon' => 'delete', 'mode' => 'secondary'], true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Create'), 'create_button', false, 'create_button_palette_callback();', [ 'icon' => 'wand'], true).'</div></td>';
 
             foreach ($form_items as $item => $item_options) {
                 echo '<tr id="'.$item.'"   class="'.implode(' ', (array) $item_options['items']).'">';
@@ -1054,14 +1102,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 <?php
                 $form_items_advance['map_linked_row']['html'] .= ob_get_clean();
             } else {
-                $visual_maps = array_reduce(
-                    $visual_maps,
-                    function ($all, $item) {
-                        $all[$item['id']] = $item['name'];
-                        return $all;
-                    },
-                    []
-                );
+                $visual_maps = [];
+                if (empty($visual_maps) === false) {
+                    $visual_maps = array_reduce(
+                        $visual_maps,
+                        function ($all, $item) {
+                            $all[$item['id']] = $item['name'];
+                            return $all;
+                        },
+                        []
+                    );
+                }
+
                 $form_items_advance['map_linked_row']['html'] .= html_print_select(
                     $visual_maps,
                     'map_linked',
@@ -1201,7 +1253,15 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'donut_graph',
                 'color_cloud',
             ];
-            $form_items_advance['element_group_row']['html'] = '<td align="left">'.__('Restrict access to group').'</td>'.'<td align="left">'.html_print_select_groups(
+            $form_items_advance['element_group_row']['html'] = '<td align="left">';
+            $form_items_advance['element_group_row']['html'] .= __('Restrict access to group');
+            $form_items_advance['element_group_row']['html'] .= ui_print_help_tip(
+                __('If selected, restrict visualization of this item in the visual console to users who have access to selected group. This is also used on calculating child visual consoles.'),
+                true
+            );
+            $form_items_advance['element_group_row']['html'] .= '</td>';
+            $form_items_advance['element_group_row']['html'] .= '<td align="left">';
+            $form_items_advance['element_group_row']['html'] .= html_print_select_groups(
                 $config['id_user'],
                 'VR',
                 true,
@@ -1211,10 +1271,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 '',
                 '',
                 true
-            ).ui_print_help_tip(
-                __('If selected, restrict visualization of this item in the visual console to users who have access to selected group. This is also used on calculating child visual consoles.'),
-                true
-            ).'</td>';
+            );
+            $form_items_advance['element_group_row']['html'] .= '</td>';
 
     if (!$config['legacy_vc']) {
         $intervals = [
@@ -1393,8 +1451,8 @@ function visual_map_editor_print_toolbox()
         visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
         visual_map_print_button_editor('clock', __('Clock'), 'left', false, 'clock_min', true);
         visual_map_print_button_editor('group_item', __('Group'), 'left', false, 'group_item_min', true);
-        visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
-        visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);
+        visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item', true);
+        visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item', true);
         visual_map_print_button_editor('color_cloud', __('Color cloud'), 'left', false, 'color_cloud_min', true);
     if (isset($config['legacy_vc']) === false
         || (bool) $config['legacy_vc'] === false
@@ -1415,9 +1473,9 @@ function visual_map_editor_print_toolbox()
 
         $text_autosave = html_print_input_hidden('auto_save', true, true);
         visual_map_print_item_toolbox('auto_save', $text_autosave, 'right');
-        visual_map_print_button_editor('show_grid', __('Show grid'), 'right', true, 'grid_min', true);
-        visual_map_print_button_editor('edit_item', __('Update item'), 'right', true, 'config_min', true);
-        visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
+        visual_map_print_button_editor('show_grid', __('Show grid'), 'right', true, 'show_grid', true);
+        visual_map_print_button_editor('edit_item', __('Update item'), 'right', true, 'edit_item', true);
+        visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_item', true);
         visual_map_print_button_editor('copy_item', __('Copy item'), 'right', true, 'copy_item', true);
     echo '</div>';
     echo '</div>';
@@ -1435,12 +1493,12 @@ function visual_map_print_button_editor(
 ) {
     html_print_button(
         $label,
-        'button_toolbox2',
+        $idDiv,
         $disabled,
-        "click_button_toolbox('".$idDiv."');",
+        'click_button_toolbox("'.$idDiv.'");',
         [
-            'icon' => $class,
-            'mode' => 'onlyIcon',
+            'class' => $class.' float-'.$float,
+            'mode'  => 'onlyIcon',
         ],
         false,
         $imageButton

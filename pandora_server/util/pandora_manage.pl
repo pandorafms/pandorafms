@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2015-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2015-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.771 Build 230511";
+my $version = "7.0NG.772 Build 230710";
 
 # save program name for logging
 my $progname = basename($0);
@@ -95,7 +95,7 @@ exit;
 # Print a help screen and exit.
 ########################################################################
 sub help_screen{
-	print "\nPandora FMS CLI $version Copyright (c) 2013-2021 Artica ST\n";
+	print "\nPandora FMS CLI $version Copyright (c) 2013-2023 Pandora FMS\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 	print "$enterprise_msg\n\n";
@@ -4504,7 +4504,7 @@ sub cli_create_event() {
 			print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data, undef, undef, $server_id);
+				$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 		}
 	} else {
 		if (! $agent_name) {
@@ -4551,7 +4551,7 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, safe_input($comment), $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data, undef, undef, $server_id);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 
 	}
 }

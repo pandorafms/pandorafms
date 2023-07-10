@@ -1,7 +1,7 @@
 /*
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2004-2021 Artica Soluciones Tecnológicas S.L
+// Copyright (c) 2004-2023 Pandora FMS
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@
 }
 
 #div_display::-webkit-scrollbar:vertical {
-  width: 5px;
+  width: 0px;
 }
 
 #div_display::-webkit-scrollbar-button:increment,
@@ -57,7 +57,7 @@
 }
 
 #div_management::-webkit-scrollbar:vertical {
-  width: 5px;
+  width: 0px;
 }
 
 #div_management::-webkit-scrollbar-button:increment,
@@ -353,6 +353,11 @@
 }
 
 .icon_about {
+  background: url(../../images/menu/about.svg) no-repeat 50% 50%;
+  background-size: 18px;
+}
+
+.icon_about_operation {
   background: url(../../images/menu/about.svg) no-repeat 50% 50%;
   background-size: 18px;
 }

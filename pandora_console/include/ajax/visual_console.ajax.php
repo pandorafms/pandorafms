@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -39,6 +39,7 @@ $graph_javascript = (bool) get_parameter('graph_javascript', false);
 $force_remote_check = (bool) get_parameter('force_remote_check', false);
 $update_maintanance_mode = (bool) get_parameter('update_maintanance_mode', false);
 $load_css_cv = (bool) get_parameter('load_css_cv', false);
+$update_grid_style = (bool) get_parameter('update_grid_style', false);
 
 if ($render_map) {
     $width = (int) get_parameter('width', '400');
@@ -116,6 +117,25 @@ if ($update_maintanance_mode === true) {
     } else {
         $values['maintenance_mode'] = null;
     }
+
+    $result = db_process_sql_update(
+        'tlayout',
+        $values,
+        ['id' => $idVisualConsole]
+    );
+
+    echo json_encode(['result' => $result]);
+    return;
+}
+
+if ($update_grid_style === true) {
+    $idVisualConsole = (int) get_parameter('idVisualConsole', 0);
+    $color = get_parameter('color', '#CCC');
+    $size = get_parameter('size', '10');
+
+    $values = [];
+    $values['grid_color'] = $color;
+    $values['grid_size'] = $size;
 
     $result = db_process_sql_update(
         'tlayout',

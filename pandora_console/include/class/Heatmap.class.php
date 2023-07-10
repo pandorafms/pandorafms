@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -102,11 +102,25 @@ class Heatmap
     protected $group = null;
 
     /**
-     * Heatmap group.
+     * Heatmap dashboard.
      *
      * @var boolean
      */
     protected $dashboard = null;
+
+    /**
+     * Public hash.
+     *
+     * @var boolean
+     */
+    protected $hash = null;
+
+    /**
+     * Public user.
+     *
+     * @var boolean
+     */
+    protected $publicUser = null;
 
 
     /**
@@ -131,7 +145,9 @@ class Heatmap
         int $height=0,
         string $search=null,
         int $group=1,
-        bool $dashboard=false
+        bool $dashboard=false,
+        string $hash='',
+        string $publicUser=''
     ) {
         $this->type = $type;
         $this->filter = $filter;
@@ -142,6 +158,8 @@ class Heatmap
         $this->search = $search;
         $this->group = $group;
         $this->dashboard = $dashboard;
+        $this->hash = $hash;
+        $this->publicUser = $publicUser;
     }
 
 
@@ -164,15 +182,18 @@ class Heatmap
                 false
             ),
             'data'     => [
-                'page'      => 'operation/heatmap',
-                'method'    => 'showHeatmap',
-                'randomId'  => $this->randomId,
-                'type'      => $this->type,
-                'filter'    => $this->filter,
-                'refresh'   => $this->refresh,
-                'search'    => $this->search,
-                'group'     => $this->group,
-                'dashboard' => (int) $this->dashboard,
+                'page'       => 'operation/heatmap',
+                'method'     => 'showHeatmap',
+                'randomId'   => $this->randomId,
+                'type'       => $this->type,
+                'filter'     => $this->filter,
+                'refresh'    => $this->refresh,
+                'search'     => $this->search,
+                'group'      => $this->group,
+                'dashboard'  => (int) $this->dashboard,
+                'auth_hash'  => $this->hash,
+                'auth_class' => 'PandoraFMS\Dashboard\Manager',
+                'id_user'    => $this->publicUser,
             ],
         ];
 

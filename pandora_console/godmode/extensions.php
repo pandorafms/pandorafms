@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -287,7 +287,7 @@ foreach ($extensions as $file => $extension) {
                 [
                     'href'  => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&enabled='.$file,
                     'image' => 'images/lightbulb_off.png',
-                    'title' => __('Delete'),
+                    'title' => __('Enable'),
                 ],
                 true
             );
@@ -305,7 +305,7 @@ foreach ($extensions as $file => $extension) {
                 [
                     'href'  => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&disabled='.$file,
                     'image' => 'images/lightbulb.png',
-                    'title' => __('Delete'),
+                    'title' => __('Disable'),
                 ],
                 true
             );

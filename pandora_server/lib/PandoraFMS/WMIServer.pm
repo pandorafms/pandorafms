@@ -3,7 +3,7 @@ package PandoraFMS::WMIServer;
 # Pandora FMS WMI Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -135,8 +135,9 @@ sub data_producer ($) {
 ###############################################################################
 # Data consumer.
 ###############################################################################
-sub data_consumer ($$) {
-	my ($self, $module_id) = @_;
+#sub data_consumer ($$;$) {
+sub data_consumer {
+	my ($self, $module_id, $none) = @_;
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
 	
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $module_id);
@@ -245,6 +246,14 @@ sub data_consumer ($$) {
 			no warnings;
 			$module_data = ($module_data =~ /$filter/) ? 1 : 0;
 		};
+	}
+
+	# Every once in a while a WMI module seems to return None and we don't know the
+	# cause yet. Calling data_consumer again is not the most efficient way to retry the module,
+	# but it reduces the complexity of the function and this should only happen on rare occasions.
+	if ($module_data eq 'None' && !defined($none)) {
+		data_consumer($self, $module_id, 'None');
+		return;
 	}
 
 	my $utimestamp = time ();

@@ -1,7 +1,7 @@
 <?PHP
 
 // ===========================================================
-// Copyright (c) 2011-2021 Artica, info@artica.es
+// Copyright (c) 2011-2021 Artica, info@pandorafms.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
 // (LGPL) as published by the Free Software Foundation; version 2
@@ -344,7 +344,11 @@ function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fo
     $image = imagecreate($width, $height);
 
     // colors
-    $back = imagecolorallocate($image, 241, 241, 241);
+    if ($config['style'] === 'pandora_black') {
+        $back = imagecolorallocate($image, 34, 34, 34);
+    } else {
+        $back = imagecolorallocate($image, 241, 241, 241);
+    }
 
     $bordercolor = imagecolorallocate($image, 241, 241, 241);
     $text = imagecolorallocate($image, 74, 74, 74);

@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -153,18 +153,24 @@ foreach ($password_fields as $k => $p) {
 ?>
 <script type="text/javascript">
     function changePluginSelect() {
-        if (flag_load_plugin_component) {
+        if (typeof flag_load_plugin_component !== 'undefined' && flag_load_plugin_component) {
             flag_load_plugin_component = false;
             
             return;
         }
+
+        const moduleId = <?php echo $id_agent_module; ?>;
         
         load_plugin_description($("#id_plugin").val());
         
-        load_plugin_macros_fields('simple-macro');
+        load_plugin_macros_fields('simple-macro', moduleId);
         
         forced_title_callback();
 
         $('select#id_plugin').select2('close');
     }
+
+    $(document).ready(function () {
+        changePluginSelect();
+    });
 </script>

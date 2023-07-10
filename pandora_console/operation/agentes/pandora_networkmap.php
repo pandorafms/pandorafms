@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -823,7 +823,8 @@ switch ($tab) {
                     $tableActionButtons[] = html_print_anchor(
                         [
                             'title'   => __('Delete'),
-                            'href'    => 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&delete=1&id_networkmap='.$network_map['id'],
+                            'href'    => 'javascript:',
+                            'onClick' => 'deleteMap('.$network_map['id'].')',
                             'content' => html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']),
                         ],
                         true
@@ -842,7 +843,7 @@ switch ($tab) {
             }
 
             html_print_table($table);
-            $tablePagination = ui_pagination($count_maps, false, 0, 0, true, 'offset', false);
+            $tablePagination = ui_pagination($count_maps, false, $offset, $limit, true, 'offset', false);
         } else {
             ui_print_info_message(['no_close' => true, 'message' => __('There are no maps defined.') ]);
         }
@@ -864,3 +865,25 @@ switch ($tab) {
 
     break;
 }
+
+?>
+
+<script type="text/javascript">
+
+    function deleteMap(idMap){
+
+        confirmDialog({
+            title: "<?php echo __('Are you sure?'); ?>",
+            message: "<?php echo __('Are you sure you want to delete this network map?'); ?>",
+            ok: "<?php echo __('OK'); ?>",
+            cancel: "<?php echo __('Cancel'); ?>",
+            onAccept: function() {
+                window.location.href = 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&delete=1&id_networkmap='+idMap;
+            }
+        });
+
+
+    }
+
+
+</script>

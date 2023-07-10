@@ -3,7 +3,7 @@ package PandoraFMS::Core;
 # Core Pandora FMS functions.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2022 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -850,7 +850,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		if ($pa_config->{'alertserver'} == 1) {
+		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
 				$alert, 1, $timestamp, 0, $extra_macros, $is_correlated_alert]);
 		} else {
@@ -1025,7 +1025,6 @@ sub pandora_execute_alert {
 		
 		# Check the action threshold (template_action_threshold takes precedence over action_threshold)
 		my $threshold = 0;
-		my $recovered = 0;
 		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});	
 		$action->{'recovered'} = 0 unless defined ($action->{'recovered'});
 
@@ -1047,11 +1046,11 @@ sub pandora_execute_alert {
 			if($alert_mode == RECOVERED_ALERT) {
 				# Reset action thresholds and set recovered
 				if (defined ($alert->{'id_template_module'})) {
-					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id = ?', $action->{'id_alert_templ_module_actions'});
 				}
 			} else {
 					# Action executed again, set recovered to 0.
-					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id = ?', $action->{'id_alert_templ_module_actions'});
 			}
 		} else {
 			if($alert_mode == RECOVERED_ALERT) {
@@ -1543,8 +1542,9 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		# Check for _module_graph_Xh_ macros
 		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
 		my $module_graph_list = {};
-		my $macro_regexp = "_modulegraph_(\\d+)h_";
+		my $macro_regexp = "_modulegraph_(?!([\\w\\s-]+_\\d+h_))(\\d+)h_";
 		my $macro_regexp2 = "_modulegraphth_(\\d+)h_";
+		my $macro_regexp3 = "_modulegraph_([\\w\\s-]+)_(\\d+)h_";
 		
 		# API connection
 		my $ua = new LWP::UserAgent;
@@ -1570,6 +1570,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		my $subst_func = sub {
 			my $hours = shift;
 			my $threshold = shift;
+			my $module = shift if @_;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
 				$params->{"other"} = $period . '%7C1%7C0%7C225%7C%7C14';
@@ -1580,8 +1581,12 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
+			if (defined($module)) {
+				$params->{"id"} = get_agent_module_id($dbh, $module, $agent->{'id_agente'});
+			}
+
 			$params->{"other_mode"} = 'url_encode_separator_%7C';
-			
+
 			if (! exists($module_graph_list->{$cid}) && defined $url) {
 				# Get the module graph image in base 64
 				my $response = $ua->post($url, $params);
@@ -1600,10 +1605,11 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		eval {
 			no warnings;
 			local $SIG{__DIE__};
-			$field3 =~ s/$macro_regexp/$subst_func->($1, 0)/ige;
+			$field3 =~ s/$macro_regexp/$subst_func->($2, 0)/ige;
 			$field3 =~ s/$macro_regexp2/$subst_func->($1, 1)/ige;
+			$field3 =~ s/$macro_regexp3/$subst_func->($2, 0, $1)/ige;
 		};
-		
+
 		# Default content type
 		my $content_type = $field4 . '; charset="iso-8859-1"';
 		
@@ -1963,7 +1969,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 	}
 	
 	# Update action last execution date
-	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
+	if ($alert_mode != RECOVERED_ALERT && defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
 		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
  			WHERE id = ?', int(time ()), $action->{'id_alert_templ_module_actions'});
 	}
@@ -3694,6 +3700,7 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'query_key_field'};
 	delete $parameters->{'name_oid'};
 	delete $parameters->{'module_type'};
+	delete $parameters->{'target_ip'};
 
 	if (defined $parameters->{'id_os'}) {
 		delete $parameters->{'id_os'};
@@ -5199,7 +5206,7 @@ sub get_module_status ($$$$) {
 	$warning_str = (defined ($warning_str) && valid_regex ($warning_str) == 1) ? safe_output($warning_str) : '';
 	
 	# Adjust percentage max/min values.
-	if ($module->{'percentage_critical'} == 1) {
+	if (defined($module->{'percentage_critical'}) && $module->{'percentage_critical'} == 1) {
 		if ($critical_max != 0 && $critical_min != 0) {
 			$critical_max = $last_data_value * (1 +  $critical_max / 100.0);
 			$critical_min = $last_data_value * (1 -  $critical_min / 100.0);
@@ -5216,7 +5223,7 @@ sub get_module_status ($$$$) {
 			$module->{'critical_inverse'} = 0;
 		}
 	}
-	if ($module->{'percentage_warning'} == 1) {
+	if (defined($module->{'percentage_warning'}) && $module->{'percentage_warning'} == 1) {
 		if ($warning_max != 0 && $warning_min != 0) {
 			$warning_max = $last_data_value * (1 +  $warning_max / 100.0);
 			$warning_min = $last_data_value * (1 -  $warning_min / 100.0);
@@ -5254,35 +5261,36 @@ sub get_module_status ($$$$) {
 			
 		# Critical
 		if ($critical_min ne $critical_max) {
-			# [critical_min, critical_max)
-			if ($module->{'critical_inverse'} == 0) {
-				return 1 if ($data >= $critical_min && $data < $critical_max);
-				return 1 if ($data >= $critical_min && $critical_max < $critical_min);
-			}
+			
 			# (-inf, critical_min), [critical_max, +inf)
-			else {
+			if (defined($module->{'critical_inverse'}) && $module->{'critical_inverse'} == 1) {
 				if ($critical_max < $critical_min) {
 					return 1 if ($data < $critical_min);
 				} else {
 					return 1 if ($data < $critical_min || $data >= $critical_max);
 				}
 			}
+			# [critical_min, critical_max)
+			else {
+				return 1 if ($data >= $critical_min && $data < $critical_max);
+				return 1 if ($data >= $critical_min && $critical_max < $critical_min);
+			}
 		}
 	
 		# Warning
 		if ($warning_min ne $warning_max) {
-			# [warning_min, warning_max)
-			if ($module->{'warning_inverse'} == 0) {
-				return 2 if ($data >= $warning_min && $data < $warning_max);
-				return 2 if ($data >= $warning_min && $warning_max < $warning_min);
-			}
 			# (-inf, warning_min), [warning_max, +inf)
-			else {
+			if (defined($module->{'warning_inverse'}) && $module->{'warning_inverse'} == 1) {
 				if ($warning_max < $warning_min) {
 					return 2 if ($data < $warning_min);
 				} else {
 					return 2 if ($data < $warning_min || $data >= $warning_max);
 				}
+			}
+			# [warning_min, warning_max)
+			else {
+				return 2 if ($data >= $warning_min && $data < $warning_max);
+				return 2 if ($data >= $warning_min && $warning_max < $warning_min);
 			}
 		}
 	}
@@ -5291,22 +5299,24 @@ sub get_module_status ($$$$) {
 
 		# Critical
 		$eval_result = eval {
-			if ($module->{'critical_inverse'} == 0) {
-				$critical_str ne '' && $data =~ /$critical_str/ ;
-			} else {
+			if (defined($module->{'critical_inverse'}) && $module->{'critical_inverse'} == 1) {
 				$critical_str ne '' && $data !~ /$critical_str/ ;
+			} else {
+				$critical_str ne '' && $data =~ /$critical_str/ ;
 			}
 		};
+			
 		return 1 if ($eval_result);
-
+		
 		# Warning
 		$eval_result = eval {
-			if ($module->{'warning_inverse'} == 0) {
-				$warning_str ne '' && $data =~ /$warning_str/ ;
-			} else {
+			if (defined($module->{'warning_inverse'}) && $module->{'warning_inverse'} == 1) {
 				$warning_str ne '' && $data !~ /$warning_str/ ;
+			} else {
+				$warning_str ne '' && $data =~ /$warning_str/ ;
 			}
 		};
+
 		return 2 if ($eval_result);
 	}
 
@@ -6689,40 +6699,40 @@ sub pandora_get_os ($$) {
 		return 10;
 	}
 	
-	if ($os =~ m/Windows.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Windows/i) {
 		return 9;
 	}
-	if ($os =~ m/Cisco.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Cisco/i) {
 		return 7;
 	}
-	if ($os =~ m/SunOS.*?(?=\(\d+%\))/i || $os =~ m/Solaris.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/SunOS/i || $os =~ m/Solaris/i) {
 		return 2;
 	}
-	if ($os =~ m/AIX.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/AIX/i) {
 		return 3;
 	}
-	if ($os =~ m/HP\-UX.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/HP\-UX/i) {
 		return 5;
 	}
-	if ($os =~ m/Apple.*?(?=\(\d+%\))/i || $os =~ m/Darwin.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Apple/i || $os =~ m/Darwin/i) {
 		return 8;
 	}
-	if ($os =~ m/Linux.*?(?=\(\d+%\))/i) {
-		return 1;
-	}
-	if ($os =~ m/Enterasys.*?(?=\(\d+%\))/i || $os =~ m/3com.*?(?=\(\d+%\))/i) {
-		return 11;
-	}
-	if ($os =~ m/Octopods.*?(?=\(\d+%\))/i) {
-		return 13;
-	}
-	if ($os =~ m/embedded.*?(?=\(\d+%\))/i) {
-		return 14;
-	}
-	if ($os =~ m/android.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/android/i) {
 		return 15;
 	}
-	if ($os =~ m/BSD.*?(?=\(\d+%\))/i) {
+	if ($os =~ m/Linux/i) {
+		return 1;
+	}
+	if ($os =~ m/Enterasys/i || $os =~ m/3com/i) {
+		return 11;
+	}
+	if ($os =~ m/Octopods/i) {
+		return 13;
+	}
+	if ($os =~ m/embedded/i) {
+		return 14;
+	}
+	if ($os =~ m/BSD/i) {
 		return 4;
 	}
 		
@@ -7833,7 +7843,7 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2023 Pandora FMS
 
 =cut
 

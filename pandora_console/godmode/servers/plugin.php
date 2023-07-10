@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -57,21 +57,9 @@ if (is_ajax()) {
             $network_components = [];
         }
 
-        $modules = db_get_all_rows_filter(
-            'tagente_modulo',
-            [
-                'delete_pending' => 0,
-                'id_plugin'      => $id_plugin,
-            ]
-        );
-        if (empty($modules)) {
-            $modules = [];
-        }
-
         $table = new stdClass();
         $table->width = '100%';
         $table->head[0] = __('Network Components');
-        // $table->data = [];
         foreach ($network_components as $net_comp) {
             $table->data[] = [$net_comp['name']];
         }
@@ -80,24 +68,86 @@ if (is_ajax()) {
             html_print_table($table);
         }
 
-        $table = new stdClass();
-        $table->width = '100%';
-        $table->head[0] = __('Agent');
-        $table->head[1] = __('Module');
-        foreach ($modules as $mod) {
-            $agent_name = '<a href="'.ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$mod['id_agente']).'">'.modules_get_agentmodule_agent_alias(
-                $mod['id_agente_modulo']
-            ).'</a>';
+        if (is_metaconsole() === true) {
+            $connection_names = metaconsole_get_connection_names();
+            $modules = [];
+            foreach ($connection_names as $connection_name) {
+                $connected = metaconsole_connect(metaconsole_get_connection($connection_name));
+                if ($connected != NOERR) {
+                    continue;
+                }
 
+                $modules_node = db_get_all_rows_filter(
+                    'tagente_modulo',
+                    [
+                        'delete_pending' => 0,
+                        'id_plugin'      => $id_plugin,
+                    ]
+                );
+                if (empty($modules_node) === false) {
+                    foreach ($modules_node as $key => $mod) {
+                        $modules_node[$key]['name_agent'] = modules_get_agentmodule_agent_alias($mod['id_agente_modulo']);
+                    }
 
-            $table->data[] = [
-                $agent_name,
-                $mod['nombre'],
-            ];
+                    $modules[$connection_name] = $modules_node;
+                }
+
+                metaconsole_restore_db();
+            }
+        } else {
+            $modules = db_get_all_rows_filter(
+                'tagente_modulo',
+                [
+                    'delete_pending' => 0,
+                    'id_plugin'      => $id_plugin,
+                ]
+            );
         }
 
-        if (!empty($table->data)) {
-            html_print_table($table);
+        if (empty($modules)) {
+            $modules = [];
+        }
+
+        if (is_metaconsole() === true) {
+            foreach ($modules as $name_server => $modules_node) {
+                $table = new stdClass();
+                $table->width = '100%';
+                $table->head[0] = $name_server.' - '.__('Agent');
+                $table->head[1] = $name_server.' - '.__('Module');
+                foreach ($modules_node as $mod) {
+                    $server = metaconsole_get_servers(metaconsole_get_id_server($name_server));
+                    $agent_name = '<a href="'.$server['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$mod['id_agente'].'">'.$mod['name_agent'].'</a>';
+
+                    $table->data[] = [
+                        $agent_name,
+                        $mod['nombre'],
+                    ];
+                }
+
+                if (!empty($table->data)) {
+                    html_print_table($table);
+                }
+            }
+        } else {
+            $table = new stdClass();
+            $table->width = '100%';
+            $table->head[0] = __('Agent');
+            $table->head[1] = __('Module');
+            foreach ($modules as $mod) {
+                $agent_name = '<a href="'.ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$mod['id_agente']).'">'.modules_get_agentmodule_agent_alias(
+                    $mod['id_agente_modulo']
+                ).'</a>';
+
+
+                $table->data[] = [
+                    $agent_name,
+                    $mod['nombre'],
+                ];
+            }
+
+            if (!empty($table->data)) {
+                html_print_table($table);
+            }
         }
 
         return;
@@ -487,17 +537,16 @@ if (empty($create) === false || empty($view) === false) {
     $data = [];
     $data[0] = html_print_label_input_block(
         __('Plug-in parameters'),
-        html_print_input_text(
+        html_print_textarea(
             'form_parameters',
+            4,
+            50,
             $parameters,
             '',
-            100,
-            255,
             true,
+            'command_component command_advanced_conf text_input',
             false,
-            false,
-            '',
-            'command_component command_advanced_conf text_input'
+            false
         )
     );
 
@@ -978,21 +1027,52 @@ if (empty($create) === false || empty($view) === false) {
     if ($rows !== false) {
         $pluginTable = new stdClass();
         $pluginTable->id = 'plugin_table';
-        $pluginTable->class = (is_metaconsole() === true) ? 'databox data' : 'info_table';
+        $pluginTable->class = 'info_table';
 
         $pluginTable->head = [];
         $pluginTable->head[0] = __('Name');
         $pluginTable->head[1] = __('Type');
         $pluginTable->head[2] = __('Command');
         if ($management_allowed === true) {
-            $pluginTable->head[3] = '<span title="'.__('Operations').'">'.__('Op.').'</span>';
+            $pluginTable->head[3] = __('Operations');
         }
 
         $pluginTable->data = [];
 
         foreach ($rows as $k => $row) {
+            $tableActionButtons = [];
+            // Show it is locket.
+            $modules_using_plugin = db_get_value_filter(
+                'count(*)',
+                'tagente_modulo',
+                [
+                    'delete_pending' => 0,
+                    'id_plugin'      => $row['id'],
+                ]
+            );
+            $components_using_plugin = db_get_value_filter(
+                'count(*)',
+                'tnetwork_component',
+                ['id_plugin' => $row['id']]
+            );
+            if (($components_using_plugin + $modules_using_plugin) > 0) {
+                $tableActionButtons[] = html_print_anchor(
+                    [
+                        'href'    => 'javascript: show_locked_dialog('.$row['id'].', \''.$row['name'].'\');',
+                        'content' => html_print_image(
+                            'images/policy@svg.svg',
+                            true,
+                            [
+                                'title' => __('Lock'),
+                                'class' => 'invert_filter main_menu_icon',
+                            ]
+                        ),
+                    ],
+                    true
+                );
+            }
+
             if ($management_allowed === true) {
-                $tableActionButtons = [];
                 $pluginNameContent = html_print_anchor(
                     [
                         'href'    => 'index.php?sec=$sec&sec2=godmode/servers/plugin&view='.$row['id'].'&tab=plugins&pure='.$config['pure'],
@@ -1000,37 +1080,6 @@ if (empty($create) === false || empty($view) === false) {
                     ],
                     true
                 );
-
-                // Show it is locket.
-                $modules_using_plugin = db_get_value_filter(
-                    'count(*)',
-                    'tagente_modulo',
-                    [
-                        'delete_pending' => 0,
-                        'id_plugin'      => $row['id'],
-                    ]
-                );
-                $components_using_plugin = db_get_value_filter(
-                    'count(*)',
-                    'tnetwork_component',
-                    ['id_plugin' => $row['id']]
-                );
-                if (($components_using_plugin + $modules_using_plugin) > 0) {
-                    $tableActionButtons[] = html_print_anchor(
-                        [
-                            'href'    => 'javascript: show_locked_dialog('.$row['id'].', \''.$row['name'].'\');',
-                            'content' => html_print_image(
-                                'images/policy@svg.svg',
-                                true,
-                                [
-                                    'title' => __('Lock'),
-                                    'class' => 'invert_filter main_menu_icon',
-                                ]
-                            ),
-                        ],
-                        true
-                    );
-                }
 
                 $tableActionButtons[] = html_print_anchor(
                     [
@@ -1072,15 +1121,13 @@ if (empty($create) === false || empty($view) === false) {
             $pluginTable->data[$k][1] = ((int) $row['plugin_type'] === 0) ? __('Standard') : __('Nagios');
             $pluginTable->data[$k][2] = $row['execute'];
 
-            if ($management_allowed === true) {
-                $pluginTable->data[$k][3] = html_print_div(
-                    [
-                        'class'   => 'table_action_buttons',
-                        'content' => implode('', $tableActionButtons),
-                    ],
-                    true
-                );
-            }
+            $pluginTable->data[$k][3] = html_print_div(
+                [
+                    'class'   => 'table_action_buttons',
+                    'content' => implode('', $tableActionButtons),
+                ],
+                true
+            );
         }
 
         html_print_table($pluginTable);
@@ -1119,7 +1166,7 @@ ui_require_javascript_file('pandora_modules');
 
     function update_preview() {
         var command = $('#text-form_execute').val();
-        var parameters = $('#text-form_parameters').val();
+        var parameters = $('#textarea_form_parameters').val();
         var i = 1;
 
         while (1) {

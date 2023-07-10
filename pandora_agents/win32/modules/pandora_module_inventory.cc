@@ -1,7 +1,7 @@
 /* Pandora Inventory module. These module makes an inventory of the machine where
 the agent is instaled.
 
-   Copyright (c) 2009-2021 Artica ST.
+   Copyright (c) 2009-2023 Pandora FMS.
    Written by Pablo de la Concepci�n.
 
    This program is free software; you can redistribute it and/or modify

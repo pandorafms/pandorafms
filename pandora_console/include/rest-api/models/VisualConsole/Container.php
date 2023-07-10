@@ -91,6 +91,8 @@ final class Container extends Model
             'relationLineWidth' => (int) $data['relationLineWidth'],
             'hash'              => static::extractHash($data),
             'maintenanceMode'   => static::extractMaintenanceMode($data),
+            'gridSize'          => (int) $data['grid_size'],
+            'gridColor'         => (string) $data['grid_color'],
         ];
     }
 
@@ -181,7 +183,7 @@ final class Container extends Model
             null
         );
 
-        return ($backgroundImage === 'None.png') ? null : str_replace(' ', '%20', $backgroundImage);
+        return ($backgroundImage === 'None.png' || $backgroundImage === null) ? null : str_replace(' ', '%20', $backgroundImage);
     }
 
 

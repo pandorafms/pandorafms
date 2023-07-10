@@ -2366,7 +2366,7 @@ sub snmp_data_switcher {
 	}
 
 	if ($data{type} eq "generic_data"){
-		($data{data} = $pure_data) =~ s/\D*//g;
+		($data{data} = $pure_data) =~ s/[^-\d]//gr;
 	}
 
 	return \%data;

@@ -671,7 +671,6 @@ function html_print_select_groups(
                                     step: params.page || 1,
                                     strict: "<?php echo $strict_user; ?>",
                                     not_condition: $('#not_condition_switch').prop('checked'),
-                                    returnAllGroup: <?php echo (int) $returnAllGroup; ?>
                                 }
 
                                 return query;

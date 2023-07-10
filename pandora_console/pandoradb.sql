@@ -1572,6 +1572,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `id_agent_module` BIGINT UNSIGNED NULL DEFAULT NULL,
   `type` VARCHAR(30) DEFAULT 'simple_graph',
   `period` INT NOT NULL DEFAULT 0,
+  `period_range` INT DEFAULT 0,
   `order` INT NOT NULL DEFAULT 0,
   `name` VARCHAR(300) NULL,
   `description` MEDIUMTEXT,

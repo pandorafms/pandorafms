@@ -12,4 +12,6 @@ DELETE FROM tconfig WHERE token = 'refr';
 
 ALTER TABLE `tusuario`  ADD COLUMN `session_max_time_expire` INT NOT NULL DEFAULT 0 AFTER `auth_token_secret`;
 
+ALTER TABLE `treport_content`  ADD COLUMN `period_range` INT NULL DEFAULT 0 AFTER `period`;
+
 COMMIT;

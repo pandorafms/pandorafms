@@ -67,8 +67,9 @@ if ($custom_date === '1') {
 
     $period = ($datetime_end - $datetime_init);
 } else if ($custom_date === '2') {
+    $date_units = get_parameter('date_units');
     $date_end = date('Y/m/d H:i:s');
-    $date_start = date('Y/m/d H:i:s', (strtotime($date_end) - $date_text));
+    $date_start = date('Y/m/d H:i:s', (strtotime($date_end) - ($date_text * $date_units)));
     $period = (strtotime($date_end) - strtotime($date_start));
 } else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
     if ($date === 'this_week') {

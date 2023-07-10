@@ -6998,7 +6998,7 @@ function html_print_select_date_range(
     $date_end='',
     $time_end='',
     $date_text=SECONDS_1DAY,
-    $class=''
+    $class='w100p'
 ) {
     if ($selected === 'custom') {
         $display_extend = '';

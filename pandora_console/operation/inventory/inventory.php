@@ -50,8 +50,9 @@ if ($custom_date === '1') {
 
     $period = ($datetime_end - $datetime_init);
 } else if ($custom_date === '2') {
+    $date_units = get_parameter('date_units');
     $utimestamp = date('Y/m/d H:i:s');
-    $date_start = date('Y/m/d H:i:s', (strtotime($utimestamp) - $date_text));
+    $date_start = date('Y/m/d H:i:s', (strtotime($utimestamp) - ($date_text * $date_units)));
     $period = (strtotime($utimestamp) - strtotime($date_start));
 } else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
     if ($date === 'this_week') {

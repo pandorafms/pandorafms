@@ -662,6 +662,7 @@ if (isset($config['id_user']) === false) {
             db_logon($nick_in_db, $_SERVER['REMOTE_ADDR']);
             $_SESSION['id_usuario'] = $nick_in_db;
             $config['id_user'] = $nick_in_db;
+            config_prepare_expire_time_session(true);
 
             // Check if connection goes through F5 balancer. If it does, then
             // don't call config_prepare_session() or user will be back to login

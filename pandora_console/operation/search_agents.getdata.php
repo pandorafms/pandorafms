@@ -30,7 +30,7 @@ switch ($order['field']) {
     break;
 
     case 'os':
-        $order['field'] = 'tl.id_os';
+        $order['field'] = 't1.id_os';
     break;
 
     case 'interval':

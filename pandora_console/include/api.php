@@ -203,9 +203,9 @@ if ($correctLogin === true) {
                         }
                     break;
 
-                    case 'create_network_module':
+                    // case 'create_network_module':
                     case 'create_plugin_module':
-                    case 'create_data_module':
+                        // case 'create_data_module':
                     case 'create_synthetic_module':
                     case 'create_snmp_module':
                     case 'delete_module':
@@ -320,6 +320,7 @@ if ($correctLogin === true) {
                     break;
 
                     default:
+                    return false;
                         // Ignore.
                     break;
                 }

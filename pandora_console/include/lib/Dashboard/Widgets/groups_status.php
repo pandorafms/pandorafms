@@ -340,6 +340,7 @@ class GroupsStatusWidget extends Widget
 
         // Head  agents.
         $table->data[0][0] = '<span>';
+
         $table->data[0][0] .= html_print_image(
             'images/agent.png',
             true,
@@ -360,37 +361,63 @@ class GroupsStatusWidget extends Widget
 
         if ($stats['total_agents'] !== 0) {
             // Agent Critical.
-            $table->data[1][0] = $this->getCellCounter(
+            $agent_url = '';
+            $agent_url .= $url.'&status=1';
+            $agent_data = '<a href="'.$agent_url.'">';
+            $agent_data .= $this->getCellCounter(
                 $stats['agent_critical'],
                 '',
                 'bg_ff5'
             );
+            $agent_data .= '</a>';
+
+            $table->data[1][0] = $agent_data;
 
             // Agent Warning.
-            $table->data[2][0] = $this->getCellCounter(
+            $agent_url = '';
+            $agent_url .= $url.'&status=2';
+            $agent_data = '<a href="'.$agent_url.'">';
+            $agent_data .= $this->getCellCounter(
                 $stats['agent_warning'],
                 '',
                 'bg_ffd'
             );
+            $agent_data .= '</a>';
+            $table->data[2][0] = $agent_data;
 
             // Agent OK.
-            $table->data[3][0] = $this->getCellCounter(
+            $agent_url = '';
+            $agent_url .= $url.'&status=0';
+            $agent_data = '<a href="'.$agent_url.'">';
+            $agent_data .= $this->getCellCounter(
                 $stats['agent_ok'],
                 '',
                 'bg_82B92E'
             );
+            $agent_data .= '</a>';
+            $table->data[3][0] = $agent_data;
 
             // Agent Unknown.
-            $table->data[1][1] = $this->getCellCounter(
+            $agent_url = '';
+            $agent_url .= $url.'&status=3';
+            $agent_data = '<a href="'.$agent_url.'">';
+            $agent_data .= $this->getCellCounter(
                 $stats['agent_unknown'],
                 '#B2B2B2'
             );
+            $agent_data .= '</a>';
+            $table->data[1][1] = $agent_data;
 
             // Agent Not Init.
-            $table->data[2][1] = $this->getCellCounter(
+            $agent_url = '';
+            $agent_url .= $url.'&status=5';
+            $agent_data = '<a href="'.$agent_url.'">';
+            $agent_data .= $this->getCellCounter(
                 $stats['agent_not_init'],
                 '#4a83f3'
             );
+            $agent_data .= '</a>';
+            $table->data[2][1] = $agent_data;
 
             $data .= html_print_table($table, true);
             $data .= '</div>';
@@ -436,26 +463,43 @@ class GroupsStatusWidget extends Widget
             $table->data[0][1] .= '</b>';
             $table->data[0][1] .= '</span>';
 
+            $monitordetail_url = 'index.php?sec=view&sec2=operation/agentes/status_monitor&refr=0&ag_group='.$this->values['groupId'];
+
             // Modules Critical.
-            $table->data[1][0] = $this->getCellCounter(
+            $module_url = '';
+            $module_url .= $monitordetail_url.'&status=1';
+            $module_data = '<a href="'.$module_url.'">';
+            $module_data .= $this->getCellCounter(
                 $stats['monitor_critical'],
                 '',
                 'bg_ff5'
             );
+            $module_data .= '</a>';
+            $table->data[1][0] = $module_data;
 
             // Modules Warning.
-            $table->data[2][0] = $this->getCellCounter(
+            $module_url = '';
+            $module_url .= $monitordetail_url.'&status=2';
+            $module_data = '<a href="'.$module_url.'">';
+            $module_data .= $this->getCellCounter(
                 $stats['monitor_warning'],
                 '',
                 'bg_ffd'
             );
+            $module_data .= '</a>';
+            $table->data[2][0] = $module_data;
 
             // Modules OK.
-            $table->data[3][0] = $this->getCellCounter(
+            $module_url = '';
+            $module_url .= $monitordetail_url.'&status=0';
+            $module_data = '<a href="'.$module_url.'">';
+            $module_data .= $this->getCellCounter(
                 $stats['monitor_ok'],
                 '',
                 'bg_82B92E'
             );
+            $module_data .= '</a>';
+            $table->data[3][0] = $module_data;
 
             // Modules Unknown.
             $table->data[1][1] = $this->getCellCounter(

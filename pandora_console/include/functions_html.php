@@ -2161,7 +2161,8 @@ function html_print_extended_select_for_time(
     $custom_fields=false,
     $style_icon='',
     $no_change=false,
-    $allow_zero=0
+    $allow_zero=0,
+    $units=null
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
@@ -2187,15 +2188,17 @@ function html_print_extended_select_for_time(
             $selected = 300;
     }
 
-    $units = [
-        1               => __('seconds'),
-        SECONDS_1MINUTE => __('minutes'),
-        SECONDS_1HOUR   => __('hours'),
-        SECONDS_1DAY    => __('days'),
-        SECONDS_1WEEK   => __('weeks'),
-        SECONDS_1MONTH  => __('months'),
-        SECONDS_1YEAR   => __('years'),
-    ];
+    if (empty($units) === true) {
+        $units = [
+            1               => __('seconds'),
+            SECONDS_1MINUTE => __('minutes'),
+            SECONDS_1HOUR   => __('hours'),
+            SECONDS_1DAY    => __('days'),
+            SECONDS_1WEEK   => __('weeks'),
+            SECONDS_1MONTH  => __('months'),
+            SECONDS_1YEAR   => __('years'),
+        ];
+    }
 
     if ($unique_name === true) {
         $uniq_name = uniqid($name);

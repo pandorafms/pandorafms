@@ -574,8 +574,7 @@ if (is_ajax() === true) {
                         $tmp->user_comment = ui_print_comments(
                             event_get_last_comment(
                                 $item,
-                                $filter['group_rep'],
-                                $item['event_rep']
+                                $filter
                             )
                         );
 
@@ -649,11 +648,14 @@ if (is_ajax() === true) {
 
                         // Grouped events.
                         if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
-                            $evn .= '(el contador de extraid iguales) ';
-                        }
-
-                        if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
-                            $evn .= '('.$tmp->event_rep.') ';
+                            $counter_extra_id = event_get_counter_extraId($item, $filter);
+                            if (empty($counter_extra_id) === false && $counter_extra_id > 0) {
+                                $evn .= '('.$counter_extra_id.') ';
+                            }
+                        } else {
+                            if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
+                                $evn .= '('.$tmp->event_rep.') ';
+                            }
                         }
 
                         $evn .= $tmp->evento.'</a>';

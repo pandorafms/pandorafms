@@ -743,6 +743,17 @@ $table->data[$i][] = html_print_label_input_block(
     )
 );
 
+$table->data[$i++][] = html_print_label_input_block(
+    __('Max. hours old events comments'),
+    html_print_input_number(
+        [
+            'name'  => 'max_hours_old_event_comment',
+            'min'   => 0,
+            'value' => $config['max_hours_old_event_comment'],
+        ]
+    )
+);
+
 echo '<form class="max_floating_element_size" id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo '<fieldset class="margin-bottom-10">';

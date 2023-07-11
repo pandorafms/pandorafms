@@ -205,6 +205,10 @@ if ($access_console_node === true) {
             $sub['operation/inventory/inventory']['refr'] = 0;
         }
 
+        $sub['operation/custom_fields/custom_fields_view']['text'] = __('Custom fields view');
+        $sub['operation/custom_fields/custom_fields_view']['id'] = 'Custom fields view';
+        $sub['operation/custom_fields/custom_fields_view']['refr'] = 0;
+
         if ($config['activate_netflow'] || $config['activate_sflow']) {
             $sub['network_traffic'] = [
                 'text'    => __('Network'),

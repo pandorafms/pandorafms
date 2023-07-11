@@ -12341,3 +12341,71 @@ tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
 }
+
+form.cfv_status_agent {
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+}
+
+form.cfv_status_agent label {
+  display: block;
+  line-height: 35px;
+  height: 40px;
+  width: 19%;
+  -webkit-font-smoothing: antialiased;
+  margin-top: 10px;
+  color: #ffffff;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0.3;
+  font-size: 13pt;
+}
+
+form.cfv_status_agent label img {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+form.cfv_status_agent input[type="checkbox"] {
+  display: none;
+}
+
+form.cfv_status_agent input:checked + label {
+  opacity: 1;
+}
+
+form.cfv_status_agent input:checked + label:before {
+  content: "✓ ";
+}
+
+/* --- Custom fields view --- */
+.custom_fields_view_layout {
+  margin-top: 15px;
+}
+
+.custom_fields_view {
+  width: 30%;
+  float: left;
+  margin-left: 10px;
+  padding-right: 10px;
+  max-height: 890px;
+  overflow: auto;
+  background-color: #f9f9f9;
+}
+
+.agents_custom_fields {
+  width: 100%;
+
+  margin-bottom: 15px;
+  padding: 25px 5px;
+}
+div.agents_custom_fields #datatables_wrapper div.top,
+div.agents_custom_fields #datatables_wrapper div.bottom {
+  background-color: #414141;
+  color: #ffffff;
+  border: none;
+  padding: 5px;
+  height: 38px;
+  width: 99%;
+}

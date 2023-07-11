@@ -305,6 +305,7 @@ echo '</div>';
                 table_hover2 = $(this);
                 handsIn2 = 1;
                 openTime2 = new Date().getTime();
+                $("#sub" + table_hover2[0].id).attr('style', 'display: none; position: fixed; left: 340px;');
                 $("#sub" + table_hover2[0].id).show();
                 if (typeof(table_noHover2) != 'undefined') {
                     if ("ul#sub" + table_hover2[0].id != "ul#sub" + table_noHover2[0].id) {
@@ -315,6 +316,7 @@ echo '</div>';
         }).mouseleave(function() {
             var menuType_val = localStorage.getItem("menuType");
             if (!click_display && menuType_val === 'collapsed') {
+                $("#sub" + $(this)[0].id).attr('style', 'display: none;');
                 table_noHover2 = table_hover2;
                 handsIn2 = 0;
                 setTimeout(function() {

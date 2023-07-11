@@ -1490,6 +1490,8 @@ echo html_print_div(
 
 // Connection lost alert.
 set_js_value('check_conexion_interval', $config['check_conexion_interval']);
+set_js_value('title_conexion_interval', __('Connection with console has been lost'));
+set_js_value('status_conexion_interval', __('Connection status: '));
 ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with console has been lost');

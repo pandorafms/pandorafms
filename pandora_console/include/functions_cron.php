@@ -923,7 +923,8 @@ function cron_list_table()
                 }
 
                 if ($manage_pandora) {
-                    $data[7] .= '<a href="javascript:form_add_cron_task('.$task['id'].',1);">';
+                    $data[7] .= '<a href="'.$url;
+                    $data[7] .= 'delete_task=1&id_user_task='.$task['id'].'">';
                     $data[7] .= html_print_image(
                         'images/delete.svg',
                         true,

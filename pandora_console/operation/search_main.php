@@ -48,12 +48,83 @@ $table->style[13] = 'font-weight: bold; text-align: left;';
 $table->style[14] = 'font-weight: bold; text-align: left;';
 $table->style[15] = 'font-weight: bold; text-align: left;';
 
+// Get total agents.
+$userGroups = users_get_groups($config['id_user'], 'AR', false);
+$id_userGroups = array_keys($userGroups);
 
+$has_secondary = enterprise_hook('agents_is_using_secondary_groups');
+$stringSearchSQL = str_replace('&amp;', '&', $stringSearchSQL);
+$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
+    INNER JOIN taddress_agent ON
+    taddress.id_a = taddress_agent.id_a
+    WHERE taddress.ip LIKE '$stringSearchSQL'";
+
+    $id = db_get_all_rows_sql($sql);
+if ($id != '') {
+    $aux = $id[0]['id_agent'];
+    $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
+        t2.nombre LIKE '".$stringSearchSQL."' OR
+        t1.alias LIKE '".$stringSearchSQL."' OR
+        t1.comentarios LIKE '".$stringSearchSQL."' OR
+        t1.id_agente =".$aux;
+
+    $idCount = count($id);
+
+    if ($idCount >= 2) {
+        for ($i = 1; $i < $idCount; $i++) {
+            $aux = $id[$i]['id_agent'];
+            $search_sql .= " OR t1.id_agente = $aux";
+        }
+    }
+} else {
+    $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
+        t2.nombre LIKE '".$stringSearchSQL."' OR
+        t1.direccion LIKE '".$stringSearchSQL."' OR
+        t1.comentarios LIKE '".$stringSearchSQL."' OR
+        t1.alias LIKE '".$stringSearchSQL."'";
+}
+
+if ($has_secondary === true) {
+    $search_sql .= " OR (tasg.id_group IS NOT NULL AND
+        tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '".$stringSearchSQL."'))";
+}
+
+$sql = "
+    FROM tagente t1 LEFT JOIN tagent_secondary_group tasg
+        ON t1.id_agente = tasg.id_agent
+        INNER JOIN tgrupo t2
+            ON t2.id_grupo = t1.id_grupo
+    WHERE (
+            1 = (
+                SELECT is_admin
+                FROM tusuario
+                WHERE id_user = '".$config['id_user']."'
+            )
+            OR (
+                t1.id_grupo IN (".implode(',', $id_userGroups).')
+                OR tasg.id_group IN ('.implode(',', $id_userGroups).")
+            )
+            OR 0 IN (
+                SELECT id_grupo
+                FROM tusuario_perfil
+                WHERE id_usuario = '".$config['id_user']."'
+                    AND id_perfil IN (
+                        SELECT id_perfil
+                        FROM tperfil WHERE agent_view = 1
+                    )
+                )
+        )
+        AND (
+            ".$search_sql.'
+        )
+';
+$totalAgents = db_get_value_sql(
+    'SELECT COUNT(DISTINCT id_agente) AS agent_count '.$sql
+);
 
 
 $table->data[0][0] = html_print_image('images/agent.png', true, ['title' => __('Agents found'), 'class' => 'invert_filter']);
-$table->data[0][1] = "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $_SESSION['totalAgents']).'</a>';
-unset($_SESSION['totalAgents']);
+$table->data[0][1] = "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalAgents).'</a>';
 $table->data[0][2] = html_print_image('images/module.png', true, ['title' => __('Modules found'), 'class' => 'invert_filter']);
 $table->data[0][3] = "<a href='index.php?search_category=modules&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalModules).'</a>';
 

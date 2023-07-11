@@ -44,7 +44,9 @@ try {
     ];
 
     $tableId = 'agents_search';
+    $stringSearchSQL = $_SESSION['stringSearchSQL'];
 
+    unset($_SESSION['stringSearchSQL']);
     // Load datatables user interface.
     ui_print_datatable(
         [

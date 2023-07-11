@@ -70,18 +70,19 @@ if ($searchAgents) {
 
     $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
 
+    $stringSearchSQL = str_replace('&amp;', '&', $stringSearchSQL);
     $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 		INNER JOIN taddress_agent ON
 		taddress.id_a = taddress_agent.id_a
-		WHERE taddress.ip LIKE '%$stringSearchSQL%'";
+		WHERE taddress.ip LIKE '$stringSearchSQL'";
 
         $id = db_get_all_rows_sql($sql);
     if ($id != '') {
         $aux = $id[0]['id_agent'];
-        $search_sql = " t1.nombre LIKE '%%".$stringSearchSQL."%%' OR
-            t2.nombre LIKE '%%".$stringSearchSQL."%%' OR
-            t1.alias LIKE '%%".$stringSearchSQL."%%' OR
-            t1.comentarios LIKE '%%".$stringSearchSQL."%%' OR
+        $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
+            t2.nombre LIKE '".$stringSearchSQL."' OR
+            t1.alias LIKE '".$stringSearchSQL."' OR
+            t1.comentarios LIKE '".$stringSearchSQL."' OR
             t1.id_agente =".$aux;
 
         $idCount = count($id);
@@ -93,16 +94,16 @@ if ($searchAgents) {
             }
         }
     } else {
-        $search_sql = " t1.nombre LIKE '%%".$stringSearchSQL."%%' OR
-            t2.nombre LIKE '%%".$stringSearchSQL."%%' OR
-            t1.direccion LIKE '%%".$stringSearchSQL."%%' OR
-            t1.comentarios LIKE '%%".$stringSearchSQL."%%' OR
-            t1.alias LIKE '%%".$stringSearchSQL."%%'";
+        $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
+            t2.nombre LIKE '".$stringSearchSQL."' OR
+            t1.direccion LIKE '".$stringSearchSQL."' OR
+            t1.comentarios LIKE '".$stringSearchSQL."' OR
+            t1.alias LIKE '".$stringSearchSQL."'";
     }
 
     if ($has_secondary === true) {
         $search_sql .= " OR (tasg.id_group IS NOT NULL AND
-            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '%%".$stringSearchSQL."%%'))";
+            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '".$stringSearchSQL."'))";
     }
 
     $sql = "
@@ -164,7 +165,6 @@ if ($searchAgents) {
         $totalAgents = db_get_value_sql(
             'SELECT COUNT(DISTINCT id_agente) AS agent_count '.$sql
         );
-        $_SESSION['totalAgents'] = $totalAgents;
     }
 
     foreach ($agents as $key => $agent) {

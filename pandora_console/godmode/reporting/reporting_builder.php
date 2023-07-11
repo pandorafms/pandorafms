@@ -1621,6 +1621,27 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'event_report_log_table':
+                                $agents_to_report = get_parameter('id_agents3');
+                                $source = get_parameter('source', '');
+                                $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
+                                $log_number = get_parameter('log_number', '');
+
+                                $es['source'] = $source;
+                                $es['id_agents'] = $agents_to_report;
+                                $es['search'] = $search;
+                                $es['full_text'] = $full_text;
+                                $es['log_number'] = $log_number;
+
+                                $values['external_source'] = json_encode($es);
+                                $values['period'] = get_parameter('period');
+                                $values['period_range'] = get_parameter('period_range');
+                                $values['show_graph'] = get_parameter('combo_graph_options');
+                                $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
+                                $good_format = true;
+                            break;
+
                             case 'prediction_date':
                                 $values['period'] = get_parameter('period1');
                                 $values['top_n'] = get_parameter(
@@ -2223,15 +2244,7 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
-
-                            if ($values['type'] === 'sql_graph_hbar'
-                                || ($values['type'] === 'sql_graph_vbar')
-                                || ($values['type'] === 'sql_graph_pie')
-                            ) {
-                                $values['server_name'] = get_parameter('combo_server_sql');
-                            } else {
-                                $values['server_name'] = get_parameter('combo_server');
-                            }
+                            $values['server_name'] = get_parameter('combo_server_sql');
 
                             if ($sql !== '') {
                                 if ($values['server_name'] === 'all') {
@@ -2610,6 +2623,27 @@ switch ($action) {
 
                                 $values['external_source'] = json_encode($es);
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'event_report_log_table':
+                                $agents_to_report = get_parameter('id_agents3');
+                                $source = get_parameter('source', '');
+                                $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
+                                $log_number = get_parameter('log_number', '');
+
+                                $es['source'] = $source;
+                                $es['id_agents'] = $agents_to_report;
+                                $es['search'] = $search;
+                                $es['full_text'] = $full_text;
+                                $es['log_number'] = $log_number;
+
+                                $values['external_source'] = json_encode($es);
+                                $values['period'] = get_parameter('period');
+                                $values['period_range'] = get_parameter('period_range');
+                                $values['show_graph'] = get_parameter('combo_graph_options');
+                                $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 
@@ -3000,15 +3034,8 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
+                            $values['server_name'] = get_parameter('combo_server_sql');
 
-                            if ($values['type'] === 'sql_graph_hbar'
-                                || ($values['type'] === 'sql_graph_vbar')
-                                || ($values['type'] === 'sql_graph_pie')
-                            ) {
-                                $values['server_name'] = get_parameter('combo_server_sql');
-                            } else {
-                                $values['server_name'] = get_parameter('combo_server');
-                            }
 
                             if ($sql !== '') {
                                 if ($values['server_name'] === 'all') {

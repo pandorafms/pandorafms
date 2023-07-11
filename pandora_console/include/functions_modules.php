@@ -3676,6 +3676,10 @@ function get_modules_agents(
                         implode(',', $id_agents)
                     )
                 );
+
+                if ($rows === false) {
+                    $rows = [];
+                }
             } else {
                 $rows = [];
             }
@@ -4654,4 +4658,27 @@ function policies_type_modules_availables(string $sec2): array
     }
 
     return $modules;
+}
+
+
+function get_agent_module_childs(
+    &$array_parent_module_id=[],
+    $id_agent_module=false,
+    $id_agente=false
+) {
+    if ($array_parent_module_id !== false && $id_agent_module !== false && $id_agente !== false) {
+        $parent['parent_module_id'] = $id_agent_module;
+        $module_childs_id = agents_get_modules(
+            $id_agente,
+            'parent_module_id',
+            $parent
+        );
+
+        foreach ($module_childs_id as $key => $value) {
+            if ($value !== 0) {
+                $array_parent_module_id[] = $key;
+                get_agent_module_childs($array_parent_module_id, $key, $id_agente);
+            }
+        }
+    }
 }

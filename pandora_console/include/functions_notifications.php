@@ -931,7 +931,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
             true,
             [
                 'title'   => __('Add elements'),
-                'style'   => 'rotate: 90deg',
+                'style'   => 'rotate: 180deg',
                 'onclick' => sprintf(
                     "notifications_modify_two_ways_element('%s', '%s', 'add')",
                     $users,
@@ -970,11 +970,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
             __('Add'),
             'Add',
             false,
-            sprintf(
-                "notifications_add_source_element_to_database('%s', '%s')",
-                $users,
-                $source_id
-            ),
+            'notifications_add_source_element_to_database("'.$users.'",'.$source_id.')',
             "class='sub add'",
             true
         )

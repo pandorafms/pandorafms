@@ -67,6 +67,7 @@ if (is_ajax()) {
     $agents_inserted = get_parameter('agents_inserted', []);
     $id_group = (int) get_parameter('id_group');
     $pendingdelete = (bool) get_parameter('pendingdelete');
+    $get_node_agent = (bool) get_parameter('get_node_agent', false);
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -941,7 +942,12 @@ if (is_ajax()) {
 
         if (is_metaconsole() && !$force_local_modules) {
             if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+                if (empty($server_name)) {
+                    $server_name = explode(' ', io_safe_output($agentName))[0];
+                }
+
                 $connection = metaconsole_get_connection($server_name);
+
                 if ($server_id > 0) {
                     $connection = metaconsole_get_connection_by_id($server_id);
                 }
@@ -1309,10 +1315,23 @@ if (is_ajax()) {
         return;
     }
 
+    if ($get_node_agent === true) {
+        $id = get_parameter('id', 0);
+        if (empty($id) === false) {
+            $result = db_get_value_sql(
+                'SELECT id_tmetaconsole_setup FROM tmetaconsole_agent WHERE id_agente = '.$id
+            );
+
+            echo json_encode($result);
+            return;
+        }
+    }
+
     return;
 }
 
 $id_agente = (int) get_parameter('id_agente', 0);
+
 if (empty($id_agente)) {
     return;
 }

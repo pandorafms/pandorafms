@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # **********************************************************************
 # Pandora FMS Generic Unix/Perl Agent
-# (c) 2009-2015 Artica Soluciones Tecnológicas
+# (c) 2009-2023 Pandora FMS
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
@@ -1031,7 +1031,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.772';
-use constant AGENT_BUILD => '230629';
+use constant AGENT_BUILD => '230711';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -4440,7 +4440,7 @@ This is released under the GNU Lesser General Public License.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2023 Pandora FMS
 
 =cut
 

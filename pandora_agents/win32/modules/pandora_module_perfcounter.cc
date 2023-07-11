@@ -1,7 +1,7 @@
 /* Pandora perfcounter module. This module retrieves information from
    performance counters.
 
-   Copyright (c) 2008-2021 Artica ST.
+   Copyright (c) 2008-2023 Pandora FMS.
    Written by Ramon Novoa.
 
    This program is free software; you can redistribute it and/or modify

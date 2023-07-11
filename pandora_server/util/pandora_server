@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2005-2010 Artica ST
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # Author: Sancho Lerena <slerena@artica.es> 2006-2010
 #
@@ -35,18 +35,19 @@ export PANDORA_HOME="/etc/pandora/pandora_server.conf"
 export PANDORA_HOME_EXTRA="/etc/pandora/conf.d"
 export PANDORA_DAEMON=/usr/bin/pandora_server
 export PANDORA_HA=/usr/bin/pandora_ha
+export PANDORA_ENV=/etc/pandora/pandora_server.env
 export PID_DIR=/var/run
 declare -A SERVERS_NAMES
 
 # Environment variables
-if [ -f /etc/pandora/pandora_server.env ]; then
-	source /etc/pandora/pandora_server.env
+if [ -f $PANDORA_ENV ]; then
+	source $PANDORA_ENV
 fi
 if [[ -z ${PANDORA_RB_PRODUCT_NAME} ]]; then
 	PANDORA_RB_PRODUCT_NAME="Pandora FMS"
 fi
 if [[ -z ${PANDORA_RB_COPYRIGHT_NOTICE} ]]; then
-	PANDORA_RB_COPYRIGHT_NOTICE="Artica ST"
+	PANDORA_RB_COPYRIGHT_NOTICE="Pandora FMS"
 fi
 
 export PANDORA_RB_PRODUCT_NAME=$PANDORA_RB_PRODUCT_NAME
@@ -270,7 +271,7 @@ case "$1" in
 	start-server)
 		_count=0
 		for key in ${!SERVERS_NAMES[@]}; do
-			[[ $key != "/etc/pandora/pandora_server.conf" ]] && check_extra_confs $key
+			[[ $key != $PANDORA_HOME ]] && check_extra_confs $key
 			unset SEC_PID
 			SEC_PID=$(pidof_secondary_server $key)
 			if [ ! -z "$SEC_PID" ] ; then

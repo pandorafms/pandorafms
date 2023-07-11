@@ -628,7 +628,47 @@ if ($favorite_menu !== false) {
 }
 
 
+// Links.
+$rows = db_get_all_rows_in_table('tlink', 'name');
+// $rows = [];
+if (!empty($rows)) {
+    $menu_operation['links']['text'] = __('Links');
+    $menu_operation['links']['sec2'] = '';
+    $menu_operation['links']['id'] = 'god-links';
 
+    $sub = [];
+    foreach ($rows as $row) {
+        // Audit //meter en extensiones.
+        $sub[$row['link']]['text'] = $row['name'];
+        $sub[$row['link']]['id'] = $row['name'];
+        $sub[$row['link']]['type'] = 'direct';
+        $sub[$row['link']]['subtype'] = 'new_blank';
+    }
+
+    $menu_operation['links']['sub'] = $sub;
+}
+
+
+
+// Links.
+$rows = db_get_all_rows_in_table('tlink', 'name');
+// $rows = [];
+if (!empty($rows)) {
+    $menu_operation['links']['text'] = __('Links');
+    $menu_operation['links']['sec2'] = '';
+    $menu_operation['links']['id'] = 'god-links';
+
+    $sub = [];
+    foreach ($rows as $row) {
+        // Audit //meter en extensiones.
+        $sub[$row['link']]['text'] = $row['name'];
+        $sub[$row['link']]['id'] = $row['name'];
+        $sub[$row['link']]['type'] = 'direct';
+        $sub[$row['link']]['subtype'] = 'new_blank';
+    }
+
+    $menu_operation['links']['sub'] = $sub;
+}
 
 // Workspace.
 $menu_operation['workspace']['text'] = __('Workspace');
@@ -816,7 +856,10 @@ if ($access_console_node === true) {
     // ~ }
 }
 
-// Save operation menu array to use in operation/extensions.php view
+$menu_operation['about_operation']['text'] = __('About');
+$menu_operation['about_operation']['id'] = 'about_operation';
+
+// Save operation menu array to use in operation/extensions.php view.
 $operation_menu_array = $menu_operation;
 
 

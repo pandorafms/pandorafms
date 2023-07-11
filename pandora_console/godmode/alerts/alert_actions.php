@@ -333,7 +333,7 @@ $show_table_filter .= ui_toggle(
     __('Search'),
     'search',
     true,
-    false,
+    true,
     '',
     'white-box-content no_border',
     'filter-datatable-main box-flat white_table_graph fixed_filter_bar  '

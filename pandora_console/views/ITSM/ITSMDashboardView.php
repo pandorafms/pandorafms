@@ -33,6 +33,51 @@ global $config;
 
 ui_require_css_file('integriaims');
 
+
+/**
+ * Draw chart.
+ *
+ * @param string $title Title.
+ * @param array  $data  Data for chart.
+ *
+ * @return string Output.
+ */
+function draw_graph(string $title, ?array $data): string
+{
+    global $config;
+    if (is_array($data) === false) {
+        return 'N/A';
+    }
+
+    $water_mark = [];
+
+    $output = '<div class="white_box pdd_15px">';
+    $output .= '<span class="breadcrumbs-title">'.$title.'</span>';
+    $labels = array_keys($data);
+    $options = [
+        'width'     => 320,
+        'height'    => 200,
+        'waterMark' => $water_mark,
+        'legend'    => [
+            'display'  => true,
+            'position' => 'right',
+            'align'    => 'center',
+        ],
+        'labels'    => $labels,
+    ];
+
+    $output .= '<div style="width:inherit;margin: 0 auto;">';
+    $output .= pie_graph(
+        array_values($data),
+        $options
+    );
+    $output .= '</div>';
+    $output .= '</div>';
+
+    return $output;
+}
+
+
 // Header tabs.
 ui_print_standard_header(
     __('ITSM Dashboard'),
@@ -53,13 +98,23 @@ ui_print_standard_header(
     ]
 );
 
-if (empty($incidences) === true) {
+if (empty($error) === false) {
+    ui_print_error_message($error);
+}
+
+if (empty($incidencesByStatus) === true) {
     ui_print_info_message(
         [
             'no_close' => true,
-            'message'  => __('Wip...........................'),
+            'message'  => __('Not found incidences'),
         ]
     );
 } else {
-    echo 'WIP...';
+    $output = '<div class="container-statistics">';
+    $output .= draw_graph(__('Incidents by status'), $incidencesByStatus);
+    $output .= draw_graph(__('Incidents by priority'), $incidencesByPriorities);
+    $output .= draw_graph(__('Incidents by group'), $incidencesByGroups);
+    $output .= draw_graph(__('Incidents by user'), $incidencesByOwners);
+    $output .= '</div>';
+    echo $output;
 }

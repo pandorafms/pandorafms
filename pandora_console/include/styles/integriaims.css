@@ -145,3 +145,15 @@ div.incidence-type-custom-fields {
   flex-direction: column;
   margin: 0;
 }
+
+div.container-statistics {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+div.container-statistics > div {
+  flex: 1 1 45%;
+  max-width: 46%;
+  margin: 1%;
+}

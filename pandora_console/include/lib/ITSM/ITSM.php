@@ -218,6 +218,22 @@ class ITSM
                 $path = '/incidence/'.$id['idIncidence'].'/attachment/'.$id['idAttachment'].'/download';
             break;
 
+            case 'getIncidencesGroupedByStatus':
+                $path = '/incidence/statistic/groupedByStatus';
+            break;
+
+            case 'getIncidencesGroupedByPriorities':
+                $path = '/incidence/statistic/groupedByPriorities';
+            break;
+
+            case 'getIncidencesGroupedByGroups':
+                $path = '/incidence/statistic/groupedByGroups';
+            break;
+
+            case 'getIncidencesGroupedByOwners':
+                $path = '/incidence/statistic/groupedByOwners';
+            break;
+
             default:
                 // Not posible.
             break;

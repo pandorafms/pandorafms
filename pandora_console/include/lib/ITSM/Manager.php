@@ -359,6 +359,41 @@ class Manager
 
 
     /**
+     * Draw list dashboards.
+     *
+     * @return void
+     */
+    private function showDashboard()
+    {
+        $error = '';
+        try {
+            $ITSM = new ITSM();
+            $status = $this->getStatus($ITSM);
+            $incidencesByStatus = $this->getIncidencesGroupedByStatus($ITSM, $status);
+            $priorities = $this->getPriorities($ITSM);
+            $incidencesByPriorities = $this->getIncidencesGroupedByPriorities($ITSM, $priorities);
+            $incidencesByGroups = $this->getIncidencesGroupedByGroups($ITSM);
+            $incidencesByOwners = $this->getIncidencesGroupedByOwners($ITSM);
+        } catch (\Throwable $th) {
+            $error = $th->getMessage();
+        }
+
+        View::render(
+            'ITSM/ITSMDashboardView',
+            [
+                'ajaxController'         => $this->ajaxController,
+                'urlAjax'                => \ui_get_full_url('ajax.php'),
+                'incidencesByStatus'     => $incidencesByStatus,
+                'incidencesByPriorities' => $incidencesByPriorities,
+                'incidencesByGroups'     => $incidencesByGroups,
+                'incidencesByOwners'     => $incidencesByOwners,
+                'error'                  => $error,
+            ]
+        );
+    }
+
+
+    /**
      * Get Incidences types.
      *
      * @param ITSM $ITSM Object for callApi.
@@ -715,19 +750,76 @@ class Manager
 
 
     /**
-     * Draw list dashboards.
+     * Get Incidences group by for status.
      *
-     * @return void
+     * @param ITSM  $ITSM   Object for callApi.
+     * @param array $status Status.
+     *
+     * @return array
      */
-    private function showDashboard()
+    private function getIncidencesGroupedByStatus(ITSM $ITSM, array $status): array
     {
-        View::render(
-            'ITSM/ITSMDashboardView',
-            [
-                'ajaxController' => $this->ajaxController,
-                'urlAjax'        => \ui_get_full_url('ajax.php'),
-            ]
-        );
+        $listStatus = $ITSM->callApi('getIncidencesGroupedByStatus');
+        $result = [];
+        foreach ($status as $key => $value) {
+            if (isset($listStatus[$key]) === false) {
+                $listStatus[$key] = 0;
+            }
+
+            $result[$value] = $listStatus[$key];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Get Incidences group by for priorities.
+     *
+     * @param ITSM  $ITSM       Object for callApi.
+     * @param array $priorities Priorities.
+     *
+     * @return array
+     */
+    private function getIncidencesGroupedByPriorities(ITSM $ITSM, array $priorities): array
+    {
+        $listPriorities = $ITSM->callApi('getIncidencesGroupedByPriorities');
+        $result = [];
+        foreach ($priorities as $key => $value) {
+            if (isset($listPriorities[$key]) === false) {
+                $listPriorities[$key] = 0;
+            }
+
+            $result[$value] = $listPriorities[$key];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Get Incidences group by for groups.
+     *
+     * @param ITSM $ITSM Object for callApi.
+     *
+     * @return array
+     */
+    private function getIncidencesGroupedByGroups(ITSM $ITSM): array
+    {
+        return $ITSM->callApi('getIncidencesGroupedByGroups');
+    }
+
+
+    /**
+     * Get Incidences group by for owner.
+     *
+     * @param ITSM $ITSM Object for callApi.
+     *
+     * @return array
+     */
+    private function getIncidencesGroupedByOwners(ITSM $ITSM): array
+    {
+        return $ITSM->callApi('getIncidencesGroupedByOwners');
     }
 
 

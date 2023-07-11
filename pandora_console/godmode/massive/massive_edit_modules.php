@@ -847,18 +847,6 @@ $table_critical->data[1][1] = html_print_label_input_block(
     )
 );
 
-$table_critical->data[1][2] = html_print_label_input_block(
-    __('Change to critical status after.'),
-    html_print_input_text(
-        'warning_time',
-        '',
-        '',
-        false,
-        15,
-        true
-    )
-);
-
 $table->colspan[14][0] = 2;
 $table->data[14][0] = html_print_label_input_block(__('Critical status'), html_print_table($table_critical, true));
 

@@ -419,7 +419,7 @@ $table->data[3][0] = html_print_label_input_block(
         true,
         '',
         false,
-        'overflow-x: auto;overflow-y: hidden;white-space: nowrap;max-width: 1136px;'
+        'overflow-x: hidden;white-space: nowrap;max-width: 1136px;'
     )
 );
 
@@ -439,7 +439,12 @@ $table->data[4][0] = html_print_label_input_block(
         '',
         __('All'),
         AGENT_MODULE_STATUS_ALL,
-        true
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
     )
 );
 
@@ -453,7 +458,12 @@ $table->data[4][1] = html_print_label_input_block(
         '',
         __('All'),
         AGENT_STATUS_ALL,
-        true
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
     )
 );
 
@@ -478,8 +488,9 @@ $table->data[5][1] = html_print_label_input_block(
         true,
         false,
         true,
-        '',
-        false
+        'w100p',
+        false,
+        'width:100%'
     )
 );
 
@@ -521,8 +532,8 @@ $table->data[6][1] = html_print_label_input_block(
 );
 
 $tags = tags_get_user_tags();
-$table->colspan[7] = 2;
 $table->rowclass[7] = 'select_agents_row select_agents_row_2';
+$table->colspan[7][0] = 2;
 $table->data[7][0] = html_print_label_input_block(
     __('Tags'),
     html_print_select(
@@ -537,7 +548,7 @@ $table->data[7][0] = html_print_label_input_block(
         true,
         '',
         false,
-        'overflow-x: auto;overflow-y: hidden;white-space: nowrap;max-width: 1136px;'
+        'overflow-x: hidden;white-space: nowrap;max-width: 1136px;'
     )
 );
 
@@ -560,7 +571,12 @@ $table->data[8][1] = html_print_label_input_block(
         false,
         '',
         '',
-        true
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
     )
 );
 
@@ -579,7 +595,7 @@ $table->data[9][0] = html_print_label_input_block(
         false,
         '',
         false,
-        'width:100%'
+        'width:100%;white-space: nowrap;max-width: 1136px;'
     ).' '.__('Select all agents').' '.html_print_checkbox('select_all_agents', 1, false, true, false, '', false, "class='static'")
 );
 
@@ -595,7 +611,7 @@ $table->data[9][1] = html_print_label_input_block(
         true,
         true,
         false,
-        '',
+        'w100p',
         false,
         'width:100%'
     )

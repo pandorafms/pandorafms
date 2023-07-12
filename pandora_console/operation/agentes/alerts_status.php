@@ -258,7 +258,8 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
         );
     }
 
-    if ($print_agent === true) {
+    /*
+        if ($print_agent === true) {
         array_push(
             $column_names,
             ['text' => 'Agent']
@@ -268,11 +269,12 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
             $columns,
             ['agent_name']
         );
-    }
+    }*/
 }
 
 array_push(
     $column_names,
+    ['text' => 'Agent'],
     ['text' => 'Module'],
     ['text' => 'Template'],
     [
@@ -286,6 +288,7 @@ array_push(
 
 $columns = array_merge(
     $columns,
+    ['agent_name'],
     ['agent_module_name'],
     ['template_name'],
     ['action'],

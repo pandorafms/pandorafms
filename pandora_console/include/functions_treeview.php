@@ -650,16 +650,28 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     // Agent name.
     $row = [];
     $row['title'] = __('Agent name');
-    $row['data'] = html_print_anchor(
-        [
-            'href'    => 'javascript:void(0)',
-            'title'   => __('Click here for view this agent'),
-            'class'   => 'font_11',
-            'content' => $cellName,
-            'onClick' => "sendHash('".$urlAgent."')",
-        ],
-        true
-    );
+    if (is_metaconsole() === true) {
+        $row['data'] = html_print_anchor(
+            [
+                'href'    => 'javascript:void(0)',
+                'title'   => __('Click here for view this agent'),
+                'class'   => 'font_11',
+                'content' => $cellName,
+                'onClick' => "sendHash('".$urlAgent."')",
+            ],
+            true
+        );
+    } else {
+        $row['data'] = html_print_anchor(
+            [
+                'href'    => $urlAgent,
+                'title'   => __('Click here for view this agent'),
+                'class'   => 'font_11',
+                'content' => $cellName,
+            ],
+            true
+        );
+    }
 
     $table->data['name'] = $row;
 

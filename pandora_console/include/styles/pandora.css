@@ -7303,6 +7303,9 @@ div.graph div.legend table {
 .vertical_middle {
   vertical-align: middle;
 }
+.vertical_baseline {
+  vertical-align: baseline !important;
+}
 
 .mrg_btt_7 {
   margin-bottom: 7px;
@@ -8382,6 +8385,11 @@ div.graph div.legend table {
 .flex_justify_end {
   display: flex;
   justify-content: end;
+}
+
+.justify-content-between {
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 
 .span_priority {
@@ -11654,8 +11662,8 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: absolute;
-  right: 12px;
+  position: relative;
+  right: 40px;
   top: 4px;
   border: 0;
   outline: none;
@@ -11910,6 +11918,32 @@ span.help_icon_15px > img {
   width: 65px !important;
   height: 65px !important;
   margin-top: 10px;
+}
+.order-arrows option {
+  position: relative;
+}
+.order-arrows option::before {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  top: 5px;
+  background-image: url(../../images/darrowup.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
+
+.order-arrows option::after {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  bottom: 6px;
+  background-image: url(../../images/darrowdown.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
 }
 
 /* ==== Spinner ==== */
@@ -12263,6 +12297,14 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .toggle-traffic-graph {
   margin: 0px !important;
+}
+
+form.max_floating_element_size > ul#ul_tree_azure {
+  background-color: #fff;
+  border-spacing: 0px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e2e2;
 }
 
 #grid_img {

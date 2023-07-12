@@ -336,6 +336,10 @@ if (is_ajax() === true) {
         $config['block_size']
     );
 
+    if ($length === 'null') {
+        $length = $config['block_size'];
+    }
+
     if ($get_events !== 0) {
         try {
             ob_start();

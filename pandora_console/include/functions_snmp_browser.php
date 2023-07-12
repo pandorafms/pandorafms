@@ -716,6 +716,13 @@ function snmp_browser_print_container(
     $table->size[0] = '30%';
     $table->size[1] = '30%';
     $table->size[2] = '30%';
+    $target_ip = get_parameter('target_ip', '');
+    if (str_contains($target_ip, '_')) {
+        $custom_field = explode('_', $target_ip)[2];
+        $agent_alias = get_parameter('agent_alias', '');
+        $id_agente = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE alias = "'.io_safe_output($agent_alias).'"')[0]['id_agente'];
+        $target_ip = db_get_all_rows_sql('SELECT description FROM tagent_custom_data WHERE id_field = '.$custom_field.' AND id_agent = '.$id_agente)[0]['description'];
+    }
 
     $table->data[0][0] = html_print_label_input_block(
         __('Target IP'),
@@ -723,7 +730,7 @@ function snmp_browser_print_container(
             [
                 'type'      => 'text',
                 'name'      => 'target_ip',
-                'value'     => get_parameter('target_ip', ''),
+                'value'     => $target_ip,
                 'required'  => true,
                 'size'      => 25,
                 'maxlength' => 0,

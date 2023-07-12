@@ -784,8 +784,8 @@ function loadVisualConsoleData(
         page: "include/rest-api/index",
         getVisualConsole: 1,
         visualConsoleId: vcId,
-        id_user: typeof id_user == undefined ? id_user : null,
-        auth_hash: typeof hash == undefined ? hash : null
+        id_user: typeof id_user !== undefined ? id_user : null,
+        auth_hash: typeof hash !== undefined ? hash : null
       },
       "json"
     )

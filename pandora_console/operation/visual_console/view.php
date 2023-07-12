@@ -85,6 +85,8 @@ $width = (int) get_parameter('width', 0);
 $height = (int) get_parameter('height', 0);
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
+use PandoraFMS\User;
+
 $visualConsole = null;
 try {
     $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
@@ -152,7 +154,7 @@ if ($aclWrite === true || $aclManage === true) {
         $baseUrl = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&action2='.$action;
     }
 
-    $hash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
+    $hash = User::generatePublicHash();
 
     $options['public_link']['text'] = '<a href="'.ui_get_full_url(
         'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$visualConsoleId.'&refr='.$refr.'&id_user='.$config['id_user'],

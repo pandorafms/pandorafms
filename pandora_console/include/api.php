@@ -130,8 +130,7 @@ if (empty($apiPassword) === true
         $config['id_user'] = 'admin';
         $correctLogin = true;
     // Bypass credentials if server-auth and api-pass are correct. 
-    } else if (($op === 'get') 
-        && ($config['server_unique_identifier'] === get_parameter('server_auth'))
+    } else if (($config['server_unique_identifier'] === get_parameter('server_auth'))
         && ($api_password === $apiPassword)  
         && ((bool) isInACL($ipOrigin) === true)) {
 

@@ -4453,16 +4453,9 @@ sub cli_create_event() {
 		exist_check($id_user,'user',$user_name);
 	}
 	
-	my $id_group;
-	
-	if (! $group_name || $group_name eq "All") {
-		$id_group = 0;
-	}
-	else {
-		$id_group = get_group_id($dbh,$group_name);
-		exist_check($id_group,'group',$group_name);
-	}
-	
+	my $id_group = get_group_id($dbh,$group_name);
+	exist_check($id_group,'group',$group_name);
+
 	my $id_agent;
 
 	if (defined $use_alias and $use_alias eq 'use_alias') {
@@ -4515,7 +4508,7 @@ sub cli_create_event() {
 			# exist_check($id_agent,'agent',$agent_name);
 			if($id_agent == -1){
 				if($force_create_agent == 1){
-					pandora_create_agent ($conf, '', $agent_name, '', '', '', '', 'Created by cli_create_event', '', $dbh);
+					pandora_create_agent ($conf, '', $agent_name, '', $id_group, '', '', 'Created by cli_create_event', '', $dbh);
 					print_log "[INFO] Adding agent '$agent_name' \n\n";
 					$id_agent = get_agent_id($dbh,$agent_name);
 				}

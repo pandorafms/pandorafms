@@ -122,6 +122,7 @@ namespace Pandora {
 		Pandora_Agent_Conf *getConf ();
 		string         getEHKey (string ehorus_conf);
 		long           getInterval ();
+		long           getIntervalSec ();
 		long           getIntensiveInterval ();
 		string         generateAgentName ();
 		bool           writeToBuffer (string temporal);

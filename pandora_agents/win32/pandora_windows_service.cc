@@ -2198,6 +2198,11 @@ Pandora_Windows_Service::getInterval () {
 }
 
 long
+Pandora_Windows_Service::getIntervalSec () {
+	return this->interval_sec;
+}
+
+long
 Pandora_Windows_Service::getIntensiveInterval () {
 	return this->intensive_interval;
 }

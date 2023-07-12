@@ -31,6 +31,10 @@ using namespace std;
  * File operations.
  */
 namespace Pandora_File {
+
+	/* Size of a buffer that will be passed to Pandora_File::md5. */
+	const int MD5_BUF_SIZE = 33;
+
 	/**
 	 * File super-class exception.
 	 */

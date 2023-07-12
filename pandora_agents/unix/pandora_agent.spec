@@ -94,6 +94,10 @@ if [ ! -e /etc/pandora/collections ]; then
 	mkdir /etc/pandora/collections
 fi
 
+if [ ! -e /etc/pandora/ref ]; then
+	mkdir /etc/pandora/ref
+fi
+
 if [ ! -e /etc/pandora/commands ]; then
 	mkdir /etc/pandora/commands
 fi

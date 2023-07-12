@@ -4343,7 +4343,7 @@ function ui_print_datatable(array $parameters)
                     $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
                     $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
 
-                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers"));
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").attr("style","margin-right: 10px;"));
                     $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
                     $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
                     $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));

@@ -654,7 +654,9 @@ $(document).ready (function () {
             $("#module_name").trigger('change');
         } else {
             $("#module_name option").prop('selected', false);
-            $("#module_name").trigger('change');
+            if ($('#agents_selection_mode :selected').val() === 'all'){
+                $("#module_name").trigger('change');
+            }
         }
     });
 
@@ -796,14 +798,6 @@ $(document).ready (function () {
             }
             else if (this.id == "checkbox-recursion") {
                 $("#groups_select").trigger("change");
-            }
-            else {
-                if (this.checked) {
-                    $(".select_agents_row_2").css('display', 'none');
-                }
-                else {
-                    $(".select_agents_row_2").css('display', '');
-                }
             }
         }
     );

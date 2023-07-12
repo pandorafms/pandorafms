@@ -486,6 +486,40 @@ function ring_graph(
 }
 
 
+/**
+ * Radar graph RADAR.
+ *
+ * @param array $chart_data Data.
+ * @param array $options    Options.
+ *
+ * @return string  Output html charts
+ */
+function radar_graph(
+    $chart_data,
+    $options
+) {
+    $chart = get_build_setup_charts('RADAR', $options, $chart_data);
+    return $chart->render(true, true);
+}
+
+
+/**
+ * Line graph LINE.
+ *
+ * @param array $chart_data Data.
+ * @param array $options    Options.
+ *
+ * @return string  Output html charts
+ */
+function line_graph(
+    $chart_data,
+    $options
+) {
+    $chart = get_build_setup_charts('LINE', $options, $chart_data);
+    return $chart->render(true, true);
+}
+
+
 function get_build_setup_charts($type, $options, $data)
 {
     global $config;
@@ -503,6 +537,14 @@ function get_build_setup_charts($type, $options, $data)
 
         case 'BAR':
             $chart = $factory->create($factory::BAR);
+        break;
+
+        case 'RADAR':
+            $chart = $factory->create($factory::RADAR);
+        break;
+
+        case 'LINE':
+            $chart = $factory->create($factory::LINE);
         break;
 
         default:
@@ -1102,12 +1144,48 @@ function get_build_setup_charts($type, $options, $data)
             }
         break;
 
+        case 'RADAR':
+            $chart->labels()->exchangeArray($options['labels']);
+
+            foreach ($data as $key => $dataset) {
+                $dataSet1 = $chart->createDataSet();
+                $dataSet1->setLabel($dataset['label']);
+                $dataSet1->setBackgroundColor($dataset['backgroundColor']);
+                $dataSet1->setBorderColor($dataset['borderColor']);
+                $dataSet1->setPointBackgroundColor($dataset['pointBackgroundColor']);
+                $dataSet1->setPointBorderColor($dataset['pointBorderColor']);
+                $dataSet1->setPointHoverBackgroundColor($dataset['pointHoverBackgroundColor']);
+                $dataSet1->setPointHoverBorderColor($dataset['pointHoverBorderColor']);
+                $dataSet1->data()->exchangeArray($dataset['data']);
+                $chart->addDataSet($dataSet1);
+            }
+        break;
+
+        case 'LINE':
+            $chart->labels()->exchangeArray($options['labels']);
+
+            foreach ($data as $key => $dataset) {
+                $dataSet1 = $chart->createDataSet();
+                $dataSet1->setLabel($dataset['label']);
+                $dataSet1->setBackgroundColor($dataset['backgroundColor']);
+                $dataSet1->setBorderColor($dataset['borderColor']);
+                $dataSet1->setPointBackgroundColor($dataset['pointBackgroundColor']);
+                $dataSet1->setPointBorderColor($dataset['pointBorderColor']);
+                $dataSet1->setPointHoverBackgroundColor($dataset['pointHoverBackgroundColor']);
+                $dataSet1->setPointHoverBorderColor($dataset['pointHoverBorderColor']);
+                $dataSet1->data()->exchangeArray($dataset['data']);
+                $chart->addDataSet($dataSet1);
+            }
+        break;
+
         default:
             // Not possible.
         break;
     }
 
-    $chart->addDataSet($setData);
+    if ($type !== 'RADAR' && $type !== 'LINE') {
+        $chart->addDataSet($setData);
+    }
 
     return $chart;
 }

@@ -518,7 +518,6 @@ sub pandora_load_config {
 	$pa_config->{"syslog_blacklist"} = undef; # 7.0.773
 	$pa_config->{"syslog_whitelist"} = undef; # 7.0 773
 
-
 	# External .enc files for XML::Parser.
 	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
 

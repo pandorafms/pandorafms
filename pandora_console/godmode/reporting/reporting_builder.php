@@ -508,11 +508,11 @@ switch ($action) {
         $buttons = [
             'list_reports' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image(
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image(
                     'images/logs@svg.svg',
                     true,
                     [
-                        'title' => __('Reports list'),
+                        'title' => __('Reports'),
                         'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
@@ -545,7 +545,7 @@ switch ($action) {
 
         // Header.
         ui_print_standard_header(
-            __('List of reports'),
+            __('Reports'),
             'images/op_reporting.png',
             false,
             '',
@@ -3678,7 +3678,7 @@ switch ($action) {
             $buttons = [
                 'list_reports' => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Reports list'), 'class' => 'invert_filter main_menu_icon']).'</a>',
+                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Reports'), 'class' => 'invert_filter main_menu_icon']).'</a>',
                 ],
             ];
 
@@ -3745,7 +3745,7 @@ $buttons = [
             'images/report_list.png',
             true,
             [
-                'title' => __('Reports list'),
+                'title' => __('Reports'),
                 'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
@@ -3793,12 +3793,13 @@ if ($idReport != 0) {
     $buttons = [
         'main' => [
             'active' => true,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image('images/report_list.png', true, ['title' => __('Reports'), 'class' => 'main_menu_icon invert_filter']).'</a>',
         ],
     ];
     $textReportName = __('Create Custom Report');
 }
 
+// here1
 $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
 if (is_metaconsole() === true || $action !== 'update') {

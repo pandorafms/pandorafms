@@ -1920,7 +1920,8 @@ function html_print_extended_select_for_unit(
     $select_style=false,
     $unique_name=true,
     $disabled=false,
-    $no_change=0
+    $no_change=0,
+    $class='w100p'
 ) {
     global $config;
 
@@ -1952,7 +1953,7 @@ function html_print_extended_select_for_unit(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" class="w100p inline_line">';
+    echo '<div id="'.$uniq_name.'_default" class="'.$class.' inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -3923,6 +3924,14 @@ function html_print_table(&$table, $return=false)
         }
     }
 
+    if (isset($table->tdid)) {
+        foreach ($table->tdid as $keyrow => $tid) {
+            foreach ($tid as $key => $id) {
+                $tdid[$keyrow][$key] = $id;
+            }
+        }
+    }
+
     if (isset($table->cellstyle)) {
         foreach ($table->cellstyle as $keyrow => $cstyle) {
             foreach ($cstyle as $key => $cst) {
@@ -4106,6 +4115,10 @@ function html_print_table(&$table, $return=false)
                     $colspan[$keyrow][$key] = '';
                 }
 
+                if (!isset($tdid[$keyrow][$key])) {
+                    $tdid[$keyrow][$key] = '';
+                }
+
                 if (!isset($rowspan[$keyrow][$key])) {
                     $rowspan[$keyrow][$key] = '';
                 }
@@ -4126,10 +4139,16 @@ function html_print_table(&$table, $return=false)
                     $style[$key] = '';
                 }
 
-                if ($class === 'datos5' && $key === 1) {
-                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                if ($tdid[$keyrow][$key] !== '') {
+                    $tid = $tdid[$keyrow][$key];
                 } else {
-                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                    $tid = $tableid.'-'.$keyrow.'-'.$key;
+                }
+
+                if ($class === 'datos5' && $key === 1) {
+                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                } else {
+                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
                 }
             }
 

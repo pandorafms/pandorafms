@@ -5916,12 +5916,24 @@ sub cli_get_bad_conf_files() {
 	foreach my $file (@files) {
 		# Check important tokens
 		my $missings = 0;
-		my @tokens = ("server_ip","server_path","temporal","log_file");
+		my @tokens = ("server_ip","server_path","temporal","logfile");
 		
 		if ($file !~ /.srv./) {
 			foreach my $token (@tokens) {
-				if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {
+				my $result = enterprise_hook('pandora_check_conf_token', [$conf->{incomingdir}.'/conf/'.$file, $token]);
+				
+				if($result  == 0) {
 					$missings++;
+				}
+				elsif ($result  == -1) {
+					print_log "[WARN] File not exists /conf/".$file."\n\n";
+					$bad_files++;
+					last;
+				}
+				elsif(!defined $result) {
+					print_log "[WARN] Can't open file /conf/".$file."\n\n";
+					$bad_files++;
+					last;
 				}
 			}
 			

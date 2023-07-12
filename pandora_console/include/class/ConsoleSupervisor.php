@@ -2379,7 +2379,8 @@ class ConsoleSupervisor
             'SELECT count(*) FROM tusuario
             WHERE
                 id_user="admin"
-                AND password="1da7ee7d45b96d0e1f45ee4ee23da560"
+                AND (password="1da7ee7d45b96d0e1f45ee4ee23da560" OR
+                     password="$2y$10$Wv/xoxjI2VAkthJhk/PzeeGIhBKYU/K.TMgUdmW7fEP2NQkdWlB9K")
                 AND is_admin=1
                 and disabled!=1'
         );

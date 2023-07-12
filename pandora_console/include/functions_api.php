@@ -11546,6 +11546,11 @@ function api_get_events($node_id, $trash2, $other, $returnType)
                 }
             }
 
+            // Add agent name to nodo.
+            if (is_metaconsole() === false && empty($row['id_agente']) === false) {
+                $row['agent_name'] = agents_get_name($row['id_agente']);
+            }
+
             // FOR THE TEST THE API IN THE ANDROID.
             $row['description_event'] = events_print_type_description($row['event_type'], true);
             $row['img_description'] = events_print_type_img($row['event_type'], true, true);

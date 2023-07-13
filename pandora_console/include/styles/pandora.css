@@ -10804,6 +10804,10 @@ button.ui-button.ui-widget.submit-cancel:active {
   border-color: #96a2bf;
 }
 
+.cursor-default {
+  cursor: default;
+}
+
 .hasColorPicker {
   z-index: 10;
 }

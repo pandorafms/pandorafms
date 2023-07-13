@@ -740,7 +740,7 @@ if ($id_agente) {
 
         case 'policy':
             $help_header = 'policy_tab';
-            $tab_name = __('Policy');
+            $tab_name = __('Policies');
         break;
 
         case 'plugins':

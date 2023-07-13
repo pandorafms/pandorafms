@@ -603,7 +603,7 @@ class WelcomeWindow extends Wizard
                 ],
                 [
                     'arguments' => [
-                        'label'      => __('Let`s do it!'),
+                        'label'      => __("Let's do it!"),
                         'type'       => 'button',
                         'attributes' => [
                             'class' => 'secondary',
@@ -754,7 +754,7 @@ class WelcomeWindow extends Wizard
             echo html_print_label_input_block(
                 __('Ip target'),
                 html_print_input_text(
-                    'ip_target',
+                    'ip_target_discovery',
                     '192.168.10.0/24',
                     '192.168.10.0/24',
                     false,
@@ -1352,7 +1352,7 @@ class WelcomeWindow extends Wizard
                 url: "include/ajax/task_to_perform.php",
                 data: {
                     create_net_scan: 1,
-                    ip_target: $('#text-ip_target').val(),
+                    ip_target: $('#text-ip_target_discovery').val(),
                 },
                 success: function(data) {
                     if (data !== 0) {

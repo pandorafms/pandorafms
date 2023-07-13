@@ -479,7 +479,7 @@ function create_module_packet_lost($id_agent, $id_group, $ip_target)
 function create_net_scan($ip_target)
 {
     global $config;
-    include_once 'HostDevices.class.php';
+    include_once $config['homedir'].'/godmode/wizards/HostDevices.class.php';
     $HostDevices = new HostDevices(1);
     $id_recon_server = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_DISCOVERY], 'id_server')['id_server'];
 

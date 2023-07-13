@@ -267,6 +267,23 @@ function agents_modules_load_js()
             //     }
             // });
         }
+        /* <![CDATA[ */
+        function export_csv() {
+            let group_id = $('#group_id option:selected').val();
+            let module_group_id = $('#modulegroup option:selected').val();
+            let agent_id = $('#id_agents2 option:selected').map((_, e) => e.value).get();
+            let module_id = $('#module option:selected').map((_, e) => e.value).get();
+
+            let filters_array = {group_id: group_id, module_group_id:module_group_id, agent_id:agent_id, module_id:module_id}
+            let jsonFilters = JSON.stringify(filters_array)
+            let filters = window.btoa(jsonFilters)
+            var f = document.forms.filter_form;
+
+            blockResubmit($(this));
+            f.action = "extensions/agents_modules_csv.php?get_agents_module_csv=1&filters="+filters;
+            $("#filter_form").submit();
+        }
+        /* ]]> */
     </script>
     <?php
 }
@@ -653,7 +670,7 @@ function mainAgentsModules()
     }
 
     if ($config['pure'] != 1) {
-        $show_filters = '<form method="post" action="index.php?sec=view&sec2=extensions/agents_modules" class="w100p">';
+        $show_filters = '<form id="filter_form" method="post" action="index.php?sec=view&sec2=extensions/agents_modules" class="w100p">';
         $show_filters .= '<table class="filter-table-adv w100p no-border" cellpadding="4" cellspacing="4">';
             $show_filters .= '<tr>';
                 $show_filters .= '<td width="33%">'.$filter_type.'</td>';
@@ -679,6 +696,13 @@ function mainAgentsModules()
                         'onclick' => 'select_selected()',
                     ],
                     true
+                ).html_print_button(
+                    __('Export to CSV'),
+                    'srcbutton',
+                    false,
+                    'export_csv()',
+                    ['class' => 'secondary mini'],
+                    true,
                 ),
             ],
             true

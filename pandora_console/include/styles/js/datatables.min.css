@@ -924,9 +924,8 @@ a.ui-button:active,
 .ui-button:active,
 .ui-button.ui-state-active:hover {
   border: 1px solid #003eff;
-  background: #007fff;
+  background: #ececec;
   font-weight: normal;
-  color: #fff;
 }
 .ui-icon-background,
 .ui-state-active .ui-icon-background {
@@ -936,7 +935,6 @@ a.ui-button:active,
 .ui-state-active a,
 .ui-state-active a:link,
 .ui-state-active a:visited {
-  color: #fff;
   text-decoration: none;
 }
 .ui-state-highlight,

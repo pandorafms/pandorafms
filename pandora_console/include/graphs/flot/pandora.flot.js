@@ -943,12 +943,18 @@ function pandoraFlotSlicebar(
 
   // Format functions
   function xFormatter(v) {
-    var ct = new Date();
+    // var ct = new Date();
+    var ct = new timezoneJS.Date();
+    ct.setTimezone(phpTimezone);
+
     var currentTime = ct.getTime();
 
     var diffDates = (currentTime - 1000 * datelimit) / 1000;
 
-    var d = new Date(1000 * (v + datelimit));
+    // var d = new Date(1000 * (v + datelimit));
+    var d = new timezoneJS.Date(1000 * (v + datelimit));
+    d.setTimezone(phpTimezone);
+
     var monthNames = [
       "Jan",
       "Feb",
@@ -1975,25 +1981,27 @@ function pandoraFlotArea(
         !(type == 1 && /percentil/.test(index) == true) &&
         !(type == 3 && /percentil/.test(index) == true)
       ) {
-        data_base.push({
-          id: "serie_" + i,
-          data: value.data,
-          label: index,
-          color: color[index]["color"],
-          lines: {
-            show: line_show,
-            fill: filled,
-            lineWidth: lineWidth,
-            steps: steps_chart
-          },
-          points: {
-            show: points_show,
-            radius: radius,
-            fillColor: fill_points,
-            fill: filled
-          },
-          legend: legend.index
-        });
+        if (color[index] !== null) {
+          data_base.push({
+            id: "serie_" + i,
+            data: value.data,
+            label: index,
+            color: color[index]["color"],
+            lines: {
+              show: line_show,
+              fill: filled,
+              lineWidth: lineWidth,
+              steps: steps_chart
+            },
+            points: {
+              show: points_show,
+              radius: radius,
+              fillColor: fill_points,
+              fill: filled
+            },
+            legend: legend.index
+          });
+        }
       }
     }
     i++;
@@ -2046,7 +2054,7 @@ function pandoraFlotArea(
     xaxes: [
       {
         mode: "time",
-        timezone: "browser",
+        timezone: phpTimezone,
         localTimezone: true
         //tickSize: [maxticks, 'hour']
       }
@@ -2146,7 +2154,7 @@ function pandoraFlotArea(
       xaxes: [
         {
           mode: "time",
-          timezone: "browser",
+          timezone: phpTimezone,
           localTimezone: true
           //tickSize: [maxticks, 'hour']
         }
@@ -2245,7 +2253,7 @@ function pandoraFlotArea(
           xaxes: [
             {
               mode: "time",
-              timezone: "browser",
+              timezone: phpTimezone,
               localTimezone: true,
               tickSize: [maxticks_zoom, "hour"]
             }
@@ -2292,7 +2300,7 @@ function pandoraFlotArea(
           xaxes: [
             {
               mode: "time",
-              timezone: "browser",
+              timezone: phpTimezone,
               localTimezone: true,
               tickSize: [maxticks_zoom, "hour"]
             }
@@ -2354,7 +2362,11 @@ function pandoraFlotArea(
 
     $("#timestamp_" + graph_id).show();
 
-    var d = new Date(pos.x);
+    // var d = new Date(pos.x);
+    var d = new timezoneJS.Date();
+    d.setTimezone(phpTimezone);
+    d.setTime(pos.x);
+
     var monthNames = [
       "Jan",
       "Feb",

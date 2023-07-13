@@ -9111,7 +9111,7 @@ a.text-dark:hover {
   visibility: visible !important;
 }
 .invisible {
-  visibility: hidden !important;
+  display: none;
 }
 @media print {
   *,

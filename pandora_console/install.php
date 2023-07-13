@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -130,8 +130,8 @@
         </div>
         <div style='padding-bottom: 50px'>
             <?php
-            $version = '7.0NG.770';
-            $build = '230504';
+            $version = '7.0NG.772';
+            $build = '230713';
             $banner = "v$version Build $build";
             error_reporting(0);
 
@@ -604,7 +604,7 @@ function install_step1_licence()
 		<div id='install_box'>
 			<h2 class='subtitle'>GPL2 Licence terms agreement</h2>
 			<p class='text'>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
-			<p class='text'>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
+			<p class='text'>For more information, please refer to our website at https://pandorafms.com/community/ and contact us if you have any kind of question about the usage of Pandora FMS</p>
             <p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
 		";
 
@@ -1325,7 +1325,7 @@ function install_step5()
 			    please read documentation on how to install it.</p>
 			<p class='text'>Default user is <b>'admin'</b> with password <b>'pandora'</b>, 
 			    please change it both as soon as possible.</p>
-			<p class='text'>Don't forget to check <a href='http://pandorafms.com' class='link'>http://pandorafms.com</a> 
+			<p class='text'>Don't forget to check <a href='https://pandorafms.com' class='link'>https://pandorafms.com</a> 
 			    for updates.
 			<p class='text'>Select if you want to rename '<i>install.php</i>'.</p>
 			<form method='post' action='index.php'>

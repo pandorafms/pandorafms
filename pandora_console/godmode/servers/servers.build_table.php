@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -167,18 +167,21 @@ foreach ($servers as $server) {
         break;
     }
 
-    $data[6] = $server['threads'].' : '.$server['queued_modules'];
+    $data[6] = '';
     if ($server['queued_modules'] > 500) {
-        $data[6] .= '&nbsp;&nbsp;<div class="inline"><a onclick="show_dialog();" >'.html_print_image(
+        $data[6] .= '<div class="inline"><a onclick="show_dialog();" >'.html_print_image(
             'images/info-warning.svg',
             true,
             [
                 'width' => 16,
                 'heght' => 16,
                 'class' => 'pulsate clickable',
+                'style' => 'margin-left: -25px;',
             ]
-        ).'</a></div>';
+        ).'</a></div>&nbsp;&nbsp;';
     }
+
+    $data[6] .= $server['threads'].' : '.$server['queued_modules'];
 
     $data[7] = ui_print_timestamp($server['keepalive'], true);
 
@@ -256,7 +259,7 @@ foreach ($servers as $server) {
                 'images/agents@svg.svg',
                 true,
                 [
-                    'title' => __('Manage satellite hosts'),
+                    'title' => __('Manage server conf'),
                     'class' => 'main_menu_icon invert_filter',
                 ]
             );

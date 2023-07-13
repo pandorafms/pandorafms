@@ -1,9 +1,9 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.770
+# Version 7.0NG.772
 # Licensed under GPL license v2,
-# (c) 2003-2021 Artica Soluciones Tecnologicas
+# (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
 # Please change it for your setup needs
 #############################################################################
@@ -384,7 +384,7 @@ max_queue_files 5000
 
 # Pandora FMS will restart after restart_delay seconds on critical errors.
 
-restart 1 
+restart 0
 restart_delay 60
 
 # More information about GIS Setup in /usr/share/pandora_server/util/gis.README

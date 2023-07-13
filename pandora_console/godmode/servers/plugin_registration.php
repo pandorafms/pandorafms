@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -93,10 +93,6 @@ if (is_metaconsole() === true) {
     }
 }
 
-$str = 'This extension makes registering server plugins an easier task.';
-$str .= ' Here you can upload a server plugin in .pspz zipped format.';
-$str .= ' Please refer to the official documentation on how to obtain and use Server Plugins.';
-
 $output = '<div class="new_task">';
 $output .= '<div class="image_task">';
 $output .= html_print_image(
@@ -108,7 +104,7 @@ $output .= '</div>';
 $output .= '<div class="text_task">';
 $output .= '<h3>'.__('Plugin registration').'</h3>';
 $output .= '<p id="description_task">';
-$output .= __($str);
+$output .= __('This extension makes registering server plugins an easier task. Here you can upload a server plugin in .pspz zipped format. Please refer to the official documentation on how to obtain and use Server Plugins.');
 $output .= '<br><br>';
 $output .= __('You can get more plugins in our');
 $output .= '<a href="https://pandorafms.com/Library/Library/">';

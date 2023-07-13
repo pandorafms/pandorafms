@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -33,6 +33,15 @@ require_once 'include/config.php';
 global $config;
 
 check_login();
+// ACL Check.
+if (check_acl($config['id_user'], 0, 'AR') === 0) {
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Default view'
+    );
+    include 'general/noaccess.php';
+    exit;
+}
 
 require_once 'include/functions_reporting.php';
 require_once 'include/functions_tactical.php';
@@ -202,22 +211,58 @@ if (!empty($news)) {
 
     $output_news = '<div id="news_board" class="new">';
     foreach ($news as $article) {
-        $image = false;
+        $default = false;
         if ($article['text'] == '&amp;lt;p&#x20;style=&quot;text-align:&#x20;center;&#x20;font-size:&#x20;13px;&quot;&amp;gt;Hello,&#x20;congratulations,&#x20;if&#x20;you&apos;ve&#x20;arrived&#x20;here&#x20;you&#x20;already&#x20;have&#x20;an&#x20;operational&#x20;monitoring&#x20;console.&#x20;Remember&#x20;that&#x20;our&#x20;forums&#x20;and&#x20;online&#x20;documentation&#x20;are&#x20;available&#x20;24x7&#x20;to&#x20;get&#x20;you&#x20;out&#x20;of&#x20;any&#x20;trouble.&#x20;You&#x20;can&#x20;replace&#x20;this&#x20;message&#x20;with&#x20;a&#x20;personalized&#x20;one&#x20;at&#x20;Admin&#x20;tools&#x20;-&amp;amp;gt;&#x20;Site&#x20;news.&amp;lt;/p&amp;gt;&#x20;') {
-            $image = true;
+            $article['subject'] = __('Welcome to Pandora FMS Console');
+            $default = true;
         }
 
         $text_bbdd = io_safe_output($article['text']);
         $text = html_entity_decode($text_bbdd);
-        $output_news .= '<span class="green_title">'.$article['subject'].'</span>';
+
+        $output_news .= '<div class="new-board">';
+        $output_news .= '<div class="new-board-header">';
+        $output_news .= '<span class="new-board-title">'.$article['subject'].'</span>';
+        $output_news .= '<span class="new-board-author">'.__('By').' '.$article['author'].' '.ui_print_timestamp($article['timestamp'], true).'</span>';
+        $output_news .= '</div>';
         $output_news .= '<div class="new content">';
-        $output_news .= '<p>'.__('by').' <b>'.$article['author'].'</b> <i>'.ui_print_timestamp($article['timestamp'], true).'</i> '.$comparation_suffix.'</p>';
-        if ($image) {
-            $output_news .= '<center><img src="./images/welcome_image.png" alt="img colabora con nosotros - Support" width="191" height="207"></center>';
+
+        if ($default) {
+            $output_news .= '<div class="default-new">';
+            $output_news .= '<div class="default-image-new">';
+            $output_news .= '<img src="./images/welcome_image.svg" alt="img colabora con nosotros - Support">';
+            $output_news .= '</div><div class="default-text-new">';
+
+            $output_news .= '
+                <p>'.__('Welcome to our monitoring tool so grand,').'
+                <br>'.__('Where data insights are at your command.').'
+                <br>'.__('Sales, marketing, operations too,').'
+                <br>'.__("Customer support, we've got you.").'
+                </p>
+                
+                <p>'.__('Our interface is user-friendly,').'
+                <br>'.__("Customize your dashboard, it's easy.").'
+                <br>'.__('Set up alerts and gain insights so keen,').'
+                <br>'.__("Optimize your data, like you've never seen.").'
+                </p>
+                
+                <p>'.__('Unleash its power now, and join the pro league,').'
+                <br>'.__('Unlock the potential of your data to intrigue.').'
+                <br>'.__('Monitoring made simple, efficient and fun,').'
+                <br>'.__('Discover a whole new way to get things done.').'
+                </p>
+                
+                <p>'.__('And take control of your IT once and for all.').'</p>
+                
+                <span>'.__('You can replace this message with a personalized one at Admin tools -> Site news.').'</span>
+            ';
+
+            $output_news .= '</div></div>';
+        } else {
+            $output_news .= nl2br($text);
         }
 
-        $output_news .= nl2br($text);
-        $output_news .= '</div>';
+        $output_news .= '</div></div>';
     }
 
     $output_news .= '</div>';

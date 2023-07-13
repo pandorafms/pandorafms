@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -262,6 +262,10 @@ function config_update_config()
 
                     if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
                         $error_update[] = __('Enable Sflow');
+                    }
+
+                    if (config_update_value('activate_feedback', (bool) get_parameter('activate_feedback'), true) === false) {
+                        $error_update[] = __('Enable Feedback');
                     }
 
                     if (config_update_value('general_network_path', get_parameter('general_network_path'), true) === false) {
@@ -607,6 +611,10 @@ function config_update_config()
                         $error_update[] = __('Start TLS');
                     }
 
+                    if (config_update_value('recursive_search', get_parameter('recursive_search'), true) === false) {
+                        $error_update[] = __('Recursive search');
+                    }
+
                     if (config_update_value('ad_advanced_config', get_parameter('ad_advanced_config'), true) === false) {
                         $error_update[] = __('Advanced Config AD');
                     }
@@ -811,6 +819,10 @@ function config_update_config()
                         $error_update[] = __('2FA all users');
                     }
 
+                    if (config_update_value('control_session_timeout', get_parameter('control_session_timeout'), true) === false) {
+                        $error_update[] = __('Control timeout');
+                    }
+
                     if (config_update_value('session_timeout', get_parameter('session_timeout'), true) === false) {
                         $error_update[] = __('Session timeout');
                     } else {
@@ -820,6 +832,8 @@ function config_update_config()
                             if (config_update_value('session_timeout', 90, true) === false) {
                                 $error_update[] = __('Session timeout');
                             }
+                        } else {
+                            config_prepare_expire_time_session(true);
                         }
                     }
 
@@ -946,6 +960,10 @@ function config_update_config()
 
                     if (config_update_value('max_execution_event_response', get_parameter('max_execution_event_response'), true) === false) {
                         $error_update[] = __('Max execution event response');
+                    }
+
+                    if (config_update_value('limit_sql_pdf', get_parameter('limit_sql_pdf'), true) === false) {
+                        $error_update[] = __('Rows limit for SQL report item PDF');
                     }
 
                     if (config_update_value('row_limit_csv', get_parameter('row_limit_csv'), true) === false) {
@@ -2205,6 +2223,10 @@ function config_process_config()
         config_update_value('max_execution_event_response', 10);
     }
 
+    if (!isset($config['limit_sql_pdf'])) {
+        config_update_value('limit_sql_pdf', 5000);
+    }
+
     if (!isset($config['max_number_of_events_per_node'])) {
         config_update_value('max_number_of_events_per_node', 100000);
     }
@@ -2827,7 +2849,7 @@ function config_process_config()
     }
 
     if (!isset($config['email_from_dir'])) {
-        config_update_value('email_from_dir', 'pandora@pandorafms.org');
+        config_update_value('email_from_dir', 'pandora@pandorafms.com');
     }
 
     if (!isset($config['email_from_name'])) {
@@ -3080,6 +3102,10 @@ function config_process_config()
 
     if (!isset($config['ad_start_tls'])) {
         config_update_value('ad_start_tls', 0);
+    }
+
+    if (!isset($config['recursive_search'])) {
+        config_update_value('recursive_search', 1);
     }
 
     if (!isset($config['ad_advanced_config'])) {
@@ -3340,6 +3366,10 @@ function config_process_config()
 
     if (!isset($config['autoupdate'])) {
         config_update_value('autoupdate', 1);
+    }
+
+    if (!isset($config['activate_feedback'])) {
+        config_update_value('activate_feedback', true);
     }
 
     if (!isset($config['api_password'])) {
@@ -3773,6 +3803,10 @@ function config_process_config()
         config_update_value('notification_autoclose_time', 5);
     }
 
+    if (isset($config['control_session_timeout']) === false) {
+        config_update_value('control_session_timeout', 'check_activity');
+    }
+
     // Finally, check if any value was overwritten in a form.
     config_update_config();
 }
@@ -3813,7 +3847,7 @@ function get_um_url()
         $url = $config['url_update_manager'];
         $url = substr($url, 0, (strlen($url) - strpos(strrev($url), '/')));
     } else {
-        $url = 'https://licensing.artica.es/pandoraupdate7/';
+        $url = 'https://licensing.pandorafms.com/pandoraupdate7/';
         config_update_value(
             'url_update_manager',
             $url.'/server.php'
@@ -3904,9 +3938,57 @@ function config_user_set_custom_config()
         }
     }
 
+    config_prepare_expire_time_session();
+
     if (is_metaconsole() === true) {
         $config['metaconsole_access'] = $userinfo['metaconsole_access'];
     }
+}
+
+
+function config_prepare_expire_time_session($force_update=false)
+{
+    global $config;
+    if (empty($config['id_user']) === true) {
+        return;
+    }
+
+    $userinfo = get_user_info($config['id_user']);
+
+    if (isset($userinfo)) {
+        $user_sesion_time = $userinfo['session_time'];
+    } else {
+        $user_sesion_time = null;
+    }
+
+    if ($user_sesion_time == 0) {
+        // Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours.
+        $sessionCookieExpireTime = $config['session_timeout'];
+    } else {
+        // Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours.
+        $sessionCookieExpireTime = $user_sesion_time;
+    }
+
+    if ($sessionCookieExpireTime <= 0) {
+        $sessionCookieExpireTime = (10 * 365 * 24 * 60 * 60);
+    } else {
+        $sessionCookieExpireTime *= 60;
+    }
+
+    if ($config['control_session_timeout'] === 'ignore_activity') {
+        $sessionMaxTimeout = (time() + $sessionCookieExpireTime);
+        if ((int) $userinfo['session_max_time_expire'] === 0 || $force_update === true) {
+            $userinfo['session_max_time_expire'] = $sessionMaxTimeout;
+            update_user($userinfo['id_user'], ['session_max_time_expire' => $sessionMaxTimeout]);
+        } else if (time() > (int) $userinfo['session_max_time_expire'] && (int) $userinfo['session_max_time_expire'] > 0) {
+            update_user($userinfo['id_user'], ['session_max_time_expire' => 0]);
+        }
+    } else {
+        if ((int) $userinfo['session_max_time_expire'] > 0) {
+            update_user($userinfo['id_user'], ['session_max_time_expire' => 0]);
+        }
+    }
+
 }
 
 
@@ -3951,7 +4033,13 @@ function config_prepare_session()
         }
 
         if ($update_cookie === true) {
-            setcookie(session_name(), $_COOKIE[session_name()], (time() + $sessionCookieExpireTime), '/');
+            if ((int) $user['session_max_time_expire'] > 0 && time() < $user['session_max_time_expire']) {
+                $sessionMaxTimeout = $user['session_max_time_expire'];
+            } else {
+                $sessionMaxTimeout = (time() + $sessionCookieExpireTime);
+            }
+
+            setcookie(session_name(), $_COOKIE[session_name()], $sessionMaxTimeout, '/');
         }
     }
 

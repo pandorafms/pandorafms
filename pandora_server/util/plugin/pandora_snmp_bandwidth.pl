@@ -60,6 +60,7 @@ Where OPTIONS could be:
     -inUsage         Show only input usage (in percentage) - 1, or not 0.
     -outUsage        Show only output usage (in percentage) - 1, or not 0.
     -f               We treat unkonwn duplex as full duplex.
+    -max             Value that replaces ifSpeed when you have a port chanel with multiple interfaces.
 
 Note: You can also use snmpget/snmpwalk argument notation,
 e.g. -v is equal to -version, -c to -community, etc.
@@ -139,6 +140,9 @@ sub update_config_key ($) {
   }
   if ($arg eq 'f') {
     return "unknown_fullduplex";
+  }
+  if ($arg eq 'max') {
+    return "max_interfaces";
   }
 }
 
@@ -258,12 +262,17 @@ sub prepare_tree {
       $speed{'oid'} .= $config->{'x86_indexes'}{'ifSpeed'}.$ifIndex;
     }
 
-    my $speed = snmp_get(\%speed);
-    if (ref($speed) eq "HASH") {
-      $speed = int $speed->{'data'};
+    my $speed = 0;
+    if (empty($config->{'max_interfaces'})) {
+      $speed = snmp_get(\%speed);
+      if (ref($speed) eq "HASH") {
+        $speed = int $speed->{'data'};
+      } else {
+        # Ignore, cannot retrieve inOctets.
+        next;
+      }
     } else {
-      # Ignore, cannot retrieve inOctets.
-      next;
+      $speed = $config->{'max_interfaces'};
     }
 
     {

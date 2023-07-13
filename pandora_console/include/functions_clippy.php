@@ -1,9 +1,9 @@
 <?php
 /**
- * Pandora FMS - http://pandorafms.com
+ * Pandora FMS - https://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the  GNU Lesser General Public License
  * as published by the Free Software Foundation; version 2
@@ -296,22 +296,46 @@ function clippy_context_help($help=null)
     $code = str_replace('{clippy}', '#'.$id, $code);
     $code = str_replace('{clippy_obj}', 'intro_'.$id, $code);
 
-    $return = $code.'<div id="'.$id.'" class="inline"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
-        'images/clippy_icon.png',
-        true
-    ).'</a></div>
+    if ($help === 'module_unknow') {
+        $title = __('You have unknown modules in this agent.');
+        $intro = __('Unknown modules are modules which receive data normally at least in one occassion, but at this time are not receving data. Please check our troubleshoot help page to help you determine why you have unknown modules.');
+        $img = html_print_image(
+            'images/info-warning.svg',
+            true,
+            [
+                'class' => 'main_menu_icon invert_filter',
+                'style' => 'margin-left: -25px;',
+            ]
+        );
+    } else if ($help === 'interval_agent_min') {
+        $clippy_interval_agent_min = clippy_interval_agent_min();
+        $title = $clippy_interval_agent_min['tours']['interval_agent_min']['steps'][0]['title'];
+        $intro = $clippy_interval_agent_min['tours']['interval_agent_min']['steps'][0]['intro'];
+        $img   = $clippy_interval_agent_min['tours']['interval_agent_min']['steps'][0]['img'];
+    } else if ($help === 'data_configuration_module') {
+        $clippy_data_configuration_module = clippy_data_configuration_module();
+        $title = $clippy_data_configuration_module['tours']['data_configuration_module']['steps'][0]['title'];
+        $intro = $clippy_data_configuration_module['tours']['data_configuration_module']['steps'][0]['intro'];
+        $img   = $clippy_data_configuration_module['tours']['data_configuration_module']['steps'][0]['img'];
+    } else {
+        $img = html_print_image(
+            'images/info-warning.svg',
+            true,
+            ['class' => 'main_menu_icon invert_filter']
+        );
+    }
+
+    $return = $code.'<div id="'.$id.'" class="inline"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.$img.'</a></div>
         <script type="text/javascript">
         
         function show_'.$id.'() {
-            if (intro_'.$id.'.started()) {
-                started = 1;
-            }
-            else {
-                started = 0;
-            }
-            
-            if (started == 0)
-                intro_'.$id.'.start();
+            confirmDialog({
+                title: "'.$title.'",
+                message: "'.$intro.'",
+                strOKButton: "'.__('Close').'",
+                hideCancelButton: true,
+                size: 675,
+            });
         }
         
         $(document).ready(function() {

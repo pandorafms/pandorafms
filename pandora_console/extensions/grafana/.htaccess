@@ -1,0 +1,7 @@
+# /etc/httpd/conf/httpd.conf -> AllowOverride All -> service httpd restart
+
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteCond %{REQUEST_FILENAME}\.php -f 
+RewriteRule ^(.*)$ $1.php

@@ -11,7 +11,7 @@ OpenOffice/PDF Version
 1st Edition , 3 May 2011
 
 
-© Artica Soluciones Tecnológicas 2005-2011
+© Pandora FMS 2005-2023
 © Juan Manuel Ramon <juanma@artica.es>
 © Javier Lanz <javier.lanz@artica.es>
 

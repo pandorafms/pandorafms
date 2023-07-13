@@ -4,6 +4,9 @@
 div.container-button-play > button#button-start-search {
   transition: none !important;
 }
+.wizard {
+  text-align: left;
+}
 #modal-sound {
   display: flex;
   flex-direction: column;
@@ -66,7 +69,7 @@ div.container-button-play > button#button-start-search {
   width: inherit;
   position: absolute;
   top: -12px;
-  left: 50%;
+  left: 52%;
 }
 
 #tabs-sound-modal ul.wizard li.interval-sounds label:first-of-type,

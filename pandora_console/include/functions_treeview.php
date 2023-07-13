@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -322,9 +322,50 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     $agent_name = db_get_value('nombre', 'tagente', 'id_agente', $module['id_agente']);
 
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
-        // Actions table
         echo '<div class="actions_treeview flex flex-evenly">';
-        echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
+
+        if (is_metaconsole() === true) {
+            echo "<form id='module-table-redirection' method='POST' action='".$console_url."index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module'>";
+
+            parse_str($url_hash, $url_hash_array);
+
+            html_print_input_hidden(
+                'id_agente',
+                $module['id_agente'],
+                false
+            );
+            html_print_input_hidden(
+                'edit_module',
+                1,
+                false
+            );
+            html_print_input_hidden(
+                'id_agent_module',
+                $module['id_agente_modulo'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash',
+                $url_hash_array['loginhash'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash_data',
+                $url_hash_array['loginhash_data'],
+                false
+            );
+            html_print_input_hidden(
+                'loginhash_user',
+                $url_hash_array['loginhash_user'],
+                false
+            );
+
+            echo '</form>';
+            echo "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"module-table-redirection\").submit();' href='#'>";
+        } else {
+            echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
+        }
+
         html_print_submit_button(
             __('Go to module edition'),
             'upd_button',
@@ -609,15 +650,28 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     // Agent name.
     $row = [];
     $row['title'] = __('Agent name');
-    $row['data'] = html_print_anchor(
-        [
-            'href'    => $urlAgent,
-            'title'   => __('Click here for view this agent'),
-            'class'   => 'font_11',
-            'content' => $cellName,
-        ],
-        true
-    );
+    if (is_metaconsole() === true) {
+        $row['data'] = html_print_anchor(
+            [
+                'href'    => 'javascript:void(0)',
+                'title'   => __('Click here for view this agent'),
+                'class'   => 'font_11',
+                'content' => $cellName,
+                'onClick' => "sendHash('".$urlAgent."')",
+            ],
+            true
+        );
+    } else {
+        $row['data'] = html_print_anchor(
+            [
+                'href'    => $urlAgent,
+                'title'   => __('Click here for view this agent'),
+                'class'   => 'font_11',
+                'content' => $cellName,
+            ],
+            true
+        );
+    }
 
     $table->data['name'] = $row;
 
@@ -976,7 +1030,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     echo "
         <script>
             function sendHash(url) {
-                window.location = url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."';
+                window.open(url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."', '_blank');
  
             }
 

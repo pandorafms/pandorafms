@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2005-2021 Artica Soluciones Tecnológicas, http://www.artica.es
+-- Copyright (c) 2005-2023 Pandora FMS, http:// https://pandorafms.com
 -- Please see http://pandora.sourceforge.net for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -572,6 +572,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   `fires_max` INT UNSIGNED DEFAULT 0,
   `module_action_threshold` INT NOT NULL DEFAULT 0,
   `last_execution` BIGINT NOT NULL DEFAULT 0,
+  `recovered` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
@@ -1008,6 +1009,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `target_ip` VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1295,6 +1297,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `shortcut_data` TEXT,
   `section` TEXT,
   `data_section` TEXT,
+  `metaconsole_section` VARCHAR(255) NOT NULL DEFAULT 'Default',
+  `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '',
   `force_change_pass` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `last_pass_change` DATETIME,
   `last_failed_login` DATETIME,
@@ -1309,6 +1313,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `id_filter`  INT UNSIGNED NULL DEFAULT NULL,
   `session_time` INT signed NOT NULL DEFAULT 0,
   `default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
+  `metaconsole_default_event_filter` INT UNSIGNED NOT NULL DEFAULT 0,
   `show_tips_startup` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `autorefresh_white_list` TEXT ,
   `time_autorefresh` INT UNSIGNED NOT NULL DEFAULT 30,
@@ -1322,6 +1327,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `allowed_ip_active` TINYINT UNSIGNED DEFAULT 0,
   `allowed_ip_list` TEXT,
   `auth_token_secret` VARCHAR(45) DEFAULT NULL,
+  `session_max_time_expire` INT NOT NULL DEFAULT 0,
   CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -1566,6 +1572,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `id_agent_module` BIGINT UNSIGNED NULL DEFAULT NULL,
   `type` VARCHAR(30) DEFAULT 'simple_graph',
   `period` INT NOT NULL DEFAULT 0,
+  `period_range` INT DEFAULT 0,
   `order` INT NOT NULL DEFAULT 0,
   `name` VARCHAR(300) NULL,
   `description` MEDIUMTEXT,
@@ -1695,6 +1702,8 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
   `maintenance_mode` TEXT,
+  `grid_color` VARCHAR(45) NOT NULL DEFAULT '#cccccc',
+  `grid_size` VARCHAR(45) NOT NULL DEFAULT '10',
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1725,6 +1734,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
   `label_position` VARCHAR(50) NOT NULL DEFAULT 'down',
   `border_color` VARCHAR(200) DEFAULT '',
   `fill_color` VARCHAR(200) DEFAULT '',
+  `recursive_group` TINYINT NOT NULL DEFAULT 0,
   `show_statistics` TINYINT NOT NULL DEFAULT 0,
   `linked_layout_node_id` INT NOT NULL DEFAULT 0,
   `linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
@@ -3660,6 +3670,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
   `is_favourite` INT UNSIGNED NOT NULL DEFAULT 0,
   `auto_adjust` INT UNSIGNED NOT NULL DEFAULT 0,
   `maintenance_mode` TEXT,
+  `grid_color` VARCHAR(45) NOT NULL DEFAULT '#cccccc',
+  `grid_size` VARCHAR(45) NOT NULL DEFAULT '10',
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3690,6 +3702,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
   `label_position` VARCHAR(50) NOT NULL DEFAULT 'down',
   `border_color` VARCHAR(200) DEFAULT '',
   `fill_color` VARCHAR(200) DEFAULT '',
+  `recursive_group` TINYINT NOT NULL DEFAULT '0',
   `show_statistics` TINYINT NOT NULL DEFAULT 0,
   `linked_layout_node_id` INT NOT NULL DEFAULT 0,
   `linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
@@ -4289,3 +4302,30 @@ CREATE TABLE IF NOT EXISTS `tfavmenu_user` (
   `label` VARCHAR(255) NOT NULL,
   `section` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`));
+
+-- ---------------------------------------------------------------------
+-- Table `tsesion_filter_log_viewer`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
+  `id_filter` INT NOT NULL AUTO_INCREMENT,
+  `id_name` TEXT NULL,
+  `id_group_filter` TEXT NULL,
+  `id_search_mode` INT NULL,
+  `order` VARCHAR(45) NULL,
+  `search` VARCHAR(255) NULL,
+  `group_id` INT NULL,
+  `date_range` TINYINT NULL,
+  `start_date_defined` VARCHAR(45) NULL,
+  `start_date_time` VARCHAR(45) NULL,
+  `start_date_date` VARCHAR(45) NULL,
+  `start_date_date_range` VARCHAR(45) NULL,
+  `start_date_time_range` VARCHAR(45) NULL,
+  `end_date_date_range` VARCHAR(45) NULL,
+  `end_date_time_range` VARCHAR(45) NULL,
+  `agent` VARCHAR(255) NULL,
+  `source` VARCHAR(255) NULL,
+  `display_mode` INT NULL,
+  `capture_model` INT NULL,
+  `graph_type` INT NULL,
+  PRIMARY KEY (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

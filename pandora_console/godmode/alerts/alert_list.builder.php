@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -40,28 +40,46 @@ $table->size = [];
 $table->style[0] = 'width: 50%';
 $table->style[1] = 'width: 50%';
 
-// Add an agent selector
-if (! $id_agente) {
+if (is_metaconsole() === true) {
     $params = [];
     $params['return'] = true;
     $params['show_helptip'] = true;
     $params['input_name'] = 'id_agent';
     $params['selectbox_id'] = 'id_agent_module';
     $params['javascript_is_function_select'] = true;
-    $params['metaconsole_enabled'] = false;
+    $params['metaconsole_enabled'] = true;
     $params['use_hidden_input_idagent'] = true;
     $params['print_hidden_input_idagent'] = true;
+    $params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
+
     $table->data[0][0] = html_print_label_input_block(
         __('Agent'),
-        ui_print_agent_autocomplete_input($params)
+        '<div class="w100p">'.ui_print_agent_autocomplete_input($params).'</div>'
     );
+} else {
+    // Add an agent selector.
+    if (! $id_agente) {
+        $params = [];
+        $params['return'] = true;
+        $params['show_helptip'] = true;
+        $params['input_name'] = 'id_agent';
+        $params['selectbox_id'] = 'id_agent_module';
+        $params['javascript_is_function_select'] = true;
+        $params['metaconsole_enabled'] = false;
+        $params['use_hidden_input_idagent'] = true;
+        $params['print_hidden_input_idagent'] = true;
+        $table->data[0][0] = html_print_label_input_block(
+            __('Agent'),
+            ui_print_agent_autocomplete_input($params)
+        );
+    }
+
+    if ($id_agente) {
+        $modules = agents_get_modules($id_agente, false, ['delete_pending' => 0]);
+    }
 }
 
 $modules = [];
-
-if ($id_agente) {
-    $modules = agents_get_modules($id_agente, false, ['delete_pending' => 0]);
-}
 
 $table->data[0][1] = html_print_label_input_block(
     __('Module'),
@@ -166,10 +184,10 @@ $table->data[1][1] = html_print_label_input_block(
 );
 
 $table->data[2][0] = html_print_label_input_block(
-    __('Threshold'),
+    __('Threshold').ui_print_help_tip(__('It takes precedence over the action\'s threshold configuration.'), true),
     html_print_extended_select_for_time(
         'module_action_threshold',
-        0,
+        '0',
         '',
         '',
         '',
@@ -319,7 +337,8 @@ $(document).ready (function () {
         jQuery.post (<?php echo "'".ui_get_full_url(false, false, false, false)."'"; ?> + "ajax.php",
             {"page" : "operation/agentes/estado_agente",
             "get_agent_module_last_value" : 1,
-            "id_agent_module" : this.value
+            "id_agent_module" : this.value,
+            "server_name" : $('#text-id_agent').val(),
             },
             function (data, status) {
                 if (data === false) {
@@ -338,5 +357,4 @@ $(document).ready (function () {
         );
     });
 });
-/* ]]> */
 </script>

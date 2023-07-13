@@ -1,6 +1,6 @@
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2023 Pandora FMS
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -826,7 +826,7 @@ function sunburst(recipient, data, width, height, tooltip = true) {
     height = width;
   }
 
-  var radius = Math.min(width, height) / 2;
+  var radius = Math.min(width, height) / 2 - 40;
 
   var x = d3.scale.linear().range([0, 2 * Math.PI]);
 

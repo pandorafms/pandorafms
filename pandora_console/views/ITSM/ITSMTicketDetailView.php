@@ -120,13 +120,13 @@ if (empty($incidence) === true) {
     $people_box .= '<div class="integriaims_details_titles">'.__('Closed by').':</div>';
 
     $people_box .= '<div>';
-    $people_box .= (empty($incidence['idCreator']) === false) ? $users[$incidence['idCreator']] : '--';
+    $people_box .= (empty($incidence['idCreator']) === false) ? $users[$incidence['idCreator']]['fullName'] : '--';
     $people_box .= '</div>';
     $people_box .= '<div>';
-    $people_box .= (empty($incidence['owner']) === false) ? $users[$incidence['owner']] : '--';
+    $people_box .= (empty($incidence['owner']) === false) ? $users[$incidence['owner']]['fullName'] : '--';
     $people_box .= '</div>';
     $people_box .= '<div>';
-    $people_box .= (empty($incidence['closedBy']) === false) ? $users[$incidence['closedBy']] : '--';
+    $people_box .= (empty($incidence['closedBy']) === false) ? $users[$incidence['closedBy']]['fullName'] : '--';
     $people_box .= '</div>';
     $people_box .= '</div>';
 
@@ -211,7 +211,7 @@ if (empty($incidence) === true) {
 
     $table_files_section->data[0][0] = '<div class="label_select">';
     $table_files_section->data[0][0] .= '<p class="input_label">'.__('File name').':</p>';
-    $table_files_section->data[0][0] .= html_print_input_file('userfile', true);
+    $table_files_section->data[0][0] .= html_print_input_file('userfile', true, ['required' => true]);
     $table_files_section->data[0][1] = '<div class="label_select">';
     $table_files_section->data[0][1] .= '<p class="input_label">';
     $table_files_section->data[0][1] .= __('Attachment description');

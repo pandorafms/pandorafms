@@ -178,6 +178,10 @@ class ITSM
                 $path = '/user/list';
             break;
 
+            case 'listCompanies':
+                $path = '/company/list';
+            break;
+
             case 'createIncidence':
                 $path = '/incidence';
             break;
@@ -208,6 +212,10 @@ class ITSM
 
             case 'createIncidenceAttachment':
                 $path = '/incidence/'.$id.'/attachment';
+            break;
+
+            case 'createIncidenceWu':
+                $path = '/incidence/'.$id.'/workunit';
             break;
 
             case 'deleteIncidenceAttachment':

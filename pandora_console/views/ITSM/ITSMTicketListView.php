@@ -110,7 +110,41 @@ try {
                 'direction' => 'desc',
             ],
             'search_button_class' => 'sub filter float-right',
-            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
+            'form'                => [
+                'inputs' => [
+                    [
+                        'label' => __('Free search'),
+                        'type'  => 'text',
+                        'id'    => 'string',
+                        'name'  => 'string',
+                    ],
+                    [
+                        'label'         => __('Status'),
+                        'type'          => 'select',
+                        'name'          => 'status',
+                        'fields'        => $status,
+                        'nothing'       => 'None',
+                        'nothing_value' => null,
+                    ],
+                    [
+                        'label'         => __('Group'),
+                        'type'          => 'select',
+                        'name'          => 'idGroup',
+                        'fields'        => $groups,
+                        'nothing'       => 'None',
+                        'nothing_value' => null,
+                    ],
+                    [
+                        'label'         => __('Creation date'),
+                        'type'          => 'interval',
+                        'name'          => 'fromDate',
+                        'value'         => 0,
+                        'nothing'       => __('None'),
+                        'nothing_value' => 0,
+                    ],
+                ],
+            ],
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar ',
         ]
     );
 } catch (Exception $e) {

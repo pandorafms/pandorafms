@@ -141,14 +141,18 @@ class Manager
         $idIncidence = \get_parameter('idIncidence', 0);
         $error = '';
         $successfullyMsg = '';
-        if (empty($idIncidence) === false) {
+        $groups = [];
+        $status = [];
+        try {
             $ITSM = new ITSM();
-            try {
+            $groups = $this->getGroups($ITSM);
+            $status = $this->getStatus($ITSM);
+            if (empty($idIncidence) === false) {
                 $this->deleteIncidence($ITSM, $idIncidence);
                 $successfullyMsg = __('Delete ticket successfully');
-            } catch (\Throwable $th) {
-                $error = $th->getMessage();
             }
+        } catch (\Throwable $th) {
+            $error = $th->getMessage();
         }
 
         View::render(
@@ -158,6 +162,8 @@ class Manager
                 'urlAjax'         => \ui_get_full_url('ajax.php'),
                 'error'           => $error,
                 'successfullyMsg' => $successfullyMsg,
+                'groups'          => $groups,
+                'status'          => $status,
             ]
         );
     }
@@ -298,6 +304,22 @@ class Manager
 
                     if ($incidenceAttachment !== false) {
                         $successfullyMsg = __('File added succesfully');
+                    }
+                }
+
+                if ($addComment === true) {
+                    $wu = [
+                        'description' => get_parameter('comment_description', ''),
+                    ];
+
+                    $incidenceAttachment = $this->createIncidenceWu(
+                        $ITSM,
+                        $idIncidence,
+                        $wu
+                    );
+
+                    if ($incidenceAttachment !== false) {
+                        $successfullyMsg = __('Comment added succesfully');
                     }
                 }
 
@@ -665,7 +687,10 @@ class Manager
             $res = array_reduce(
                 $result['data'],
                 function ($carry, $user) {
-                    $carry[$user['idUser']] = $user['fullName'];
+                    $carry[$user['idUser']] = [
+                        'fullName'  => $user['fullName'],
+                        'idCompany' => $user['idCompany'],
+                    ];
                     return $carry;
                 }
             );
@@ -676,7 +701,46 @@ class Manager
 
 
     /**
-     * Create incidence
+     * Get Companies.
+     *
+     * @param ITSM  $ITSM      Object for callApi.
+     * @param array $companies Companies ID.
+     *
+     * @return array Companies.
+     */
+    private function getCompanies(ITSM $ITSM, array $companies): array
+    {
+        $result = $ITSM->callApi(
+            'listCompanies',
+            [
+                'page'     => 0,
+                'sizePage' => 0,
+            ],
+            [
+                'multipleSearchString' => [
+                    'field' => 'idCompany',
+                    'data'  => $companies,
+                ],
+            ]
+        );
+
+        $res = [];
+        if (empty($result['data']) === false) {
+            $res = array_reduce(
+                $result['data'],
+                function ($carry, $company) {
+                    $carry[$company['idCompany']] = $company['name'];
+                    return $carry;
+                }
+            );
+        }
+
+        return $res;
+    }
+
+
+    /**
+     * Create incidence Attachment.
      *
      * @param ITSM    $ITSM        Object for callApi.
      * @param integer $idIncidence Id incidence.
@@ -696,6 +760,28 @@ class Manager
             $file
         );
         return $incidenceAttachment;
+    }
+
+
+    /**
+     * Create incidence Wu.
+     *
+     * @param ITSM    $ITSM        Object for callApi.
+     * @param integer $idIncidence Id incidence.
+     * @param array   $wu          Params insert.
+     *
+     * @return array
+     */
+    private function createIncidenceWu(ITSM $ITSM, int $idIncidence, array $wu): array
+    {
+        $incidenceWu = $ITSM->callApi(
+            'createIncidenceWu',
+            null,
+            $wu,
+            $idIncidence,
+            'POST'
+        );
+        return $incidenceWu;
     }
 
 
@@ -879,11 +965,40 @@ class Manager
 
         // Init data.
         $data = [];
+
         // Catch post parameters.
         $start = (int) get_parameter('start', 1);
         $length = (int) get_parameter('length', $config['block_size']);
         $order = get_datatable_order(true);
         $filters = get_parameter('filter', []);
+
+        if (isset($filters['status']) === true && empty($filters['status']) === true) {
+            unset($filters['status']);
+        }
+
+        if (isset($filters['idGroup']) === true && empty($filters['idGroup']) === true) {
+            unset($filters['idGroup']);
+        }
+
+        if (isset($filters['fromDate']) === true && empty($filters['fromDate']) === false) {
+            $filters['fromDate'] = ($filters['fromDate'] / SECONDS_1DAY);
+        }
+
+        if (isset($filters['form_itms_list_tickets_search_bt']) === true) {
+            unset($filters['form_itms_list_tickets_search_bt']);
+        }
+
+        if (isset($filters['fromDate_select']) === true) {
+            unset($filters['fromDate_select']);
+        }
+
+        if (isset($filters['fromDate_text']) === true) {
+            unset($filters['fromDate_text']);
+        }
+
+        if (isset($filters['fromDate_units']) === true) {
+            unset($filters['fromDate_units']);
+        }
 
         try {
             ob_start();
@@ -908,81 +1023,105 @@ class Manager
             $priorities = $this->getPriorities($ITSM);
 
             $usersInvolved = [];
+            $usersCreators = [];
             foreach ($result['data'] as $incidence) {
+                $usersCreators[$incidence['idCreator']] = $incidence['idCreator'];
                 $usersInvolved[$incidence['idCreator']] = $incidence['idCreator'];
                 $usersInvolved[$incidence['owner']] = $incidence['owner'];
                 $usersInvolved[$incidence['closedBy']] = $incidence['closedBy'];
             }
 
             $users = $this->getUsers($ITSM, $usersInvolved);
+            $companiesCreator = [];
+            foreach ($usersCreators as $userInfo) {
+                $companiesCreator[$userInfo] = $users[$userInfo]['idCompany'];
+            }
+
+            if (empty($companiesCreator) === false) {
+                $companies = $this->getCompanies($ITSM, $companiesCreator);
+            }
+
             $url = \ui_get_full_url('index.php?sec=manageTickets&sec2=operation/ITSM/itsm');
 
-            $data = array_reduce(
-                $result['data'],
-                function ($carry, $item) use ($groups, $resolutions, $status, $priorities, $users, $url) {
-                    // Transforms array of arrays $data into an array
-                    // of objects, making a post-process of certain fields.
-                    $tmp = (object) $item;
+            if (empty($result['data']) === false) {
+                $data = array_reduce(
+                    $result['data'],
+                    function (
+                        $carry,
+                        $item
+                    ) use (
+                        $groups,
+                        $resolutions,
+                        $status,
+                        $priorities,
+                        $users,
+                        $companies,
+                        $url
+                    ) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
 
-                    $new = (object) [];
-                    $new->idIncidence = $tmp->idIncidence;
-                    $new->title = '<a href="'.$url.'&operation=detail&idIncidence='.$tmp->idIncidence.'">';
-                    $new->title .= $tmp->title;
-                    $new->title .= '</a>';
-                    $new->groupCompany = $groups[$tmp->idGroup];
-                    if (empty($tmp->idCompany) === false) {
-                        $new->groupCompany .= '/'.$tmp->idCompany;
+                        $new = (object) [];
+                        $new->idIncidence = $tmp->idIncidence;
+                        $new->title = '<a href="'.$url.'&operation=detail&idIncidence='.$tmp->idIncidence.'">';
+                        $new->title .= $tmp->title;
+                        $new->title .= '</a>';
+                        $new->groupCompany = $groups[$tmp->idGroup];
+                        if (empty($users[$tmp->idCreator]['idCompany']) === false) {
+                            $new->groupCompany .= ' / '.$companies[$users[$tmp->idCreator]['idCompany']];
+                        }
+
+                        $new->statusResolution = $status[$tmp->status].'/'.$resolutions[$tmp->resolution];
+                        $new->priority = $this->priorityDiv($tmp->priority, $priorities[$tmp->priority]);
+                        $new->updateDate = $tmp->updateDate;
+                        $new->startDate = $tmp->startDate;
+                        $new->idCreator = $users[$tmp->idCreator]['fullName'];
+                        $new->owner = $users[$tmp->owner]['fullName'];
+
+                        $new->operation = '<div class="table_action_buttons">';
+                        $new->operation .= '<a href="'.$url.'&operation=edit&idIncidence='.$tmp->idIncidence.'">';
+                        $new->operation .= html_print_image(
+                            'images/edit.svg',
+                            true,
+                            [
+                                'title' => __('Edit'),
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        );
+                        $new->operation .= '</a>';
+
+                        $new->operation .= '<a href="'.$url.'&operation=detail&idIncidence='.$tmp->idIncidence.'">';
+                        $new->operation .= html_print_image(
+                            'images/enable.svg',
+                            true,
+                            [
+                                'title' => __('Detail'),
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        );
+                        $new->operation .= '</a>';
+
+                        $urlDelete = $url.'&operation=list&idIncidence='.$tmp->idIncidence;
+                        $urlOnClick = 'javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;';
+                        $new->operation .= '<a href="'.$urlDelete.'" onClick="'.$urlOnClick.'">';
+                        $new->operation .= html_print_image(
+                            'images/delete.svg',
+                            true,
+                            [
+                                'title' => __('Delete'),
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        );
+                        $new->operation .= '</a>';
+
+                        $new->operation .= '</div>';
+
+                        $carry[] = $new;
+                        return $carry;
                     }
-
-                    $new->statusResolution = $status[$tmp->status].'/'.$resolutions[$tmp->resolution];
-                    $new->priority = $this->priorityDiv($tmp->priority, $priorities[$tmp->priority]);
-                    $new->updateDate = $tmp->updateDate;
-                    $new->startDate = $tmp->startDate;
-                    $new->idCreator = $users[$tmp->idCreator];
-                    $new->owner = $users[$tmp->owner];
-
-                    $new->operation = '<div class="table_action_buttons">';
-                    $new->operation .= '<a href="'.$url.'&operation=edit&idIncidence='.$tmp->idIncidence.'">';
-                    $new->operation .= html_print_image(
-                        'images/edit.svg',
-                        true,
-                        [
-                            'title' => __('Edit'),
-                            'class' => 'main_menu_icon invert_filter',
-                        ]
-                    );
-                    $new->operation .= '</a>';
-
-                    $new->operation .= '<a href="'.$url.'&operation=detail&idIncidence='.$tmp->idIncidence.'">';
-                    $new->operation .= html_print_image(
-                        'images/enable.svg',
-                        true,
-                        [
-                            'title' => __('Detail'),
-                            'class' => 'main_menu_icon invert_filter',
-                        ]
-                    );
-                    $new->operation .= '</a>';
-
-                    $urlDelete = $url.'&operation=list&idIncidence='.$tmp->idIncidence;
-                    $urlOnClick = 'javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;';
-                    $new->operation .= '<a href="'.$urlDelete.'" onClick="'.$urlOnClick.'">';
-                    $new->operation .= html_print_image(
-                        'images/delete.svg',
-                        true,
-                        [
-                            'title' => __('Delete'),
-                            'class' => 'main_menu_icon invert_filter',
-                        ]
-                    );
-                    $new->operation .= '</a>';
-
-                    $new->operation .= '</div>';
-
-                    $carry[] = $new;
-                    return $carry;
-                }
-            );
+                );
+            }
 
             echo json_encode(
                 [

@@ -661,7 +661,7 @@ syslog_max 65535
 # Blacklist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
 # syslog_blacklist [regex]
 
-# Blacklist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+# Whitelist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
 # syslog_whitelist .*
 
 # Sync Server

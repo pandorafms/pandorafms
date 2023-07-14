@@ -385,7 +385,6 @@ class WelcomeWindow extends Wizard
                 $flag_su = true;
             }
 
-            $show_license = true;
             if (enterprise_installed()) {
                 $license_valid = true;
                 enterprise_include_once('include/functions_license.php');
@@ -405,7 +404,9 @@ class WelcomeWindow extends Wizard
                     $flag_lv = false;
                 }
             } else {
-                $show_license = false;
+                $btn_license_valid_class = 'fail';
+                $li_license_valid_class = 'row_grey';
+                $flag_lv = false;
             }
 
             $inputs[] = [
@@ -510,36 +511,34 @@ class WelcomeWindow extends Wizard
                         ],
                     ],
                 ];
-                if ($show_license) {
-                    $inputs[] = [
-                        'wrapper'       => 'div',
-                        'block_id'      => 'div_license_valid',
-                        'class'         => 'hole flex-row flex-items-center w98p '.$li_license_valid_class,
-                        'direct'        => 1,
-                        'block_content' => [
-                            [
-                                'label'     => __('Enterprise licence valid'),
-                                'arguments' => [
-                                    'class' => 'first_lbl',
-                                    'name'  => 'lbl_license_valid',
-                                    'id'    => 'lbl_license_valid',
-                                ],
-                            ],
-                            [
-                                'arguments' => [
-                                    'label'      => '',
-                                    'type'       => 'button',
-                                    'attributes' => [
-                                        'class' => (empty($btn_license_valid_class) === false) ? $btn_license_valid_class : 'invisible_important',
-                                        'mode'  => 'onlyIcon',
-                                    ],
-                                    'name'       => 'btn_license_valid_conf',
-                                    'id'         => 'btn_license_valid_conf',
-                                ],
+                $inputs[] = [
+                    'wrapper'       => 'div',
+                    'block_id'      => 'div_license_valid',
+                    'class'         => 'hole flex-row flex-items-center w98p '.$li_license_valid_class,
+                    'direct'        => 1,
+                    'block_content' => [
+                        [
+                            'label'     => __('Enterprise licence valid'),
+                            'arguments' => [
+                                'class' => 'first_lbl',
+                                'name'  => 'lbl_license_valid',
+                                'id'    => 'lbl_license_valid',
                             ],
                         ],
-                    ];
-                }
+                        [
+                            'arguments' => [
+                                'label'      => '',
+                                'type'       => 'button',
+                                'attributes' => [
+                                    'class' => (empty($btn_license_valid_class) === false) ? $btn_license_valid_class : 'invisible_important',
+                                    'mode'  => 'onlyIcon',
+                                ],
+                                'name'       => 'btn_license_valid_conf',
+                                'id'         => 'btn_license_valid_conf',
+                            ],
+                        ],
+                    ],
+                ];
             } else {
                 $inputs[] = [
                     'wrapper'       => 'div',

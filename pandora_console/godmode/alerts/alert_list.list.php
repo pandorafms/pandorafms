@@ -912,7 +912,10 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'invert_filter main_menu_icon']
+            [
+                'class' => 'invert_filter main_menu_icon',
+                'title' => __('Enable'),
+            ]
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -922,7 +925,10 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'main_menu_icon']
+            [
+                'class' => 'main_menu_icon',
+                'title' => __('Disable'),
+            ]
         );
         $data[4] .= html_print_input_hidden('disable_alert', 1, true);
     }
@@ -940,7 +946,10 @@ foreach ($simple_alerts as $alert) {
                 1,
                 'padding:0px; width: 22px; height: 22px;',
                 true,
-                ['class' => 'invert_filter main_menu_icon']
+                [
+                    'class' => 'invert_filter main_menu_icon',
+                    'title' => __('Standby off'),
+                ]
             );
             $data[4] .= html_print_input_hidden('standbyon_alert', 1, true);
         } else {
@@ -950,7 +959,10 @@ foreach ($simple_alerts as $alert) {
                 1,
                 'padding:0px; width: 22px; height: 22px;',
                 true,
-                ['class' => 'invert_filter main_menu_icon']
+                [
+                    'class' => 'invert_filter main_menu_icon',
+                    'title' => __('Standby on'),
+                ]
             );
             $data[4] .= html_print_input_hidden('standbyoff_alert', 1, true);
         }

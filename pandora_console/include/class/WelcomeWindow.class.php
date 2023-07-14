@@ -399,6 +399,10 @@ class WelcomeWindow extends Wizard
                     $btn_license_valid_class = '';
                     $li_license_valid_class = 'row_green';
                     $flag_lv = true;
+                } else {
+                    $btn_license_valid_class = 'fail';
+                    $li_license_valid_class = 'row_grey';
+                    $flag_lv = false;
                 }
             } else {
                 $show_license = false;
@@ -1226,6 +1230,10 @@ class WelcomeWindow extends Wizard
 
                     $('#text-id_agent').autocomplete({
                         appendTo: '#dialog_alert_mail'
+                    });
+
+                    $("#id_agent_module").select2({
+                            dropdownParent: $("#dialog_alert_mail")
                     });
                 }
             });

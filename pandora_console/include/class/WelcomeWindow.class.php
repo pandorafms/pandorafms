@@ -1286,7 +1286,7 @@ class WelcomeWindow extends Wizard
                 type: "POST",
                 url: "include/ajax/task_to_perform.php",
                 data: {
-                    Contition: 1,
+                    create_net_scan: 1,
                     ip_target: $('#text-ip_target_discovery').val(),
                 },
                 success: function(data) {

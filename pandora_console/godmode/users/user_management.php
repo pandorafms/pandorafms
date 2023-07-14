@@ -52,8 +52,8 @@ $customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select($dashboards
 // Home screen. Visual consoles.
 $customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
 // Home screen. External link and Other.
-$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true);
-$customHomeScreenAddition[HOME_SCREEN_OTHER] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true);
+$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section_external', $user_info['data_section'], '', 60, 255, true);
+$customHomeScreenAddition[HOME_SCREEN_OTHER] = html_print_input_text('data_section_other', $user_info['data_section'], '', 60, 255, true);
 
 $customHomeScreenDataField = '';
 foreach ($customHomeScreenAddition as $key => $customField) {

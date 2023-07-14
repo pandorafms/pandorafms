@@ -306,7 +306,6 @@ our @ServerTypes = qw (
 	icmpserver
 	snmpserver
 	satelliteserver
-	transactionalserver
 	mfserver
 	syncserver
 	wuxserver

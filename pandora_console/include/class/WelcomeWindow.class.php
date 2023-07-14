@@ -822,7 +822,7 @@ class WelcomeWindow extends Wizard
                 <span id="module_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</span>'
             );
 
-            $condition = alerts_get_alert_templates(['id IN (1,3)'], ['id', 'name']);
+            $condition = alerts_get_alert_templates(['(id IN (1,3) OR name = "'.io_safe_input('Unknown condition').'")'], ['id', 'name']);
 
             echo html_print_label_input_block(
                 __('Contition'),
@@ -1128,81 +1128,6 @@ class WelcomeWindow extends Wizard
             }
         });
 
-        // Task to do buttons.
-        $('#button-go_wizard').click(function(){
-            if ($('#task_to_perform :selected').val() === '') {
-                alert("<?php echo __('You must chose an option'); ?>");
-            } else {
-                switch($('#task_to_perform :selected').val()) {
-                    case 'wizard_agent':
-                        deployAgent();
-                    break;
-                    case 'check_mail_alert':
-                        openCreateAlertMailDialog();
-                    break;
-                    case 'check_connectivity':
-                        openCreateConnectivityDialog();
-                    break;
-                    case 'check_web':
-                        openCreateModulesDialog();
-                    break;
-                    case 'check_net':
-                        openCreateBasicNetDialog();
-                    break;
-                };
-            }
-        });
-
-        // Task to do buttons.
-        $('#button-go_wizard').click(function(){
-            if ($('#task_to_perform :selected').val() === '') {
-                alert("<?php echo __('You must chose an option'); ?>");
-            } else {
-                switch($('#task_to_perform :selected').val()) {
-                    case 'wizard_agent':
-                        deployAgent();
-                    break;
-                    case 'check_mail_alert':
-                        openCreateAlertMailDialog();
-                    break;
-                    case 'check_connectivity':
-                        openCreateConnectivityDialog();
-                    break;
-                    case 'check_web':
-                        openCreateModulesDialog();
-                    break;
-                    case 'check_net':
-                        openCreateBasicNetDialog();
-                    break;
-                };
-            }
-        });
-
-        // Task to do buttons.
-        $('#button-go_wizard').click(function(){
-            if ($('#task_to_perform :selected').val() === '') {
-                alert("<?php echo __('You must chose an option'); ?>");
-            } else {
-                switch($('#task_to_perform :selected').val()) {
-                    case 'wizard_agent':
-                        deployAgent();
-                    break;
-                    case 'check_mail_alert':
-                        openCreateAlertMailDialog();
-                    break;
-                    case 'check_connectivity':
-                        openCreateConnectivityDialog();
-                    break;
-                    case 'check_web':
-                        openCreateModulesDialog();
-                    break;
-                    case 'check_net':
-                        openCreateBasicNetDialog();
-                    break;
-                };
-            }
-        });
-
         function configureUpdateManager() {
             window.location = '<?php echo ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'); ?>';
         }
@@ -1276,23 +1201,33 @@ class WelcomeWindow extends Wizard
         }
 
         function openCreateAlertMailDialog() {
-            $('#dialog_alert_mail').dialog({
-                title: '<?php echo __('Create email alert'); ?>',
-                resizable: true,
-                draggable: true,
-                modal: true,
-                close: false,
-                height: 350,
-                width: 480,
-                overlay: {
-                    opacity: 0.5,
-                    background: "black"
-                }
-            })
-            .show();
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "include/ajax/task_to_perform.php",
+                data: {
+                    create_unknown_template_alert: 1,
+                },
+                success: function(data) {
+                    $('#dialog_alert_mail').dialog({
+                        title: '<?php echo __('Create email alert'); ?>',
+                        resizable: true,
+                        draggable: true,
+                        modal: true,
+                        close: false,
+                        height: 350,
+                        width: 480,
+                        overlay: {
+                            opacity: 0.5,
+                            background: "black"
+                        }
+                    })
+                    .show();
 
-            $('#text-id_agent').autocomplete({
-                appendTo: '#dialog_alert_mail'
+                    $('#text-id_agent').autocomplete({
+                        appendTo: '#dialog_alert_mail'
+                    });
+                }
             });
         }
 
@@ -1351,7 +1286,7 @@ class WelcomeWindow extends Wizard
                 type: "POST",
                 url: "include/ajax/task_to_perform.php",
                 data: {
-                    create_net_scan: 1,
+                    Contition: 1,
                     ip_target: $('#text-ip_target_discovery').val(),
                 },
                 success: function(data) {

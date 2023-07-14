@@ -35,6 +35,7 @@ $check_web = get_parameter('check_web', 0);
 $check_connectivity = get_parameter('check_connectivity', 0);
 $create_net_scan = get_parameter('create_net_scan', 0);
 $create_mail_alert = get_parameter('create_mail_alert', 0);
+$create_unknown_template_alert = get_parameter('create_unknown_template_alert', 0);
 
 // Begin.
 global $config;
@@ -177,5 +178,13 @@ if ($create_mail_alert) {
 
     if ($alert_created === true) {
         ui_print_success_message(__('Congratulations, you have already created a simple alert. <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure=0').'>You can see it.</a> Pandora FMS alerts are very flexible, you can do many more things with them, we recommend you to read the <a href="https://pandorafms.com/manual/start?id=en/documentation/04_using/01_alerts">documentation</a> for more information. You can create advanced alerts from <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_actions').'>here</a>.'));
+    }
+}
+
+if ($create_unknown_template_alert) {
+    if (is_array(alerts_get_alert_templates(['name' => io_safe_input('Unknown condition')]))) {
+        echo 1;
+    } else {
+        echo create_template_alert_unknown();
     }
 }

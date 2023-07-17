@@ -1807,7 +1807,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.SERIALIZE_PRECISION');
         }
 
-        if (version_compare('8.1', PHP_VERSION) >= 0) {
+        if (version_compare('8.0.29', PHP_VERSION) > 0) {
             $url = 'https://www.php.net/supported-versions.php';
             $this->notify(
                 [

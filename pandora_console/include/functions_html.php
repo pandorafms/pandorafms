@@ -7144,3 +7144,44 @@ function html_print_code_picker(
         echo $output;
     }
 }
+
+
+function html_print_wizard_diagnosis(
+    $title,
+    $id_button,
+    $description='',
+    $status=true,
+    $return=false,
+) {
+    $button = '';
+    if ($status === true) {
+        $status = 'Connected';
+        $img = '/images/configuration@svg.svg';
+    } else {
+        $status = 'Disconnected';
+        $img = '/images/change-active.svg';
+    }
+
+    $button = html_print_image(
+        $img,
+        true,
+        [
+            'class' => 'main_menu_icon invert_filter float-right mrgn_right_10px',
+            'id'    => $id_button,
+        ]
+    );
+
+    $output = '<div class="rectangle rectangle_'.$status.'">
+                        <span class="status '.$status.'">'.__($status).$button.'</span>
+                        <div class="title">'.html_print_image('/images/circle_title.svg', true, ['class' => 'invert_filter']).'<span>'.$title.'</span></div>
+                        <div class="description">
+                            <span>'.$description.'</span>
+                        </div>
+                </div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}

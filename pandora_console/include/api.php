@@ -118,7 +118,7 @@ if ($info === 'version') {
 if (empty($apiPassword) === true
     || (empty($apiPassword) === false && $api_password === $apiPassword)
     || $apiTokenValid === true
-) {  
+) {
     if (enterprise_hook('metaconsole_validate_origin', [get_parameter('server_auth')]) === true
         || enterprise_hook('console_validate_origin', [get_parameter('server_auth')])  === true
     ) {
@@ -129,16 +129,15 @@ if (empty($apiPassword) === true
         // Compat.
         $config['id_user'] = 'admin';
         $correctLogin = true;
-    // Bypass credentials if server-auth and api-pass are correct. 
+        // Bypass credentials if server-auth and api-pass are correct.
     } else if (($config['server_unique_identifier'] === get_parameter('server_auth'))
-        && ($api_password === $apiPassword)  
-        && ((bool) isInACL($ipOrigin) === true)) {
-
+        && ($api_password === $apiPassword)
+        && ((bool) isInACL($ipOrigin) === true)
+    ) {
         $config['id_usuario'] = 'admin';
         $config['id_user'] = 'admin';
         $correctLogin = true;
-
-    } else if ((bool) isInACL($ipOrigin) === true) {   
+    } else if ((bool) isInACL($ipOrigin) === true) {
         // External access.
         // Token is valid. Bypass the credentials.
         if ($apiTokenValid === true) {

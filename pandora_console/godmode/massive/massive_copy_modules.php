@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -86,31 +86,39 @@ if ($do_operation) {
 $groups = users_get_groups();
 
 $table = new stdClass();
-$table->class = 'databox filters';
-$table->width = '100%';
-$table->data = [];
-$table->style = [];
-$table->style[0] = 'font-weight: bold;';
-$table->style[2] = 'font-weight: bold';
-$table->style[4] = 'font-weight: bold';
-$table->style[6] = 'font-weight: bold';
-
-// Source selection
 $table->id = 'source_table';
-$table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(
-    false,
-    'AW',
-    true,
-    'source_id_group',
-    $source_id_group,
-    false,
-    '',
-    '',
-    true
+$table->class = 'databox filters filter-table-adv';
+$table->width = '100%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->data = [];
+
+// Source selection.
+$table->data[0][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'AW',
+        true,
+        'source_id_group',
+        $source_id_group,
+        false,
+        '',
+        '',
+        true,
+        false,
+        false,
+        'w100p',
+        false,
+        'width:100%'
+    )
 );
-$table->data[0][2] = __('Group recursion');
-$table->data[0][3] = html_print_checkbox('source_recursion', 1, $source_recursion, true, false);
+
+$table->data[0][1] = html_print_label_input_block(
+    __('Group recursion'),
+    html_print_checkbox('source_recursion', 1, $source_recursion, true, false)
+);
+
 $status_list = [];
 $status_list[AGENT_STATUS_NORMAL] = __('Normal');
 $status_list[AGENT_STATUS_WARNING] = __('Warning');
@@ -118,37 +126,52 @@ $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
 $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
-$table->data[0][4] = __('Status');
-$table->data[0][5] = html_print_select(
-    $status_list,
-    'status_agents_source',
-    'selected',
-    '',
-    __('All'),
-    AGENT_STATUS_ALL,
-    true
+
+$table->data[1][0] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $status_list,
+        'status_agents_source',
+        'selected',
+        '',
+        __('All'),
+        AGENT_STATUS_ALL,
+        true,
+        false,
+        true,
+        'w100p'
+    )
 );
-$table->data[0][6] = __('Agent');
-$table->data[0][6] .= ' <span id="source_agent_loading" class="invisible">';
-$table->data[0][6] .= html_print_image('images/spinner.png', true);
-$table->data[0][6] .= '</span>';
-// $table->data[0][7] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
-// 'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
+
 $agents = ( $source_id_group ? agents_get_group_agents($source_id_group, false, 'none') : agents_get_group_agents(array_keys(users_get_groups($config['id_user'], 'AW', false))) );
-$table->data[0][7] = html_print_select($agents, 'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
+$table->data[1][1] = html_print_label_input_block(
+    __('Agent').' <span id="source_agent_loading" class="invisible">'.html_print_image('images/spinner.png', true).'</span>',
+    html_print_select(
+        $agents,
+        'source_id_agent',
+        $source_id_agent,
+        false,
+        __('Select'),
+        0,
+        true
+    )
+);
 
-echo '<form '.'action="index.php?'.'sec=gmassive&'.'sec2=godmode/massive/massive_operations&'.'option=copy_modules" '.'id="manage_config_form" '.'method="post">';
-
+echo '<form action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=copy_modules" id="manage_config_form" method="post" class="max_floating_element_size">';
 echo '<fieldset id="fieldset_source">';
-echo '<legend>';
-echo '<span>'.__('Source');
-echo '</legend>';
+echo '<legend><span>'.__('Source').'</span></legend>';
 html_print_table($table);
 echo '</fieldset>';
 
-// Target selection
+
+unset($table);
+// Target selection.
+$table = new stdClass();
 $table->id = 'target_table';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
+$table->width = '100%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 $table->data = [];
 
 $modules = [];
@@ -169,66 +192,64 @@ foreach ($agent_alerts as $alert) {
 }
 
 $tags = tags_get_user_tags();
-$table->data['tags'][0] = __('Tags');
-$table->data['tags'][1] = html_print_select(
-    $tags,
-    'tags[]',
-    $tags_name,
-    false,
-    __('Any'),
-    -1,
-    true,
-    true,
-    true
+$table->colspan[0][0] = 2;
+$table->data[0][0] = html_print_label_input_block(
+    __('Tags'),
+    html_print_select(
+        $tags,
+        'tags[]',
+        $tags_name,
+        false,
+        __('Any'),
+        -1,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'overflow-x: hidden;white-space: nowrap;max-width: 1136px;'
+    )
 );
 
-$table->data['operations'][0] = __('Operations');
-$table->data['operations'][1] = '<span class="with_modules'.(empty($modules) ? ' invisible' : '').'">';
-$table->data['operations'][1] .= html_print_checkbox('copy_modules', 1, true, true);
-$table->data['operations'][1] .= html_print_label(__('Copy modules'), 'checkbox-copy_modules', true);
-$table->data['operations'][1] .= '</span><br />';
-
-$table->data['operations'][1] .= '<span class="with_alerts'.(empty($alerts) ? ' invisible' : '').'">';
-$table->data['operations'][1] .= html_print_checkbox('copy_alerts', 1, true, true);
-$table->data['operations'][1] .= html_print_label(__('Copy alerts'), 'checkbox-copy_alerts', true);
-$table->data['operations'][1] .= '</span>';
-
-$table->data['form_modules_filter'][0] = __('Filter Modules');
-$table->data['form_modules_filter'][1] = html_print_input_text('filter_modules', '', '', 20, 255, true);
-
-$table->data[1][0] = __('Modules');
-$table->data[1][1] = '<span class="with_modules'.(empty($modules) ? ' invisible' : '').'">';
-$table->data[1][1] .= html_print_select(
-    $modules,
-    'target_modules[]',
-    0,
-    false,
-    '',
-    '',
-    true,
-    true
+$table->data[1][0] = html_print_label_input_block(
+    __('Operations'),
+    '<span class="with_modules'.(empty($modules) ? ' invisible' : '').'">'.html_print_checkbox('copy_modules', 1, true, true).html_print_label(__('Copy modules'), 'checkbox-copy_modules', true).'</span><span class="with_alerts'.(empty($alerts) ? ' invisible' : '').'">'.html_print_checkbox('copy_alerts', 1, true, true).html_print_label(__('Copy alerts'), 'checkbox-copy_alerts', true).'</span>'
 );
-$table->data[1][1] .= '</span>';
-$table->data[1][1] .= '<span class="without_modules'.(! empty($modules) ? ' invisible' : '').'">';
-$table->data[1][1] .= '<em>'.__('No modules for this agent').'</em>';
-$table->data[1][1] .= '</span>';
 
-$table->data[2][0] = __('Alerts');
-$table->data[2][1] = '<span class="with_alerts'.(empty($alerts) ? ' invisible' : '').'">';
-$table->data[2][1] .= html_print_select(
-    $alerts,
-    'target_alerts[]',
-    0,
-    false,
-    '',
-    '',
-    true,
-    true
+$table->data[1][1] = html_print_label_input_block(
+    __('Filter Modules'),
+    html_print_input_text('filter_modules', '', '', 20, 255, true)
 );
-$table->data[2][1] .= '</span>';
-$table->data[2][1] .= '<span class="without_alerts'.(! empty($modules) ? ' invisible' : '').'">';
-$table->data[2][1] .= '<em>'.__('No alerts for this agent').'</em>';
-$table->data[2][1] .= '</span>';
+
+$table->colspan[2][0] = 2;
+$table->data[2][0] = html_print_label_input_block(
+    __('Modules'),
+    '<span class="with_modules'.(empty($modules) ? ' invisible' : '').'">'.html_print_select(
+        $modules,
+        'target_modules[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true
+    ).'</span><span class="without_modules'.(! empty($modules) ? ' invisible' : '').'"><em>'.__('No modules for this agent').'</em></span>'
+);
+
+$table->colspan[3][0] = 2;
+$table->data[3][0] = html_print_label_input_block(
+    __('Alerts'),
+    '<span class="with_alerts'.(empty($alerts) ? ' invisible' : '').'">'.html_print_select(
+        $alerts,
+        'target_alerts[]',
+        0,
+        false,
+        '',
+        '',
+        true,
+        true
+    ).'</span><span class="without_alerts'.(! empty($modules) ? ' invisible' : '').'"><em>'.__('No alerts for this agent').'</em></span>'
+);
 
 echo '<div id="modules_loading" class="loading invisible">';
 html_print_image('images/spinner.png');
@@ -240,35 +261,50 @@ echo '<legend><span>'.__('Targets').'</span></legend>';
 html_print_table($table);
 echo '</fieldset>';
 
-
-// Destiny selection
+unset($table);
+// Destiny selection.
+$table = new stdClass();
 $table->id = 'destiny_table';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
+$table->width = '100%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 $table->data = [];
-$table->size[0] = '20%';
-$table->size[1] = '30%';
-$table->size[2] = '20%';
-$table->size[3] = '30%';
 
-$table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(
-    false,
-    'AW',
-    true,
-    'destiny_id_group',
-    $destiny_id_group,
-    false,
-    '',
-    '',
-    true
+$table->data[0][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'AW',
+        true,
+        'destiny_id_group',
+        $destiny_id_group,
+        false,
+        '',
+        '',
+        true,
+        false,
+        false,
+        'w100p',
+        false,
+        'width:100%'
+    )
 );
-$table->data[0][2] = __('Group recursion');
-$table->data[0][3] = html_print_checkbox(
-    'destiny_recursion',
-    1,
-    $destiny_recursion,
-    true,
-    false
+
+$table->data[0][1] = html_print_label_input_block(
+    __('Group recursion'),
+    html_print_checkbox(
+        'destiny_recursion',
+        1,
+        $destiny_recursion,
+        true,
+        false
+    )
+);
+
+$table->data[1][0] = html_print_label_input_block(
+    __('Filter Agents'),
+    html_print_input_text('filter_agents', '', '', 20, 255, true)
 );
 
 $status_list = [];
@@ -278,24 +314,18 @@ $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
 $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
-$table->data[1][0] = __('Status');
-$table->data[1][1] = html_print_select(
-    $status_list,
-    'status_agents_destiny',
-    'selected',
-    '',
-    __('All'),
-    AGENT_STATUS_ALL,
-    true
+$table->data[1][1] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $status_list,
+        'status_agents_destiny',
+        'selected',
+        '',
+        __('All'),
+        AGENT_STATUS_ALL,
+        true
+    )
 );
-
-$table->data['form_agents_filter'][0] = __('Filter Agents');
-$table->data['form_agents_filter'][1] = html_print_input_text('filter_agents', '', '', 20, 255, true);
-
-$table->data[2][0] = __('Agent');
-$table->data[2][0] .= '<span id="destiny_agent_loading" class="invisible">';
-$table->data[2][0] .= html_print_image('images/spinner.png', true);
-$table->data[2][0] .= '</span>';
 
 $agents = [];
 if ($source_id_agent) {
@@ -303,7 +333,11 @@ if ($source_id_agent) {
     unset($agents[$source_id_agent]);
 }
 
-$table->data[2][1] = html_print_select($agents, 'destiny_id_agent[]', 0, false, '', '', true, true);
+$table->colspan[2][0] = 2;
+$table->data[2][0] = html_print_label_input_block(
+    __('Agent').'<span id="destiny_agent_loading" class="invisible">'.html_print_image('images/spinner.png', true).'</span>',
+    html_print_select($agents, 'destiny_id_agent[]', 0, false, '', '', true, true)
+);
 
 echo '<fieldset id="fieldset_destiny"'.($source_id_agent ? '' : ' class="invisible"').'>';
 echo '<legend><span>'.__('To agent(s)').'</span></legend>';

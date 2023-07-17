@@ -239,7 +239,7 @@ export function titleItem(id: number): string {
  */
 abstract class VisualConsoleItem<Props extends ItemProps> {
   // Properties of the item.
-  private itemProps: Props;
+  public itemProps: Props;
   // Metadata of the item.
   private _metadata: ItemMeta;
   // Reference to the DOM element which will contain the item.
@@ -955,8 +955,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     if (!prevMeta || prevMeta.isSelected !== this.meta.isSelected) {
       if (this.meta.isSelected) {
         this.elementRef.classList.add("is-selected");
+        this.elementRef.setAttribute("id", "item-selected-move");
       } else {
         this.elementRef.classList.remove("is-selected");
+        this.elementRef.removeAttribute("id");
       }
     }
   }

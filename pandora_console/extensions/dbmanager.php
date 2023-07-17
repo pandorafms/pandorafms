@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -136,7 +136,7 @@ function dbmgr_extension_main()
         __(
             "This is an advanced extension to interface with %s database directly from WEB console
             using native SQL sentences. Please note that <b>you can damage</b> your %s installation
-            if you don't know </b>exactly</b> what are you are doing,
+            if you don't know </b>exactly</b> what you are doing,
             this means that you can severily damage your setup using this extension.
             This extension is intended to be used <b>only by experienced users</b>
             with a depth knowledge of %s internals.",

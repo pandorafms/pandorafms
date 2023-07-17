@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -654,6 +654,18 @@ function snmp_browser_print_oid(
         );
     }
 
+    if (isset($_POST['print_copy_oid'])) {
+        // Hidden by default.
+        $output .= html_print_button(
+            __('Use this OID'),
+            'use_iod',
+            false,
+            'use_oid()',
+            'class="sub add invisible"',
+            true
+        );
+    }
+
     // Select agent modal.
     $output .= snmp_browser_print_create_modules(true);
 
@@ -704,6 +716,13 @@ function snmp_browser_print_container(
     $table->size[0] = '30%';
     $table->size[1] = '30%';
     $table->size[2] = '30%';
+    $target_ip = get_parameter('target_ip', '');
+    if (str_contains($target_ip, '_')) {
+        $custom_field = explode('_', $target_ip)[2];
+        $agent_alias = get_parameter('agent_alias', '');
+        $id_agente = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE alias = "'.io_safe_output($agent_alias).'"')[0]['id_agente'];
+        $target_ip = db_get_all_rows_sql('SELECT description FROM tagent_custom_data WHERE id_field = '.$custom_field.' AND id_agent = '.$id_agente)[0]['description'];
+    }
 
     $table->data[0][0] = html_print_label_input_block(
         __('Target IP'),
@@ -711,7 +730,7 @@ function snmp_browser_print_container(
             [
                 'type'      => 'text',
                 'name'      => 'target_ip',
-                'value'     => get_parameter('target_ip', ''),
+                'value'     => $target_ip,
                 'required'  => true,
                 'size'      => 25,
                 'maxlength' => 0,
@@ -1134,6 +1153,14 @@ function snmp_browser_print_container(
             false,
             'id_agent_module'
         );
+        $output .= html_print_input_hidden(
+            'is_policy_agent',
+            1,
+            true,
+            false,
+            false,
+            'is_policy_agent'
+        );
         $output .= html_print_table($table, true);
         $output .= html_print_div(
             [
@@ -1264,7 +1291,8 @@ function snmp_browser_create_modules_snmp(
     string $module_target,
     array $snmp_values,
     ?array $id_target,
-    ?string $server_to_exec=null
+    ?string $server_to_exec=null,
+    ?string $use_agent_ip=''
 ) {
     $target_ip = null;
     $target_port = null;
@@ -1321,6 +1349,12 @@ function snmp_browser_create_modules_snmp(
         if (isset($snmp_values['oids']) === true) {
             $targets_oids = $snmp_values['oids'];
         }
+    }
+
+    if (empty($use_agent_ip) === false) {
+        $use_agent_ip = true;
+    } else {
+        $use_agent_ip = false;
     }
 
     $fail_modules = [];
@@ -1487,7 +1521,7 @@ function snmp_browser_create_modules_snmp(
                     'history_data'          => 1,
                 ];
                 foreach ($id_target as $agent) {
-                    $ids[] = modules_create_agent_module($agent, $oid['oid'], $values);
+                    $ids[] = modules_create_agent_module($agent, $oid['oid'], $values, false, false, $use_agent_ip);
                 }
         } else if ($module_target == 'policy') {
             // Policies only in enterprise version.
@@ -1774,6 +1808,16 @@ function snmp_browser_print_create_module_massive(
             'style'   => 'width:100% !important',
         ],
         true
+    );
+
+    $table->data[4][0] = html_print_label_input_block(
+        __('Use agent IP'),
+        html_print_checkbox(
+            'use_agent_ip',
+            1,
+            false,
+            true
+        )
     );
 
     $output .= html_print_table($table, true);

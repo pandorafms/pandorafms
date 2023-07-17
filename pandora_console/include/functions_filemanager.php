@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -899,7 +899,19 @@ function filemanager_file_explorer(
             if ($allowZipFiles === true) {
                 $uploadFileElements .= ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true);
                 $uploadFileElements .= html_print_input_file('file', true, false);
-                $uploadFileElements .= html_print_checkbox('decompress', 1, false, true).__('Decompress');
+                $uploadFileElements .= html_print_div(
+                    [
+                        'id'      => 'checkbox-decompress',
+                        'content' => html_print_checkbox(
+                            'decompress',
+                            1,
+                            false,
+                            true,
+                        ).__('Decompress'),
+                        'style'   => 'margin-top:25px',
+                    ],
+                    true
+                );
                 $uploadFileElements .= html_print_input_hidden('upload_file_or_zip', 1, true);
             } else {
                 $uploadFileElements .= html_print_div(

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -411,7 +411,16 @@ class ReportsWidget extends Widget
             $this->printReport();
             $output .= ob_get_clean();
 
-            $output .= 'Click to view: <a href="?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$this->values['reportId'].'">'.__('Report').'</a>';
+            if ($this->values['node'] === '-1') {
+                $output .= 'Click to view: <a href="?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$this->values['reportId'].'">'.__('Report').'</a>';
+            } else {
+                \enterprise_hook('metaconsole_restore_db');
+                $node = $this->values['node'];
+                $serverurl = db_get_value('server_url', 'tmetaconsole_setup', 'id', $node);
+                $url = $serverurl.'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$this->values['reportId'];
+                $output .= 'Click to view: <a href="'.$url.'">'.__('Report').'</a>';
+            }
+
             $output .= '</div>';
         } else {
             $this->loadError = true;

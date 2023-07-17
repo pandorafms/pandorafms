@@ -634,6 +634,12 @@ select:-internal-list-box {
   white-space: nowrap;
 }
 
+.nowrap_max180px {
+  width: 10px;
+  max-width: 180px;
+  white-space: nowrap;
+}
+
 .wrap {
   flex-wrap: wrap;
 }
@@ -648,6 +654,10 @@ select:-internal-list-box {
 
 .inline_flex {
   display: inline-flex;
+}
+
+.align-center {
+  align-items: center;
 }
 
 .relative {
@@ -783,6 +793,10 @@ select:-internal-list-box {
 
 .w100p {
   width: 100%;
+}
+
+.w100pi {
+  width: 100% !important;
 }
 
 /*
@@ -6909,6 +6923,10 @@ div.graph div.legend table {
 /*
 * MARGIN LEFT
 */
+.mrgn_lft-20px {
+  margin-left: -20px !important;
+}
+
 .mrgn_lft_05em {
   margin-left: 0.5em;
 }
@@ -7158,6 +7176,10 @@ div.graph div.legend table {
   margin-bottom: 35px;
 }
 
+.mrgn_btn_35px_imp {
+  margin-bottom: 35px !important;
+}
+
 .mrgn_btn_40px {
   margin-bottom: 40px;
 }
@@ -7280,6 +7302,9 @@ div.graph div.legend table {
 
 .vertical_middle {
   vertical-align: middle;
+}
+.vertical_baseline {
+  vertical-align: baseline !important;
 }
 
 .mrg_btt_7 {
@@ -8360,6 +8385,11 @@ div.graph div.legend table {
 .flex_justify_end {
   display: flex;
   justify-content: end;
+}
+
+.justify-content-between {
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 
 .span_priority {
@@ -10659,6 +10689,11 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.force {
+  mask: url(../../images/force@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/force@svg.svg) no-repeat center / contain;
+}
+
 button div.upload_file {
   mask: url(../../images/upload_file.png) no-repeat center / contain;
   -webkit-mask: url(../../images/upload_file.png) no-repeat center / contain;
@@ -10767,6 +10802,10 @@ button.ui-button.ui-widget.submit-cancel:active {
   color: #fff;
   background-color: #96a2bf;
   border-color: #96a2bf;
+}
+
+.cursor-default {
+  cursor: default;
 }
 
 .hasColorPicker {
@@ -11524,6 +11563,12 @@ span.subsection_header_title.secondary {
   margin-left: 0px;
 }
 
+.table-about p span i {
+  color: #454545;
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .table-about p.about-last-p {
   padding-bottom: 17px;
 }
@@ -11621,8 +11666,8 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: absolute;
-  right: 12px;
+  position: relative;
+  right: 40px;
   top: 4px;
   border: 0;
   outline: none;
@@ -11856,6 +11901,10 @@ div.relative > div > div#ui-datepicker-div {
   width: 400px;
 }
 
+#message_dialog_connection {
+  height: auto !important;
+}
+
 #module_relations > thead > tr {
   border: none !important;
   border-bottom: 1px solid #e2e2e2 !important;
@@ -11865,14 +11914,36 @@ span.help_icon_15px > img {
   height: 15px !important;
 }
 
-.select2-dropdown {
-  z-index: 1116 !important;
-}
-
 .icon_connection_check {
   width: 65px !important;
   height: 65px !important;
   margin-top: 10px;
+}
+.order-arrows option {
+  position: relative;
+}
+.order-arrows option::before {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  top: 5px;
+  background-image: url(../../images/darrowup.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
+
+.order-arrows option::after {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  bottom: 6px;
+  background-image: url(../../images/darrowdown.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
 }
 
 /* ==== Spinner ==== */
@@ -12074,8 +12145,9 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 70%;
 }
 
 .step {
@@ -12107,7 +12179,7 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
 }
 
@@ -12225,4 +12297,47 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .toggle-traffic-graph {
   margin: 0px !important;
+}
+
+form.max_floating_element_size > ul#ul_tree_azure {
+  background-color: #fff;
+  border-spacing: 0px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e2e2;
+}
+
+#grid_img {
+  position: absolute;
+  margin-top: -2px;
+}
+
+div#visual-console-container * {
+  font-size: unset;
+  line-height: unset;
+}
+
+.combo-oid-button {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:first-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:first-child {
+  padding-bottom: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:last-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:last-child {
+  padding-top: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
+  width: 100% !important;
 }

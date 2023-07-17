@@ -3,7 +3,7 @@ package PandoraFMS::Tools;
 # Tools Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ################################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -774,9 +774,16 @@ sub pandora_sendmail {
 		$mail{Message} = encode("UTF-8", $mail{Message});
 		$mail{'Content-Type'} = 'text/plain; charset="UTF-8"';
 	}
-	
+ 
 	if ($pa_config->{"mta_user"} ne ""){
-		$mail{auth} = {user=>$pa_config->{"mta_user"}, password=>$pa_config->{"mta_pass"}, method=>$pa_config->{"mta_auth"}, required=>1 };
+		$mail{auth} = {
+			user=>$pa_config->{"mta_user"},
+			password=>PandoraFMS::Core::pandora_output_password(
+				$pa_config,
+				safe_output($pa_config->{"mta_pass"})
+			),
+			method=>$pa_config->{"mta_auth"}, required=>1
+		};
 	}
 
 	eval {

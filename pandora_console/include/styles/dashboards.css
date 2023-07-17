@@ -142,7 +142,9 @@ h1 {
   img {
   cursor: pointer;
 }
-
+#modal-add-widget {
+  min-height: 566px !important;
+}
 #modal-add-widget .container-list-widgets {
   display: flex;
   flex-direction: row;

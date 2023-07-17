@@ -1,7 +1,7 @@
 #!/bin/bash
 # **********************************************************************
 # Pandora FMS Generic Linux Agent
-# (c) 2010 Artica Soluciones Tecnológicas
+# (c) 2010-2023 Pandora FMS
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
@@ -172,7 +172,7 @@ function configure_agent {
 	if [ "$CRON_MODE" == "0" ]
 	then
 		# Script banner at start
-		echo "Pandora FMS Agent $AGENT_VERSION (c) Artica ST 2003-2010"
+		echo "Pandora FMS Agent $AGENT_VERSION (c) Pandora FMS 2003-2023"
 		echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 		echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 		echo " "

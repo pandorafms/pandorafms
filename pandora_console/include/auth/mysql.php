@@ -244,7 +244,6 @@ function process_user_login_remote($login, $pass, $api=false)
             }
 
             if ($sr === false) {
-                $config['auth_error'] = 'User not found in database or incorrect password';
                 return false;
             }
         break;

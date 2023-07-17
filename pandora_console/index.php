@@ -711,7 +711,6 @@ if (isset($config['id_user']) === false) {
                     login_check_failed($nick);
                 }
 
-                $config['auth_error'] = __('User is blocked');
                 $login_failed = true;
             }
 

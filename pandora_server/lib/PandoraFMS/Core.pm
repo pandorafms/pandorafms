@@ -1561,8 +1561,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "get";
 		$params->{"op2"} = "module_graph";
 		$params->{"id"} = $module->{'id_agente_modulo'};
@@ -1707,8 +1706,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "set";
 		$params->{"op2"} = "send_report";
 		$params->{"other_mode"} = "url_encode_separator_|;|";
@@ -1739,8 +1737,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "set";
 		$params->{"op2"} = "send_report";
 		$params->{"other_mode"} = "url_encode_separator_|;|";

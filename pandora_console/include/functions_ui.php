@@ -3325,6 +3325,32 @@ function ui_print_module_status(
 
 
 /**
+ * Returns html code to print a shape for a module.
+ *
+ * @param integer $color       Hex color.
+ * @param boolean $return      True or false.
+ * @param string  $class       Custom class or use defined.
+ * @param string  $div_content Content.
+ *
+ * @return string HTML code for shape.
+ */
+function ui_print_diagnosis_status(
+    $color,
+    $return=false,
+    $class='status_rounded_rectangles',
+    $div_content=''
+) {
+    $output = '<div style="background: '.$color.'" class="'.$class.'">'.$div_content.'</div>';
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
  * Get the shape of an image by assigning it a CSS class. Prints an image with CSS representing a status.
  *
  * @param string $type Module/Agent/Alert status.
@@ -4343,7 +4369,8 @@ function ui_print_datatable(array $parameters)
                     $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
                     $(".action_buttons_right_content").html("<div class=\"pagination-child-div\"></div>");
 
-                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").attr("style","margin-right: 10px;"));
+                    let original_styles = $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").attr("style");
+                    $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").attr("style", original_styles + " margin-right: 10px;"));
                     $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_length"));
                     $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dt-buttons"));
                     $(".pagination-child-div").append($("#'.$table_id.'_wrapper > .dataTables_filter"));

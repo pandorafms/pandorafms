@@ -97,6 +97,18 @@ if (check_login()) {
         return;
     }
 
+    $id_plugin = get_parameter('id_plugin', 0);
+    $id_module_plugin = db_get_value(
+        'id_plugin',
+        'tagente_modulo',
+        'id_agente_modulo',
+        $get_module_macros
+    );
+    if ($id_plugin !== $id_module_plugin) {
+        $get_plugin_macros = true;
+        $get_module_macros = 0;
+    }
+
     if ($get_plugin_macros) {
         if (https_is_running()) {
             header('Content-type: application/json');

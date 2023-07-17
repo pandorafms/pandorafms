@@ -150,13 +150,15 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
 }
 
 
-function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $tooltip=true)
+function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $tooltip=true, $id_container=false)
 {
     global $config;
 
     if (is_array($data)) {
         $data = json_encode($data);
     }
+
+    $id_container = ($id_container === false) ? '#sunburst' : $id_container;
 
     $output = "<div id=\"sunburst\" style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
@@ -167,7 +169,7 @@ function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $toolt
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					sunburst('#sunburst', $data, '$width', '$height', '$tooltip');
+					sunburst('$id_container', $data, '$width', '$height', '$tooltip');
 				</script>";
 
     if (!$return) {

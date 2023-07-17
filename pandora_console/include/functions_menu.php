@@ -330,6 +330,8 @@ function menu_print_menu(&$menu)
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
                     $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p arrow_menu_down"></div></div>';
+                } else if (isset($sub['subtype']) && $sub['subtype'] == 'nolink_no_arrow') {
+                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p"></div></div>';
                 } else if (isset($sub['subtype']) && $sub['subtype'] == 'new_blank') {
                     $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 } else {

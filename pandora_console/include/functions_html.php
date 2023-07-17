@@ -671,6 +671,7 @@ function html_print_select_groups(
                                     step: params.page || 1,
                                     strict: "<?php echo $strict_user; ?>",
                                     not_condition: $('#not_condition_switch').prop('checked'),
+                                    returnAllGroup: <?php echo (int) $returnAllGroup; ?>
                                 }
 
                                 return query;
@@ -7134,6 +7135,47 @@ function html_print_code_picker(
     $output = '<div class="code-fragment '.$single_line_class.$classes.'">';
     $output .= '<pre style="margin: 0;"><code class="code-font" id="'.$id.'" style="display: block; white-space: pre-wrap;">'.$content.'</code></pre>';
     $output .= '</div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+function html_print_wizard_diagnosis(
+    $title,
+    $id_button,
+    $description='',
+    $status=true,
+    $return=false,
+) {
+    $button = '';
+    if ($status === true) {
+        $status = 'Connected';
+        $img = '/images/configuration@svg.svg';
+    } else {
+        $status = 'Disconnected';
+        $img = '/images/change-active.svg';
+    }
+
+    $button = html_print_image(
+        $img,
+        true,
+        [
+            'class' => 'main_menu_icon invert_filter float-right mrgn_right_10px',
+            'id'    => $id_button,
+        ]
+    );
+
+    $output = '<div class="rectangle rectangle_'.$status.'">
+                        <span class="status '.$status.'">'.__($status).$button.'</span>
+                        <div class="title">'.html_print_image('/images/circle_title.svg', true, ['class' => 'invert_filter']).'<span>'.$title.'</span></div>
+                        <div class="description">
+                            <span>'.$description.'</span>
+                        </div>
+                </div>';
 
     if ($return === true) {
         return $output;

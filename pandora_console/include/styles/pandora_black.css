@@ -1464,6 +1464,10 @@ ul.datatable_filter:has(li > div.action-buttons) {
   background-color: #222 !important;
 }
 
+ul.datatable_filter {
+  background-color: #222 !important;
+}
+
 span.ui-dialog-title {
   color: #fff !important;
 }

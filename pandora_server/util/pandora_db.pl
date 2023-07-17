@@ -789,7 +789,6 @@ sub pandora_checkdb_integrity {
 				$where_condition = '';
 				my @modules = get_db_rows($dbh, 'SELECT id_agente_modulo FROM tagente_modulo');
 				foreach my $id_agente_modulo (@modules) {
-					print Dumper($id_agente_modulo);
 					$where_condition .= 'options NOT LIKE ("%\\"moduleId\\":\\"'.$id_agente_modulo->{'id_agente_modulo'}.'\\"%")';
 					if($id_agente_modulo == $modules[-1]) {
 						last;	

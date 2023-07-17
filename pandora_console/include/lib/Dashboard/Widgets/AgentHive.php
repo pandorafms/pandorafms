@@ -414,7 +414,7 @@ class AgentHive extends Widget
                     $output .= '<div id="hiveImg_'.$id.'"
                         style="width:20px;height:20px;margin-right: 5px;">';
                         $output .= file_get_contents(
-                            ui_get_full_url('images/'.$icon)
+                            ui_get_full_url('images/'.$icon, false, false, false)
                         );
                     $output .= '</div>';
                     $output .= ui_print_truncate_text(
@@ -424,8 +424,9 @@ class AgentHive extends Widget
                         true,
                         true,
                         '&hellip;',
-                        'font-size: 11pt;color: #14524f;
-                            font-weight: 600;text-align: left',
+                        'font-size: 11pt;color: #14524f;white-space: nowrap;
+                            font-weight: 600;text-align: left;width: 80%;
+                            overflow: hidden;',
                     );
 
                 $output .= '</div>';

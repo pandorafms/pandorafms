@@ -674,17 +674,16 @@ form.modal-dashboard
 .widget-agent-hive-square-status {
   width: 3%;
   height: 100%;
-  margin-left: 4%;
-  margin-right: 3%;
+  margin-left: 3%;
   border-radius: 15px;
 }
 
 .widget-agent-hive-square-info {
-  width: 90%;
+  width: 87%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  margin-left: 5px;
+  margin-left: 6%;
 }
 
 .widget-agent-hive-square-info-header {

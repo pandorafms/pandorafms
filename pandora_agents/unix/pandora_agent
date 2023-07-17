@@ -1671,6 +1671,17 @@ sub parse_conf_modules($) {
 				# Convert from seconds to actual agent intervals.
 				$module->{'interval'} = ceil($module->{'absoluteinterval'} / $Conf{'interval'});
 
+				# Make sure modules that run once are asynchronous.
+				if ($module->{'interval'} == 0) {
+					if ($module->{'type'} eq 'generic_data') {
+						$module->{'type'} = 'async_data';
+					} elsif ($module->{'type'} eq 'generic_proc') {
+						$module->{'type'} = 'async_proc';
+					} elsif ($module->{'type'} eq 'generic_data_string') {
+						$module->{'type'} = 'async_string';
+					}
+				}
+
 				# This file will be used for persistence.
 				$module->{'timestamp_file'} = $ConfDir . '/' . $Conf{'server_path_ref'} . '/' . md5($module->{'name'}) . '.ref';
 			}

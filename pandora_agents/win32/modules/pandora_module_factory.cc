@@ -1448,6 +1448,18 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		numeric = false;
 	}
 
+	// Make sure modules that run once are asynchronous.
+	if (module->getInterval() == 0) {
+		type = module->getTypeInt();
+		if (type == TYPE_GENERIC_DATA) {
+			module->setType("async_data");
+		} else if (type == TYPE_GENERIC_PROC) {
+			module->setType("async_proc");
+		} else if (type == TYPE_GENERIC_DATA_STRING) {
+			module->setType("async_string");
+		}
+	}
+
 	if (numeric) {
 		if (module_max != "") {
 			try {

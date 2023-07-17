@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -150,13 +150,15 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
 }
 
 
-function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $tooltip=true)
+function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $tooltip=true, $id_container=false)
 {
     global $config;
 
     if (is_array($data)) {
         $data = json_encode($data);
     }
+
+    $id_container = ($id_container === false) ? '#sunburst' : $id_container;
 
     $output = "<div id=\"sunburst\" style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
@@ -167,7 +169,7 @@ function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $toolt
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					sunburst('#sunburst', $data, '$width', '$height', '$tooltip');
+					sunburst('$id_container', $data, '$width', '$height', '$tooltip');
 				</script>";
 
     if (!$return) {

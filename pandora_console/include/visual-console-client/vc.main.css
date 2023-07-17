@@ -250,6 +250,10 @@ p.error-p-validate {
   color: #c00;
 }
 
+#modalVCItemForm #textarea_label_ifr {
+  background-color: #c9cfcd;
+}
+
 /* Styles for the solid icons */
 
 .fa {

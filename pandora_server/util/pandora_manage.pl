@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2015-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2015-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.771 Build 230605";
+my $version = "7.0NG.772 Build 230717";
 
 # save program name for logging
 my $progname = basename($0);
@@ -95,7 +95,7 @@ exit;
 # Print a help screen and exit.
 ########################################################################
 sub help_screen{
-	print "\nPandora FMS CLI $version Copyright (c) 2013-2021 Artica ST\n";
+	print "\nPandora FMS CLI $version Copyright (c) 2013-2023 Pandora FMS\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 	print "$enterprise_msg\n\n";
@@ -4453,16 +4453,9 @@ sub cli_create_event() {
 		exist_check($id_user,'user',$user_name);
 	}
 	
-	my $id_group;
-	
-	if (! $group_name || $group_name eq "All") {
-		$id_group = 0;
-	}
-	else {
-		$id_group = get_group_id($dbh,$group_name);
-		exist_check($id_group,'group',$group_name);
-	}
-	
+	my $id_group = get_group_id($dbh,$group_name);
+	exist_check($id_group,'group',$group_name);
+
 	my $id_agent;
 
 	if (defined $use_alias and $use_alias eq 'use_alias') {
@@ -4515,7 +4508,7 @@ sub cli_create_event() {
 			# exist_check($id_agent,'agent',$agent_name);
 			if($id_agent == -1){
 				if($force_create_agent == 1){
-					pandora_create_agent ($conf, '', $agent_name, '', '', '', '', 'Created by cli_create_event', '', $dbh);
+					pandora_create_agent ($conf, '', $agent_name, '', $id_group, '', '', 'Created by cli_create_event', '', $dbh);
 					print_log "[INFO] Adding agent '$agent_name' \n\n";
 					$id_agent = get_agent_id($dbh,$agent_name);
 				}
@@ -5923,12 +5916,24 @@ sub cli_get_bad_conf_files() {
 	foreach my $file (@files) {
 		# Check important tokens
 		my $missings = 0;
-		my @tokens = ("server_ip","server_path","temporal","log_file");
+		my @tokens = ("server_ip","server_path","temporal","logfile");
 		
 		if ($file !~ /.srv./) {
 			foreach my $token (@tokens) {
-				if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {
+				my $result = enterprise_hook('pandora_check_conf_token', [$conf->{incomingdir}.'/conf/'.$file, $token]);
+				
+				if($result  == 0) {
 					$missings++;
+				}
+				elsif ($result  == -1) {
+					print_log "[WARN] File not exists /conf/".$file."\n\n";
+					$bad_files++;
+					last;
+				}
+				elsif(!defined $result) {
+					print_log "[WARN] Can't open file /conf/".$file."\n\n";
+					$bad_files++;
+					last;
 				}
 			}
 			

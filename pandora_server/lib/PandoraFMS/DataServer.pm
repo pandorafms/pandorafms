@@ -3,7 +3,7 @@ package PandoraFMS::DataServer;
 # Pandora FMS Data Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -324,8 +324,8 @@ sub data_consumer ($$) {
 		return;	
 	}
 
-	rename($file_name, $file_name . '_BADXML');
-	pandora_event ($pa_config, "Unable to process XML data file '$file_name': $xml_err", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+	rename($file_name, $file_name.'_BADXML');
+	pandora_event ($pa_config, "Unable to process XML data file '$task'.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 	agent_unlock($pa_config, $agent_name);
 }
 

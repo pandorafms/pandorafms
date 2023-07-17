@@ -3,7 +3,7 @@ package PandoraFMS::Core;
 # Core Pandora FMS functions.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2022 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -1025,7 +1025,6 @@ sub pandora_execute_alert {
 		
 		# Check the action threshold (template_action_threshold takes precedence over action_threshold)
 		my $threshold = 0;
-		my $recovered = 0;
 		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});	
 		$action->{'recovered'} = 0 unless defined ($action->{'recovered'});
 
@@ -1047,11 +1046,11 @@ sub pandora_execute_alert {
 			if($alert_mode == RECOVERED_ALERT) {
 				# Reset action thresholds and set recovered
 				if (defined ($alert->{'id_template_module'})) {
-					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 1 WHERE id = ?', $action->{'id_alert_templ_module_actions'});
 				}
 			} else {
 					# Action executed again, set recovered to 0.
-					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id_alert_template_module = ?', $alert->{'id_template_module'});
+					db_do($dbh, 'UPDATE talert_template_module_actions SET recovered = 0 WHERE id = ?', $action->{'id_alert_templ_module_actions'});
 			}
 		} else {
 			if($alert_mode == RECOVERED_ALERT) {
@@ -1562,8 +1561,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "get";
 		$params->{"op2"} = "module_graph";
 		$params->{"id"} = $module->{'id_agente_modulo'};
@@ -1708,8 +1706,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "set";
 		$params->{"op2"} = "send_report";
 		$params->{"other_mode"} = "url_encode_separator_|;|";
@@ -1740,8 +1737,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "set";
 		$params->{"op2"} = "send_report";
 		$params->{"other_mode"} = "url_encode_separator_|;|";
@@ -1970,7 +1966,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 	}
 	
 	# Update action last execution date
-	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
+	if ($alert_mode != RECOVERED_ALERT && defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
 		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
  			WHERE id = ?', int(time ()), $action->{'id_alert_templ_module_actions'});
 	}
@@ -3701,6 +3697,7 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'query_key_field'};
 	delete $parameters->{'name_oid'};
 	delete $parameters->{'module_type'};
+	delete $parameters->{'target_ip'};
 
 	if (defined $parameters->{'id_os'}) {
 		delete $parameters->{'id_os'};
@@ -7843,7 +7840,7 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2023 Pandora FMS
 
 =cut
 

@@ -160,6 +160,8 @@ export interface VisualConsoleProps extends Size {
   isFavorite: boolean;
   relationLineWidth: number;
   maintenanceMode: MaintenanceModeInterface | null;
+  gridSize: number | 10;
+  gridSelected: boolean | false | false;
 }
 
 export interface MaintenanceModeInterface {
@@ -188,7 +190,9 @@ export function visualConsolePropsDecoder(
     backgroundColor,
     isFavorite,
     relationLineWidth,
-    maintenanceMode
+    maintenanceMode,
+    gridSize,
+    gridSelected
   } = data;
 
   if (id == null || isNaN(parseInt(id))) {
@@ -210,6 +214,8 @@ export function visualConsolePropsDecoder(
     isFavorite: parseBoolean(isFavorite),
     relationLineWidth: parseIntOr(relationLineWidth, 0),
     maintenanceMode: maintenanceMode,
+    gridSize: parseIntOr(gridSize, 10),
+    gridSelected: false,
     ...sizePropsDecoder(data)
   };
 }
@@ -279,6 +285,24 @@ export default class VisualConsole {
    * @param e Event object.
    */
   private handleElementMovement: (e: ItemMovedEvent) => void = e => {
+    var type = e.item.itemProps.type;
+    if (type !== 13 && type !== 21 && this.props.gridSelected === true) {
+      var gridSize = this.props.gridSize;
+      var positionX = e.newPosition.x;
+      var positionY = e.newPosition.y;
+      if (positionX % gridSize !== 0 || positionY % gridSize !== 0) {
+        var x = Math.floor(positionX / gridSize) * gridSize;
+        var y = Math.floor(positionY / gridSize) * gridSize;
+        let elemntSelected = document.getElementById(
+          "item-selected-move"
+        ) as HTMLElement;
+        elemntSelected.setAttribute(
+          "style",
+          "top:" + y + "px !important; left:" + x + "px !important"
+        );
+        return;
+      }
+    }
     // Move their relation lines.
     const itemId = e.item.props.id;
     const relations = this.getItemRelations(itemId);
@@ -1267,6 +1291,22 @@ export default class VisualConsole {
     });
     this.containerRef.classList.remove("is-maintenance");
     this.containerRef.classList.add("is-editing");
+  }
+
+  /**
+   * Update the gridSize.
+   */
+  public updateGridSize(gridSize: string): void {
+    this._props.gridSize = parseInt(gridSize);
+    this.props.gridSize = parseInt(gridSize);
+  }
+
+  /**
+   * Update the gridSize.
+   */
+  public updateGridSelected(gridSelected: boolean): void {
+    this._props.gridSelected = gridSelected;
+    this.props.gridSelected = gridSelected;
   }
 
   /**

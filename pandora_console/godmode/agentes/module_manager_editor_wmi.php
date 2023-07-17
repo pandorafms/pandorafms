@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -43,14 +43,9 @@ if (empty($edit_module)) {
 
 $data = [];
 if ($page == 'enterprise/godmode/policies/policy_modules') {
-    if ($ip_target != 'auto' && $ip_target != '') {
+    if ($ip_target !== 'auto' && $ip_target !== 'force_pri') {
         $custom_ip_target = $ip_target;
         $ip_target = 'custom';
-    } else if ($ip_target == '') {
-        $ip_target = 'force_pri';
-        $custom_ip_target = '';
-    } else {
-        $custom_ip_target = '';
     }
 
     $target_ip_values = [];
@@ -240,9 +235,13 @@ push_table_simple($data, 'key_field');
 <script type="text/javascript">
 $(document).ready (function () {
     var custom_ip_target = "<?php echo $custom_ip_target; ?>";
-    if(custom_ip_target == ''){
+    var ip_target = "<?php echo $ip_target; ?>";
+    if(ip_target === 'custom'){
+        $("#text-custom_ip_target").show();
+    } else {
         $("#text-custom_ip_target").hide();
     }
+
     $('#ip_target').change(function() {
         if($(this).val() == 'custom') {
             $("#text-custom_ip_target").show();

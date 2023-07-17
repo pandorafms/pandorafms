@@ -3,7 +3,7 @@ Pandora Mail Transfer
 
 1st Edition , 3 May 2011
 
-(c) Artica Soluciones Tecnológicas 2005-2011
+(c) Pandora FMS 2005-2023
 (c) Juan Manuel Ramon <juanma@artica.es>
 (c) Javier Lanz <javier.lanz@artica.es>
 

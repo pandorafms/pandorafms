@@ -212,7 +212,7 @@ if (isset($_GET['server']) === true) {
             false,
             'servers',
             true,
-            [],
+            $buttons,
             [
                 [
                     'link'  => '',

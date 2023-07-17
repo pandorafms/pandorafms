@@ -404,13 +404,19 @@ function treeMap(recipient, data, width, height) {
   var isIE = true;
   var chartWidth = width;
   var chartHeight = height;
-  var consoleStyle = document.getElementById("hidden-selected_style_theme")
-    .value;
-  $("#tooltip").css(
+  const uniqueId = generateUniqueId();
+  if (document.getElementById("hidden-selected_style_theme") !== null) {
+    var consoleStyle = document.getElementById("hidden-selected_style_theme")
+      .value;
+  } else {
+    var consoleStyle = "";
+  }
+
+  $("#tooltip_" + uniqueId).css(
     "color",
     consoleStyle === "pandora_black" ? "rgb(240, 240, 240)" : "rgb(0, 0, 0)"
   );
-  $("#tooltip").css(
+  $("#tooltip_" + uniqueId).css(
     "background-color",
     consoleStyle === "pandora_black" ? "rgb(0, 0, 0)" : "rgb(240, 240, 240)"
   );
@@ -543,7 +549,7 @@ function treeMap(recipient, data, width, height) {
     .append("rect")
     .classed("background", true)
     .style("fill", function(d) {
-      return color(d.name);
+      return d.color ? d.color : color(d.name);
     });
 
   childEnterTransition
@@ -743,11 +749,11 @@ function treeMap(recipient, data, width, height) {
   }
 
   function move_tooltip(d) {
-    x = d3.event.pageX + 10;
-    y = d3.event.pageY + 10;
+    x = d3.event.layerX + 15;
+    y = d3.event.layerY + 15;
 
-    $("#tooltip").css("left", x + "px");
-    $("#tooltip").css("top", y + "px");
+    $("#tooltip_" + uniqueId).css("left", x + "px");
+    $("#tooltip_" + uniqueId).css("top", y + "px");
   }
 
   function over_user(d) {
@@ -769,17 +775,17 @@ function treeMap(recipient, data, width, height) {
   }
 
   function create_tooltip(d, x, y) {
-    if ($("#tooltip").length == 0) {
+    if ($("#tooltip_" + uniqueId).length == 0) {
       $(recipient).append(
         $("<div></div>")
-          .attr("id", "tooltip")
+          .attr("id", "tooltip_" + uniqueId)
           .html(d.tooltip_content)
       );
     } else {
-      $("#tooltip").html(d.tooltip_content);
+      $("#tooltip_" + uniqueId).html(d.tooltip_content);
     }
 
-    $("#tooltip").attr(
+    $("#tooltip_" + uniqueId).attr(
       "style",
       "background: #fff;" +
         "color: #111;" +
@@ -809,7 +815,14 @@ function treeMap(recipient, data, width, height) {
   }
 
   function hide_tooltip() {
-    $("#tooltip").hide();
+    $("#tooltip_" + uniqueId).hide();
+  }
+
+  function generateUniqueId() {
+    const timestamp = new Date().getTime();
+    const randomNum = Math.floor(Math.random() * 10000);
+    const uniqueId = `${timestamp}-${randomNum}`;
+    return uniqueId;
   }
 }
 

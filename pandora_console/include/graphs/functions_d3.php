@@ -83,7 +83,7 @@ function d3_relationship_graph($elements, $matrix, $width=700, $return=false)
 }
 
 
-function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
+function d3_tree_map_graph($data, $width=700, $height=700, $return=false, $id_container='tree_map')
 {
     global $config;
 
@@ -91,7 +91,7 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
         $data = json_encode($data);
     }
 
-    $output = "<div id=\"tree_map\" style='overflow: hidden;'></div>";
+    $output = '<div id="'.$id_container."\" style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
     $output .= '<style type="text/css">
 					.cell>rect {
@@ -139,7 +139,7 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					treeMap('#tree_map', $data, '$width', '$height');
+					treeMap('#$id_container', $data, '$width', '$height');
 				</script>";
 
     if (!$return) {

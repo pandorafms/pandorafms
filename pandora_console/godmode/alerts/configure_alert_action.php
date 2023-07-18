@@ -11,7 +11,8 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+use PandoraFMS\ITSM\ITSM;
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
@@ -39,11 +40,19 @@ if (is_ajax()) {
     $get_integria_ticket_custom_types = (bool) get_parameter('get_integria_ticket_custom_types');
 
     if ($get_integria_ticket_custom_types) {
-        $ticket_type_id = get_parameter('ticket_type_id');
+        $ticket_type_id = (int) get_parameter('ticket_type_id', 0);
+        if (empty($ticket_type_id) === false) {
+            $error = '';
+            try {
+                $ITSM = new ITSM();
+                $fields = $ITSM->getObjecTypesFields($ticket_type_id);
+            } catch (\Throwable $th) {
+                $error = $th->getMessage();
+            }
 
-        $api_call = integria_api_call(null, null, null, null, 'get_incident_fields', $ticket_type_id, false, 'json');
+            echo json_encode($fields);
+        }
 
-        echo $api_call;
         return;
     }
 }
@@ -504,7 +513,6 @@ $(document).ready (function () {
           },
           function(data) {
             var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
-
             data.forEach(function(custom_field, key) {
                 var custom_field_key = key+8; // Custom fields start from field 8.
 
@@ -523,7 +531,7 @@ $(document).ready (function () {
                 custom_field_row.html(new_html_content);
 
                 switch (custom_field.type) {
-                    case 'checkbox':
+                    case 'CHECKBOX':
                         var checkbox_selector = $('input:not(.datepicker)[name=field'+custom_field_key+'_value\\[\\]]');
                         var checkbox_recovery_selector = $('input:not(.datepicker)[name=field'+custom_field_key+'_recovery_value\\[\\]]');
 
@@ -568,14 +576,14 @@ $(document).ready (function () {
                         $('input:not(.datepicker)[name=field'+custom_field_key+'_value\\[\\]]').show();
                         $('input:not(.datepicker)[name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
                     break;
-                    case 'combo':
+                    case 'COMBO':
                         var combo_input = $('select[name=field'+custom_field_key+'_value\\[\\]]');
                         var combo_input_recovery = $('select[name=field'+custom_field_key+'_recovery_value\\[\\]]');
 
                         combo_input.find('option').remove();
                         combo_input_recovery.find('option').remove();
 
-                        var combo_values_array = custom_field.combo_value.split(',');
+                        var combo_values_array = custom_field.comboValue.split(',');
                         
                         combo_values_array.forEach(function(value) {
                             combo_input.append($('<option>', {
@@ -600,7 +608,7 @@ $(document).ready (function () {
                         combo_input.show();
                         combo_input_recovery.show();
                     break;
-                    case 'date':
+                    case 'DATE':
                         $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').removeClass("hasDatepicker");
                         $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').removeClass("hasDatepicker");
                         $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').datepicker("destroy");
@@ -620,9 +628,10 @@ $(document).ready (function () {
                             $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').val(recovery_values[key]);
                         }
                     break;
-                    case 'text':
-                    case 'textarea':
-                    case 'numeric':
+                    case 'TEXT':
+                    case 'TEXTAREA':
+                    case 'NUMERIC':
+                    default:
                         if (typeof values[key] !== "undefined") {
                             $('textarea[name=field'+custom_field_key+'_value\\[\\]]').val(values[key]);
                         }

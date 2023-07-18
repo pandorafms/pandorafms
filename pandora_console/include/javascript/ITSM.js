@@ -64,3 +64,66 @@ function downloadIncidenceAttachment(
     }
   });
 }
+
+/* Function check API */
+// eslint-disable-next-line no-unused-vars
+function testConectionApi(pass, host) {
+  var hideLoadingImage = function() {
+    $("span#ITSM-spinner").hide();
+  };
+  var showLoadingImage = function() {
+    $("span#ITSM-spinner").show();
+  };
+  var hideSuccessImage = function() {
+    $("span#ITSM-success").hide();
+  };
+  var showSuccessImage = function() {
+    $("span#ITSM-success").show();
+  };
+  var hideFailureImage = function() {
+    $("span#ITSM-failure").hide();
+  };
+  var showFailureImage = function() {
+    $("span#ITSM-failure").show();
+  };
+  var hideMessage = function() {
+    $("span#ITSM-message").hide();
+  };
+  var showMessage = function() {
+    $("span#ITSM-message").show();
+  };
+
+  hideSuccessImage();
+  hideFailureImage();
+  hideMessage();
+  showLoadingImage();
+
+  var data = {
+    page: "operation/ITSM/itsm",
+    method: "checkConncetionApi",
+    pass: pass,
+    host: host
+  };
+
+  $.ajax({
+    type: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: data
+  })
+    .done(function(data) {
+      if (data.valid == 1) {
+        showSuccessImage();
+      } else {
+        showFailureImage();
+        showMessage();
+      }
+    })
+    .fail(function() {
+      showFailureImage();
+      showMessage();
+    })
+    .always(function() {
+      hideLoadingImage();
+    });
+}

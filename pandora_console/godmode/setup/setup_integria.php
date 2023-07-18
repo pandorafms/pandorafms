@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\ITSM\ITSM;
+
  // Load globals.
 global $config;
 
@@ -42,35 +44,39 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 
 require_once $config['homedir'].'/include/functions_integriaims.php';
 
-if (is_ajax() === true) {
-    $operation = (string) get_parameter('operation', '');
-
-    $integria_user = get_parameter('integria_user', '');
-    $integria_pass = get_parameter('integria_pass', '');
-    $integria_api_hostname = get_parameter('api_hostname', '');
-    $integria_api_pass = get_parameter('api_pass', '');
-    $user_level_conf = get_parameter('user_level_conf', 0);
-    $user_level_conf_bool = ((bool) $user_level_conf === true);
-
-    $login_result = integria_api_call($integria_api_hostname, $integria_user, $integria_pass, $integria_api_pass, 'get_login', [], false, '', '', $user_level_conf_bool);
-
-    echo json_encode(['login' => ($login_result !== false) ? 1 : 0]);
-
-    return;
+$error = '';
+$group_values = [];
+$priority_values = [];
+$object_types_values = [];
+$status_values = [];
+try {
+    $ITSM = new ITSM();
+    $has_connection = $ITSM->ping();
+    $group_values = $ITSM->getGroups();
+    $priority_values = $ITSM->getPriorities();
+    $status_values = $ITSM->getStatus();
+    $object_types_values = $ITSM->getObjectypes();
+} catch (\Throwable $th) {
+    $error = $th->getMessage();
+    $has_connection = false;
 }
 
-$has_connection = integria_api_call(null, null, null, null, 'get_login', []);
-
 if ($has_connection === false && $config['integria_enabled']) {
-    ui_print_error_message(__('Integria IMS API is not reachable'));
+    ui_print_error_message(__('ITSM API is not reachable, %s', $error));
 }
 
 if (get_parameter('update_config', 0) == 1) {
     // Try to retrieve event response 'Create incident in IntegriaIMS from event' to check if it exists.
-    $event_response_exists = db_get_row_filter('tevent_response', ['name' => io_safe_input('Create ticket in IntegriaIMS from event')]);
+    $event_response_exists = db_get_row_filter(
+        'tevent_response',
+        ['name' => io_safe_input('Create ticket in IntegriaIMS from event')]
+    );
 
     // Try to retrieve command 'Integia IMS Ticket' to check if it exists.
-    $command_exists = db_get_row_filter('talert_commands', ['name' => io_safe_input('Integria IMS Ticket')]);
+    $command_exists = db_get_row_filter(
+        'talert_commands',
+        ['name' => io_safe_input('Integria IMS Ticket')]
+    );
 
     if ($config['integria_enabled'] == 1) {
         if ($event_response_exists === false) {
@@ -92,13 +98,10 @@ if (get_parameter('update_config', 0) == 1) {
             );
         }
 
-        $ticket_types = integria_api_call(null, null, null, null, 'get_types', '', false, 'json');
-
         $types_string = '';
-
-        if ($ticket_types !== '') {
-            foreach (json_decode($ticket_types, true) as $key => $value) {
-                $types_string .= $value['id'].','.$value['name'].';';
+        if (empty($object_types_values) === false) {
+            foreach ($object_types_values as $id => $name) {
+                $types_string .= $id.','.$name.';';
             }
         }
 
@@ -118,20 +121,20 @@ if (get_parameter('update_config', 0) == 1) {
 
             // Create 'Create Integria IMS Ticket' action only when user enables IntegriaIMS integration and command exists in database.
             $action_values = [
-                'field1'           => io_safe_input($config['incident_title']),
-                'field1_recovery'  => io_safe_input($config['incident_title']),
-                'field2'           => io_safe_input($config['default_group']),
-                'field2_recovery'  => io_safe_input($config['default_group']),
-                'field3'           => io_safe_input($config['default_criticity']),
-                'field3_recovery'  => io_safe_input($config['default_criticity']),
-                'field4'           => io_safe_input($config['default_owner']),
-                'field4_recovery'  => io_safe_input($config['default_owner']),
-                'field5'           => io_safe_input($config['incident_type']),
-                'field5_recovery'  => io_safe_input($config['incident_type']),
-                'field6'           => io_safe_input($config['incident_status']),
-                'field6_recovery'  => io_safe_input($config['incident_status']),
-                'field7'           => io_safe_input($config['incident_content']),
-                'field7_recovery'  => io_safe_input($config['incident_content']),
+                'field1'           => $config['incident_title'],
+                'field1_recovery'  => $config['incident_title'],
+                'field2'           => $config['default_group'],
+                'field2_recovery'  => $config['default_group'],
+                'field3'           => $config['default_criticity'],
+                'field3_recovery'  => $config['default_criticity'],
+                'field4'           => $config['default_owner'],
+                'field4_recovery'  => $config['default_owner'],
+                'field5'           => $config['incident_type'],
+                'field5_recovery'  => $config['incident_type'],
+                'field6'           => $config['incident_status'],
+                'field6_recovery'  => $config['incident_status'],
+                'field7'           => $config['incident_content'],
+                'field7_recovery'  => $config['incident_content'],
                 'id_group'         => 0,
                 'action_threshold' => 0,
             ];
@@ -215,40 +218,6 @@ if (get_parameter('update_config', 0) == 1) {
     }
 }
 
-// Get parameters from Integria IMS API.
-$integria_group_values = [];
-$integria_criticity_values = [];
-$integria_users_values = [];
-$integria_types_values = [];
-$integria_status_values = [];
-
-$integria_groups_csv = integria_api_call(null, null, null, null, 'get_groups', []);
-
-get_array_from_csv_data_pair($integria_groups_csv, $integria_group_values);
-
-$integria_status_csv = integria_api_call(null, null, null, null, 'get_incidents_status', []);
-
-get_array_from_csv_data_pair($integria_status_csv, $integria_status_values);
-
-$integria_criticity_levels_csv = integria_api_call(null, null, null, null, 'get_incident_priorities', []);
-
-get_array_from_csv_data_pair($integria_criticity_levels_csv, $integria_criticity_values);
-
-$integria_users_csv = integria_api_call(null, null, null, null, 'get_users', []);
-
-$csv_array = explode("\n", $integria_users_csv);
-
-foreach ($csv_array as $csv_line) {
-    if (empty($csv_line) === false) {
-        $integria_users_values[$csv_line] = $csv_line;
-    }
-}
-
-$integria_types_csv = integria_api_call(null, null, null, null, 'get_types', []);
-
-get_array_from_csv_data_pair($integria_types_csv, $integria_types_values);
-
-// Enable table.
 $table_enable = new StdClass();
 $table_enable->data = [];
 $table_enable->width = '100%';
@@ -287,8 +256,9 @@ $row['user_level'] = html_print_label_input_block(
 $table_remote->data['integria_user_level_conf'] = $row;
 
 // Integria user.
-$row = [];
-$row['user'] = html_print_label_input_block(
+/*
+    $row = [];
+    $row['user'] = html_print_label_input_block(
     __('User'),
     html_print_input_text(
         'integria_user',
@@ -299,22 +269,8 @@ $row['user'] = html_print_label_input_block(
         true
     ),
     ['div_class' => 'integria-remote-setup-integria_user']
-);
-
-// Integria password.
-$row['password'] = html_print_label_input_block(
-    __('Password'),
-    html_print_input_password(
-        'integria_pass',
-        io_output_password($config['integria_pass']),
-        '',
-        30,
-        100,
-        true
-    ),
-    ['div_class' => 'integria-remote-setup-integria_pass']
-);
-$table_remote->data['integria_pass'] = $row;
+    );
+*/
 
 // Integria hostname.
 $row = [];
@@ -331,8 +287,24 @@ $row['hostname'] = html_print_label_input_block(
     ['div_class' => 'integria-remote-setup-integria_hostname']
 );
 
-// API password.
-$row['api_pass'] = html_print_label_input_block(
+// Integria token.
+$row['password'] = html_print_label_input_block(
+    __('Password'),
+    html_print_input_password(
+        'integria_pass',
+        io_output_password($config['integria_pass']),
+        '',
+        30,
+        100,
+        true
+    ),
+    ['div_class' => 'integria-remote-setup-integria_pass']
+);
+$table_remote->data['integria_pass'] = $row;
+
+/*
+    // API password.
+    $row['api_pass'] = html_print_label_input_block(
     __('API Password'),
     html_print_input_password(
         'integria_api_pass',
@@ -343,12 +315,12 @@ $row['api_pass'] = html_print_label_input_block(
         true
     ),
     ['div_class' => 'integria-remote-setup-integria_api_pass']
-);
-$table_remote->data['integria_api_pass'] = $row;
+    );
+    $table_remote->data['integria_api_pass'] = $row;
 
-// Request timeout.
-$row = [];
-$row['req_timeout'] = html_print_label_input_block(
+    // Request timeout.
+    $row = [];
+    $row['req_timeout'] = html_print_label_input_block(
     __('Request timeout'),
     html_print_input_text(
         'integria_req_timeout',
@@ -359,9 +331,9 @@ $row['req_timeout'] = html_print_label_input_block(
         true
     ),
     ['div_class' => 'integria-remote-setup-integria_req_timeout']
-);
-$table_remote->data['integria_req_timeout'] = $row;
-
+    );
+    $table_remote->data['integria_req_timeout'] = $row;
+*/
 $row = [];
 $row['control'] = __('Inventory');
 $row['control'] .= html_print_button(
@@ -375,9 +347,9 @@ $row['control'] .= html_print_button(
     ],
     true
 );
-$row['control'] .= '<span id="test-integria-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="test-integria-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$row['control'] .= '<span id="test-integria-failure-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$row['control'] .= '<span id="ITSM-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+$row['control'] .= '<span id="ITSM-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+$row['control'] .= '<span id="ITSM-failure-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
 $table_remote->data['integria_sync_inventory'] = $row;
 
 // Alert settings.
@@ -425,7 +397,7 @@ $row = [];
 $row[0] = html_print_label_input_block(
     __('Group'),
     html_print_select(
-        $integria_group_values,
+        $group_values,
         'default_group',
         $config['default_group'],
         '',
@@ -443,7 +415,7 @@ $row[0] = html_print_label_input_block(
 $row[1] = html_print_label_input_block(
     __('Priority'),
     html_print_select(
-        $integria_criticity_values,
+        $priority_values,
         'default_criticity',
         $config['default_criticity'],
         '',
@@ -478,7 +450,7 @@ $row[0] = html_print_label_input_block(
 $row[1] = html_print_label_input_block(
     __('Type'),
     html_print_select(
-        $integria_types_values,
+        $object_types_values,
         'incident_type',
         $config['incident_type'],
         '',
@@ -498,7 +470,7 @@ $row = [];
 $row[0] = html_print_label_input_block(
     __('Status'),
     html_print_select(
-        $integria_status_values,
+        $status_values,
         'incident_status',
         $config['incident_status'],
         '',
@@ -559,7 +531,7 @@ $row = [];
 $row[0] = html_print_label_input_block(
     __('Group'),
     html_print_select(
-        $integria_group_values,
+        $group_values,
         'cr_default_group',
         $config['cr_default_group'],
         '',
@@ -577,7 +549,7 @@ $row[0] = html_print_label_input_block(
 $row[1] = html_print_label_input_block(
     __('Priority'),
     html_print_select(
-        $integria_criticity_values,
+        $priority_values,
         'cr_default_criticity',
         $config['cr_default_criticity'],
         '',
@@ -612,7 +584,7 @@ $row[0] = html_print_label_input_block(
 $row[1] = html_print_label_input_block(
     __('Type'),
     html_print_select(
-        $integria_types_values,
+        $object_types_values,
         'cr_incident_type',
         $config['cr_incident_type'],
         '',
@@ -632,7 +604,7 @@ $row = [];
 $row[0] = html_print_label_input_block(
     __('Status'),
     html_print_select(
-        $integria_status_values,
+        $status_values,
         'cr_incident_status',
         $config['cr_incident_status'],
         '',
@@ -652,7 +624,7 @@ $row = [];
 $row['control'] = __('Test connection');
 $row['control'] .= html_print_button(
     __('Test'),
-    'test-integria',
+    'ITSM',
     false,
     '',
     [
@@ -661,10 +633,10 @@ $row['control'] .= html_print_button(
     ],
     true
 );
-$row['control'] .= '<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'&nbsp;'.__('Connection its OK').'</span>';
-$row['control'] .= '<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'&nbsp;'.__('Connection failed').'</span>';
-$row['control'] .= '&nbsp;<span id="test-integria-message" class="invisible"></span>';
+$row['control'] .= '<span id="ITSM-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+$row['control'] .= '<span id="ITSM-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'&nbsp;'.__('Connection its OK').'</span>';
+$row['control'] .= '<span id="ITSM-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'&nbsp;'.__('Connection failed').'</span>';
+$row['control'] .= '&nbsp;<span id="ITSM-message" class="invisible"></span>';
 $table_remote->data['integria_test'] = $row;
 
 // Print.
@@ -745,6 +717,8 @@ html_print_action_buttons($update_button);
 
 echo '</form>';
 
+ui_require_javascript_file('ITSM');
+
 ?>
 
 <script type="text/javascript">
@@ -815,92 +789,6 @@ echo '</form>';
 
     $('input:checkbox[name="integria_enabled"]').change(handleEnable);
 
-    var handleTest = function (event) {
-        var user = $('input#text-integria_user').val();
-        var pass = $('input#password-integria_pass').val();
-        var host = $('input#text-integria_hostname').val();
-        var timeout = Number.parseInt($('input#text-integria_req_timeout').val(), 10);
-    
-        var timeoutMessage = '<?php echo __('Connection timeout'); ?>';
-        var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
-        var notFoundMessage = '<?php echo __('User not found'); ?>';
-        var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
-        
-        var hideLoadingImage = function () {
-            $('span#test-integria-spinner').hide();
-        }
-        var showLoadingImage = function () {
-            $('span#test-integria-spinner').show();
-        }
-        var hideSuccessImage = function () {
-            $('span#test-integria-success').hide();
-        }
-        var showSuccessImage = function () {
-            $('span#test-integria-success').show();
-        }
-        var hideFailureImage = function () {
-            $('span#test-integria-failure').hide();
-        }
-        var showFailureImage = function () {
-            $('span#test-integria-failure').show();
-        }
-        var hideMessage = function () {
-            $('span#test-integria-message').hide();
-        }
-        var showMessage = function () {
-            $('span#test-integria-message').show();
-        }
-        var changeTestMessage = function (message) {
-            $('span#test-integria-message').text(message);
-        }
-        
-        hideSuccessImage();
-        hideFailureImage();
-        hideMessage();
-        showLoadingImage();
-
-        var integria_user = $('input[name=integria_user]').val();
-        var integria_pass = $('input[name=integria_pass]').val();
-        var api_hostname = $('input[name=integria_hostname]').val();
-        var api_pass = $('input[name=integria_api_pass]').val();
-        var user_level_conf = $('input:checkbox[name="integria_user_level_conf"]').is(':checked');
-
-        var data = {
-            page: 'godmode/setup/setup_integria',
-            operation: 'check_api_access',
-            integria_user: integria_user,
-            integria_pass: integria_pass,
-            api_hostname: api_hostname,
-            api_pass: api_pass,
-            user_level_conf: user_level_conf,
-        }
-
-        // AJAX call to check API connection.
-        $.ajax({
-            type: "POST",
-            url: "ajax.php",
-            dataType: "json",
-            timeout: timeout ? timeout * 1000 : 0,
-            data: data
-        })
-        .done(function(data, textStatus, xhr) {
-            if (data.login == '1') {
-                showSuccessImage();
-            } else {
-                showFailureImage();
-                showMessage();
-            }
-
-        })
-        .fail(function(xhr, textStatus, errorThrown) {
-            showFailureImage();
-            showMessage();
-        })
-        .always(function(xhr, textStatus) {
-            hideLoadingImage();
-        });
-    }
-
     var handleInventorySync = function (event) {
 
         var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
@@ -908,22 +796,22 @@ echo '</form>';
         var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
 
         var hideLoadingImage = function () {
-            $('span#test-integria-spinner-sync').hide();
+            $('span#ITSM-spinner-sync').hide();
         }
         var showLoadingImage = function () {
-            $('span#test-integria-spinner-sync').show();
+            $('span#ITSM-spinner-sync').show();
         }
         var hideSuccessImage = function () {
-            $('span#test-integria-success-sync').hide();
+            $('span#ITSM-success-sync').hide();
         }
         var showSuccessImage = function () {
-            $('span#test-integria-success-sync').show();
+            $('span#ITSM-success-sync').show();
         }
         var hideFailureImage = function () {
-            $('span#test-integria-failure-sync').hide();
+            $('span#ITSM-failure-sync').hide();
         }
         var showFailureImage = function () {
-            $('span#test-integria-failure-sync').show();
+            $('span#ITSM-failure-sync').show();
         }
 
         hideSuccessImage();
@@ -991,7 +879,11 @@ echo '</form>';
         });
     }
 
-    $('#button-test-integria').click(handleTest);
-    $('#button-sync-inventory').click(handleInventorySync);
+    $('#button-ITSM').click(function() {
+        var pass = $('input#password-integria_pass').val();
+        var host = $('input#text-integria_hostname').val();
+        testConectionApi(pass, host);
+    });
+    //$('#button-sync-inventory').click(handleInventorySync);
 
 </script>

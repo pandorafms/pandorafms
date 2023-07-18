@@ -19,7 +19,7 @@ require_once 'include/functions_incidents.php';
 check_login();
 
 if (!$config['integria_enabled']) {
-    ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
+    ui_print_error_message(__('In order to access ticket management system, integration with ITSM must be enabled and properly configured'));
     return;
 }
 
@@ -113,15 +113,14 @@ foreach ($result as $row) {
     $data = [];
 
     $data[0] = '<a href="index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$row['id_incidencia'].'">'.$row['id_incidencia'].'</a>';
-    $attach = incidents_get_attach($row['id_incidencia']);
-
+    // $attach = incidents_get_attach($row['id_incidencia']);
     if (!empty($attach)) {
         $data[0] .= '&nbsp;&nbsp;'.html_print_image('images/attachment.png', true, ['style' => 'align:middle;']);
     }
 
-    $data[1] = incidents_print_status_img($row['estado'], true);
+    // $data[1] = incidents_print_status_img($row['estado'], true);
     $data[2] = '<a href="index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$row['id_incidencia'].'">'.substr(io_safe_output($row['titulo']), 0, 45).'</a>';
-    $data[3] = incidents_print_priority_img($row['prioridad'], true);
+    // $data[3] = incidents_print_priority_img($row['prioridad'], true);
     $data[4] = $row['id_grupo'];
     $data[5] = ui_print_timestamp($row['actualizacion'], true);
 

@@ -605,11 +605,8 @@ if ($id_agente) {
         $agent_wizard['active'] = false;
     }
 
-
-    $total_incidents = agents_get_count_incidents($id_agente);
-
     // Incident tab.
-    if ($total_incidents > 0) {
+    if ((bool) $config['integria_enabled'] === true) {
         $incidenttab['text'] = html_print_menu_button(
             [
                 'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente,

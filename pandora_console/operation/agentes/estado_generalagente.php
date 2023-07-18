@@ -30,11 +30,9 @@
 global $config;
 
 require_once 'include/functions_agents.php';
-
 require_once $config['homedir'].'/include/functions_graph.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_ui.php';
-require_once $config['homedir'].'/include/functions_incidents.php';
 require_once $config['homedir'].'/include/functions_reporting_html.php';
 
 require_once $config['homedir'].'/include/functions_clippy.php';
@@ -688,44 +686,6 @@ if ((bool) $config['agentaccess'] === true && $access_agent > 0) {
  * END: ACCESS RATE GRAPH
  */
 
-/*
- * START: TABLE INCIDENTS
- */
-
-$last_incident = db_get_row_sql(
-    sprintf(
-        'SELECT * FROM tincidencia
-	     WHERE estado IN (0,1)
-		 AND id_agent = %d
-        ORDER BY actualizacion DESC',
-        $id_agente
-    )
-);
-
-if ($last_incident != false) {
-    $table_incident = new stdClass();
-    $table_incident->id = 'agent_incident_main';
-    $table_incident->width = '100%';
-    $table_incident->cellspacing = 0;
-    $table_incident->cellpadding = 0;
-    $table_incident->class = 'info_table tactical_table';
-
-    $table_incident->head[0] = '<span>'.__('Author').'</span>';
-    $table_incident->head[1] = '<span>'.__('Title').'</span>';
-    $table_incident->head[2] = '<span>'.__('Timestamp').'</span>';
-    $table_incident->head[3] = '<span>'.__('Priority').'</span>';
-
-    $data = [];
-    $data[0] = $last_incident['id_creator'];
-    $data[1] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$last_incident['id_incidencia'].'">'.$last_incident['titulo'].'</a>';
-    $data[2] = $last_incident['inicio'];
-    $data[3] = incidents_print_priority_img($last_incident['prioridad'], true);
-    $table_incident->data[] = $data;
-}
-
-/*
- * END: TABLE INCIDENTS
- */
 
 /*
  * START: TABLE INTERFACES
@@ -1002,19 +962,6 @@ if (empty($agentIncidents) === false) {
         ],
     );
 }
-
-
-
-/*
-    // Show both graphs, events and access rate.
-    if ($table_access_rate) {
-    echo '<div class="agent_access_rate_events agent_details_line">'.$table_access_rate.$table_events.'</div>';
-    } else {
-    echo '<div class="w100p">'.$table_events.'</div>';
-    }
-
-    echo $agent_incidents;
-*/
 
 if (isset($table_interface) === true) {
     ui_toggle(

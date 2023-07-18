@@ -28,6 +28,7 @@ class Manager
         'getUserSelect',
         'getInputFieldsIncidenceType',
         'getDownloadIncidenceAttachment',
+        'checkConncetionApi',
     ];
 
     /**
@@ -145,8 +146,8 @@ class Manager
         $status = [];
         try {
             $ITSM = new ITSM();
-            $groups = $this->getGroups($ITSM);
-            $status = $this->getStatus($ITSM);
+            $groups = $ITSM->getGroups();
+            $status = $ITSM->getStatus();
             if (empty($idIncidence) === false) {
                 $this->deleteIncidence($ITSM, $idIncidence);
                 $successfullyMsg = __('Delete ticket successfully');
@@ -181,13 +182,13 @@ class Manager
         $idIncidence      = \get_parameter('idIncidence', 0);
 
         $error = '';
-        $ITSM = new ITSM();
         try {
-            $objectTypes = $this->getObjectypes($ITSM);
-            $groups = $this->getGroups($ITSM);
-            $priorities = $this->getPriorities($ITSM);
+            $ITSM = new ITSM();
+            $objectTypes = $ITSM->getObjectypes();
+            $groups = $ITSM->getGroups();
+            $priorities = $ITSM->getPriorities();
             $resolutions = $this->getResolutions($ITSM);
-            $status = $this->getStatus($ITSM);
+            $status = $ITSM->getStatus();
 
             if (empty($idIncidence) === false) {
                 $incidenceData = $this->getIncidence($ITSM, $idIncidence);
@@ -329,11 +330,11 @@ class Manager
                 }
 
                 $incidence = $this->getIncidence($ITSM, $idIncidence);
-                $objectTypes = $this->getObjectypes($ITSM);
-                $groups = $this->getGroups($ITSM);
+                $objectTypes = $ITSM->getObjectypes();
+                $groups = $ITSM->getGroups();
                 $resolutions = $this->getResolutions($ITSM);
-                $status = $this->getStatus($ITSM);
-                $priorities = $this->getPriorities($ITSM);
+                $status = $ITSM->getStatus();
+                $priorities = $ITSM->getPriorities();
                 $wus = $this->getIncidenceWus($ITSM, $idIncidence);
                 $files = $this->getIncidenceFiles($ITSM, $idIncidence);
 
@@ -390,9 +391,9 @@ class Manager
         $error = '';
         try {
             $ITSM = new ITSM();
-            $status = $this->getStatus($ITSM);
+            $status = $ITSM->getStatus();
             $incidencesByStatus = $this->getIncidencesGroupedByStatus($ITSM, $status);
-            $priorities = $this->getPriorities($ITSM);
+            $priorities = $ITSM->getPriorities();
             $incidencesByPriorities = $this->getIncidencesGroupedByPriorities($ITSM, $priorities);
             $incidencesByGroups = $this->getIncidencesGroupedByGroups($ITSM);
             $incidencesByOwners = $this->getIncidencesGroupedByOwners($ITSM);
@@ -412,46 +413,6 @@ class Manager
                 'error'                  => $error,
             ]
         );
-    }
-
-
-    /**
-     * Get Incidences types.
-     *
-     * @param ITSM $ITSM Object for callApi.
-     *
-     * @return array Return mode select.
-     */
-    private function getObjectypes(ITSM $ITSM): array
-    {
-        $listObjectTypes = $ITSM->callApi('listObjectTypes');
-        $result = [];
-        foreach ($listObjectTypes['data'] as $objectType) {
-            $result[$objectType['idIncidenceType']] = $objectType['name'];
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * Get Groups.
-     *
-     * @param ITSM $ITSM Object for callApi.
-     *
-     * @return array Return mode select.
-     */
-    private function getGroups(ITSM $ITSM): array
-    {
-        $listGroups = $ITSM->callApi('listGroups');
-        $result = [];
-        foreach ($listGroups['data'] as $group) {
-            if ($group['idGroup'] > 1) {
-                $result[$group['idGroup']] = $group['name'];
-            }
-        }
-
-        return $result;
     }
 
 
@@ -508,39 +469,6 @@ class Manager
             'PUT'
         );
         return $incidence;
-    }
-
-
-    /**
-     * Get Status.
-     *
-     * @param ITSM $ITSM Object for callApi.
-     *
-     * @return array Return mode select.
-     */
-    private function getStatus(ITSM $ITSM): array
-    {
-        $listStatus = $ITSM->callApi('listStatus');
-        $result = [];
-        foreach ($listStatus['data'] as $status) {
-            $result[$status['idIncidenceStatus']] = $status['name'];
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * Get Priorities.
-     *
-     * @param ITSM $ITSM Object for callApi.
-     *
-     * @return array Return mode select.
-     */
-    private function getPriorities(ITSM $ITSM): array
-    {
-        $listPriorities = $ITSM->callApi('listPriorities');
-        return $listPriorities;
     }
 
 
@@ -1016,11 +944,11 @@ class Manager
                 $filters
             );
 
-            $groups = $this->getGroups($ITSM);
+            $groups = $ITSM->getGroups();
             $resolutions = $this->getResolutions($ITSM);
             $resolutions['NOTRESOLVED'] = __('None');
-            $status = $this->getStatus($ITSM);
-            $priorities = $this->getPriorities($ITSM);
+            $status = $ITSM->getStatus();
+            $priorities = $ITSM->getPriorities();
 
             $usersInvolved = [];
             $usersCreators = [];
@@ -1252,6 +1180,29 @@ class Manager
         }
 
         echo $result;
+        exit;
+    }
+
+
+    /**
+     * Ping API, check connection.
+     *
+     * @return void
+     */
+    public function checkConncetionApi()
+    {
+        $pass = (string) get_parameter('pass', '');
+        $host = (string) get_parameter('host', '');
+        try {
+            $ITSM = new ITSM($host, $pass);
+            $result = $ITSM->ping();
+        } catch (Throwable $e) {
+            echo $e->getMessage();
+            $result = false;
+            exit;
+        }
+
+        echo json_encode(['valid' => ($result !== false) ? 1 : 0]);
         exit;
     }
 

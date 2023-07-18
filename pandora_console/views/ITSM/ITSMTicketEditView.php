@@ -177,7 +177,7 @@ $table->data[3][0] = html_print_label_input_block(
 
 $table->data[3][1] = html_print_label_input_block(
     __('Creator').ui_print_help_tip(
-        __('This field corresponds to the Integria IMS user specified in Integria IMS setup'),
+        __('This field corresponds to the ITSM user specified in ITSM setup'),
         true
     ),
     html_print_input_text(

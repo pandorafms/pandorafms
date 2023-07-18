@@ -32,16 +32,19 @@ class ITSM
 
     /**
      * ITSM.
+     *
+     * @param string|null $host Host url.
+     * @param string|null $pass Token.
      */
-    public function __construct()
+    public function __construct(?string $host=null, ?string $pass=null)
     {
         global $config;
         $user_info = \users_get_user_by_id($config['id_user']);
 
         $this->userLevelConf = (bool) $config['integria_user_level_conf'];
-        $this->url = $config['integria_hostname'];
+        $this->url = ($host ?? $config['integria_hostname']);
 
-        $this->userBearer = $config['integria_pass'];
+        $this->userBearer = ($pass ?? $config['integria_pass']);
         if ($this->userLevelConf === true) {
             $this->userBearer = $user_info['integria_user_level_pass'];
         }
@@ -150,6 +153,10 @@ class ITSM
     {
         $path = '';
         switch ($action) {
+            case 'ping':
+                $path = '/ping';
+            break;
+
             case 'listTickets':
                 $path = '/incidence/list';
             break;
@@ -263,6 +270,113 @@ class ITSM
         }
 
         return $path;
+    }
+
+
+    /**
+     * Ping API.
+     *
+     * @return boolean Data incidence
+     */
+    public function ping(): bool
+    {
+        $result = $this->callApi(
+            'ping',
+            [],
+            [],
+            null,
+            'GET'
+        );
+
+        return $result['valid'];
+    }
+
+
+    /**
+     * Get Groups.
+     *
+     * @return array Return mode select.
+     */
+    public function getGroups(): array
+    {
+        $listGroups = $this->callApi('listGroups');
+        $result = [];
+        foreach ($listGroups['data'] as $group) {
+            if ($group['idGroup'] > 1) {
+                $result[$group['idGroup']] = $group['name'];
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Get Priorities.
+     *
+     * @return array Return mode select.
+     */
+    public function getPriorities(): array
+    {
+        $listPriorities = $this->callApi('listPriorities');
+        return $listPriorities;
+    }
+
+
+    /**
+     * Get Status.
+     *
+     * @return array Return mode select.
+     */
+    public function getStatus(): array
+    {
+        $listStatus = $this->callApi('listStatus');
+        $result = [];
+        foreach ($listStatus['data'] as $status) {
+            $result[$status['idIncidenceStatus']] = $status['name'];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Get Incidences types.
+     *
+     * @return array Return mode select.
+     */
+    public function getObjectypes(): array
+    {
+        $listObjectTypes = $this->callApi('listObjectTypes');
+        $result = [];
+        foreach ($listObjectTypes['data'] as $objectType) {
+            $result[$objectType['idIncidenceType']] = $objectType['name'];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Get fields incidence type.
+     *
+     * @param integer $idIncidenceType Incidence Type ID.
+     *
+     * @return array Fields array.
+     */
+    public function getObjecTypesFields(int $idIncidenceType): array
+    {
+        $result = $this->callApi(
+            'incidenceTypeFields',
+            [
+                'page'     => 0,
+                'sizePage' => 0,
+            ],
+            [],
+            $idIncidenceType
+        );
+
+        return $result['data'];
     }
 
 

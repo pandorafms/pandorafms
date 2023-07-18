@@ -392,7 +392,7 @@ if ($access_console_node === true) {
         $sub2['godmode/setup/setup&section=ehorus']['text'] = __('eHorus');
         $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
 
-        $sub2['godmode/setup/setup&section=integria']['text'] = __('Integria IMS');
+        $sub2['godmode/setup/setup&section=integria']['text'] = __('ITSM');
         $sub2['godmode/setup/setup&section=integria']['refr'] = 0;
 
         enterprise_hook('module_library_submenu');

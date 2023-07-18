@@ -308,7 +308,16 @@ if (is_ajax()) {
                             false,
                             'fields',
                             $is_management_allowed,
-                            'width: 100%;'
+                            'width: 100%;',
+                            false,
+                            false,
+                            false,
+                            '',
+                            false,
+                            false,
+                            false,
+                            false,
+                            false
                         );
 
                         $rfield .= html_print_select(
@@ -323,7 +332,16 @@ if (is_ajax()) {
                             false,
                             'fields',
                             $is_management_allowed,
-                            'width: 100%;'
+                            'width: 100%;',
+                            false,
+                            false,
+                            false,
+                            '',
+                            false,
+                            false,
+                            false,
+                            false,
+                            false
                         );
 
                         $ffield .= html_print_input_text('field'.$i.'_value[]', '', '', 10, 10, true, false, false, '', 'datepicker');
@@ -684,9 +702,7 @@ if ($delete_command) {
 
     $result = alerts_delete_alert_command($id);
 
-    $auditMessage = ((bool) $result === true)
-    ? sprintf('Delete alert command #%s', $id)
-    : sprintf('Fail try to delete alert command #%s', $id);
+    $auditMessage = ((bool) $result === true) ? sprintf('Delete alert command #%s', $id) : sprintf('Fail try to delete alert command #%s', $id);
 
     db_pandora_audit(
         AUDIT_LOG_ALERT_MANAGEMENT,

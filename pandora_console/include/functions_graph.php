@@ -4983,19 +4983,18 @@ function graph_monitor_wheel($width=550, $height=600, $filter=false)
     $filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
     if ($filter['group'] != 0) {
-        $filter_subgroups = '';
-        if (!$filter['dont_show_subgroups']) {
-            $filter_subgroups = ' || parent IN ('.$filter['group'].')';
+        if ($filter['dont_show_subgroups'] === false) {
+            $groups = groups_get_children($filter['group']);
+            $groups_ax = [];
+            foreach ($groups as $g) {
+                $groups_ax[$g['id_grupo']] = $g;
+            }
+
+            $groups = $groups_ax;
+        } else {
+            $groups = groups_get_group_by_id($filter['group']);
+            $groups[$group['id_grupo']] = $group;
         }
-
-        $groups = db_get_all_rows_sql('SELECT * FROM tgrupo where id_grupo IN ('.$filter['group'].') '.$filter_subgroups);
-
-        $groups_ax = [];
-        foreach ($groups as $g) {
-            $groups_ax[$g['id_grupo']] = $g;
-        }
-
-        $groups = $groups_ax;
     } else {
         $groups = users_get_groups(false, 'AR', false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
     }

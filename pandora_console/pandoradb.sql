@@ -1226,6 +1226,7 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
   `text` VARCHAR(255) DEFAULT '',
   `description` VARCHAR(255) DEFAULT '',
   `severity` TINYINT UNSIGNED NOT NULL DEFAULT 2,
+  `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_trap`),
   INDEX timestamp (`timestamp`),
   INDEX status (`status`),

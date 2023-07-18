@@ -508,11 +508,11 @@ switch ($action) {
         $buttons = [
             'list_reports' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image(
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image(
                     'images/logs@svg.svg',
                     true,
                     [
-                        'title' => __('Reports list'),
+                        'title' => __('Reports'),
                         'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
@@ -545,7 +545,7 @@ switch ($action) {
 
         // Header.
         ui_print_standard_header(
-            __('List of reports'),
+            __('Reports'),
             'images/op_reporting.png',
             false,
             '',
@@ -1411,6 +1411,7 @@ switch ($action) {
                         ];
 
 
+
                         $report = db_get_row_filter(
                             'treport',
                             ['id_report' => $idReport]
@@ -1520,21 +1521,28 @@ switch ($action) {
                 $good_format = false;
                 switch ($action) {
                     case 'update':
+
                         $values = [];
-                        $server_id = get_parameter('server_id', 0);
-                        if (is_metaconsole() === true
-                            && empty($server_id) === false
-                        ) {
-                            $connection = metaconsole_get_connection_by_id(
-                                $server_id
-                            );
-                            metaconsole_connect($connection);
-                            $values['server_name'] = $connection['server_name'];
+                        $values['type'] = get_parameter('type', null);
+                        if (is_metaconsole() === true && $values['type'] === 'inventory') {
+                            $values['server_name'] = get_parameter('combo_server');
+                        } else {
+                            $server_id = get_parameter('server_id', 0);
+                            if (is_metaconsole() === true
+                                && empty($server_id) === false
+                            ) {
+                                $connection = metaconsole_get_connection_by_id(
+                                    $server_id
+                                );
+                                metaconsole_connect($connection);
+                                $values['server_name'] = $connection['server_name'];
+                            }
                         }
+
 
                         $values['id_report'] = $idReport;
                         $values['description'] = get_parameter('description');
-                        $values['type'] = get_parameter('type', null);
+
                         $values['recursion'] = get_parameter('recursion', null);
                         $values['show_extended_events'] = get_parameter(
                             'include_extended_events',
@@ -1610,6 +1618,27 @@ switch ($action) {
 
                                 $values['external_source'] = json_encode($es);
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'event_report_log_table':
+                                $agents_to_report = get_parameter('id_agents3');
+                                $source = get_parameter('source', '');
+                                $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
+                                $log_number = get_parameter('log_number', '');
+
+                                $es['source'] = $source;
+                                $es['id_agents'] = $agents_to_report;
+                                $es['search'] = $search;
+                                $es['full_text'] = $full_text;
+                                $es['log_number'] = $log_number;
+
+                                $values['external_source'] = json_encode($es);
+                                $values['period'] = get_parameter('period');
+                                $values['period_range'] = get_parameter('period_range');
+                                $values['show_graph'] = get_parameter('combo_graph_options');
+                                $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 
@@ -1757,9 +1786,14 @@ switch ($action) {
                                     'inventory_modules'
                                 );
                                 $es['inventory_regular_expression'] = get_parameter('inventory_regular_expression', '');
+                                if (is_metaconsole() === true) {
+                                    $es['inventory_server'] = get_parameter('combo_server');
+                                }
+
                                 $description = get_parameter('description');
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
+
                             break;
 
                             case 'inventory_changes':
@@ -2210,15 +2244,7 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
-
-                            if ($values['type'] === 'sql_graph_hbar'
-                                || ($values['type'] === 'sql_graph_vbar')
-                                || ($values['type'] === 'sql_graph_pie')
-                            ) {
-                                $values['server_name'] = get_parameter('combo_server_sql');
-                            } else {
-                                $values['server_name'] = get_parameter('combo_server');
-                            }
+                            $values['server_name'] = get_parameter('combo_server_sql');
 
                             if ($sql !== '') {
                                 if ($values['server_name'] === 'all') {
@@ -2579,6 +2605,7 @@ switch ($action) {
                                 $es['inventory_regular_expression'] = get_parameter('inventory_regular_expression', '');
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
+
                             break;
 
                             case 'event_report_log':
@@ -2596,6 +2623,27 @@ switch ($action) {
 
                                 $values['external_source'] = json_encode($es);
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'event_report_log_table':
+                                $agents_to_report = get_parameter('id_agents3');
+                                $source = get_parameter('source', '');
+                                $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
+                                $log_number = get_parameter('log_number', '');
+
+                                $es['source'] = $source;
+                                $es['id_agents'] = $agents_to_report;
+                                $es['search'] = $search;
+                                $es['full_text'] = $full_text;
+                                $es['log_number'] = $log_number;
+
+                                $values['external_source'] = json_encode($es);
+                                $values['period'] = get_parameter('period');
+                                $values['period_range'] = get_parameter('period_range');
+                                $values['show_graph'] = get_parameter('combo_graph_options');
+                                $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 
@@ -2986,15 +3034,8 @@ switch ($action) {
                                 'historical_db_check'
                             );
                             $values['top_n_value'] = get_parameter('max_items');
+                            $values['server_name'] = get_parameter('combo_server_sql');
 
-                            if ($values['type'] === 'sql_graph_hbar'
-                                || ($values['type'] === 'sql_graph_vbar')
-                                || ($values['type'] === 'sql_graph_pie')
-                            ) {
-                                $values['server_name'] = get_parameter('combo_server_sql');
-                            } else {
-                                $values['server_name'] = get_parameter('combo_server');
-                            }
 
                             if ($sql !== '') {
                                 if ($values['server_name'] === 'all') {
@@ -3637,7 +3678,7 @@ switch ($action) {
             $buttons = [
                 'list_reports' => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Reports list'), 'class' => 'invert_filter main_menu_icon']).'</a>',
+                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Reports'), 'class' => 'invert_filter main_menu_icon']).'</a>',
                 ],
             ];
 
@@ -3704,7 +3745,7 @@ $buttons = [
             'images/report_list.png',
             true,
             [
-                'title' => __('Reports list'),
+                'title' => __('Reports'),
                 'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
@@ -3752,12 +3793,13 @@ if ($idReport != 0) {
     $buttons = [
         'main' => [
             'active' => true,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image('images/report_list.png', true, ['title' => __('Reports'), 'class' => 'main_menu_icon invert_filter']).'</a>',
         ],
     ];
     $textReportName = __('Create Custom Report');
 }
 
+// here1
 $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
 if (is_metaconsole() === true || $action !== 'update') {

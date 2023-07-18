@@ -67,6 +67,7 @@ if (is_ajax()) {
     $agents_inserted = get_parameter('agents_inserted', []);
     $id_group = (int) get_parameter('id_group');
     $pendingdelete = (bool) get_parameter('pendingdelete');
+    $get_node_agent = (bool) get_parameter('get_node_agent', false);
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -483,6 +484,7 @@ if (is_ajax()) {
         $status_modulo = (int) get_parameter('status_module', -1);
         $id_group_selected = (int) get_parameter('id_group', 0);
         $metaconsole_server_name = null;
+        $exclude_policy_modules = (bool) get_parameter('exclude_policy_modules', false);
         if (!empty($id_server)) {
             $metaconsole_server_name = db_get_value(
                 'server_name',
@@ -767,6 +769,10 @@ if (is_ajax()) {
                 }
             }
 
+            if ($exclude_policy_modules === true) {
+                $sql .= ' AND t1.id_policy_module = 0 AND t1.policy_linked = 0';
+            }
+
             $sql .= ' ORDER BY nombre';
             $nameModules = db_get_all_rows_sql($sql);
             if ($tags != null) {
@@ -835,6 +841,8 @@ if (is_ajax()) {
         $safe_name = (bool) get_parameter('safe_name', false);
 
         $truncate_module_names = (bool) get_parameter('truncate_module_names');
+
+        $exclude_policy_modules = (bool) get_parameter('exclude_policy_modules', false);
 
         // Filter.
         $filter = [];
@@ -927,9 +935,19 @@ if (is_ajax()) {
             $filter['ttag_module.id_tag IN '] = '('.implode(',', $tags).')';
         }
 
+        if ($exclude_policy_modules === true) {
+            $filter['id_policy_module'] = 0;
+            $filter['policy_linked'] = 0;
+        }
+
         if (is_metaconsole() && !$force_local_modules) {
             if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+                if (empty($server_name)) {
+                    $server_name = explode(' ', io_safe_output($agentName))[0];
+                }
+
                 $connection = metaconsole_get_connection($server_name);
+
                 if ($server_id > 0) {
                     $connection = metaconsole_get_connection_by_id($server_id);
                 }
@@ -1297,10 +1315,23 @@ if (is_ajax()) {
         return;
     }
 
+    if ($get_node_agent === true) {
+        $id = get_parameter('id', 0);
+        if (empty($id) === false) {
+            $result = db_get_value_sql(
+                'SELECT id_tmetaconsole_setup FROM tmetaconsole_agent WHERE id_agente = '.$id
+            );
+
+            echo json_encode($result);
+            return;
+        }
+    }
+
     return;
 }
 
 $id_agente = (int) get_parameter('id_agente', 0);
+
 if (empty($id_agente)) {
     return;
 }

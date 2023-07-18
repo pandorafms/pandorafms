@@ -17,6 +17,8 @@ $save_custom_graph = (bool) get_parameter('save_custom_graph');
 $print_custom_graph = (bool) get_parameter('print_custom_graph', false);
 $print_sparse_graph = (bool) get_parameter('print_sparse_graph');
 $get_graphs = (bool) get_parameter('get_graphs_container');
+$width = get_parameter('width', 0);
+$height = get_parameter('height', 0);
 
 if ($save_custom_graph) {
     $return = [];
@@ -25,8 +27,6 @@ if ($save_custom_graph) {
     $name = get_parameter('name', '');
     $description = get_parameter('description', '');
     $stacked = get_parameter('stacked', CUSTOM_GRAPH_LINE);
-    $width = get_parameter('width', 0);
-    $height = get_parameter('height', 0);
     $events = get_parameter('events', 0);
     $period = get_parameter('period', 0);
     $fullscale = get_parameter('fullscale', 0);
@@ -126,6 +126,8 @@ if ($print_sparse_graph) {
         'force_interval'      => '',
         'time_interval'       => 300,
         'array_data_create'   => 0,
+        'height'              => $height,
+        'width'               => $width,
     ];
 
     echo grafico_modulo_sparse($params);

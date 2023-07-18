@@ -609,9 +609,9 @@ $infoHeadTitle = '';
                             opacity: 0.5,
                             background: "black"
                         },
-                        width: 650,
+                        width: "auto",
                         height: 500
-                    })
+                    }).css({"min-width": "650px"})
                     .show ();
                     refresh_pagination_callback(module_id, id_agent, server_name, module_name);
                     datetime_picker_callback();

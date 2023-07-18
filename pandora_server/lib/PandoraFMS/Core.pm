@@ -3,7 +3,7 @@ package PandoraFMS::Core;
 # Core Pandora FMS functions.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2022 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -1561,8 +1561,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "get";
 		$params->{"op2"} = "module_graph";
 		$params->{"id"} = $module->{'id_agente_modulo'};
@@ -1707,8 +1706,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "set";
 		$params->{"op2"} = "send_report";
 		$params->{"other_mode"} = "url_encode_separator_|;|";
@@ -1739,8 +1737,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		my $params = {};
 		$params->{"apipass"} = $pa_config->{"console_api_pass"};
-		$params->{"user"} ||= $pa_config->{"console_user"};
-		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"server_auth"} = $pa_config->{"server_unique_identifier"};
 		$params->{"op"} = "set";
 		$params->{"op2"} = "send_report";
 		$params->{"other_mode"} = "url_encode_separator_|;|";
@@ -4867,9 +4864,10 @@ sub on_demand_macro($$$$$$;$) {
 
 		return '';
 	} elsif ($macro eq '_moduletags_') {
-		return (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+		return (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_policy_') {
-		return (defined ($alert)) ? enterprise_hook('get_policy_name_policy_alerts_id', [$dbh, $alert->{'id_policy_alerts'}]) : '';
+		my $policy_name = get_db_value($dbh, 'SELECT p.name FROM tpolicy_modules AS pm, tpolicies AS p WHERE pm.id_policy = p.id AND pm.id = ?;', $module->{'id_policy_module'});
+		return (defined ($policy_name)) ? $policy_name  : '';
 	} elsif ($macro eq '_email_tag_') {
 		return (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_phone_tag_') {
@@ -7843,7 +7841,7 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2023 Pandora FMS
 
 =cut
 

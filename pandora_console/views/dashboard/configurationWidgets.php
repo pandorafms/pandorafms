@@ -57,7 +57,14 @@ HTML::printForm(
 );
 
 $output .= '<script>';
-$output .= 'dashboardInitTinyMce("'.ui_get_full_url(false, false, false, false).'")';
+$output .= 'tinymce.init({
+                selector: "#textarea_text",
+                setup : function(ed) {
+                    ed.onChange.add(function(e) {
+                        tinyMCE.triggerSave();
+                        console.log($("#textarea_text").val());
+                    });
+              }
+            });';
 $output .= '</script>';
-
 echo $output;

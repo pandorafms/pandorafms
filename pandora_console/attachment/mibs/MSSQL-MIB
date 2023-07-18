@@ -1,0 +1,837 @@
+  
+MSSQLSERVER-MIB DEFINITIONS ::= BEGIN
+
+  IMPORTS
+        enterprises
+                FROM RFC1155-SMI
+        OBJECT-TYPE
+                FROM RFC-1212
+        DisplayString
+                FROM RFC-1213;
+
+  microsoft          OBJECT IDENTIFIER ::= { enterprises 311 }
+  software           OBJECT IDENTIFIER ::= { microsoft 1 }
+  apps               OBJECT IDENTIFIER ::= { software 4 }
+  mssqlServer        OBJECT IDENTIFIER ::= { apps 1 }
+  mssqlServerObjects OBJECT IDENTIFIER ::= { mssqlServer 1 }
+
+      -- sqlserver MIB
+                
+  mssqlSrvTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MssqlSrvEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+           "This table contains a single row for the SQL Server
+           installed on the system."          
+      ::= { mssqlServerObjects 1 }
+
+  mssqlSrvEntry OBJECT-TYPE
+      SYNTAX MssqlSrvEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+           "mssqlSrvTable entries."                
+      INDEX  { mssqlSrvVendorName }
+      ::= { mssqlSrvTable 1 }
+
+  MssqlSrvEntry ::=
+      SEQUENCE {
+          mssqlSrvVendorName   
+              DisplayString,
+          mssqlSrvProductName  
+              DisplayString,
+          mssqlSrvVersion      
+              DisplayString,
+          mssqlSrvContact      
+              DisplayString,
+          mssqlSrvState        
+              INTEGER
+      }
+
+  mssqlSrvVendorName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The name of the database server vendor."                
+      ::= { mssqlSrvEntry 1 }
+
+  mssqlSrvProductName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The product name of the database server."                
+      ::= { mssqlSrvEntry 2 }
+
+  mssqlSrvVersion OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The version of installed SQL Server."                
+      ::= { mssqlSrvEntry 3 }
+
+  mssqlSrvContact OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "Contact person for this SQL Server installation."                
+      ::= { mssqlSrvEntry 4 }
+
+  mssqlSrvState OBJECT-TYPE
+      SYNTAX INTEGER {
+                 running(1),   
+                 paused(2),
+                 stopped(3),
+                 starting(4),
+                 stopping(5),
+                 continuing(6),
+                 pausing(7)
+             }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The state of SQL Server.  Unknown(1) means we are
+            unable to determine the state of the server, Running(2)
+            means the server is available and can be used, Paused(3)
+            means the server is running, but new connections cannot
+            currently be established, and Stopped(4) means the server
+            is not running and unavailable."                
+      ::= { mssqlSrvEntry 5 }
+
+  ----------------------------------------------------------------
+
+  mssqlSrvInfoTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MssqlSrvInfoEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+           "This table contains general information regarding
+            the active SQL Server process, including performance
+            counters."                
+      ::= { mssqlServerObjects 2 }
+
+  mssqlSrvInfoEntry OBJECT-TYPE
+      SYNTAX MssqlSrvInfoEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+           "mssqlSrvInfoTable entries."                      
+      INDEX  { mssqlSrvInfoServerName }
+      ::= { mssqlSrvInfoTable 1 }
+
+  MssqlSrvInfoEntry ::=
+      SEQUENCE {
+          mssqlSrvInfoServerName          
+              DisplayString,
+          mssqlSrvInfoStartupTime         
+              DisplayString,
+          mssqlSrvInfoTrans               
+              Gauge,
+          mssqlSrvInfoPageReads           
+              Counter,
+          mssqlSrvInfoSinglePageWrites    
+              Counter,
+          mssqlSrvInfoBatchWrites         
+              Counter,
+          mssqlSrvInfoLazyWrites          
+              Counter,
+          mssqlSrvInfoLogWrites           
+              Counter,
+          mssqlSrvInfoOutstandingReads
+              Counter,
+          mssqlSrvInfoOutstandingWrites
+              Counter,
+          mssqlSrvInfoCacheHitRatio       
+              Gauge,
+          mssqlSrvInfoFreeBuffers         
+              Gauge,
+          mssqlSrvInfoNetworkReads        
+              Counter,
+          mssqlSrvInfoNetworkWrites       
+              Counter,
+          mssqlSrvInfoRAPhysicalReads        
+              Counter,
+          mssqlSrvInfoUserConnections     
+              Gauge,
+          mssqlSrvInfoTotalLocks          
+              Gauge,
+          mssqlSrvInfoTotalBlockingLocks  
+              Gauge,
+          mssqlSrvInfoUsersBlocked        
+              Gauge
+      }
+
+  mssqlSrvInfoServerName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The name of the local SQL Server."                      
+      ::= { mssqlSrvInfoEntry 1 }
+
+  mssqlSrvInfoStartupTime OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The date and time at which the current running
+            SQL Server process was last started."                      
+      ::= { mssqlSrvInfoEntry 2 }
+
+  mssqlSrvInfoTrans OBJECT-TYPE
+      SYNTAX Gauge
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of command batches completed since
+            SQL Server was last started."                      
+      ::= { mssqlSrvInfoEntry 3 }
+
+  mssqlSrvInfoPageReads OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of physical page reads completed
+            since SQL Server was started."                      
+      ::= { mssqlSrvInfoEntry 4 }
+
+  mssqlSrvInfoSinglePageWrites OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of single page writes completed
+            since the SQL Server was started (does not
+            include log writes, cache flushes (Lazy Writer),
+            or batch writes)."                      
+      ::= { mssqlSrvInfoEntry 5 }
+
+  mssqlSrvInfoBatchWrites OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of pages written to disk using batch
+            I/O since SQL Server was started."                      
+      ::= { mssqlSrvInfoEntry 6 }
+
+  mssqlSrvInfoLazyWrites OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of pages flushed to disk by the
+            Lazy Writer since SQL Server was started."                      
+      ::= { mssqlSrvInfoEntry 7 }
+
+  mssqlSrvInfoLogWrites OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of log pages physically written
+            to disk since SQL Server was started."                      
+      ::= { mssqlSrvInfoEntry 8 }
+
+  mssqlSrvInfoOutstandingReads OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of physical reads pending."                      
+      ::= { mssqlSrvInfoEntry 9 }
+
+  mssqlSrvInfoOutstandingWrites OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of physical writes pending."                      
+      ::= { mssqlSrvInfoEntry 10 }
+
+  mssqlSrvInfoCacheHitRatio OBJECT-TYPE
+      SYNTAX Gauge
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The percentage of time that a requested data
+            page was found in the data cache (instead of
+            being read from disk)."                      
+      ::= { mssqlSrvInfoEntry 11 }
+
+  mssqlSrvInfoFreeBuffers OBJECT-TYPE
+      SYNTAX Gauge
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of data cache buffers currently
+            in the free pool."                      
+      ::= { mssqlSrvInfoEntry 12 }
+
+  mssqlSrvInfoNetworkReads OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of tabular data stream (TDS) packets read
+            from the network since SQL Server was started."                      
+      ::= { mssqlSrvInfoEntry 13 }
+
+  mssqlSrvInfoNetworkWrites OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of tabular data stream (TDS) packets written
+            to the network since SQL Server was started."                      
+      ::= { mssqlSrvInfoEntry 14 }
+
+  mssqlSrvInfoRAPhysicalReads OBJECT-TYPE
+      SYNTAX Counter
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "Physical reads (each consisting of 8 - 2K pages) issued by
+            Read Ahead Manager since SQL Server was started."                      
+      ::= { mssqlSrvInfoEntry 15 }
+
+  mssqlSrvInfoUserConnections OBJECT-TYPE
+      SYNTAX Gauge
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of open user connections."                      
+      ::= { mssqlSrvInfoEntry 16 }
+
+  mssqlSrvInfoTotalLocks OBJECT-TYPE
+      SYNTAX Gauge
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "A count of all locks being used by SQL Server."                      
+      ::= { mssqlSrvInfoEntry 17 }
+
+  mssqlSrvInfoTotalBlockingLocks OBJECT-TYPE
+      SYNTAX Gauge
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "A count of all locks blocking other processes."                      
+      ::= { mssqlSrvInfoEntry 18 }
+
+  mssqlSrvInfoUsersBlocked OBJECT-TYPE
+      SYNTAX Gauge
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The number of users blocked by other users."                      
+      ::= { mssqlSrvInfoEntry 19 }
+
+  ----------------------------------------------------------------
+
+  mssqlSrvConfigParamTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MssqlSrvConfigParamEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+           "This table contains entries for the SQL Server
+            configuration parameters."                      
+      ::= { mssqlServerObjects 3 }
+
+  mssqlSrvConfigParamEntry OBJECT-TYPE
+      SYNTAX MssqlSrvConfigParamEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+           "mssqlSrvConfigParamTable entries.  The SQL Server configuration
+		    parameter name is used as the index value."                      
+      INDEX  { OCTET STRING }
+      ::= { mssqlSrvConfigParamTable 1 }
+
+  MssqlSrvConfigParamEntry ::=
+      SEQUENCE {
+          mssqlSrvConfigParamName     
+              DisplayString,
+          mssqlSrvConfigParamMax      
+              INTEGER,
+          mssqlSrvConfigParamMin      
+              INTEGER,
+          mssqlSrvConfigParamConfigValue  
+              INTEGER,
+          mssqlSrvConfigParamRunValue     
+              INTEGER
+      }
+
+  mssqlSrvConfigParamName OBJECT-TYPE
+      SYNTAX DisplayString 
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "Name of SQL Server configuration parameter."                      
+      ::= { mssqlSrvConfigParamEntry 1 }
+
+  mssqlSrvConfigParamMax OBJECT-TYPE
+      SYNTAX INTEGER
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The maximum configurable value for the associated
+            SQL Server configuration parameter."                      
+      ::= { mssqlSrvConfigParamEntry 2 }
+
+  mssqlSrvConfigParamMin OBJECT-TYPE
+      SYNTAX INTEGER
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The minimum configurable value for the associated
+            SQL Server configuration parameter."                      
+      ::= { mssqlSrvConfigParamEntry 3 }
+
+  mssqlSrvConfigParamConfigValue OBJECT-TYPE
+      SYNTAX INTEGER
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The current configured value for the associated
+            SQL Server configuration parameter."                      
+      ::= { mssqlSrvConfigParamEntry 4 }
+
+  mssqlSrvConfigParamRunValue OBJECT-TYPE
+      SYNTAX INTEGER
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The current run value for the associated
+            SQL Server configuration parameter."                      
+      ::= { mssqlSrvConfigParamEntry 5 }
+
+  ----------------------------------------------------------------
+
+  mssqlSrvDeviceTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MssqlSrvDeviceEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+           "This table contains entries for each SQL Server
+            device on the system."                      
+      ::= { mssqlServerObjects 4 }
+
+  mssqlSrvDeviceEntry OBJECT-TYPE
+      SYNTAX MssqlSrvDeviceEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+           "mssqlSrvDeviceTable entries."                      
+      INDEX  { mssqlSrvDeviceLogicalName }
+      ::= { mssqlSrvDeviceTable 1 }
+
+  MssqlSrvDeviceEntry ::=
+      SEQUENCE {
+          mssqlSrvDeviceLogicalName      
+              DisplayString,
+          mssqlSrvDevicePhysicalName     
+              DisplayString,
+          mssqlSrvDeviceDescription      
+              DisplayString
+      }
+
+  mssqlSrvDeviceLogicalName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The logical name of the defined database or dump device."                      
+      ::= { mssqlSrvDeviceEntry  1 }
+
+  mssqlSrvDevicePhysicalName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The physical name including the file system path and file name."                      
+      ::= { mssqlSrvDeviceEntry  2 }
+
+  mssqlSrvDeviceDescription OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "Detailed description of the device including the type of
+            device, size, and the media type."                      
+      ::= { mssqlSrvDeviceEntry  3 }
+
+----------------------------------------------------------------
+
+  mssqlDbTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MssqlDbEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+          "This table contains a list of SQL Server databases.  The
+           table contains a single row for each database (whether
+           the database is actually accessible or not)."
+      ::= { mssqlServerObjects 5 }
+
+  mssqlDbEntry OBJECT-TYPE
+      SYNTAX MssqlDbEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+          "mssqlDbTable entries."
+      INDEX  { mssqlDbId, mssqlDbState }
+      ::= { mssqlDbTable 1 }
+
+  MssqlDbEntry ::=
+      SEQUENCE {
+          mssqlDbId            
+              INTEGER,
+          mssqlDbName          
+              DisplayString,
+          mssqlDbState         
+              INTEGER
+      }
+
+  mssqlDbId OBJECT-TYPE
+      SYNTAX INTEGER (1..2147483647)
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+          "The dbid of the database."
+      ::= { mssqlDbEntry 1 }
+
+  mssqlDbName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+          "The name of the database."
+      ::= { mssqlDbEntry 2 }
+
+  mssqlDbState OBJECT-TYPE
+      SYNTAX INTEGER {
+                 active(1),
+                 singleUser(2),
+                 dboonly(3),
+                 readOnly(4),
+                 offline(5),
+                 suspect(6),
+                 loading(7),
+                 publishing(8)
+             }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+          "The state of the database.  Valid states are defined as follows:
+           Active(1), Single User(2), DBO Only(3), Read Only(4), Offline(5),
+           Suspect(6), Loading(7), and Publishing(8)."
+      ::= { mssqlDbEntry 3 }
+
+  ----------------------------------------------------------------
+
+  mssqlDbInfoTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MssqlDbInfoEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+          "This table contains detailed information about SQL Server
+           databases.  In order for this table to be populated, the
+           database must be accessible (as determined by checking
+           mssqlDbState)."           
+      ::= { mssqlServerObjects 6 }
+
+  mssqlDbInfoEntry OBJECT-TYPE
+      SYNTAX MssqlDbInfoEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+          "mssqlDbInfoTable entries."      
+      INDEX  { mssqlDbInfoDbId }
+      ::= { mssqlDbInfoTable 1 }
+
+  MssqlDbInfoEntry ::=
+      SEQUENCE {
+          mssqlDbInfoDbId             
+              INTEGER,
+          mssqlDbInfoDbName       
+              DisplayString,
+          mssqlDbInfoCreationDateTime 
+              DisplayString,
+          mssqlDbInfoOwner            
+              DisplayString,
+          mssqlDbInfoSize         
+              INTEGER,
+          mssqlDbInfoUnallocatedSpace 
+              INTEGER,
+          mssqlDbInfoReservedSpace    
+              INTEGER,
+          mssqlDbInfoDataSpace        
+              INTEGER,
+          mssqlDbInfoIndexSpace       
+              INTEGER,
+          mssqlDbInfoUnusedSpace      
+              INTEGER,        
+          mssqlDbInfoLastTrLogDump
+              DisplayString,
+          mssqlDbInfoLogSize          
+              INTEGER,
+          mssqlDbInfoLogSpaceUsed     
+              INTEGER
+      }
+
+  mssqlDbInfoDbId OBJECT-TYPE
+      SYNTAX INTEGER
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The dbid of the database associated with this row."
+      ::= { mssqlDbInfoEntry 1 }
+
+  mssqlDbInfoDbName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The name of the database associated with this row."
+      ::= { mssqlDbInfoEntry 2 }
+
+  mssqlDbInfoCreationDateTime OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The date and time that the database associated with
+            this row was created."
+      ::= { mssqlDbInfoEntry 3 }
+
+  mssqlDbInfoOwner OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The owner of the database associated with this row."
+      ::= { mssqlDbInfoEntry 4 }
+
+  mssqlDbInfoSize OBJECT-TYPE
+      SYNTAX INTEGER (1..2147483647)
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The size in KB of the database associated with this row."
+      ::= { mssqlDbInfoEntry 5 }
+
+  mssqlDbInfoUnallocatedSpace OBJECT-TYPE
+      SYNTAX INTEGER (1..2147483647)
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+           "The unallocated space in KB of the database associated
+            with this row."
+      ::= { mssqlDbInfoEntry 6 }
+
+  mssqlDbInfoReservedSpace OBJECT-TYPE
+       SYNTAX INTEGER (1..2147483647)
+       ACCESS read-only
+       STATUS mandatory
+       DESCRIPTION
+           "The reserved space in KB of the database associated with
+            this row."
+       ::= { mssqlDbInfoEntry 7 }
+
+  mssqlDbInfoDataSpace OBJECT-TYPE
+       SYNTAX INTEGER (1..2147483647)
+       ACCESS read-only
+       STATUS mandatory
+       DESCRIPTION
+           "The used data space in KB of the database associated
+            with this row."
+       ::= { mssqlDbInfoEntry 8 }
+
+  mssqlDbInfoIndexSpace OBJECT-TYPE
+       SYNTAX INTEGER (1..2147483647)
+       ACCESS read-only
+       STATUS mandatory
+       DESCRIPTION
+               "The used index space in KB of the database associated
+                with this row."
+       ::= { mssqlDbInfoEntry 9 }
+
+  mssqlDbInfoUnusedSpace OBJECT-TYPE
+       SYNTAX INTEGER (1..2147483647)
+       ACCESS read-only
+       STATUS mandatory
+       DESCRIPTION
+               "The unused space in KB of the database associated
+                with this row."
+       ::= { mssqlDbInfoEntry 10 }
+
+  mssqlDbInfoLastTrLogDump OBJECT-TYPE
+       SYNTAX DisplayString
+       ACCESS read-only
+       STATUS mandatory
+       DESCRIPTION
+               "The date and time that the latest transaction log dump
+                for this database was taken."
+       ::= { mssqlDbInfoEntry 11 }
+
+  mssqlDbInfoLogSize OBJECT-TYPE
+       SYNTAX INTEGER (1..2147483647)
+       ACCESS read-only
+       STATUS mandatory
+       DESCRIPTION
+               "The size in KB of the transaction log for the database
+                associated with this row."
+       ::= { mssqlDbInfoEntry 12 }
+
+  mssqlDbInfoLogSpaceUsed OBJECT-TYPE
+       SYNTAX INTEGER (1..2147483647)
+       ACCESS read-only
+       STATUS mandatory
+       DESCRIPTION
+               "The percentage of transaction log space for the
+                database associated with this row."
+       ::= { mssqlDbInfoEntry 13 }
+
+  ----------------------------------------------------------------
+
+  mssqlDbOptionTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MssqlDbOptionEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+               "This table contains the list of possible database
+                options and indicates which are set for a given dastabase."
+      ::= { mssqlServerObjects 7 }
+
+  mssqlDbOptionEntry OBJECT-TYPE
+      SYNTAX MssqlDbOptionEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+               "mssqlDbOptionTable entries.  The dbid of the database
+			   is used as the index value associated with this row."      
+      INDEX  { mssqlDbOptionDbId, INTEGER }
+      ::= { mssqlDbOptionTable 1 }
+
+  MssqlDbOptionEntry ::=
+      SEQUENCE {
+          mssqlDbOptionDbId        
+              INTEGER,
+          mssqlDbOptionDbName      
+              DisplayString,
+          mssqlDbOptionSetName     
+              DisplayString          
+      }
+
+  mssqlDbOptionDbId OBJECT-TYPE
+      SYNTAX INTEGER (1..2147483647)
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+              "The dbid of the database associated with this row."      
+      ::= { mssqlDbOptionEntry 1 }
+
+  mssqlDbOptionDbName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+              "The name of the database associated with this row."      
+      ::= { mssqlDbOptionEntry 2 }
+
+  mssqlDbOptionSetName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+              "The name of the database option that is set for
+               the database associated with this row."      
+      ::= { mssqlDbOptionEntry 3 }
+ 
+ ----------------------------------------------------------------
+
+  mssqlDbDeviceTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MssqlDbDeviceEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+              "This table contains entries for each device fragment
+               on which a particular SQL Server database has been
+               created or altered."      
+      ::= { mssqlServerObjects 8 }
+
+  mssqlDbDeviceEntry OBJECT-TYPE
+      SYNTAX MssqlDbDeviceEntry
+      ACCESS not-accessible
+      STATUS mandatory
+      DESCRIPTION
+              "mssqlDbDeviceTable entries.  The dbid of the database
+			   is used as index value associated with this row."          
+      INDEX  { mssqlDbDeviceDbId, INTEGER }
+    ::= { mssqlDbDeviceTable 1 }
+
+  MssqlDbDeviceEntry ::=
+      SEQUENCE {
+          mssqlDbDeviceDbId                   
+              INTEGER,          
+          mssqlDbDeviceDbName                 
+              DisplayString,          
+          mssqlDbDeviceFragmentName           
+              DisplayString,                    
+          mssqlDbDeviceFragmentSize       
+              INTEGER,
+          mssqlDbDeviceFragmentUsage          
+              DisplayString
+      }
+
+  mssqlDbDeviceDbId OBJECT-TYPE
+      SYNTAX INTEGER
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+              "The dbid of the database associated with this row."          
+      ::= { mssqlDbDeviceEntry  1 }
+
+  mssqlDbDeviceDbName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+              "The name of the database associated with this row."          
+      ::= { mssqlDbDeviceEntry 2 }
+
+  mssqlDbDeviceFragmentName OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+              "The name of a device fragment on which the database
+               has been created or altered."          
+      ::= { mssqlDbDeviceEntry  3 }
+
+  mssqlDbDeviceFragmentSize OBJECT-TYPE
+      SYNTAX INTEGER (1..2147483647)
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+              "The size in KB of the device fragment on which the
+               database has been created or altered."          
+      ::= { mssqlDbDeviceEntry  4 }
+
+  mssqlDbDeviceFragmentUsage OBJECT-TYPE
+      SYNTAX DisplayString
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+              "Indicates if the device fragment contains data,
+               log, or data and log."          
+      ::= { mssqlDbDeviceEntry  5 }
+
+----------------------------------------------------------------
+
+END

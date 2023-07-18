@@ -43,8 +43,8 @@ if (isset($config) === false) {
 		<meta http-equiv="content-type" content="text/html; charset=utf8">
 		<meta name="resource-type" content="document">
 		<meta name="distribution" content="global">
-		<meta name="author" content="Artica ST">
-		<meta name="copyright" content="(c) Artica ST">
+		<meta name="author" content="Pandora FMS">
+		<meta name="copyright" content="(c) Pandora FMS">
 		<meta name="robots" content="index, follow">
 		<link rel="icon" href="../../images/pandora.ico" type="image/ico">
 		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
@@ -813,10 +813,6 @@ function update_user(string $id_user, array $values)
             HOME_SCREEN_OTHER          => __('Other'),
             HOME_SCREEN_DASHBOARD      => __('Dashboard'),
         ];
-
-        if (array_key_exists($values['section'], $homeScreenValues) === true) {
-            $values['section'] = $homeScreenValues[$values['section']];
-        }
 
         if (is_metaconsole() === true) {
             $values['metaconsole_section'] = $values['section'];

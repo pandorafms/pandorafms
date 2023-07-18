@@ -547,7 +547,8 @@ table.filter-table-adv td {
 }
 
 div.filter-table-adv-manual > div,
-table.filter-table-adv td > div {
+table.filter-table-adv td > div,
+table.filter-table-adv td > div.ec2_instance_metrics > div {
   display: flex;
   flex-direction: column;
   justify-content: center;

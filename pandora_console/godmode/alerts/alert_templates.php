@@ -287,6 +287,7 @@ $url = ui_get_url_refresh(
         'offset'        => false,
         'search_string' => $search_string,
         'search_type'   => $search_type,
+        'alert_flag'    => true,
     ],
     true,
     false

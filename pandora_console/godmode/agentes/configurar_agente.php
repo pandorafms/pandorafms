@@ -460,6 +460,18 @@ if ($id_agente) {
 
     $templatetab['active'] = ($tab === 'template');
 
+     // Policy tab.
+    $policyTab['text'] = html_print_menu_button(
+        [
+            'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=policy&amp;id_agente='.$id_agente,
+            'image' => 'images/policy@svg.svg',
+            'title' => __('Manage policy'),
+        ],
+        true
+    );
+
+    $policyTab['active'] = ($tab === 'policy');
+
     // Inventory.
     $inventorytab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
         'images/hardware-software-component@svg.svg',
@@ -638,6 +650,7 @@ if ($id_agente) {
                 'template'             => $templatetab,
                 'inventory'            => $inventorytab,
                 'pluginstab'           => $pluginstab,
+                'policy'               => (enterprise_installed() === true) ? $policyTab : '',
                 'collection'           => $collectiontab,
                 'group'                => $grouptab,
                 'gis'                  => $gistab,
@@ -654,11 +667,11 @@ if ($id_agente) {
                 'template'     => $templatetab,
                 'inventory'    => $inventorytab,
                 'pluginstab'   => $pluginstab,
+                'policy'       => (enterprise_installed() === true) ? $policyTab : '',
                 'collection'   => $collectiontab,
                 'group'        => $grouptab,
                 'gis'          => $gistab,
                 'agent_wizard' => $agent_wizard,
-
             ];
         }
 
@@ -723,6 +736,11 @@ if ($id_agente) {
         case 'inventory':
             $help_header = 'inventory_tab';
             $tab_name = __('Inventory');
+        break;
+
+        case 'policy':
+            $help_header = 'policy_tab';
+            $tab_name = __('Policies');
         break;
 
         case 'plugins':
@@ -2426,6 +2444,10 @@ switch ($tab) {
 
     case 'inventory':
         include 'inventory_manager.php';
+    break;
+
+    case 'policy':
+        enterprise_include('operation/agentes/policy_manager.php');
     break;
 
     default:

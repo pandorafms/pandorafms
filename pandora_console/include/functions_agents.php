@@ -165,9 +165,9 @@ function agents_locate_agent(string $field)
 function agents_get_agent_id_by_alias($alias, $is_metaconsole=false)
 {
     if ($is_metaconsole === true) {
-        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE upper(alias) LIKE upper('%$alias%')");
+        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE '$alias' != '' and upper(alias) LIKE upper('%$alias%')");
     } else {
-        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE '$alias' != '' and upper(alias) LIKE upper('%$alias%')");
     }
 }
 
@@ -1690,7 +1690,7 @@ function agents_get_modules(
 					WHERE tagente_modulo.delete_pending = 0
 						AND %s
 					GROUP BY 1
-					ORDER BY 1',
+					ORDER BY tagente_modulo.nombre',
         ($details != 'tagente_modulo.*' && $indexed) ? 'tagente_modulo.id_agente_modulo,' : '',
         io_safe_output(implode(',', (array) $details)),
         $sql_tags_join,

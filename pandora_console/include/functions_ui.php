@@ -4261,7 +4261,7 @@ function ui_print_datatable(array $parameters)
                     $("div.dt-buttons").hide();
 
                     if (dt_'.$table_id.'.page.info().pages > 1) {
-                        $(".dataTables_paginate.paging_simple_numbers").show()
+                        $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").show()
                     }
                 } else {
                     $(".datatable-msg-info-'.$table_id.'").hide();
@@ -4272,7 +4272,7 @@ function ui_print_datatable(array $parameters)
                     $("div.dt-buttons").show();
 
                     if (dt_'.$table_id.'.page.info().pages == 1) {
-                        $(".dataTables_paginate.paging_simple_numbers").hide()
+                        $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()
                     }
                 }';
 

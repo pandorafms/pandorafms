@@ -4345,6 +4345,10 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
   PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
+-- Table `tdiscovery_apps_scripts`
+-- ---------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS `tdiscovery_apps_scripts` (
   `id_app` int(10),
   `macro` varchar(250) NOT NULL DEFAULT '',
@@ -4353,6 +4357,10 @@ CREATE TABLE IF NOT EXISTS `tdiscovery_apps_scripts` (
   FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
+-- Table `tdiscovery_apps_executions`
+-- ---------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS `tdiscovery_apps_executions` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_app` int(10),
@@ -4360,6 +4368,10 @@ CREATE TABLE IF NOT EXISTS `tdiscovery_apps_executions` (
   PRIMARY KEY (`id`, `id_app`),
   FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tdiscovery_apps_tasks_macros`
+-- ---------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `tdiscovery_apps_tasks_macros` (
   `id_task` int(10) unsigned NOT NULL,
@@ -4370,3 +4382,27 @@ CREATE TABLE IF NOT EXISTS `tdiscovery_apps_tasks_macros` (
   PRIMARY KEY (`id_task`, `macro`),
   FOREIGN KEY (`id_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_explorer_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnetwork_explorer_filter` (
+  `id` INT NOT NULL,
+  `filter_name` VARCHAR(45) NULL,
+  `top` VARCHAR(45) NULL,
+  `action` VARCHAR(45) NULL,
+  `advanced_filter` TEXT NULL,
+  PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_usage_filter`
+-- ---------------------------------------------------------------------
+  CREATE TABLE IF NOT EXISTS `tnetwork_usage_filter` (
+  `id` INT NOT NULL auto_increment,
+  `filter_name` VARCHAR(45) NULL,
+  `top` VARCHAR(45) NULL,
+  `action` VARCHAR(45) NULL,
+  `advanced_filter` TEXT NULL,
+  PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

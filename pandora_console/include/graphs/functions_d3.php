@@ -57,7 +57,7 @@ function include_javascript_d3($return=false)
 }
 
 
-function d3_relationship_graph($elements, $matrix, $width=700, $return=false)
+function d3_relationship_graph($elements, $matrix, $width=700, $return=false, $height=700)
 {
     global $config;
 
@@ -72,7 +72,7 @@ function d3_relationship_graph($elements, $matrix, $width=700, $return=false)
     $output = '<div id="chord_diagram"></div>';
     $output .= include_javascript_d3(true);
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					chordDiagram('#chord_diagram', $elements, $matrix, $width);
+					chordDiagram('#chord_diagram', $elements, $matrix, $width, $height);
 				</script>";
 
     if (!$return) {

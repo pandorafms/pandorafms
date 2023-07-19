@@ -4624,7 +4624,10 @@ function graph_netflow_circular_mesh($data)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], 900, true);
+    $width = (empty($data['width']) === false) ? $data['width'] : 900;
+    $height = (empty($data['height']) === false) ? $data['height'] : 900;
+
+    return d3_relationship_graph($data['elements'], $data['matrix'], $width, true, $height);
 }
 
 

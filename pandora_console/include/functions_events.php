@@ -5195,54 +5195,9 @@ function events_page_comments($event, $groupedComments=[], $filter=null)
         }
     }
 
-    if (((tags_checks_event_acl(
-        $config['id_user'],
-        $event['id_grupo'],
-        'EM',
-        (isset($event['clean_tags']) === true) ? $event['clean_tags'] : [],
-        []
-    )) || (tags_checks_event_acl(
-        $config['id_user'],
-        $event['id_grupo'],
-        'EW',
-        (isset($event['clean_tags']) === true) ? $event['clean_tags'] : [],
-        []
-    )))
-    ) {
-        $event['evento'] = io_safe_output($event['evento']);
-        $comments_form = '<br><div id="comments_form" style="width:98%;">';
-        $comments_form .= html_print_textarea(
-            'comment',
-            3,
-            10,
-            '',
-            'class="comments_form"',
-            true
-        );
-
-        $comments_form .= '<br><div class="right mrgn_top_10px">';
-        $comments_form .= html_print_button(
-            __('Add comment'),
-            'comment_button',
-            false,
-            'event_comment("'.base64_encode(json_encode($event)).'");',
-            [
-                'icon' => 'next',
-                'mode' => 'mini secondary',
-            ],
-            true
-        );
-        $comments_form .= '</div><br></div>';
-    }
-
-    $table_filter = new stdClass;
-    $table_filter->width = '100%';
-    $table_filter->class = 'databox filters no_border filter-table-adv';
-    $table_filter->size = [];
-    $table_filter->size[0] = '80%';
-    $table_filter->data = [];
-    $table_filter->data[0][0] = html_print_label_input_block(
-        __('Max. hours old').ui_print_help_tip(__('Hours filter comments'), true),
+    $comments_filter = '<div class="flex align-center">';
+    $comments_filter .= html_print_label_input_block(
+        null,
         html_print_extended_select_for_time(
             'comments_events_max_hours_old',
             $filter['event_view_hr_cs'],
@@ -5269,24 +5224,70 @@ function events_page_comments($event, $groupedComments=[], $filter=null)
         )
     );
 
-    $event = base64_encode(json_encode($event));
-    $filter = base64_encode(json_encode($filter));
-
-    $table_filter->data[0][1] = html_print_submit_button(
+    $eventb64 = base64_encode(json_encode($event));
+    $filterb64 = base64_encode(json_encode($filter));
+    $comments_filter .= html_print_submit_button(
         __('Filter'),
         'filter_comments_button',
         false,
         [
-            'class'   => 'mini',
+            'class'   => 'mini mrgn_lft_15px',
             'icon'    => 'search',
-            'onclick' => 'get_table_events_tabs("'.$event.'","'.$filter.'")',
+            'onclick' => 'get_table_events_tabs("'.$eventb64.'","'.$filterb64.'")',
         ],
         true
     );
+    $comments_filter .= '</div>';
 
-    $comments_time_input = html_print_table($table_filter, true);
+    if (((tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EM',
+        (isset($event['clean_tags']) === true) ? $event['clean_tags'] : [],
+        []
+    )) || (tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EW',
+        (isset($event['clean_tags']) === true) ? $event['clean_tags'] : [],
+        []
+    )))
+    ) {
+        $event['evento'] = io_safe_output($event['evento']);
+        $comments_form = '<br><div id="comments_form" style="width:98%;">';
+        $comments_form .= html_print_textarea(
+            'comment',
+            3,
+            10,
+            '',
+            'class="comments_form"',
+            true
+        );
 
-    return $comments_form.$comments_time_input.html_print_table($table_comments, true);
+        $comments_form .= '<br>';
+        $comments_form .= '<div class="mrgn_top_10px container-filter-buttons">';
+        $comments_form .= $comments_filter;
+        $comments_form .= '<div>';
+        $comments_form .= html_print_button(
+            __('Add comment'),
+            'comment_button',
+            false,
+            'event_comment("'.base64_encode(json_encode($event)).'");',
+            [
+                'icon' => 'next',
+                'mode' => 'mini secondary',
+            ],
+            true
+        );
+        $comments_form .= '</div>';
+        $comments_form .= '</div>';
+
+        $comments_form .= '<br></div>';
+    } else {
+        $comments_form = $comments_filter;
+    }
+
+    return $comments_form.html_print_table($table_comments, true);
 }
 
 
@@ -6013,6 +6014,11 @@ function event_get_comment($event, $filter=null)
                 ' AND tevent_comment.utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d SECOND) ',
                 $filter['event_view_hr_cs']
             );
+        } else if (isset($filter['event_view_hr']) === true && ($filter['event_view_hr'] > 0)) {
+            $whereGrouped[] = sprintf(
+                ' AND tevent_comment.utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d SECOND) ',
+                ((int) $filter['event_view_hr'] * 3600)
+            );
         }
     }
 
@@ -6024,7 +6030,7 @@ function event_get_comment($event, $filter=null)
         // Default grouped message filtering (evento and estado).
         $whereGrouped[] = sprintf(
             'AND `tevento`.`evento` = "%s"',
-            $event['evento']
+            io_safe_input(io_safe_output($event['evento']))
         );
 
         // If id_agente is reported, filter the messages by them as well.
@@ -6044,7 +6050,7 @@ function event_get_comment($event, $filter=null)
     } else if ($mode === EVENT_GROUP_REP_EXTRAIDS) {
         $whereGrouped[] = sprintf(
             'AND `tevento`.`id_extra` = "%s"',
-            io_safe_output($event['id_extra'])
+            io_safe_input(io_safe_output($event['id_extra']))
         );
     } else {
         $whereGrouped[] = sprintf('AND `tevento`.`id_evento` = %d', $event['id_evento']);
@@ -6125,7 +6131,7 @@ function event_get_counter_extraId(array $event, ?array $filters)
 
     $where[] = sprintf(
         'AND `te`.`id_extra` = "%s"',
-        io_safe_output($event['id_extra'])
+        $event['id_extra']
     );
 
     try {

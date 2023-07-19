@@ -4098,7 +4098,7 @@ sub pandora_event {
 	$module_status = defined($module) ? $module->{'estado'} : 0 unless defined ($module_status);
 	
 	# If the event is created with validated status, assign ack_utimestamp
-	my $ack_utimestamp = $event_status == 1 ? time() : 0;
+	my $ack_utimestamp = ($event_status == 1 || $event_status == 2) ? time() : 0;
 	
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
@@ -4117,6 +4117,7 @@ sub pandora_event {
 			# Only when the event comes as New. Validated events are excluded
 			if (defined($id_extra_inprocess_count) && $id_extra_inprocess_count > 0 && $event_status == 0) {
 				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
+				$ack_utimestamp = get_db_value ($dbh, 'SELECT ack_utimestamp FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 				$event_status = 2;
 			}
 		}

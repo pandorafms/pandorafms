@@ -653,7 +653,7 @@ if (is_ajax() === true) {
                         // Grouped events.
                         if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
                             $counter_extra_id = event_get_counter_extraId($item, $filter);
-                            if (empty($counter_extra_id) === false && $counter_extra_id > 0) {
+                            if (empty($counter_extra_id) === false && $counter_extra_id > 1) {
                                 $evn .= '('.$counter_extra_id.') ';
                             }
                         } else {

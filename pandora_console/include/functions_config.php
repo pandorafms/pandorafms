@@ -2426,7 +2426,7 @@ function config_process_config()
     }
 
     if (!isset($config['max_hours_old_event_comment'])) {
-        config_update_value('max_hours_old_event_comment', 48);
+        config_update_value('max_hours_old_event_comment', 8);
     }
 
     if (!isset($config['elasticsearch_ip'])) {

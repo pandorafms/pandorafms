@@ -176,7 +176,7 @@ $buttons['integria'] = [
         'images/integria.png',
         true,
         [
-            'title' => __('Integria IMS'),
+            'title' => __('ITSM'),
             'class' => 'invert_filter',
         ]
     ).'</a>',

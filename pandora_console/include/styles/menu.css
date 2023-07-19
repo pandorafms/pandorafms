@@ -259,6 +259,12 @@
   background-size: 18px;
 }
 
+/* ITSM */
+.icon_oper-itsm {
+  background: url(../../images/menu/itsm.svg) no-repeat 50% 50%;
+  background-size: 18px;
+}
+
 /* trap console */
 .icon_oper-snmpc,
 .icon_god-snmpc {

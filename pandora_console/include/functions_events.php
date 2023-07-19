@@ -2355,7 +2355,6 @@ function events_create_event(
         'id_agentmodule'        => $id_agent_module,
         'id_alert_am'           => $id_aam,
         'criticity'             => $priority,
-        'user_comment'          => '',
         'tags'                  => $tags,
         'source'                => $source,
         'id_extra'              => $id_extra,

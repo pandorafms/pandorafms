@@ -322,10 +322,18 @@ function update_template($step)
 
     if ($step == 1) {
         $name = (string) get_parameter('name');
+        $name = trim(io_safe_output($name));
+        if (strlen($name) === 0) {
+            ui_print_warning_message(__('You can\'t named a template with spaces'));
+            return false;
+        }
+
+        $name = io_safe_input($name);
         $description = (string) get_parameter('description');
         $wizard_level = (string) get_parameter('wizard_level');
         $priority = (int) get_parameter('priority');
         $id_group = get_parameter('id_group');
+        $name_check = db_get_value('name', 'talert_templates', 'name', $name);
         // Only for Metaconsole. Save the previous name for synchronizing.
         if (is_metaconsole() === true) {
             $previous_name = db_get_value('name', 'talert_templates', 'id', $id);
@@ -342,7 +350,12 @@ function update_template($step)
             'previous_name' => $previous_name,
         ];
 
-        $result = alerts_update_alert_template($id, $values);
+        if ($name_check === false) {
+            $result = alerts_update_alert_template($id, $values);
+        } else {
+            ui_print_warning_message(__('Another template with the same name already exists'));
+            $result = false;
+        }
     } else if ($step == 2) {
         $schedule = io_safe_output(get_parameter('schedule', []));
         json_decode($schedule, true);
@@ -487,6 +500,13 @@ $wizard_level = 'nowizard';
 
 if ($create_template) {
     $name = (string) get_parameter('name');
+    $name = trim(io_safe_output($name));
+    if (strlen($name) === 0) {
+        ui_print_warning_message(__('You can\'t named a template with spaces'));
+    }
+
+    $name = io_safe_input($name);
+
     $description = (string) get_parameter('description');
     $type = (string) get_parameter('type', 'critical');
     $value = (string) get_parameter('value');
@@ -515,10 +535,11 @@ if ($create_template) {
         $values['field3_recovery'] = ' ';
     }
 
-    if (!$name_check) {
+    if ($name_check === false) {
         $result = alerts_create_alert_template($name, $type, $values);
     } else {
-        $result = '';
+        ui_print_warning_message(__('Another template with the same name already exists'));
+        $result = false;
     }
 
     if ($result) {

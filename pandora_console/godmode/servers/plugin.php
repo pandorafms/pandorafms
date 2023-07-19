@@ -537,17 +537,16 @@ if (empty($create) === false || empty($view) === false) {
     $data = [];
     $data[0] = html_print_label_input_block(
         __('Plug-in parameters'),
-        html_print_input_text(
+        html_print_textarea(
             'form_parameters',
+            4,
+            50,
             $parameters,
             '',
-            100,
-            255,
             true,
+            'command_component command_advanced_conf text_input',
             false,
-            false,
-            '',
-            'command_component command_advanced_conf text_input'
+            false
         )
     );
 
@@ -1167,7 +1166,7 @@ ui_require_javascript_file('pandora_modules');
 
     function update_preview() {
         var command = $('#text-form_execute').val();
-        var parameters = $('#text-form_parameters').val();
+        var parameters = $('#textarea_form_parameters').val();
         var i = 1;
 
         while (1) {

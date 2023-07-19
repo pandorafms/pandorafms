@@ -1137,6 +1137,9 @@ class DiscoveryTaskList extends HTML
                         case DISCOVERY_CLOUD_AWS_S3:
                         return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=s3&page=0';
 
+                        case DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE:
+                        return 'wiz=cloud&mode=gcp&ki='.$task['auth_strings'].'&sub=compute&page=0';
+
                         default:
                         return 'wiz=cloud';
                     }

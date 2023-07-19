@@ -36,9 +36,16 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
                 <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.5.0-rc1.js').'"></script>';
         }
 
+        $output .= '
+        <script type="text/javascript">
+        var phpTimezone = "'.date_default_timezone_get().'";
+        var configHomeurl = "'.$config['homeurl'].'";
+        </script>';
+
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
         $output .= '
 			<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/excanvas.js').'"></script><![endif]-->
+			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/javascript/timezone/src/date.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.min.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.time.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.pie.js').'"></script>

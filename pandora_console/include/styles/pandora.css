@@ -10804,6 +10804,10 @@ button.ui-button.ui-widget.submit-cancel:active {
   border-color: #96a2bf;
 }
 
+.cursor-default {
+  cursor: default;
+}
+
 .hasColorPicker {
   z-index: 10;
 }
@@ -11662,8 +11666,8 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: absolute;
-  right: 12px;
+  position: relative;
+  right: 40px;
   top: 4px;
   border: 0;
   outline: none;
@@ -11908,10 +11912,6 @@ div.relative > div > div#ui-datepicker-div {
 
 span.help_icon_15px > img {
   height: 15px !important;
-}
-
-.select2-dropdown {
-  z-index: 1116 !important;
 }
 
 .icon_connection_check {
@@ -12297,6 +12297,14 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .toggle-traffic-graph {
   margin: 0px !important;
+}
+
+form.max_floating_element_size > ul#ul_tree_azure {
+  background-color: #fff;
+  border-spacing: 0px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e2e2;
 }
 
 #grid_img {

@@ -339,6 +339,10 @@ class Netflow extends Widget
                 $style .= ' width: 95%;';
             }
 
+            if ($size['width'] > $size['height']) {
+                $size['width'] = $size['height'];
+            }
+
             // Draw the netflow chart.
             $output .= html_print_div(
                 [
@@ -353,7 +357,9 @@ class Netflow extends Widget
                         $this->values['max_values'],
                         '',
                         'HTML',
-                        0
+                        0,
+                        ($size['width'] - 50),
+                        ($size['height'] - 20),
                     ),
                 ],
                 true

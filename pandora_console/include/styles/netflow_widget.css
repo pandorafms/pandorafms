@@ -7,3 +7,7 @@
 #image_hide_show_labels {
   display: none !important;
 }
+
+.select2-search--dropdown .select2-search__field {
+  padding: 0px !important;
+}

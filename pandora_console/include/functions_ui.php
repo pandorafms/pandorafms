@@ -4012,7 +4012,7 @@ function ui_print_datatable(array $parameters)
                 '',
                 '',
                 $parameters['toggle_collapsed'],
-                false,
+                (isset($parameters['form']['return_filter']) === false) ? false : $parameters['form']['return_filter'],
                 '',
                 'no-border filter-datatable-submain',
                 'filter-datatable-main '.$parameters['filter_main_class']
@@ -4266,10 +4266,10 @@ function ui_print_datatable(array $parameters)
                 } else {
                     $(".datatable-msg-info-'.$table_id.'").hide();
                     $("table#'.$table_id.'").show();
-                    $("div.dataTables_paginate").show();
-                    $("div.dataTables_info").hide();
-                    $("div.dataTables_length").show();
-                    $("div.dt-buttons").show();
+                    $("#'.$table_id.'_wrapper > div.dataTables_paginate").show();
+                    $("#'.$table_id.'_wrapper > div.dataTables_info").hide();
+                    $("#'.$table_id.'_wrapper > div.dataTables_length").show();
+                    $("#'.$table_id.'_wrapper > div.dt-buttons").show();
 
                     if (dt_'.$table_id.'.page.info().pages == 1) {
                         $("#'.$table_id.'_wrapper > .dataTables_paginate.paging_simple_numbers").hide()

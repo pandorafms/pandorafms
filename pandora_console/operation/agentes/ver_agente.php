@@ -1749,7 +1749,7 @@ if (enterprise_installed() === true) {
     $security_hardening['text'] = html_print_menu_button(
         [
             'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=security_hardening&id_agente='.$id_agente,
-            'image' => 'images/external-tools@svg.svg',
+            'image' => 'images/security_scan@svg.svg',
             'title' => __('Security hardening'),
         ],
         true

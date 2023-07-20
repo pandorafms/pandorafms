@@ -691,7 +691,6 @@ $(document).ready (function () {
     $('li#Views').removeClass('submenu_not_selected');
     $('ul#subViews').show();
     var parent = $('div[title="Alert details"]').parent().parent();
-    console.log(parent);
     parent.addClass('selected');
     $('.sub_subMenu.selected').prepend(`<div class="element_submenu_selected left_3"></div>`);
 

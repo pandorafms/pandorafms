@@ -1762,9 +1762,11 @@ function events_get_all(
                     }
                 }
 
+                $string_metaconsole_connections = reset($metaconsole_connections);
+                $explode_metaconsole_connections = explode(',', $string_metaconsole_connections);
                 $result_meta = Promise\wait(
                     parallelMap(
-                        $metaconsole_connections,
+                        $explode_metaconsole_connections,
                         function ($node_int) use ($sql, $history) {
                             try {
                                 if (is_metaconsole() === true

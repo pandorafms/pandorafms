@@ -1040,8 +1040,12 @@ sub pandora_execute_alert {
 				$event_generated = 1;
 				$monitoring_event_custom_data = $custom_data;
 			}
-			
+
+			if($alert_mode == FIRED_ALERT || ($alert_mode == RECOVERED_ALERT && $action->{'recovered'} == 0)) {
 				pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros, $monitoring_event_custom_data);
+			}else{
+				logger ($pa_config, "Skipping recover action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
+			}
 
 			if($alert_mode == RECOVERED_ALERT) {
 				# Reset action thresholds and set recovered

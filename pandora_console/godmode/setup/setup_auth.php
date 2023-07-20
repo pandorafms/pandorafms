@@ -210,7 +210,7 @@ if (is_ajax() === true) {
 
                 // Ldapsearch timeout.
                 // Default Ldapsearch timeout.
-                set_when_empty($config['ldap_searh_timeout'], 5);
+                set_when_empty($config['ldap_search_timeout'], 5);
                 $row = [];
                 $row['name'] = __('Ldap search timeout (secs)');
                 $row['control'] = html_print_input_text(
@@ -558,7 +558,13 @@ echo '</form>';
         if ($('input[type=checkbox][name=secondary_ldap_enabled]:checked').val() == 1) {
             $("tr[id*='ldap_'][id$='_secondary']").show();
         } else {
-                $( "tr[id*='ldap_'][id$='_secondary']" ).hide();
+            $( "tr[id*='ldap_'][id$='_secondary']" ).hide();
+        }
+
+        if ($('input[type=checkbox][name=secondary_active_directory]:checked').val() == 1) {
+            $("tr[id*='ad_'][id$='_secondary']").show();
+        } else {
+            $( "tr[id*='ad_'][id$='_secondary']" ).hide();
         }
     }
     $( document ).ready(function() {   

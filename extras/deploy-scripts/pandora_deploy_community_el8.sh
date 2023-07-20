@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2023050901'
+S_VERSION='2023062901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -344,8 +344,7 @@ console_dependencies=" \
     http://firefly.pandorafms.com/centos8/chromium-110.0.5481.177-1.el7.x86_64.rpm \
     http://firefly.pandorafms.com/centos8/chromium-common-110.0.5481.177-1.el7.x86_64.rpm \
     http://firefly.pandorafms.com/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
-    http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
-    http://firefly.pandorafms.com/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
+    http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "dnf install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
 # Server dependencies
@@ -371,7 +370,7 @@ server_dependencies=" \
     java \
     bind-utils \
     whois \
-    http://firefly.pandorafms.com/centos7/xprobe2-0.3-12.2.x86_64.rpm \
+    libnsl \
     http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.pandorafms.com/centos8/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -399,7 +398,6 @@ execute_cmd "dnf install -y $oracle_dependencies" "Installing Oracle Instant cli
 
 #ipam dependencies
 ipam_dependencies=" \
-    http://firefly.pandorafms.com/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     perl(NetAddr::IP) \
     perl(Sys::Syslog) \
     perl(DBI) \
@@ -622,8 +620,9 @@ sed -i -e "s/^upload_max_filesize.*/upload_max_filesize = 800M/g" /etc/php.ini
 sed -i -e "s/^memory_limit.*/memory_limit = 800M/g" /etc/php.ini
 sed -i -e "s/.*post_max_size =.*/post_max_size = 800M/" /etc/php.ini
 
-#adding 900s to httpd timeout
+#adding 900s to httpd timeout and 300 to ProxyTimeout
 echo 'TimeOut 900' > /etc/httpd/conf.d/timeout.conf
+echo 'ProxyTimeout 300' >> /etc/httpd/conf.d/timeout.conf
 
 cat > /var/www/html/index.html << EOF_INDEX
 <meta HTTP-EQUIV="REFRESH" content="0; url=/pandora_console/">
@@ -786,6 +785,9 @@ echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cro
 ## Enabling agent
 systemctl enable pandora_agent_daemon &>> "$LOGFILE"
 execute_cmd "systemctl start pandora_agent_daemon" "Starting Pandora FMS Agent"
+
+# Enable postfix
+systemctl enable postfix --now &>> "$LOGFILE"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

@@ -378,6 +378,10 @@ function config_update_config()
                         $error_update[] = __('keep_in_process_status_extra_id');
                     }
 
+                    if (config_update_value('show_experimental_features', get_parameter('show_experimental_features'), true) === false) {
+                        $error_update[] = __('show_experimental_features');
+                    }
+
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -2399,6 +2403,10 @@ function config_process_config()
 
     if (!isset($config['keep_in_process_status_extra_id'])) {
         config_update_value('keep_in_process_status_extra_id', 0);
+    }
+
+    if (!isset($config['show_experimental_features'])) {
+        config_update_value('show_experimental_features', 0);
     }
 
     if (!isset($config['console_log_enabled'])) {

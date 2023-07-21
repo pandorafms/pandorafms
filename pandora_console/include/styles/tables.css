@@ -866,3 +866,8 @@ td.w75p#rightcolumn {
   margin-right: 0%;
   vertical-align: baseline;
 }
+
+/* Workaround specifically for alert server pending alerts list */
+#pending_alerts_paginate {
+  margin-bottom: 15px;
+}

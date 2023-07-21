@@ -31,8 +31,6 @@ require_once $config['homedir'].'/include/class/HTML.class.php';
 
 global $config;
 
-ui_require_css_file('integriaims');
-
 
 /**
  * Draw chart.
@@ -83,7 +81,7 @@ ui_print_standard_header(
     __('ITSM Dashboard'),
     '',
     false,
-    'integria_tab',
+    'ITSM_tab',
     false,
     [],
     [

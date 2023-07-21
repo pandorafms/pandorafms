@@ -33,20 +33,20 @@ class ITSM
     /**
      * ITSM.
      *
-     * @param string|null $host Host url.
-     * @param string|null $pass Token.
+     * @param string|null $host  Host url.
+     * @param string|null $token Token.
      */
-    public function __construct(?string $host=null, ?string $pass=null)
+    public function __construct(?string $host=null, ?string $token=null)
     {
         global $config;
         $user_info = \users_get_user_by_id($config['id_user']);
 
-        $this->userLevelConf = (bool) $config['integria_user_level_conf'];
-        $this->url = ($host ?? $config['integria_hostname']);
+        $this->userLevelConf = (bool) $config['ITSM_user_level_conf'];
+        $this->url = ($host ?? $config['ITSM_hostname']);
 
-        $this->userBearer = ($pass ?? $config['integria_pass']);
+        $this->userBearer = ($token ?? $config['ITSM_token']);
         if ($this->userLevelConf === true) {
-            $this->userBearer = $user_info['integria_user_level_pass'];
+            $this->userBearer = ($token ?? $user_info['integria_user_level_pass']);
         }
     }
 

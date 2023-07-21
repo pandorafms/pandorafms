@@ -36,7 +36,7 @@ ui_print_standard_header(
     __('ITSM Edit'),
     '',
     false,
-    'integria_tab',
+    'ITSM_tab',
     false,
     [],
     [
@@ -90,13 +90,13 @@ $table->data[0][0] = html_print_label_input_block(
     )
 );
 
-$integria_logo = 'images/integria_logo_gray.png';
+$ITSM_logo = 'images/integria_logo_gray.png';
 if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
-    $integria_logo = 'images/integria_logo.svg';
+    $ITSM_logo = 'images/integria_logo.svg';
 }
 
 $table->data[0][2] = '<div style="max-width: 150px; float:right;">'.html_print_image(
-    $integria_logo,
+    $ITSM_logo,
     true,
     ['style' => 'width: -webkit-fill-available;'],
     false
@@ -182,7 +182,7 @@ $table->data[3][1] = html_print_label_input_block(
     ),
     html_print_input_text(
         'idCreator',
-        $config['integria_user'],
+        '',
         '',
         0,
         100,
@@ -196,7 +196,7 @@ $table->data[3][1] = html_print_label_input_block(
 
 $table->data[3][2] = html_print_label_input_block(
     __('Owner').ui_print_help_tip(__('Type at least two characters to search the user.'), true),
-    html_print_autocomplete_users_from_integria(
+    html_print_autocomplete_users_from_pandora_itsm(
         'owner',
         ($incidence['owner'] ?? ''),
         true,
@@ -237,7 +237,7 @@ $table->data[5][0] = html_print_label_input_block(
     )
 );
 
-$formName = 'create_integria_incident_form';
+$formName = 'create_itsm_incident_form';
 $classForm = 'max_floating_element_size';
 $enctype = 'multipart/form-data';
 echo '<form class="'.$classForm.'" id="'.$formName.'" name="'.$formName.'" method="POST" enctype="'.$enctype.'">';

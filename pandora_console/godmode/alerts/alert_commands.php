@@ -12,6 +12,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // Load global vars.
+use PandoraFMS\ITSM\ITSM;
+
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
@@ -279,7 +281,7 @@ if (is_ajax()) {
                     $editor_type_chkbx .= '</small></b></div>';
                     $rfield = $editor_type_chkbx;
                     // Select type.
-                } else if (preg_match('/^_integria_type_custom_field_$/i', $field_value)) {
+                } else if (preg_match('/^_custom_field_ITSM_$/i', $field_value)) {
                         $ffield = '';
                         $rfield = '';
 
@@ -369,6 +371,96 @@ if (is_ajax()) {
                             '',
                             $is_management_allowed
                         );
+                } else if (str_starts_with($field_value, '_ITSM_')) {
+                    $nothing = '';
+                    $nothing_value = 0;
+                    $mode = 'select';
+                    switch ($field_value) {
+                        case '_ITSM_groups_':
+                            $fields_array = [];
+                            try {
+                                $ITSM = new ITSM();
+                                $fields_array = $ITSM->getGroups();
+                            } catch (\Throwable $th) {
+                                $error = $th->getMessage();
+                                $fields_array = [];
+                            }
+                        break;
+
+                        case '_ITSM_priorities_':
+                            $fields_array = [];
+                            try {
+                                $ITSM = new ITSM();
+                                $fields_array = $ITSM->getPriorities();
+                            } catch (\Throwable $th) {
+                                $error = $th->getMessage();
+                                $fields_array = [];
+                            }
+                        break;
+
+                        case '_ITSM_types_':
+                            $fields_array = [];
+                            try {
+                                $ITSM = new ITSM();
+                                $fields_array = $ITSM->getObjectypes();
+                            } catch (\Throwable $th) {
+                                $error = $th->getMessage();
+                                $fields_array = [];
+                            }
+
+                            $nothing = __('None');
+                            $nothing_value = 0;
+                        break;
+
+                        case '_ITSM_status_':
+                            $fields_array = [];
+                            try {
+                                $ITSM = new ITSM();
+                                $fields_array = $ITSM->getStatus();
+                            } catch (\Throwable $th) {
+                                $error = $th->getMessage();
+                                $fields_array = [];
+                            }
+                        break;
+
+                        default:
+                            // Nothing.
+                            $mode = '';
+                        break;
+                    }
+
+                    if ($mode === 'select') {
+                        $ffield = html_print_select(
+                            $fields_array,
+                            'field'.$i.'_value',
+                            '',
+                            '',
+                            $nothing,
+                            $nothing_value,
+                            true,
+                            false,
+                            false,
+                            'fields',
+                            $is_management_allowed
+                        );
+
+                        $rfield = html_print_select(
+                            $fields_array,
+                            'field'.$i.'_recovery_value',
+                            '',
+                            '',
+                            $nothing,
+                            $nothing_value,
+                            true,
+                            false,
+                            false,
+                            'fields_recovery',
+                            $is_management_allowed
+                        );
+                    } else {
+                        $ffield = 'TODO';
+                        $rfield = 'TODO';
+                    }
                 } else {
                     $fields_value_select = [];
                     $force_print_select = false;

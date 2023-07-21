@@ -244,18 +244,6 @@ function config_update_config()
                         $error_update[] = __('Enable GIS features');
                     }
 
-                    if (config_update_value('integria_inventory', get_parameter('integria_inventory'), true) === false) {
-                        $error_update[] = __('Integria inventory');
-                    }
-
-                    if (config_update_value('integria_api_password', io_input_password(get_parameter('integria_api_password')), true) === false) {
-                        $error_update[] = __('Integria API password');
-                    }
-
-                    if (config_update_value('integria_url', get_parameter('integria_url'), true) === false) {
-                        $error_update[] = __('Integria URL');
-                    }
-
                     if (config_update_value('activate_netflow', (bool) get_parameter('activate_netflow'), true) === false) {
                         $error_update[] = __('Enable Netflow');
                     }
@@ -772,26 +760,6 @@ function config_update_config()
                     }
 
                     if (config_update_value('rpandora_pass', io_input_password(get_parameter('rpandora_pass')), true) === false) {
-                        $error_update[] = __('Password');
-                    }
-
-                    if (config_update_value('rintegria_server', get_parameter('rintegria_server'), true) === false) {
-                        $error_update[] = __('Integria host');
-                    }
-
-                    if (config_update_value('rintegria_port', get_parameter('rintegria_port'), true) === false) {
-                        $error_update[] = __('MySQL port');
-                    }
-
-                    if (config_update_value('rintegria_dbname', get_parameter('rintegria_dbname'), true) === false) {
-                        $error_update[] = __('Database name');
-                    }
-
-                    if (config_update_value('rintegria_user', get_parameter('rintegria_user'), true) === false) {
-                        $error_update[] = __('User');
-                    }
-
-                    if (config_update_value('rintegria_pass', io_input_password(get_parameter('rintegria_pass')), true) === false) {
                         $error_update[] = __('Password');
                     }
 
@@ -1891,103 +1859,91 @@ function config_update_config()
                     }
                 break;
 
-                case 'integria':
-                    if (config_update_value('integria_user_level_conf', (int) get_parameter('integria_user_level_conf', 0), true) === false) {
-                        $error_update[] = __('Integria user login');
+                case 'ITSM':
+                    if (config_update_value('ITSM_user_level_conf', (int) get_parameter('ITSM_user_level_conf', 0), true) === false) {
+                        $error_update[] = __('Pandora ITSM user login');
                     }
 
-                    if (config_update_value('integria_enabled', (int) get_parameter('integria_enabled', 0), true) === false) {
-                        $error_update[] = __('Enable Integria IMS');
+                    if (config_update_value('ITSM_enabled', (int) get_parameter('ITSM_enabled', 0), true) === false) {
+                        $error_update[] = __('Enable Pandora ITSM');
                     }
 
-                    if (config_update_value('integria_user', (string) get_parameter('integria_user', $config['integria_user']), true) === false) {
-                        $error_update[] = __('Integria user');
+                    if (config_update_value('ITSM_token', io_input_password((string) get_parameter('ITSM_token', $config['ITSM_token'])), true) === false) {
+                        $error_update[] = __('Pandora ITSM token');
                     }
 
-                    if (config_update_value('integria_pass', io_input_password((string) get_parameter('integria_pass', $config['integria_pass'])), true) === false) {
-                        $error_update[] = __('Integria password');
-                    }
+                    $ITSM_hostname = (string) get_parameter('ITSM_hostname', $config['ITSM_hostname']);
 
-                    $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
-
-                    if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
+                    if (parse_url($ITSM_hostname, PHP_URL_SCHEME) === null) {
                         if (empty($_SERVER['HTTPS']) === false) {
-                            $integria_hostname = 'https://'.$integria_hostname;
+                            $ITSM_hostname = 'https://'.$ITSM_hostname;
                         } else {
-                            $integria_hostname = 'http://'.$integria_hostname;
+                            $ITSM_hostname = 'http://'.$ITSM_hostname;
                         }
                     }
 
-                    if (config_update_value('integria_hostname', $integria_hostname, true) === false) {
-                        $error_update[] = __('integria API hostname');
-                    }
-
-                    if (config_update_value('integria_api_pass', io_input_password((string) get_parameter('integria_api_pass', $config['integria_api_pass'])), true) === false) {
-                        $error_update[] = __('Integria API password');
-                    }
-
-                    if (config_update_value('integria_req_timeout', (int) get_parameter('integria_req_timeout', $config['integria_req_timeout']), true) === false) {
-                        $error_update[] = __('Integria request timeout');
+                    if (config_update_value('ITSM_hostname', $ITSM_hostname, true) === false) {
+                        $error_update[] = __('Pandora iTSM API hostname');
                     }
 
                     if (config_update_value('default_group', (int) get_parameter('default_group', $config['default_group']), true) === false) {
-                        $error_update[] = __('Integria default group');
+                        $error_update[] = __('Pandora ITSM default group');
                     }
 
                     if (config_update_value('cr_default_group', (int) get_parameter('cr_default_group', $config['cr_default_group']), true) === false) {
-                        $error_update[] = __('Integria custom response default group');
+                        $error_update[] = __('Pandora ITSM custom response default group');
                     }
 
-                    if (config_update_value('default_criticity', (int) get_parameter('default_criticity', $config['default_criticity']), true) === false) {
-                        $error_update[] = __('Integria default priority');
+                    if (config_update_value('default_criticity', (string) get_parameter('default_criticity', $config['default_criticity']), true) === false) {
+                        $error_update[] = __('Pandora ITSM default priority');
                     }
 
-                    if (config_update_value('cr_default_criticity', (int) get_parameter('cr_default_criticity', $config['cr_default_criticity']), true) === false) {
-                        $error_update[] = __('Integria custom response default priority');
+                    if (config_update_value('cr_default_criticity', (string) get_parameter('cr_default_criticity', $config['cr_default_criticity']), true) === false) {
+                        $error_update[] = __('Pandora ITSM custom response default priority');
                     }
 
                     if (config_update_value('default_creator', (string) get_parameter('default_creator', $config['default_creator']), true) === false) {
-                        $error_update[] = __('Integria default creator');
+                        $error_update[] = __('Pandora ITSM default creator');
                     }
 
                     if (config_update_value('default_owner', (string) get_parameter('default_owner', $config['default_owner']), true) === false) {
-                        $error_update[] = __('Integria default owner');
+                        $error_update[] = __('Pandora ITSM default owner');
                     }
 
                     if (config_update_value('cr_default_owner', (string) get_parameter('cr_default_owner', $config['cr_default_owner']), true) === false) {
-                        $error_update[] = __('Integria custom response default owner');
+                        $error_update[] = __('Pandora ITSM custom response default owner');
                     }
 
                     if (config_update_value('incident_type', (int) get_parameter('incident_type', $config['incident_type']), true) === false) {
-                        $error_update[] = __('Integria default ticket type');
+                        $error_update[] = __('Pandora ITSM default ticket type');
                     }
 
                     if (config_update_value('cr_incident_type', (int) get_parameter('cr_incident_type', $config['cr_incident_type']), true) === false) {
-                        $error_update[] = __('Integria custom response default ticket type');
+                        $error_update[] = __('Pandora ITSM custom response default ticket type');
                     }
 
-                    if (config_update_value('incident_status', (int) get_parameter('incident_status', $config['incident_status']), true) === false) {
-                        $error_update[] = __('Integria default ticket status');
+                    if (config_update_value('incident_status', (string) get_parameter('incident_status', $config['incident_status']), true) === false) {
+                        $error_update[] = __('Pandora ITSM default ticket status');
                     }
 
-                    if (config_update_value('cr_incident_status', (int) get_parameter('cr_incident_status', $config['cr_incident_status']), true) === false) {
-                        $error_update[] = __('Integria custom response default ticket status');
+                    if (config_update_value('cr_incident_status', (string) get_parameter('cr_incident_status', $config['cr_incident_status']), true) === false) {
+                        $error_update[] = __('Pandora ITSM custom response default ticket status');
                     }
 
                     if (config_update_value('incident_title', (string) get_parameter('incident_title', $config['incident_title']), true) === false) {
-                        $error_update[] = __('Integria default ticket title');
+                        $error_update[] = __('Pandora ITSM default ticket title');
                     }
 
                     if (config_update_value('cr_incident_title', (string) get_parameter('cr_incident_title', $config['cr_incident_title']), true) === false) {
-                        $error_update[] = __('Integria custom response default ticket title');
+                        $error_update[] = __('Pandora ITSM custom response default ticket title');
                     }
 
                     if (config_update_value('incident_content', (string) get_parameter('incident_content', $config['incident_content']), true) === false) {
-                        $error_update[] = __('Integria default ticket content');
+                        $error_update[] = __('Pandora ITSM default ticket content');
                     }
 
                     if (config_update_value('cr_incident_content', (string) get_parameter('cr_incident_content', $config['cr_incident_content']), true) === false) {
-                        $error_update[] = __('Integria custom response default ticket content');
+                        $error_update[] = __('Pandora ITSM custom response default ticket content');
                     }
                 break;
 
@@ -3336,26 +3292,6 @@ function config_process_config()
         config_update_value('rpandora_pass', '');
     }
 
-    if (!isset($config['rintegria_server'])) {
-        config_update_value('rintegria_server', 'localhost');
-    }
-
-    if (!isset($config['rintegria_port'])) {
-        config_update_value('rintegria_port', 3306);
-    }
-
-    if (!isset($config['rintegria_dbname'])) {
-        config_update_value('rintegria_dbname', 'integria');
-    }
-
-    if (!isset($config['rintegria_user'])) {
-        config_update_value('rintegria_user', 'integria');
-    }
-
-    if (!isset($config['rintegria_pass'])) {
-        config_update_value('rintegria_pass', '');
-    }
-
     if (!isset($config['saml_path'])) {
         config_update_value('saml_path', '/opt/');
     }
@@ -3801,21 +3737,17 @@ function config_process_config()
         config_update_value('ehorus_req_timeout', 5);
     }
 
-    // Integria.
-    if (!isset($config['integria_user_level_conf'])) {
-        config_update_value('integria_user_level_conf', 0);
+    // ITSM.
+    if (!isset($config['ITSM_user_level_conf'])) {
+        config_update_value('ITSM_user_level_conf', 0);
     }
 
-    if (!isset($config['integria_enabled'])) {
-        config_update_value('integria_enabled', 0);
+    if (!isset($config['ITSM_enabled'])) {
+        config_update_value('ITSM_enabled', 0);
     }
 
-    if (!isset($config['integria_req_timeout'])) {
-        config_update_value('integria_req_timeout', 5);
-    }
-
-    if (!isset($config['integria_hostname'])) {
-        config_update_value('integria_hostname', '');
+    if (!isset($config['ITSM_hostname'])) {
+        config_update_value('ITSM_hostname', '');
     }
 
     // Module Library.

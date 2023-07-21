@@ -17,7 +17,6 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
 require_once $config['homedir'].'/include/functions_users.php';
-require_once $config['homedir'].'/include/functions_integriaims.php';
 enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
@@ -159,6 +158,21 @@ if ($id) {
     $action = alerts_get_alert_action($id);
     $name = $action['name'];
     $id_command = $action['id_alert_command'];
+    $command = alerts_get_alert_command($id_command);
+    if (empty($command) === false && $command['name'] === io_safe_input('Integria IMS Ticket')) {
+        $action['field2'] = ($action['field2'] ?? $config['default_group']);
+        $action['field3'] = ($action['field3'] ?? $config['default_criticity']);
+        $action['field4'] = ($action['field4'] ?? $config['default_owner']);
+        $action['field5'] = ($action['field5'] ?? $config['incident_type']);
+        $action['field6'] = ($action['field6'] ?? $config['incident_status']);
+        $action['field7'] = ($action['field7'] ?? $config['incident_content']);
+        $action['field2_recovery'] = ($action['field2'] ?? $config['default_group']);
+        $action['field3_recovery'] = ($action['field3'] ?? $config['default_criticity']);
+        $action['field4_recovery'] = ($action['field4'] ?? $config['default_owner']);
+        $action['field5_recovery'] = ($action['field5'] ?? $config['incident_type']);
+        $action['field6_recovery'] = ($action['field6'] ?? $config['incident_status']);
+        $action['field7_recovery'] = ($action['field7'] ?? $config['incident_content']);
+    }
 
     $group = $action['id_group'];
     $action_threshold = $action['action_threshold'];
@@ -248,7 +262,7 @@ $create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_saf
 
 $sql_exclude_command_id = '';
 
-if (!is_metaconsole() && $config['integria_enabled'] == 0 && $create_ticket_command_id !== false) {
+if (!is_metaconsole() && $config['ITSM_enabled'] == 0 && $create_ticket_command_id !== false) {
     $sql_exclude_command_id = ' AND id <> '.$create_ticket_command_id;
 }
 
@@ -655,13 +669,20 @@ $(document).ready (function () {
         // No se envia el valor del commando.
         values.push({
             name: "page",
-            value: "godmode/alerts/alert_commands"});
+            value: "godmode/alerts/alert_commands"
+        });
         values.push({
             name: "get_alert_command",
-            value: "1"});
+            value: "1"
+        });
         values.push({
             name: "id",
-            value: this.value});
+            value: this.value
+        });
+        values.push({
+            name: "id_action",
+            value: "<?php echo (int) $id; ?>"
+        });
         
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,
             values,
@@ -673,7 +694,6 @@ $(document).ready (function () {
                     render_command_description(command_description);
                 } else {
                     render_command_description('');
-
                 }
                 
                 // Allow create workunit if Integria IMS Ticket is selected.
@@ -708,12 +728,64 @@ $(document).ready (function () {
                     old_value = '';
                     old_recovery_value = '';
                     // Only keep the value if is provided from hidden (first time)
-                    if (($("[name=field" + i + "_value]").attr('id'))
-                        == ("hidden-field" + i + "_value")) {
-                        
+                    if (($("[name=field" + i + "_value]").attr('id')) == ("hidden-field" + i + "_value")) {
                         old_value = $("[name=field" + i + "_value]").val();
                         disabled = $("[name=field" + i + "_value]").attr('disabled');
                     }
+
+                    if ($("#id_command option:selected").text() === "Integria IMS Ticket" && (!old_value || !old_recovery_value) ) {
+                        if (i === 2) {
+                            if(!old_value) {
+                                old_value = '<?php echo $config['default_group']; ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo $config['default_group']; ?>';
+                            }
+                        } else if (i === 3) {
+                            if(!old_value) {
+                                old_value = '<?php echo $config['default_criticity']; ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo $config['default_criticity']; ?>';
+                            }
+                        } else if (i === 4) {
+                            if(!old_value) {
+                                old_value = '<?php echo $config['default_owner']; ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo $config['default_owner']; ?>';
+                            }
+                        } else if (i === 5) {
+                            if(!old_value) {
+                                old_value = '<?php echo $config['incident_type']; ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo $config['incident_type']; ?>';
+                            }
+                        } else if (i === 6) {
+                            if(!old_value) {
+                                old_value = '<?php echo $config['incident_status']; ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo $config['incident_status']; ?>';
+                            }
+                        } else if (i === 7) {
+                            if(!old_value) {
+                                old_value = '<?php echo $config['incident_content']; ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo $config['incident_content']; ?>';
+                            }
+                        }
+                    }
+
+                    
                     
                     if (($("[name=field" + i + "_recovery_value]").attr('id'))
                         == ("hidden-field" + i + "_recovery_value")) {

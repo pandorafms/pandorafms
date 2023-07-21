@@ -1322,7 +1322,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `ehorus_user_level_pass` VARCHAR(45),
   `ehorus_user_level_enabled` TINYINT,
   `integria_user_level_user` VARCHAR(60),
-  `integria_user_level_pass` VARCHAR(45),
+  `integria_user_level_pass` TEXT,
   `api_token` VARCHAR(255) NOT NULL DEFAULT '',
   `allowed_ip_active` TINYINT UNSIGNED DEFAULT 0,
   `allowed_ip_list` TEXT,

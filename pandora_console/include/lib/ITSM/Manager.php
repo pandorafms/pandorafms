@@ -109,7 +109,7 @@ class Manager
      */
     public function run()
     {
-        \ui_require_css_file('integriaims');
+        \ui_require_css_file('pandoraitsm');
         \ui_require_javascript_file('ITSM');
         switch ($this->operation) {
             case 'list':

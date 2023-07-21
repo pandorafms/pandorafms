@@ -706,7 +706,7 @@ if ($access_console_node === true) {
 $menu_operation['workspace']['sub'] = $sub;
 
 if ($access_console_node === true) {
-    if ((bool) $config['integria_enabled'] === true) {
+    if ((bool) $config['ITSM_enabled'] === true) {
         // ITSM.
         $menu_operation['ITSM']['text'] = __('ITSM');
         $menu_operation['ITSM']['sec2'] = 'operation/ITSM/itsm';

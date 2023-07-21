@@ -1,6 +1,6 @@
 <?php
 /**
- * Integria setup.
+ * ITSM setup.
  *
  * @category   Setup
  * @package    Pandora FMS
@@ -42,8 +42,6 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
-require_once $config['homedir'].'/include/functions_integriaims.php';
-
 $error = '';
 $group_values = [];
 $priority_values = [];
@@ -61,7 +59,7 @@ try {
     $has_connection = false;
 }
 
-if ($has_connection === false && $config['integria_enabled']) {
+if ($has_connection === false && $config['ITSM_enabled']) {
     ui_print_error_message(__('ITSM API is not reachable, %s', $error));
 }
 
@@ -78,7 +76,7 @@ if (get_parameter('update_config', 0) == 1) {
         ['name' => io_safe_input('Integria IMS Ticket')]
     );
 
-    if ($config['integria_enabled'] == 1) {
+    if ($config['ITSM_enabled'] == 1) {
         if ($event_response_exists === false) {
             // Create 'Create incident in IntegriaIMS from event' event response only when user enables IntegriaIMS integration and it does not exist in database.
             db_process_sql_insert(
@@ -98,13 +96,6 @@ if (get_parameter('update_config', 0) == 1) {
             );
         }
 
-        $types_string = '';
-        if (empty($object_types_values) === false) {
-            foreach ($object_types_values as $id => $name) {
-                $types_string .= $id.','.$name.';';
-            }
-        }
-
         if ($command_exists === false) {
             // Create 'Integria IMS Ticket' command only when user enables IntegriaIMS integration and it does not exist in database.
             $id_command_inserted = db_process_sql_insert(
@@ -114,8 +105,8 @@ if (get_parameter('update_config', 0) == 1) {
                     'command'             => io_safe_input('Internal type'),
                     'internal'            => 1,
                     'description'         => io_safe_input('Create a ticket in Integria IMS'),
-                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'","'.io_safe_input('Ticket status').'","'.io_safe_input('Ticket description').'","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]',
-                    'fields_values'       => '["", "", "","","'.$types_string.'","","","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]',
+                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'","'.io_safe_input('Ticket status').'","'.io_safe_input('Ticket description').'","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_"]',
+                    'fields_values'       => '["", "_ITSM_groups_", "_ITSM_priorities_","_ITSM_users_","_ITSM_types_","_ITSM_status_","_html_editor_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_","_custom_field_ITSM_"]',
                 ]
             );
 
@@ -140,80 +131,6 @@ if (get_parameter('update_config', 0) == 1) {
             ];
 
             alerts_create_alert_action(io_safe_input('Create Integria IMS ticket'), $id_command_inserted, $action_values);
-        } else {
-            // Update 'Integria IMS Ticket' command with ticket types retrieved from Integria IMS.
-            $sql_update_command_values = sprintf(
-                '
-                UPDATE talert_commands
-                SET fields_values = \'["","","","","%s","","","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]\'
-                WHERE name="%s"',
-                $types_string,
-                io_safe_input('Integria IMS Ticket')
-            );
-
-            db_process_sql($sql_update_command_values);
-
-            // Update those actions that make use of 'Integria IMS Ticket' command when setup default fields are updated. Empty fields in actions will be filled in with default values.
-            $update_action_values = [
-                $config['incident_title'],
-                $config['default_group'],
-                $config['default_criticity'],
-                $config['default_owner'],
-                $config['incident_type'],
-                $config['incident_status'],
-                $config['incident_content'],
-            ];
-
-            foreach ($update_action_values as $key => $value) {
-                $field_key = ($key + 1);
-
-                $sql_update_action_field = sprintf(
-                    '
-                    UPDATE talert_actions taa
-                    INNER JOIN talert_commands tac
-                    ON taa.id_alert_command=tac.id
-                    SET field%s= "%s"
-                    WHERE tac.name="Integria&#x20;IMS&#x20;Ticket"
-                    AND (
-                        taa.field%s IS NULL OR taa.field%s=""
-                    )',
-                    $field_key,
-                    $value,
-                    $field_key,
-                    $field_key,
-                    $field_key
-                );
-
-                db_process_sql($sql_update_action_field);
-            }
-
-            foreach ($update_action_values as $key => $value) {
-                $field_key = ($key + 1);
-
-                $sql_update_action_recovery_field = sprintf(
-                    '
-                    UPDATE talert_actions taa
-                    INNER JOIN talert_commands tac
-                    ON taa.id_alert_command=tac.id
-                    SET field%s_recovery = "%s"
-                    WHERE tac.name="Integria&#x20;IMS&#x20;Ticket"
-                    AND (
-                        taa.field%s_recovery IS NULL OR taa.field%s_recovery=""
-                    )',
-                    $field_key,
-                    $value,
-                    $field_key,
-                    $field_key,
-                    $field_key
-                );
-
-                db_process_sql($sql_update_action_recovery_field);
-            }
-        }
-    } else {
-        if ($event_response_exists !== false) {
-            // Delete 'Create incident in IntegriaIMS from event' event response if it does exist and IntegriaIMS integration is disabled.
-            db_process_sql_delete('tevent_response', ['name' => io_safe_input('Create ticket in IntegriaIMS from event')]);
         }
     }
 }
@@ -221,119 +138,70 @@ if (get_parameter('update_config', 0) == 1) {
 $table_enable = new StdClass();
 $table_enable->data = [];
 $table_enable->width = '100%';
-$table_enable->id = 'integria-enable-setup';
+$table_enable->id = 'itsm-enable-setup';
 $table_enable->class = 'databox filters';
 $table_enable->size['name'] = '30%';
 $table_enable->style['name'] = 'font-weight: bold';
 
-// Enable Integria.
+// Enable Pandora ITSM.
 $row = [];
-$row['name'] = __('Enable Integria IMS');
-$row['control'] = html_print_checkbox_switch('integria_enabled', 1, $config['integria_enabled'], true);
-$table_enable->data['integria_enabled'] = $row;
+$row['name'] = __('Enable Pandora ITSM');
+$row['control'] = html_print_checkbox_switch('ITSM_enabled', 1, $config['ITSM_enabled'], true);
+$table_enable->data['ITSM_enabled'] = $row;
 
 // Remote config table.
 $table_remote = new StdClass();
 $table_remote->data = [];
 $table_remote->width = '100%';
 $table_remote->styleTable = 'margin-bottom: 10px;';
-$table_remote->id = 'integria-remote-setup';
+$table_remote->id = 'ITSM-remote-setup';
 $table_remote->class = 'databox filters filter-table-adv';
 $table_remote->size['hostname'] = '50%';
 $table_remote->size['api_pass'] = '50%';
 
-// Enable Integria user configuration.
+// Enable ITSM user configuration.
 $row = [];
 $row['user_level'] = html_print_label_input_block(
-    __('Integria configuration at user level'),
+    __('Pandora ITSM configuration at user level'),
     html_print_checkbox_switch(
-        'integria_user_level_conf',
+        'ITSM_user_level_conf',
         1,
-        $config['integria_user_level_conf'],
+        $config['ITSM_user_level_conf'],
         true
     )
 );
-$table_remote->data['integria_user_level_conf'] = $row;
+$table_remote->data['ITSM_user_level_conf'] = $row;
 
-// Integria user.
-/*
-    $row = [];
-    $row['user'] = html_print_label_input_block(
-    __('User'),
-    html_print_input_text(
-        'integria_user',
-        $config['integria_user'],
-        '',
-        30,
-        100,
-        true
-    ),
-    ['div_class' => 'integria-remote-setup-integria_user']
-    );
-*/
-
-// Integria hostname.
+// ITSM hostname.
 $row = [];
 $row['hostname'] = html_print_label_input_block(
-    __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true),
+    __('URL to Pandora ITSM setup').ui_print_help_tip(__('Full URL to your Pandora ITSM setup (e.g., http://192.168.1.20/integria/api/v1).'), true),
     html_print_input_text(
-        'integria_hostname',
-        $config['integria_hostname'],
+        'ITSM_hostname',
+        $config['ITSM_hostname'],
         '',
         30,
         100,
         true
     ),
-    ['div_class' => 'integria-remote-setup-integria_hostname']
+    ['div_class' => 'ITSM-remote-setup-ITSM_hostname']
 );
 
-// Integria token.
+// ITSM token.
 $row['password'] = html_print_label_input_block(
-    __('Password'),
+    __('Token'),
     html_print_input_password(
-        'integria_pass',
-        io_output_password($config['integria_pass']),
+        'ITSM_token',
+        io_output_password($config['ITSM_token']),
         '',
         30,
         100,
         true
     ),
-    ['div_class' => 'integria-remote-setup-integria_pass']
+    ['div_class' => 'ITSM-remote-setup-ITSM_token']
 );
-$table_remote->data['integria_pass'] = $row;
+$table_remote->data['ITSM_token'] = $row;
 
-/*
-    // API password.
-    $row['api_pass'] = html_print_label_input_block(
-    __('API Password'),
-    html_print_input_password(
-        'integria_api_pass',
-        io_output_password($config['integria_api_pass']),
-        '',
-        30,
-        100,
-        true
-    ),
-    ['div_class' => 'integria-remote-setup-integria_api_pass']
-    );
-    $table_remote->data['integria_api_pass'] = $row;
-
-    // Request timeout.
-    $row = [];
-    $row['req_timeout'] = html_print_label_input_block(
-    __('Request timeout'),
-    html_print_input_text(
-        'integria_req_timeout',
-        $config['integria_req_timeout'],
-        '',
-        3,
-        10,
-        true
-    ),
-    ['div_class' => 'integria-remote-setup-integria_req_timeout']
-    );
-    $table_remote->data['integria_req_timeout'] = $row;
-*/
 $row = [];
 $row['control'] = __('Inventory');
 $row['control'] .= html_print_button(
@@ -350,14 +218,14 @@ $row['control'] .= html_print_button(
 $row['control'] .= '<span id="ITSM-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
 $row['control'] .= '<span id="ITSM-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
 $row['control'] .= '<span id="ITSM-failure-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-$table_remote->data['integria_sync_inventory'] = $row;
+$table_remote->data['ITSM_sync_inventory'] = $row;
 
 // Alert settings.
 $table_alert_settings = new StdClass();
 $table_alert_settings->data = [];
 $table_alert_settings->width = '100%';
 $table_alert_settings->styleTable = 'margin-bottom: 10px;';
-$table_alert_settings->id = 'integria-cr-settings-setup';
+$table_alert_settings->id = 'ITSM-settings-setup';
 $table_alert_settings->class = 'databox filters filter-table-adv';
 $table_alert_settings->size[0] = '50%';
 $table_alert_settings->size[1] = '50%';
@@ -434,7 +302,7 @@ $table_alert_settings->data[1] = $row;
 $row = [];
 $row[0] = html_print_label_input_block(
     __('Owner'),
-    html_print_autocomplete_users_from_integria(
+    html_print_autocomplete_users_from_pandora_itsm(
         'default_owner',
         $config['default_owner'],
         true,
@@ -490,7 +358,7 @@ $table_cr_settings = new StdClass();
 $table_cr_settings->data = [];
 $table_cr_settings->width = '100%';
 $table_cr_settings->styleTable = 'margin-bottom: 10px;';
-$table_cr_settings->id = 'integria-cr-settings-setup';
+$table_cr_settings->id = 'ITSM-cr-settings-setup';
 $table_cr_settings->class = 'databox filters filter-table-adv';
 $table_cr_settings->size[0] = '50%';
 $table_cr_settings->size[1] = '50%';
@@ -568,7 +436,7 @@ $table_cr_settings->data[1] = $row;
 $row = [];
 $row[0] = html_print_label_input_block(
     __('Owner'),
-    html_print_autocomplete_users_from_integria(
+    html_print_autocomplete_users_from_pandora_itsm(
         'cr_default_owner',
         $config['cr_default_owner'],
         true,
@@ -637,11 +505,11 @@ $row['control'] .= '<span id="ITSM-spinner" class="invisible">&nbsp;'.html_print
 $row['control'] .= '<span id="ITSM-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'&nbsp;'.__('Connection its OK').'</span>';
 $row['control'] .= '<span id="ITSM-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'&nbsp;'.__('Connection failed').'</span>';
 $row['control'] .= '&nbsp;<span id="ITSM-message" class="invisible"></span>';
-$table_remote->data['integria_test'] = $row;
+$table_remote->data['ITSM_test'] = $row;
 
 // Print.
 echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
-echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
+echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/itsm/">';
 html_print_image(
     'images/integria_logo.svg',
     false,
@@ -649,11 +517,11 @@ html_print_image(
 );
 echo '</a>';
 echo '<br />';
-echo '<div clsas="integria_title">';
-echo __('Integria IMS');
+echo '<div class="ITSM_title">';
+echo __('Pandora ITSM');
 echo '</div>';
-echo '<a target="_blank" rel="noopener noreferrer" href="https://integriaims.com">';
-echo 'https://integriaims.com';
+echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/itsm/">';
+echo 'https://pandorafms.com/es/itsm/';
 echo '</a>';
 echo '</div>';
 
@@ -668,7 +536,7 @@ echo '</div>';
 // Form remote.
 echo '<div id="form_remote">';
 echo '<fieldset>';
-echo '<legend>'.__('Integria API settings').'</legend>';
+echo '<legend>'.__('Pandora ITSM API settings').'</legend>';
 
 html_print_table($table_remote);
 
@@ -723,30 +591,29 @@ ui_require_javascript_file('ITSM');
 
 <script type="text/javascript">
 
-    if($('input:checkbox[name="integria_user_level_conf"]').is(':checked'))
+    if($('input:checkbox[name="ITSM_user_level_conf"]').is(':checked'))
     {
-        $('.integria-remote-setup-integria_user').hide();
-        $('.integria-remote-setup-integria_pass').hide()
+        $('.ITSM-remote-setup-ITSM_token').hide()
     }
 
     var handleUserLevel = function(event) {
-        var is_checked = $('input:checkbox[name="integria_enabled"]').is(':checked');
-        var is_checked_userlevel = $('input:checkbox[name="integria_user_level_conf"]').is(':checked');
+        var is_checked = $('input:checkbox[name="ITSM_enabled"]').is(':checked');
+        var is_checked_userlevel = $('input:checkbox[name="ITSM_user_level_conf"]').is(':checked');
 
         if (event.target.value == '1' && is_checked && !is_checked_userlevel) {
             showUserPass();
-            $('input:checkbox[name="integria_user_level_conf"]').attr('checked', true);
+            $('input:checkbox[name="ITSM_user_level_conf"]').attr('checked', true);
         }
         else {
             hideUserPass();
-            $('input:checkbox[name="integria_user_level_conf"]').attr('checked', false);
+            $('input:checkbox[name="ITSM_user_level_conf"]').attr('checked', false);
         };
     }
 
-    $('input:checkbox[name="integria_enabled"]').change(handleEnable);
-    $('input:checkbox[name="integria_user_level_conf"]').change(handleUserLevel);
+    $('input:checkbox[name="ITSM_enabled"]').change(handleEnable);
+    $('input:checkbox[name="ITSM_user_level_conf"]').change(handleUserLevel);
 
-    if(!$('input:checkbox[name="integria_enabled"]').is(':checked')) {
+    if(!$('input:checkbox[name="ITSM_enabled"]').is(':checked')) {
         $('#form_remote').hide();
         $('#form_custom_response_settings').hide();
     } else {
@@ -765,29 +632,27 @@ ui_require_javascript_file('ITSM');
     }
 
     var hideUserPass = function () {
-        $('.integria-remote-setup-integria_user').hide();
-        $('.integria-remote-setup-integria_pass').hide();
+        $('.ITSM-remote-setup-ITSM_token').hide();
     }
 
     var showUserPass = function () {
-        $('.integria-remote-setup-integria_user').show();
-        $('.integria-remote-setup-integria_pass').show();
+        $('.ITSM-remote-setup-ITSM_token').show();
     }
 
     var handleEnable = function (event) {
-        var is_checked = $('input:checkbox[name="integria_enabled"]').is(':checked');
+        var is_checked = $('input:checkbox[name="ITSM_enabled"]').is(':checked');
 
         if (event.target.value == '1' && is_checked) {
             showFields();
-            $('input:checkbox[name="integria_enabled"]').attr('checked', true);
+            $('input:checkbox[name="ITSM_enabled"]').attr('checked', true);
         }
         else {
             hideFields();
-            $('input:checkbox[name="integria_enabled"]').attr('checked', false);
+            $('input:checkbox[name="ITSM_enabled"]').attr('checked', false);
         };
     }
 
-    $('input:checkbox[name="integria_enabled"]').change(handleEnable);
+    $('input:checkbox[name="ITSM_enabled"]').change(handleEnable);
 
     var handleInventorySync = function (event) {
 
@@ -818,17 +683,15 @@ ui_require_javascript_file('ITSM');
         hideFailureImage();
         showLoadingImage();
 
-        var integria_user = $('input[name=integria_user]').val();
-        var integria_pass = $('input[name=integria_pass]').val();
-        var api_hostname = $('input[name=integria_hostname]').val();
-        var api_pass = $('input[name=integria_api_pass]').val();
+        var ITSM_token = $('input[name=ITSM_token]').val();
+        var api_hostname = $('input[name=ITSM_hostname]').val();
 
         if (!api_hostname.match(/^[a-zA-Z]+:\/\//))
         {
             api_hostname = 'http://' + api_hostname;
         }
 
-        var url = api_hostname + '/integria/include/api.php';
+        var url = api_hostname + '//include/api.php';
 
         <?php
         // Retrieve all agents and codify string in the format that will be sent over in Ajax call.
@@ -854,9 +717,7 @@ ui_require_javascript_file('ITSM');
 
         var data = {
             op: 'sync_pandora_agents_inventory',
-            user: integria_user,
-            user_pass: integria_pass,
-            pass: api_pass,
+            user_pass: ITSM_token,
             params: agents_query_string_array,
             token: '|;|'
         }
@@ -880,8 +741,8 @@ ui_require_javascript_file('ITSM');
     }
 
     $('#button-ITSM').click(function() {
-        var pass = $('input#password-integria_pass').val();
-        var host = $('input#text-integria_hostname').val();
+        var pass = $('input#password-ITSM_token').val();
+        var host = $('input#text-ITSM_hostname').val();
         testConectionApi(pass, host);
     });
     //$('#button-sync-inventory').click(handleInventorySync);

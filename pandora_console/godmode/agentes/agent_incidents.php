@@ -18,7 +18,7 @@ require_once 'include/functions_incidents.php';
 
 check_login();
 
-if (!$config['integria_enabled']) {
+if (!$config['ITSM_enabled']) {
     ui_print_error_message(__('In order to access ticket management system, integration with ITSM must be enabled and properly configured'));
     return;
 }
@@ -55,8 +55,7 @@ $params = [
     agents_get_name($id_agent),
 ];
 
-$result = integria_api_call(null, null, null, null, 'get_incidents', $params, false, 'json', ',');
-
+// $result = integria_api_call(null, null, null, null, 'get_incidents', $params, false, 'json', ',');
 $result = json_decode($result, true);
 
 if (empty($result) === true) {

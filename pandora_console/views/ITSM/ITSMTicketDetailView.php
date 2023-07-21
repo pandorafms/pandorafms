@@ -28,14 +28,12 @@
 
 global $config;
 
-ui_require_css_file('integriaims');
-
 // Header tabs.
 ui_print_standard_header(
     __('ITSM Detailed'),
     '',
     false,
-    'integria_tab',
+    'ITSM_tab',
     false,
     [],
     [
@@ -71,12 +69,12 @@ if (empty($incidence) === true) {
     }
 
     // Details box.
-    $details_box = '<div class="integriaims_details_box integriaims_details_box_five">';
-    $details_box .= '<div class="integriaims_details_titles">'.__('Status').'</div>';
-    $details_box .= '<div class="integriaims_details_titles">'.__('Resolution').'</div>';
-    $details_box .= '<div class="integriaims_details_titles">'.__('Group').'</div>';
-    $details_box .= '<div class="integriaims_details_titles">'.__('Priority').'</div>';
-    $details_box .= '<div class="integriaims_details_titles">'.__('Type').'</div>';
+    $details_box = '<div class="pandoraitsm_details_box pandoraitsm_details_box_five">';
+    $details_box .= '<div class="pandoraitsm_details_titles">'.__('Status').'</div>';
+    $details_box .= '<div class="pandoraitsm_details_titles">'.__('Resolution').'</div>';
+    $details_box .= '<div class="pandoraitsm_details_titles">'.__('Group').'</div>';
+    $details_box .= '<div class="pandoraitsm_details_titles">'.__('Priority').'</div>';
+    $details_box .= '<div class="pandoraitsm_details_titles">'.__('Type').'</div>';
     $details_box .= '<div>';
     $details_box .= html_print_image('images/heart.png', true, ['class' => 'invert_filter']);
     $details_box .= '</div>';
@@ -104,7 +102,7 @@ if (empty($incidence) === true) {
     $details_box .= '</div>';
 
     // People box.
-    $people_box = '<div class="integriaims_details_box integriaims_details_box_three">';
+    $people_box = '<div class="pandoraitsm_details_box pandoraitsm_details_box_three">';
     $people_box .= '<div>';
     $people_box .= html_print_image('images/header_user_green.png', true, ['width' => '21']);
     $people_box .= '</div>';
@@ -115,9 +113,9 @@ if (empty($incidence) === true) {
     $people_box .= html_print_image('images/header_user_green.png', true, ['width' => '21']);
     $people_box .= '</div>';
 
-    $people_box .= '<div class="integriaims_details_titles">'.__('Created by').':</div>';
-    $people_box .= '<div class="integriaims_details_titles">'.__('Owned by').':</div>';
-    $people_box .= '<div class="integriaims_details_titles">'.__('Closed by').':</div>';
+    $people_box .= '<div class="pandoraitsm_details_titles">'.__('Created by').':</div>';
+    $people_box .= '<div class="pandoraitsm_details_titles">'.__('Owned by').':</div>';
+    $people_box .= '<div class="pandoraitsm_details_titles">'.__('Closed by').':</div>';
 
     $people_box .= '<div>';
     $people_box .= (empty($incidence['idCreator']) === false) ? $users[$incidence['idCreator']]['fullName'] : '--';
@@ -131,7 +129,7 @@ if (empty($incidence) === true) {
     $people_box .= '</div>';
 
     // Dates box.
-    $dates_box = '<div class="integriaims_details_box integriaims_details_box_three">';
+    $dates_box = '<div class="pandoraitsm_details_box pandoraitsm_details_box_three">';
     $dates_box .= '<div>';
     $dates_box .= html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
     $dates_box .= '</div>';
@@ -142,9 +140,9 @@ if (empty($incidence) === true) {
     $dates_box .= html_print_image('images/mul.png', true, ['class' => 'invert_filter']);
     $dates_box .= '</div>';
 
-    $dates_box .= '<div class="integriaims_details_titles">'.__('Created at').':</div>';
-    $dates_box .= '<div class="integriaims_details_titles">'.__('Updated at').':</div>';
-    $dates_box .= '<div class="integriaims_details_titles">'.__('Closed at').':</div>';
+    $dates_box .= '<div class="pandoraitsm_details_titles">'.__('Created at').':</div>';
+    $dates_box .= '<div class="pandoraitsm_details_titles">'.__('Updated at').':</div>';
+    $dates_box .= '<div class="pandoraitsm_details_titles">'.__('Closed at').':</div>';
 
     $dates_box .= '<div>'.$incidence['startDate'].'</div>';
     $dates_box .= '<div>'.$incidence['updateDate'].'</div>';
@@ -154,7 +152,7 @@ if (empty($incidence) === true) {
     $dates_box .= '</div>';
 
     // Show details, people and dates.
-    echo '<div class="integria_details">';
+    echo '<div class="ITSM_details">';
     ui_toggle(
         $details_box,
         __('Details'),
@@ -163,8 +161,8 @@ if (empty($incidence) === true) {
         false,
         false,
         '',
-        'integria_details_content white-box-content',
-        'integria_details_shadow box-flat white_table_graph'
+        'ITSM_details_content white-box-content',
+        'ITSM_details_shadow box-flat white_table_graph'
     );
     ui_toggle(
         $people_box,
@@ -174,8 +172,8 @@ if (empty($incidence) === true) {
         false,
         false,
         '',
-        'integria_details_content white-box-content',
-        'integria_details_shadow box-flat white_table_graph'
+        'ITSM_details_content white-box-content',
+        'ITSM_details_shadow box-flat white_table_graph'
     );
     ui_toggle(
         $dates_box,
@@ -185,13 +183,13 @@ if (empty($incidence) === true) {
         false,
         false,
         '',
-        'integria_details_content white-box-content',
-        'integria_details_shadow box-flat white_table_graph'
+        'ITSM_details_content white-box-content',
+        'ITSM_details_shadow box-flat white_table_graph'
     );
     echo '</div>';
 
     // Show description.
-    $description_box = '<div class="integria_details_description">';
+    $description_box = '<div class="ITSM_details_description">';
     $description_box .= $incidence['description'];
     $description_box .= '</div>';
     ui_toggle($description_box, __('Description'), '', '', false);

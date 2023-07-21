@@ -606,7 +606,7 @@ if ($id_agente) {
     }
 
     // Incident tab.
-    if ((bool) $config['integria_enabled'] === true) {
+    if ((bool) $config['ITSM_enabled'] === true) {
         $incidenttab['text'] = html_print_menu_button(
             [
                 'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente,

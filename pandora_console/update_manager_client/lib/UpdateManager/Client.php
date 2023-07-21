@@ -1018,7 +1018,7 @@ class Client
             );
 
             if ($sth === false) {
-                // IntegriaIMS.
+                // Pandora ITSM.
                 $sth = $dbh->query(
                     'SELECT `value`
                      FROM `tconfig`

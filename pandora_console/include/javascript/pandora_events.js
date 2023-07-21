@@ -951,8 +951,24 @@ function openSoundEventsDialog(settings) {
     $("#modal-sound").hasClass("ui-dialog-content") &&
     $("#modal-sound").dialog("isOpen")
   ) {
+    if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
+      console.log("arrow_menu_up");
+      $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
+      $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
+      $(".ui-dialog-titlebar-minimize").trigger("click");
+    } else if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_down")) {
+      console.log("arrow_menu_down");
+      $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
+      $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
+      $(".ui-dialog-titlebar-minimize").trigger("click");
+    }
     return;
   }
+  //Modify button
+  $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
+  $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
+  $("#minimize_arrow_event_sound").show();
+
   // Initialize modal.
   $("#modal-sound")
     .empty()
@@ -993,6 +1009,25 @@ function openSoundEventsDialog(settings) {
               var action = false;
               if (mode == 0) {
                 action = true;
+              }
+              if ($("#button-start-search").hasClass("play")) {
+                $("#modal-sound").css({
+                  height: "500px"
+                });
+                $("#modal-sound")
+                  .parent()
+                  .css({
+                    height: "550px"
+                  });
+              } else {
+                $("#modal-sound").css({
+                  height: "450px"
+                });
+                $("#modal-sound")
+                  .parent()
+                  .css({
+                    height: "500px"
+                  });
               }
 
               action_events_sound(action, settings);
@@ -1035,6 +1070,7 @@ function openSoundEventsDialog(settings) {
         });
       },
       close: function() {
+        $("#minimize_arrow_event_sound").hide();
         remove_audio();
         $(this).dialog("destroy");
       }
@@ -1065,6 +1101,7 @@ function openSoundEventModal(settings) {
   }
 
   settings = JSON.parse(atob(settings));
+
   // Check modal exists and is open.
   if (
     $("#modal-sound").hasClass("ui-dialog-content") &&
@@ -1379,7 +1416,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage",
       type: "button",
       title: "Disengage",
-      style: "float: right;margin-right: 3.2em;"
+      style: "float: right;margin-right: 0.5em; position:relative;"
     }).insertBefore(minimizeButton);
 
     // Add the disengage icon to the disengage button
@@ -1394,7 +1431,17 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
       .html(" ")
       .appendTo(disengageButton);
 
-    // Define the minimize button functionality
+    // Define the minimize button functionality;
+    function hidden_dialog() {
+      setTimeout(function() {
+        dialog.hide();
+      }, 200);
+    }
+    function show_dialog() {
+      setTimeout(function() {
+        dialog.show();
+      }, 50);
+    }
     minimizeButton.click(function(e) {
       if (!dialog.data("isMinimized")) {
         $(".ui-widget-overlay").hide();
@@ -1410,9 +1457,11 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
           {
             height: "40px",
             top: 0,
-            top: $(window).height() - 50
+            top: $(window).height() - 100
           },
-          200
+          200,
+          "linear",
+          hidden_dialog()
         );
         dialog.css({ height: "" });
 
@@ -1427,7 +1476,9 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
             height: dialog.data("originalSize").height + "px",
             top: dialog.data("originalPos").top + "px"
           },
-          200
+          200,
+          "linear",
+          show_dialog()
         );
       }
     });
@@ -1457,7 +1508,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
                 200
               );
             }
-
+            /*
             var $el = $('[aria-describedby="modal-sound"]').find(
               ".ui-dialog-title"
             );
@@ -1482,7 +1533,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
               $("style")
                 .last()
                 .remove();
-            }, flashingDuration);
+            }, flashingDuration);*/
             break;
           }
         }
@@ -1517,7 +1568,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
 
     // Set CSS properties for #modal-sound
     $("#modal-sound").css({
-      height: "auto",
+      height: "450px",
       margin: "0px"
     });
 

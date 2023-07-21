@@ -2525,7 +2525,7 @@ if ($drawConsoleSound === true) {
                     'label'      => __('Start'),
                     'type'       => 'button',
                     'name'       => 'start-search',
-                    'attributes' => [ 'class' => 'play' ],
+                    'attributes' => [ 'class' => 'play secondary' ],
                     'return'     => true,
                 ],
                 'div',

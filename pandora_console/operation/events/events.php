@@ -2699,8 +2699,9 @@ if (check_acl(
         false,
         'openSoundEventsDialog("'.$data_sound.'")',
         [
-            'icon'  => 'sound',
-            'style' => 'margin-right: 25% !important',
+            'icon'           => 'sound',
+            'style'          => 'margin-right: 25% !important',
+            'minimize-arrow' => true,
         ],
         true
     );

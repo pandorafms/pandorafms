@@ -214,11 +214,10 @@ div.container-button-play > button#button-start-search {
   text-align: left;
 }
 
-.actions-sound-modal .buttons-sound-modal button.play,
-.actions-sound-modal .buttons-sound-modal input[type="button"].play {
-  background: url(../../images/play-white.png), transparent;
-  background-repeat: no-repeat;
-  background-position: 82px 14px;
+.actions-sound-modal .buttons-sound-modal button.play {
+  background: url(../../images/play-white.png), transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: 82px 14px !important;
   color: #ffffff;
   padding-left: 20px;
   border: 0;

@@ -60,22 +60,22 @@ echo '<head>';
 ?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo __('Acoustic console'); ?></title>
-<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/pandora_minimal.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/js/jquery-ui.min.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/js/jquery-ui_custom.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/select2.min.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $config['homeurl']; ?>include/styles/pandora.css" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/select2.min.css" type="text/css" />
+<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />
 <?php
 echo ui_require_css_file('wizard', 'include/styles/', true);
 echo ui_require_css_file('discovery', 'include/styles/', true);
 echo ui_require_css_file('sound_events', 'include/styles/', true);
 ?>
-<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/jquery.current.js'></script>
-<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/jquery.pandora.js'></script>
-<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/jquery-ui.min.js'></script>
-<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/select2.min.js'></script>
-<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/pandora.js'></script>
-<script type='text/javascript' src='<?php echo $config['homeurl']; ?>include/javascript/pandora_ui.js'></script>
+<script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
+<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
+<script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
+<script type='text/javascript' src='../../include/javascript/select2.min.js'></script>
+<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
+<script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
 
 <?php
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
@@ -516,7 +516,18 @@ $(document).ready(function(){
         if (mode == 0) {
             action = true;
         }
-
+        if ($("#button-start-search").hasClass("play")){
+            $("#modal-sound").css({
+                height: "500px"
+            });
+            $("#modal-sound").parent().css({
+                height: "800px"
+            });
+        } else {
+            $("#modal-sound").css({
+                height: "450px"
+            });
+        }
         action_events_sound(action);
     });
 

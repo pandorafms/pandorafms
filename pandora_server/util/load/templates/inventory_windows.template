@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<agent_data description='{{description}}' group='{{group}}' os_name='windows' os_version='Windows 11' interval='300' version='' timestamp='{{date}}' agent_name='{{agent_name}}' agent_alias='' timezone_offset='0' custom_id='' url_address='' address=''>
+
+  <inventory>
+    <inventory_module>
+    <name>CPU</name>
+    <type><![CDATA[generic_data_string]]></type>
+    <datalist>
+    <data><![CDATA[Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz;3696 MHz;Intel64 Family 6 Model 158 Stepping 10]]></data>
+    <data><![CDATA[Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz;3696 MHz;Intel64 Family 6 Model 158 Stepping 10]]></data>
+    <data><![CDATA[Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz;3696 MHz;Intel64 Family 6 Model 158 Stepping 10]]></data>
+    <data><![CDATA[Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz;3696 MHz;Intel64 Family 6 Model 158 Stepping 10]]></data>
+    </datalist>
+    </inventory_module>
+
+    <inventory_module>
+    <name>HD</name>
+    <type><![CDATA[generic_data_string]]></type>
+    <datalist>
+    <data><![CDATA[XENSRC PVDISK SCSI Disk Device;100 GB;4c0ae98e-d414-4c  ]]></data>
+    <data><![CDATA[XENSRC PVDISK SCSI Disk Device;100 GB;afd0d8a2-84d3-49  ]]></data>
+    </datalist>
+    </inventory_module>
+
+    <inventory_module>
+    <name>Video</name>
+    <type><![CDATA[generic_data_string]]></type>
+    <datalist>
+    <data><![CDATA[Citrix Indirect Display Adapter;;PCI\VEN_5853&DEV_1003\1&79F5D87&2&03]]></data>
+    <data><![CDATA[Microsoft Basic Display Adapter;0 MB;PCI\VEN_1013&DEV_00B8&SUBSYS_00015853&REV_00\3&267A616A&0&10]]></data>
+    </datalist>
+    </inventory_module>
+
+    <inventory_module>
+    <name>NIC</name>
+    <type><![CDATA[generic_data_string]]></type>
+    <datalist>
+    <data><![CDATA[XenServer PV Network Device;BE:99:07:B0:E6:8F;{{ip_address}}]]></data>
+    <data><![CDATA[XenServer PV Network Device;C6:4E:9F:12:99:27;]]></data>
+    </datalist>
+    </inventory_module>
+
+    <inventory_module>
+    <name>Monitors</name>
+    <type><![CDATA[generic_data_string]]></type>
+    <datalist>
+    <data><![CDATA[Generic Non-PnP Monitor;DISPLAY\DEFAULT_MONITOR\4&251819FC&0&UID0]]></data>
+    </datalist>
+    </inventory_module>
+
+    <inventory_module>
+    <name>RAM</name>
+    <type><![CDATA[generic_data_string]]></type>
+    <datalist>
+    <data><![CDATA[DIMM 0;4092 MB;18756 MHz]]></data>
+    <data><![CDATA[DIMM 1;4092 MB;18756 MHz]]></data>
+    </datalist>
+    </inventory_module>
+
+    <inventory_module>
+  <name><![CDATA[Software]]></name>
+  <type><![CDATA[generic_data_string]]></type>
+  <datalist>
+      <data><![CDATA[Microsoft Office 32-bit Components 2016  ;16.0.{{rand_number}}.1000]]></data>
+      <data><![CDATA[Microsoft Office Shared 32-bit MUI (Spanish) 2016 ;16.0.4417.1000]]></data>
+      <data><![CDATA[Microsoft Skype for Business MUI (Spanish) 2016;16.0.4417.1000]]></data>
+      <data><![CDATA[Microsoft Office Proofing (Spanish) 2016 ;16.0.4417.1000]]></data>
+      <data><![CDATA[Microsoft Skype for Business Entry 2016  ;16.0.4417.1000]]></data>
+      <data><![CDATA[Microsoft Office Shared MUI (Spanish) 2016  ;16.0.4417.1000]]></data>
+      <data><![CDATA[Eines de correcció del Microsoft Office 2016: català ;16.0.4417.1000]]></data>
+      <data><![CDATA[Revisores de Texto do Microsoft Office 2016 – Português (Brasil)  ;16.0.4417.1000]]></data>
+      <data><![CDATA[Ferramentas de verificación de Microsoft Office 2016 - Galego  ;16.0.4417.1000]]></data>
+      <data><![CDATA[Microsoft Office Proofing Tools 2016 - English ;16.0.4417.1000]]></data>
+      <data><![CDATA[Herramientas de corrección de Microsoft Office 2016: español;16.0.4417.1000]]></data>
+      <data><![CDATA[Microsoft Office zuzenketa-tresnak 2016 - Euskara ;16.0.4417.1000]]></data>
+      <data><![CDATA[Microsoft OLE DB Driver for SQL Server;18.6.5.0]]></data>
+      <data><![CDATA[Integration Services  ;16.0.5107.0]]></data>
+      <data><![CDATA[Remote Desktop ;1.2.{{rand_number}}.0]]></data>
+      <data><![CDATA[XCP-ng Center 20.04.01;20.04.01.33]]></data>
+      <data><![CDATA[Universal CRT Headers Libraries and Sources ;10.1.18362.1]]></data>
+      <data><![CDATA[MSI Development Tools ;10.1.22000.194]]></data>
+      <data><![CDATA[Windows SDK Redistributables;10.1.18362.1]]></data>
+      <data><![CDATA[MSI Development Tools ;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 XEvent;16.0.1000.6]]></data>
+      <data><![CDATA[Windows SDK Desktop Tools x86  ;10.1.18362.1]]></data>
+      <data><![CDATA[CrossChex Standard ;1.1.0.0]]></data>
+      <data><![CDATA[Windows SDK Desktop Tools x64  ;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 Shared Management Objects;16.0.1000.6]]></data>
+      <data><![CDATA[WinRT Intellisense PPI - en-us ;10.1.18362.1]]></data>
+      <data><![CDATA[WinRT Intellisense UAP - Other Languages ;10.1.18362.1]]></data>
+      <data><![CDATA[Microsoft .NET Framework 4.8 Targeting Pack ;4.8.03761]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2010  x64 Redistributable - 10.0.40219 ;10.0.40219]]></data>
+      <data><![CDATA[Windows SDK AddOn  ;10.1.0.0]]></data>
+      <data><![CDATA[GlobalProtect  ;5.2.13]]></data>
+      <data><![CDATA[Windows SDK ;10.1.18362.1]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2010  x86 Redistributable - 10.0.40219 ;10.0.40219]]></data>
+      <data><![CDATA[Windows SDK for Windows Store Apps Contracts;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK Signing Tools;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 Database Engine Shared;16.0.1000.6]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2013 x86 Minimum Runtime - 12.0.21005  ;12.0.21005]]></data>
+      <data><![CDATA[Windows SDK EULA;10.1.18362.1]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2013 x86 Additional Runtime - 12.0.21005  ;12.0.21005]]></data>
+      <data><![CDATA[WPTx64 (DesktopEditions) ;10.1.22000.194]]></data>
+      <data><![CDATA[Citrix XenServer Windows Management Agent;7.2.1555]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2019 X64 Minimum Runtime - 14.29.30139 ;14.29.30139]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2019 X64 Additional Runtime - 14.29.30139 ;14.29.30139]]></data>
+      <data><![CDATA[SDK Debuggers  ;10.1.22000.194]]></data>
+      <data><![CDATA[Windows SDK ARM Desktop Tools  ;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 Connection Info;16.0.1000.6]]></data>
+      <data><![CDATA[VMware Horizon HTML5 Multimedia Redirection Client;7.8.0]]></data>
+      <data><![CDATA[Microsoft Analysis Services OLE DB Provider ;16.0.5143.0]]></data>
+      <data><![CDATA[Windows Mobile Extension SDK Contracts;10.1.18362.1]]></data>
+      <data><![CDATA[WinRT Intellisense PPI - Other Languages ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK for Windows Store Apps Metadata ;10.1.18362.1]]></data>
+      <data><![CDATA[VMware Horizon Client ;5.0.0.5596]]></data>
+      <data><![CDATA[Microsoft SQL Server 2022 Setup (English);16.0.{{rand_number}}.5]]></data>
+      <data><![CDATA[SQL Server 2022 Connection Info;16.0.1000.6]]></data>
+      <data><![CDATA[WinRT Intellisense Desktop - en-us;10.1.18362.1]]></data>
+      <data><![CDATA[Microsoft Visual Studio Tools for Applications 2019 x64 Hosting Support ;16.0.31110]]></data>
+      <data><![CDATA[Universal CRT Tools x64  ;10.1.18362.1]]></data>
+      <data><![CDATA[Application Verifier x64 External Package;10.1.22000.194]]></data>
+      <data><![CDATA[SSMS Post Install Tasks  ;19.0.20209.0]]></data>
+      <data><![CDATA[MSI Wrapper 10.0.50.0 ;10.0.50.0]]></data>
+      <data><![CDATA[Windows SDK DirectX x86 Remote ;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 Database Engine Services ;16.0.1000.6]]></data>
+      <data><![CDATA[Microsoft Web Platform Installer 5.1  ;5.1.51515.0]]></data>
+      <data><![CDATA[Self-service Plug-in  ;21.7.0.28]]></data>
+      <data><![CDATA[SDK ARM Redistributables ;10.1.18362.1]]></data>
+      <data><![CDATA[Citrix Web Helper  ;21.7.0.28]]></data>
+      <data><![CDATA[FortiClient ;6.0.10.0297]]></data>
+      <data><![CDATA[Microsoft Visual Studio Tools for Applications 2019 x86 Hosting Support ;16.0.31110]]></data>
+      <data><![CDATA[Windows SDK EULA;10.1.22000.194]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2019 X86 Additional Runtime - 14.29.30139 ;14.29.30139]]></data>
+      <data><![CDATA[SQL Server 2022 Common Files;16.0.1000.6]]></data>
+      <data><![CDATA[Windows Mobile Extension SDK;10.1.18362.1]]></data>
+      <data><![CDATA[Citrix WorkSpace Browser ;21.7.0.2]]></data>
+      <data><![CDATA[Python 2.7.15  ;2.7.15150]]></data>
+      <data><![CDATA[WinRT Intellisense IoT - Other Languages ;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 Database Engine Services ;16.0.1000.6]]></data>
+      <data><![CDATA[Java 8 Update 201  ;8.0.2010.9]]></data>
+      <data><![CDATA[Java 8 Update 201 (64-bit)  ;8.0.2010.9]]></data>
+      <data><![CDATA[Microsoft .NET Framework 4.8 SDK  ;4.8.03928]]></data>
+      <data><![CDATA[SQL Server 2022 Shared Management Objects Extensions ;16.0.1000.6]]></data>
+      <data><![CDATA[SQL Server 2022 Database Engine Services ;16.0.1000.6]]></data>
+      <data><![CDATA[VIP Access  ;2.2.4.44]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2019 X86 Minimum Runtime - 14.29.30139 ;14.29.30139]]></data>
+      <data><![CDATA[Microsoft Analysis Services OLE DB Provider ;16.0.5143.0]]></data>
+      <data><![CDATA[RSA SecurID Software Token  ;5.0.2.440]]></data>
+      <data><![CDATA[Windows SDK Facade Windows WinMD Versioned  ;10.1.18362.1]]></data>
+      <data><![CDATA[Browser for SQL Server 2022 ;16.0.1000.6]]></data>
+      <data><![CDATA[SQL Server Management Studio Language Pack - English ;19.0.20209.0]]></data>
+      <data><![CDATA[PowerShell 7-x64;7.2.11.0]]></data>
+      <data><![CDATA[Microsoft Help Viewer 2.3;2.3.28307]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2013 x64 Additional Runtime - 12.0.21005  ;12.0.21005]]></data>
+      <data><![CDATA[Online Plug-in ;21.7.0.17]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2008 Redistributable - x64 9.0.{{rand_number}}.6161 ;9.0.30729.6161]]></data>
+      <data><![CDATA[SDK ARM Additions  ;10.1.18362.1]]></data>
+      <data><![CDATA[Universal CRT Tools x86  ;10.1.18362.1]]></data>
+      <data><![CDATA[Citrix Screen Casting for Windows ;19.11.100.48]]></data>
+      <data><![CDATA[WPTx64 (OnecoreUAP);10.1.22000.194]]></data>
+      <data><![CDATA[Windows IoT Extension SDK Contracts;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 DMF;16.0.1000.6]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2008 Redistributable - x86 9.0.30729.6161 ;9.0.30729.6161]]></data>
+      <data><![CDATA[Microsoft Visual C++ 2013 x64 Minimum Runtime - 12.0.21005  ;12.0.21005]]></data>
+      <data><![CDATA[Windows SDK for Windows Store Apps Tools ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK for Windows Store Managed Apps Libs;10.1.18362.1]]></data>
+      <data><![CDATA[Check Point VPN;98.61.3407]]></data>
+      <data><![CDATA[Windows SDK for Windows Store Apps;10.1.18362.1]]></data>
+      <data><![CDATA[Application Verifier x64 External Package;10.1.18362.1]]></data>
+      <data><![CDATA[Universal General MIDI DLS Extension SDK ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK Desktop Libs x86;10.1.18362.1]]></data>
+      <data><![CDATA[Windows App Certification Kit x64 ;10.1.18362.1]]></data>
+      <data><![CDATA[Citrix Workspace(DV)  ;21.7.0.17]]></data>
+      <data><![CDATA[SQL Server 2022 Database Engine Shared;16.0.1000.6]]></data>
+      <data><![CDATA[SQL Server 2022 SQL Diagnostics;16.0.1000.6]]></data>
+      <data><![CDATA[Microsoft VSS Writer for SQL Server 2022 ;16.0.1000.6]]></data>
+      <data><![CDATA[WPT Redistributables  ;10.1.22000.194]]></data>
+      <data><![CDATA[Kits Configuration Installer;10.1.22000.194]]></data>
+      <data><![CDATA[Windows SDK for Windows Store Apps Libs  ;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 Batch Parser;16.0.1000.6]]></data>
+      <data><![CDATA[SQL Server 2022 XEvent;16.0.1000.6]]></data>
+      <data><![CDATA[Windows SDK Desktop Libs x64;10.1.18362.1]]></data>
+      <data><![CDATA[SMA Connect Agent  ;1.0.13]]></data>
+      <data><![CDATA[Windows SDK Desktop Tools arm64;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK DirectX x64 Remote ;10.1.18362.1]]></data>
+      <data><![CDATA[Microsoft SQL Server 2022 RsFx Driver ;16.0.1000.6]]></data>
+      <data><![CDATA[Citrix Workspace(USB) ;21.7.0.17]]></data>
+      <data><![CDATA[Universal CRT Extension SDK ;10.1.18362.1]]></data>
+      <data><![CDATA[Check MK Agent 1.6 ;1.6.0p5]]></data>
+      <data><![CDATA[SQL Server 2022 Shared Management Objects;16.0.1000.6]]></data>
+      <data><![CDATA[SQL Server 2022 Shared Management Objects Extensions ;16.0.1000.6]]></data>
+      <data><![CDATA[WinRT Intellisense UAP - en-us ;10.1.18362.1]]></data>
+      <data><![CDATA[BIG-IP Edge Client ;72.22.0308....]]></data>
+      <data><![CDATA[Orca  ;3.1.3790.0000]]></data>
+      <data><![CDATA[Cisco AnyConnect Secure Mobility Client  ;4.9.06037]]></data>
+      <data><![CDATA[WinRT Intellisense IoT - en-us ;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 Common Files;16.0.1000.6]]></data>
+      <data><![CDATA[Windows IP Over USB;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK Desktop Headers arm;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 Database Engine Services ;16.0.1000.6]]></data>
+      <data><![CDATA[Windows App Certification Kit SupportedApiList x86;10.1.18362.1]]></data>
+      <data><![CDATA[Windows IoT Extension SDK;10.1.18362.1]]></data>
+      <data><![CDATA[MySQL Workbench 8.0 CE;8.0.23]]></data>
+      <data><![CDATA[Windows Desktop Extension SDK  ;10.1.18362.1]]></data>
+      <data><![CDATA[Microsoft ODBC Driver 17 for SQL Server  ;17.10.3.1]]></data>
+      <data><![CDATA[Google Chrome  ;114.0.5735.199]]></data>
+      <data><![CDATA[Windows Desktop Extension SDK Contracts  ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK Modern Versioned Developer Tools;10.1.18362.1]]></data>
+      <data><![CDATA[Windows Team Extension SDK  ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK for Windows Store Apps DirectX x86 Remote;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK Desktop Libs arm64 ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK Desktop Headers x64;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK Modern Non-Versioned Developer Tools  ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows App Certification Kit Native Components;10.1.18362.1]]></data>
+      <data><![CDATA[SQL Server 2022 DMF;16.0.1000.6]]></data>
+      <data><![CDATA[Citrix Authentication Manager  ;21.7.0.2]]></data>
+      <data><![CDATA[Citrix Gateway Plug-in;12.1.55.18]]></data>
+      <data><![CDATA[Windows SDK Signing Tools;10.1.22000.194]]></data>
+      <data><![CDATA[Citrix Hypervisor PV Tools  ;9.0.33]]></data>
+      <data><![CDATA[Windows SDK Desktop Headers arm64 ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK Desktop Headers x86;10.1.18362.1]]></data>
+      <data><![CDATA[CrossChex Lite ;1.1.0.0]]></data>
+      <data><![CDATA[PuTTY release 0.70 (64-bit) ;0.70.0.0]]></data>
+      <data><![CDATA[SQL Server Management Studio;19.0.20209.0]]></data>
+      <data><![CDATA[Windows SDK Desktop Libs arm;10.1.18362.1]]></data>
+      <data><![CDATA[Visual Studio 2017 Isolated Shell for SSMS  ;15.0.28308.421]]></data>
+      <data><![CDATA[Java Auto Updater  ;2.8.{{rand_number}}.9]]></data>
+      <data><![CDATA[WinRT Intellisense Mobile - en-us ;10.1.18362.1]]></data>
+      <data><![CDATA[Windows SDK for Windows Store Apps Headers  ;10.1.18362.1]]></data>
+      <data><![CDATA[Citrix Workspace Inside  ;21.7.0.19]]></data>
+      <data><![CDATA[Universal CRT Redistributable  ;10.1.18362.1]]></data>
+      <data><![CDATA[VMware Horizon Media Engine 8.0.0.561 (64-bit) ;8.0.0.561]]></data>
+      <data><![CDATA[WinAppDeploy;10.1.18362.1]]></data>
+      <data><![CDATA[Windows Team Extension SDK Contracts  ;10.1.18362.1]]></data>
+      <data><![CDATA[WinRT Intellisense Desktop - Other Languages;10.1.18362.1]]></data>
+  </datalist>
+    </inventory_module>
+
+  <inventory_module>
+    <name>Users</name>
+    <type><![CDATA[generic_data_string]]></type>
+    <datalist>
+    <data><![CDATA[PROJECTS;Roberto]]></data>
+    </datalist>
+   </inventory_module>
+
+    <inventory_module>
+      <name>product_ID</name>
+      <type><![CDATA[generic_data_string]]></type>
+      <datalist>
+      <data><![CDATA[00429-00101-62363-AA558  ]]></data>
+      </datalist>
+    </inventory_module>
+
+  </inventory>
+
+</agent_data>

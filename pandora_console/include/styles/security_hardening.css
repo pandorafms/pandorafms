@@ -39,13 +39,30 @@
   font-weight: 800;
 }
 
+.text-passed {
+  font-size: 18px;
+  color: #82b92e;
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+}
+
+.text-passed img {
+  margin: 0px 5px 0px 11px;
+}
 .text-fail img {
-  margin: 0px 10px;
+  margin: 0px 5px 0px 11px;
 }
 
 .text-calendar {
   margin-left: 20px;
   display: flex;
+  font-size: 13px;
+  align-items: center;
+}
+
+.text-scored b {
+  margin-left: 5px;
   font-size: 13px;
   align-items: center;
 }
@@ -71,6 +88,20 @@
   margin: 21px auto;
 }
 
+.time-line {
+  max-height: 300px;
+}
+
+#form_list_resume {
+  display: flex;
+  align-items: flex-end;
+}
+
+#form_list_total_resume {
+  display: flex;
+  align-items: flex-end;
+}
+
 @media (max-width: 1500px) {
   .col-md-3 {
     width: 40%;
@@ -80,5 +111,8 @@
   }
   .issues-audit {
     justify-content: center;
+  }
+  .time-line {
+    max-height: 230px;
   }
 }

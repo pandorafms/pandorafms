@@ -187,6 +187,11 @@ class AlertsList
     }
 
 
+    /**
+     * Draw table.
+     *
+     * @return void
+     */
     public function drawTable()
     {
         global $config;
@@ -237,8 +242,6 @@ class AlertsList
                             $decoded_data = json_decode($decoded_data, true);
 
                             if (is_array($decoded_data) === true) {
-                                hd("&&&&&&&&&&&&&&&&&", true);
-                                hd($decoded_data[3]['type'], true);
                                 // Access the second element of $decoded_data (index 1) to get 'alias' and 'type'.
                                 $tmp->agentAlias = isset($decoded_data[1]['alias']) ? $decoded_data[1]['alias'] : null;
                                 $tmp->alertType = isset($decoded_data[3]['type']) ? $decoded_data[3]['type'] : null;

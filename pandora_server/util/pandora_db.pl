@@ -25,6 +25,8 @@ use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
 use File::Path qw(rmtree);
 use Time::HiRes qw(usleep);
+use IO::Handle;
+use File::Copy;
 
 # Default lib dir for RPM and DEB packages
 BEGIN { push @INC, '/usr/lib/perl5'; }
@@ -1252,6 +1254,9 @@ sub pandoradb_main {
 	# Maintain Referential integrity and other stuff
 	pandora_checkdb_integrity ($conf, $dbh);
 
+	# Update error logs
+	update_err_logs($conf);
+
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}, $conf->{'_history_db_string_days'}, $conf->{'_history_db_adv'}]));
@@ -1327,6 +1332,36 @@ sub pandora_check_forgotten_discovery_tasks {
 		log_message('FORGOTTEN DISCOVERY TASKS', 'Step ended');
 }
 
+###############################################################################
+# Update error logs that do not have a date
+###############################################################################
+sub update_err_logs {
+
+    my ($conf) = @_;
+    my $file = $conf{'errorlog_file'};
+	my $temp_file = substr($file, 0, rindex($file, '.')) . '_temp.txt';
+    my $date_str = strftime("%Y-%m-%d %H:%M:%S ", localtime);
+
+    open(my $in_fh, '<', $file) or die "Unable to open error log file to read: $!";
+    open(my $out_fh, '>', $temp_file) or die "Unable to open the temporary file for writing: $!";
+
+    while (my $line = <$in_fh>) {
+        chomp $line;
+        if ($line !~ /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/) {
+            $line = $date_str . $line;
+        }
+        print $out_fh "$line\n";  
+    }
+
+    close($in_fh);
+    close($out_fh);
+
+    if (!copy($temp_file, $file)) {
+        die "Could not copy temporary file: $!";
+    }
+
+    unlink($temp_file) or warn "Could not delete temporary file: $!";
+}
 
 # Init
 pandora_init_pdb(\%conf);

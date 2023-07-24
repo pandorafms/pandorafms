@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -649,9 +649,9 @@ $table_cr_settings->data[3] = $row;
 
 // Test.
 $row = [];
-$row['control'] = __('Test');
+$row['control'] = __('Test connection');
 $row['control'] .= html_print_button(
-    __('Start'),
+    __('Test'),
     'test-integria',
     false,
     '',
@@ -662,8 +662,8 @@ $row['control'] .= html_print_button(
     true
 );
 $row['control'] .= '<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$row['control'] .= '<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$row['control'] .= '<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'&nbsp;'.__('Connection its OK').'</span>';
+$row['control'] .= '<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'&nbsp;'.__('Connection failed').'</span>';
 $row['control'] .= '&nbsp;<span id="test-integria-message" class="invisible"></span>';
 $table_remote->data['integria_test'] = $row;
 

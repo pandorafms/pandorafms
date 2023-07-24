@@ -3,7 +3,7 @@ package PandoraFMS::DiscoveryServer;
 # Pandora FMS Discovery Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ################################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -432,8 +432,8 @@ sub PandoraFMS::Recon::Base::guess_os($$;$) {
     my $return = `"$self->{pa_config}->{nmap}" -sSU -T5 -F -O --osscan-limit $device 2>$DEVNULL`;
     return OS_OTHER if ($? != 0);
     my $str_os;
-    if ($return =~ /Aggressive OS guesses:\s*(.*)|OS details:\s(.*)/) {
-      if($1 ne "") {
+    if ($return =~ /Aggressive OS guesses:(.*?)(?>\(\d+%\),)|^OS details:(.*?)$/mi) {
+      if(defined($1) && $1 ne "") {
         $str_os = $1;
       } else {
         $str_os = $2;

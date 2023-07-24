@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -212,7 +212,8 @@ $filter['limit'] = (int) $config['block_size'];
 // Statements for pagination.
 $url = 'index.php?sec=gusuarios&sec2=godmode/tag/tag';
 $total_tags = tags_get_tag_count($filter);
-$offset_delete = ($offset >= ($total_tags - 1)) ? ($offset - $config['block_size']) : $offset;
+$offset_delete = ($offset >= $total_tags ) ? ($offset - $config['block_size']) : 0;
+
 $result = tags_search_tag(false, $filter);
 
 // Filter form.

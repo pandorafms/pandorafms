@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -441,8 +441,12 @@ class HeatmapWidget extends Widget
             $filter = explode(',', $values['module_groups'][0]);
         }
 
+        // Public dashboard.
+        $auth_hash = get_parameter('auth_hash', '');
+        $public_user = get_parameter('id_user', '');
+
         // Control call flow.
-        $heatmap = new Heatmap($type, $filter, null, 300, 400, 200, $search, 0, true);
+        $heatmap = new Heatmap($type, $filter, null, 300, 400, 200, $search, 0, true, $auth_hash, $public_user);
         // AJAX controller.
         if (is_ajax() === true) {
             $method = get_parameter('method');

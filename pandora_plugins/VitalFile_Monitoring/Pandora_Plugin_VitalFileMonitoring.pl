@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Pandora FMS Agent Plugin for Tuxedo
-# (c) Artica Soluciones Tecnologicas  <info@artica.es> 2012
+# (c) Pandora FMS  <info@pandorafms.com> 2012
 # v1.0, 18 Apr 2012 
 # ------------------------------------------------------------------------
 

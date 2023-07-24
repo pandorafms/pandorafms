@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -354,6 +354,8 @@ class ColorModuleTabs extends Widget
     {
         global $config;
 
+        include_once $config['homedir'].'/include/functions_graph.php';
+
         $size = parent::getSize();
 
         $output = '';
@@ -503,15 +505,23 @@ class ColorModuleTabs extends Widget
             if (isset($this->values['formatData']) === true
                 && (bool) $this->values['formatData'] === true
             ) {
-                $output .= format_for_graph(
-                    $data['data'],
-                    $config['graph_precision']
-                );
+                if (is_numeric($data['data']) === true) {
+                    $output .= format_for_graph(
+                        $data['data'],
+                        $config['graph_precision']
+                    );
+                } else {
+                    $output .= ui_print_truncate_text($data['data'], 20);
+                }
             } else {
-                $output .= sla_truncate(
-                    $data['data'],
-                    $config['graph_precision']
-                );
+                if (is_numeric($data['data']) === true) {
+                    $output .= sla_truncate(
+                        $data['data'],
+                        $config['graph_precision']
+                    );
+                } else {
+                    $output .= ui_print_truncate_text($data['data'], 20);
+                }
             }
         } else {
             $output .= '--';

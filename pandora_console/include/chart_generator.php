@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -46,6 +46,8 @@ if (json_last_error() === JSON_ERROR_NONE) {
     $session_id = $data_decoded['session_id'];
     $type_graph_pdf = $data_decoded['type_graph_pdf'];
     $id_user = $data_decoded['id_user'];
+    $slicebar = $data_decoded['slicebar'];
+    $slicebar_value = $data_decoded['slicebar_value'];
 
     $data_combined = [];
     if (isset($data_decoded['data_combined']) === true) {
@@ -64,6 +66,9 @@ global $config;
 // Care whit this!!! check_login not working if you remove this.
 $config['id_user'] = $id_user;
 $_SESSION['id_usuario'] = $id_user;
+if (!isset($config[$slicebar])) {
+    $config[$slicebar] = $slicebar_value;
+}
 
 // Try to initialize session using existing php session id.
 $user = new PandoraFMS\User(['phpsessionid' => $session_id]);
@@ -131,37 +136,41 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     $l10n->load_tables();
 }
 
+$hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
 ?>
 <!DOCTYPE>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Pandora FMS Graph</title>
-        <link rel="stylesheet" href="styles/pandora.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-        <link rel="stylesheet" href="styles/pandora_minimal.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-        <link rel="stylesheet" href="styles/js/jquery-ui.min.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-        <link rel="stylesheet" href="styles/js/jquery-ui_custom.css?v=<?php echo $config['current_package']; ?>" type="text/css" />
-        <script language="javascript" type='text/javascript' src='javascript/pandora_ui.js?v=<?php echo $config['current_package']; ?>'></script>
-        <script language="javascript" type='text/javascript' src='javascript/jquery.current.js?v=<?php echo $config['current_package']; ?>'></script>
-        <script language="javascript" type='text/javascript' src='javascript/jquery.pandora.js?v=<?php echo $config['current_package']; ?>'></script>
-        <script language="javascript" type='text/javascript' src='javascript/jquery-ui.min.js?v=<?php echo $config['current_package']; ?>'></script>
-        <script language="javascript" type='text/javascript' src='javascript/pandora.js?v=<?php echo $config['current_package']; ?>'></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.min.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.time.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.pie.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.crosshair.min.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.stack.min.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.selection.min.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.resize.min.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.threshold.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.threshold.multiple.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.symbol.min.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.exportdata.pandora.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.axislabels.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/flot/pandora.flot.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/chartjs/chart.js?v=<?php echo $config['current_package']; ?>"></script>
-        <script language="javascript" type="text/javascript" src="graphs/chartjs/chartjs-plugin-datalabels.min.js?v=<?php echo $config['current_package']; ?>"></script>
+        <link rel="stylesheet" href="<?php echo ui_get_full_url($hack_metaconsole.'include/styles/pandora.css'); ?>?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="<?php echo ui_get_full_url($hack_metaconsole.'include/styles/pandora_minimal.css'); ?>?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="<?php echo ui_get_full_url($hack_metaconsole.'include/styles/js/jquery-ui.min.css'); ?>?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <link rel="stylesheet" href="<?php echo ui_get_full_url($hack_metaconsole.'include/styles/js/jquery-ui_custom.css'); ?>?v=<?php echo $config['current_package']; ?>" type="text/css" />
+        <script language="javascript" type='text/javascript' src='<?php echo ui_get_full_url($hack_metaconsole.'include/javascript/pandora_ui.js'); ?>?v=<?php echo $config['current_package']; ?>'></script>
+        <script language="javascript" type='text/javascript' src='<?php echo ui_get_full_url($hack_metaconsole.'include/javascript/jquery.current.js'); ?>?v=<?php echo $config['current_package']; ?>'></script>
+        <script language="javascript" type='text/javascript' src='<?php echo ui_get_full_url($hack_metaconsole.'include/javascript/jquery.pandora.js'); ?>?v=<?php echo $config['current_package']; ?>'></script>
+        <script language="javascript" type='text/javascript' src='<?php echo ui_get_full_url($hack_metaconsole.'include/javascript/jquery-ui.min.js'); ?>?v=<?php echo $config['current_package']; ?>'></script>
+        <script language="javascript" type='text/javascript' src='<?php echo ui_get_full_url($hack_metaconsole.'include/javascript/pandora.js'); ?>?v=<?php echo $config['current_package']; ?>'></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.time.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.pie.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.crosshair.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.stack.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.selection.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.resize.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.threshold.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.threshold.multiple.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.symbol.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.exportdata.pandora.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.axislabels.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script type="text/javascript">
+            var phpTimezone = "<?php echo date_default_timezone_get(); ?>";
+        </script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/pandora.flot.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/chartjs/chart.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/chartjs/chartjs-plugin-datalabels.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
     </head>
     <body style='width:794px; margin: 0px; background-color: <?php echo $params['backgroundColor']; ?>;'>
     <?php

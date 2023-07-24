@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.770 Build 230509";
+my $version = "7.0NG.772 Build 230724";
 
 # Pandora server configuration
 my %conf;
@@ -760,7 +760,53 @@ sub pandora_checkdb_integrity {
 
     # Delete orphan data_inc reference records
     db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
-    
+
+		# Delete orphan data from visual console.
+		log_message ('INTEGRITY', "Deleting orphan visual console items.");
+		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agent NOT IN (SELECT id_agente FROM tagente)');
+		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
+
+		# Delete orphan data form deleted agents.
+		# Clearl orphan data from dashboards
+		log_message ('INTEGRITY', "Deleting orphan dahsboard items.");
+		my @agents_ids = get_db_rows($dbh, 'SELECT id_agente FROM tagente');
+		my $where_condition;
+		foreach my $agent_id (@agents_ids) {
+			$where_condition .= 'options NOT LIKE ("%\\"agentid\\":\\"'.$agent_id->{'id_agente'}.'\\"%")';
+			if($agent_id == $agents_ids[-1]) {
+				last;	
+			}
+			$where_condition .= ' AND ';
+		}
+
+		db_do ($dbh, 'UPDATE twidget_dashboard set options = NULL WHERE '.$where_condition);
+
+		$where_condition = '';
+		my @modules = get_db_rows($dbh, 'SELECT id_agente_modulo FROM tagente_modulo');
+		foreach my $id_agente_modulo (@modules) {
+			$where_condition .= 'options NOT LIKE ("%\\"moduleId\\":\\"'.$id_agente_modulo->{'id_agente_modulo'}.'\\"%")';
+			if($id_agente_modulo == $modules[-1]) {
+				last;	
+			}
+			$where_condition .= ' AND ';
+		}
+
+		db_do ($dbh, 'UPDATE twidget_dashboard set options = NULL WHERE '.$where_condition);
+
+		# Delete orphan data from favorite agents
+		log_message ('INTEGRITY', "Deleting orphan favories items.");
+		db_do ($dbh, 'DELETE FROM tfavmenu_user WHERE section = "Agents" AND id_element NOT IN (SELECT id_agente FROM tagente)');
+
+		# Delete orphan data from gis maps
+		log_message ('INTEGRITY', "Deleting orphan GIS data.");
+		db_do ($dbh, 'DELETE FROM tgis_data_history WHERE tagente_id_agente NOT IN (SELECT id_agente FROM tagente)');
+
+		# Delete orphan tnetwork maps data
+		log_message ('INTEGRITY', "Deleting orphan networkmaps data.");
+		db_do ($dbh, 'DELETE FROM titem WHERE source_data NOT IN (SELECT id_agente FROM tagente)');
+		db_do ($dbh, 'DELETE FROM trel_item WHERE id_parent_source_data NOT IN (SELECT id_agente FROM tagente) OR id_child_source_data NOT IN (SELECT id_agente FROM tagente)');
+		
+	
     # Check enterprise tables
     enterprise_hook ('pandora_checkdb_integrity_enterprise', [$conf, $dbh]);
 }

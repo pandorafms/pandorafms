@@ -216,6 +216,10 @@ class ModulesByStatus extends Widget
             $values['nodes'] = $decoder['nodes'];
         }
 
+        if (isset($decoder['disabled_modules']) === true) {
+            $values['disabled_modules'] = $decoder['disabled_modules'];
+        }
+
         return $values;
     }
 
@@ -245,6 +249,23 @@ class ModulesByStatus extends Widget
                 'value'  => $values['search'],
                 'return' => true,
                 'size'   => 0,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => html_print_div(
+                [
+                    'class'   => 'flex',
+                    'content' => __('Disabled modules').ui_print_help_tip(__('Include disabled modules'), true),
+                ],
+                true
+            ),
+            'arguments' => [
+                'id'     => 'disabled_modules',
+                'name'   => 'disabled_modules',
+                'type'   => 'switch',
+                'value'  => ($values['disabled_modules'] === null) ? true : $values['disabled_modules'],
+                'return' => true,
             ],
         ];
 
@@ -356,6 +377,7 @@ class ModulesByStatus extends Widget
         $values['status'] = \get_parameter('status', '');
         $values['limit'] = \get_parameter('limit', '');
         $values['nodes'] = \get_parameter('nodes', '');
+        $values['disabled_modules'] = \get_parameter_switch('disabled_modules');
 
         return $values;
     }
@@ -416,7 +438,7 @@ class ModulesByStatus extends Widget
                     [
                         'id'                 => $tableId,
                         'class'              => 'info_table align-left-important',
-                        'style'              => 'width: 99%',
+                        'style'              => 'width: 100%',
                         'columns'            => $columns,
                         'column_names'       => $column_names,
                         'ajax_url'           => 'include/ajax/module',
@@ -426,6 +448,7 @@ class ModulesByStatus extends Widget
                             'search'                   => $this->values['search'],
                             'status'                   => $this->values['status'],
                             'nodes'                    => $this->values['nodes'],
+                            'disabled_modules'         => $this->values['disabled_modules'],
                         ],
                         'default_pagination' => $this->values['limit'],
                         'order'              => [

@@ -1180,3 +1180,52 @@ function getUrlAjax() {
     return $("#hidden-ajax_file_sound_console").val();
   }
 }
+
+function addElement(name_select, id_modal) {
+  var modal = document.getElementById(id_modal);
+  var parent = $(modal).parent();
+  $(modal).dialog({
+    title: "Choose columns",
+    width: 330,
+    buttons: [
+      {
+        class:
+          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-next",
+        text: "Confirm",
+        click: function() {
+          $(modal)
+            .find("select option:selected")
+            .each(function(key, option) {
+              $("select[name='" + name_select + "']").append(option);
+            });
+          var clone = $(modal).clone();
+          $(modal)
+            .dialog("destroy")
+            .remove();
+          $(clone).hide();
+          $(parent).append(clone);
+        }
+      }
+    ],
+    close: function() {
+      var clone = $(modal).clone();
+      $(modal)
+        .dialog("destroy")
+        .remove();
+      $(clone).hide();
+      $(parent).append(clone);
+    }
+  });
+}
+
+function removeElement(name_select, id_modal) {
+  var modal = document.getElementById(id_modal);
+  $("select[name='" + name_select + "'] option:selected").each(function(
+    key,
+    option
+  ) {
+    $(modal)
+      .find("select")
+      .append(option);
+  });
+}

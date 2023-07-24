@@ -2,7 +2,7 @@
 ###############################################################################
 #
 # Copyright (c) 2016  Antonio Sánchez  <antonio.sanchez@artica.es>
-# Copyright (c) 2016  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2016-2023 Pandora FMS.
 #
 # By default, gather data from all data file system types.
 # You can add many filesystems you want to include in the checks by just passing 

@@ -165,9 +165,9 @@ function agents_locate_agent(string $field)
 function agents_get_agent_id_by_alias($alias, $is_metaconsole=false)
 {
     if ($is_metaconsole === true) {
-        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE upper(alias) LIKE upper('%$alias%')");
+        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE '$alias' != '' and upper(alias) LIKE upper('%$alias%')");
     } else {
-        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE '$alias' != '' and upper(alias) LIKE upper('%$alias%')");
     }
 }
 
@@ -2769,6 +2769,69 @@ function agents_delete_agent($id_agents, $disableACL=false)
         // Delete the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         enterprise_hook('agent_delete_from_cache', [$id_agent]);
+
+        // Delete agent from visual console.
+        db_process_sql_delete(
+            'tlayout_data',
+            ['id_agent' => $id_agent]
+        );
+
+        // Delete agent from visual dashboards.
+        db_process_sql(
+            'UPDATE twidget_dashboard 
+        SET options = NULL 
+        WHERE options LIKE ("%\"agentid\":\"'.$id_agent.'\"%")'
+        );
+
+        // Delete agent from treport.
+        db_process_sql_delete(
+            'treport_content',
+            ['id_agent' => $id_agent]
+        );
+
+        // Delete rules from tevent alerts (correlative alerts)
+        db_process_sql_delete(
+            'tevent_rule',
+            [
+                'agent'          => $id_agent,
+                'operator_agent' => '==',
+            ]
+        );
+
+        db_process_sql_delete(
+            'tevent_rule',
+            [
+                'log_agent'          => $id_agent,
+                'operator_log_agent' => '==',
+            ]
+        );
+
+        // Delete from gis maps history
+        db_process_sql_delete(
+            'tgis_data_history',
+            ['tagente_id_agente' => $id_agent]
+        );
+
+        // Delete from policies.
+        db_process_sql_delete(
+            'tpolicy_agents',
+            ['id_agent' => $id_agent]
+        );
+
+        // Delete from tnetwork maps
+        db_process_sql_delete(
+            'titem',
+            ['source_data' => $id_agent]
+        );
+
+        db_process_sql_delete(
+            'trel_item',
+            [
+                'id_parent_source_data' => $id_agent,
+                'id_child_source_data'  => $id_agent,
+            ],
+            'OR'
+        );
 
         // Delete agent from fav menu.
         db_process_sql_delete(

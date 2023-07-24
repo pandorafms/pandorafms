@@ -34,6 +34,22 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $notifications_numbers['notifications'],
             $notifications_numbers['last_id']
         ).'</div>';
+        $header_welcome = '';
+        if (check_acl($config['id_user'], $group, 'AW')) {
+            $header_welcome .= '<div id="welcome-icon-header">';
+            $header_welcome .= html_print_image(
+                'images/wizard@svg.svg',
+                true,
+                [
+                    'class' => 'main_menu_icon invert_filter',
+                    'title' => __('Welcome dialog'),
+                    'id'    => 'Welcome-dialog',
+                    'alt'   => __('Welcome dialog'),
+                    'style' => 'cursor: pointer;',
+                ]
+            );
+            $header_welcome .= '</div>';
+        }
 
         // ======= Servers List ===============================================
         if ((bool) check_acl($config['id_user'], 0, 'AW') !== false) {
@@ -352,7 +368,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         }
 
         // Button for feedback pandora.
-        if (enterprise_installed()) {
+        if (enterprise_installed() && $config['activate_feedback']) {
             $header_feedback = '<div id="feedback-icon-header">';
             $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
             $header_feedback .= '<div id="msg-header" class="invisible"></div>';
@@ -461,7 +477,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         } else {
             echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         }
         ?>
     </div>    <!-- Closes #table_header_inner -->
@@ -902,6 +918,44 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         });
         $("#ui_close_dialog_titlebar").click(function () {
             $("#agent_access").css("display","");
+        });
+
+        $("#welcome-icon-header").click(function () {
+            if (!$('#welcome_modal_window').length){
+                $(document.body).append('<div id="welcome_modal_window"></div>');
+                $(document.body).append( $('<link rel="stylesheet" type="text/css" />').attr('href', 'include/styles/new_installation_welcome_window.css') );
+            }
+            // Clean DOM.
+            load_modal({
+                target: $('#welcome_modal_window'),
+                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                modal: {
+                    title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
+                    cancel: '<?php echo __('Do not show anymore'); ?>',
+                    ok: '<?php echo __('Close'); ?>'
+                },
+                onshow: {
+                    page: 'include/ajax/welcome_window',
+                    method: 'loadWelcomeWindow',
+                },
+                oncancel: {
+                    page: 'include/ajax/welcome_window',
+                    title: "<?php echo __('Cancel Configuration Window'); ?>",
+                    method: 'cancelWelcome',
+                    confirm: function (fn) {
+                        confirmDialog({
+                            title: '<?php echo __('Are you sure?'); ?>',
+                            message: '<?php echo __('Are you sure you want to cancel this tutorial?'); ?>',
+                            ok: '<?php echo __('OK'); ?>',
+                            cancel: '<?php echo __('Cancel'); ?>',
+                            onAccept: function() {
+                                // Continue execution.
+                                fn();
+                            }
+                        })
+                    }
+                }
+            });
         });
 
         <?php if (enterprise_installed()) { ?>

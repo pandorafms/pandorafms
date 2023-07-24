@@ -324,6 +324,8 @@ function menu_print_menu(&$menu)
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
                     $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p arrow_menu_down"></div></div>';
+                } else if (isset($sub['subtype']) && $sub['subtype'] == 'nolink_no_arrow') {
+                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p"></div></div>';
                 } else if (isset($sub['subtype']) && $sub['subtype'] == 'new_blank') {
                     $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 } else {
@@ -458,8 +460,9 @@ function menu_print_menu(&$menu)
                 ($main['sec2'] ?? null),
             ]
         ) === false
+            || $mainsec === 'about_operation'
         ) {
-            if ($count_sub_access > 0) {
+            if ($count_sub_access > 0 || $mainsec === 'about_operation') {
                 // If any susection have access but main section not, we change main link to first subsection found
                 $main['sec2'] = $first_sub_sec2;
             } else {
@@ -484,7 +487,7 @@ function menu_print_menu(&$menu)
         if ($menuTypeClass === 'collapsed') {
             $div = '<div class="icon_'.$id.' w100p"></div><span class="w55p" style="display: none">'.$main['text'].'</span><div class="arrow_menu_down w30p" style="display: none"></div>';
         } else {
-            if ($id === 'about') {
+            if ($id === 'about' || $id === 'about_operation') {
                 $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span>';
             } else {
                 $div = '<div class="icon_'.$id.' w15p"></div><span class="w55p">'.$main['text'].'</span><div class="arrow_menu_down w30p"></div>';
@@ -861,12 +864,18 @@ function menu_pepare_acl_select_data($pages, $sec)
 
 if (is_ajax()) {
     $about = (bool) get_parameter('about');
+    $about_operation = (bool) get_parameter('about_operation');
     if ($about) {
         global $config;
         global $pandora_version;
         global $build_version;
         $product_name = io_safe_output(get_product_name());
         $license_expiry_date = substr($config['license_expiry_date'], 0, 4).'/'.substr($config['license_expiry_date'], 4, 2).'/'.substr($config['license_expiry_date'], 6, 2);
+        $license_expired = false;
+        $timestamp = strtotime($license_expiry_date);
+        if ($timestamp < time() || enterprise_installed() === false) {
+            $license_expired = true;
+        }
 
         include_once $config['homedir'].'/include/class/Diagnostics.class.php';
         $d = new Diagnostics;
@@ -954,14 +963,28 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%; border: 0px;">
-                                    <img src="'.$image_about.'" alt="logo" width="70%">
+                                    <a href="https://pandorafms.com/" target="_blank">
+                                        <img src="'.$image_about.'" alt="logo" width="70%">
+                                    </a>
                                 </th>
                                 <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
                                     <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
                                     <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
-                                    <p><span>Build</span>'.$build_version.'</p>
-                                    <p style="margin-bottom: 20px!important;"><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';
+                                    <p><span>Build</span>'.$build_version.'</p>';
+        if (enterprise_installed() === true) {
+            $dialog .= '<p><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';
+        }
+
+        if ($license_expired === false) {
+            $dialog .= '<p>'.__('This system has official support, warranty and official updates.').'</p>';
+        } else if (enterprise_installed() === true) {
+            $dialog .= '<p><span>'.__('This system has no active support contract, and has no support, upgrades or warranty.').'</span></p>';
+            $dialog .= '<p><b><a href="https://pandorafms.com/contact/" target="_blank">'.__('Contact Pandora FMS for expand your support contract.').'</a></b></p>';
+        } else {
+            $dialog .= '<p><span>'.__('The OpenSource version has no support or warranty of any kind.').'</span></p>';
+            $dialog .= '<p><b><a href="https://pandorafms.com/contact/" target="_blank">'.__('Contact Pandora FMS for official support contract.').'</a></b></p>';
+        }
 
         if (((bool) check_acl($config['id_user'], 0, 'PM') === true) && (is_metaconsole() === false)) {
             $dialogButtons = [];
@@ -1004,7 +1027,7 @@ if (is_ajax()) {
                             </tr>
                         </tbody>
                     </table>
-                    <p class="trademark-copyright">Trademark and copyright 2004 - '.date('Y').' Pandora FMS. All rights reserved</p>
+                    <p class="trademark-copyright">Trademark and copyright 2004 - '.date('Y').' <a href="https://pandorafms.com/" target="_blank">Pandora FMS</a>. All rights reserved</p>
                 </div>
                 <div id="tab-database" class="div-scroll">
                     <table class="table-about">
@@ -1218,6 +1241,106 @@ if (is_ajax()) {
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        ';
+
+        echo $dialog;
+    }
+
+    if ($about_operation) {
+        global $config;
+        global $pandora_version;
+        global $build_version;
+        $product_name = io_safe_output(get_product_name());
+        $license_expiry_date = substr($config['license_expiry_date'], 0, 4).'/'.substr($config['license_expiry_date'], 4, 2).'/'.substr($config['license_expiry_date'], 6, 2);
+        $license_expired = false;
+        $timestamp = strtotime($license_expiry_date);
+        if ($timestamp < time() || enterprise_installed() === false) {
+            $license_expired = true;
+        }
+
+        $lts_name = '';
+        if (empty($config['lts_name']) === false) {
+            $lts_name = ' <i>'.$config['lts_name'].'</i>';
+        }
+
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms.png', false, false, false);
+        if (enterprise_installed() === false) {
+            if ($config['style'] === 'pandora_black') {
+                $image_about = 'images/custom_logo/'.HEADER_LOGO_BLACK_CLASSIC;
+            } else if ($config['style'] === 'pandora') {
+                $image_about = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_CLASSIC;
+            }
+        } else {
+            if ($config['style'] === 'pandora_black' && $config['custom_logo'] === HEADER_LOGO_DEFAULT_CLASSIC) {
+                $config['custom_logo'] = HEADER_LOGO_BLACK_CLASSIC;
+            } else if ($config['style'] === 'pandora' && $config['custom_logo'] === HEADER_LOGO_BLACK_CLASSIC) {
+                $config['custom_logo'] = HEADER_LOGO_DEFAULT_CLASSIC;
+            }
+
+            $image_about = 'images/custom_logo/'.$config['custom_logo'];
+
+            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
+                $image_about = ENTERPRISE_DIR.'/'.$image_about;
+            }
+        }
+
+        if (is_metaconsole() === true) {
+            $image_about = ui_get_full_url('/enterprise/images/custom_logo/pandoraFMS_metaconsole_full.svg', false, false, false);
+
+            if ($config['meta_custom_logo'] === 'pandoraFMS_metaconsole_full.svg') {
+                $image_about = 'images/custom_logo/'.$config['meta_custom_logo'];
+            } else {
+                $image_about = '../images/custom_logo/'.$config['meta_custom_logo'];
+            }
+
+            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
+                $image_about = $image_about;
+            }
+        }
+
+
+        $dialog = '
+            <div id="about-tabs" class="invisible overflow-hidden">
+            <ul>
+                <li class="ui-tabs-close-button" style="float:right!important;">
+                    <img id="about-close" style="cursor: pointer;" src="'.ui_get_full_url('/include/styles/images/dialog-titlebar-close.png', false, false, false).'" alt="'.__('Close').'" title="'.__('Close').'" width="25px">
+                </li>
+            </ul>
+                <div id="tab-general-view">
+                    <table class="table-about">
+                        <tbody>
+                            <tr>
+                                <th style="width: 40%; border: 0px;">
+                                    <a href="https://pandorafms.com/" target="_blank">
+                                        <img src="'.$image_about.'" alt="logo" width="70%">
+                                    </a>
+                                </th>
+                                <th style="width: 60%; text-align: left; border: 0px;">
+                                    <h1>'.$product_name.'</h1>
+                                    <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
+                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
+                                    <p><span>Build</span>'.$build_version.'</p>';
+        if (enterprise_installed() === true) {
+            $dialog .= '<p><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';
+        }
+
+        if ($license_expired === false) {
+            $dialog .= '<p>'.__('This system has official support, warranty and official updates.').'</p>';
+        } else if (enterprise_installed() === true) {
+            $dialog .= '<p><span>'.__('This system has no active support contract, and has no support, upgrades or warranty.').'</span></p>';
+            $dialog .= '<p><b><a href="https://pandorafms.com/contact/" target="_blank">'.__('Contact Pandora FMS for expand your support contract.').'</a></b></p>';
+        } else {
+            $dialog .= '<p><span>'.__('The OpenSource version has no support or warranty of any kind.').'</span></p>';
+            $dialog .= '<p><b><a href="https://pandorafms.com/contact/" target="_blank">'.__('Contact Pandora FMS for official support contract.').'</a></b></p>';
+        }
+
+        $dialog .= '</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="trademark-copyright">Trademark and copyright 2004 - '.date('Y').' <a href="https://pandorafms.com/" target="_blank">Pandora FMS</a>. All rights reserved</p>
                 </div>
             </div>
         ';

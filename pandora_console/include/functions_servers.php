@@ -1411,3 +1411,24 @@ function servers_get_master()
 
     return $result;
 }
+
+
+/**
+ * Return true if all servers are up.
+ *
+ * @return boolean
+ */
+function check_all_servers_up()
+{
+    $status = true;
+
+    $servers = servers_get_info();
+
+    foreach ($servers as $server) {
+        if ($server['status'] !== '1') {
+            return false;
+        }
+    }
+
+    return $status;
+}

@@ -1254,8 +1254,8 @@ sub pandoradb_main {
 	# Maintain Referential integrity and other stuff
 	pandora_checkdb_integrity ($conf, $dbh);
 
-	# Update error logs
-	update_err_logs($conf);
+	# Close and open error log blocks
+	handle_error_log_block($conf, $dbh);
 
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
@@ -1333,34 +1333,21 @@ sub pandora_check_forgotten_discovery_tasks {
 }
 
 ###############################################################################
-# Update error logs that do not have a date
+# Opening and closing of error log blocks 
 ###############################################################################
-sub update_err_logs {
+sub handle_error_log_block {
+    my ($conf, $dbh) = @_;
+	my $is_open = get_db_value ($dbh,"SELECT `value` FROM `tconfig` WHERE `token` = 'open_error_log'");
+	open (STDERR, ">> " . $conf->{'errorlog_file'}) or die " [ERROR] " . pandora_get_initial_product_name() . " can't write to Errorlog. Aborting : \n $! \n";
+	
+	if (!defined ($is_open)) {
+		db_do($dbh, "INSERT INTO `tconfig`(`token`, `value`) VALUES ('open_error_log', 1)");
+	} elsif ($is_open eq 1){
+		print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks ends\n";
+	}
 
-    my ($conf) = @_;
-    my $file = $conf{'errorlog_file'};
-	my $temp_file = substr($file, 0, rindex($file, '.')) . '_temp.txt';
-    my $date_str = strftime("%Y-%m-%d %H:%M:%S ", localtime);
-
-    open(my $in_fh, '<', $file) or die "Unable to open error log file to read: $!";
-    open(my $out_fh, '>', $temp_file) or die "Unable to open the temporary file for writing: $!";
-
-    while (my $line = <$in_fh>) {
-        chomp $line;
-        if ($line !~ /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/) {
-            $line = $date_str . $line;
-        }
-        print $out_fh "$line\n";  
-    }
-
-    close($in_fh);
-    close($out_fh);
-
-    if (!copy($temp_file, $file)) {
-        die "Could not copy temporary file: $!";
-    }
-
-    unlink($temp_file) or warn "Could not delete temporary file: $!";
+	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks starts\n"; 
+	close (STDERR);
 }
 
 # Init

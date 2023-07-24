@@ -3294,7 +3294,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
 
     // If metaconsole is activated and image doesn't exists try to search on normal console.
     if (is_metaconsole() === true) {
-        if (false === @file_get_contents($src, 0, null, 0, 1)) {
+        if ($src !== null && false === @file_get_contents($src, 0, null, 0, 1)) {
             $src = '../../'.$src;
         }
     }

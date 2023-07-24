@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -209,7 +209,7 @@ class EventSound extends HTML
             $titleHeader = __('Add new sound');
         } else {
             $helpHeader  = 'servers_ha_clusters_tab';
-            $titleHeader = __('Accoustic console sound list');
+            $titleHeader = __('Acoustic console sound list');
         }
 
         // Header.
@@ -227,7 +227,7 @@ class EventSound extends HTML
                 ],
                 [
                     'link'  => '',
-                    'label' => __('Accoustic console setup'),
+                    'label' => __('Acoustic console setup'),
                 ],
             ]
         );

@@ -7,6 +7,10 @@ function snmpBrowse() {
   // Hide the data div
   hideOIDData();
 
+  $("#button-srcbutton")
+    .find("div")
+    .addClass("rotation");
+
   // Reset previous searches
   $("#search_results").css("display", "none");
   $("#hidden-search_count").val(-1);
@@ -258,7 +262,7 @@ function snmpGet(oid) {
   var ajax_url = $("#hidden-ajax_url").val();
   var server_to_exec = $("#server_to_exec").val();
   var target_port = $("#target_port").val();
-  var print_create_agent_module = $("#print_create_agent_module").val();
+  var is_policy_or_agent = $("#is_policy_agent").val();
 
   // Check for a custom action
   var custom_action = $("#hidden-custom_action").val();
@@ -283,7 +287,11 @@ function snmpGet(oid) {
   params["custom_action"] = custom_action;
   params["page"] = "include/ajax/snmp_browser.ajax";
   params["target_port"] = target_port;
-  params["print_create_agent_module"] = print_create_agent_module;
+  if (typeof is_policy_or_agent !== "undefined") {
+    params["print_copy_oid"] = 1;
+  } else {
+    params["print_create_agent_module"] = 1;
+  }
 
   // SNMP get!
   jQuery.ajax({
@@ -533,7 +541,7 @@ function checkSNMPVersion() {
 }
 
 // Show the SNMP browser window
-function snmpBrowserWindow() {
+function snmpBrowserWindow(id_agente = 0) {
   // Keep elements in the form and the SNMP browser synced
   $("#text-target_ip").val($("#text-ip_target").val());
   $("#target_port").val($("#text-tcp_port").val());
@@ -549,6 +557,8 @@ function snmpBrowserWindow() {
   $("#password-snmp3_browser_privacy_pass").val(
     $("#password-snmp3_privacy_pass").val()
   );
+  // Realation agente module.
+  $("#id_agent_module").val(id_agente);
 
   checkSNMPVersion();
 

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -113,7 +113,8 @@ if ($id_policy_module > 0) {
 $plugin_parameter_split = explode('&#x0a;', $plugin_parameter);
 $plugin_parameter_final_split = '';
 
-foreach ($plugin_parameter_split as $key => $value) {
+$new_plugin_parameter_split = array_filter($plugin_parameter_split, 'strlen');
+foreach ($new_plugin_parameter_split as $key => $value) {
     if (strpos($value, 'http_auth_user') === false && strpos($value, 'http_auth_pass') === false) {
         $plugin_parameter_final_split .= $value.'&#x0a;';
     }
@@ -193,7 +194,7 @@ $actionButtons .= html_print_button(
     __('Debug'),
     'btn_debugModule',
     $disableDebug,
-    'loadDebugWindow()',
+    '',
     [
         'icon' => 'cog',
         'mode' => 'mini secondary ',
@@ -317,8 +318,7 @@ foreach ($texts as $code => $text) {
                 return;
             }
 
-            $(plugin_parameter).val(
-                'task_begin\ncookie 0\nresource 0\ntask_end');
+            $(plugin_parameter).val('task_begin\ncookie 0\nresource 0\ntask_end');
 
             $('#button-btn_loadbasic').attr('disabled', 'disabled');
 

@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -60,6 +60,7 @@ if ($create_network_from_module) {
     $max = $data_module['max'];
     $min = $data_module['min'];
     $module_interval = $data_module['module_interval'];
+    $target_ip = $data_module['target_ip'];
     $tcp_port = $data_module['tcp_port'];
     $tcp_rcv = $data_module['tcp_rcv'];
     $tcp_send = $data_module['tcp_send'];
@@ -120,6 +121,7 @@ if (isset($id)) {
         $max                     = $component['max'];
         $min                     = $component['min'];
         $module_interval         = $component['module_interval'];
+        $target_ip               = $component['target_ip'];
         $tcp_port                = $component['tcp_port'];
         $tcp_rcv                 = $component['tcp_rcv'];
         $tcp_send                = $component['tcp_send'];
@@ -207,6 +209,7 @@ if (isset($id)) {
         $max = '0';
         $min = '0';
         $module_interval = '300';
+        $target_ip = '';
         $tcp_port = '';
         $tcp_rcv = '';
         $tcp_send = '';
@@ -348,10 +351,12 @@ if ($id_component_type == COMPONENT_TYPE_WMI) {
     return;
 }
 
-echo '<form name="component" method="post">';
+echo '<form name="component" method="post" class="max_floating_element_size">';
 
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
+$table->style[0] = 'width: 50%; max-width: 50%; font-weight: bold;';
+$table->style[2] = 'width: 50%; max-width: 50%; font-weight: bold;';
 
 if (is_metaconsole() === true) {
     if ($id) {

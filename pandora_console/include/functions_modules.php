@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -743,7 +743,8 @@ function modules_create_agent_module(
     string $name,
     array $values=[],
     bool $disableACL=false,
-    $tags=false
+    $tags=false,
+    $use_agent_ip=false,
 ) {
     global $config;
 
@@ -783,6 +784,10 @@ function modules_create_agent_module(
 
     if ($exists === true) {
         return ERR_EXIST;
+    }
+
+    if ($use_agent_ip === true) {
+        $values['ip_target'] = agents_get_address($id_agent);
     }
 
     // Encrypt passwords.
@@ -2831,7 +2836,7 @@ function modules_get_color_status($status, $force_module=false)
 
         case STATUS_SERVER_DOWN:
         case STATUS_SERVER_DOWN_BALL:
-        return '#444';
+        return '#B2B2B2';
 
         default:
             // Ignored.
@@ -3676,6 +3681,10 @@ function get_modules_agents(
                         implode(',', $id_agents)
                     )
                 );
+
+                if ($rows === false) {
+                    $rows = [];
+                }
             } else {
                 $rows = [];
             }
@@ -4654,4 +4663,27 @@ function policies_type_modules_availables(string $sec2): array
     }
 
     return $modules;
+}
+
+
+function get_agent_module_childs(
+    &$array_parent_module_id=[],
+    $id_agent_module=false,
+    $id_agente=false
+) {
+    if ($array_parent_module_id !== false && $id_agent_module !== false && $id_agente !== false) {
+        $parent['parent_module_id'] = $id_agent_module;
+        $module_childs_id = agents_get_modules(
+            $id_agente,
+            'parent_module_id',
+            $parent
+        );
+
+        foreach ($module_childs_id as $key => $value) {
+            if ($value !== 0) {
+                $array_parent_module_id[] = $key;
+                get_agent_module_childs($array_parent_module_id, $key, $id_agente);
+            }
+        }
+    }
 }

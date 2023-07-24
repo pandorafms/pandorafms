@@ -1,5 +1,5 @@
 /* Misc utils for string.
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
    
    Stringtok (C) pedwards@jaj.com  May 1999
@@ -44,6 +44,7 @@ namespace Pandora_Strutils {
 	
 	string             trim        (const string str);
 
+	string             base64Encode(string str);
 	string             strUnicodeToAnsi (LPCWSTR s);
 	wstring			   strAnsiToUnicode (LPCSTR s);
 	string             inttostr    (const int i);

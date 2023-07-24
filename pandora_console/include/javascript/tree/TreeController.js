@@ -1,6 +1,6 @@
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2023 Pandora FMS
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -920,7 +920,8 @@ var TreeController = {
 
                 if (
                   typeof element.elementDescription !== "undefined" &&
-                  element.elementDescription != ""
+                  element.elementDescription != "" &&
+                  element.elementDescription != null
                 ) {
                   $content.append(
                     '<span class="node-service-name" style="">' +
@@ -1559,7 +1560,10 @@ var TreeController = {
         this.reload();
       },
       init: function(data) {
-        if (data.filter.statusModule === "fired") {
+        if (
+          typeof data.filter !== "undefined" &&
+          data.filter.statusModule === "fired"
+        ) {
           const newData = {
             ajaxUrl: data.ajaxURL,
             baseURL: data.baseURL,

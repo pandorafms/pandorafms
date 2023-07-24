@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -523,6 +523,17 @@ function edit_massive_agent(
             if ($values['disabled'] == 1) {
                 alerts_validate_alert_agent($id_agent);
             }
+        }
+
+        if (empty($values['id_grupo']) === false) {
+            // Check if group and secondary group match and remove.
+            $remove_sg = (bool) db_process_sql_delete(
+                'tagent_secondary_group',
+                [
+                    'id_agent' => (int) $id_agent,
+                    'id_group' => (int) $values['id_grupo'],
+                ]
+            );
         }
     }
 

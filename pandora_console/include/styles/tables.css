@@ -323,6 +323,9 @@ a.pandora_pagination {
   line-height: 35px;
   cursor: pointer;
 }
+a.pandora_pagination:first-child {
+  border-left: 1px solid #cacaca;
+}
 a.pandora_pagination.next {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
@@ -562,7 +565,8 @@ table.filter-table-adv td {
 }
 
 div.filter-table-adv-manual > div,
-table.filter-table-adv td > div {
+table.filter-table-adv td > div,
+table.filter-table-adv td > div.ec2_instance_metrics > div {
   display: flex;
   flex-direction: column;
   justify-content: center;

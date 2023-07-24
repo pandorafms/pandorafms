@@ -82,6 +82,10 @@ check_root_permissions () {
 ## Main
 echo "Starting PandoraFMS External DB deployment EL8 ver. $S_VERSION"
 
+if ! grep --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+if ! sed --version &>> $LOGFILE ; then echo 'Error grep is not detected on the system, grep tool is needed for installation.'; exit -1 ;fi 
+ 
+
 # Centos Version
 if [ ! "$(grep -Ei 'centos|rocky|Almalinux|Red Hat Enterprise' /etc/redhat-release)" ]; then
          printf "\n ${red}Error this is not a Centos/Rocky/Almalinux Base system, this installer is compatible with RHEL/Almalinux/Centos/Rockylinux systems only${reset}\n"

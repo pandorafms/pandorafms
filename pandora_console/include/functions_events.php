@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -2665,7 +2665,7 @@ function events_print_type_img(
 
     $urlImage = ui_get_full_url(false);
     $icon = '';
-    $style = 'invert_filter main_menu_icon';
+    $style = 'main_menu_icon';
 
     switch ($type) {
         case 'alert_recovered':
@@ -2702,23 +2702,28 @@ function events_print_type_img(
         break;
 
         case 'system':
+            $style .= ' invert_filter';
             $icon = 'images/configuration@svg.svg';
         break;
 
         case 'recon_host_detected':
+            $style .= ' invert_filter';
             $icon = 'images/recon.png';
         break;
 
         case 'new_agent':
+            $style .= ' invert_filter';
             $icon = 'images/agents@svg.svg';
         break;
 
         case 'configuration_change':
+            $style .= ' invert_filter';
             $icon = 'images/configuration@svg.svg';
         break;
 
         case 'unknown':
         default:
+            $style .= ' invert_filter';
             $icon = 'images/event.svg';
         break;
     }
@@ -4345,6 +4350,31 @@ function events_page_details($event, $server_id=0)
                 true,
                 true
             ).ui_print_help_tip(__('This agent belongs to metaconsole, is not possible display it'), true);
+        } else if (can_user_access_node() && is_metaconsole()) {
+            // Workaround to pass login hash data in POST body instead of directly in the URL.
+            parse_str($hashstring, $url_hash_array);
+            $redirection_form = "<form id='agent-redirection' method='POST' action='".$serverstring.'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$event['id_agente']."'>";
+            $redirection_form .= html_print_input_hidden(
+                'loginhash',
+                $url_hash_array['loginhash'],
+                true
+            );
+            $redirection_form .= html_print_input_hidden(
+                'loginhash_data',
+                $url_hash_array['loginhash_data'],
+                true
+            );
+            $redirection_form .= html_print_input_hidden(
+                'loginhash_user',
+                $url_hash_array['loginhash_user'],
+                true
+            );
+            $redirection_form .= '</form>';
+
+            $data[1] = $redirection_form;
+            $data[1] .= "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-redirection\").submit();' href='#'>";
+            $data[1] .= '<b>'.$agent['alias'].'</b>';
+            $data[1] .= '</a>';
         } else if (can_user_access_node()) {
             $data[1] = ui_print_agent_name(
                 $event['id_agente'],

@@ -2,7 +2,7 @@
 ###############################################################################
 #
 # Copyright (c) 2008  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2008  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2008-2023 Pandora FMS.
 #
 # grep_log	Perl script to search log files for a matching pattern. The last
 #           searched position is saved in an index file so that consecutive
@@ -22,6 +22,11 @@
 use strict;
 use File::Basename;
 use Scalar::Util qw(looks_like_number);
+BEGIN {
+	eval {
+		require MIME::Base64;
+	};
+}
 
 # Output format (module or log_module).
 my $Output = 'module';
@@ -64,6 +69,37 @@ my $coincidences = 0;
 if ( (defined ($ENV{GREP_LOG_TMP})) && (-d $ENV{GREP_LOG_TMP}) ) {
 	$Idx_dir=$ENV{GREP_LOG_TMP};
 }
+
+# Define encode_base64 if it is not available via MIME::Base64.
+my $encode_sub = defined(&MIME::Base64::encode_base64) ? \&MIME::Base64::encode_base64 : sub {
+	my ($str, $endl) = @_;
+
+	my @ALPHABET = ('A'..'Z', 'a'..'z', 0..9, '+', '/');
+	my $str_len = length($str);
+	my $str_base64 = '';
+	
+	for (my $i = 0; $i < $str_len; $i += 3) {
+		my $chunk = substr($str, $i, 3);
+		my $chunk_len = length($chunk);
+
+		my $num = 0;
+		$num |= ord(substr($chunk, 0, 1)) << 16 if ($chunk_len >= 1);
+		$num |= ord(substr($chunk, 1, 1)) << 8  if ($chunk_len >= 2);
+		$num |= ord(substr($chunk, 2, 1))       if ($chunk_len == 3);
+		
+		my $enc_1 = ($num & 0xfc0000) >> 18;
+		my $enc_2 = ($num & 0x03f000) >> 12;
+		my $enc_3 = ($num & 0x000fc0) >> 6;
+		my $enc_4 = ($num & 0x00003f);
+		
+		$str_base64 .= $ALPHABET[$enc_1];
+		$str_base64 .= $ALPHABET[$enc_2];
+		$str_base64 .= $chunk_len >= 2 ? $ALPHABET[$enc_3] : '=';
+		$str_base64 .= $chunk_len == 3 ? $ALPHABET[$enc_4] : '=';
+	}
+	
+	return $str_base64;
+};
 
 ########################################################################################
 # Erase blank spaces before and after the string
@@ -335,11 +371,13 @@ sub print_log ($) {
 		my $output = "<log_module>\n";
 		$output .= "<source><![CDATA[" . $Module_name . "]]></source>\n";
 		$output .= "<data><![CDATA[";
+		my $tmp = '';
 		foreach my $line (@kdata) {
-			my $processed_line = $line;
-			$processed_line =~ s/\]\]/]]]]><![CDATA[/g;
-			$output .= $processed_line;
+			foreach my $content (@{$data->{$line}}) {
+				$tmp .= $content;
+			}
 		}
+		$output .= &$encode_sub($tmp, '');
 		$output .= "]]></data>";
 		$output .= "</log_module>\n";
 

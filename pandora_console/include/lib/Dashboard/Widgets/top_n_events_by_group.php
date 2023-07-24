@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -385,33 +385,81 @@ class TopNEventByGroupWidget extends Widget
                 $all_group = true;
             }
 
-            if ($all_group === false) {
-                $sql = sprintf(
-                    'SELECT id_agente, COUNT(*) AS count
-                    FROM tevento
-                    WHERE utimestamp >= %d
-                        AND id_grupo IN (%s)
-                    GROUP BY id_agente
-                    ORDER BY count DESC
-                    LIMIT %d',
-                    $timestamp,
-                    implode(',', $this->values['groupId']),
-                    $this->values['amountShow']
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT id_agente, COUNT(*) AS count
-                    FROM tevento
-                    WHERE utimestamp >= %d
-                    GROUP BY id_agente
-                    ORDER BY count DESC
-                    LIMIT %d',
-                    $timestamp,
-                    $this->values['amountShow']
-                );
-            }
+            if (is_metaconsole() === true) {
+                $servers = metaconsole_get_connection_names();
+                $result = [];
+                foreach ($servers as $key => $server) {
+                    $connection = metaconsole_get_connection($server);
+                    if (metaconsole_connect($connection) != NOERR) {
+                        continue;
+                    }
 
-            $result = db_get_all_rows_sql($sql);
+                    if ($all_group === false) {
+                        $sql = sprintf(
+                            'SELECT id_agente,
+                                    COUNT(*) AS count,
+                                    "'.$connection['id'].'" AS id_server
+                            FROM tevento
+                            WHERE utimestamp >= %d
+                                AND id_grupo IN (%s)
+                            GROUP BY id_agente
+                            ORDER BY count DESC
+                            LIMIT %d',
+                            $timestamp,
+                            implode(',', $this->values['groupId']),
+                            $this->values['amountShow']
+                        );
+                    } else {
+                        $sql = sprintf(
+                            'SELECT id_agente,
+                                    COUNT(*) AS count,
+                                    "'.$connection['id'].'" AS id_server
+                            FROM tevento
+                            WHERE utimestamp >= %d
+                            GROUP BY id_agente
+                            ORDER BY count DESC
+                            LIMIT %d',
+                            $timestamp,
+                            $this->values['amountShow']
+                        );
+                    }
+
+                    $rows = db_get_all_rows_sql($sql);
+                    if ($rows !== false) {
+                        $result = array_merge($result, $rows);
+                    }
+
+                    metaconsole_restore_db();
+                }
+            } else {
+                if ($all_group === false) {
+                    $sql = sprintf(
+                        'SELECT id_agente, COUNT(*) AS count
+                        FROM tevento
+                        WHERE utimestamp >= %d
+                            AND id_grupo IN (%s)
+                        GROUP BY id_agente
+                        ORDER BY count DESC
+                        LIMIT %d',
+                        $timestamp,
+                        implode(',', $this->values['groupId']),
+                        $this->values['amountShow']
+                    );
+                } else {
+                    $sql = sprintf(
+                        'SELECT id_agente, COUNT(*) AS count
+                        FROM tevento
+                        WHERE utimestamp >= %d
+                        GROUP BY id_agente
+                        ORDER BY count DESC
+                        LIMIT %d',
+                        $timestamp,
+                        $this->values['amountShow']
+                    );
+                }
+
+                $result = db_get_all_rows_sql($sql);
+            }
 
             if (empty($result) === true) {
                 $output .= '<div class="container-center">';
@@ -430,11 +478,13 @@ class TopNEventByGroupWidget extends Widget
                         $name = __('System');
                     } else {
                         if (is_metaconsole() === true) {
-                            $name = (string) db_get_value(
+                            $name = (string) db_get_value_filter(
                                 'alias',
                                 'tmetaconsole_agent',
-                                'id_tagente',
-                                (int) $row['id_agente']
+                                [
+                                    'id_tagente'            => $row['id_agente'],
+                                    'id_tmetaconsole_setup' => $row['id_server'],
+                                ]
                             );
                         } else {
                             $name = io_safe_output(

@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -48,7 +48,79 @@ $table->style[13] = 'font-weight: bold; text-align: left;';
 $table->style[14] = 'font-weight: bold; text-align: left;';
 $table->style[15] = 'font-weight: bold; text-align: left;';
 
+// Get total agents.
+$userGroups = users_get_groups($config['id_user'], 'AR', false);
+$id_userGroups = array_keys($userGroups);
 
+$has_secondary = enterprise_hook('agents_is_using_secondary_groups');
+$stringSearchSQL = str_replace('&amp;', '&', $stringSearchSQL);
+$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
+    INNER JOIN taddress_agent ON
+    taddress.id_a = taddress_agent.id_a
+    WHERE taddress.ip LIKE '$stringSearchSQL'";
+
+    $id = db_get_all_rows_sql($sql);
+if ($id != '') {
+    $aux = $id[0]['id_agent'];
+    $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
+        t2.nombre LIKE '".$stringSearchSQL."' OR
+        t1.alias LIKE '".$stringSearchSQL."' OR
+        t1.comentarios LIKE '".$stringSearchSQL."' OR
+        t1.id_agente =".$aux;
+
+    $idCount = count($id);
+
+    if ($idCount >= 2) {
+        for ($i = 1; $i < $idCount; $i++) {
+            $aux = $id[$i]['id_agent'];
+            $search_sql .= " OR t1.id_agente = $aux";
+        }
+    }
+} else {
+    $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
+        t2.nombre LIKE '".$stringSearchSQL."' OR
+        t1.direccion LIKE '".$stringSearchSQL."' OR
+        t1.comentarios LIKE '".$stringSearchSQL."' OR
+        t1.alias LIKE '".$stringSearchSQL."'";
+}
+
+if ($has_secondary === true) {
+    $search_sql .= " OR (tasg.id_group IS NOT NULL AND
+        tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '".$stringSearchSQL."'))";
+}
+
+$sql = "
+    FROM tagente t1 LEFT JOIN tagent_secondary_group tasg
+        ON t1.id_agente = tasg.id_agent
+        INNER JOIN tgrupo t2
+            ON t2.id_grupo = t1.id_grupo
+    WHERE (
+            1 = (
+                SELECT is_admin
+                FROM tusuario
+                WHERE id_user = '".$config['id_user']."'
+            )
+            OR (
+                t1.id_grupo IN (".implode(',', $id_userGroups).')
+                OR tasg.id_group IN ('.implode(',', $id_userGroups).")
+            )
+            OR 0 IN (
+                SELECT id_grupo
+                FROM tusuario_perfil
+                WHERE id_usuario = '".$config['id_user']."'
+                    AND id_perfil IN (
+                        SELECT id_perfil
+                        FROM tperfil WHERE agent_view = 1
+                    )
+                )
+        )
+        AND (
+            ".$search_sql.'
+        )
+';
+$totalAgents = db_get_value_sql(
+    'SELECT COUNT(DISTINCT id_agente) AS agent_count '.$sql
+);
 
 
 $table->data[0][0] = html_print_image('images/agent.png', true, ['title' => __('Agents found'), 'class' => 'invert_filter']);
@@ -76,14 +148,10 @@ if (enterprise_installed()) {
 
 html_print_table($table);
 
-if ($searchAgents && $totalAgents > 0) {
+if ($searchAgents) {
     echo $list_agents;
 
-    echo "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(
-        __('Show %s of %s. View all matches'),
-        $count_agents_main,
-        $totalAgents
-    ).'</a>';
+    echo "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".__('View all matches').'</a>';
 }
 
 

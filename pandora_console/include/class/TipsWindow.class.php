@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -270,12 +270,26 @@ class TipsWindow
         }
 
         $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
+        $sql .= sprintf(' AND id_lang = "%s"', $language);
 
         $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
 
         $tip = db_get_row_sql($sql);
-
+        $check_tips = db_get_row_sql('SELECT count(*) AS tips FROM twelcome_tip WHERE id_lang = "'.$language.'"')['tips'];
         if (empty($tip) === false) {
+            $tip['files'] = $this->getFilesFromTip($tip['id']);
+
+            $tip['title'] = io_safe_output($tip['title']);
+            $tip['text'] = io_safe_output($tip['text']);
+            $tip['url'] = io_safe_output($tip['url']);
+        } else if ($check_tips === '0') {
+            $language = 'en_GB';
+            $sql = 'SELECT id, title, text, url
+            FROM twelcome_tip
+            WHERE enable = "1" AND id_lang = "'.$language.'"';
+            $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
+            $tip = db_get_row_sql($sql);
+
             $tip['files'] = $this->getFilesFromTip($tip['id']);
 
             $tip['title'] = io_safe_output($tip['title']);
@@ -311,6 +325,15 @@ class TipsWindow
         global $config;
         $profilesUser = users_get_user_profile($config['id_user']);
         $idProfilesFilter = '0';
+        $userInfo = users_get_user_by_id($config['id_user']);
+        $language = ($userInfo['language'] !== 'default') ? $userInfo['language'] : $config['language'];
+
+        $check_tips = db_get_row_sql('SELECT count(*) AS tips FROM twelcome_tip WHERE id_lang = "'.$language.'"')['tips'];
+
+        if ($check_tips === '0') {
+            $language = 'en_GB';
+        }
+
         foreach ($profilesUser as $key => $profile) {
             $idProfilesFilter .= ','.$profile['id_perfil'];
         }
@@ -320,9 +343,9 @@ class TipsWindow
                 WHERE enable = "1" ';
 
         $sql .= sprintf(' AND id_profile IN (%s)', $idProfilesFilter);
+        $sql .= sprintf(' AND id_lang = "%s"', $language);
 
-        $sql .= ' ORDER BY CASE WHEN id_lang = "'.$config['language'].'" THEN id_lang END DESC, RAND()';
-
+        $sql .= ' ORDER BY CASE WHEN id_lang = "'.$language.'" THEN id_lang END DESC, RAND()';
         return db_get_sql($sql);
     }
 
@@ -568,7 +591,7 @@ class TipsWindow
             }
 
             $sql = sprintf(
-                'SELECT id, name AS language, title, text, url, enable
+                'SELECT id, id_language AS language, title, text, url, enable
                 FROM twelcome_tip t
                 LEFT JOIN tlanguage l ON t.id_lang COLLATE utf8mb4_unicode_ci = CONVERT(l.id_language USING utf8mb4) COLLATE utf8mb4_unicode_ci
                 %s %s %s',

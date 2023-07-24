@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -187,19 +187,16 @@ html_print_div(
         'class'   => 'agent_details_line',
         'content' => ui_toggle(
             $html_toggle,
-            __('List of modules').' '.$help_not_init.ui_print_help_tip(
-                __('To see the list of modules paginated, enable this option in the Styles Configuration.'),
-                true
-            ).reporting_tiny_stats(
+            '<span class="subsection_header_title">'.__('List of modules').' '.$help_not_init.reporting_tiny_stats(
                 $agent,
                 true,
                 'modules',
                 ':',
                 true,
-            ),
+            ).'</span>',
             'status_monitor_agent',
             false,
-            false,
+            ($agent['total_count'] > 0) ? false : true,
             true,
             '',
             'white-box-content',
@@ -446,9 +443,9 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
                             opacity: 0.5,
                             background: "black"
                         },
-                        width: 650,
+                        width: "auto",
                         height: 500
-                    })
+                    }).css({"min-width": "650px"})
                     .show ();
                     refresh_pagination_callback (module_id, id_agent, "",module_name);
                     datetime_picker_callback();
@@ -549,7 +546,8 @@ function print_form_filter_monitors(
     $table->size[0] = '25%';
     $table->size[1] = '25%';
     $table->size[2] = '25%';
-    $table->size[3] = '25%';
+    $table->size[3] = '15%';
+    $table->size[4] = '10%';
     // Captions.
     $table->data[0][0] = html_print_label_input_block(
         html_print_input_hidden('filter_monitors', 1, true).html_print_input_hidden(
@@ -618,11 +616,7 @@ function print_form_filter_monitors(
         )
     );
 
-    $form_text = html_print_table($table, true);
-
-    $filtersButtons = [];
-
-    $filtersButtons[] = html_print_button(
+    $table->data[0][4] = html_print_button(
         __('Filter'),
         'filter',
         false,
@@ -633,19 +627,20 @@ function print_form_filter_monitors(
             'style' => 'margin-left: 15px',
         ],
         true
-    );
-
-    $filtersButtons[] = html_print_button(
+    ).html_print_button(
         __('Reset'),
         'filter',
         false,
         'reset_filter_modules();',
         [
-            'icon' => 'fail',
+            'icon' => 'force',
             'mode' => 'secondary mini',
         ],
         true
     );
+    $table->cellstyle[0][4] = 'width:20%;display: flex;flex-direction: row-reverse;justify-content: flex-end;height: 60px;align-items: flex-end;width:10%;';
+
+    $form_text = html_print_table($table, true);
 
     // TODO. Unused code.
     if ($status_filter_monitor === -1 && empty($status_text_monitor) === true && $status_module_group === -1) {
@@ -655,10 +650,4 @@ function print_form_filter_monitors(
     }
 
     echo $form_text;
-    html_print_div(
-        [
-            'class'   => 'action-buttons-right-forced',
-            'content' => implode('', $filtersButtons),
-        ]
-    );
 }

@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -635,15 +635,20 @@ switch ($activeTab) {
                 } else {
                     if (is_metaconsole() === true) {
                         $agents_ids = [];
+                        $servers_ids = [];
                         foreach ($id_agents as $id_agent_id) {
                             $server_and_agent = explode('|', $id_agent_id);
 
                             $agents_ids[] = $server_and_agent[1];
+                            $servers_ids[] = $server_and_agent[0];
                         }
 
                         $rows = db_get_all_rows_filter(
                             'tmetaconsole_agent',
-                            ['id_tagente' => $agents_ids]
+                            [
+                                'id_tagente'            => $agents_ids,
+                                'id_tmetaconsole_setup' => $servers_ids,
+                            ]
                         );
 
                         $agents = [];
@@ -688,7 +693,9 @@ switch ($activeTab) {
 
                                     foreach ($modules_serial as $data_serialized) {
                                         $data = explode('|', $data_serialized);
-                                        $id_modules[] = $data[0];
+                                        if ($id_server == $data[2]) {
+                                            $id_modules[] = $data[0];
+                                        }
                                     }
                                 }
                             } else {
@@ -833,7 +840,7 @@ $buttons['wizard'] = [
 if ($config['legacy_vc']) {
     $buttons['editor'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder.png', true, ['title' => __('Builder'), 'class' => 'invert_filter']).'</a>',
+        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder@svg.svg', true, ['title' => __('Builder'), 'class' => 'invert_filter']).'</a>',
     ];
 }
 

@@ -951,17 +951,7 @@ function openSoundEventsDialog(settings) {
     $("#modal-sound").hasClass("ui-dialog-content") &&
     $("#modal-sound").dialog("isOpen")
   ) {
-    if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
-      console.log("arrow_menu_up");
-      $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
-      $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
-      $(".ui-dialog-titlebar-minimize").trigger("click");
-    } else if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_down")) {
-      console.log("arrow_menu_down");
-      $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
-      $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
-      $(".ui-dialog-titlebar-minimize").trigger("click");
-    }
+    $(".ui-dialog-titlebar-minimize").trigger("click");
     return;
   }
   //Modify button
@@ -1434,15 +1424,26 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
     // Define the minimize button functionality;
     function hidden_dialog() {
       setTimeout(function() {
-        dialog.hide();
+        dialog.css("z-index", "-1");
       }, 200);
     }
     function show_dialog() {
       setTimeout(function() {
-        dialog.show();
+        dialog.css("z-index", "1115");
       }, 50);
     }
     minimizeButton.click(function(e) {
+      console.log("here");
+      if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
+        console.log("arrow_menu_up");
+        $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
+        $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
+      } else if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_down")) {
+        console.log("arrow_menu_down");
+        $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
+        $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
+      }
+
       if (!dialog.data("isMinimized")) {
         $(".ui-widget-overlay").hide();
         console.log("Minimize Window");
@@ -1465,11 +1466,11 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         );
         dialog.css({ height: "" });
 
-        dialog.find(".ui-dialog-content").hide();
+        //dialog.find(".ui-dialog-content").hide();
       } else {
         console.log("Restore Window");
         $(".ui-widget-overlay").show();
-        dialog.find(".ui-dialog-content").show();
+        //dialog.find(".ui-dialog-content").show();
         dialog.data("isMinimized", false);
         dialog.animate(
           {
@@ -1496,7 +1497,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         for (var i = 0; i < addedNodes.length; i++) {
           if (addedNodes[i].nodeName.toLowerCase() === "li") {
             console.log("The dialog content contains an <li> tag.");
-            if (dialog.data("isMinimized")) {
+            /*if (dialog.data("isMinimized")) {
               console.log("Restore Window");
               $(".ui-widget-overlay").show();
               dialog.data("isMinimized", false);
@@ -1507,7 +1508,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
                 },
                 200
               );
-            }
+            }*/
             /*
             var $el = $('[aria-describedby="modal-sound"]').find(
               ".ui-dialog-title"

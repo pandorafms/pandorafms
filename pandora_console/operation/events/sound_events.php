@@ -26,6 +26,7 @@
  * ============================================================================
  */
 
+
 require_once '../../include/config.php';
 require_once '../../include/functions.php';
 require_once '../../include/functions_db.php';
@@ -55,29 +56,34 @@ if (check_acl($config['id_user'], 0, 'ER') === false
     return;
 }
 
+if (is_metaconsole() === true) {
+    $redirect_metaconsole = '../../';
+} else {
+    $redirect_metaconsole = '';
+}
+
 echo '<html>';
 echo '<head>';
-?>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo __('Acoustic console'); ?></title>
-<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/select2.min.css" type="text/css" />
-<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />
-<?php
+echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+echo '<title>'.__('Acoustic console').'</title>';
+echo '<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />';
+echo '<link rel="stylesheet" href="../../include/styles/js/jquery-ui.min.css" type="text/css" />';
+echo '<link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />';
+echo '<link rel="stylesheet" href="../../include/styles/select2.min.css" type="text/css" />';
+echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+
 echo ui_require_css_file('wizard', 'include/styles/', true);
 echo ui_require_css_file('discovery', 'include/styles/', true);
 echo ui_require_css_file('sound_events', 'include/styles/', true);
-?>
-<script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
-<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
-<script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
-<script type='text/javascript' src='../../include/javascript/select2.min.js'></script>
-<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
-<script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
 
-<?php
+echo '<script type="text/javascript" src="../../include/javascript/jquery.current.js"></script>';
+echo '<script type="text/javascript" src="../../include/javascript/jquery.pandora.js"></script>';
+echo '<script type="text/javascript" src="../../include/javascript/jquery-ui.min.js"></script>';
+echo '<script type="text/javascript" src="../../include/javascript/select2.min.js"></script>';
+echo '<script type="text/javascript" src="../../include/javascript/pandora.js"></script>';
+echo '<script type="text/javascript" src="../../include/javascript/pandora_ui.js"></script>';
+
+
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
 if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
     echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css" />';
@@ -110,6 +116,7 @@ $output = '<div id="tabs-sound-modal">';
             [
                 'title' => __('Events list'),
                 'class' => 'invert_filter',
+                'div_sty'
             ]
         );
         $output .= '</a>';
@@ -242,7 +249,7 @@ $output = '<div id="tabs-sound-modal">';
         );
         $output .= '</div>';
 
-        $output .= '<div id="tabs-sound-modal-2">';
+        $output .= '<div id="tabs-sound-modal-2" style="height: 290px;">';
         $output .= '<h3 class="title-discovered-alerts">';
         $output .= __('Discovered alerts');
         $output .= '</h3>';
@@ -259,7 +266,7 @@ $output = '<div id="tabs-sound-modal">';
         $output .= __('Congrats! there’s nothing to show');
         $output .= '</span>';
         $output .= '</div>';
-        $output .= '<div class="elements-discovered-alerts"><ul></ul></div>';
+        $output .= '<div class="elements-discovered-alerts" style="max-height:250px !important;"><ul></ul></div>';
         $output .= html_print_input_hidden(
             'ajax_file_sound_console',
             ui_get_full_url('ajax.php', false, false, false),
@@ -368,7 +375,7 @@ function action_events_sound(mode) {
         // Change img button.
         $("#button-start-search")
         .removeClass("stop")
-        .addClass("play");
+        //.addClass("play");
         // Change value button.
         $("#button-start-search").val("Start");
         $("#button-start-search > span").text("Start");
@@ -405,7 +412,7 @@ function add_audio(urlSound) {
 
 function remove_audio() {
     $(".actions-sound-modal audio").remove();
-    buttonBlink();
+    //buttonBlink();
 }
 
 function listen_event_sound() {
@@ -450,6 +457,7 @@ function check_event_sound() {
                 // Remove audio.
                 remove_audio();
                 var urlSound = '../../include/sounds/'+$('#sound_id :selected').val();
+                console.log(urlSound)
                 // Apend audio.
                 add_audio(urlSound);
 
@@ -505,7 +513,7 @@ $(document).ready(function(){
             sound = true;
         }
         var urlSound = '../../include/sounds/'+$('#sound_id :selected').val();
-
+        urlSound
         test_sound_button(sound, urlSound);
     });
 

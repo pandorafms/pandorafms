@@ -1594,6 +1594,11 @@ if ($pure) {
 
     // Acoustic console.
     $sound_event['active'] = false;
+    if (is_metaconsole() === true) {
+        $urlSound = '../../include/sounds/';
+    } else {
+        $urlSound = 'include/sounds/';
+    }
 
     // Sound Events.
     $data_sound = base64_encode(
@@ -1606,7 +1611,7 @@ if ($pure) {
                 'silenceAlarm' => __('Silence alarm'),
                 'url'          => ui_get_full_url('ajax.php'),
                 'page'         => 'include/ajax/events',
-                'urlSound'     => 'include/sounds/',
+                'urlSound'     => $urlSound,
             ]
         )
     );
@@ -2676,6 +2681,11 @@ if (check_acl(
         false,
         false
     );
+    if (is_metaconsole() === true) {
+        $urlSound = '../../include/sounds/';
+    } else {
+        $urlSound = 'include/sounds/';
+    }
 
     // Acoustic console.
     $data_sound = base64_encode(
@@ -2688,7 +2698,7 @@ if (check_acl(
                 'silenceAlarm' => __('Silence alarm'),
                 'url'          => ui_get_full_url('ajax.php'),
                 'page'         => 'include/ajax/events',
-                'urlSound'     => 'include/sounds/',
+                'urlSound'     => $urlSound,
             ]
         )
     );
@@ -2702,6 +2712,7 @@ if (check_acl(
             'icon'           => 'sound',
             'style'          => 'margin-right: 25% !important',
             'minimize-arrow' => true,
+            'span_style'     => 'width: 100%',
         ],
         true
     );

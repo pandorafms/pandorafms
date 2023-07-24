@@ -249,7 +249,7 @@ function fmModuleChange(uniqId, isMeta) {
               )
               .html(value["nombre"]);
           } else {
-            option.attr("value", value).html(value);
+            option.attr("value", id).html(value);
           }
 
           $("#filtered-module-modules-" + uniqId).append(option);

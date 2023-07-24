@@ -4,6 +4,9 @@
 div.container-button-play > button#button-start-search {
   transition: none !important;
 }
+.wizard {
+  text-align: left;
+}
 #modal-sound {
   display: flex;
   flex-direction: column;
@@ -66,7 +69,7 @@ div.container-button-play > button#button-start-search {
   width: inherit;
   position: absolute;
   top: -12px;
-  left: 50%;
+  left: 52%;
 }
 
 #tabs-sound-modal ul.wizard li.interval-sounds label:first-of-type,
@@ -229,10 +232,6 @@ div.container-button-play > button#button-start-search {
   color: #ffffff;
   padding-left: 20px;
   border: 0;
-}
-
-button#button-start-search:hover {
-  background-position: 82px 14px !important;
 }
 
 .actions-sound-modal .buttons-sound-modal button.alerts,

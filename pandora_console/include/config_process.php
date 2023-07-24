@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC230426';
-$pandora_version = 'v7.0NG.770';
+$build_version = 'PC230724';
+$pandora_version = 'v7.0NG.772';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -220,7 +220,7 @@ if (!isset($config['inventory_changes_blacklist'])) {
 if (!isset($config['url_update_manager'])) {
     config_update_value(
         'url_update_manager',
-        'https://licensing.artica.es/pandoraupdate7/server.php'
+        'https://licensing.pandorafms.com/pandoraupdate7/server.php'
     );
 }
 

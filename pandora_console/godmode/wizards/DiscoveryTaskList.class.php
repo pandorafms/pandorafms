@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1136,6 +1136,9 @@ class DiscoveryTaskList extends HTML
 
                         case DISCOVERY_CLOUD_AWS_S3:
                         return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=s3&page=0';
+
+                        case DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE:
+                        return 'wiz=cloud&mode=gcp&ki='.$task['auth_strings'].'&sub=compute&page=0';
 
                         default:
                         return 'wiz=cloud';

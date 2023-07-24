@@ -90,11 +90,11 @@ final class Label extends Item
 
         // Default values.
         if (isset($values['width']) === false) {
-            $values['width'] = 10;
+            $values['width'] = 50;
         }
 
         if (isset($values['height']) === false) {
-            $values['height'] = 10;
+            $values['height'] = 50;
         }
 
         return $values;

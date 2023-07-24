@@ -71,7 +71,7 @@
   position: absolute;
   left: -100000px;
   width: 100%;
-  z-index: 1115;
+  z-index: 1118;
 }
 .select2-results {
   display: block;
@@ -208,7 +208,8 @@
 }
 .select2-container--default.select2-container--disabled
   .select2-selection--single {
-  background-color: #eee;
+  background-color: #e5e9ed !important;
+  color: #8a96a6;
   cursor: default;
 }
 .select2-container--default.select2-container--disabled

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -271,29 +271,27 @@ if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) che
     }
 }
 
-if ((bool) check_acl($config['id_user'], $id_group, 'AW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
-    array_push(
-        $column_names,
-        ['text' => 'Module'],
-        ['text' => 'Template'],
-        [
-            'title' => __('Action'),
-            'text'  => __('Action'),
-            'style' => 'min-width: 15%;',
-        ],
-        ['text' => 'Last fired'],
-        ['text' => 'Status']
-    );
+array_push(
+    $column_names,
+    ['text' => 'Module'],
+    ['text' => 'Template'],
+    [
+        'title' => __('Action'),
+        'text'  => __('Action'),
+        'style' => 'min-width: 15%;',
+    ],
+    ['text' => 'Last fired'],
+    ['text' => 'Status']
+);
 
-    $columns = array_merge(
-        $columns,
-        ['agent_module_name'],
-        ['template_name'],
-        ['action'],
-        ['last_fired'],
-        ['status']
-    );
-}
+$columns = array_merge(
+    $columns,
+    ['agent_module_name'],
+    ['template_name'],
+    ['action'],
+    ['last_fired'],
+    ['status']
+);
 
 if (is_metaconsole() === false) {
     if ((bool) check_acl($config['id_user'], $id_group, 'LW') === true || (bool) check_acl($config['id_user'], $id_group, 'LM') === true) {
@@ -314,12 +312,18 @@ if (is_metaconsole() === false) {
     }
 }
 
+if (is_metaconsole()) {
+    array_push($column_names, ['text' => 'actions']);
+    array_push($columns, 'actions');
+}
+
 if (is_metaconsole() === true) {
     $no_sortable_columns = [
         0,
         1,
         2,
         5,
+        -1,
     ];
 } else {
     if (enterprise_installed() === true) {
@@ -375,7 +379,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'form'                => [
                 'inputs'    => [
                     [
@@ -417,7 +421,7 @@ if ($agent_view_page === true) {
             ],
             'zeroRecords'         => __('No alerts found'),
             'emptyTable'          => __('No alerts found'),
-            'search_button_class' => 'sub filter float-right',
+            'search_button_class' => 'sub filter float-right secondary',
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'form'                => [
                 'html' => printFormFilterAlert(
@@ -441,7 +445,7 @@ if (is_metaconsole() === false) {
         if ($agent_view_page === true) {
             html_print_div(
                 [
-                    'class'   => 'action-buttons pdd_b_10px pdd_r_5px w100p',
+                    'class'   => 'action-buttons pdd_r_5px w100p',
                     'content' => html_print_submit_button(
                         __('Validate'),
                         'alert_validate',
@@ -468,13 +472,24 @@ if (is_metaconsole() === false) {
         }
     }
 } else {
-    html_print_action_buttons('');
+    echo "<form method='post' action='index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure=0'>";
+    html_print_action_buttons(
+        html_print_submit_button(
+            __('Create alert'),
+            'submit',
+            false,
+            [ 'icon' => 'next'],
+            true
+        )
+    );
+    echo '</form>';
 }
 
 $html_content = ob_get_clean();
 
 if ($agent_view_page === true) {
     // Create controlled toggle content.
+    $alerts_count = alerts_get_alerts(0, '', 'all', -1, $true, true, $agent['id_agente']);
     html_print_div(
         [
             'class'   => 'agent_details_line',
@@ -483,7 +498,7 @@ if ($agent_view_page === true) {
                 '<span class="subsection_header_title">'.__('Full list of alerts').'</span>',
                 'status_monitor_agent',
                 !$alerts_defined,
-                false,
+                ($alerts_count > 0) ? false : true,
                 true,
                 '',
                 '',
@@ -510,97 +525,153 @@ ui_require_jquery_file('cluetip');
 <script type="text/javascript">
 
 function alerts_table_controls() {
-    
-        $("button.template_details").cluetip ({
-            arrows: true,
-            attribute: 'href',
-            cluetipClass: 'default'
-        }).click (function () {
-            return false;
-        });
 
-        $("a.template_details").cluetip ({
-                    arrows: true,
-                    attribute: 'href',
-                    cluetipClass: 'default'
-                });
-
-        $('[id^=checkbox-all_validate]').change(function(){    
-            if ($("#checkbox-all_validate").prop("checked")) {
-                $("input[id^=checkbox-validate]").prop('checked', true);
-            }
-            else{
-                $('[id^=checkbox-validate]').parent().parent().removeClass('checkselected');
-                $('[name^=validate]').prop("checked", false);                
-            }    
-        });
-
-    }
-    
-    $(document).ready ( function () {
-        alerts_table_controls();
-        $('#button-alert_validate').on('click', function () {
-            validateAlerts();
-        });
+    $("button.template_details").cluetip ({
+        arrows: true,
+        attribute: 'href',
+        cluetipClass: 'default'
+    }).click (function () {
+        return false;
     });
 
-    $('table.alert-status-filter #ag_group').change (function () {
-        var strict_user = $("#text-strict_user_hidden").val();
-        var is_meta = $("#text-is_meta_hidden").val();
-
-        if (($(this).val() != 0) && (strict_user != 0)) {
-            $("table.alert-status-filter #tag_filter").hide();
-            if (is_meta) {
-                $("table.alert-status-filter #table1-0-4").hide();
-            } else {
-                $("table.alert-status-filter #table2-0-4").hide();
-            }
-        } else {
-            $("#tag_filter").show();
-            if (is_meta) {
-                $("table.alert-status-filter #table1-0-4").show();
-            } else {
-                $("table.alert-status-filter #table2-0-4").show();
-            }
-        }
-    }).change();
-    
-
-    function validateAlerts() {
-        var alert_ids = [];
-
-        $('[id^=checkbox-validate]:checked').each(function() {
-            alert_ids.push($(this).val());
-        });
-
-        if (alert_ids.length === 0) { 
-            confirmDialog({
-                title: "<?php echo __('No alert selected'); ?>",
-                message: "<?php echo __('You must select at least one alert.'); ?>",
-                hideCancelButton: true
+    $("a.template_details").cluetip ({
+                arrows: true,
+                attribute: 'href',
+                cluetipClass: 'default'
             });
+
+    $('[id^=checkbox-all_validate]').change(function(){
+        if ($("#checkbox-all_validate").prop("checked")) {
+            $("input[id^=checkbox-validate]").prop('checked', true);
         }
+        else{
+            $('[id^=checkbox-validate]').parent().parent().removeClass('checkselected');
+            $('[name^=validate]').prop("checked", false);
+        }
+    });
 
-        $.ajax({
-            type: "POST",
-            url: "ajax.php",
-            data: {
-                alert_ids: alert_ids,
-                page: "include/ajax/alert_list.ajax",
-                alert_validate: 1,
-                all_groups: <?php echo json_encode($all_groups); ?>,
-            },
-            dataType: "json",
-            success: function (data) {
-                $("#menu_tab_frame_view").after(data);
-                var table = $('#alerts_status_datatable').DataTable({
-                    ajax: "data.json"
-                });
+}
 
-                table.ajax.reload();
-            }, 
-        });
+$(document).ready ( function () {
+    alerts_table_controls();
+    $('#button-alert_validate').on('click', function () {
+        validateAlerts();
+    });
+});
 
-        
+$('table.alert-status-filter #ag_group').change (function () {
+    var strict_user = $("#text-strict_user_hidden").val();
+    var is_meta = $("#text-is_meta_hidden").val();
+
+    if (($(this).val() != 0) && (strict_user != 0)) {
+        $("table.alert-status-filter #tag_filter").hide();
+        if (is_meta) {
+            $("table.alert-status-filter #table1-0-4").hide();
+        } else {
+            $("table.alert-status-filter #table2-0-4").hide();
+        }
+    } else {
+        $("#tag_filter").show();
+        if (is_meta) {
+            $("table.alert-status-filter #table1-0-4").show();
+        } else {
+            $("table.alert-status-filter #table2-0-4").show();
+        }
     }
+}).change();
+
+function validateAlerts() {
+    var alert_ids = [];
+
+    $('[id^=checkbox-validate]:checked').each(function() {
+        alert_ids.push($(this).val());
+    });
+
+    if (alert_ids.length === 0) {
+        confirmDialog({
+            title: "<?php echo __('No alert selected'); ?>",
+            message: "<?php echo __('You must select at least one alert.'); ?>",
+            hideCancelButton: true
+        });
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "ajax.php",
+        data: {
+            alert_ids: alert_ids,
+            page: "include/ajax/alert_list.ajax",
+            alert_validate: 1,
+            all_groups: <?php echo json_encode($all_groups); ?>,
+        },
+        dataType: "json",
+        success: function (data) {
+            $("#menu_tab_frame_view").after(data);
+            var table = $('#alerts_status_datatable').DataTable({
+                ajax: "data.json"
+            });
+
+            table.ajax.reload();
+        },
+    });
+
+}
+
+function show_display_update_action(id_module_action, alert_id, alert_id_agent_module, action_id,id_agent='') {
+    $.each($('[id^="update_action-div"]'), function(){
+        $(this).html('');
+    });
+    var params = [];
+    params.push("show_update_action_menu=1");
+    params.push("id_agent_module=" + alert_id_agent_module);
+    params.push("id_module_action=" + id_module_action);
+    params.push("id_alert=" + alert_id);
+    params.push("id_action=" + action_id);
+    params.push("id_agent=" + id_agent);
+    params.push("page=include/ajax/alert_list.ajax");
+    jQuery.ajax ({
+        data: params.join ("&"),
+        type: 'POST',
+        url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        success: function (data) {
+            $('#update_action-div-'+alert_id).html(data);
+            $('#update_action-div-'+alert_id).dialog ({
+                    resizable: true,
+                    draggable: true,
+                    title: '<?php echo __('Update action'); ?>',
+                    modal: true,
+                    overlay: {
+                        opacity: 0.5,
+                        background: "black"
+                    },
+                    open: function() {
+                        $('#action_select_ajax-'+alert_id).select2();
+                    },
+                    onclose: function() {
+                        $('#update_action-div-'+alert_id).html("");
+                    },
+                    width: 600,
+                    height: 350,
+                })
+                .show ();
+        }
+    });
+}
+
+function show_add_action(id_alert) {
+    $("#add_action-div-" + id_alert).hide ()
+        .dialog ({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            width: 700,
+            title: '<?php echo __('Add action'); ?>',
+            modal: true,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            }
+        })
+        .show ();
+}
 </script>

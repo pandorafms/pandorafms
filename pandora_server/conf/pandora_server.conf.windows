@@ -3,7 +3,7 @@
 # Pandora FMS, the Flexible Monitoring System.
 # Version 6.1dev
 # Licensed under GPL license v2,
-# (c) 2003-2021 Artica Soluciones Tecnologicas
+# (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
 # Please change it for your setup needs
 #############################################################################
@@ -251,12 +251,6 @@ dataserver_threads 2
 # SMTP encryption protocol (none, ssl, starttls)
 
 #mta_encryption none
-
-# xprobe2: Optional package to detect OS types using advanced TCP/IP 
-# fingerprinting tecniques, much more accurates than stadard nmap.
-# If not provided, nmap is used insted xprobe2
-
-#xprobe2 c:\pandora_server\bin\xprobe2
 
 # nmap: If provided, is used to detect OS type with recon server using 
 # advanded OS fingerprint technique. Xprobe2 gives more accurate results

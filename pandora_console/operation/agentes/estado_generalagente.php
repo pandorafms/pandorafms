@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -517,14 +517,12 @@ $data_opcional->class = 'floating_form';
 $agentAdditionalContent = '';
 // Position Information.
 if ((bool) $config['activate_gis'] === true) {
-    $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
     $dataPositionAgent = gis_get_data_last_position_agent(
         $agent['id_agente']
     );
+    if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_longitude'] !== '') {
+        $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
 
-    if ($dataPositionAgent === false) {
-        $data_opcional->data['agent_position'][1] = __('There is no GIS data.');
-    } else {
         $dataOptionalOutput = html_print_anchor(
             [
                 'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente,
@@ -710,23 +708,17 @@ if ($last_incident != false) {
     $table_incident->width = '100%';
     $table_incident->cellspacing = 0;
     $table_incident->cellpadding = 0;
-    $table_incident->class = 'white_table';
-    $table_incident->style = array_fill(0, 3, 'width: 25%;');
+    $table_incident->class = 'info_table tactical_table';
 
-    $table_incident->head[0] = ' <span><a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$last_incident['id_incidencia'].'">'.__('Active incident on this agent').'</a></span>';
-    $table_incident->head_colspan[0] = 4;
-
-    $data = [];
-    $data[0] = '<b>'.__('Author').'</b>';
-    $data[1] = $last_incident['id_creator'];
-    $data[2] = '<b>'.__('Timestamp').'</b>';
-    $data[3] = $last_incident['inicio'];
-    $table_incident->data[] = $data;
+    $table_incident->head[0] = '<span>'.__('Author').'</span>';
+    $table_incident->head[1] = '<span>'.__('Title').'</span>';
+    $table_incident->head[2] = '<span>'.__('Timestamp').'</span>';
+    $table_incident->head[3] = '<span>'.__('Priority').'</span>';
 
     $data = [];
-    $data[0] = '<b>'.__('Title').'</b>';
+    $data[0] = $last_incident['id_creator'];
     $data[1] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$last_incident['id_incidencia'].'">'.$last_incident['titulo'].'</a>';
-    $data[2] = '<b>'.__('Priority').'</b>';
+    $data[2] = $last_incident['inicio'];
     $data[3] = incidents_print_priority_img($last_incident['prioridad'], true);
     $table_incident->data[] = $data;
 }
@@ -996,8 +988,18 @@ if (empty($agentIncidents) === false) {
     html_print_div(
         [
             'class'   => 'agent_details_line',
-            'content' => $agentIncidents,
-        ]
+            'content' => ui_toggle(
+                '<div class=\'w100p\' id=\'agent_incident\'>'.$agentIncidents.'</div>',
+                '<span class="subsection_header_title">'.__('Active issue on this agent').'</span>',
+                __('Agent incident main'),
+                'agent_incident',
+                false,
+                true,
+                '',
+                'box-flat white-box-content no_border',
+                'box-flat white_table_graph w100p',
+            ),
+        ],
     );
 }
 

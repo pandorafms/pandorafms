@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>windows-grey@svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Mockups" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Deploy-agents---1-Default" transform="translate(-674.000000, -276.000000)" fill="#95A3BF">
+            <g id="Popup" transform="translate(640.000000, 90.000000)">
+                <g id="Content" transform="translate(0.000000, 13.000000)">
+                    <g id="OS" transform="translate(20.000000, 133.000000)">
+                        <g transform="translate(0.000000, 26.000000)" id="Icons/Dark/20/windows-grey">
+                            <g transform="translate(14.000000, 14.000000)">
+                                <path d="M0,0 L9.16666667,0 L9.16666667,9.16666667 L0,9.16666667 L0,0 Z M10.8333333,0 L10.8333333,9.16666667 L20,9.16666667 L20,0 L10.8333333,0 Z M0,10.8333333 L0,20 L9.16666667,20 L9.16666667,10.8333333 L0,10.8333333 Z M10.8333333,10.8333333 L10.8333333,20 L20,20 L20,10.8333333 L10.8333333,10.8333333 Z" id="Shape"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

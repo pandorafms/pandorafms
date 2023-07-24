@@ -116,7 +116,12 @@ final class Icon extends Item
 
         // Get the img src.
         $imagePath = \visual_map_get_image_status_element($data);
-        $data['imageSrc'] = \ui_get_full_url($imagePath, false, false, false);
+        $url = parse_url($imagePath);
+        if (isset($url['scheme']) === false) {
+            $data['imageSrc'] = \ui_get_full_url($imagePath, false, false, false);
+        } else {
+            $data['imageSrc'] = $imagePath;
+        }
 
         // If the width or the height are equal to 0 we will extract them
         // from the real image size.

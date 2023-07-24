@@ -108,7 +108,7 @@ a.update_manager_button:after {
   color: #82b92e;
   font-size: 6em;
   font-weight: bold;
-  margin: 30px 0 !important;
+  margin: 50px 0 !important;
 }
 
 .update_manager_warning p {
@@ -315,19 +315,10 @@ a.update_manager_button:after {
 }
 
 #um-buttons button {
-  margin: 0 1em 1em 1em;
-  border: none;
   padding: 10px;
   cursor: pointer;
-  background: #efefef;
-}
-
-#um-buttons button:hover {
-  background: #ddd;
-}
-
-#um-buttons button:active {
-  background: #ccc;
+  width: 285px;
+  margin: 20px;
 }
 
 .ui-widget.ui-widget-content {
@@ -577,4 +568,12 @@ a.update_manager_button_open {
   border: 1px solid #82b92e;
   color: #82b92e;
   border-radius: 2px;
+}
+
+#um-updates {
+  width: 300px;
+}
+
+#next-version:hover {
+  font-weight: bolder;
 }

@@ -6,7 +6,7 @@ Description: The default Pandora FMS theme layout
 
 // Pandora FMS - http://pandorafms.com
 // ==========================================================
-// Copyright (c) 2004-2021 Artica Soluciones Tecnológicas S.L
+// Copyright (c) 2004-2023 Pandora FMS
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,7 +39,7 @@ select,
 .selection,
 button.sub,
 .select2-container .select2-selection--single,
-.select2-container .select2-selection--multiple {
+.select2-container {
   background-color: #111 !important;
   color: #fff !important;
 }
@@ -252,7 +252,7 @@ tr.group_view_data,
 .group_view_data,
 ol.steps li span,
 ol.steps li a {
-  color: #fff;
+  color: #fff !important;
 }
 
 /* Tabs icons change color */
@@ -394,7 +394,7 @@ table.black_table_modal_alternate tr:nth-child(even) td {
 
 .info_table tr:first-child > th,
 .info_table th {
-  background-color: #222;
+  background-color: #222 !important;
   color: #fff;
 }
 
@@ -736,7 +736,7 @@ div#main_pure {
 div#main,
 div#container,
 body.pure {
-  background-color: #111;
+  background-color: #111 !important;
 }
 
 form ul.form_flex {
@@ -753,7 +753,7 @@ form ul.form_flex {
 
 .invert_filter,
 .labels {
-  filter: invert(100%);
+  filter: invert(100%) !important;
 }
 
 .info_table .invert_filter,
@@ -1392,6 +1392,7 @@ p.trademark-copyright {
 #tab-database {
   height: 80%;
   overflow: auto;
+  width: 96%;
 }
 
 button.buttonButton,
@@ -1434,14 +1435,24 @@ button.submitButton.secondary:hover > div {
 }
 
 select[multiple] option:checked,
-select[multiple] option:active {
-  background: #008d86;
+select[multiple] option:active,
+select[multiple] option:hover {
+  background: #008d86 !important;
+}
+
+.select2-search.select2-search--dropdown,
+.select2-results > .select2-results__options > .select2-results__option {
+  background-color: #222;
 }
 
 .select2-results
   > .select2-results__options
   > .select2-results__option.select2-results__option--highlighted {
   background-color: #008d86;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  color: var(--secondary-color) !important;
 }
 
 .filter_summary > div,
@@ -1552,7 +1563,7 @@ a.autorefresh_txt,
 
 .info_table,
 .filter_table {
-  border: 1px solid #333;
+  border: 1px solid #333 !important;
 }
 
 .info_table.events > tbody > tr > td {
@@ -1599,4 +1610,8 @@ a.pandora_pagination,
 
 .font-title-font {
   color: #fff;
+}
+
+#visual-console-container a p {
+  color: #3f3f3f;
 }

@@ -3,7 +3,7 @@ package PandoraFMS::InventoryServer;
 ##########################################################################
 # Pandora FMS Inventory Server.
 ##########################################################################
-# Copyright (c) 2007-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2007-2023 Pandora FMS
 # This code is not free or OpenSource. Please don't redistribute.
 ##########################################################################
 
@@ -122,7 +122,7 @@ sub data_producer ($) {
 			@rows = get_db_rows ($dbh,
 				'SELECT tagent_module_inventory.id_agent_module_inventory, tagent_module_inventory.flag, tagent_module_inventory.timestamp
 				FROM tagente, tagent_module_inventory, tmodule_inventory 
-				WHERE (server_name = ? OR server_name = ANY(SELECT name FROM tserver WHERE status <> 1 AND server_type = ?)) 
+				WHERE (server_name = ? OR server_name NOT IN (SELECT name FROM tserver WHERE status = 1 AND server_type = ?)) 
 					AND tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory
 					AND tmodule_inventory.id_os IS NOT NULL 
 					AND tagente.id_agente = tagent_module_inventory.id_agente
@@ -138,7 +138,7 @@ sub data_producer ($) {
 			@rows = get_db_rows ($dbh,
 				'SELECT tagent_module_inventory.id_agent_module_inventory, tagent_module_inventory.flag, tagent_module_inventory.timestamp
 				FROM tagente, tagent_module_inventory, tmodule_inventory 
-				WHERE (server_name = ? OR server_name = ANY(SELECT name FROM tserver WHERE status <> 1 AND server_type = ?)) 
+				WHERE (server_name = ? OR server_name NOT IN (SELECT name FROM tserver WHERE status = 1 AND server_type = ?)) 
 					AND tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory
 					AND tmodule_inventory.id_os IS NOT NULL 
 					AND tagente.id_agente = tagent_module_inventory.id_agente

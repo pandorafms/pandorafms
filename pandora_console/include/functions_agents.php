@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -165,9 +165,9 @@ function agents_locate_agent(string $field)
 function agents_get_agent_id_by_alias($alias, $is_metaconsole=false)
 {
     if ($is_metaconsole === true) {
-        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE upper(alias) LIKE upper('%$alias%')");
+        return db_get_all_rows_sql("SELECT id_tagente FROM tmetaconsole_agent WHERE '$alias' != '' and upper(alias) LIKE upper('%$alias%')");
     } else {
-        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+        return db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE '$alias' != '' and upper(alias) LIKE upper('%$alias%')");
     }
 }
 
@@ -801,15 +801,16 @@ function agents_get_agents_selected($group)
             0,
             true
         );
-
-        $all = array_reduce(
-            $all,
-            function ($carry, $item) {
-                $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['server_name'].' &raquo; '.$item['alias'];
-                return $carry;
-            },
-            []
-        );
+        if ($all !== false) {
+            $all = array_reduce(
+                $all,
+                function ($carry, $item) {
+                    $carry[$item['id_tmetaconsole_setup'].'|'.$item['id_tagente']] = $item['server_name'].' &raquo; '.$item['alias'];
+                    return $carry;
+                },
+                []
+            );
+        }
     } else {
         $all = agents_get_agents(
             ['id_grupo' => $group],
@@ -1689,7 +1690,7 @@ function agents_get_modules(
 					WHERE tagente_modulo.delete_pending = 0
 						AND %s
 					GROUP BY 1
-					ORDER BY 1',
+					ORDER BY tagente_modulo.nombre',
         ($details != 'tagente_modulo.*' && $indexed) ? 'tagente_modulo.id_agente_modulo,' : '',
         io_safe_output(implode(',', (array) $details)),
         $sql_tags_join,
@@ -2768,6 +2769,69 @@ function agents_delete_agent($id_agents, $disableACL=false)
         // Delete the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         enterprise_hook('agent_delete_from_cache', [$id_agent]);
+
+        // Delete agent from visual console.
+        db_process_sql_delete(
+            'tlayout_data',
+            ['id_agent' => $id_agent]
+        );
+
+        // Delete agent from visual dashboards.
+        db_process_sql(
+            'UPDATE twidget_dashboard 
+        SET options = NULL 
+        WHERE options LIKE ("%\"agentid\":\"'.$id_agent.'\"%")'
+        );
+
+        // Delete agent from treport.
+        db_process_sql_delete(
+            'treport_content',
+            ['id_agent' => $id_agent]
+        );
+
+        // Delete rules from tevent alerts (correlative alerts)
+        db_process_sql_delete(
+            'tevent_rule',
+            [
+                'agent'          => $id_agent,
+                'operator_agent' => '==',
+            ]
+        );
+
+        db_process_sql_delete(
+            'tevent_rule',
+            [
+                'log_agent'          => $id_agent,
+                'operator_log_agent' => '==',
+            ]
+        );
+
+        // Delete from gis maps history
+        db_process_sql_delete(
+            'tgis_data_history',
+            ['tagente_id_agente' => $id_agent]
+        );
+
+        // Delete from policies.
+        db_process_sql_delete(
+            'tpolicy_agents',
+            ['id_agent' => $id_agent]
+        );
+
+        // Delete from tnetwork maps
+        db_process_sql_delete(
+            'titem',
+            ['source_data' => $id_agent]
+        );
+
+        db_process_sql_delete(
+            'trel_item',
+            [
+                'id_parent_source_data' => $id_agent,
+                'id_child_source_data'  => $id_agent,
+            ],
+            'OR'
+        );
 
         // Delete agent from fav menu.
         db_process_sql_delete(

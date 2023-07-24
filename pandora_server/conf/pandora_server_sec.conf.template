@@ -3,7 +3,7 @@
 # Pandora FMS, the Flexible Monitoring System.
 # Version 7.0NG.769
 # Licensed under GPL license v2,
-# (c) 2003-2021 Artica Soluciones Tecnologicas
+# (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
 # Please change it for your setup needs
 #############################################################################
@@ -301,13 +301,6 @@ dataserver_threads 1
 # Set 1 if want eMail deliver alert in separate mail  (default). 
 # Set 0 if want eMail deliver shared mail by all destination.
 mail_in_separate 1
-
-
-# xprobe2: Optional package to detect OS types using advanced TCP/IP 
-# fingerprinting tecniques, much more accurates than stadard nmap.
-# If not provided, nmap is used insted xprobe2
-
-xprobe2 /usr/bin/xprobe2
 
 # nmap: If provided, is used to detect OS type with recon server using 
 # advanded OS fingerprint technique. Xprobe2 gives more accurate results
@@ -664,6 +657,12 @@ syslog_threads 2
 
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
+
+# Blacklist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+# syslog_blacklist [regex]
+
+# Whitelist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+# syslog_whitelist .*
 
 # Sync Server
 #syncserver

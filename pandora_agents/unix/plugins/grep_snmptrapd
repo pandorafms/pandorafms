@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 ###############################################################################
 #
-# Copyright (c) 2018  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2018-2023 Pandora FMS.
 #
 # grep_log	Perl script to search log files for a matching pattern. The last
 #           searched position is saved in an index file so that consecutive

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -561,7 +561,6 @@ class BasicChart extends Widget
         global $config;
 
         $size = parent::getSize();
-        hd($size, true);
 
         include_once $config['homedir'].'/include/functions_graph.php';
         include_once $config['homedir'].'/include/functions_agents.php';
@@ -625,16 +624,20 @@ class BasicChart extends Widget
             ],
         ];
 
+        $graph = \grafico_modulo_sparse($params);
         $output = '<div class="container-center widget-mrgn-0px">';
-        $output .= '<div class="basic-chart-title">';
-        $output .= '<span style="color:'.$this->values['colorLabel'].'; font-size:'.$this->values['sizeLabel'].'px;">';
-        $output .= ((bool) $this->values['showLabel'] === true) ? $title : '';
-        $output .= '</span>';
-        $output .= '<span style="color:'.$color_status.'; font-size:'.$this->values['sizeValue'].'px;">';
-        $output .= ((bool) $this->values['showValue'] === true) ? $value : '';
-        $output .= '</span>';
-        $output .= '</div>';
-        $output .= \grafico_modulo_sparse($params);
+        if (str_contains($graph, '<img') === false) {
+            $output .= '<div class="basic-chart-title">';
+            $output .= '<span style="color:'.$this->values['colorLabel'].'; font-size:'.$this->values['sizeLabel'].'px;">';
+            $output .= ((bool) $this->values['showLabel'] === true) ? $title : '';
+            $output .= '</span>';
+            $output .= '<span style="color:'.$color_status.'; font-size:'.$this->values['sizeValue'].'px;">';
+            $output .= ((bool) $this->values['showValue'] === true) ? $value : '';
+            $output .= '</span>';
+            $output .= '</div>';
+        }
+
+        $output .= $graph;
         $output .= '</div>';
         return $output;
     }

@@ -34,6 +34,7 @@ div#vc-controls {
 
 div#vc-controls div#menu_tab {
   margin: 0px;
+  height: 100% !important;
 }
 
 div#vc-controls ul.white-box-content {
@@ -99,15 +100,6 @@ div#vc-controls img.vc-qr {
   flex: inherit;
 }
 
-input.vs_button_ghost {
-  background-color: transparent;
-  border: 1px solid #82b92e;
-  color: #82b92e;
-  text-align: center;
-  padding: 4px 12px;
-  font-weight: bold;
-}
-
 #toolbox #auto_save {
   padding-top: 5px;
 }
@@ -163,6 +155,14 @@ div.label strong span {
 
 .zindex999 {
   z-index: 999;
+}
+
+.vc-btn-no-fullscreen {
+  padding: 0 !important;
+}
+
+.vc-btn-no-fullscreen img {
+  margin-top: 0 !important;
 }
 
 .visual_font_size_4pt,
@@ -478,4 +478,8 @@ div.label strong span {
 .center_switch .p-switch {
   margin: 0;
   padding: 0;
+}
+
+.select2-search__field {
+  width: 95% !important;
 }

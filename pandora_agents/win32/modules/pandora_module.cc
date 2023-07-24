@@ -1,6 +1,6 @@
 /* Defines a parent class for a Pandora module.
 
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -520,7 +520,7 @@ Pandora_Module::getXml () {
 	if (this->module_type == TYPE_LOG) {
 		module_xml = "<log_module>\n\t<source><![CDATA[";
 		module_xml += this->module_name;
-		module_xml += "]]></source>\n\t<data><![CDATA[";
+		module_xml += "]]></source>\n\t<encoding>base64</encoding>\n\t<data><![CDATA[";
 
 		if (this->data_list && this->data_list->size () > 1) {
 			list<Pandora_Data *>::iterator iter;
@@ -532,25 +532,19 @@ Pandora_Module::getXml () {
 				data = *iter;
 				
 				try {
-					data_clean = strreplace (this->getDataOutput (data),
-								 "%", "%%" );
-					data_clean = strreplace (data_clean, "]]>", "]]><![CDATA[");
+					data_clean += this->getDataOutput(data);
 				} catch (Module_Exception e) {
 					continue;
 				}
-				
-				module_xml += data_clean;
 			}
 		} else {
 			data = data_list->front ();
 			try {
-				data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-				data_clean = strreplace (data_clean, "]]>", "]]><![CDATA[");
-				module_xml += data_clean;
-
+				data_clean = this->getDataOutput (data);
 			} catch (Module_Exception e) {
 			}
 		}
+		module_xml += base64Encode(data_clean);
 		module_xml += "]]></data></log_module>";
 		
 		/* Clean up */

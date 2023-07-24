@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -47,8 +47,74 @@ if (isset($policy_page) === false) {
     $policy_page = false;
 }
 
-$checked = (bool) get_parameter('checked');
+$checked = (bool) get_parameter('status_hierachy_mode');
+$status_hierachy_mode = (bool) get_parameter('status_hierachy_mode');
 $sec2 = (string) get_parameter('sec2');
+// Table for filter bar.
+$filterTable = new stdClass();
+$filterTable->class = 'filter-table-adv w100p';
+$filterTable->size[0] = '20%';
+$filterTable->size[1] = '20%';
+$filterTable->size[2] = '20%';
+$filterTable->size[3] = '20%';
+$filterTable->size[4] = '20%';
+$filterTable->data = [];
+$filterTable->cellstyle[0][0] = 'width:0';
+$filterTable->data[0][0] = __('Search');
+$filterTable->data[1][0] .= html_print_input_text(
+    'search_string',
+    $search_string,
+    '',
+    30,
+    255,
+    true,
+    false,
+    false,
+    '',
+    ''
+);
+
+$filterTable->data[0][0] .= html_print_input_hidden('search', 1, true);
+
+if ((bool) $policy_page === false) {
+    $filterTable->data[0][1] = __('Show in hierachy mode');
+    $filterTable->data[1][1] = html_print_checkbox_switch(
+        'status_hierachy_mode',
+        ((string) $checked),
+        ((string) $checked),
+        true,
+        false,
+        'onChange=change_mod_filter();'
+    );
+}
+
+$filterTable->data[1][2] = html_print_submit_button(
+    __('Filter'),
+    'filter',
+    false,
+    [
+        'icon'  => 'search',
+        'class' => 'float-right',
+        'mode'  => 'secondary mini',
+    ],
+    true
+);
+
+// Print filter table.
+echo '<form id="create_module_type" method="post" action="'.$url.'">';
+ui_toggle(
+    html_print_table($filterTable, true).'</form>',
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'filter',
+    true,
+    false,
+    '',
+    'white-box-content no_border',
+    'filter-datatable-main box-flat white_table_graph fixed_filter_bar'
+);
+echo '</form>';
+
 
 if (isset($id_agente) === false) {
     return;
@@ -769,7 +835,17 @@ if ($modules !== false) {
         }
 
         if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
-            $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+            if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+                $linked = policies_is_module_linked($module['id_agente_modulo']);
+                $adopt = policies_is_module_adopt($module['id_agente_modulo']);
+                if ($linked !== false && $adopt === false) {
+                    $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'&id_policy_module='.$module['id_policy_module'].'">';
+                } else {
+                    $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+                }
+            } else {
+                $data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+            }
         }
 
         if ((bool) $module['disabled'] === true) {
@@ -830,8 +906,8 @@ if ($modules !== false) {
                 $linked = policies_is_module_linked($module['id_agente_modulo']);
                 $adopt = policies_is_module_adopt($module['id_agente_modulo']);
 
-                if ($linked !== false) {
-                    if ($adopt === true) {
+                if ((bool) $linked !== false) {
+                    if ((bool) $adopt === true) {
                         $img = 'images/policies_brick.png';
                         $title = '('.__('Adopted').') '.$policyInfo['name_policy'];
                     } else {
@@ -839,7 +915,7 @@ if ($modules !== false) {
                         $title = $policyInfo['name_policy'];
                     }
                 } else {
-                    if ($adopt === true) {
+                    if ((bool) $adopt === true) {
                         $img = 'images/policies_not_brick.png';
                         $title = '('.__('Unlinked').') ('.__('Adopted').') '.$policyInfo['name_policy'];
                     } else {
@@ -871,6 +947,10 @@ if ($modules !== false) {
             $status,
             $title
         );
+
+        if (strlen($module['ip_target']) !== 0) {
+            $title .= '<br/>IP: '.$module['ip_target'];
+        }
 
         // This module is initialized ? (has real data).
         if ($status === STATUS_MODULE_NO_DATA) {
@@ -995,7 +1075,7 @@ if ($modules !== false) {
             $data[8] .= html_print_menu_button(
                 [
                     'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'],
-                    'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'onClick' => 'javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;',
                     'image'   => 'images/delete.svg',
                     'title'   => __('Delete'),
                 ],
@@ -1091,8 +1171,9 @@ $createModuleTable->data[0][] = html_print_label_input_block(
         false,
         '',
         false,
-        'max-width:300px;'
-    )
+        'width:350px;'
+    ),
+    ['div_style' => 'margin-top: 25px;'],
 );
 
 $createModuleTable->data[1][] = html_print_label_input_block(
@@ -1120,8 +1201,9 @@ $modalCreateModule .= html_print_div(
             'modal_button_create',
             false,
             [
-                'icon' => 'next',
-                'mode' => 'mini secondary',
+                'icon'  => 'next',
+                'mode'  => 'mini secondary',
+                'style' => 'margin-top: 140px;',
             ],
             true
         ),
@@ -1148,8 +1230,8 @@ html_print_div(
             draggable: true,
             modal: true,
             close: false,
-            height: 222,
-            width: 480,
+            height: 400,
+            width: 495,
             overlay: {
                 opacity: 0.5,
                 background: "black"
@@ -1199,14 +1281,17 @@ html_print_div(
         if (/checked/.test(window.location)) {
             var url = window.location.toString();
             if (checked) {
-                window.location = url.replace("checked=false", "checked=true");
+                //window.location = url.replace("checked=0", "checked=1");
+                $("#checkbox-status_hierachy_mode").val('1');
             }
             else {
-                window.location = url.replace("checked=true", "checked=false");
+                //window.location = url.replace("checked=1", "checked=0");
+                $("#checkbox-status_hierachy_mode").val('0');
             }
         }
         else {
-            window.location = window.location + "&checked=true";
+            //window.location = window.location + "&checked=1";
+            $("#checkbox-status_hierachy_mode").val('1');
         }
     }
 

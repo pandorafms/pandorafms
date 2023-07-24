@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -429,6 +429,19 @@ $table->data[$i++][] = html_print_label_input_block(
     )
 );
 
+$table->data[$i++][] = html_print_label_input_block(
+    __('Enable Feedback'),
+    html_print_checkbox_switch_extended(
+        'activate_feedback',
+        true,
+        $config['activate_feedback'],
+        false,
+        '',
+        '',
+        true
+    )
+);
+
 $table->colspan[$i][] = 2;
 $table->data[$i++][] = html_print_label_input_block(
     __('Server timezone setup'),
@@ -668,15 +681,19 @@ $table->data[$i++][] = html_print_label_input_block(
     )
 );
 
+$help_tip = ui_print_help_tip(
+    __('This log is recommended to be DISABLED by default due to the large amount of debug data it generates.'),
+    true
+);
 $table->data[$i][] = html_print_label_input_block(
-    __('Enable console log'),
+    __('Enable console log').$help_tip,
     html_print_checkbox_switch(
         'console_log_enabled',
         1,
         $config['console_log_enabled'],
         true
     ).ui_print_input_placeholder(
-        __('Log location').': pandora_console/log/console.log',
+        __('Log location').': /var/log/php-fpm/error.log',
         true
     )
 );
@@ -704,7 +721,7 @@ $table->data[$i][] = html_print_label_input_block(
     )
 );
 
-$table->data[$i][] = html_print_label_input_block(
+$table->data[$i++][] = html_print_label_input_block(
     __('Check conexion interval'),
     html_print_input_number(
         [
@@ -712,6 +729,31 @@ $table->data[$i][] = html_print_label_input_block(
             'min'   => 90,
             'value' => $config['check_conexion_interval'],
         ]
+    )
+);
+
+$help_tip = ui_print_help_tip(
+    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead.'),
+    true
+);
+
+$table->data[$i][] = html_print_label_input_block(
+    __('Keep In process status for new events with extra ID').$help_tip,
+    html_print_checkbox_switch(
+        'keep_in_process_status_extra_id',
+        1,
+        $config['keep_in_process_status_extra_id'],
+        true
+    )
+);
+
+$table->data[$i][] = html_print_label_input_block(
+    __('Show experimental features'),
+    html_print_checkbox_switch(
+        'show_experimental_features',
+        1,
+        $config['show_experimental_features'],
+        true
     )
 );
 

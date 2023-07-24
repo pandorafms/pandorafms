@@ -11949,7 +11949,7 @@ span.help_icon_15px > img {
 /* ==== Spinner ==== */
 .spinner-fixed {
   position: absolute;
-  left: 40%;
+  left: 45%;
   top: 40%;
   z-index: 1;
   width: 100px;
@@ -11959,6 +11959,7 @@ span.help_icon_15px > img {
   animation: animate 1.2s linear infinite;
   margin: auto;
   margin-bottom: 40px;
+  text-align: initial;
 }
 .spinner-fixed span {
   position: absolute;

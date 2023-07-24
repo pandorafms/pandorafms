@@ -984,19 +984,31 @@ function get_build_setup_charts($type, $options, $data)
     ) {
         $scales = $chart->options()->getScales();
 
-        // Defaults scalesFont X.
-        $scalesXFonts = $scales->getX()->ticks()->getFonts();
-        $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
-        $scalesXFonts->setStyle('normal');
-        $scalesXFonts->setWeight(600);
-        $scalesXFonts->setSize(((int) $config['font_size'] + 2));
+        if ($options['scales']['x'] !== false) {
+            // Defaults scalesFont X.
+            $scalesXFonts = $scales->getX()->ticks()->getFonts();
+            $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
+            $scalesXFonts->setStyle('normal');
+            $scalesXFonts->setWeight(600);
+            $scalesXFonts->setSize(((int) $config['font_size'] + 2));
+        }
 
-        // Defaults scalesFont Y.
-        $scalesYFonts = $scales->getY()->ticks()->getFonts();
-        $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
-        $scalesYFonts->setStyle('normal');
-        $scalesYFonts->setWeight(600);
-        $scalesYFonts->setSize(((int) $config['font_size'] + 2));
+        if ($options['scales']['y'] !== false) {
+            // Defaults scalesFont Y.
+            $scalesYFonts = $scales->getY()->ticks()->getFonts();
+            $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
+            $scalesYFonts->setStyle('normal');
+            $scalesYFonts->setWeight(600);
+            $scalesYFonts->setSize(((int) $config['font_size'] + 2));
+        }
+
+        if ($options['scales']['r'] !== false) {
+            // Defaults scalesFont R.
+            $scalesRFonts = $scales->getR()->pointLabels()->getFonts();
+            $scalesRFonts->setStyle('normal');
+            $scalesRFonts->setWeight(600);
+            $scalesRFonts->setSize(((int) $config['font_size'] + 2));
+        }
 
         if (isset($options['scales']['x']) === true
             && empty($options['scales']['x']) === false
@@ -1087,6 +1099,34 @@ function get_build_setup_charts($type, $options, $data)
                 }
             }
         }
+
+        if (isset($options['scales']['r']) === true
+            && empty($options['scales']['r']) === false
+            && is_array($options['scales']['r']) === true
+        ) {
+            if (isset($options['scales']['r']['pointLabels']) === true
+                && empty($options['scales']['r']['pointLabels']) === false
+                && is_array($options['scales']['r']['pointLabels']) === true
+            ) {
+                if (isset($options['scales']['r']['pointLabels']['fonts']) === true
+                    && empty($options['scales']['r']['pointLabels']['fonts']) === false
+                    && is_array($options['scales']['r']['pointLabels']['fonts']) === true
+                ) {
+                    $scaleRpointLabelsFonts = $scales->getR()->pointLabels()->getFonts();
+                    if (isset($options['scales']['r']['pointLabels']['fonts']['size']) === true) {
+                        $scaleRpointLabelsFonts->setSize($options['scales']['r']['pointLabels']['fonts']['size']);
+                    }
+
+                    if (isset($options['scales']['r']['pointLabels']['fonts']['style']) === true) {
+                        $scaleRpointLabelsFonts->setStyle($options['scales']['r']['pointLabels']['fonts']['style']);
+                    }
+
+                    if (isset($options['scales']['r']['pointLabels']['fonts']['weight']) === true) {
+                        $scaleRpointLabelsFonts->setWeight($options['scales']['r']['pointLabels']['fonts']['weight']);
+                    }
+                }
+            }
+        }
     }
 
     // Color.
@@ -1145,11 +1185,8 @@ function get_build_setup_charts($type, $options, $data)
         break;
 
         case 'RADAR':
-            $chart->labels()->exchangeArray($options['labels']);
-
             foreach ($data as $key => $dataset) {
                 $dataSet1 = $chart->createDataSet();
-                $dataSet1->setLabel($dataset['label']);
                 $dataSet1->setBackgroundColor($dataset['backgroundColor']);
                 $dataSet1->setBorderColor($dataset['borderColor']);
                 $dataSet1->setPointBackgroundColor($dataset['pointBackgroundColor']);

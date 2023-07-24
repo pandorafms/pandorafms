@@ -5,6 +5,7 @@ namespace Artica\PHPChartJS\Options;
 use Artica\PHPChartJS\ArraySerializableInterface;
 use Artica\PHPChartJS\Delegate\ArraySerializable;
 use Artica\PHPChartJS\Options\Scales\GridLines;
+use Artica\PHPChartJS\Options\Scales\PointLabels;
 use Artica\PHPChartJS\Options\Scales\ScaleLabel;
 use Artica\PHPChartJS\Options\Scales\Ticks;
 use JsonSerializable;
@@ -137,6 +138,11 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
      * @var Ticks
      */
     protected $ticks;
+
+    /**
+     * @var PointLabels
+     */
+    protected $pointLabels;
 
     /**
      * @return string
@@ -617,6 +623,31 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
         }
 
         return $this->ticks;
+    }
+
+
+    /**
+     *
+     * @return  PointLabels
+     */
+    public function getPointLabels()
+    {
+        return $this->pointLabels;
+    }
+
+    /**
+     *
+     * @param  PointLabels  $pointLabels
+     *
+     * @return  self
+     */
+    public function pointLabels()
+    {
+        if (is_null($this->pointLabels)) {
+            $this->pointLabels = new PointLabels();
+        }
+
+        return $this->pointLabels;
     }
 
     /**

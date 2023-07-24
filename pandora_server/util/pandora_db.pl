@@ -25,8 +25,6 @@ use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
 use File::Path qw(rmtree);
 use Time::HiRes qw(usleep);
-use IO::Handle;
-use File::Copy;
 
 # Default lib dir for RPM and DEB packages
 BEGIN { push @INC, '/usr/lib/perl5'; }

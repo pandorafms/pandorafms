@@ -116,6 +116,7 @@ if (!$report_r && !$report_w && !$report_m) {
 }
 
 require_once $config['homedir'].'/include/functions_reports.php';
+require_once $config['homedir'].'/godmode/wizards/DiscoveryTaskList.class.php';
 
 // Load enterprise extensions.
 enterprise_include('operation/reporting/custom_reporting.php');
@@ -1277,7 +1278,9 @@ switch ($action) {
             );
         }
 
-        $report_task_data = enterprise_hook('tasklist_showListConsoleTask', [$object, true]);
+        $discovery_tasklist = new DiscoveryTaskList();
+        $report_task_data = $discovery_tasklist->showListConsoleTask(true);
+
         if (is_array($report_task_data) === true || strpos($report_task_data, 'class="nf"') === false) {
             $task_table = '<div class="mrgn_top_15px white_box">';
             $task_table .= '<span class="white_table_graph_header">'.__('Report tasks');

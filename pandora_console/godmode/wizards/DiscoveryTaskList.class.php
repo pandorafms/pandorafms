@@ -1109,9 +1109,9 @@ class DiscoveryTaskList extends HTML
      *
      * @return boolean Success or not.
      */
-    public function showListConsoleTask()
+    public function showListConsoleTask($report_task=false)
     {
-        return enterprise_hook('tasklist_showListConsoleTask', [$this]);
+        return enterprise_hook('tasklist_showListConsoleTask', [$this, $report_task]);
     }
 
 

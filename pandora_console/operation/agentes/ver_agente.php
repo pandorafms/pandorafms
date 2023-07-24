@@ -42,6 +42,7 @@ ui_require_javascript_file('openlayers.pandora');
 ui_require_css_file('agent_view');
 
 enterprise_include_once('operation/agentes/ver_agente.php');
+enterprise_include_once('include/functions_security_hardening.php');
 
 check_login();
 if (is_ajax()) {
@@ -1744,7 +1745,7 @@ $external_tools['text'] = html_print_menu_button(
 
 $external_tools['active'] = ($tab === 'external_tools');
 
-if (enterprise_installed() === true) {
+if (enterprise_installed() === true && security_hardening_installed() === true) {
     // External Tools tab.
     $security_hardening['text'] = html_print_menu_button(
         [

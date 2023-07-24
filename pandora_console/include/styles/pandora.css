@@ -1278,6 +1278,11 @@ p.center {
   margin-right: 10px;
 }
 
+.margin-lr-5 {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 .img_help {
   cursor: help;
   margin: 0 5px;

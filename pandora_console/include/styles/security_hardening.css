@@ -91,6 +91,14 @@
 .time-line {
   max-height: 300px;
 }
+.summary_categories {
+  width: 80%;
+  margin: 20px;
+}
+
+#list_total_resume .sorting_asc {
+  background-image: none;
+}
 
 #form_list_resume {
   display: flex;

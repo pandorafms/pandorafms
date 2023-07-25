@@ -1108,6 +1108,22 @@ function get_build_setup_charts($type, $options, $data)
                 && empty($options['scales']['r']['pointLabels']) === false
                 && is_array($options['scales']['r']['pointLabels']) === true
             ) {
+                if (isset($options['scales']['r']['pointLabels']['color']) === true) {
+                    $scales->getR()->pointLabels()->setColor($options['scales']['r']['pointLabels']['color']);
+                }
+
+                if (isset($options['scales']['r']['grid']['display']) === true) {
+                    $scales->getR()->grid()->setDrawOnChartArea($options['scales']['r']['grid']['display']);
+                }
+
+                if (isset($options['scales']['r']['grid']['color']) === true) {
+                    $scales->getR()->grid()->setColor($options['scales']['r']['grid']['color']);
+                }
+
+                if (isset($options['scales']['r']['angleLines']['color']) === true) {
+                    $scales->getR()->angleLines()->setColor($options['scales']['r']['angleLines']['color']);
+                }
+
                 if (isset($options['scales']['r']['pointLabels']['fonts']) === true
                     && empty($options['scales']['r']['pointLabels']['fonts']) === false
                     && is_array($options['scales']['r']['pointLabels']['fonts']) === true

@@ -4,6 +4,7 @@ namespace Artica\PHPChartJS\Options;
 
 use Artica\PHPChartJS\ArraySerializableInterface;
 use Artica\PHPChartJS\Delegate\ArraySerializable;
+use Artica\PHPChartJS\Options\Scales\AngleLines;
 use Artica\PHPChartJS\Options\Scales\GridLines;
 use Artica\PHPChartJS\Options\Scales\PointLabels;
 use Artica\PHPChartJS\Options\Scales\ScaleLabel;
@@ -130,6 +131,13 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
     protected $grid;
 
     /**
+     * AngleLines
+     *
+     * @var AngleLines
+     */
+    protected $angleLines;
+
+    /**
      * @var ScaleLabel
      */
     protected $scaleLabel;
@@ -164,7 +172,7 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
         return $this;
     }
 
-    
+
     /**
      * @return string
      */
@@ -583,6 +591,26 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
         }
 
         return $this->grid;
+    }
+
+    /**
+     * @return AngleLines
+     */
+    public function getAngleLines()
+    {
+        return $this->angleLines;
+    }
+
+    /**
+     * @return AngleLines
+     */
+    public function angleLines()
+    {
+        if (is_null($this->angleLines)) {
+            $this->angleLines = new AngleLines();
+        }
+
+        return $this->angleLines;
     }
 
     /**

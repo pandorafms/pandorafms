@@ -955,8 +955,8 @@ function openSoundEventsDialog(settings) {
     return;
   }
   //Modify button
-  $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
-  $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
+  $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
+  $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
   $("#minimize_arrow_event_sound").show();
 
   // Initialize modal.
@@ -1370,180 +1370,168 @@ function removeElement(name_select, id_modal) {
 
 $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
   const requestBody = ajaxOptions.data;
-  if (requestBody && requestBody.includes("drawConsoleSound=1")) {
-    console.log("AJAX request sent with drawConsoleSound=1:", ajaxOptions.url);
+  try {
+    if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+      console.log(
+        "AJAX request sent with drawConsoleSound=1:",
+        ajaxOptions.url
+      );
 
-    // Find the dialog element by the aria-describedby attribute
-    var dialog = $('[aria-describedby="modal-sound"]');
+      // Find the dialog element by the aria-describedby attribute
+      var dialog = $('[aria-describedby="modal-sound"]');
 
-    // Select the close button within the dialog
-    var closeButton = dialog.find(".ui-dialog-titlebar-close");
+      // Select the close button within the dialog
+      var closeButton = dialog.find(".ui-dialog-titlebar-close");
 
-    // Add the minimize button before the close button
-    var minimizeButton = $("<button>", {
-      class:
-        "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize",
-      type: "button",
-      title: "Minimize",
-      style: "float: right;margin-right: 1.5em;"
-    }).insertBefore(closeButton);
+      // Add the minimize button before the close button
+      var minimizeButton = $("<button>", {
+        class:
+          "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize",
+        type: "button",
+        title: "Minimize",
+        style: "float: right;margin-right: 1.5em;"
+      }).insertBefore(closeButton);
 
-    // Add the minimize icon to the minimize button
-    $("<span>", {
-      class: "ui-button-icon ui-icon ui-icon-minusthick",
-      style: "background-color: #fff;"
-    }).appendTo(minimizeButton);
+      // Add the minimize icon to the minimize button
+      $("<span>", {
+        class: "ui-button-icon ui-icon ui-icon-minusthick",
+        style: "background-color: #fff;"
+      }).appendTo(minimizeButton);
 
-    $("<span>", {
-      class: "ui-button-icon-space"
-    })
-      .html(" ")
-      .appendTo(minimizeButton);
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(minimizeButton);
 
-    // Add the disengage button before the minimize button
-    var disengageButton = $("<button>", {
-      class:
-        "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage",
-      type: "button",
-      title: "Disengage",
-      style: "float: right;margin-right: 0.5em; position:relative;"
-    }).insertBefore(minimizeButton);
+      // Add the disengage button before the minimize button
+      var disengageButton = $("<button>", {
+        class:
+          "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage",
+        type: "button",
+        title: "Disengage",
+        style: "float: right;margin-right: 0.5em; position:relative;"
+      }).insertBefore(minimizeButton);
 
-    // Add the disengage icon to the disengage button
-    $("<span>", {
-      class: "ui-button-icon ui-icon ui-icon-circle-triangle-n",
-      style: "background-color: #fff;"
-    }).appendTo(disengageButton);
+      // Add the disengage icon to the disengage button
+      $("<span>", {
+        class: "ui-button-icon ui-icon ui-icon-circle-triangle-n",
+        style: "background-color: #fff;"
+      }).appendTo(disengageButton);
 
-    $("<span>", {
-      class: "ui-button-icon-space"
-    })
-      .html(" ")
-      .appendTo(disengageButton);
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(disengageButton);
 
-    // Define the minimize button functionality;
-    function hidden_dialog() {
-      setTimeout(function() {
-        dialog.css("z-index", "-1");
-      }, 200);
-    }
-    function show_dialog() {
-      setTimeout(function() {
-        dialog.css("z-index", "1115");
-      }, 50);
-    }
-    minimizeButton.click(function(e) {
-      console.log("here");
-      if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
-        console.log("arrow_menu_up");
-        $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
-        $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
-      } else if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_down")) {
-        console.log("arrow_menu_down");
-        $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
-        $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
+      // Define the minimize button functionality;
+      function hidden_dialog() {
+        setTimeout(function() {
+          $("#modal-sound").css("visibility", "hidden");
+          dialog.css("z-index", "-1");
+        }, 200);
       }
-
-      if (!dialog.data("isMinimized")) {
-        $(".ui-widget-overlay").hide();
-        console.log("Minimize Window");
-        dialog.data("originalPos", dialog.position());
-        dialog.data("originalSize", {
-          width: dialog.width(),
-          height: dialog.height()
-        });
-        dialog.data("isMinimized", true);
-
-        dialog.animate(
-          {
-            height: "40px",
-            top: 0,
-            top: $(window).height() - 100
-          },
-          200,
-          "linear",
-          hidden_dialog()
-        );
-        dialog.css({ height: "" });
-
-        //dialog.find(".ui-dialog-content").hide();
-      } else {
-        console.log("Restore Window");
-        $(".ui-widget-overlay").show();
-        //dialog.find(".ui-dialog-content").show();
-        dialog.data("isMinimized", false);
-        dialog.animate(
-          {
-            height: dialog.data("originalSize").height + "px",
-            top: dialog.data("originalPos").top + "px"
-          },
-          200,
-          "linear",
-          show_dialog()
-        );
+      function show_dialog() {
+        setTimeout(function() {
+          $("#modal-sound").css("visibility", "visible");
+          dialog.css("z-index", "1115");
+        }, 50);
       }
-    });
+      minimizeButton.click(function(e) {
+        console.log("here");
+        if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
+          console.log("arrow_menu_up");
+          $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
+          $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
+        } else if (
+          $("#minimize_arrow_event_sound").hasClass("arrow_menu_down")
+        ) {
+          console.log("arrow_menu_down");
+          $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
+          $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
+        }
 
-    disengageButton.click(function() {
-      $(".ui-dialog-titlebar-close").trigger("click");
-      $("#button-sound_events_button_hidden").trigger("click");
-    });
+        if (!dialog.data("isMinimized")) {
+          $(".ui-widget-overlay").hide();
+          console.log("Minimize Window");
+          dialog.data("originalPos", dialog.position());
+          dialog.data("originalSize", {
+            width: dialog.width(),
+            height: dialog.height()
+          });
+          dialog.data("isMinimized", true);
 
-    // Listener to check if the dialog content contains <li> elements
-    var dialogContent = dialog.find(".ui-dialog-content");
-    var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        var addedNodes = mutation.addedNodes;
-        for (var i = 0; i < addedNodes.length; i++) {
-          if (addedNodes[i].nodeName.toLowerCase() === "li") {
-            console.log("The dialog content contains an <li> tag.");
-            /*if (dialog.data("isMinimized")) {
-              console.log("Restore Window");
-              $(".ui-widget-overlay").show();
-              dialog.data("isMinimized", false);
-              dialog.animate(
-                {
-                  height: dialog.data("originalSize").height + "px",
-                  top: dialog.data("originalPos").top + "px"
-                },
-                200
-              );
-            }*/
-            /*
-            var $el = $('[aria-describedby="modal-sound"]').find(
-              ".ui-dialog-title"
-            );
-            var flashingDuration = 10000; // 10 seconds
+          dialog.animate(
+            {
+              height: "40px",
+              top: 0,
+              top: $(window).height() - 100
+            },
+            200,
+            "linear",
+            hidden_dialog()
+          );
+          dialog.css({ height: "" });
+          dialog.animate(
+            {
+              height: dialog.data("originalSize").height + "px",
+              top: dialog.data("originalPos").top + "px"
+            },
+            5
+          );
+          //dialog.find(".ui-dialog-content").hide();
+        } else {
+          console.log("Restore Window");
+          $(".ui-widget-overlay").show();
+          //dialog.find(".ui-dialog-content").show();
+          dialog.data("isMinimized", false);
 
-            $("<style>")
-              .text(
-                `
-              @keyframes flashRed {
-                from { background-color: initial; }
-                to { background-color: red; }
-              }
-              .red-flash { animation: flashRed 0.5s alternate infinite; }
-            `
-              )
-              .appendTo("head");
-
-            $el.addClass("red-flash");
-
-            setTimeout(() => {
-              $el.removeClass("red-flash");
-              $("style")
-                .last()
-                .remove();
-            }, flashingDuration);*/
-            break;
-          }
+          dialog.animate(
+            {
+              height: "40px",
+              top: 0,
+              top: $(window).height() - 100
+            },
+            5
+          );
+          dialog.animate(
+            {
+              height: dialog.data("originalSize").height + "px",
+              top: dialog.data("originalPos").top + "px"
+            },
+            200,
+            "linear",
+            show_dialog()
+          );
         }
       });
-    });
 
-    // Configure and start observing the dialog content for changes
-    var config = { childList: true, subtree: true };
-    observer.observe(dialogContent[0], config);
+      disengageButton.click(function() {
+        $(".ui-dialog-titlebar-close").trigger("click");
+        $("#button-sound_events_button_hidden").trigger("click");
+      });
+
+      // Listener to check if the dialog content contains <li> elements
+      var dialogContent = dialog.find(".ui-dialog-content");
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          var addedNodes = mutation.addedNodes;
+          for (var i = 0; i < addedNodes.length; i++) {
+            if (addedNodes[i].nodeName.toLowerCase() === "li") {
+              console.log("The dialog content contains an <li> tag.");
+              break;
+            }
+          }
+        });
+      });
+
+      // Configure and start observing the dialog content for changes
+      var config = { childList: true, subtree: true };
+      observer.observe(dialogContent[0], config);
+    }
+  } catch (e) {
+    console.log(e);
   }
 });
 
@@ -1557,55 +1545,62 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
 */
 $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
   const requestBody = ajaxOptions.data;
-  if (requestBody && requestBody.includes("drawConsoleSound=1")) {
-    console.log("AJAX request sent with drawConsoleSound=1:", ajaxOptions.url);
-
-    // Find the dialog element by the aria-describedby attribute
-    var dialog = $('[aria-describedby="modal-sound"]');
-    dialog.css({
-      // "backgroundColor":"black",
-      // "color":"white"
-    });
-
-    // Set CSS properties for #modal-sound
-    $("#modal-sound").css({
-      height: "450px",
-      margin: "0px"
-    });
-
-    // Set CSS properties for #tabs-sound-modal
-    $("#tabs-sound-modal").css({
-      "margin-top": "0px",
-      padding: "0px",
-      "font-weight": "bolder"
-    });
-
-    // Set CSS properties for #actions-sound-modal
-    $("#actions-sound-modal").css({
-      "margin-bottom": "0px"
-    });
-
-    // Hide the overlay with specific class and z-index
-    $('.ui-widget-overlay.ui-front[style="z-index: 10000;"]').css(
-      "display",
-      "none"
-    );
-
-    // Handle the 'change' event for #modal-sound, simply to compact the size of the img "No alerts discovered"
-    // An image should always have a size assigned!!!
-    $("#modal-sound").on("change", function() {
-      // Find the image within the specific div
-      var image = $(this).find(
-        'img.invert_filter.forced_title[data-title="No alerts discovered"][alt="No alerts discovered"]'
+  try {
+    if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+      console.log(
+        "AJAX request sent with drawConsoleSound=1:",
+        ajaxOptions.url
       );
 
-      // Set the desired width and height
-      var width = 48;
-      var height = 48;
+      // Find the dialog element by the aria-describedby attribute
+      var dialog = $('[aria-describedby="modal-sound"]');
+      dialog.css({
+        // "backgroundColor":"black",
+        // "color":"white"
+      });
 
-      // Resize the image
-      image.width(width);
-      image.height(height);
-    });
+      // Set CSS properties for #modal-sound
+      $("#modal-sound").css({
+        height: "450px",
+        margin: "0px"
+      });
+
+      // Set CSS properties for #tabs-sound-modal
+      $("#tabs-sound-modal").css({
+        "margin-top": "0px",
+        padding: "0px",
+        "font-weight": "bolder"
+      });
+
+      // Set CSS properties for #actions-sound-modal
+      $("#actions-sound-modal").css({
+        "margin-bottom": "0px"
+      });
+
+      // Hide the overlay with specific class and z-index
+      $('.ui-widget-overlay.ui-front[style="z-index: 10000;"]').css(
+        "display",
+        "none"
+      );
+
+      // Handle the 'change' event for #modal-sound, simply to compact the size of the img "No alerts discovered"
+      // An image should always have a size assigned!!!
+      $("#modal-sound").on("change", function() {
+        // Find the image within the specific div
+        var image = $(this).find(
+          'img.invert_filter.forced_title[data-title="No alerts discovered"][alt="No alerts discovered"]'
+        );
+
+        // Set the desired width and height
+        var width = 48;
+        var height = 48;
+
+        // Resize the image
+        image.width(width);
+        image.height(height);
+      });
+    }
+  } catch (e) {
+    console.log(e);
   }
 });

@@ -11666,14 +11666,14 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: relative;
-  right: 40px;
+  position: absolute;
+  right: 9px;
   top: 4px;
   border: 0;
   outline: none;
   margin: 0;
   height: 30px;
-  width: 30px;
+  width: 40px;
   cursor: pointer;
   display: inline-block;
 }

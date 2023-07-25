@@ -129,6 +129,11 @@ class DiscoveryTaskList extends HTML
         }
 
         $delete_console_task = (bool) get_parameter('delete_console_task');
+        $report_task = (bool) get_parameter('report_task', 0);
+        if ($report_task === true) {
+            $this->url = ui_get_full_url('index.php?sec=reporting&sec2=godmode/reporting/reporting_builder');
+        }
+
         if ($delete_console_task === true) {
             return $this->deleteConsoleTask();
         }
@@ -287,6 +292,10 @@ class DiscoveryTaskList extends HTML
         }
 
         $id_console_task = (int) get_parameter('id_console_task');
+        $report_task = (bool) get_parameter('report_task', 0);
+        if ($report_task === true) {
+            $this->url = ui_get_full_url('index.php?sec=reporting&sec2=godmode/reporting/reporting_builder');
+        }
 
         if ($id_console_task != null) {
             // --------------------------------
@@ -352,6 +361,10 @@ class DiscoveryTaskList extends HTML
         }
 
         $id_console_task = (int) get_parameter('id_console_task');
+        $report_task = (bool) get_parameter('report_task', 0);
+        if ($report_task === true) {
+            $this->url = ui_get_full_url('index.php?sec=reporting&sec2=godmode/reporting/reporting_builder');
+        }
 
         if ($id_console_task > 0) {
             $result = db_process_sql_update(
@@ -1096,9 +1109,9 @@ class DiscoveryTaskList extends HTML
      *
      * @return boolean Success or not.
      */
-    public function showListConsoleTask()
+    public function showListConsoleTask($report_task=false)
     {
-        return enterprise_hook('tasklist_showListConsoleTask', [$this]);
+        return enterprise_hook('tasklist_showListConsoleTask', [$this, $report_task]);
     }
 
 

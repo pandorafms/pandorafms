@@ -469,7 +469,7 @@ class AuditLog extends HTML
                             success: function(data) {
                                 var options = "";
                                 $.each(data,function(key,value){
-                                    options += "<option value='"+key+"'>"+value+"</option>";
+                                    options += "<option value='"+value+"'>"+key+"</option>";
                                 });
                                 $('#overwrite_filter').html(options);
                                 $('#overwrite_filter').select2();
@@ -509,8 +509,12 @@ class AuditLog extends HTML
                 /* Filter management */
                 $('#button-load-filter').click(function (){
                     if($('#load-filter-select').length) {
-                        $('#load-filter-select').dialog({width: "20%",
-                            maxWidth: "25%",
+                        $('#load-filter-select').dialog({
+                            resizable: true,
+                            draggable: true,
+                            modal: false,
+                            closeOnEscape: true,
+                            width: "auto",
                             title: "<?php echo __('Load filter'); ?>"
                         });
                         $.ajax({
@@ -523,8 +527,9 @@ class AuditLog extends HTML
                             },
                             success: function(data) {
                                 var options = "";
+                                console.log(data)
                                 $.each(data,function(key,value){
-                                    options += "<option value='"+key+"'>"+value+"</option>";
+                                    options += "<option value='"+value+"'>"+key+"</option>";
                                 });
                                 $('#filter_id').html(options);
                                 $('#filter_id').select2();

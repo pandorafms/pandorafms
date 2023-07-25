@@ -7623,6 +7623,10 @@ div.graph div.legend table {
   padding-bottom: 10px !important;
 }
 
+.pdd_b_15px_important {
+  padding-bottom: 15px !important;
+}
+
 .pdd_b_20px {
   padding-bottom: 20px;
 }
@@ -7699,6 +7703,10 @@ div.graph div.legend table {
 
 .pdd_t_15px {
   padding-top: 15px;
+}
+
+.pdd_t_15px_important {
+  padding-top: 15px !important;
 }
 
 .pdd_t_20px {

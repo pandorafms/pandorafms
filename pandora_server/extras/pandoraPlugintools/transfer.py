@@ -22,6 +22,13 @@ def set_global_variable(
         variable_name,
         value
     ):
+    """
+    Sets the value of a global variable in the 'global_variables' dictionary.
+
+    Args:
+        variable_name (str): Name of the variable to set.
+        value (any): Value to assign to the variable.
+    """
     
     global_variables[variable_name] = value
 
@@ -95,6 +102,16 @@ def agentplugin(
         tentacle=False,
         tentacle_conf=None
     ):
+    """
+    Detects the transfer mode and executes the corresponding action.
+
+    Args:
+        modules (list): List of modules.
+        agent (dict): Dictionary with agent configuration.
+        temp_dir (str, optional): Temporary directory. Default is global_variables['temporal'].
+        tentacle (bool, optional): Indicates whether to use the Tentacle protocol. Default is False.
+        tentacle_conf (dict, optional): Dictionary with Tentacle protocol configuration. Default is None.
+    """
     agent_file=print_agent(agent,modules,temp_dir)
 
     if agent_file[1] is not None:
@@ -114,6 +131,18 @@ def transfer_xml(
         tentacle_port=global_variables['tentacle_port'],
         temporal=global_variables['temporal']
     ):
+
+    """
+    Detects the transfer mode and calls the agentplugin() function to perform the transfer.
+
+    Args:
+        agent (dict): Dictionary with agent configuration.
+        modules (list): List of modules.
+        transfer_mode (str, optional): Transfer mode. Default is global_variables['transfer_mode'].
+        tentacle_ip (str, optional): IP address for Tentacle. Default is global_variables['tentacle_ip'].
+        tentacle_port (str, optional): Port for Tentacle. Default is global_variables['tentacle_port'].
+        temporal (str, optional): Temporary directory. Default is global_variables['temporal'].
+    """
     
     if transfer_mode != "local" and tentacle_ip is not None:
         tentacle_conf={"address":tentacle_ip,"port":tentacle_port}

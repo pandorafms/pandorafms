@@ -17,6 +17,13 @@ def set_global_variable(
         variable_name, 
         value
     ):
+    """
+    Sets the value of a global variable in the 'global_variables' dictionary.
+
+    Args:
+        variable_name (str): Name of the variable to set.
+        value (any): Value to assign to the variable.
+    """
     
     global_variables[variable_name] = value
 
@@ -90,6 +97,12 @@ def write_xml(
 # Init agent template
 ###########################################
 def init_agent() :
+    """
+    Initializes an agent template with default values.
+
+    Returns:
+        dict: Dictionary representing the agent template with default values.
+    """
     agent = {
         "agent_name"  : "",
         "agent_alias" : "",

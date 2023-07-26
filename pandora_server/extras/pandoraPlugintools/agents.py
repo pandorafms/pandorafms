@@ -2,6 +2,7 @@ from datetime import datetime
 from subprocess import *
 import hashlib
 import sys
+import os
 from .modules import print_module,print_log_module
 
 global_variables = {
@@ -9,6 +10,21 @@ global_variables = {
     'agents_group_name': '',
     'interval'         : 300
 }
+#########################################################################################
+# OS check
+#########################################################################################
+
+POSIX = os.name == "posix"
+WINDOWS = os.name == "nt"
+LINUX = sys.platform.startswith("linux")
+MACOS = sys.platform.startswith("darwin")
+OSX = MACOS  # deprecated alias
+FREEBSD = sys.platform.startswith("freebsd")
+OPENBSD = sys.platform.startswith("openbsd")
+NETBSD = sys.platform.startswith("netbsd")
+BSD = FREEBSD or OPENBSD or NETBSD
+SUNOS = sys.platform.startswith(("sunos", "solaris"))
+AIX = sys.platform.startswith("aix")
 
 ####
 # Set a global variable with the specified name and assigns a value to it.
@@ -118,3 +134,19 @@ def init_agent() :
         "agent_mode"  : "1",
         }
     return agent
+
+
+#########################################################################################
+# Agent class
+#########################################################################################
+
+class Agent:
+    """Basic agent class. Requires agent parameters (config {dictionary})
+    and module definition (modules_def [list of dictionaries]) """
+    def __init__(
+            self,
+            config,
+            modules_def
+        ):
+        self.config = config
+        self.modules_def = modules_def

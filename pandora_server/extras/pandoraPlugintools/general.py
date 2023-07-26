@@ -2,37 +2,8 @@ import sys
 import os
 import json
 from datetime import datetime
+import hashlib
 
-#########################################################################################
-# OS check
-#########################################################################################
-
-POSIX = os.name == "posix"
-WINDOWS = os.name == "nt"
-LINUX = sys.platform.startswith("linux")
-MACOS = sys.platform.startswith("darwin")
-OSX = MACOS  # deprecated alias
-FREEBSD = sys.platform.startswith("freebsd")
-OPENBSD = sys.platform.startswith("openbsd")
-NETBSD = sys.platform.startswith("netbsd")
-BSD = FREEBSD or OPENBSD or NETBSD
-SUNOS = sys.platform.startswith(("sunos", "solaris"))
-AIX = sys.platform.startswith("aix")
-
-#########################################################################################
-# Agent class
-#########################################################################################
-
-class Agent:
-    """Basic agent class. Requires agent parameters (config {dictionary})
-    and module definition (modules_def [list of dictionaries]) """
-    def __init__(
-            self,
-            config,
-            modules_def
-        ):
-        self.config = config
-        self.modules_def = modules_def
 
 #########################################################################################
 # Debug_dict: prints dictionary in formatted json string.
@@ -154,3 +125,20 @@ def parse_csv_file(
     except Exception as e:
         print (f"{type(e).__name__}: {e}")
         return 1
+
+
+#########################################################################################
+# md5 generator
+#########################################################################################
+def generate_md5(input_string):
+    """
+    Generates an MD5 hash for the given input string.
+
+    Args:
+        input_string (str): The string for which the MD5 hash will be generated.
+
+    Returns:
+        str: The MD5 hash of the input string as a hexadecimal string.
+    """
+    md5_hash = hashlib.md5(input_string.encode()).hexdigest()
+    return md5_hash

@@ -12342,3 +12342,28 @@ tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
 }
+
+/*Horizontal tree*/
+
+.horizontal_tree-icon {
+  position: absolute;
+  background: #f4f4f4;
+  margin-top: 140px;
+  margin-left: 15px;
+  transform: rotate(-90deg);
+}
+
+.horizontal_tree-icon-sunburst {
+  position: absolute;
+  background: #f4f4f4;
+  margin-top: 40px;
+  /*margin-left: 15px;*/
+  transform: rotate(-90deg);
+}
+
+.tree-icon {
+  position: absolute;
+  background: #f4f4f4;
+  margin-top: 140px;
+  margin-left: 15px;
+}

@@ -2,6 +2,7 @@ from datetime import datetime
 from subprocess import *
 import hashlib
 import sys
+from .modules import print_module,print_log_module
 
 global_variables = {
     'temporal'         : '/tmp',
@@ -104,4 +105,3 @@ def init_agent() :
         "agent_mode"  : "1",
         }
     return agent
-

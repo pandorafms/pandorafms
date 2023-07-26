@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import os
 import sys
+from .agents import print_agent
 
 global_variables = {
     'transfer_mode'    : 'tentacle',

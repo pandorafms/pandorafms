@@ -907,7 +907,7 @@ function set_cookie($name, $value)
 {
     if (is_null($value)) {
         unset($_COOKIE[$value]);
-        setcookie($name, null, -1, '/');
+        setcookie($name, '', -1, '/');
     } else {
         setcookie($name, $value);
     }

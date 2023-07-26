@@ -4788,7 +4788,10 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
                 $url .= $key.'['.$k.']='.$v.'&';
             }
         } else {
-            $url .= $key.'='.io_safe_input(rawurlencode($value)).'&';
+            $aux = (empty($value) === false)
+                ? io_safe_input(rawurlencode($value))
+                : '';
+            $url .= $key.'='.$aux.'&';
         }
     }
 

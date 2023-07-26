@@ -433,7 +433,14 @@ class ServiceMapWidget extends Widget
             );
         } else {
             include_once $config['homedir'].'/include/graphs/functions_d3.php';
-            servicemap_print_sunburst($this->values['serviceId'], $size['width'], $size['height'], false);
+            $id_container = '#container_servicemap_'.$this->values['serviceId'].'_'.$this->cellId.' #sunburst';
+            servicemap_print_sunburst(
+                $this->values['serviceId'],
+                $size['width'],
+                $size['height'],
+                false,
+                $id_container
+            );
         }
 
         $output .= ob_get_clean();

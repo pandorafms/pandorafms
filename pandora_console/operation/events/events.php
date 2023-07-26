@@ -2560,7 +2560,7 @@ try {
                 [
                     'id'                             => $table_id,
                     'class'                          => 'info_table events',
-                    'style'                          => 'width: 99%;',
+                    'style'                          => 'width: 100%;',
                     'ajax_url'                       => 'operation/events/events',
                     'ajax_data'                      => [
                         'get_events' => 1,

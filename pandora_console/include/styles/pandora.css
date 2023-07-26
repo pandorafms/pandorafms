@@ -7628,6 +7628,10 @@ div.graph div.legend table {
   padding-bottom: 10px !important;
 }
 
+.pdd_b_15px_important {
+  padding-bottom: 15px !important;
+}
+
 .pdd_b_20px {
   padding-bottom: 20px;
 }
@@ -7704,6 +7708,10 @@ div.graph div.legend table {
 
 .pdd_t_15px {
   padding-top: 15px;
+}
+
+.pdd_t_15px_important {
+  padding-top: 15px !important;
 }
 
 .pdd_t_20px {
@@ -10809,6 +10817,10 @@ button.ui-button.ui-widget.submit-cancel:active {
   border-color: #96a2bf;
 }
 
+.cursor-default {
+  cursor: default;
+}
+
 .hasColorPicker {
   z-index: 10;
 }
@@ -11667,14 +11679,14 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: relative;
-  right: 40px;
+  position: absolute;
+  right: 9px;
   top: 4px;
   border: 0;
   outline: none;
   margin: 0;
   height: 30px;
-  width: 30px;
+  width: 40px;
   cursor: pointer;
   display: inline-block;
 }
@@ -11915,10 +11927,6 @@ span.help_icon_15px > img {
   height: 15px !important;
 }
 
-.select2-dropdown {
-  z-index: 1116 !important;
-}
-
 .icon_connection_check {
   width: 65px !important;
   height: 65px !important;
@@ -11954,7 +11962,7 @@ span.help_icon_15px > img {
 /* ==== Spinner ==== */
 .spinner-fixed {
   position: absolute;
-  left: 40%;
+  left: 45%;
   top: 40%;
   z-index: 1;
   width: 100px;
@@ -11964,6 +11972,7 @@ span.help_icon_15px > img {
   animation: animate 1.2s linear infinite;
   margin: auto;
   margin-bottom: 40px;
+  text-align: initial;
 }
 .spinner-fixed span {
   position: absolute;

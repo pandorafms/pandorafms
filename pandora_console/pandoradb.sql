@@ -4329,3 +4329,27 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
   `graph_type` INT NULL,
   PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_explorer_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnetwork_explorer_filter` (
+  `id` INT NOT NULL,
+  `filter_name` VARCHAR(45) NULL,
+  `top` VARCHAR(45) NULL,
+  `action` VARCHAR(45) NULL,
+  `advanced_filter` TEXT NULL,
+  PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_usage_filter`
+-- ---------------------------------------------------------------------
+  CREATE TABLE IF NOT EXISTS `tnetwork_usage_filter` (
+  `id` INT NOT NULL auto_increment,
+  `filter_name` VARCHAR(45) NULL,
+  `top` VARCHAR(45) NULL,
+  `action` VARCHAR(45) NULL,
+  `advanced_filter` TEXT NULL,
+  PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

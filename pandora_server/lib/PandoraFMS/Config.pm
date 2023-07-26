@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.772";
-my $pandora_build = "230718";
+my $pandora_build = "230726";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -1535,7 +1535,7 @@ sub pandora_get_initial_product_name {
 sub pandora_get_initial_copyright_notice {
 	# PandoraFMS product name
 	my $name = $ENV{'PANDORA_RB_COPYRIGHT_NOTICE'};
-	return 'Artica ST' unless (defined ($name) && $name ne '');
+	return 'Pandora FMS' unless (defined ($name) && $name ne '');
 	return $name;
 }
 

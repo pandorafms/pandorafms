@@ -383,13 +383,33 @@ a.pandora_pagination.current:hover {
   cursor: pointer;
 }
 
+.dt-button.buttons-csv.buttons-html5.mini-csv-button {
+  background-image: url(../../images/file-csv.svg);
+  background-position: 4px center;
+  height: 26px;
+  width: 31px;
+  margin-left: 10px;
+  box-shadow: 0px 0px 0px #00000000;
+  border: 0px;
+  border-radius: 0px;
+}
+
 .dt-button.buttons-csv.buttons-html5:hover {
   color: #1d7873 !important;
   border: 2px solid #1d7873 !important;
 }
 
+.dt-button.buttons-csv.buttons-html5.mini-csv-button:hover {
+  color: #00000000 !important;
+  border: 0px !important;
+}
+
 .dt-button.buttons-csv.buttons-html5:before {
   content: "csv";
+}
+
+.dt-button.buttons-csv.buttons-html5.mini-csv-button:before {
+  content: "";
 }
 
 .dt-button.buttons-csv.buttons-html5 span {

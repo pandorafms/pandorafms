@@ -167,7 +167,7 @@ if ($classname_selected === null) {
     $wiz_data = [];
     foreach ($classes as $classpath) {
         if (is_reporting_console_node() === true) {
-            if ($classpath !== '/var/www/html/pandora_console/godmode/wizards/DiscoveryTaskList.class.php') {
+            if ($classpath !== $config['homedir'].'/godmode/wizards/DiscoveryTaskList.class.php') {
                 continue;
             }
         }

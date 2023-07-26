@@ -6720,6 +6720,8 @@ function chooseType() {
             $("#row_agent").show();
             $("#row_module").show();
             $("#row_historical_db_check").hide();
+            period_set_value($("#hidden-period").attr('class'), 3600);
+            $("#row_period").find('select').val('3600').trigger('change');
             break;
 
         case 'SLA_monthly':

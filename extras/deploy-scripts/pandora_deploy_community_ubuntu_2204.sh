@@ -17,7 +17,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='2023050901'
+S_VERSION='2023062901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 
@@ -265,7 +265,6 @@ server_dependencies=" \
 	openssh-client \
 	postfix \
 	unzip \
-	xprobe \
 	coreutils \
 	libio-compress-perl \
 	libmoosex-role-timer-perl \
@@ -287,6 +286,7 @@ server_dependencies=" \
 	libgeo-ip-perl \
     arping \
     snmp-mibs-downloader \
+    libnsl2 \
 	openjdk-8-jdk "
 execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 
@@ -299,17 +299,7 @@ echo -en "${cyan}Installing wmic and pandorawmic...${reset}"
     chmod +x pandorawmic wmic &>> "$LOGFILE" && \
     cp -a wmic /usr/bin/ &>> "$LOGFILE" && \
     cp -a pandorawmic /usr/bin/ &>> "$LOGFILE"
-check_cmd_status "Error Installing phanromjs"
-
-# phantomjs
-echo -en "${cyan}Installing phantomjs...${reset}"
-    export PHANTOM_JS="phantomjs-2.1.1-linux-x86_64"
-    export OPENSSL_CONF=/etc/ssl
-    curl -LSs -O "https://firefly.pandorafms.com/pandorafms/utils/$PHANTOM_JS.tar.bz2" &>> "$LOGFILE" && \
-    tar xvjf "$PHANTOM_JS.tar.bz2" &>> "$LOGFILE" && \
-    mv $PHANTOM_JS/bin/phantomjs /usr/bin &>> "$LOGFILE" && \
-    /usr/bin/phantomjs --version &>> "$LOGFILE" 
-check_cmd_status "Error Installing phanromjs"
+check_cmd_status "Error Installing pandorawmic/wmic"
 
 # create symlink for fping
 rm -f /usr/sbin/fping &>> "$LOGFILE"
@@ -370,7 +360,6 @@ source '/root/.profile' &>> "$LOGFILE"
 
 #ipam dependencies
 ipam_dependencies=" \
-    xprobe \
     libnetaddr-ip-perl \
     coreutils \
     libdbd-mysql-perl \
@@ -619,8 +608,9 @@ sed --follow-symlinks -i -e "s/^memory_limit.*/memory_limit = 800M/g" /etc/php.i
 sed --follow-symlinks -i -e "s/.*post_max_size =.*/post_max_size = 800M/" /etc/php.ini
 sed --follow-symlinks -i -e "s/^disable_functions/;disable_functions/" /etc/php.ini
 
-#adding 900s to httpd timeout
-#echo 'TimeOut 900' > /etc/httpd/conf.d/timeout.conf
+#adding 900s to httpd timeout and 300 to ProxyTimeout
+echo 'TimeOut 900' > /etc/apache2/conf-enabled/timeout.conf
+echo 'ProxyTimeout 300' >> /etc/apache2/conf-enabled/timeout.conf
 
 cat > /var/www/html/index.html << EOF_INDEX
 <meta HTTP-EQUIV="REFRESH" content="0; url=/pandora_console/">
@@ -791,6 +781,9 @@ systemctl enable pandora_agent_daemon &>> "$LOGFILE"
 
 #fix path phantomjs
 sed --follow-symlinks -i -e "s/^openssl_conf = openssl_init/#openssl_conf = openssl_init/g" /etc/ssl/openssl.cnf &>> "$LOGFILE"
+
+# Enable postfix
+systemctl enable postfix --now &>> "$LOGFILE"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

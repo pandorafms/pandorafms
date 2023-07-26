@@ -1233,7 +1233,9 @@ function netflow_draw_item(
     $max_aggregates,
     $connection_name='',
     $output='HTML',
-    $address_resolution=false
+    $address_resolution=false,
+    $width_content=false,
+    $height_content=false
 ) {
     $aggregate = $filter['aggregate'];
     $interval = ($end_date - $start_date);
@@ -1431,6 +1433,9 @@ function netflow_draw_item(
                 $data['sources'],
                 netflow_aggregate_is_ip($aggregate)
             );
+
+            $data_circular['width'] = $width_content;
+            $data_circular['height'] = $height_content;
 
             $html = '<div class="center">';
             $html .= graph_netflow_circular_mesh($data_circular);

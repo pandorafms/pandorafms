@@ -41,7 +41,7 @@ Module that contains general purpose functions, useful in the creation of plugin
 - sys
 
 **http**
-Module that contains general purpose functions, useful in the creation of plugins for PandoraFMS discovery.
+Module that contains useful functions for making http requests.
 - requests_ntlm.HttpNtlmAuth
 - requests.auth.HTTPBasicAuth
 - requests.auth.HTTPDigestAuth

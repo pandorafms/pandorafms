@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -94,6 +94,19 @@ if (is_ajax() === true) {
     }
 
     if ($get_agent_module_last_value === true) {
+        if (is_metaconsole()) {
+            if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+                $server_name = explode(' ', io_safe_output(get_parameter('server_name')))[0];
+                $connection = metaconsole_get_connection($server_name);
+                if (metaconsole_load_external_db($connection) !== NOERR) {
+                    echo json_encode(false);
+                    // Restore db connection.
+                    metaconsole_restore_db();
+                    return;
+                }
+            }
+        }
+
         $id_module = (int) get_parameter('id_agent_module');
         $id_agent = (int) modules_get_agentmodule_agent((int) $id_module);
         if (! check_acl_one_of_groups($config['id_user'], agents_get_all_groups_agent($id_agent), 'AR')) {
@@ -130,6 +143,11 @@ if (is_ajax() === true) {
                     $module['module_name']
                 );
             }
+        }
+
+        if (is_metaconsole()) {
+            // Restore db connection.
+            metaconsole_restore_db();
         }
 
         echo json_encode($value);

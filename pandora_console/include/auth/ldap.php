@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -27,8 +27,8 @@ if (!isset($config)) {
 		<meta http-equiv="content-type" content="text/html; charset=utf8">
 		<meta name="resource-type" content="document">
 		<meta name="distribution" content="global">
-		<meta name="author" content="Artica ST">
-		<meta name="copyright" content="(c) Artica ST">
+		<meta name="author" content="Pandora FMS">
+		<meta name="copyright" content="(c) Pandora FMS">
 		<meta name="robots" content="index, follow">
 		<link rel="icon" href="../../images/pandora.ico" type="image/ico">
 		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">

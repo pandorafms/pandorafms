@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -60,15 +60,13 @@ class Home
             'icon'      => 'ui-icon-menu-group ui-widget-icon-floatbeginning ui-icon-menu-square',
         ];
 
-        if ((bool) $system->getConfig('legacy_vc', false) === false) {
-            // Show Visual consoles only if new system is enabled.
-            $items['visualmaps'] = [
-                'name'      => __('Visual consoles'),
-                'filename'  => 'visualmaps.php',
-                'menu_item' => true,
-                'icon'      => 'ui-icon-menu-visual_console ui-widget-icon-floatbeginning ui-icon-menu-square',
-            ];
-        }
+        // Show Visual consoles only if new system is enabled.
+        $items['visualmaps'] = [
+            'name'      => __('Visual consoles'),
+            'filename'  => 'visualmaps.php',
+            'menu_item' => true,
+            'icon'      => 'ui-icon-menu-visual_console ui-widget-icon-floatbeginning ui-icon-menu-square',
+        ];
 
         $items['alerts'] = [
             'name'      => __('Alerts'),

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -201,8 +201,9 @@ if (is_metaconsole() === true) {
         $buttons[$tab]['active'] = true;
     }
 
+    $edit_user = get_parameter('edit_user');
     ui_print_standard_header(
-        (empty($id) === false) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
+        ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         'images/gm_users.png',
         false,
         '',
@@ -352,8 +353,7 @@ if ($create_user === true) {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    $values['section'] = $homeScreenValues[$values['section']];
-
+    // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;
         $values['last_pass_change'] = date('Y/m/d H:i:s', get_system_time());
@@ -370,6 +370,9 @@ if ($create_user === true) {
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
 
+    // Previously defined.
+    $values['autorefresh_white_list'] = $autorefresh_white_list;
+
     // eHorus user level conf.
     if ((bool) $config['ehorus_user_level_conf'] === true) {
         $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
@@ -385,9 +388,8 @@ if ($create_user === true) {
     // Generate new API token.
     $values['api_token'] = api_token_generate();
     // Validate the user ID if it already exists.
-    $user_exists = get_user_info($id);
-
-    if (empty($id) === true) {
+    $user_exists = get_user_info($values['id_user']);
+    if (empty($values['id_user']) === true) {
         ui_print_error_message(__('User ID cannot be empty'));
         $is_err = true;
         $user_info = $values;
@@ -645,8 +647,7 @@ if ($update_user) {
         $values['data_section'] = get_parameter('data_section');
     }
 
-    $values['section'] = $homeScreenValues[$values['section']];
-
+    // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true && is_metaconsole() === true) {
         if (users_is_admin() === true) {
             $values['metaconsole_access'] = get_parameter('metaconsole_access');
@@ -663,20 +664,31 @@ if ($update_user) {
     $values['local_user'] = (bool) get_parameter('local_user', false);
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
+
+    $force_update_session_expire = false;
+    if ($values['session_time'] !== $user_info['session_time']) {
+        $force_update_session_expire = true;
+    }
+
     // Previously defined.
     $values['autorefresh_white_list'] = $autorefresh_white_list;
 
     $res1 = update_user($id, $values);
 
+    if ($force_update_session_expire === true) {
+        config_prepare_expire_time_session(true);
+    }
+
     if ($config['user_can_update_password']) {
         $password_new = (string) get_parameter('password_new', '');
         $password_confirm = (string) get_parameter('password_confirm', '');
         $own_password_confirm = (string) get_parameter('own_password_confirm', '');
+        $id_user = (string) get_parameter('id_user', '');
 
         if ($password_new != '') {
             $correct_password = false;
 
-            $user_credentials_check = process_user_login($config['id_user'], $own_password_confirm, true);
+            $user_credentials_check = process_user_login($id_user, $own_password_confirm, true);
 
             if ($user_credentials_check !== false) {
                 $correct_password = true;
@@ -1073,9 +1085,11 @@ if (!$new_user) {
         'show_api_token',
         false,
         sprintf(
-            'javascript:showAPIToken("%s", "%s")',
+            'javascript:showAPIToken("%s", "%s", "%s", "%s")',
             __('API Token'),
-            base64_encode(__('Your API Token is:').'&nbsp;<br><span class="font_12pt bolder">'.users_get_API_token($id).'</span><br>&nbsp;'.__('Please, avoid share this string with others.')),
+            __('Your API Token is:'),
+            base64_encode(users_get_API_token($id)),
+            __('Please, avoid share this string with others.'),
         ),
         [
             'mode'  => 'link',
@@ -1830,7 +1844,6 @@ if (is_metaconsole() === false) {
         });
 
         $("#button-uptbutton").click (function () {
-            console.log('aaaaaaaaaaaaa');
             if($("#autorefresh_list option").length > 0) {
                 $('#autorefresh_list option').prop('selected', true);
             }

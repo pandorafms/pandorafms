@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -61,6 +61,18 @@ echo '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'
 require_once 'include/functions_visual_map.php';
 
 $hash = (string) get_parameter('hash');
+
+// Check input hash.
+// DO NOT move it after of get parameter user id.
+if (User::validatePublicHash($hash) !== true) {
+    db_pandora_audit(
+        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+        'Trying to access public visual console'
+    );
+    include 'general/noaccess.php';
+    exit;
+}
+
 $visualConsoleId = (int) get_parameter('id_layout');
 $userAccessMaintenance = null;
 if (empty($config['id_user']) === true) {
@@ -73,16 +85,6 @@ $refr = (int) get_parameter('refr', ($config['refr'] ?? null));
 
 if (!isset($config['pure'])) {
     $config['pure'] = 0;
-}
-
-// Check input hash.
-if (User::validatePublicHash($hash) !== true) {
-    db_pandora_audit(
-        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
-        'Trying to access public visual console'
-    );
-    include 'general/noaccess.php';
-    exit;
 }
 
 // Load Visual Console.

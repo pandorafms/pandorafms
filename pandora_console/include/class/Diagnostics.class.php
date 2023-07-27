@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1579,7 +1579,7 @@ class Diagnostics extends Wizard
                         [
                             'id'                  => $tableId,
                             'class'               => 'info_table caption_table',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columnNames,
                             'ajax_data'           => [
@@ -1591,6 +1591,7 @@ class Diagnostics extends Wizard
                             'no_sortable_columns' => [-1],
                             'caption'             => $title,
                             'print'               => true,
+                            'mini_csv'            => true,
                         ]
                     );
                 } else {

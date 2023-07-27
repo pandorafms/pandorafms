@@ -636,6 +636,12 @@ select:-internal-list-box {
   white-space: nowrap;
 }
 
+.nowrap_max180px {
+  width: 10px;
+  max-width: 180px;
+  white-space: nowrap;
+}
+
 .wrap {
   flex-wrap: wrap;
 }
@@ -650,6 +656,10 @@ select:-internal-list-box {
 
 .inline_flex {
   display: inline-flex;
+}
+
+.align-center {
+  align-items: center;
 }
 
 .relative {
@@ -785,6 +795,10 @@ select:-internal-list-box {
 
 .w100p {
   width: 100%;
+}
+
+.w100pi {
+  width: 100% !important;
 }
 
 /*
@@ -4198,13 +4212,6 @@ div.simple_value > a > span.text p {
 }
 
 .modalokbutton {
-  transition-property: background-color, color;
-  transition-duration: 1s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 1s;
-  -o-transition-property: background-color, color;
-  -o-transition-duration: 1s;
   cursor: pointer;
   text-align: center;
   margin-right: 45px;
@@ -4215,44 +4222,24 @@ div.simple_value > a > span.text p {
   border-radius: 3px;
   width: 90px;
   height: 30px;
-  background-color: white;
-  border: 1px solid #82b92e;
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 6px;
 }
 
 .modalokbuttontext {
-  transition-property: background-color, color;
-  transition-duration: 1s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 1s;
-  -o-transition-property: background-color, color;
-  -o-transition-duration: 1s;
-  color: #82b92e;
+  color: #fff;
   font-size: 10pt;
   position: relative;
   top: 6px;
 }
 
 .modalokbutton:hover {
-  transition-property: background-color, color;
-  transition-duration: 1s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 1s;
-  -o-transition-property: background-color, color;
-  -o-transition-duration: 1s;
-  background-color: #82b92e;
+  background-color: var(--primary-color);
 }
 
 .modalokbutton:hover .modalokbuttontext {
-  transition-property: background-color, color;
-  transition-duration: 1s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 1s;
-  -o-transition-property: background-color, color;
-  -o-transition-duration: 1s;
-  color: white;
+  color: #fff;
 }
 
 .modaldeletebutton {
@@ -6911,6 +6898,10 @@ div.graph div.legend table {
 /*
 * MARGIN LEFT
 */
+.mrgn_lft-20px {
+  margin-left: -20px !important;
+}
+
 .mrgn_lft_05em {
   margin-left: 0.5em;
 }
@@ -7287,6 +7278,9 @@ div.graph div.legend table {
 .vertical_middle {
   vertical-align: middle;
 }
+.vertical_baseline {
+  vertical-align: baseline !important;
+}
 
 .mrg_btt_7 {
   margin-bottom: 7px;
@@ -7604,6 +7598,10 @@ div.graph div.legend table {
   padding-bottom: 10px !important;
 }
 
+.pdd_b_15px_important {
+  padding-bottom: 15px !important;
+}
+
 .pdd_b_20px {
   padding-bottom: 20px;
 }
@@ -7680,6 +7678,10 @@ div.graph div.legend table {
 
 .pdd_t_15px {
   padding-top: 15px;
+}
+
+.pdd_t_15px_important {
+  padding-top: 15px !important;
 }
 
 .pdd_t_20px {
@@ -8366,6 +8368,11 @@ div.graph div.legend table {
 .flex_justify_end {
   display: flex;
   justify-content: end;
+}
+
+.justify-content-between {
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 
 .span_priority {
@@ -10665,6 +10672,11 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.force {
+  mask: url(../../images/force@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/force@svg.svg) no-repeat center / contain;
+}
+
 button div.upload_file {
   mask: url(../../images/upload_file.png) no-repeat center / contain;
   -webkit-mask: url(../../images/upload_file.png) no-repeat center / contain;
@@ -10773,6 +10785,10 @@ button.ui-button.ui-widget.submit-cancel:active {
   color: #fff;
   background-color: #96a2bf;
   border-color: #96a2bf;
+}
+
+.cursor-default {
+  cursor: default;
 }
 
 .hasColorPicker {
@@ -11634,13 +11650,13 @@ p.trademark-copyright {
 
 .show-hide-pass {
   position: absolute;
-  right: 12px;
+  right: 9px;
   top: 4px;
   border: 0;
   outline: none;
   margin: 0;
   height: 30px;
-  width: 30px;
+  width: 40px;
   cursor: pointer;
   display: inline-block;
 }
@@ -11881,20 +11897,42 @@ span.help_icon_15px > img {
   height: 15px !important;
 }
 
-.select2-dropdown {
-  z-index: 1116 !important;
-}
-
 .icon_connection_check {
   width: 65px !important;
   height: 65px !important;
   margin-top: 10px;
 }
+.order-arrows option {
+  position: relative;
+}
+.order-arrows option::before {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  top: 5px;
+  background-image: url(../../images/darrowup.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
+
+.order-arrows option::after {
+  opacity: 0.5;
+  content: " ";
+  right: 19px;
+  bottom: 6px;
+  background-image: url(../../images/darrowdown.png);
+  position: absolute;
+  width: 8px;
+  height: 9px;
+  background-position: center;
+}
 
 /* ==== Spinner ==== */
 .spinner-fixed {
   position: absolute;
-  left: 40%;
+  left: 45%;
   top: 40%;
   z-index: 1;
   width: 100px;
@@ -11904,6 +11942,7 @@ span.help_icon_15px > img {
   animation: animate 1.2s linear infinite;
   margin: auto;
   margin-bottom: 40px;
+  text-align: initial;
 }
 .spinner-fixed span {
   position: absolute;
@@ -12090,8 +12129,9 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 70%;
 }
 
 .step {
@@ -12123,7 +12163,7 @@ div.parent_graph > p.legend_background > table > tbody > tr {
 
 .steps {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
 }
 
@@ -12243,7 +12283,52 @@ div.parent_graph > p.legend_background > table > tbody > tr {
   margin: 0px !important;
 }
 
+form.max_floating_element_size > ul#ul_tree_azure {
+  background-color: #fff;
+  border-spacing: 0px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e2e2;
+}
+
+#grid_img {
+  position: absolute;
+  margin-top: -2px;
+}
+
 div#visual-console-container * {
   font-size: unset;
   line-height: unset;
+}
+
+.combo-oid-button {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:first-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:first-child {
+  padding-bottom: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] > td:last-child,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
+  > td:last-child {
+  padding-top: 0px !important;
+}
+
+tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
+tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
+  width: 100% !important;
+}
+
+.start-end-date-log-viewer {
+  display: flex;
+  flex-direction: row !important;
+  flex-wrap: nowrap;
+  justify-content: flex-start !important;
 }

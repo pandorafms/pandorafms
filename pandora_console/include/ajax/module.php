@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -95,6 +95,21 @@ if (check_login()) {
         echo json_encode($agent_modules);
 
         return;
+    }
+
+    $id_plugin = get_parameter('id_plugin', 0);
+
+    if ($id_plugin !== 0) {
+        $id_module_plugin = db_get_value(
+            'id_plugin',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $get_module_macros
+        );
+        if ($id_plugin !== $id_module_plugin) {
+            $get_plugin_macros = true;
+            $get_module_macros = 0;
+        }
     }
 
     if ($get_plugin_macros) {
@@ -1252,7 +1267,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/event-history.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Event history'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1267,7 +1285,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/module-graph.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Module graph'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1284,7 +1305,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/simple-value.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Module detail'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true
@@ -1320,7 +1344,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 $imgaction,
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Force remote check'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1337,7 +1364,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/edit.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Edit configuration'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true
@@ -1713,6 +1743,7 @@ if (check_login()) {
         $length = ($length != '-1') ? $length : '18446744073709551615';
         $order = get_datatable_order(true);
         $nodes = get_parameter('nodes', 0);
+        $disabled_modules = (bool) get_parameter('disabled_modules', false);
 
         $where = '';
         $recordsTotal = 0;
@@ -1737,8 +1768,12 @@ if (check_login()) {
         $where .= sprintf(
             'tagente_estado.estado IN (%s)
             AND tagente_modulo.delete_pending = 0',
-            $status
+            $status,
         );
+
+        if ($disabled_modules === false) {
+            $where .= ' AND tagente_modulo.disabled = 0';
+        }
 
         if (is_metaconsole() === false) {
             $order_by = '';

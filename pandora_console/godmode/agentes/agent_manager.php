@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -212,7 +212,7 @@ $groups = users_get_groups($config['id_user'], 'AR', false);
 // Get modules.
 $modules = db_get_all_rows_sql(
     'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
-								WHERE id_agente = '.$id_parent
+								WHERE id_agente = '.$id_agente
 );
 $modules_values = [];
 $modules_values[0] = __('Any');
@@ -965,7 +965,7 @@ foreach ($fields as $field) {
             true
         );
     } else if ($field['is_link_enabled']) {
-        list($link_text, $link_url) = json_decode($custom_value, true);
+        list($link_text, $link_url) = json_decode(io_safe_output($custom_value), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $link_text = '';

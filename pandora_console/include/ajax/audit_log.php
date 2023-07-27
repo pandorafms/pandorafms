@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -84,7 +84,7 @@ if ($save_log_filter) {
 
 
 if ($recover_aduit_log_select) {
-    echo json_encode(audit_get_audit_filter_select());
+    echo json_encode(audit_get_audit_filter_select_fix_order());
 }
 
 if ($update_log_filter) {
@@ -190,7 +190,7 @@ function show_filter() {
         draggable: true,
         modal: false,
         closeOnEscape: true,
-        width: 380
+        width: "auto"
     });
 }
 
@@ -207,12 +207,13 @@ function load_filter_values() {
         },
         success: function(data) {
             var options = "";
+            console.log(data);
             $.each(data,function(i,value){
                 if (i == 'text'){
                     $("#text-filter_text").val(value);
                 }
                 if (i == 'period'){
-                    $("#text-filter_period").val(value);
+                    $("#filter_period").val(value).change();
                 }
                 if (i == 'ip'){
                     $("#text-filter_ip").val(value);
@@ -395,7 +396,7 @@ function save_new_filter() {
             "save_log_filter" : 1,
             "id_name" : $("#text-id_name").val(),
             "text" : $("#text-filter_text").val(),
-            "period" : $("#text-filter_period").val(),
+            "period" : $("#filter_period :selected").val(),
             "ip" : $('#text-filter_ip').val(),
             "type" : $('#filter_type :selected').val(),
             "user" : $('#filter_user :selected').val(),
@@ -431,7 +432,7 @@ function save_update_filter() {
         "update_log_filter" : 1,
         "id" : $("#overwrite_filter :selected").val(),
         "text" : $("#text-filter_text").val(),
-        "period" : $("#text-filter_period").val(),
+        "period" : $("#filter_period :selected").val(),
         "ip" : $('#text-filter_ip').val(),
         "type" : $('#filter_type :selected').val(),
         "user" : $('#filter_user :selected').val(),

@@ -654,6 +654,59 @@ form.modal-dashboard
   font-style: italic;
 }
 
+.widget-agent-hive-square {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: start;
+  min-width: 150px;
+  max-width: 150px;
+  min-height: 150px;
+  max-height: 150px;
+  margin: 8px;
+  padding: 5px;
+  border: 1px solid #eceef2;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.widget-agent-hive-square-status {
+  width: 3%;
+  height: 100%;
+  margin-left: 3%;
+  border-radius: 15px;
+}
+
+.widget-agent-hive-square-info {
+  width: 87%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-left: 6%;
+}
+
+.widget-agent-hive-square-info-header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.widget-agent-hive-square-info-body {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.span-alias {
+  font-size: 13pt;
+  justify-content: start;
+  align-items: start;
+  color: #14524f;
+  font-weight: 600;
+}
+
 .container-histograms {
   min-width: 400px;
 }

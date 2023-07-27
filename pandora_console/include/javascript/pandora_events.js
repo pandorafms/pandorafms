@@ -943,9 +943,44 @@ function process_buffers(buffers) {
   }
 }
 
-function openSoundEventsDialog(settings) {
-  settings = JSON.parse(atob(settings));
+function openSoundEventsDialogModal(settings, dialog_parameters, reload) {
+  let mode = $("#hidden-mode_alert").val();
+  if (reload != false) {
+    if (mode == 0) {
+      let filter_id = $("#filter_id option:selected").val();
+      let interval = $("#interval option:selected").val();
+      let time_sound = $("#time_sound option:selected").val();
+      let sound_id = $("#sound_id option:selected").val();
+      let parameters = {
+        filter_id: filter_id,
+        interval: interval,
+        time_sound: time_sound,
+        sound_id: sound_id,
+        mode: mode
+      };
+      parameters = JSON.stringify(parameters);
+      parameters = btoa(parameters);
+      let url =
+        window.location + "&settings=" + settings + "&parameters=" + parameters;
+      $(location).attr("href", url);
+    } else {
+      let url = window.location + "&settings=" + settings;
+      $(location).attr("href", url);
+    }
+  } else {
+    openSoundEventsDialog(settings, dialog_parameters, reload);
+  }
+}
 
+function openSoundEventsDialog(settings, dialog_parameters, reload) {
+  let encode_settings = settings;
+  if (reload == undefined) {
+    reload = true;
+  }
+  if (dialog_parameters != undefined) {
+    dialog_parameters = JSON.parse(atob(dialog_parameters));
+  }
+  settings = JSON.parse(atob(settings));
   // Check modal exists and is open.
   if (
     $("#modal-sound").hasClass("ui-dialog-content") &&
@@ -995,6 +1030,9 @@ function openSoundEventsDialog(settings) {
 
             // Play Stop.
             $("#button-start-search").click(function() {
+              if (reload == true) {
+                openSoundEventsDialogModal(encode_settings, 0, reload);
+              }
               var mode = $("#hidden-mode_alert").val();
               var action = false;
               if (mode == 0) {
@@ -1022,6 +1060,22 @@ function openSoundEventsDialog(settings) {
 
               action_events_sound(action, settings);
             });
+
+            if (reload == false && dialog_parameters != undefined) {
+              if ($("#button-start-search").hasClass("play")) {
+                $("#filter_id").val(dialog_parameters["filter_id"]);
+                $("#interval").val(dialog_parameters["interval"]);
+                $("#time_sound").val(dialog_parameters["time_sound"]);
+                $("#sound_id").val(dialog_parameters["sound_id"]);
+
+                $("#filter_id").trigger("change");
+                $("#interval").trigger("change");
+                $("#time_sound").trigger("change");
+                $("#sound_id").trigger("change");
+
+                $("#button-start-search").trigger("click");
+              }
+            }
 
             // Silence Alert.
             $("#button-no-alerts").click(function() {
@@ -1192,6 +1246,37 @@ function listen_event_sound(settings) {
 }
 
 function check_event_sound(settings) {
+  // Update elements time.
+  $(".elements-discovered-alerts ul li").each(function() {
+    let element_time = $(this)
+      .children(".li-hidden")
+      .val();
+    let obj_time = new Date(element_time);
+    let current_dt = new Date();
+    let timestamp = current_dt.getTime() - obj_time.getTime();
+    timestamp = timestamp / 1000;
+    if (timestamp <= 60) {
+      timestamp = Math.round(timestamp) + " seconds";
+    } else if (timestamp <= 3600) {
+      let minute = Math.floor((timestamp / 60) % 60);
+      minute = minute < 10 ? "0" + minute : minute;
+      let second = Math.floor(timestamp % 60);
+      second = second < 10 ? "0" + second : second;
+      timestamp = minute + " minutes " + second + " seconds";
+    } else {
+      let hour = Math.floor(timestamp / 3600);
+      hour = hour < 10 ? "0" + hour : hour;
+      let minute = Math.floor((timestamp / 60) % 60);
+      minute = minute < 10 ? "0" + minute : minute;
+      let second = Math.round(timestamp % 60);
+      second = second < 10 ? "0" + second : second;
+      timestamp = hour + " hours " + minute + " minutes " + second + " seconds";
+    }
+    $(this)
+      .children(".li-time")
+      .children("span")
+      .html(timestamp);
+  });
   jQuery.post(
     settings.url,
     {
@@ -1245,7 +1330,13 @@ function check_event_sound(settings) {
             "beforeend",
             '<div class="li-time">' + element.timestamp + "</div>"
           );
-          $("#tabs-sound-modal .elements-discovered-alerts ul").append(li);
+          li.insertAdjacentHTML(
+            "beforeend",
+            '<input type="hidden" value="' +
+              element.event_timestamp +
+              '" class="li-hidden"/>'
+          );
+          $("#tabs-sound-modal .elements-discovered-alerts ul").prepend(li);
         });
 
         // -100 delay sound.
@@ -1357,6 +1448,21 @@ function removeElement(name_select, id_modal) {
       .append(option);
   });
 }
+// Define the minimize button functionality;
+function hidden_dialog(dialog) {
+  setTimeout(function() {
+    $("#modal-sound").css("visibility", "hidden");
+    dialog.css("z-index", "-1");
+  }, 200);
+}
+
+function show_dialog(dialog) {
+  setTimeout(function() {
+    $("#modal-sound").css("visibility", "visible");
+    dialog.css("z-index", "1115");
+  }, 50);
+}
+
 /*
 #############################################################################
 ##
@@ -1425,19 +1531,6 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         .html(" ")
         .appendTo(disengageButton);
 
-      // Define the minimize button functionality;
-      function hidden_dialog() {
-        setTimeout(function() {
-          $("#modal-sound").css("visibility", "hidden");
-          dialog.css("z-index", "-1");
-        }, 200);
-      }
-      function show_dialog() {
-        setTimeout(function() {
-          $("#modal-sound").css("visibility", "visible");
-          dialog.css("z-index", "1115");
-        }, 50);
-      }
       minimizeButton.click(function(e) {
         console.log("here");
         if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
@@ -1470,7 +1563,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
             },
             200,
             "linear",
-            hidden_dialog()
+            hidden_dialog(dialog)
           );
           dialog.css({ height: "" });
           dialog.animate(
@@ -1502,7 +1595,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
             },
             200,
             "linear",
-            show_dialog()
+            show_dialog(dialog)
           );
         }
       });
@@ -1604,3 +1697,17 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
     console.log(e);
   }
 });
+
+function loadModal() {
+  const urlSearch = window.location.search;
+  const urlParams = new URLSearchParams(urlSearch);
+  if (urlParams.has("settings")) {
+    let modal_parameters = "";
+    if (urlParams.has("parameters")) {
+      modal_parameters = urlParams.get("parameters");
+    }
+    let settings = urlParams.get("settings");
+    openSoundEventsDialogModal(settings, modal_parameters, false);
+  }
+}
+window.onload = loadModal;

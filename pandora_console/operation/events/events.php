@@ -104,6 +104,9 @@ if (isset($fb64) === true) {
     );
 }
 
+$settings_modal = get_parameter('settings', 0);
+$parameters_modal = get_parameter('parameters', 0);
+
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group_filter'] ?? '')
@@ -1624,6 +1627,8 @@ if ($pure) {
             'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
+
+    echo '<input type="hidden" id="open_sound_event_modal" value="0" /> ';
 
     // If the user has administrator permission display manage tab.
     if ($event_w === true || $event_m === true) {
@@ -3199,7 +3204,9 @@ $(document).ready( function() {
                     url: '<?php echo ui_get_full_url('ajax.php'); ?>',
                     data: {
                         page: 'include/ajax/events',
-                        load_filter_modal: 1
+                        load_filter_modal: 1,
+                        settings: '<?php echo $settings_modal; ?>',
+                        parameters: '<?php echo $parameters_modal; ?>',
                     },
                     success: function (data){
                         $('#load-modal-filter')

@@ -291,7 +291,7 @@ $output = '<div id="tabs-sound-modal">';
             false,
             '',
             [
-                'icon'  => 'cog',
+                'icon'  => 'play',
                 'class' => 'mrgn_lft_20px',
             ],
             true
@@ -357,9 +357,9 @@ function action_events_sound(mode) {
         // Change mode.
         $("#hidden-mode_alert").val(1);
         // Change img button.
-        $("#button-start-search")
-        .removeClass("play")
-        .addClass("stop");
+        $("#button-start-search").children("div").removeClass("play")
+        $("#button-start-search").children("div").addClass("stop");
+
         // Change value button.
         $("#button-start-search").val("Stop");
         $("#button-start-search > span").text("Stop");
@@ -373,9 +373,8 @@ function action_events_sound(mode) {
         // Change mode.
         $("#hidden-mode_alert").val(0);
         // Change img button.
-        $("#button-start-search")
-        .removeClass("stop")
-        //.addClass("play");
+        $("#button-start-search").children("div").removeClass("stop")
+        $("#button-start-search").children("div").addClass("play")
         // Change value button.
         $("#button-start-search").val("Start");
         $("#button-start-search > span").text("Start");

@@ -12413,6 +12413,15 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   border: 0;
 }
 
+.actions-sound-modal .buttons-sound-modal div.play {
+  background: url(../../images/play-white.png), transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: 20px 5px !important;
+  color: #ffffff !important;
+  padding-left: 20px !important;
+  border: 0 !important;
+}
+
 .actions-sound-modal .buttons-sound-modal button.stop,
 .actions-sound-modal .buttons-sound-modal input[type="button"].stop {
   background: url(../../images/stop.png), var(--primary-color);
@@ -12421,4 +12430,13 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   color: #ffffff;
   padding-left: 20px;
   border: 0;
+}
+
+.actions-sound-modal .buttons-sound-modal div.stop {
+  background: url(../../images/stop.png), transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: 20px 5px !important;
+  color: #ffffff !important;
+  padding-left: 20px !important;
+  border: 0 !important;
 }

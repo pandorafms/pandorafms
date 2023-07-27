@@ -519,6 +519,8 @@ class SnmpConsole extends HTML
         $legend .= '</div>';
         $legend .= '</div></div></td>';
 
+        echo '<br>';
+
         ui_toggle($legend, __('Legend'));
 
         // Load own javascript file.
@@ -1331,17 +1333,8 @@ class SnmpConsole extends HTML
              *   Show more information
              */
             function toggleVisibleExtendedInfo(id, position) {
-                // Show all "Show more"
-                $('[id^=img_]').each(function() {
-                    $(this).show();
-                });
-                // Hide all "Hide details"
-                $('[id^=img_hide_]').each(function() {
-                    $(this).hide();
-                });
                 var status = $('#eye_'+id).attr('data-show');
                 if(status == "show"){
-                    $('tr[id^=show_]').remove()
                     $.ajax({
                         method: 'get',
                         url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
@@ -1360,14 +1353,14 @@ class SnmpConsole extends HTML
                         datatype: "json",
                         success: function(data) {
                             let trap = JSON.parse(data);
-                            var tr = $('#snmp_console tr').eq(position+1);
+                            var tr = $('#snmp_console tr:not([id^="show_"])').eq(position+1);
 
                             // Count.
                             if ($('#filter_group_by').val() == 1) {
                                 let labelCount = '<td align="left" valign="top"><b><?php echo __('Count:'); ?></b></br><b><?php echo __('First trap:'); ?></b></br><b><?php echo __('Last trap:'); ?></td>';
                                 let variableCount = `<td align="left" valign="top" style="line-height: 16pt">${trap['count']}</br>${trap['first']}</br>${trap['last']}</td>`;
 
-                                tr.after(`<tr id="show_" role="row">${labelCount}${variableCount}</tr>`);
+                                tr.after(`<tr id="show_${id}" role="row">${labelCount}${variableCount}</tr>`);
                             }
 
                             // Type.
@@ -1405,27 +1398,27 @@ class SnmpConsole extends HTML
                             let labelType = '<td align="left" valign="top"><b><?php echo __('Type:'); ?></td>';
                             let variableType = `<td align="left" colspan="8">${desc_trap_type}</td>`;
 
-                            tr.after(`<tr id="show_" role="row">${labelType}${variableType}</tr>`);
+                            tr.after(`<tr id="show_${id}" role="row">${labelType}${variableType}</tr>`);
 
                             // Description.
                             if (trap['description']) {
                                 let labelDesc = '<td align="left" valign="top"><b><?php echo __('Description:'); ?></td>';
                                 let variableDesc = `<td align="left" colspan="8">${trap['description']}</td>`;
 
-                                tr.after(`<tr id="show_" role="row">${labelDesc}${variableDesc}</tr>`);
+                                tr.after(`<tr id="show_${id}" role="row">${labelDesc}${variableDesc}</tr>`);
                             }
 
                             // Enterprise String.
                             let labelOid = '<td align="left" valign="top"><b><?php echo __('Enterprise String:'); ?></td>';
                             let variableOId = `<td align="left" colspan="8">${trap['oid']}</td>`;
 
-                            tr.after(`<tr id="show_" role="row">${labelOid}${variableOId}</tr>`);
+                            tr.after(`<tr id="show_${id}" role="row">${labelOid}${variableOId}</tr>`);
 
                             // Variable bindings.
                             let labelBindings = '';
                             let variableBindings = '';
                             if ($('#filter_group_by').val() == 1) {
-                                labelBindings = '<td align="left" valign="top" width="15%"><b><?php echo __('Variable bindings:'); ?></b></td>';
+                                labelBindings = '<td align="left" valign="top" ><b><?php echo __('Variable bindings:'); ?></b></td>';
 
                                 let new_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view';
                                 new_url += '&filter_severity='+$('#filter_severity').val();
@@ -1439,7 +1432,7 @@ class SnmpConsole extends HTML
 
                                 variableBindings = `<td align="left" colspan="8">${string}</td>`;
                             } else {
-                                labelBindings = '<td align="left" valign="top" width="15%"><b><?php echo __('Variable bindings:'); ?></b></td>';
+                                labelBindings = '<td align="left" valign="top" ><b><?php echo __('Variable bindings:'); ?></b></td>';
                                 const binding_vars = trap['oid_custom'].split("\t");
                                 let string = '';
                                 binding_vars.forEach(function(oid) {
@@ -1448,7 +1441,7 @@ class SnmpConsole extends HTML
                                 variableBindings = `<td align="left" colspan="8" class="break-word w200px">${string}</td>`;
                             }
 
-                            tr.after(`<tr id="show_" role="row">${labelBindings}${variableBindings}</tr>`);
+                            tr.after(`<tr id="show_${id}" role="row">${labelBindings}${variableBindings}</tr>`);
                         },
                         error: function(e) {
                             console.error(e);
@@ -1458,7 +1451,7 @@ class SnmpConsole extends HTML
                     $('#img_'+id).hide();
                     $('#img_hide_'+id).show();
                 } else{
-                    $('tr[id^=show_]').remove();
+                    $(`tr#show_${id}`).remove();
                     $('#eye_'+id).attr('data-show', 'show');
                     $('#img_'+id).show();
                     $('#img_hide_'+id).hide();

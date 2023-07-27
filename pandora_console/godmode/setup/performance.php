@@ -545,23 +545,8 @@ $table->data[6][0] = html_print_label_input_block(
     )
 );
 
-$table->data[6][1] = html_print_label_input_block(
-    __('Max. days before delete old network matrix data'),
-    html_print_input(
-        [
-            'type'   => 'number',
-            'size'   => 5,
-            'max'    => $performance_variables_control['delete_old_network_matrix']->max,
-            'name'   => 'delete_old_network_matrix',
-            'value'  => $config['delete_old_network_matrix'],
-            'return' => true,
-            'min'    => $performance_variables_control['delete_old_network_matrix']->min,
-        ]
-    )
-);
-
 if (enterprise_installed()) {
-    $table->data[7][0] = html_print_label_input_block(
+    $table->data[6][1] = html_print_label_input_block(
         __('Max. days before delete inventory data'),
         html_print_input_text(
             'inventory_purge',

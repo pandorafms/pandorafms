@@ -4210,13 +4210,6 @@ div.simple_value > a > span.text p {
 }
 
 .modalokbutton {
-  transition-property: background-color, color;
-  transition-duration: 1s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 1s;
-  -o-transition-property: background-color, color;
-  -o-transition-duration: 1s;
   cursor: pointer;
   text-align: center;
   margin-right: 45px;
@@ -4227,44 +4220,24 @@ div.simple_value > a > span.text p {
   border-radius: 3px;
   width: 90px;
   height: 30px;
-  background-color: white;
-  border: 1px solid #82b92e;
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 6px;
 }
 
 .modalokbuttontext {
-  transition-property: background-color, color;
-  transition-duration: 1s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 1s;
-  -o-transition-property: background-color, color;
-  -o-transition-duration: 1s;
-  color: #82b92e;
+  color: #fff;
   font-size: 10pt;
   position: relative;
   top: 6px;
 }
 
 .modalokbutton:hover {
-  transition-property: background-color, color;
-  transition-duration: 1s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 1s;
-  -o-transition-property: background-color, color;
-  -o-transition-duration: 1s;
-  background-color: #82b92e;
+  background-color: var(--primary-color);
 }
 
 .modalokbutton:hover .modalokbuttontext {
-  transition-property: background-color, color;
-  transition-duration: 1s;
-  transition-timing-function: ease-out;
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 1s;
-  -o-transition-property: background-color, color;
-  -o-transition-duration: 1s;
-  color: white;
+  color: #fff;
 }
 
 .modaldeletebutton {
@@ -7623,6 +7596,10 @@ div.graph div.legend table {
   padding-bottom: 10px !important;
 }
 
+.pdd_b_15px_important {
+  padding-bottom: 15px !important;
+}
+
 .pdd_b_20px {
   padding-bottom: 20px;
 }
@@ -7699,6 +7676,10 @@ div.graph div.legend table {
 
 .pdd_t_15px {
   padding-top: 15px;
+}
+
+.pdd_t_15px_important {
+  padding-top: 15px !important;
 }
 
 .pdd_t_20px {
@@ -9037,8 +9018,7 @@ div.graph div.legend table {
 }
 
 .app_mssg {
-  position: absolute;
-  bottom: 1em;
+  margin: 1em;
   clear: both;
   color: #888;
 }
@@ -11666,14 +11646,14 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: relative;
-  right: 40px;
+  position: absolute;
+  right: 9px;
   top: 4px;
   border: 0;
   outline: none;
   margin: 0;
   height: 30px;
-  width: 30px;
+  width: 40px;
   cursor: pointer;
   display: inline-block;
 }
@@ -11949,7 +11929,7 @@ span.help_icon_15px > img {
 /* ==== Spinner ==== */
 .spinner-fixed {
   position: absolute;
-  left: 40%;
+  left: 45%;
   top: 40%;
   z-index: 1;
   width: 100px;
@@ -11959,6 +11939,7 @@ span.help_icon_15px > img {
   animation: animate 1.2s linear infinite;
   margin: auto;
   margin-bottom: 40px;
+  text-align: initial;
 }
 .spinner-fixed span {
   position: absolute;
@@ -12340,4 +12321,11 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
 tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
+}
+
+.start-end-date-log-viewer {
+  display: flex;
+  flex-direction: row !important;
+  flex-wrap: nowrap;
+  justify-content: flex-start !important;
 }

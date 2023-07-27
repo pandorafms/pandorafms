@@ -89,7 +89,7 @@ if (is_ajax() === true) {
             [
                 'id'                  => 'agent_modules_affected_planned_downtime',
                 'class'               => 'info_table',
-                'style'               => 'width: 99%',
+                'style'               => 'width: 100%',
                 'columns'             => $columns,
                 'column_names'        => $column_names,
                 'ajax_url'            => 'godmode/agentes/planned_downtime.list',

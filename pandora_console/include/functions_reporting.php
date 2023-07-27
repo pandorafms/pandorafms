@@ -935,6 +935,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'top_n_agents_sh':
+                $report['contents'][] = reporting_top_n_agents_sh(
+                    $report,
+                    $content
+                );
+            break;
+
             default:
                 // Default.
             break;

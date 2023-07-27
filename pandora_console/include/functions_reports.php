@@ -963,6 +963,13 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Network configuration changes'),
     ];
 
+    if (enterprise_installed() === true) {
+        $types['top_n_agents_sh'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('Top-N agents with the worst score'),
+        ];
+    }
+
     return $types;
 }
 

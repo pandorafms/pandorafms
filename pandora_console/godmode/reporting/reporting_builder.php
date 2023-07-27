@@ -1987,6 +1987,12 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'top_n_agents_sh':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2860,6 +2866,12 @@ switch ($action) {
 
                             case 'group_report':
                                 $values['server_name'] = get_parameter('combo_server');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_sh':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
                                 $good_format = true;
                             break;
 

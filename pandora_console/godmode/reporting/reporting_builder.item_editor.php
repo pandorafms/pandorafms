@@ -1019,6 +1019,11 @@ switch ($action) {
                     $idAgent = $item['id_agent'];
                 break;
 
+                case 'top_n_agents_sh':
+                    $group = $item['id_group'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -7411,7 +7416,11 @@ function chooseType() {
         case 'ncm':
             $("#row_agent").show();
             break;
-            
+
+        case 'top_n_agents_sh':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
     }
 
     switch (type) {

@@ -337,6 +337,7 @@ server_dependencies=" \
 	libgeo-ip-perl \
     arping \
     snmp-mibs-downloader \
+    snmptrapd \
     libnsl2 \
 	openjdk-8-jdk "
 execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -836,6 +837,10 @@ sed --follow-symlinks -i -e "s/^openssl_conf = openssl_init/#openssl_conf = open
 
 # Enable postfix
 systemctl enable postfix --now &>> "$LOGFILE"
+
+# Disable snmptrapd
+systemctl disable --now snmptrapd &>> "$LOGFILE"
+systemctl disable --now snmptrapd.socket &>> "$LOGFILE"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

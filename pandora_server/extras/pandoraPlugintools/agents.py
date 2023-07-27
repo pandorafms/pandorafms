@@ -73,7 +73,9 @@ class Agent:
 ####
 # Init agent template
 #########################################################################################
-def init_agent() -> dict:
+def init_agent(
+        default_values: dict = {}
+    ) -> dict:
     """
     Initializes an agent template with default values.
 
@@ -94,6 +96,10 @@ def init_agent() -> dict:
         "interval"          : global_variables['interval'],
         "agent_mode"        : "1",
     }
+
+    for key, value in default_values.items():
+        if key in agent:
+            agent[key] = value
 
     return agent
 

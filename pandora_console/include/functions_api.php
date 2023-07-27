@@ -13114,16 +13114,14 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
             if ($validation) {
                 foreach ($validation as $val) {
-                    if ((bool) $config['keep_in_process_status_extra_id'] === true) {
-                        // Inherit status when previous event was in "in process" status.
-                        if ((int) $val['estado'] === EVENT_STATUS_INPROCESS && (int) $values['status'] === 0) {
-                            $values['status'] = 2;
-                        }
-
-                        // Always inherit ack_utimestamp.
+                    if ((bool) $config['keep_in_process_status_extra_id'] === true
+                        && (int) $val['estado'] === EVENT_STATUS_INPROCESS
+                        && (int) $values['status'] === 0
+                    ) {
+                        $values['status'] = 2;
                         $ack_utimestamp = $val['ack_utimestamp'];
                     }
-
+                    
                     api_set_validate_event_by_id($val['id_evento']);
                 }
             }

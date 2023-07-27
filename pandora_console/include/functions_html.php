@@ -5504,7 +5504,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : '')
+                ((isset($data['function']) === true) ? $data['function'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['hide_div_eye']) === true) ? $data['hide_div_eye'] : false),
             );
         break;
 

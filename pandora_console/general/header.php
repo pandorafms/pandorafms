@@ -233,11 +233,8 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
         $header_autorefresh = '';
         $header_autorefresh_counter = '';
-        if ($config['legacy_vc']
-            || ($_GET['sec2'] !== 'operation/visual_console/render_view')
-            || (($_GET['sec2'] !== 'operation/visual_console/render_view')
-            && $config['legacy_vc'])
-        ) {
+
+        if (($_GET['sec2'] !== 'operation/visual_console/render_view')) {
             if ($autorefresh_list !== null
                 && array_search($_GET['sec2'], $autorefresh_list) !== false
             ) {

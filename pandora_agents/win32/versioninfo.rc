@@ -6,12 +6,12 @@ BEGIN
   BEGIN
     BLOCK "080904E4"
     BEGIN
-      VALUE "CompanyName", "Artica ST"
+      VALUE "CompanyName", "Pandora FMS"
       VALUE "FileDescription", "Pandora FMS Agent for Windows Platform"
-      VALUE "LegalCopyright", "Artica ST"
+      VALUE "LegalCopyright", "Pandora FMS"
       VALUE "OriginalFilename", "PandoraAgent.exe"
       VALUE "ProductName", "Pandora FMS Windows Agent"
-      VALUE "ProductVersion", "(7.0NG.772(Build 230724))"
+      VALUE "ProductVersion", "(7.0NG.772(Build 230727))"
       VALUE "FileVersion", "1.0.0.0"
     END
   END

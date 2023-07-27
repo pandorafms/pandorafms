@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.772 Build 230724";
+my $version = "7.0NG.772 Build 230727";
 
 # Pandora server configuration
 my %conf;
@@ -1252,6 +1252,9 @@ sub pandoradb_main {
 	# Maintain Referential integrity and other stuff
 	pandora_checkdb_integrity ($conf, $dbh);
 
+	# Close and open error log blocks
+	handle_error_log_block($conf, $dbh);
+
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}, $conf->{'_history_db_string_days'}, $conf->{'_history_db_adv'}]));
@@ -1327,6 +1330,23 @@ sub pandora_check_forgotten_discovery_tasks {
 		log_message('FORGOTTEN DISCOVERY TASKS', 'Step ended');
 }
 
+###############################################################################
+# Opening and closing of error log blocks 
+###############################################################################
+sub handle_error_log_block {
+    my ($conf, $dbh) = @_;
+	my $is_open = get_db_value ($dbh,"SELECT `value` FROM `tconfig` WHERE `token` = 'open_error_log'");
+	open (STDERR, ">> " . $conf->{'errorlog_file'}) or die " [ERROR] " . pandora_get_initial_product_name() . " can't write to Errorlog. Aborting : \n $! \n";
+	
+	if (!defined ($is_open)) {
+		db_do($dbh, "INSERT INTO `tconfig`(`token`, `value`) VALUES ('open_error_log', 1)");
+	} elsif ($is_open eq 1){
+		print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks ends\n";
+	}
+
+	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks starts\n"; 
+	close (STDERR);
+}
 
 # Init
 pandora_init_pdb(\%conf);

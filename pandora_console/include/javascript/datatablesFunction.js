@@ -4,6 +4,7 @@ var config = config;
 var datacolumns = [];
 var datacolumnsTemp = [];
 dt.datacolumns.forEach(column => {
+  if (column === null) return;
   if (typeof column !== "string") {
     datacolumnsTemp = { data: column.text, className: column.class };
     datacolumns.push(datacolumnsTemp);

@@ -3,15 +3,22 @@ from subprocess import *
 import hashlib
 import sys
 import os
+from .general import now,set_dict_key_value
 from .modules import print_module,print_log_module
+from .transfer import write_xml
+
+####
+# Define global variables dict, used in functions as default values.
+# Its values can be changed.
+#########################################################################################
 
 global_variables = {
-    'temporal'         : '/tmp',
-    'agents_group_name': '',
-    'interval'         : 300
+    'agents_group_name' : '',
+    'interval'          : 300
 }
-#########################################################################################
-# OS check
+
+####
+# Define some global variables
 #########################################################################################
 
 POSIX = os.name == "posix"
@@ -28,9 +35,9 @@ AIX = sys.platform.startswith("aix")
 
 ####
 # Set a global variable with the specified name and assigns a value to it.
-###########################################
+#########################################################################################
 def set_global_variable(
-        variable_name, 
+        variable_name: str = "", 
         value
     ):
     """
@@ -40,79 +47,33 @@ def set_global_variable(
         variable_name (str): Name of the variable to set.
         value (any): Value to assign to the variable.
     """
-    
-    global_variables[variable_name] = value
+    set_dict_key_value(global_variables, variable_name, value)
 
 ####
-# Prints agent XML. Requires agent conf 
-# (dict) and modules (list) as arguments.
-###########################################
-def print_agent(
-        agent, 
-        modules,
-        temp_dir=global_variables['temporal'],
-        log_modules= None, 
-        print_flag = None
-    ):
-    """Prints agent XML. Requires agent conf (dict) and modules (list) as arguments.
-    - Use print_flag to show modules' XML in STDOUT.
-    - Returns a tuple (xml, data_file).
+# Agent class
+#########################################################################################
+
+class Agent:
     """
-    data_file=None
+    Basic agent class. Requires agent parameters (config {dictionary})
+    and module definition (modules_def [list of dictionaries])
+    """
+    def __init__(
+            self,
+            config: dict = None,
+            modules_def: list = []
+        ):
 
-    header = "<?xml version='1.0' encoding='UTF-8'?>\n"
-    header += "<agent_data"
-    for dato in agent:
-        header += " " + str(dato) + "='" + str(agent[dato]) + "'"
-    header += ">\n"
-    xml = header
-    if modules :
-        for module in modules:
-            modules_xml = print_module(module)
-            xml += str(modules_xml)
-    if log_modules :
-        for log_module in log_modules:
-            modules_xml = print_log_module(log_module)
-            xml += str(modules_xml)
-    xml += "</agent_data>"
-    if not print_flag:
-        data_file = write_xml(xml, agent["agent_name"], temp_dir)
-    else:
-        print(xml)
-    
-    return (xml,data_file)
+        if config is None:
+            config = init_agent()
 
-####
-# Creates a agent .data file in the 
-# specified data_dir folder
-###########################################
-def write_xml(
-        xml,
-        agent_name,
-        data_dir=global_variables['temporal']
-    ):
-    """Creates a agent .data file in the specified data_dir folder\n
-    Args:
-    - xml (str): XML string to be written in the file.
-    - agent_name (str): agent name for the xml and file name.
-    - data_dir (str): folder in which the file will be created."""
-
-    Utime = datetime.now().strftime('%s')
-    agent_name_md5 = (hashlib.md5(agent_name.encode()).hexdigest())
-    data_file = "%s/%s.%s.data" %(str(data_dir),agent_name_md5,str(Utime))
-    try:
-        with open(data_file, 'x') as data:
-            data.write(xml)
-    except OSError as o:
-        print(f"ERROR - Could not write file: {o}, please check directory permissions", file=sys.stderr)
-    except Exception as e:
-        print(f"{type(e).__name__}: {e}", file=sys.stderr)
-    return (data_file)
+        self.config = config
+        self.modules_def = modules_def
 
 ####
 # Init agent template
-###########################################
-def init_agent() :
+#########################################################################################
+def init_agent() -> dict:
     """
     Initializes an agent template with default values.
 
@@ -120,33 +81,58 @@ def init_agent() :
         dict: Dictionary representing the agent template with default values.
     """
     agent = {
-        "agent_name"  : "",
-        "agent_alias" : "",
+        "agent_name"        : "",
+        "agent_alias"       : "",
         "parent_agent_name" : "",
-        "description" : "",
-        "version"     : "",
-        "os_name"     : "",
-        "os_version"  : "",
-        "timestamp"   : datetime.today().strftime('%Y/%m/%d %H:%M:%S'),
-        "address"     : "",
-        "group"       : global_variables['agents_group_name'],
-        "interval"    : global_variables['interval'],
-        "agent_mode"  : "1",
-        }
+        "description"       : "",
+        "version"           : "",
+        "os_name"           : "",
+        "os_version"        : "",
+        "timestamp"         : now(),
+        "address"           : "",
+        "group"             : global_variables['agents_group_name'],
+        "interval"          : global_variables['interval'],
+        "agent_mode"        : "1",
+    }
+
     return agent
 
-
+####
+# Prints agent XML. Requires agent conf (dict) and modules (list) as arguments.
 #########################################################################################
-# Agent class
-#########################################################################################
+def print_agent(
+        agent: dict = None, 
+        modules: list = [],
+        log_modules: list = [], 
+        print_flag: bool = False
+    ) -> str:
+    """
+    Prints agent XML. Requires agent conf (dict) and modules (list) as arguments.
+    - Use print_flag to show modules' XML in STDOUT.
+    - Returns xml (str).
+    """
+    xml = ""
+    data_file = None
 
-class Agent:
-    """Basic agent class. Requires agent parameters (config {dictionary})
-    and module definition (modules_def [list of dictionaries]) """
-    def __init__(
-            self,
-            config,
-            modules_def
-        ):
-        self.config = config
-        self.modules_def = modules_def
+    if agent is not None:
+        header = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        header += "<agent_data"
+        for dato in agent:
+            header += " " + str(dato) + "='" + str(agent[dato]) + "'"
+        header += ">\n"
+        xml = header
+        
+        for module in modules:
+            modules_xml = print_module(module)
+            xml += str(modules_xml)
+        
+        for log_module in log_modules:
+            modules_xml = print_log_module(log_module)
+            xml += str(modules_xml)
+        
+        xml += "</agent_data>"
+    
+    if print_flag:
+        print(xml)
+
+    return xml

@@ -1,52 +1,31 @@
 # Python: module plugintools for PandoraFMS Developers
 
-pandoraPluginTools is a library that aims to help the creation of scripts and their integration in PandoraFMS.
+pandoraPluginTools is a library that aims to help the creation of scripts and their integration in Pandora FMS.
 
 [PluginTools Reference Documentation](https://pandorafms.com/guides/public/books/plugintools)
 
-The package includes the following modules: agents, modules, transfer, general, discovery and http. Each one has different requirements and functions that facilitate and automate the data integration in PandoraFMS. They have the following dependencies : 
-
-**agents**
-Module that contains functions oriented to the creation of agents.
-- datetime.datetime
-- subprocess.Popen
-- Hashlib
-- sys
-- os
-- print_module
-- print_log_module
-
-**modules**
-Module that contains functions oriented to the creation of modules.
-
-**transfer**
-Module containing functions oriented to file transfer and data sending.
-- datetime.datetime
-- subprocess.Popen
-- shutil
-- sys
-- os
-- print_agent
+The package includes the following modules. Each one has different functions that facilitate and automate the data integration in Pandora FMS: 
 
 **general**
-Module containing general purpose functions, useful in the creation of plugins for PandoraFMS.
-- datetime.datetime
-- hashlib
-- json
-- sys
+Module containing general purpose functions, useful in the creation of plugins for PandoraFMS
+
+**threads**
+Module containing threading purpose functions, useful to run parallel functions.
+
+**agents**
+Module that contains functions oriented to the creation of Pandora FMS agents
+
+**modules**
+Module that contains functions oriented to the creation of Pandora FMS modules.
+
+**transfer**
+Module containing functions oriented to file transfer and data sending to Pandora FMS server
 
 **discovery**
-Module that contains general purpose functions, useful in the creation of plugins for PandoraFMS discovery.
-- json
-- sys
+Module containing functions oriented to the creation of Pandora FMS discovery plugins
 
 **http**
-Module that contains general purpose functions, useful in the creation of plugins for PandoraFMS discovery.
-- requests_ntlm.HttpNtlmAuth
-- requests.auth.HTTPBasicAuth
-- requests.auth.HTTPDigestAuth
-- requests.sessions.Session
-
+Module containing functions oriented to HTTP API calls
 
 ## Example 
 
@@ -56,7 +35,7 @@ import pandoraPluginTools as ppt
 ## Define agent
 server_name = "WIN-SERV"
 
-agent=ppt.agents.init_agent()
+agent=ppt.init_agent()
 agent.update(
     agent_name  = ppt.generate_md5(server_name),
     agent_alias = server_name,
@@ -86,3 +65,21 @@ ppt.transfer_xml(
 )
 ```
 
+The package has the following dependencies:
+- Hashlib
+- datetime.datetime
+- hashlib
+- json
+- os
+- print_agent
+- print_log_module
+- print_module
+- queue.Queue
+- requests.auth.HTTPBasicAuth
+- requests.auth.HTTPDigestAuth
+- requests.sessions.Session
+- requests_ntlm.HttpNtlmAuth
+- shutil
+- subprocess.Popen
+- sys
+- threading.Thread

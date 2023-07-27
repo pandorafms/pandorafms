@@ -408,14 +408,6 @@ sub pandora_purgedb ($$$) {
 	log_message ('PURGE', 'Deleting old tgraph_source data.');
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
 
-
-	# Delete network traffic old data.
-	log_message ('PURGE', 'Deleting old network matrix data.');
-	if ($conf->{'_delete_old_network_matrix'} > 0) {
-		my $matrix_limit = time() - 86400 * $conf->{'_delete_old_network_matrix'};
-		db_do ($dbh, "DELETE FROM tnetwork_matrix WHERE utimestamp < ?", $matrix_limit);
-	}
-
 	# Delete old messages
 	log_message ('PURGE', "Deleting old messages.");
 	if ($conf->{'_delete_old_messages'} > 0) {
@@ -599,7 +591,6 @@ sub pandoradb_load_history_conf($) {
 
 	$options{'_days_autodisable_deletion'} = 0 unless defined ($options{'_days_autodisable_deletion'});
 	$options{'_num_past_special_days'} = 0 unless defined($options{'_num_past_special_days'});
-	$options{'_delete_old_network_matrix'} = 0 unless defined($options{'_delete_old_network_matrix'});
 	$options{'_delete_old_messages'} = 0 unless defined($options{'_delete_old_messages'});
 	$options{'_netflow_max_lifetime'} = 0 unless defined($options{'_netflow_max_lifetime'});
 	$options{'claim_back_snmp_modules'} = 0 unless defined($options{'claim_back_snmp_modules'});
@@ -695,7 +686,6 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
-	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_network_matrix'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_netflow_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_max_lifetime'");

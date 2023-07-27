@@ -2334,7 +2334,8 @@ function events_create_event(
     $tags='',
     $custom_data='',
     $server_id=0,
-    $id_extra=''
+    $id_extra='',
+    $ack_utimestamp=0
 ) {
     if ($source === false) {
         $source = get_product_name();
@@ -2362,7 +2363,7 @@ function events_create_event(
         'warning_instructions'  => $warning_instructions,
         'unknown_instructions'  => $unknown_instructions,
         'owner_user'            => '',
-        'ack_utimestamp'        => 0,
+        'ack_utimestamp'        => $ack_utimestamp,
         'custom_data'           => $custom_data,
         'data'                  => '',
         'module_status'         => 0,

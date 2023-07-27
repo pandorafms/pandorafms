@@ -13102,18 +13102,26 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['custom_data'] = '';
         }
 
+        $ack_utimestamp = 0;
+
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento,estado FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp
+                FROM tevento
+                WHERE estado IN (0,2) AND id_extra ="'.$other['data'][18].'";';
+
             $validation = db_get_all_rows_sql($sql_validation);
 
             if ($validation) {
                 foreach ($validation as $val) {
-                    if ((bool) $config['keep_in_process_status_extra_id'] === true
-                        && (int) $val['estado'] === EVENT_STATUS_INPROCESS
-                        && (int) $values['status'] === 0
-                    ) {
-                        $values['status'] = 2;
+                    if ((bool) $config['keep_in_process_status_extra_id'] === true) {
+                        // Inherit status when previous event was in "in process" status.
+                        if ((int) $val['estado'] === EVENT_STATUS_INPROCESS && (int) $values['status'] === 0) {
+                            $values['status'] = 2;
+                        }
+
+                        // Always inherit ack_utimestamp.
+                        $ack_utimestamp = $val['ack_utimestamp'];
                     }
 
                     api_set_validate_event_by_id($val['id_evento']);
@@ -13143,7 +13151,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['tags'],
             $custom_data,
             $values['server_id'],
-            $values['id_extra']
+            $values['id_extra'],
+            $ack_utimestamp
         );
 
         if ($other['data'][12] != '') {

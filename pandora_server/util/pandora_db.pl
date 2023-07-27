@@ -135,7 +135,16 @@ sub pandora_purgedb ($$$) {
 			}
 		}
 	}
-		
+
+	# Delete manually disabled  agents after some period
+	if (defined ($conf->{'_delete_disabled_agents'}) && $conf->{'_delete_disabled_agents'} > 0) {
+		log_message('PURGE', "Deleting old disabled agents (More than " . $conf->{'_delete_disabled_agents'} . " days).");
+		db_do ($dbh, "DELETE FROM tagente 
+				  	  WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
+				   	  AND disabled = 1
+				   	  AND modo != 2", $conf->{'_delete_disabled_agents'} * 8600);
+	}
+
 	# Delete old data
 	if ($conf->{'_days_purge'} > 0) {
 
@@ -685,6 +694,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_days_delete_not_initialized'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_not_initialized'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
+	$conf->{'_delete_disabled_agents'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_disabled_agents'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");

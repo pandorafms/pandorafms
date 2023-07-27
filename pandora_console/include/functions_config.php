@@ -974,6 +974,10 @@ function config_update_config()
                         }
                     }
 
+                    if (config_update_value('delete_disabled_agents', get_parameter('delete_disabled_agents'), true) === false) {
+                        $error_update[] = __('Max. days before disabled agents are deleted');
+                    }
+
                     if (config_update_value('delete_old_messages', get_parameter('delete_old_messages'), true) === false) {
                         $error_update[] = __('Max. days before delete old messages');
                     }
@@ -2229,6 +2233,10 @@ function config_process_config()
         if (!isset($config['inventory_purge'])) {
             config_update_value('inventory_purge', 21);
         }
+    }
+
+    if (!isset($config['delete_disabled_agents'])) {
+        config_update_value('delete_disabled_agents', 0);
     }
 
     if (!isset($config['delete_old_messages'])) {

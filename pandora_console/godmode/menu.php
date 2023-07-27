@@ -585,9 +585,13 @@ if ($access_console_node === true) {
                 $sub2[$extmenu['sec2']]['refr'] = 0;
             } else {
                 if (is_array($extmenu) === true && array_key_exists('fatherId', $extmenu) === true) {
-                    if (strlen($extmenu['fatherId']) > 0) {
+                    if (empty($extmenu['fatherId']) === false
+                        && strlen($extmenu['fatherId']) > 0
+                    ) {
                         if (array_key_exists('subfatherId', $extmenu) === true) {
-                            if (strlen($extmenu['subfatherId']) > 0) {
+                            if (empty($extmenu['subfatherId']) === false
+                                && strlen($extmenu['subfatherId']) > 0
+                            ) {
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['text'] = __($extmenu['name']);
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['id'] = str_replace(' ', '_', $extmenu['name']);
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['refr'] = 0;

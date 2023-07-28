@@ -595,7 +595,6 @@ class ConsoleSupervisor
             'days_delete_unknown'              => 'Max. days before unknown modules are deleted',
             'days_delete_not_initialized'      => 'Max. days before delete not initialized modules',
             'days_autodisable_deletion'        => 'Max. days before autodisabled agents are deleted',
-            'delete_old_network_matrix'        => 'Max. days before delete old network matrix data',
             'report_limit'                     => 'Item limit for real-time reports',
             'event_view_hr'                    => 'Default hours for event view',
             'big_operation_step_datos_purge'   => 'Big Operation Step to purge old data',

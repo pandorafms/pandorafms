@@ -59,6 +59,7 @@ class StreamReader {
 class StringReader {
   var $_pos;
   var $_str;
+  var $is_overloaded;
 
   function __construct($str='') {
     $this->_str = $str;

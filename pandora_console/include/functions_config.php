@@ -974,12 +974,12 @@ function config_update_config()
                         }
                     }
 
-                    if (config_update_value('delete_old_messages', get_parameter('delete_old_messages'), true) === false) {
-                        $error_update[] = __('Max. days before delete old messages');
+                    if (config_update_value('delete_disabled_agents', get_parameter('delete_disabled_agents'), true) === false) {
+                        $error_update[] = __('Max. days before disabled agents are deleted');
                     }
 
-                    if (config_update_value('delete_old_network_matrix', get_parameter('delete_old_network_matrix'), true) === false) {
-                        $error_update[] = __('Max. days before delete old network matrix data');
+                    if (config_update_value('delete_old_messages', get_parameter('delete_old_messages'), true) === false) {
+                        $error_update[] = __('Max. days before delete old messages');
                     }
 
                     if (config_update_value('max_graph_container', get_parameter('max_graph_container'), true) === false) {
@@ -2235,12 +2235,12 @@ function config_process_config()
         }
     }
 
-    if (!isset($config['delete_old_messages'])) {
-        config_update_value('delete_old_messages', 21);
+    if (!isset($config['delete_disabled_agents'])) {
+        config_update_value('delete_disabled_agents', 0);
     }
 
-    if (!isset($config['delete_old_network_matrix'])) {
-        config_update_value('delete_old_network_matrix', 10);
+    if (!isset($config['delete_old_messages'])) {
+        config_update_value('delete_old_messages', 21);
     }
 
     if (!isset($config['max_graph_container'])) {
@@ -2509,10 +2509,6 @@ function config_process_config()
                     'days_autodisable_deletion'        => [
                         'max' => 90,
                         'min' => 0,
-                    ],
-                    'delete_old_network_matrix'        => [
-                        'max' => 30,
-                        'min' => 1,
                     ],
                     'report_limit'                     => [
                         'max' => 500,
@@ -3477,10 +3473,6 @@ function config_process_config()
 
     if (!isset($config['dbtype'])) {
         config_update_value('dbtype', 'mysql');
-    }
-
-    if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 0);
     }
 
     if (!isset($config['vc_default_cache_expiration'])) {

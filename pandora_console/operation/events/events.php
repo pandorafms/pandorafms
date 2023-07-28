@@ -507,6 +507,7 @@ if (is_ajax() === true) {
                         }
 
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
+                        $event_text = $tmp->evento;
                         if (strlen($tmp->evento) >= 40) {
                             $tmp->evento = ui_print_truncate_text(
                                 $tmp->evento,
@@ -523,7 +524,7 @@ if (is_ajax() === true) {
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
                             if (strlen($tmp->module_name) >= 20) {
-                                $tmp->evento = ui_print_truncate_text(
+                                $tmp->module_name = ui_print_truncate_text(
                                     $tmp->module_name,
                                     20,
                                     false,
@@ -611,7 +612,7 @@ if (is_ajax() === true) {
 
                                 $total_sec = strtotime($tmp->timestamp);
                                 $total_sec += $dif;
-                                $last_contact = date($config['date_format'], $total_sec);
+                                $last_contact = date($confb64ig['date_format'], $total_sec);
                                 $last_contact_value = ui_print_timestamp($last_contact, true);
                             } else {
                                 $title = date($config['date_format'], strtotime($tmp->timestamp));
@@ -650,8 +651,10 @@ if (is_ajax() === true) {
                             );
                         }
 
+                        $aux_event = $tmp->evento;
+                        $tmp->evento = $event_text;
                         $tmp->b64 = base64_encode(json_encode($tmp));
-
+                        $tmp->evento = $aux_event;
                         // Show comments events.
                         if (empty($tmp->comments) === false) {
                             $tmp->user_comment = $tmp->comments;

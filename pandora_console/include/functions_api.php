@@ -13106,7 +13106,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp
+            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario
                 FROM tevento
                 WHERE estado IN (0,2) AND id_extra ="'.$other['data'][18].'";';
 
@@ -13120,6 +13120,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                     ) {
                         $values['status'] = 2;
                         $ack_utimestamp = $val['ack_utimestamp'];
+                        $values['id_usuario'] = $val['id_usuario'];
                     }
                     
                     api_set_validate_event_by_id($val['id_evento']);

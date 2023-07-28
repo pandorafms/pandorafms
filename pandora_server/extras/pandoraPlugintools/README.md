@@ -53,10 +53,11 @@ modules.append({
     "unit" : "%"
 })
 
-## Transfer XML
+## Generate and transfer XML
+xml_content = ppt.print_agent(agent, modules)
+xml_file = ppt.write_xml(xml_content, agent["agent_name"])
 ppt.transfer_xml(
-    agent,
-    modules,
+    xml_file,
     transfer_mode="tentacle",
     tentacle_address="192.168.1.20",
     tentacle_port="41121",

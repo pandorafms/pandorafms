@@ -49,7 +49,7 @@ modules.append({
     "name" : "CPU usage",
     "type" : "generic_data",
     "value": data,
-    "desc" : "percentage of cpu utilization",
+    "desc" : "Percentage of CPU utilization",
     "unit" : "%"
 })
 

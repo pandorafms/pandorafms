@@ -200,6 +200,14 @@ $text_agent_module = '';
 
 $only_data = false;
 
+$categories_security_hardening = [];
+if (security_hardening_installed() === true) {
+    $categories_security_hardening = categories_of_cis();
+    foreach ($categories_security_hardening as $key => $cat) {
+        $categories_security_hardening[$key] = implode(' ', $cat);
+    }
+}
+
 // Users.
 $id_users = [];
 $users_groups = [];
@@ -1017,6 +1025,16 @@ switch ($action) {
 
                 case 'ncm':
                     $idAgent = $item['id_agent'];
+                break;
+
+                case 'top_n_agents_sh':
+                    $group = $item['id_group'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'vul_by_cat':
+                    $group = $item['id_group'];
+                    $cat_selected = $item['cat_security_hardening'];
                 break;
 
                 default:
@@ -3681,6 +3699,22 @@ $class = 'databox filters';
                     false,
                     false,
                     true
+                );
+                ?>
+            </td>
+        </tr>
+        <tr id="row_cat_security_hardening" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Category');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    $categories_security_hardening,
+                    'cat_security_hardening',
+                    $cat_selected,
                 );
                 ?>
             </td>
@@ -6557,6 +6591,7 @@ function chooseType() {
     $("#row_group_by").hide();
     $("#row_type_show").hide();
     $("#row_use_prefix_notation").hide();
+    $("#row_cat_security_hardening").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -7411,7 +7446,16 @@ function chooseType() {
         case 'ncm':
             $("#row_agent").show();
             break;
-            
+
+        case 'top_n_agents_sh':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'vul_by_cat':
+            $("#row_group").show();
+            $("#row_cat_security_hardening").show();
+        break;
     }
 
     switch (type) {

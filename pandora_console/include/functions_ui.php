@@ -4054,7 +4054,7 @@ function ui_print_datatable(array $parameters)
                 '',
                 '',
                 $parameters['toggle_collapsed'],
-                false,
+                (isset($parameters['form']['return_filter']) === false) ? false : $parameters['form']['return_filter'],
                 '',
                 'no-border filter-datatable-submain',
                 'filter-datatable-main '.$parameters['filter_main_class']

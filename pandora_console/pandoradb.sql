@@ -1656,6 +1656,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `macros_definition` TEXT,
   `render_definition` TEXT,
   `use_prefix_notation` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `cat_security_hardening` INT NOT NULL DEFAULT 0,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE

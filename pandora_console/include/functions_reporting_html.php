@@ -463,6 +463,14 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             case 'ncm':
                 reporting_html_ncm_config($table, $item);
             break;
+
+            case 'top_n_agents_sh':
+                reporting_html_top_n_agents_sh($table, $item);
+            break;
+
+            case 'vul_by_cat':
+                reporting_vul_by_cat_graph($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -474,6 +482,32 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+function reporting_vul_by_cat_graph($table, $item)
+{
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+}
+
+
+function reporting_html_top_n_agents_sh($table, $item)
+{
+    global $config;
+
+    $table->data[1][0] = '<b>'.__('Agent').'</b>';
+    $table->data[1][1] = '<b>'.__('Last audit scan').'</b>';
+    $table->data[1][2] = '<b>'.__('Score').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $agent) {
+        $table->data[$row][0] = $agent['alias'];
+        $table->data[$row][1] = date($config['date_format'], $agent['utimestamp']);
+        $table->data[$row][2] = $agent['datos'].' %';
+        $row++;
     }
 }
 

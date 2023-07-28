@@ -942,6 +942,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'vul_by_cat':
+                $report['contents'][] = reporting_vul_by_categories(
+                    $report,
+                    $content
+                );
+            break;
+
             default:
                 // Default.
             break;

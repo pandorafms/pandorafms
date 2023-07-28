@@ -1993,6 +1993,12 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'vul_by_cat':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2872,6 +2878,12 @@ switch ($action) {
                             case 'top_n_agents_sh':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'vul_by_cat':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
                                 $good_format = true;
                             break;
 

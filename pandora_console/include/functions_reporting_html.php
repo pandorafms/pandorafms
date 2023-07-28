@@ -467,6 +467,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             case 'top_n_agents_sh':
                 reporting_html_top_n_agents_sh($table, $item);
             break;
+
+            case 'vul_by_cat':
+                reporting_vul_by_cat_graph($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -479,6 +483,14 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             echo '</div>';
         }
     }
+}
+
+
+function reporting_vul_by_cat_graph($table, $item)
+{
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
 }
 
 

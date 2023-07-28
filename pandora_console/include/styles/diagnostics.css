@@ -8,7 +8,7 @@
   text-align: center;
   font-size: 1.5em;
   font-weight: bolder;
-  color: #000;
+  color: var(--text-color);
   background: var(--secondary-color);
   padding: 8px;
 }
@@ -47,14 +47,34 @@
   font-size: 1.2em;
 }
 
+.title-self-monitoring {
+  border-top: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
 .container-self-monitoring {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  background-color: var(--secondary-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding-bottom: 15px;
 }
 
 .element-self-monitoring {
   flex: 2 1 600px;
+}
+
+.element-self-monitoring > img[data-title="No data"] {
+  margin-top: 5%;
+  margin-left: 20%;
 }
 
 .footer-self-monitoring {

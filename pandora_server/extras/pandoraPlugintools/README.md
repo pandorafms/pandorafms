@@ -35,12 +35,11 @@ import pandoraPluginTools as ppt
 ## Define agent
 server_name = "WIN-SERV"
 
-agent=ppt.init_agent()
-agent.update(
-    agent_name  = ppt.generate_md5(server_name),
-    agent_alias = server_name,
-    description = "Default Windows server",
-)
+agent=ppt.init_agent({
+    "agent_name"  : ppt.generate_md5(server_name),
+    "agent_alias" : server_name,
+    "description" : "Default Windows server"
+})
 
 ## Define modules
 modules=[]

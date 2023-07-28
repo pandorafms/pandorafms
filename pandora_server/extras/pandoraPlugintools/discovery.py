@@ -101,6 +101,19 @@ def set_info_value(
     info = data
 
 ####
+# Set fixed value to info
+#########################################################################################
+def add_monitoring_data(
+        data: dict = {}
+    ):
+    """
+    TODO: Add comments
+    """
+    global monitoring_data
+
+    monitoring_data.append(data)
+
+####
 # Print JSON output and exit script
 #########################################################################################
 def print_output():
@@ -116,6 +129,7 @@ def print_output():
     global error_level
     global summary
     global info
+    global monitoring_data
 
     output={}
     if summary:
@@ -123,6 +137,9 @@ def print_output():
 
     if info:
         output["info"] = info
+
+    if monitoring_data:
+        output["monitoring_data"] = monitoring_data
     
     json_string = json.dumps(output)
 

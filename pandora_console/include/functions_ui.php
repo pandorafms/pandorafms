@@ -199,7 +199,7 @@ function ui_print_truncate_text(
     }
 
     if ($forced_title === true) {
-        $truncateText = '<span class="forced_title" style="'.$style.'" title="'.$text.'" data-title="'.$text.'" data-use_title_for_force_title="1>'.$truncateText.'</span>';
+        $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text.'" data-use_title_for_force_title="1>'.$truncateText.'</span>';
     }
 
     if ($return == true) {

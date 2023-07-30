@@ -1389,6 +1389,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 		_timezone_ => strftime ("%Z", localtime()),
 		_data_ => $data,
+		_dataunit_ => (defined ($module)) ? $module->{'unit'} : '',
 		_prevdata_ => undef,
 		_homeurl_ => $pa_config->{'public_url'},
 		_alert_name_ => $alert->{'name'},
@@ -4890,6 +4891,9 @@ sub on_demand_macro($$$$$$;$) {
 		my $field_number = $1;
 		my $field_value = get_db_value($dbh, 'SELECT description FROM tagent_custom_data WHERE id_field=? AND id_agent=?', $field_number, $agent_id);
 		return (defined($field_value)) ? $field_value : '';	
+	} elsif ($macro eq '_dataunit_'){
+		return '' unless defined ($module);
+		my $field_value = get_db_value($dbh, 'SELECT unit FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1 offset 1', $module->{'id_agente_modulo'});	
 	} elsif ($macro eq '_prevdata_') {
 		return '' unless defined ($module);
 		if ($module->{'id_tipo_modulo'} eq 3){

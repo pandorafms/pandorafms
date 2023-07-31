@@ -1291,7 +1291,8 @@ function snmp_browser_create_modules_snmp(
     string $module_target,
     array $snmp_values,
     ?array $id_target,
-    ?string $server_to_exec=null
+    ?string $server_to_exec=null,
+    ?string $use_agent_ip=''
 ) {
     $target_ip = null;
     $target_port = null;
@@ -1348,6 +1349,12 @@ function snmp_browser_create_modules_snmp(
         if (isset($snmp_values['oids']) === true) {
             $targets_oids = $snmp_values['oids'];
         }
+    }
+
+    if (empty($use_agent_ip) === false) {
+        $use_agent_ip = true;
+    } else {
+        $use_agent_ip = false;
     }
 
     $fail_modules = [];
@@ -1514,7 +1521,7 @@ function snmp_browser_create_modules_snmp(
                     'history_data'          => 1,
                 ];
                 foreach ($id_target as $agent) {
-                    $ids[] = modules_create_agent_module($agent, $oid['oid'], $values);
+                    $ids[] = modules_create_agent_module($agent, $oid['oid'], $values, false, false, $use_agent_ip);
                 }
         } else if ($module_target == 'policy') {
             // Policies only in enterprise version.
@@ -1801,6 +1808,16 @@ function snmp_browser_print_create_module_massive(
             'style'   => 'width:100% !important',
         ],
         true
+    );
+
+    $table->data[4][0] = html_print_label_input_block(
+        __('Use agent IP'),
+        html_print_checkbox(
+            'use_agent_ip',
+            1,
+            false,
+            true
+        )
     );
 
     $output .= html_print_table($table, true);

@@ -184,7 +184,7 @@ if (empty($result) === false) {
                 ]
             ).'</a>&nbsp;&nbsp;';
             $data[1] .= '<a  href="index.php?sec=advanced&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
-                'images/delet.svg',
+                'images/delete.svg',
                 true,
                 [
                     'title' => __('Delete'),

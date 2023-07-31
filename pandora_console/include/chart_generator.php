@@ -165,6 +165,9 @@ $hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
         <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.symbol.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
         <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.exportdata.pandora.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
         <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/jquery.flot.axislabels.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
+        <script type="text/javascript">
+            var phpTimezone = "<?php echo date_default_timezone_get(); ?>";
+        </script>
         <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/flot/pandora.flot.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
         <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/chartjs/chart.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>
         <script language="javascript" type="text/javascript" src="<?php echo ui_get_full_url($hack_metaconsole.'include/graphs/chartjs/chartjs-plugin-datalabels.min.js'); ?>?v=<?php echo $config['current_package']; ?>"></script>

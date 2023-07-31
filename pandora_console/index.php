@@ -292,7 +292,7 @@ enterprise_include_once('include/auth/saml.php');
 if (isset($config['id_user']) === false) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
-    setcookie('errormsg', null, -1);
+    setcookie('errormsg', '', -1);
 
     if (isset($_GET['login']) === true) {
         include_once 'include/functions_db.php';
@@ -712,7 +712,6 @@ if (isset($config['id_user']) === false) {
                     login_check_failed($nick);
                 }
 
-                $config['auth_error'] = __('User is blocked');
                 $login_failed = true;
             }
 

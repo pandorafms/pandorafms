@@ -322,7 +322,7 @@ input[type="radio"] {
 
 input[type="image"] {
   border: 0px;
-  background-color: transparent;
+  background-color: transparent !important;
   height: auto;
   padding: 0px;
 }

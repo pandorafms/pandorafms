@@ -3342,6 +3342,10 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
     }
 
     foreach ($attrs as $attribute) {
+        if ($attribute === 'title') {
+            continue;
+        }
+
         if (isset($options[$attribute])) {
             $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
         }

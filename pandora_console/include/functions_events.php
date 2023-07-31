@@ -614,6 +614,74 @@ function events_update_status($id_evento, $status, $filter=null)
 
 
 /**
+ * Get filter time.
+ *
+ * @param array $filter Filters.
+ *
+ * @return array conditions.
+ */
+function get_filter_date(array $filter)
+{
+    if (isset($filter['date_from']) === true
+        && empty($filter['date_from']) === false
+        && $filter['date_from'] !== '0000-00-00'
+    ) {
+        $date_from = $filter['date_from'];
+    }
+
+    if (isset($filter['time_from']) === true) {
+        $time_from = (empty($filter['time_from']) === true) ? '00:00:00' : $filter['time_from'];
+    }
+
+    if (isset($date_from) === true) {
+        if (isset($time_from) === false) {
+            $time_from = '00:00:00';
+        }
+
+        $from = $date_from.' '.$time_from;
+        $sql_filters[] = sprintf(
+            ' AND te.utimestamp >= %d',
+            strtotime($from)
+        );
+    }
+
+    if (isset($filter['date_to']) === true
+        && empty($filter['date_to']) === false
+        && $filter['date_to'] !== '0000-00-00'
+    ) {
+        $date_to = $filter['date_to'];
+    }
+
+    if (isset($filter['time_to']) === true) {
+        $time_to = (empty($filter['time_to']) === true) ? '23:59:59' : $filter['time_to'];
+    }
+
+    if (isset($date_to) === true) {
+        if (isset($time_to) === false) {
+            $time_to = '23:59:59';
+        }
+
+        $to = $date_to.' '.$time_to;
+        $sql_filters[] = sprintf(
+            ' AND te.utimestamp <= %d',
+            strtotime($to)
+        );
+    }
+
+    if (isset($from) === false) {
+        if (isset($filter['event_view_hr']) === true && ($filter['event_view_hr'] > 0)) {
+            $sql_filters[] = sprintf(
+                ' AND te.utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
+                $filter['event_view_hr']
+            );
+        }
+    }
+
+    return $sql_filters;
+}
+
+
+/**
  * Retrieve all events filtered.
  *
  * @param array   $fields          Fields to retrieve.
@@ -700,60 +768,7 @@ function events_get_all(
         );
     }
 
-    if (isset($filter['date_from']) === true
-        && empty($filter['date_from']) === false
-        && $filter['date_from'] !== '0000-00-00'
-    ) {
-        $date_from = $filter['date_from'];
-    }
-
-    if (isset($filter['time_from']) === true) {
-        $time_from = (empty($filter['time_from']) === true) ? '00:00:00' : $filter['time_from'];
-    }
-
-    if (isset($date_from) === true) {
-        if (isset($time_from) === false) {
-            $time_from = '00:00:00';
-        }
-
-        $from = $date_from.' '.$time_from;
-        $sql_filters[] = sprintf(
-            ' AND te.utimestamp >= %d',
-            strtotime($from)
-        );
-    }
-
-    if (isset($filter['date_to']) === true
-        && empty($filter['date_to']) === false
-        && $filter['date_to'] !== '0000-00-00'
-    ) {
-        $date_to = $filter['date_to'];
-    }
-
-    if (isset($filter['time_to']) === true) {
-        $time_to = (empty($filter['time_to']) === true) ? '23:59:59' : $filter['time_to'];
-    }
-
-    if (isset($date_to) === true) {
-        if (isset($time_to) === false) {
-            $time_to = '23:59:59';
-        }
-
-        $to = $date_to.' '.$time_to;
-        $sql_filters[] = sprintf(
-            ' AND te.utimestamp <= %d',
-            strtotime($to)
-        );
-    }
-
-    if (isset($from) === false) {
-        if (isset($filter['event_view_hr']) === true && ($filter['event_view_hr'] > 0)) {
-            $sql_filters[] = sprintf(
-                ' AND utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d HOUR) ',
-                $filter['event_view_hr']
-            );
-        }
-    }
+    $sql_filters = get_filter_date($filter);
 
     if (isset($filter['id_agent']) === true && $filter['id_agent'] > 0) {
         $sql_filters[] = sprintf(
@@ -1069,7 +1084,6 @@ function events_get_all(
         $array_search = [
             'te.id_evento',
             'lower(te.evento)',
-            'lower(te.user_comment)',
             'lower(te.id_extra)',
             'lower(te.source)',
             'lower('.$custom_data_search.')',
@@ -1106,7 +1120,6 @@ function events_get_all(
             ' AND (lower(ta.alias) not like lower("%%%s%%")
                 AND te.id_evento not like "%%%s%%"
                 AND lower(te.evento) not like lower("%%%s%%")
-                AND lower(te.user_comment) not like lower("%%%s%%")
                 AND lower(te.id_extra) not like lower("%%%s%%")
                 AND lower(te.source) not like lower("%%%s%%") )',
             array_fill(0, 6, $filter['search_exclude'])
@@ -1122,16 +1135,13 @@ function events_get_all(
     }
 
     // User comment.
+    $event_comment_join = '';
     if (empty($filter['user_comment']) === false) {
-        // For filter field.
+        $event_comment_join = 'INNER JOIN tevent_comment ON te.id_evento = tevent_comment.id_event';
         $sql_filters[] = sprintf(
-            ' AND lower(te.user_comment) like lower("%%%s%%") ',
-            io_safe_input($filter['user_comment'])
-        );
-
-        // For show comments on event details.
-        $sql_filters[] = sprintf(
-            ' OR lower(te.user_comment) like lower("%%%s%%") ',
+            ' AND (lower(tevent_comment.comment) like lower("%%%s%%")
+                OR lower(tevent_comment.comment) like lower("%%%s%%"))',
+            io_safe_input($filter['user_comment']),
             $filter['user_comment']
         );
     }
@@ -1455,7 +1465,7 @@ function events_get_all(
             ' LIMIT  %d',
             $config['max_number_of_events_per_node']
         );
-    } else if (isset($limit, $offset) === true && $limit > 0) {
+    } else if (isset($limit, $offset) === true && empty($limit) === false && $limit > 0) {
         $pagination = sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
     }
 
@@ -1552,35 +1562,19 @@ function events_get_all(
     $group_selects = '';
     if ($group_by != '') {
         if ($count === false) {
-            $idx = array_search('te.user_comment', $fields);
-            if ($idx !== false) {
-                unset($fields[$idx]);
-            }
-
-            db_process_sql('SET group_concat_max_len = 9999999');
-
             $group_selects = sprintf(
                 ',COUNT(id_evento) AS event_rep,
-                %s
-                MAX(utimestamp) as timestamp_last,
-                MIN(utimestamp) as timestamp_first,
-                MAX(id_evento) as max_id_evento',
-                ($idx !== false) ? 'GROUP_CONCAT(DISTINCT user_comment SEPARATOR "<br>") AS comments,' : ''
+                MAX(te.utimestamp) as timestamp_last,
+                MIN(te.utimestamp) as timestamp_first,
+                MAX(id_evento) as max_id_evento'
             );
 
             $group_selects_trans = sprintf(
                 ',tmax_event.event_rep,
-                %s
                 tmax_event.timestamp_last,
                 tmax_event.timestamp_first,
-                tmax_event.max_id_evento',
-                ($idx !== false) ? 'tmax_event.comments,' : ''
+                tmax_event.max_id_evento'
             );
-        }
-    } else {
-        $idx = array_search('te.user_comment', $fields);
-        if ($idx !== false) {
-            $fields[$idx] = 'te.user_comment AS comments';
         }
     }
 
@@ -1596,11 +1590,12 @@ function events_get_all(
                 FROM %s
                 %s
                 %s
+                %s
                 %s JOIN %s ta
-                ON ta.%s = te.id_agente
+                    ON ta.%s = te.id_agente
                 %s
                 %s JOIN tgrupo tg
-                ON %s
+                    ON %s
                 WHERE 1=1
                 %s
                 %s
@@ -1609,6 +1604,7 @@ function events_get_all(
                 %s
             ) tmax_event
             ON te.id_evento = tmax_event.max_id_evento
+            %s
             %s
             %s
             %s JOIN %s ta
@@ -1625,6 +1621,7 @@ function events_get_all(
             $tevento,
             $event_lj,
             $agentmodule_join,
+            $event_comment_join,
             $tagente_join,
             $tagente_table,
             $tagente_field,
@@ -1638,6 +1635,7 @@ function events_get_all(
             $having,
             $event_lj,
             $agentmodule_join,
+            $event_comment_join,
             $tagente_join,
             $tagente_table,
             $tagente_field,
@@ -1652,6 +1650,7 @@ function events_get_all(
             'SELECT %s
                 %s
             FROM %s
+            %s
             %s
             %s
             %s JOIN %s ta
@@ -1671,6 +1670,7 @@ function events_get_all(
             $tevento,
             $event_lj,
             $agentmodule_join,
+            $event_comment_join,
             $tagente_join,
             $tagente_table,
             $tagente_field,
@@ -2240,90 +2240,17 @@ function events_comment(
         $first_event = reset($id_event);
     }
 
-    $sql = sprintf(
-        'SELECT user_comment
-        FROM tevento
-        WHERE id_evento = %d',
-        $first_event
+    // Update comment.
+    $ret = db_process_sql_insert(
+        'tevent_comment',
+        [
+            'id_event'   => $first_event,
+            'comment'    => $comment,
+            'action'     => $action,
+            'utimestamp' => time(),
+            'id_user'    => $config['id_user'],
+        ],
     );
-
-    $event_comments = db_get_all_rows_sql($sql);
-    $event_comments_array = [];
-
-    if ($event_comments[0]['user_comment'] == '') {
-        $comments_format = 'new';
-    } else {
-        // If comments are not stored in json, the format is old.
-        $event_comments[0]['user_comment'] = str_replace(
-            [
-                "\n",
-                '&#x0a;',
-            ],
-            '<br>',
-            $event_comments[0]['user_comment']
-        );
-        $event_comments_array = json_decode($event_comments[0]['user_comment']);
-
-        if (empty($event_comments_array) === true) {
-            $comments_format = 'old';
-        } else {
-            $comments_format = 'new';
-        }
-    }
-
-    switch ($comments_format) {
-        case 'new':
-            $comment_for_json['comment'] = io_safe_input($comment);
-            $comment_for_json['action'] = $action;
-            $comment_for_json['id_user'] = $config['id_user'];
-            $comment_for_json['utimestamp'] = time();
-            $comment_for_json['event_id'] = $first_event;
-
-            $event_comments_array[] = $comment_for_json;
-
-            $event_comments = io_json_mb_encode($event_comments_array);
-
-            // Update comment.
-            $ret = db_process_sql_update(
-                'tevento',
-                ['user_comment' => $event_comments],
-                ['id_evento' => implode(',', $id_event)]
-            );
-        break;
-
-        case 'old':
-            // Give old ugly format to comment.
-            // Change this method for aux table or json.
-            $comment = str_replace(["\r\n", "\r", "\n"], '<br>', $comment);
-
-            if ($comment !== '') {
-                $commentbox = '<div class="comment_box">'.io_safe_input($comment).'</div>';
-            } else {
-                $commentbox = '';
-            }
-
-            // Don't translate 'by' word because if multiple users with
-            // different languages make comments in the same console
-            // will be a mess.
-            $comment = '<b>-- '.$action.' by '.$config['id_user'].' ['.date($config['date_format']).'] --</b><br>'.$commentbox.'<br>';
-
-            // Update comment.
-            $sql_validation = sprintf(
-                'UPDATE %s
-                SET user_comment = concat("%s", user_comment)
-                WHERE id_evento in (%s)',
-                'tevento',
-                $comment,
-                implode(',', $id_event)
-            );
-
-            $ret = db_process_sql($sql_validation);
-        break;
-
-        default:
-            // Ignore.
-        break;
-    }
 
     if (($ret === false) || ($ret === 0)) {
         return false;
@@ -2409,7 +2336,8 @@ function events_create_event(
     $tags='',
     $custom_data='',
     $server_id=0,
-    $id_extra=''
+    $id_extra='',
+    $ack_utimestamp=0
 ) {
     if ($source === false) {
         $source = get_product_name();
@@ -2430,7 +2358,6 @@ function events_create_event(
         'id_agentmodule'        => $id_agent_module,
         'id_alert_am'           => $id_aam,
         'criticity'             => $priority,
-        'user_comment'          => '',
         'tags'                  => $tags,
         'source'                => $source,
         'id_extra'              => $id_extra,
@@ -2438,7 +2365,7 @@ function events_create_event(
         'warning_instructions'  => $warning_instructions,
         'unknown_instructions'  => $unknown_instructions,
         'owner_user'            => '',
-        'ack_utimestamp'        => 0,
+        'ack_utimestamp'        => $ack_utimestamp,
         'custom_data'           => $custom_data,
         'data'                  => '',
         'module_status'         => 0,
@@ -5061,8 +4988,12 @@ function events_page_general($event)
         }
 
         $data[1] = $user_ack.'&nbsp;(&nbsp;';
+        // hd($config['date_format'], true);
+        // hd($event['ack_utimestamp_raw'], true);
+        // TODO: mirar en el manage y en la api que este ack de venir vacio lo herede del anterior que hubiera.
         if ($event['ack_utimestamp_raw'] !== false
             && $event['ack_utimestamp_raw'] !== 'false'
+            && empty($event['ack_utimestamp_raw']) === false
         ) {
             $data[1] .= date(
                 $config['date_format'],
@@ -5218,7 +5149,7 @@ function events_page_general_acknowledged($event_id)
  *
  * @return string HTML.
  */
-function events_page_comments($event, $ajax=false, $groupedComments=[])
+function events_page_comments($event, $groupedComments=[], $filter=null)
 {
     // Comments.
     global $config;
@@ -5229,12 +5160,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
     $table_comments->head = [];
     $table_comments->class = 'table_modal_alternate';
 
-    if (isset($event['user_comment']) === false) {
-        $event['user_comment'] = '';
-    }
-
-    $comments = (empty($groupedComments) === true) ? $event['user_comment'] : $groupedComments;
-
+    $comments = $groupedComments;
     if (empty($comments) === true) {
         $table_comments->style[0] = 'text-align:left;';
         $table_comments->colspan[0][0] = 2;
@@ -5243,49 +5169,7 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
         $table_comments->data[] = $data;
     } else {
         if (is_array($comments) === true) {
-            $comments_array = [];
-            foreach ($comments as $comm) {
-                if (empty($comm) === true) {
-                    continue;
-                }
-
-                // If exists user_comments, come from grouped events and must be handled like this.
-                if (isset($comm['user_comment']) === true) {
-                    $comm = $comm['user_comment'];
-                }
-
-                $comm = str_replace(["\n", '&#x0a;'], '<br>', $comm);
-
-                $comments_array[] = io_safe_output(json_decode($comm, true));
-            }
-
-            // Plain comments. Can be improved.
-            $sortedCommentsArray = [];
-            foreach ($comments_array as $comm) {
-                if (isset($comm) === true
-                    && empty($comm) === false
-                ) {
-                    foreach ($comm as $subComm) {
-                        $sortedCommentsArray[] = $subComm;
-                    }
-                }
-            }
-
-            // Sorting the comments by utimestamp (newer is first).
-            usort(
-                $sortedCommentsArray,
-                function ($a, $b) {
-                    if ($a['utimestamp'] == $b['utimestamp']) {
-                        return 0;
-                    }
-
-                    return ($a['utimestamp'] > $b['utimestamp']) ? -1 : 1;
-                }
-            );
-
-            // Clean the unsorted comments and return it to the original array.
-            $comments_array = [];
-            $comments_array[] = $sortedCommentsArray;
+            $comments_array = $comments;
         } else {
             $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
             // If comments are not stored in json, the format is old.
@@ -5293,75 +5177,69 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
         }
 
         foreach ($comments_array as $comm) {
-            $comments_format = (empty($comm) === true && is_array($comments) === false) ? 'old' : 'new';
+            $eventIdExplanation = (empty($groupedComments) === false) ? sprintf(' (#%d)', $comm['id_event']) : '';
+            $data[0] = sprintf(
+                '<b>%s %s %s%s</b>',
+                $comm['action'],
+                __('by'),
+                get_user_fullname(io_safe_input($comm['id_user'])).' ('.io_safe_input($comm['id_user']).')',
+                $eventIdExplanation
+            );
 
-            switch ($comments_format) {
-                case 'new':
-                    foreach ($comm as $c) {
-                        $eventIdExplanation = (empty($groupedComments) === false) ? sprintf(' (#%d)', $c['event_id']) : '';
+            $data[0] .= sprintf(
+                '<br><br><i>%s</i>',
+                date($config['date_format'], $comm['utimestamp'])
+            );
 
-                        $data[0] = sprintf(
-                            '<b>%s %s %s%s</b>',
-                            $c['action'],
-                            __('by'),
-                            get_user_fullname(io_safe_input($c['id_user'])).' ('.io_safe_input($c['id_user']).')',
-                            $eventIdExplanation
-                        );
+            $data[1] = '<p class="break_word">'.stripslashes(str_replace(['\n', '\r'], '<br/>', $comm['comment'])).'</p>';
 
-                        $data[0] .= sprintf(
-                            '<br><br><i>%s</i>',
-                            date($config['date_format'], $c['utimestamp'])
-                        );
-
-                        $data[1] = '<p class="break_word">'.stripslashes(str_replace(['\n', '\r'], '<br/>', $c['comment'])).'</p>';
-
-                        $table_comments->data[] = $data;
-                    }
-                break;
-
-                case 'old':
-                    $comm = explode('<br>', $comments);
-
-                    // Split comments and put in table.
-                    $col = 0;
-                    $data = [];
-
-                    foreach ($comm as $c) {
-                        switch ($col) {
-                            case 0:
-                                $row_text = preg_replace('/\s*--\s*/', '', $c);
-                                $row_text = preg_replace('/\<\/b\>/', '</i>', $row_text);
-                                $row_text = preg_replace('/\[/', '</b><br><br><i>[', $row_text);
-                                $row_text = preg_replace('/[\[|\]]/', '', $row_text);
-                            break;
-
-                            case 1:
-                                $row_text = preg_replace("/[\r\n|\r|\n]/", '<br>', io_safe_output(strip_tags($c)));
-                            break;
-
-                            default:
-                                // Ignore.
-                            break;
-                        }
-
-                        $data[$col] = $row_text;
-
-                        $col++;
-
-                        if ($col == 2) {
-                            $col = 0;
-                            $table_comments->data[] = $data;
-                            $data = [];
-                        }
-                    }
-                break;
-
-                default:
-                    // Ignore.
-                break;
-            }
+            $table_comments->data[] = $data;
         }
     }
+
+    $comments_filter = '<div class="flex align-center">';
+    $comments_filter .= html_print_label_input_block(
+        null,
+        html_print_extended_select_for_time(
+            'comments_events_max_hours_old',
+            $filter['event_view_hr_cs'],
+            '',
+            __('Default'),
+            -2,
+            false,
+            true,
+            false,
+            true,
+            '',
+            false,
+            [
+                SECONDS_1HOUR   => __('1 hour'),
+                SECONDS_6HOURS  => __('6 hours'),
+                SECONDS_12HOURS => __('12 hours'),
+                SECONDS_1DAY    => __('24 hours'),
+                SECONDS_2DAY    => __('48 hours'),
+            ],
+            '',
+            false,
+            0,
+            [ SECONDS_1HOUR => __('hours') ],
+        )
+    );
+
+    $eventb64 = base64_encode(json_encode($event));
+    $filterb64 = base64_encode(json_encode($filter));
+    $comments_filter .= html_print_submit_button(
+        __('Filter'),
+        'filter_comments_button',
+        false,
+        [
+            'class'   => 'mini mrgn_lft_15px',
+            'icon'    => 'search',
+            'onclick' => 'get_table_events_tabs("'.$eventb64.'","'.$filterb64.'")',
+        ],
+        true
+    );
+    $comments_filter .= '</div>';
 
     if (((tags_checks_event_acl(
         $config['id_user'],
@@ -5388,7 +5266,10 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
             true
         );
 
-        $comments_form .= '<br><div class="right mrgn_top_10px">';
+        $comments_form .= '<br>';
+        $comments_form .= '<div class="mrgn_top_10px container-filter-buttons">';
+        $comments_form .= $comments_filter;
+        $comments_form .= '<div>';
         $comments_form .= html_print_button(
             __('Add comment'),
             'comment_button',
@@ -5400,14 +5281,15 @@ function events_page_comments($event, $ajax=false, $groupedComments=[])
             ],
             true
         );
-        $comments_form .= '</div><br></div>';
+        $comments_form .= '</div>';
+        $comments_form .= '</div>';
+
+        $comments_form .= '<br></div>';
+    } else {
+        $comments_form = $comments_filter;
     }
 
-    if ($ajax === true) {
-        return $comments_form.html_print_table($table_comments, true);
-    }
-
-    return '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';
+    return $comments_form.html_print_table($table_comments, true);
 }
 
 
@@ -5542,7 +5424,7 @@ function events_get_sql_order($sort_field='timestamp', $sort='DESC', $group_rep=
         break;
 
         case 'comment':
-            $sort_field_translated = 'user_comment';
+            $sort_field_translated = 'tevent_comment.comment';
         break;
 
         case 'extra_id':
@@ -6113,4 +5995,180 @@ function get_count_event_criticity(
     );
 
     return db_get_all_rows_sql($sql_meta);
+}
+
+
+/**
+ * Comments for this events.
+ *
+ * @param array   $event     Info event.
+ * @param integer $mode      Mode group by.
+ * @param integer $event_rep Events.
+ *
+ * @return array Comments.
+ */
+function event_get_comment($event, $filter=null)
+{
+    $whereGrouped = [];
+    if (empty($filter) === false) {
+        if (isset($filter['event_view_hr_cs']) === true && ($filter['event_view_hr_cs'] > 0)) {
+            $whereGrouped[] = sprintf(
+                ' AND tevent_comment.utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d SECOND) ',
+                $filter['event_view_hr_cs']
+            );
+        } else if (isset($filter['event_view_hr']) === true && ($filter['event_view_hr'] > 0)) {
+            $whereGrouped[] = sprintf(
+                ' AND tevent_comment.utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d SECOND) ',
+                ((int) $filter['event_view_hr'] * 3600)
+            );
+        }
+    }
+
+    $mode = (int) $filter['group_rep'];
+
+    $eventsGrouped = [];
+    // Consider if the event is grouped.
+    if ($mode === EVENT_GROUP_REP_EVENTS) {
+        // Default grouped message filtering (evento and estado).
+        $whereGrouped[] = sprintf(
+            'AND `tevento`.`evento` = "%s"',
+            io_safe_input(io_safe_output($event['evento']))
+        );
+
+        // If id_agente is reported, filter the messages by them as well.
+        if ((int) $event['id_agente'] > 0) {
+            $whereGrouped[] = sprintf(
+                ' AND `tevento`.`id_agente` = %d',
+                (int) $event['id_agente']
+            );
+        }
+
+        if ((int) $event['id_agentmodule'] > 0) {
+            $whereGrouped[] = sprintf(
+                ' AND `tevento`.`id_agentmodule` = %d',
+                (int) $event['id_agentmodule']
+            );
+        }
+    } else if ($mode === EVENT_GROUP_REP_EXTRAIDS) {
+        $whereGrouped[] = sprintf(
+            'AND `tevento`.`id_extra` = "%s"',
+            io_safe_input(io_safe_output($event['id_extra']))
+        );
+    } else {
+        $whereGrouped[] = sprintf('AND `tevento`.`id_evento` = %d', $event['id_evento']);
+    }
+
+    try {
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node = new Node($event['server_id']);
+            $node->connect();
+        }
+
+        $sql = sprintf(
+            'SELECT tevent_comment.*
+            FROM tevento
+            INNER JOIN tevent_comment
+                ON tevento.id_evento = tevent_comment.id_event
+            WHERE 1=1 %s
+            ORDER BY tevent_comment.utimestamp DESC',
+            implode(' ', $whereGrouped)
+        );
+
+        // Get grouped comments.
+        $eventsGrouped = db_get_all_rows_sql($sql);
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node->disconnect();
+        }
+
+        $eventsGrouped = [];
+    } finally {
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node->disconnect();
+        }
+    }
+
+    return $eventsGrouped;
+}
+
+
+/**
+ * Last comment for this event.
+ *
+ * @param array $event Info event.
+ *
+ * @return string Comment.
+ */
+function event_get_last_comment($event, $filter)
+{
+    $comments = event_get_comment($event, $filter);
+    if (empty($comments) === false) {
+        return $comments[0];
+    }
+
+    return '';
+}
+
+
+/**
+ * Get counter events same extraid.
+ *
+ * @param array $event   Event data.
+ * @param array $filters Filters.
+ *
+ * @return integer Counter.
+ */
+function event_get_counter_extraId(array $event, ?array $filters)
+{
+    $counters = 0;
+
+    $where = get_filter_date($filters);
+
+    $where[] = sprintf(
+        'AND `te`.`id_extra` = "%s"',
+        $event['id_extra']
+    );
+
+    try {
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node = new Node($event['server_id']);
+            $node->connect();
+        }
+
+        $sql = sprintf(
+            'SELECT count(*)
+            FROM tevento te
+            WHERE 1=1 %s',
+            implode(' ', $where)
+        );
+
+        // Get grouped comments.
+        $counters = db_get_value_sql($sql);
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node->disconnect();
+        }
+
+        $counters = 0;
+    } finally {
+        if (is_metaconsole() === true
+            && $event['server_id'] > 0
+        ) {
+            $node->disconnect();
+        }
+    }
+
+    return $counters;
 }

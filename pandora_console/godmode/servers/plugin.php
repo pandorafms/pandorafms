@@ -560,7 +560,14 @@ if (empty($create) === false || empty($view) === false) {
     // $data[0] = html_print_div(['id' => 'command_preview', 'class' => 'mono'], true);
     $data[0] = html_print_label_input_block(
         __('Command preview'),
-        html_print_div(['id' => 'command_preview', 'class' => 'mono'], true)
+        html_print_div(
+            [
+                'id'    => 'command_preview',
+                'class' => 'mono',
+                'style' => 'max-width: 1050px;overflow-wrap: break-word;',
+            ],
+            true
+        )
     );
     $table->data['plugin_preview_inputs'] = $data;
     $table->colspan['plugin_preview_inputs'][0] = 2;

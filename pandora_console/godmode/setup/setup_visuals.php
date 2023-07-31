@@ -1344,17 +1344,6 @@ $table_vc->style[0] = 'font-weight: bold';
 $table_vc->size[0] = '50%';
 $table_vc->data = [];
 
-// Remove when the new view reaches rock solid stability.
-$table_vc->data[$row][] = html_print_label_input_block(
-    __('Legacy Visual Console View'),
-    html_print_checkbox_switch(
-        'legacy_vc',
-        1,
-        (bool) $config['legacy_vc'],
-        true
-    )
-);
-
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Default cache expiration'),
     html_print_extended_select_for_time(
@@ -1372,7 +1361,6 @@ $table_vc->data[$row][] = html_print_label_input_block(
         $intervals
     )
 );
-$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Default interval for refresh on Visual Console'),
@@ -1388,6 +1376,7 @@ $table_vc->data[$row][] = html_print_label_input_block(
         false
     )
 );
+$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Type of view of visual consoles'),
@@ -1401,12 +1390,12 @@ $table_vc->data[$row][] = html_print_label_input_block(
         true
     )
 );
-$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Number of favorite visual consoles to show in the menu'),
     "<input ' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>"
 );
+$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Default line thickness for the Visual Console'),
@@ -1419,7 +1408,6 @@ $table_vc->data[$row][] = html_print_label_input_block(
         true
     )
 );
-$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Lock screen orientation when viewing on mobile devices'),
@@ -1430,6 +1418,7 @@ $table_vc->data[$row][] = html_print_label_input_block(
         true
     )
 );
+$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Display item frame on alert triggered'),

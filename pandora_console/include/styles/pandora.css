@@ -318,6 +318,7 @@ td input[type="checkbox"] {
 
 input[type="radio"] {
   height: 15px;
+  margin-right: 15px;
 }
 
 input[type="image"] {

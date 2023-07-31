@@ -3621,6 +3621,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     $classes = '';
     $fixedId = '';
     $iconStyle = '';
+    $minimize_arrow = false;
     // $spanStyle = 'margin-top: 4px;';
     $spanStyle = '';
     if (empty($name) === true) {
@@ -3658,6 +3659,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
                 $buttonType = ($attr_array['type'] ?? 'button');
                 $buttonAttributes = $value;
                 break;
+            } else if ($attribute === 'minimize-arrow') {
+                $minimize_arrow = true;
             } else {
                 $attributes .= $attribute.'="'.$value.'" ';
             }
@@ -3682,15 +3685,30 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $iconDiv = '';
     }
 
+    if ($minimize_arrow === true) {
+        $minimezeDiv = html_print_div(
+            [
+                'id'    => 'minimize_arrow_event_sound',
+                'style' => 'background-color:transparent; right: 1em; margin-left:0.5em; position:relative; display:none;',
+                'class' => 'arrow_menu_down w30p',
+            ],
+            true
+        );
+    } else {
+        $minimezeDiv = '';
+    }
+
     // Defined id. Is usable for span and button.
     // TODO. Check if will be proper use button or submit when where appropiate.
     $mainId = ((empty($fixedId) === false) ? $fixedId : 'button-'.$name);
 
     if ($imageButton === false) {
-        $content = '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
+        $content = $minimezeDiv;
+        $content .= '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
         $content .= $iconDiv;
     } else {
-        $content = $iconDiv;
+        $content = $minimezeDiv;
+        $content .= $iconDiv;
     }
 
     // In case of not selected button type, in this case, will be normal button.

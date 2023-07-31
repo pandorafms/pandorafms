@@ -90,6 +90,8 @@ $get_comments = (bool) get_parameter('get_comments', false);
 $get_events_fired = (bool) get_parameter('get_events_fired');
 $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
+$settings_modal = get_parameter('settings', 0);
+$parameters_modal = get_parameter('parameters', 0);
 
 if ($get_comments === true) {
     global $config;
@@ -512,8 +514,13 @@ if ($load_filter_modal) {
         false
     );
 
+    $action = 'index.php?sec=eventos&sec2=operation/events/events&pure=';
+    if ($settings_modal !== 0 && $parameters_modal !== 0) {
+        $action .= '&settings='.$settings_modal.'&parameters='.$parameters_modal;
+    }
+
     echo '<div id="load-filter-select" class="load-filter-modal">';
-    echo '<form method="post" id="form_load_filter" action="index.php?sec=eventos&sec2=operation/events/events&pure=">';
+    echo '<form method="post" id="form_load_filter" action="'.$action.'">';
 
     $table = new StdClass;
     $table->id = 'load_filter_form';
@@ -953,7 +960,7 @@ function save_new_filter() {
             }
             else {
                 id_filter_save = data;
-                
+
                 $("#info_box").filter(function(i, item) {
                     if ($(item).data('type_info_box') == "success_create_filter") {
                         return true;
@@ -2459,7 +2466,7 @@ if ($drawConsoleSound === true) {
                     'label'      => __('Start'),
                     'type'       => 'button',
                     'name'       => 'start-search',
-                    'attributes' => [ 'class' => 'play' ],
+                    'attributes' => [ 'class' => 'play secondary' ],
                     'return'     => true,
                 ],
                 'div',
@@ -2585,23 +2592,24 @@ if ($get_events_fired) {
             $return[] = array_merge(
                 $event,
                 [
-                    'fired'     => $event['id_evento'],
-                    'message'   => ui_print_string_substr(
+                    'fired'           => $event['id_evento'],
+                    'message'         => ui_print_string_substr(
                         strip_tags(io_safe_output($event['evento'])),
                         75,
                         true,
                         '9'
                     ),
-                    'priority'  => ui_print_event_priority($event['criticity'], true, true),
-                    'type'      => events_print_type_img(
+                    'priority'        => ui_print_event_priority($event['criticity'], true, true),
+                    'type'            => events_print_type_img(
                         $event['event_type'],
                         true
                     ),
-                    'timestamp' => ui_print_timestamp(
+                    'timestamp'       => ui_print_timestamp(
                         $event['timestamp'],
                         true,
                         ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
                     ),
+                    'event_timestamp' => $event['timestamp'],
                 ]
             );
         }

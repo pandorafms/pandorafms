@@ -104,6 +104,9 @@ if (isset($fb64) === true) {
     );
 }
 
+$settings_modal = get_parameter('settings', 0);
+$parameters_modal = get_parameter('parameters', 0);
+
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group_filter'] ?? '')
@@ -1705,6 +1708,11 @@ if ($pure) {
 
     // Acoustic console.
     $sound_event['active'] = false;
+    if (is_metaconsole() === true) {
+        $urlSound = '../../include/sounds/';
+    } else {
+        $urlSound = 'include/sounds/';
+    }
 
     // Sound Events.
     $data_sound = base64_encode(
@@ -1717,7 +1725,7 @@ if ($pure) {
                 'silenceAlarm' => __('Silence alarm'),
                 'url'          => ui_get_full_url('ajax.php'),
                 'page'         => 'include/ajax/events',
-                'urlSound'     => 'include/sounds/',
+                'urlSound'     => $urlSound,
             ]
         )
     );
@@ -1730,6 +1738,8 @@ if ($pure) {
             'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
+
+    echo '<input type="hidden" id="open_sound_event_modal" value="0" /> ';
 
     // If the user has administrator permission display manage tab.
     if ($event_w === true || $event_m === true) {
@@ -2780,7 +2790,7 @@ if (check_acl(
         'submit_event_response',
         false,
         'execute_event_response(true);',
-        [ 'icon' => 'cog' ],
+        [ 'icon' => 'cog'],
         true
     );
 
@@ -2794,6 +2804,50 @@ if (check_acl(
         true,
         false,
         false
+    );
+    if (is_metaconsole() === true) {
+        $urlSound = '../../include/sounds/';
+    } else {
+        $urlSound = 'include/sounds/';
+    }
+
+    // Acoustic console.
+    $data_sound = base64_encode(
+        json_encode(
+            [
+                'title'        => __('Acoustic console'),
+                'start'        => __('Start'),
+                'stop'         => __('Stop'),
+                'noAlert'      => __('No alert'),
+                'silenceAlarm' => __('Silence alarm'),
+                'url'          => ui_get_full_url('ajax.php'),
+                'page'         => 'include/ajax/events',
+                'urlSound'     => $urlSound,
+            ]
+        )
+    );
+
+    $elements .= html_print_button(
+        __('Sound Events'),
+        'sound_events_button',
+        false,
+        'openSoundEventsDialog("'.$data_sound.'")',
+        [
+            'icon'           => 'sound',
+            'style'          => 'margin-right: 25% !important',
+            'minimize-arrow' => true,
+            'span_style'     => 'width: 100%',
+        ],
+        true
+    );
+
+    $elements .= html_print_button(
+        'hidden',
+        'sound_events_button_hidden',
+        false,
+        'openSoundEventModal("'.$data_sound.'")',
+        ['style' => 'display:none'],
+        true
     );
 
     html_print_action_buttons(
@@ -3269,7 +3323,9 @@ $(document).ready( function() {
                     url: '<?php echo ui_get_full_url('ajax.php'); ?>',
                     data: {
                         page: 'include/ajax/events',
-                        load_filter_modal: 1
+                        load_filter_modal: 1,
+                        settings: '<?php echo $settings_modal; ?>',
+                        parameters: '<?php echo $parameters_modal; ?>',
                     },
                     success: function (data){
                         $('#load-modal-filter')

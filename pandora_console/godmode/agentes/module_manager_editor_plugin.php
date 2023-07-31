@@ -159,7 +159,7 @@ foreach ($password_fields as $k => $p) {
             return;
         }
 
-        const moduleId = <?php echo $module['id']; ?>;
+        const moduleId = <?php echo $id_agent_module; ?>;
         
         load_plugin_description($("#id_plugin").val());
         

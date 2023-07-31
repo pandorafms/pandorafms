@@ -339,6 +339,10 @@ if (is_ajax() === true) {
         $config['block_size']
     );
 
+    if ($length === 'null') {
+        $length = $config['block_size'];
+    }
+
     if ($get_events !== 0) {
         try {
             ob_start();
@@ -492,23 +496,52 @@ if (is_ajax() === true) {
                             }
                         }
 
+                        if (strlen($tmp->server_name) >= 10) {
+                            $tmp->server_name = ui_print_truncate_text(
+                                $tmp->server_name,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
-                        if (strlen($tmp->evento) >= 255) {
+                        $event_text = $tmp->evento;
+                        if (strlen($tmp->evento) >= 40) {
                             $tmp->evento = ui_print_truncate_text(
                                 $tmp->evento,
-                                255,
-                                $tmp->evento,
+                                40,
+                                false,
                                 true,
-                                false
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
                             );
                         }
 
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
+                            if (strlen($tmp->module_name) >= 20) {
+                                $tmp->module_name = ui_print_truncate_text(
+                                    $tmp->module_name,
+                                    20,
+                                    false,
+                                    true,
+                                    false,
+                                    '&hellip;',
+                                    true,
+                                    true,
+                                );
+                            }
                         }
 
                         if (empty($tmp->comments) === false) {
-                            $tmp->comments = ui_print_comments($tmp->comments);
+                            $tmp->comments = ui_print_comments($tmp->comments, 20);
                         }
 
                         // Show last event.
@@ -534,6 +567,32 @@ if (is_ajax() === true) {
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
+                        if (strlen($tmp->agent_name) >= 10) {
+                            $tmp->agent_name = ui_print_truncate_text(
+                                $tmp->agent_name,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        $tmp->id_extra = io_safe_output($tmp->id_extra);
+                        if (strlen($tmp->id_extra) >= 10) {
+                            $tmp->id_extra = ui_print_truncate_text(
+                                $tmp->id_extra,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
 
                         $tmp->ack_utimestamp_raw = $tmp->ack_utimestamp;
 
@@ -556,7 +615,7 @@ if (is_ajax() === true) {
 
                                 $total_sec = strtotime($tmp->timestamp);
                                 $total_sec += $dif;
-                                $last_contact = date($config['date_format'], $total_sec);
+                                $last_contact = date($confb64ig['date_format'], $total_sec);
                                 $last_contact_value = ui_print_timestamp($last_contact, true);
                             } else {
                                 $title = date($config['date_format'], strtotime($tmp->timestamp));
@@ -582,9 +641,23 @@ if (is_ajax() === true) {
                         }
 
                         $tmp->instructions = events_get_instructions($item);
+                        if (strlen($tmp->instructions) >= 20) {
+                            $tmp->instructions = ui_print_truncate_text(
+                                $tmp->instructions,
+                                20,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
 
+                        $aux_event = $tmp->evento;
+                        $tmp->evento = $event_text;
                         $tmp->b64 = base64_encode(json_encode($tmp));
-
+                        $tmp->evento = $aux_event;
                         // Show comments events.
                         if (empty($tmp->comments) === false) {
                             $tmp->user_comment = $tmp->comments;
@@ -843,6 +916,19 @@ if (is_ajax() === true) {
                             $tmp->owner_user = get_user_fullname($tmp->owner_user).' ('.$tmp->owner_user.')';
                         }
 
+                        if (strlen($tmp->owner_user) >= 10) {
+                            $tmp->owner_user = ui_print_truncate_text(
+                                $tmp->owner_user,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         // Group name.
                         if (empty($tmp->id_grupo) === true) {
                             $tmp->id_grupo = __('All');
@@ -850,8 +936,33 @@ if (is_ajax() === true) {
                             $tmp->id_grupo = $tmp->group_name;
                         }
 
+                        if (strlen($tmp->id_grupo) >= 10) {
+                            $tmp->id_grupo = ui_print_truncate_text(
+                                $tmp->id_grupo,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         // Module name.
                         $tmp->id_agentmodule = $tmp->module_name;
+                        if (strlen($tmp->id_agentmodule) >= 10) {
+                            $tmp->id_agentmodule = ui_print_truncate_text(
+                                $tmp->id_agentmodule,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
 
                         // Options.
                         // Show more.
@@ -1082,6 +1193,18 @@ if (is_ajax() === true) {
                             }
 
                             $tmp->custom_data = $custom_data_str;
+                            if (strlen($tmp->custom_data) >= 20) {
+                                $tmp->custom_data = ui_print_truncate_text(
+                                    $tmp->custom_data,
+                                    20,
+                                    false,
+                                    true,
+                                    false,
+                                    '&hellip;',
+                                    true,
+                                    true,
+                                );
+                            }
                         }
 
                         $carry[] = $tmp;
@@ -2423,7 +2546,7 @@ try {
     if (in_array('instructions', $fields) > 0) {
         $fields[array_search('instructions', $fields)] = [
             'text'  => 'instructions',
-            'class' => 'column-instructions',
+            'class' => 'column-instructions mw60px',
         ];
     }
 
@@ -2435,12 +2558,22 @@ try {
         ];
     }
 
-    $comment_id = array_search('user_comment', $fields);
-    if ($comment_id !== false) {
-        $fields[$comment_id] = [
+    $user_comment = array_search('user_comment', $fields);
+    if ($user_comment !== false) {
+        $fields[$user_comment] = [
             'text'  => 'user_comment',
-            'class' => 'nowrap_max180px',
+            'class' => 'mw100px',
         ];
+    }
+
+
+    foreach ($fields as $key => $field) {
+        if (is_array($field) === false) {
+            $fields[$key] = [
+                'text'  => $field,
+                'class' => 'mw100px',
+            ];
+        }
     }
 
     // Always add options column.
@@ -2468,6 +2601,7 @@ try {
         }
     }
 
+    // mw60px
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
 
@@ -2566,7 +2700,7 @@ try {
                 [
                     'id'                             => $table_id,
                     'class'                          => 'info_table events',
-                    'style'                          => 'width: 99%;',
+                    'style'                          => 'width: 100%;',
                     'ajax_url'                       => 'operation/events/events',
                     'ajax_data'                      => [
                         'get_events' => 1,

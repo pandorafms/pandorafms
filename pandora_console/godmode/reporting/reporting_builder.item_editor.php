@@ -38,6 +38,9 @@ require_once $config['homedir'].'/include/db/oracle.php';
 // Login check.
 check_login();
 
+// Validate enterprise.
+$is_enterprise = enterprise_installed();
+
 if (! check_acl($config['id_user'], 0, 'RW')
     && ! check_acl($config['id_user'], 0, 'RM')
 ) {
@@ -319,6 +322,21 @@ switch ($action) {
                     $search = $es['search'];
                     $log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
                     $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
+                break;
+
+                case 'event_report_log_table':
+                    $period = $item['period'];
+                    $period_range = $item['period_range'];
+                    $description = $item['description'];
+
+                    $es = json_decode($item['external_source'], true);
+                    $id_agents = $es['id_agents'];
+                    $source = $es['source'];
+                    $search = $es['search'];
+                    $log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
+                    $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
+                    $show_graph = $item['show_graph'];
+                    $group_by_agent = $item['group_by_agent'];
                 break;
 
                 case 'simple_graph':
@@ -1025,6 +1043,7 @@ switch ($action) {
                 case 'prediction_date':
                 case 'simple_baseline_graph':
                 case 'event_report_log':
+                case 'event_report_log_table':
                 case 'increment':
                     $label = (isset($style['label'])) ? $style['label'] : '';
                 break;
@@ -1402,6 +1421,29 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period',
                     $period,
+                    '',
+                    '',
+                    '0',
+                    10
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_range"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Period range');
+                ui_print_help_tip(
+                    __('This is the time range in which the files are grouped. For example, 1 day will group the files by day and will count them.')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_extended_select_for_time(
+                    'period_range',
+                    $period_range,
                     '',
                     '',
                     '0',
@@ -3643,25 +3685,28 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-
-        <tr id="row_landscape"   class="datos">
-            <td class="bolder">
-            <?php
-            echo __('Show item in landscape format (only PDF)');
+        <?php
+        if ($is_enterprise) {
             ?>
-            </td>
-            <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
-        </tr>
-
-        <tr id="row_pagebreak"   class="datos">
-            <td class="bolder">
+                <tr id="row_landscape"   class="datos">
+                    <td class="bolder">
+                    <?php
+                    echo __('Show item in landscape format (only PDF)');
+                    ?>
+                    </td>
+                    <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
+                </tr>
+                <tr id="row_pagebreak"   class="datos">
+                    <td class="bolder">
+                    <?php
+                    echo __('Page break at the end of the item (only PDF)');
+                    ?>
+                    </td>
+                    <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
+                </tr>
             <?php
-            echo __('Page break at the end of the item (only PDF)');
-            ?>
-            </td>
-            <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
-        </tr>
-
+        }
+        ?>
         <tr id="row_agents_inventory_display_options" class="datos">
             <td class="bolder">
                 <?php
@@ -5295,6 +5340,12 @@ $(document).ready (function () {
                     return false;
                 }
                 break;
+            case 'event_report_log_table':
+                if ($("#id_agents3").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
                 case 'permissions_report':
                 if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
                     dialog_message('#message_no_group');
@@ -6385,6 +6436,7 @@ function chooseType() {
     $("#row_description").hide();
     $("#row_label").hide();
     $("#row_period").hide();
+    $("#row_period_range").hide();
     $("#row_agent").hide();
     $("#row_module").hide();
     $("#row_period").hide();
@@ -6559,7 +6611,24 @@ function chooseType() {
 
             loadLogAgents();
 
-            break;
+        break;
+
+        case 'event_report_log_table':
+            $("#log_help_tip").css("visibility", "visible");
+            $("#row_description").show();
+            $("#row_period").show();
+            $("#row_period_range").show();
+            $("#row_search").show();
+            $("#row_log_number").show();
+            $("#agents_row").show();
+            $("#row_source").show();
+            $("#row_historical_db_check").hide();
+            $("#row_show_graph").show();
+            $("#row_group_by_agent").show();
+
+            loadLogAgents();
+
+        break;
 
         case 'increment':
             $("#row_description").show();
@@ -6651,6 +6720,8 @@ function chooseType() {
             $("#row_agent").show();
             $("#row_module").show();
             $("#row_historical_db_check").hide();
+            period_set_value($("#hidden-period").attr('class'), 3600);
+            $("#row_period").find('select').val('3600').trigger('change');
             break;
 
         case 'SLA_monthly':
@@ -7522,9 +7593,68 @@ function dialog_message(message_id) {
       }
     });
 }
-
+function control_period_range() {
+    let value_period_range = $('#row_period_range #hidden-period_range').val();
+    let current_value = $('#row_period #hidden-period').val();
+    let min_range = (current_value/12);
+        if(min_range > value_period_range) {
+            $('#row_period_range div:nth-child(2) select option').removeAttr("selected");
+            $('#row_period_range div:nth-child(1)').hide();
+            $('#row_period_range div:nth-child(2)').show();
+            setTimeout(() => {
+                if(min_range >= 2592000) {
+                    $('#row_period_range input').val(Math.round((min_range/2592000) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="2592000"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(2592000);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 604800) {
+                    $('#row_period_range input').val(Math.round((min_range/604800) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="604800"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(604800);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 86400) {
+                    $('#row_period_range input').val(Math.round((min_range/86400) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="86400"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(86400);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 3600) {
+                    $('#row_period_range input').val(Math.round((min_range/3600) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="3600"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(3600);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 60) {
+                    $('#row_period_range input').val(Math.round((min_range/60) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="60"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select option[value="60"]').val(60);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+            }, 800);
+        }
+}
 $(document).ready(function () {
     $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
+
+    $('#row_period input').change(function(e){
+        control_period_range();
+    });
+    $('#row_period select').change(function(e){
+        control_period_range();
+    });
+    $('#row_period_range input').change(function(e){
+        control_period_range();
+    });
+    $('#row_period_range select').change(function(e){
+        control_period_range();
+    });
 });
 
 </script>

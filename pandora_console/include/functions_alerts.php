@@ -455,7 +455,7 @@ function alerts_delete_alert_action($id_alert_action)
  *
  * @return mixed Id of the cloned action or false in case of fail.
  */
-function alerts_clone_alert_action($id_alert_action, $id_group)
+function alerts_clone_alert_action($id_alert_action, $id_group, $copy_name='')
 {
     $id_alert_action = safe_int($id_alert_action, 1);
     if (empty($id_alert_action)) {
@@ -474,7 +474,13 @@ function alerts_clone_alert_action($id_alert_action, $id_group)
 
     unset($action['id']);
 
-    return alerts_create_alert_action($action['name'].' '.__('copy'), $action['id_alert_command'], $action);
+    if ($copy_name !== '') {
+        $copy_name = $copy_name;
+    } else {
+        $copy_name = $action['name'].' '.__('copy');
+    }
+
+    return alerts_create_alert_action($copy_name, $action['id_alert_command'], $action);
 }
 
 

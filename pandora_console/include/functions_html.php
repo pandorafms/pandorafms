@@ -1921,7 +1921,8 @@ function html_print_extended_select_for_unit(
     $select_style=false,
     $unique_name=true,
     $disabled=false,
-    $no_change=0
+    $no_change=0,
+    $class='w100p'
 ) {
     global $config;
 
@@ -1953,7 +1954,7 @@ function html_print_extended_select_for_unit(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" class="w100p inline_line">';
+    echo '<div id="'.$uniq_name.'_default" class="'.$class.' inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -3942,6 +3943,14 @@ function html_print_table(&$table, $return=false)
         }
     }
 
+    if (isset($table->tdid)) {
+        foreach ($table->tdid as $keyrow => $tid) {
+            foreach ($tid as $key => $id) {
+                $tdid[$keyrow][$key] = $id;
+            }
+        }
+    }
+
     if (isset($table->cellstyle)) {
         foreach ($table->cellstyle as $keyrow => $cstyle) {
             foreach ($cstyle as $key => $cst) {
@@ -4125,6 +4134,10 @@ function html_print_table(&$table, $return=false)
                     $colspan[$keyrow][$key] = '';
                 }
 
+                if (!isset($tdid[$keyrow][$key])) {
+                    $tdid[$keyrow][$key] = '';
+                }
+
                 if (!isset($rowspan[$keyrow][$key])) {
                     $rowspan[$keyrow][$key] = '';
                 }
@@ -4145,10 +4158,16 @@ function html_print_table(&$table, $return=false)
                     $style[$key] = '';
                 }
 
-                if ($class === 'datos5' && $key === 1) {
-                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                if ($tdid[$keyrow][$key] !== '') {
+                    $tid = $tdid[$keyrow][$key];
                 } else {
-                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                    $tid = $tableid.'-'.$keyrow.'-'.$key;
+                }
+
+                if ($class === 'datos5' && $key === 1) {
+                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                } else {
+                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
                 }
             }
 
@@ -5503,7 +5522,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : '')
+                ((isset($data['function']) === true) ? $data['function'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['hide_div_eye']) === true) ? $data['hide_div_eye'] : false),
             );
         break;
 
@@ -7136,6 +7158,47 @@ function html_print_code_picker(
     $output = '<div class="code-fragment '.$single_line_class.$classes.'">';
     $output .= '<pre style="margin: 0;"><code class="code-font" id="'.$id.'" style="display: block; white-space: pre-wrap;">'.$content.'</code></pre>';
     $output .= '</div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+function html_print_wizard_diagnosis(
+    $title,
+    $id_button,
+    $description='',
+    $status=true,
+    $return=false,
+) {
+    $button = '';
+    if ($status === true) {
+        $status = 'Connected';
+        $img = '/images/configuration@svg.svg';
+    } else {
+        $status = 'Disconnected';
+        $img = '/images/change-active.svg';
+    }
+
+    $button = html_print_image(
+        $img,
+        true,
+        [
+            'class' => 'main_menu_icon invert_filter float-right mrgn_right_10px',
+            'id'    => $id_button,
+        ]
+    );
+
+    $output = '<div class="rectangle rectangle_'.$status.'">
+                        <span class="status '.$status.'">'.__($status).$button.'</span>
+                        <div class="title">'.html_print_image('/images/circle_title.svg', true, ['class' => 'invert_filter']).'<span>'.$title.'</span></div>
+                        <div class="description">
+                            <span>'.$description.'</span>
+                        </div>
+                </div>';
 
     if ($return === true) {
         return $output;

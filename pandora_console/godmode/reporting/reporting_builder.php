@@ -116,10 +116,13 @@ if (!$report_r && !$report_w && !$report_m) {
 }
 
 require_once $config['homedir'].'/include/functions_reports.php';
+require_once $config['homedir'].'/godmode/wizards/DiscoveryTaskList.class.php';
 
 // Load enterprise extensions.
 enterprise_include('operation/reporting/custom_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
+enterprise_include_once('include/functions_tasklist.php');
+enterprise_include_once('include/functions_cron.php');
 
 
 
@@ -508,11 +511,11 @@ switch ($action) {
         $buttons = [
             'list_reports' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image(
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image(
                     'images/logs@svg.svg',
                     true,
                     [
-                        'title' => __('Reports list'),
+                        'title' => __('Reports'),
                         'class' => 'main_menu_icon invert_filter',
                     ]
                 ).'</a>',
@@ -545,7 +548,7 @@ switch ($action) {
 
         // Header.
         ui_print_standard_header(
-            __('List of reports'),
+            __('Reports'),
             'images/op_reporting.png',
             false,
             '',
@@ -782,7 +785,7 @@ switch ($action) {
             '<span class="subsection_header_title">'.__('Filters').'</span>',
             'filter_form',
             '',
-            false,
+            true,
             false,
             '',
             'white-box-content',
@@ -1251,7 +1254,12 @@ switch ($action) {
                 array_push($table->data, $data);
             }
 
-            html_print_table($table);
+            $reports_table = '<div class="white_box">';
+            $reports_table .= '<span class="white_table_graph_header">'.__('Reports').'</span>';
+            $reports_table .= html_print_table($table, true);
+            $reports_table .= '<br></div>';
+            echo $reports_table;
+
             $tablePagination = ui_pagination(
                 $total_reports,
                 $url,
@@ -1259,7 +1267,7 @@ switch ($action) {
                 $pagination,
                 true,
                 'offset',
-                false,
+                false
             );
         } else {
             ui_print_info_message(
@@ -1268,6 +1276,21 @@ switch ($action) {
                     'message'  => __('No data found.'),
                 ]
             );
+        }
+
+        $discovery_tasklist = new DiscoveryTaskList();
+        $report_task_data = $discovery_tasklist->showListConsoleTask(true);
+
+        if (is_array($report_task_data) === true || strpos($report_task_data, 'class="nf"') === false) {
+            $task_table = '<div class="mrgn_top_15px white_box">';
+            $task_table .= '<span class="white_table_graph_header">'.__('Report tasks');
+            $task_table .= ui_print_help_tip(__('To schedule a report, do it from the editing view of each report.'), true);
+            $task_table .= '</span><div>';
+            $task_table .= $report_task_data;
+            $task_table .= '</div></div>';
+            echo $task_table;
+        } else {
+            ui_print_info_message($report_task_data.__('To schedule a report, do it from the editing view of each report.'));
         }
 
         if (check_acl($config['id_user'], 0, 'RW')
@@ -1618,6 +1641,27 @@ switch ($action) {
 
                                 $values['external_source'] = json_encode($es);
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'event_report_log_table':
+                                $agents_to_report = get_parameter('id_agents3');
+                                $source = get_parameter('source', '');
+                                $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
+                                $log_number = get_parameter('log_number', '');
+
+                                $es['source'] = $source;
+                                $es['id_agents'] = $agents_to_report;
+                                $es['search'] = $search;
+                                $es['full_text'] = $full_text;
+                                $es['log_number'] = $log_number;
+
+                                $values['external_source'] = json_encode($es);
+                                $values['period'] = get_parameter('period');
+                                $values['period_range'] = get_parameter('period_range');
+                                $values['show_graph'] = get_parameter('combo_graph_options');
+                                $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 
@@ -2602,6 +2646,27 @@ switch ($action) {
 
                                 $values['external_source'] = json_encode($es);
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'event_report_log_table':
+                                $agents_to_report = get_parameter('id_agents3');
+                                $source = get_parameter('source', '');
+                                $search = get_parameter('search', '');
+                                $full_text = (integer) get_parameter('full_text', 0);
+                                $log_number = get_parameter('log_number', '');
+
+                                $es['source'] = $source;
+                                $es['id_agents'] = $agents_to_report;
+                                $es['search'] = $search;
+                                $es['full_text'] = $full_text;
+                                $es['log_number'] = $log_number;
+
+                                $values['external_source'] = json_encode($es);
+                                $values['period'] = get_parameter('period');
+                                $values['period_range'] = get_parameter('period_range');
+                                $values['show_graph'] = get_parameter('combo_graph_options');
+                                $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 
@@ -3636,7 +3701,7 @@ switch ($action) {
             $buttons = [
                 'list_reports' => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Reports list'), 'class' => 'invert_filter main_menu_icon']).'</a>',
+                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image('images/logs@svg.svg', true, ['title' => __('Reports'), 'class' => 'invert_filter main_menu_icon']).'</a>',
                 ],
             ];
 
@@ -3703,7 +3768,7 @@ $buttons = [
             'images/report_list.png',
             true,
             [
-                'title' => __('Reports list'),
+                'title' => __('Reports'),
                 'class' => 'main_menu_icon invert_filter',
             ]
         ).'</a>',
@@ -3751,12 +3816,13 @@ if ($idReport != 0) {
     $buttons = [
         'main' => [
             'active' => true,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'main_menu_icon invert_filter']).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image('images/report_list.png', true, ['title' => __('Reports'), 'class' => 'main_menu_icon invert_filter']).'</a>',
         ],
     ];
     $textReportName = __('Create Custom Report');
 }
 
+// here1
 $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
 if (is_metaconsole() === true || $action !== 'update') {

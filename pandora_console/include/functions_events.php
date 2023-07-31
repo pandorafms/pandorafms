@@ -1762,7 +1762,7 @@ function events_get_all(
                     }
                 }
 
-                $string_metaconsole_connections = reset($metaconsole_connections);
+                $string_metaconsole_connections = implode(',', $metaconsole_connections);
                 $explode_metaconsole_connections = explode(',', $string_metaconsole_connections);
                 $result_meta = Promise\wait(
                     parallelMap(

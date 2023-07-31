@@ -333,7 +333,7 @@ if (is_ajax() === true) {
     $groupRecursion = (bool) get_parameter('groupRecursion', false);
 
     // Datatables offset, limit.
-    $start = get_parameter('start', 0);
+    $start = (int) get_parameter('start', 0);
     $length = get_parameter(
         'length',
         $config['block_size']
@@ -374,13 +374,6 @@ if (is_ajax() === true) {
                 'tg.nombre as group_name',
                 'ta.direccion',
             ];
-
-            if (strpos($config['event_fields'], 'user_comment') !== false
-                || empty($user_comment) === false
-                || empty($search) === false
-            ) {
-                $fields[] = 'te.user_comment';
-            }
 
             $order = get_datatable_order(true);
 
@@ -469,7 +462,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -658,25 +651,13 @@ if (is_ajax() === true) {
                         $tmp->evento = $event_text;
                         $tmp->b64 = base64_encode(json_encode($tmp));
                         $tmp->evento = $aux_event;
-                        // Show comments events.
-                        if (empty($tmp->comments) === false) {
-                            $tmp->user_comment = $tmp->comments;
-                            if ($tmp->comments !== 'undefined' && strlen($tmp->comments) > 80) {
-                                $tmp->user_comment .= '&nbsp;&nbsp;';
-                                $tmp->user_comment .= '<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
-                                $tmp->user_comment .= $tmp->b64;
-                                $tmp->user_comment .= '\',\'comments\')>;';
-                                $tmp->user_comment .= html_print_image(
-                                    'images/details.svg',
-                                    true,
-                                    [
-                                        'title' => __('Show more'),
-                                        'class' => 'invert_filter main_menu_icon',
-                                    ]
-                                );
-                                $tmp->user_comment .= '</a>';
-                            }
-                        }
+
+                        $tmp->user_comment = ui_print_comments(
+                            event_get_last_comment(
+                                $item,
+                                $filter
+                            )
+                        );
 
                         // Grouped events.
                         if (isset($tmp->max_id_evento) === true
@@ -747,8 +728,15 @@ if (is_ajax() === true) {
                         $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
 
                         // Grouped events.
-                        if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
-                            $evn .= '('.$tmp->event_rep.') ';
+                        if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
+                            $counter_extra_id = event_get_counter_extraId($item, $filter);
+                            if (empty($counter_extra_id) === false && $counter_extra_id > 1) {
+                                $evn .= '('.$counter_extra_id.') ';
+                            }
+                        } else {
+                            if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
+                                $evn .= '('.$tmp->event_rep.') ';
+                            }
                         }
 
                         $evn .= $tmp->evento.'</a>';
@@ -2558,12 +2546,9 @@ try {
         ];
     }
 
-    $user_comment = array_search('user_comment', $fields);
-    if ($user_comment !== false) {
-        $fields[$user_comment] = [
-            'text'  => 'user_comment',
-            'class' => 'mw100px',
-        ];
+    $comment_id = array_search('user_comment', $fields);
+    if ($comment_id !== false) {
+        $fields[$comment_id] = ['text' => 'user_comment'];
     }
 
 

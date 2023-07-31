@@ -484,7 +484,7 @@ function event_comment(current_event) {
     success: function() {
       $("#button-comment_button").removeAttr("disabled");
       $("#response_loading").hide();
-      $("#link_comments").click();
+      $("#button-filter_comments_button").click();
     }
   });
 
@@ -1446,6 +1446,25 @@ function removeElement(name_select, id_modal) {
     $(modal)
       .find("select")
       .append(option);
+  });
+}
+
+function get_table_events_tabs(event, filter) {
+  var custom_event_view_hr = $("#hidden-comments_events_max_hours_old").val();
+  $.post({
+    url: "ajax.php",
+    data: {
+      page: "include/ajax/events",
+      get_comments: 1,
+      event: event,
+      filter: filter,
+      custom_event_view_hr: custom_event_view_hr
+    },
+    dataType: "html",
+    success: function(data) {
+      $("#extended_event_comments_page").empty();
+      $("#extended_event_comments_page").html(data);
+    }
   });
 }
 // Define the minimize button functionality;

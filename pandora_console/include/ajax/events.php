@@ -94,84 +94,34 @@ $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
 
 if ($get_comments === true) {
-    $event = get_parameter('event', false);
-    $event_rep = (int) get_parameter_post('event')['event_rep'];
-    $group_rep = (int) get_parameter_post('event')['group_rep'];
+    global $config;
+    $event = json_decode(io_safe_output(base64_decode(get_parameter('event', ''))), true);
+    $filter = json_decode(io_safe_output(base64_decode(get_parameter('filter', ''))), true);
+
+    $default_hour = (int) $filter['event_view_hr'];
+    if (isset($config['max_hours_old_event_comment']) === true
+        && empty($config['max_hours_old_event_comment']) === false
+    ) {
+        $default_hour = (int) $config['max_hours_old_event_comment'];
+    }
+
+    $custom_event_view_hr = (int) get_parameter('custom_event_view_hr', 0);
+    if (empty($custom_event_view_hr) === false) {
+        if ($custom_event_view_hr === -2) {
+            $filter['event_view_hr_cs'] = ($default_hour * 3600);
+        } else {
+            $filter['event_view_hr_cs'] = $custom_event_view_hr;
+        }
+    } else {
+        $filter['event_view_hr_cs'] = ($default_hour * 3600);
+    }
 
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
 
-    $eventsGrouped = [];
-    // Consider if the event is grouped.
-    $whereGrouped = '1=1';
-    if ($group_rep === EVENT_GROUP_REP_EVENTS && $event_rep > 1) {
-        // Default grouped message filtering (evento and estado).
-        $whereGrouped = sprintf(
-            '`evento` = "%s"',
-            $event['evento']
-        );
-
-        // If id_agente is reported, filter the messages by them as well.
-        if ((int) $event['id_agente'] > 0) {
-            $whereGrouped .= sprintf(
-                ' AND `id_agente` = %d',
-                (int) $event['id_agente']
-            );
-        }
-
-        if ((int) $event['id_agentmodule'] > 0) {
-            $whereGrouped .= sprintf(
-                ' AND `id_agentmodule` = %d',
-                (int) $event['id_agentmodule']
-            );
-        }
-    } else if ($group_rep === EVENT_GROUP_REP_EXTRAIDS) {
-        $whereGrouped = sprintf(
-            '`id_extra` = "%s"',
-            io_safe_output($event['id_extra'])
-        );
-    } else {
-        $whereGrouped = sprintf('`id_evento` = %d', $event['id_evento']);
-    }
-
-    try {
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node = new Node($event['server_id']);
-            $node->connect();
-        }
-
-        $sql = sprintf(
-            'SELECT `user_comment`
-            FROM tevento
-            WHERE %s',
-            $whereGrouped
-        );
-
-        // Get grouped comments.
-        $eventsGrouped = db_get_all_rows_sql($sql);
-    } catch (\Exception $e) {
-        // Unexistent agent.
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node->disconnect();
-        }
-
-        $eventsGrouped = [];
-    } finally {
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node->disconnect();
-        }
-    }
-
-    // End of get_comments.
-    echo events_page_comments($event, true, $eventsGrouped);
-
+    $eventsGrouped = event_get_comment($event, $filter);
+    echo events_page_comments($event, $eventsGrouped, $filter);
     return;
 }
 
@@ -2010,23 +1960,7 @@ if ($get_extended_event) {
 
     $js .= '});';
 
-    $js .= '
-        $("#link_comments").click(function (){
-          $.post ({
-                url : "ajax.php",
-                data : {
-                    page: "include/ajax/events",
-                    get_comments: 1,
-                    event: '.json_encode($event).',
-                    event_rep: '.$event_rep.'
-                },
-                dataType : "html",
-                success: function (data) {
-                    $("#extended_event_comments_page").empty();
-                    $("#extended_event_comments_page").html(data);
-                }
-            });
-        });';
+    $js .= '$("#link_comments").click(get_table_events_tabs(\''.base64_encode(json_encode($event)).'\',\''.base64_encode(json_encode($filter)).'\'));';
 
     if (events_has_extended_info($event['id_evento']) === true) {
         $js .= '

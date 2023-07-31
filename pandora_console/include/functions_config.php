@@ -402,6 +402,10 @@ function config_update_config()
                         $error_update[] = __('Check conexion interval');
                     }
 
+                    if (config_update_value('max_hours_old_event_comment', get_parameter('max_hours_old_event_comment'), true) === false) {
+                        $error_update[] = __('Max hours old event comments');
+                    }
+
                     if (config_update_value('unique_ip', get_parameter('unique_ip'), true) === false) {
                         $error_update[] = __('Unique IP');
                     }
@@ -2427,6 +2431,10 @@ function config_process_config()
 
     if (!isset($config['check_conexion_interval'])) {
         config_update_value('check_conexion_interval', 180);
+    }
+
+    if (!isset($config['max_hours_old_event_comment'])) {
+        config_update_value('max_hours_old_event_comment', 8);
     }
 
     if (!isset($config['elasticsearch_ip'])) {

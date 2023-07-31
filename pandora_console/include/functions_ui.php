@@ -88,8 +88,16 @@ function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
  *
  * @return string Truncated text.
  */
-function ui_print_truncate_text($text, $numChars=GENERIC_SIZE_TEXT, $showTextInAToopTip=true, $return=true, $showTextInTitle=true, $suffix='&hellip;', $style=false)
-{
+function ui_print_truncate_text(
+    $text,
+    $numChars=GENERIC_SIZE_TEXT,
+    $showTextInAToopTip=true,
+    $return=true,
+    $showTextInTitle=true,
+    $suffix='&hellip;',
+    $style=false,
+    $forced_title=false
+) {
     global $config;
 
     if (is_string($numChars)) {
@@ -188,6 +196,10 @@ function ui_print_truncate_text($text, $numChars=GENERIC_SIZE_TEXT, $showTextInA
         } else {
             $truncateText = $text;
         }
+    }
+
+    if ($forced_title === true) {
+        $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text.'" data-use_title_for_force_title="1>'.$truncateText.'</span>';
     }
 
     if ($return == true) {
@@ -7075,7 +7087,7 @@ function ui_print_breadcrums($tab_name)
  *
  * @return string  HTML string with the last comment of the events.
  */
-function ui_print_comments($comment)
+function ui_print_comments($comments, $truncate_limit=255)
 {
     global $config;
 
@@ -7094,7 +7106,7 @@ function ui_print_comments($comment)
     if ($config['prominent_time'] == 'timestamp') {
         $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
 
-        if (strlen($comentario) > '200px') {
+        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
             $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     } else {
@@ -7103,13 +7115,27 @@ function ui_print_comments($comment)
 
         $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
 
-        if (strlen($comentario) > '200px') {
+        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
             $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     }
 
-    return io_safe_output($comentario);
+    $comentario = io_safe_output($comentario);
 
+    if (strlen($comentario) >= $truncate_limit) {
+        $comentario = ui_print_truncate_text(
+            $comentario,
+            $truncate_limit,
+            false,
+            true,
+            false,
+            '&hellip;',
+            true,
+            true,
+        );
+    }
+
+    return $comentario;
 }
 
 

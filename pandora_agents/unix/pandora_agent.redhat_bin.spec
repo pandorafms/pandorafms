@@ -2,17 +2,18 @@
 #Pandora FMS Linux Agent
 #
 %global __os_install_post %{nil}
-%define name        pandorafms_agent_linux
+%define name        pandorafms_agent_linux_bin
+%define source_name pandorafms_agent_linux
 %define version     7.0NG.772
-%define release     230731
+%define release     230725
 
-Summary:            Pandora FMS Linux agent, PERL version
+Summary:            Pandora FMS Linux agent, binary version
 Name:               %{name}
 Version:            %{version}
 Release:            %{release}
 License:            GPL
 Vendor:             ArticaST <http://www.artica.es>
-Source0:            %{name}-%{version}.tar.gz
+Source0:            %{source_name}-%{version}.tar.gz
 URL:                http://pandorafms.org
 Group:              System/Monitoring
 Packager:           Sancho Lerena <slerena@artica.es>

@@ -563,6 +563,12 @@ if ($access_console_node === true) {
             $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
         }
 
+        if (is_metaconsole() === true) {
+            $urlSound = '../../include/sounds/';
+        } else {
+            $urlSound = 'include/sounds/';
+        }
+
         // Acoustic console.
         $data_sound = base64_encode(
             json_encode(
@@ -574,7 +580,7 @@ if ($access_console_node === true) {
                     'silenceAlarm' => __('Silence alarm'),
                     'url'          => ui_get_full_url('ajax.php'),
                     'page'         => 'include/ajax/events',
-                    'urlSound'     => 'include/sounds/',
+                    'urlSound'     => $urlSound,
                 ]
             )
         );

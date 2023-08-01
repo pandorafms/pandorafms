@@ -185,6 +185,10 @@ echo '</div>';
                     $(`#sub${this.id}`).hide();
                 })
             } else if ($('#menu_full').hasClass('menu_full_collapsed')) {
+                $(".arrow_menu_right").each(function() {
+                    $(this).removeClass('arrow_menu_right');
+                    $(this).addClass('arrow_menu_down');
+                });
                 localStorage.setItem("menuType", "classic");
                 $('ul.submenu').css('left', '280px');
                 var menuType_val = localStorage.getItem("menuType");
@@ -273,6 +277,10 @@ echo '</div>';
         $('.menu_icon').mouseenter(function() {
             var menuType_val = localStorage.getItem("menuType");
             if (!click_display && menuType_val === 'collapsed') {
+                $(".arrow_menu_down").each(function() {
+                    $(this).removeClass('arrow_menu_down');
+                    $(this).addClass('arrow_menu_right');
+                });
                 table_hover = $(this);
                 handsIn = 1;
                 openTime = new Date().getTime();

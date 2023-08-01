@@ -23,6 +23,8 @@ class Defaults implements ChartOwnedInterface, ArraySerializableInterface, JsonS
      */
     private $font;
 
+    protected $watermark;
+
 
     /**
      * Return Font.

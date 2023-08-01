@@ -14,6 +14,12 @@ class Plugins implements ArraySerializableInterface, JsonSerializable
 {
     use ArraySerializable;
 
+    protected $legend;
+
+    protected $title;
+
+    protected $datalabels;
+
 
     /**
      * Return Legend.

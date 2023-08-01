@@ -175,9 +175,6 @@ class InventoryWidget extends Widget
 
         // Must be configured before using.
         $this->configurationRequired = false;
-        if (empty($this->values['inventoryModuleId']) === true) {
-            $this->configurationRequired = true;
-        }
 
         $this->overflow_scrollbars = false;
     }
@@ -705,7 +702,7 @@ class InventoryWidget extends Widget
                                         'no_sortable_columns' => [],
                                         'data_element'        => $data,
                                         'searching'           => true,
-                                        'dom_elements'        => 'fti',
+                                        'dom_elements'        => 'frtilp',
                                         'order'               => [
                                             'field'     => $columns[0],
                                             'direction' => 'asc',
@@ -713,10 +710,10 @@ class InventoryWidget extends Widget
                                         'zeroRecords'         => __('No inventory found'),
                                         'emptyTable'          => __('No inventory found'),
                                         'return'              => true,
-                                        'default_pagination'  => 10,
                                         'no_sortable_columns' => [-1],
                                         'csv'                 => 0,
-
+                                        'mini_pagination'     => true,
+                                        'mini_search'         => true,
                                     ]
                                 );
 
@@ -822,7 +819,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'fti',
+                                    'dom_elements'        => 'frtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -830,9 +827,11 @@ class InventoryWidget extends Widget
                                     'zeroRecords'         => __('No inventory found'),
                                     'emptyTable'          => __('No inventory found'),
                                     'return'              => true,
-                                    'default_pagination'  => 10,
+                                    //'default_pagination'  => 10,
                                     'no_sortable_columns' => [-1],
                                     'csv'                 => 0,
+                                    'mini_pagination'     => true,
+                                    'mini_search'         => true,
                                 ]
                             );
 
@@ -987,7 +986,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'fti',
+                                    'dom_elements'        => 'frtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -995,9 +994,11 @@ class InventoryWidget extends Widget
                                     'zeroRecords'         => __('No inventory found'),
                                     'emptyTable'          => __('No inventory found'),
                                     'return'              => true,
-                                    'default_pagination'  => 10,
+                                    //'default_pagination'  => 10,
                                     'no_sortable_columns' => [-1],
                                     'csv'                 => 0,
+                                    'mini_pagination'     => true,
+                                    'mini_search'         => true,
                                 ]
                             );
 
@@ -1078,7 +1079,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'fti',
+                                    'dom_elements'        => 'frtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -1090,6 +1091,8 @@ class InventoryWidget extends Widget
                                     'mini_search'         => true,
                                     'mini_pagination'     => true,
                                     'csv'                 => 0,
+                                    'mini_pagination'     => true,
+                                    'mini_search'         => true,
                                 ]
                             );
 
@@ -1102,7 +1105,7 @@ class InventoryWidget extends Widget
                                 false
                             );
                         } else {
-                            ui_print_datatable(
+                            $table = ui_print_datatable(
                                 [
                                     'id'                          => $id_table,
                                     'class'                       => 'info_table w100p',
@@ -1112,20 +1115,17 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns'         => [],
                                     'data_element'                => $data,
                                     'searching'                   => true,
+                                    'dom_elements'                => 'frtilp',
                                     'order'                       => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
                                     ],
                                     'zeroRecords'                 => __('No inventory found'),
                                     'emptyTable'                  => __('No inventory found'),
-                                    'print_pagination_search_csv' => true,
                                     'csv'                         => 0,
+                                    'mini_pagination'             => true,
+                                    'mini_search'                 => true,
                                 ]
-                            );
-
-                            html_print_action_buttons(
-                                '',
-                                ['type' => 'form_action']
                             );
                         }
                     }
@@ -1135,7 +1135,7 @@ class InventoryWidget extends Widget
             $id_agente = $inventory_id_agent;
             $agentes = [];
             $data = [];
-            $class = 'info_table';
+            $class = 'info_table w100p';
             $style = 'width: 100%; font-size: 100px !important;';
             $ordering = true;
             $searching = false;
@@ -1172,35 +1172,33 @@ class InventoryWidget extends Widget
 
             ui_print_datatable(
                 [
-                    'id'           => 'basic_info',
-                    'class'        => $class,
-                    'style'        => $style,
-                    'columns'      => $columns,
-                    'column_names' => $columns_names,
-                    'ordering'     => $ordering,
-                    'searching'    => $searching,
-                    'order'        => [
-                        'field'     => $columns[0],
-                        'direction' => 'asc',
+                    'id'              => 'basic_info',
+                    'class'           => $class,
+                    'style'           => $style,
+                    'columns'         => $columns,
+                    'column_names'    => $columns_names,
+                    'ordering'        => $ordering,
+                    'dom_elements'    => 'frtilp',
+                    'searching'       => $searching,
+                    'order'           => [
+                        'field'       => $columns[0],
+                        'direction'   => 'asc',
                     ],
-                    'ajax_url'     => 'operation/inventory/inventory',
-                    'ajax_data'    => [
+                    'ajax_url'        => 'operation/inventory/inventory',
+                    'ajax_data'       => [
                         'get_data_basic_info' => 1,
                         'id_agent'            => $id_agente,
                         'id_group'            => $inventory_id_group,
                     ],
-                    'zeroRecords'  => __('Agent info not found'),
-                    'emptyTable'   => __('Agent info not found'),
-                    'return'       => false,
-                    'csv'          => 0,
+                    'zeroRecords'     => __('Agent info not found'),
+                    'emptyTable'      => __('Agent info not found'),
+                    'return'          => false,
+                    'csv'             => 0,
+                    'mini_pagination' => true,
+                    'mini_search'     => true,
                 ]
             );
             echo '</div>';
-
-            html_print_action_buttons(
-                '',
-                ['type' => 'form_action']
-            );
         }
 
         ui_require_jquery_file('pandora.controls');
@@ -1234,8 +1232,6 @@ class InventoryWidget extends Widget
             });
           
             $("#text-agentAlias").on("keyup", function(event) {
-                console.log("keyup");
-                console.log($("#text-agentAlias").val());
               if (!clickedOnDynamicElement || $("#text-agentAlias").val() === "") {
                 getInventoryModules();
               } else {
@@ -1249,13 +1245,11 @@ class InventoryWidget extends Widget
           });
 
             function getInventoryModules() {
-                console.log("CALLED0");
                 const clickedId = $(this).attr(\'id\');
 
                 $("#'.$selectbox_id.'").empty();
 
                 if ($("#hidden-agentId").val() > 0 || $("#text-agentAlias").val() === "'.__('All').'") {
-                    console.log("CALLED1");
                     $("#module_inventory").enable();
                     var inputs = [];
                     var metaconsoleID = $("#hidden-metaconsoleId").val();
@@ -1277,7 +1271,6 @@ class InventoryWidget extends Widget
                                 $("#'.$selectbox_id.'").append($("<option value=0>All</option>"));
                                 $("#'.$selectbox_id.'").append($("<option value=\'basic\'>Basic info</option>"));
                                 jQuery.each (data, function(id, value) {
-                                    console.log("qewqwe", value);
                                     $("#'.$selectbox_id.'").append($("<option value=" + value.name + ">" + value.name + "</option>"));
                                 });
                                 $("#'.$selectbox_id.'").val("'.$this->values['inventoryModuleId'].'");
@@ -1286,7 +1279,6 @@ class InventoryWidget extends Widget
                         }
                     });
                 } else {
-                    console.log("CALLED2");
                     $("#module_inventory").disable();
                 }
                 

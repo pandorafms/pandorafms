@@ -243,7 +243,7 @@ foreach ($servers as $server) {
             $data[8] .= '</a>';
         }
 
-        if ($server['type'] === 'event') {
+        if ($server['type'] === 'event' && (bool) check_acl($config['id_user'], 0, 'LM') === true) {
             $data[8] .= '<a class="open-alerts-list-modal" href="">';
             $data[8] .= html_print_image(
                 'images/alert@svg.svg',

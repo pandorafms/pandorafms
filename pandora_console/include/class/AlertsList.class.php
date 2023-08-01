@@ -124,7 +124,7 @@ class AlertsList
         // Check access.
         check_login();
 
-        if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
+        if ((bool) check_acl($config['id_user'], 0, 'LM') === false) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access pending alerts list'
@@ -171,7 +171,7 @@ class AlertsList
 
         ui_require_css_file('tables');
 
-        if (check_acl($config['id_user'], 0, 'AR') === false) {
+        if ((bool) check_acl($config['id_user'], 0, 'LM') === false) {
             db_pandora_audit(
                 AUDIT_LOG_ACL_VIOLATION,
                 'Trying to access pending alerts list.'

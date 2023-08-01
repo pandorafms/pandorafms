@@ -281,6 +281,10 @@ echo '</div>';
                     $(this).removeClass('arrow_menu_down');
                     $(this).addClass('arrow_menu_right');
                 });
+                $(".arrow_menu_up").each(function() {
+                    $(this).removeClass('arrow_menu_up');
+                    $(this).addClass('arrow_menu_right');
+                });
                 table_hover = $(this);
                 handsIn = 1;
                 openTime = new Date().getTime();

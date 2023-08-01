@@ -45,16 +45,41 @@
   font-size: 11pt;
   top: 2px;
 }
-.ui-dialog .ui-dialog-titlebar-close {
+
+.ui-dialog .ui-dialog-titlebar-minimize {
   position: absolute;
-  right: 1em;
+  right: 1.5em;
   width: 21px;
   margin: 0px 0 0 0;
   padding: 1px;
   height: 20px;
   bottom: 30%;
-  top: 20%;
+  top: 2em;
+  background-color: #fff !important;
 }
+
+.ui-dialog .ui-dialog-titlebar-minimize:hover {
+  cursor: pointer;
+}
+
+.ui-dialog .ui-dialog-titlebar-disengage {
+  position: relative;
+  right: 1.5em;
+  width: 21px;
+  margin: 0px 0 0 0;
+  padding: 1px;
+  height: 20px;
+  bottom: 30%;
+  background-color: #fff !important;
+  -ms-transform: scale(1.2);
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+}
+
+.ui-dialog .ui-dialog-titlebar-disengage:hover {
+  cursor: pointer;
+}
+
 .ui-dialog .ui-dialog-content {
   position: relative;
   border: 0;

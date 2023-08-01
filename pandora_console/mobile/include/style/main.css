@@ -496,6 +496,10 @@ table.event_details td.cell_event_name {
   font-size: 14px;
 }
 
+table.event_details td.cell_event_comments {
+  height: auto;
+}
+
 #validate_button {
   margin: 10px auto;
   padding: 0;

@@ -39,6 +39,21 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
     exit;
 }
 
+// Ajax callbacks.
+if (is_ajax() === true) {
+    $get_filter_values = get_parameter('get_filter_values', 0);
+    // Get values of the current network filter.
+    if ($get_filter_values) {
+        $id = get_parameter('id');
+        $filter_values = db_get_row_filter('tnetwork_explorer_filter', ['id' => $id]);
+        // Decode HTML entities.
+        $filter_values['advanced_filter'] = io_safe_output($filter_values['advanced_filter']);
+        echo json_encode($filter_values);
+    }
+
+    return;
+}
+
 // Include JS timepicker.
 ui_include_time_picker();
 
@@ -78,6 +93,8 @@ if ($custom_date === '1') {
     $date_from = ($date_to - $date);
 }
 
+$filter_id = (int) get_parameter('filter_id', 0);
+
 // Query params and other initializations.
 $utimestamp_greater = $date_to;
 $utimestamp_lower = $date_from;
@@ -86,6 +103,13 @@ $top = (int) get_parameter('top', 10);
 $main_value = ((bool) get_parameter('remove_filter', 0)) ? '' : get_parameter('main_value', '');
 if (is_numeric($main_value) && !in_array($action, ['udp', 'tcp'])) {
     $main_value = '';
+} else {
+    $filter['ip'] = $main_value;
+}
+
+$advanced_filter = get_parameter('advanced_filter', '');
+if ($advanced_filter !== '') {
+    $filter['advanced_filter'] = $advanced_filter;
 }
 
 $order_by = get_parameter('order_by', 'bytes');
@@ -94,26 +118,104 @@ if (!in_array($order_by, ['bytes', 'pkts', 'flows'])) {
 }
 
 // Build the table.
-$table = new stdClass();
-$table->class = 'filter-table-adv';
-$table->width = '100%';
-$table->data = [];
+$filterTable = new stdClass();
+$filterTable->id = '';
+$filterTable->class = 'filter-table-adv';
+$filterTable->size = [];
+$filterTable->size[0] = '33%';
+$filterTable->size[1] = '33%';
+$filterTable->size[2] = '33%';
+$filterTable->data = [];
 
-$table->data[0][] = html_print_label_input_block(
-    __('Data to show'),
-    html_print_select(
-        network_get_report_actions(false),
-        'action',
-        $action,
+$filterTable->data[0][0] = html_print_label_input_block(
+    __('Interval'),
+    html_print_extended_select_for_time(
+        'period',
+        $period,
         '',
         '',
         0,
+        false,
+        true
+    ),
+    [ 'div_id' => 'period_container' ]
+);
+
+$filterTable->data[0][0] .= html_print_label_input_block(
+    __('Start date'),
+    html_print_div(
+        [
+            'class'   => '',
+            'content' => html_print_input_text(
+                'date_lower',
+                $date_lower,
+                false,
+                13,
+                10,
+                true
+            ).html_print_image(
+                'images/calendar_view_day.png',
+                true,
+                [
+                    'alt'   => 'calendar',
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            ).html_print_input_text(
+                'time_lower',
+                $time_lower,
+                false,
+                10,
+                8,
+                true
+            ),
+        ],
+        true
+    ),
+    [ 'div_id' => 'end_date_container' ]
+);
+
+$filterTable->data[0][1] = html_print_label_input_block(
+    __('End date'),
+    html_print_div(
+        [
+            'content' => html_print_input_text(
+                'date',
+                $date_greater,
+                false,
+                13,
+                10,
+                true
+            ).html_print_image(
+                'images/calendar_view_day.png',
+                true,
+                ['alt' => 'calendar']
+            ).html_print_input_text(
+                'time',
+                $time_greater,
+                false,
+                10,
+                8,
+                true
+            ),
+        ],
         true
     )
 );
 
-$table->data[0][] = html_print_label_input_block(
-    __('Number of result to show'),
+$filterTable->data[0][2] = html_print_label_input_block(
+    __('Defined period'),
+    html_print_checkbox_switch(
+        'is_period',
+        1,
+        ($is_period === true) ? 1 : 0,
+        true,
+        false,
+        'nf_view_click_period()'
+    )
+);
+
+$filterTable->data[1][] = html_print_label_input_block(
+    __('Results to show'),
     html_print_select(
         [
             '5'   => 5,
@@ -139,14 +241,10 @@ $table->data[1][] = html_print_label_input_block(
     html_print_select_date_range('date', true)
 );
 
-echo '<form method="post">';
-html_print_input_hidden('order_by', $order_by);
-if (empty($main_value) === false) {
-    html_print_input_hidden('main_value', $main_value);
-}
-
-$outputTable = html_print_table($table, true);
-$outputTable .= html_print_div(
+$filterInputTable = '<form method="POST">';
+$filterInputTable .= html_print_input_hidden('order_by', $order_by);
+$filterInputTable .= html_print_table($filterTable, true);
+$filterInputTable .= html_print_div(
     [
         'class'   => 'action-buttons-right-forced',
         'content' => html_print_submit_button(
@@ -158,19 +256,48 @@ $outputTable .= html_print_div(
                 'mode' => 'mini',
             ],
             true
+        ).html_print_submit_button(
+            __('Save as new filter'),
+            'save_button',
+            false,
+            [
+                'icon'    => 'load',
+                'onClick' => 'return defineFilterName();',
+                'mode'    => 'mini secondary',
+                'class'   => 'mrgn_right_10px',
+            ],
+            true
+        ).html_print_submit_button(
+            __('Update current filter'),
+            'update_button',
+            false,
+            [
+                'icon'  => 'load',
+                'mode'  => 'mini secondary',
+                'class' => 'mrgn_right_10px',
+            ],
+            true
         ),
     ],
     true
 );
+$filterInputTable .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $netflow_button,
+    ],
+    true
+);
+$filterInputTable .= '</form>';
 ui_toggle(
-    $outputTable,
-    '<span class="subsection_header_title">'.__('Filters').'</span>',
-    __('Filters'),
-    '',
+    $filterInputTable,
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'search',
     true,
     false,
     '',
-    'white-box-content',
+    'white-box-content no_border',
     'box-flat white_table_graph fixed_filter_bar'
 );
 html_print_action_buttons(
@@ -194,7 +321,7 @@ $data = netflow_get_top_summary(
     $action,
     $utimestamp_lower,
     $utimestamp_greater,
-    $main_value,
+    $filter,
     $order_by
 );
 
@@ -396,6 +523,26 @@ if (empty($data)) {
 
 ?>
 <script>
+$(document).ready(function(){
+    nf_view_click_period();
+
+    $('#filter_id').change(function(){
+        jQuery.post (
+        "ajax.php",
+        {
+            "page" : "operation/network/network_report",
+            "get_filter_values" : 1,
+            "id": $(this).val(),
+        },
+        function (data) {
+            $('#action').val(data.action).trigger('change');
+            $('#top').val(data.top).trigger('change');
+            $('#textarea_advanced_filter').val(data.advanced_filter);
+            $('select#filter_id').select2('close');
+        }, 'json');
+    });
+});
+
 // Configure jQuery timepickers.
 $("#text-time_lower, #text-time_greater").timepicker({
     showSecond: true,
@@ -412,4 +559,17 @@ $("#text-time_lower, #text-time_greater").timepicker({
 $("#text-date_lower, #text-date_greater").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 
+function network_report_click_period(event) {
+    var is_period = document.getElementById(event.target.id).checked;
+
+    document.getElementById('period_container').style.display = !is_period ? 'none' : 'block';
+    document.getElementById('end_date_container').style.display = is_period ? 'none' : 'block';
+}
+
+function nf_view_click_period() {
+    var is_period = document.getElementById('checkbox-is_period').checked;
+
+    document.getElementById('period_container').style.display = !is_period ? 'none' : 'flex';
+    document.getElementById('end_date_container').style.display = is_period ? 'none' : 'flex';
+}
 </script>

@@ -349,7 +349,7 @@ echo '</div>';
                 const id = table_hover[0].id;
                 const classes = $(`#${id}`).attr('class');
 
-                if (id === 'icon_about') {
+                if (id === 'icon_about' || id === 'icon_about_operation') {
                     return;
                 }
 

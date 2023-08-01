@@ -34,6 +34,21 @@ global $config;
 
 check_login();
 
+// Ajax callbacks.
+if (is_ajax() === true) {
+    $get_filter_values = get_parameter('get_filter_values', 0);
+    // Get values of the current network filter.
+    if ($get_filter_values) {
+        $id = get_parameter('id');
+        $filter_values = db_get_row_filter('tnetwork_usage_filter', ['id' => $id]);
+        // Decode HTML entities.
+        $filter_values['advanced_filter'] = io_safe_output($filter_values['advanced_filter']);
+        echo json_encode($filter_values);
+    }
+
+    return;
+}
+
 // Header.
 ui_print_standard_header(
     __('Network usage map'),
@@ -69,7 +84,6 @@ ui_include_time_picker();
 
 // Query params and other initializations.
 $action = get_parameter('action', 'talkers');
-
 // Calculate range dates.
 $custom_date = get_parameter('custom_date', '0');
 $date = get_parameter('date', SECONDS_1DAY);
@@ -105,11 +119,51 @@ if ($custom_date === '1') {
     $date_from = ($date_to - $date);
 }
 
+$advanced_filter = get_parameter('advanced_filter', '');
+
 $top = (int) get_parameter('top', 10);
 
 $order_by = get_parameter('order_by', 'bytes');
 if (in_array($order_by, ['bytes', 'pkts', 'flows']) === false) {
     $order_by = 'bytes';
+}
+
+$save = get_parameter('save_button', '');
+$update = get_parameter('update_button', '');
+
+// Save user defined filter.
+if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
+    // Save filter args.
+    $data['filter_name'] = get_parameter('filter_name');
+    $data['top'] = $top;
+    $data['action'] = $action;
+    $data['advanced_filter'] = $advanced_filter;
+
+
+    $filter_id = db_process_sql_insert('tnetwork_usage_filter', $data);
+    if ($filter_id === false) {
+        $filter_id = 0;
+        ui_print_error_message(__('Error creating filter'));
+    } else {
+        ui_print_success_message(__('Filter created successfully'));
+    }
+} else if ($update != '' && check_acl($config['id_user'], 0, 'AW')) {
+    // Update current filter.
+    // Do not update the filter name and group.
+    $data['top'] = $top;
+    $data['action'] = $action;
+    $data['advanced_filter'] = $advanced_filter;
+
+    $result = db_process_sql_update(
+        'tnetwork_usage_filter',
+        $data,
+        ['id' => $filter_id]
+    );
+    ui_print_result_message(
+        $result,
+        __('Filter updated successfully'),
+        __('Error updating filter')
+    );
 }
 
 if ((bool) $config['activate_netflow'] === true) {
@@ -118,6 +172,27 @@ if ((bool) $config['activate_netflow'] === true) {
         'update_netflow',
         false,
         ['icon' => 'update'],
+        true
+    ).html_print_submit_button(
+        __('Save as new filter'),
+        'save_button',
+        false,
+        [
+            'icon'    => 'load',
+            'onClick' => 'return defineFilterName();',
+            'mode'    => 'mini secondary',
+            'class'   => 'mrgn_right_10px',
+        ],
+        true
+    ).html_print_submit_button(
+        __('Update current filter'),
+        'update_button',
+        false,
+        [
+            'icon'  => 'load',
+            'mode'  => 'mini secondary',
+            'class' => 'mrgn_right_10px',
+        ],
         true
     );
 } else {
@@ -174,6 +249,44 @@ $filterTable->data[0][2] = html_print_label_input_block(
     )
 );
 
+$advanced_toggle = new stdClass();
+$advanced_toggle->class = 'filter-table-adv';
+$advanced_toggle->size = [];
+$advanced_toggle->size[0] = '50%';
+$advanced_toggle->size[1] = '50%';
+$advanced_toggle->width = '100%';
+$user_groups = users_get_groups($config['id_user'], 'AR', $own_info['is_admin'], true);
+$user_groups[0] = 0;
+$sql = 'SELECT * FROM tnetwork_usage_filter';
+$advanced_toggle->data[0][0] = html_print_label_input_block(
+    __('Load Filter'),
+    html_print_select_from_sql($sql, 'filter_id', $filter_id, '', __('Select a filter'), 0, true, false, true, false, 'width:100%;')
+);
+$advanced_toggle->data[0][1] = html_print_label_input_block(
+    __('Filter name'),
+    html_print_input_text('filter_name', '', false, 40, 45, true, false, false, '', 'w100p')
+);
+$advanced_toggle->colspan[1][0] = 2;
+$advanced_toggle->data[1][0] = html_print_label_input_block(
+    __('Filter').ui_print_help_icon('pcap_filter', true),
+    html_print_textarea('advanced_filter', 4, 10, $advanced_filter, 'style="width:100%"', true)
+);
+$filterTable->colspan[2][0] = 3;
+$filterTable->data[2][0] = html_print_label_input_block(
+    '',
+    ui_toggle(
+        html_print_table($advanced_toggle, true),
+        __('Advanced'),
+        '',
+        '',
+        true,
+        true,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph'
+    )
+);
+
 $filterInputTable = '<form method="POST">';
 $filterInputTable .= html_print_input_hidden('order_by', $order_by);
 $filterInputTable .= html_print_table($filterTable, true);
@@ -205,7 +318,8 @@ if ((bool) get_parameter('update_netflow') === true) {
         $date_from,
         $date_to,
         $top,
-        ($action === 'talkers') ? 'srcip' : 'dstip'
+        ($action === 'talkers') ? 'srcip' : 'dstip',
+        $advanced_filter
     );
     $has_data = !empty($map_data['nodes']);
 }
@@ -225,10 +339,26 @@ if ($has_data === true) {
 </style>
 <script>
 
-    $(document).ready(function(){
-        nf_view_click_period();
-    }
-    );
+$(document).ready(function(){
+    nf_view_click_period();
+
+    $('#filter_id').change(function(){
+        jQuery.post (
+        "ajax.php",
+        {
+            "page" : "operation/network/network_usage_map",
+            "get_filter_values" : 1,
+            "id": $(this).val(),
+        },
+        function (data) {
+            $('#action').val(data.action).trigger('change');
+            $('#top').val(data.top).trigger('change');
+            $('#textarea_advanced_filter').val(data.advanced_filter);
+            $('select#filter_id').select2('close');
+        }, 'json');
+    });
+});
+
 // Configure jQuery timepickers.
 $("#text-time_lower, #text-time_greater").timepicker({
     showSecond: true,

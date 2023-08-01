@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -62,8 +62,8 @@ function generateExtraFields($extra_fields, $protocol)
         }
 
         $data = [];
-        $data[0] = '<div class="right">'.$extraFieldText.'</div>';
-        $data[1] = html_print_input_text_extended(
+        $data[0] = '<div class="left">'.$extraFieldText.'</div>';
+        $data[0] .= html_print_input_text_extended(
             'extra_field_'.$protocol.'_'.$idField,
             $field,
             'extra_field_'.$protocol.'_'.$idField,
@@ -76,7 +76,7 @@ function generateExtraFields($extra_fields, $protocol)
             true
         );
 
-        $table->colspan['oid-list-'.$rowId.'-row-'.$idField][1] = 3;
+        $data[1] = '';
         push_table_row($data, 'oid-list-'.$rowId.'-row-'.$idField);
     }
 
@@ -110,7 +110,7 @@ function generateExtraFields($extra_fields, $protocol)
                     'title'   => __('Remove last macro oid'),
                     'onclick' => 'manageComponentFields(\'del\', \'oid-list-'.$rowId.'\');',
                     'style'   => 'margin-left: 1em;',
-                    'class'   => 'invert_filter',
+                    'class'   => 'invert_filter main_menu_icon',
                 ]
             ),
         ],
@@ -121,6 +121,7 @@ function generateExtraFields($extra_fields, $protocol)
         [
             'id'      => 'combo_oid_button',
             'content' => $image_del.$image_add,
+            'class'   => 'combo-oid-button',
         ],
         true
     );
@@ -234,259 +235,364 @@ $table->id = 'network_component';
 $table->width = '100%';
 $table->class = 'databox';
 $table->style = [];
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
+$table->style[0] = 'font-weight: bold;';
+$table->style[1] = 'font-weight: bold;';
 $table->colspan = [];
 if (!enterprise_installed()) {
-    $table->colspan[0][1] = 3;
+    $data[1] = '';
 }
 
 $table->data = [];
 
 $data = [];
-$data[0] = __('Enabled');
-$data[1] = html_print_checkbox_switch(
-    'enabled',
-    1,
-    $enabled,
-    true,
-    false,
-    '',
-    false
+$data[0] = html_print_label_input_block(
+    __('Enabled'),
+    html_print_checkbox_switch(
+        'enabled',
+        1,
+        $enabled,
+        true,
+        false,
+        '',
+        false
+    )
 );
 
-$data[2] = __('Add by default');
-$data[3] = html_print_checkbox_switch(
-    'module_enabled',
-    1,
-    $module_enabled,
-    true,
-    false,
-    '',
-    false
+$data[1] = html_print_label_input_block(
+    __('Add by default'),
+    html_print_checkbox_switch(
+        'module_enabled',
+        1,
+        $module_enabled,
+        true,
+        false,
+        '',
+        false
+    )
 );
 
 push_table_row($data, 'module-enable-row');
 
 $data = [];
-$data[0] = __('Module name');
-$data[1] = html_print_input_text_extended(
-    'name',
-    $name,
-    'name',
-    '',
-    50,
-    255,
-    '',
-    '',
-    '',
-    true
+$data[0] = html_print_label_input_block(
+    __('Module name'),
+    html_print_input_text_extended(
+        'name',
+        $name,
+        'name',
+        '',
+        50,
+        255,
+        '',
+        '',
+        '',
+        true
+    )
 );
 
-$data[2] = __('Module protocol');
-$data[3] = html_print_select(
-    $module_protocol_list,
-    'module_protocol',
-    $module_protocol,
-    'manageVisibleFields()',
-    '',
-    '',
-    true,
-    false,
-    false,
-    ''
-).'&nbsp;'.html_print_image(
-    'images/'.$module_protocol.'.png',
-    true,
-    [
-        'title' => strtoupper($module_protocol).'&nbsp;'.__('Protocol'),
-        'class' => 'add_comments_button',
-        'style' => 'width: 18px;',
-        'id'    => 'module_protocol_symbol',
-    ]
-);
 $type = 4;
-$data[4] = html_print_input_hidden('type', $type, true);
+$data[1] = html_print_label_input_block(
+    __('Module protocol'),
+    '<div class="inline_flex">'.html_print_select(
+        $module_protocol_list,
+        'module_protocol',
+        $module_protocol,
+        'manageVisibleFields()',
+        '',
+        '',
+        true,
+        false,
+        false,
+        ''
+    ).'&nbsp;'.html_print_image(
+        'images/'.$module_protocol.'.png',
+        true,
+        [
+            'title' => strtoupper($module_protocol).'&nbsp;'.__('Protocol'),
+            'class' => 'add_comments_button ',
+            'style' => 'height: 25px;',
+            'id'    => 'module_protocol_symbol',
+        ]
+    ).html_print_input_hidden('type', $type, true).'</div>'
+);
 
 push_table_row($data, 'module-name-type-row');
 
 $data = [];
+$data[0] = html_print_label_input_block(
+    __('Name OID'),
+    html_print_input_text('name_oid', $name_oid, '', 50, 255, true)
+);
 
-$data[0] = __('Name OID');
-$data[1] = html_print_input_text('name_oid', $name_oid, '', 50, 255, true);
-
-$data[2] = __('Manufacturer ID');
-$data[3] = html_print_select_from_sql(
-    'SELECT manufacturer as `id`, manufacturer FROM tpen GROUP BY manufacturer',
-    'manufacturer_id',
-    $manufacturer_id,
-    '',
-    'All',
-    '',
-    true,
-    false,
-    false,
-    ''
+$data[1] = html_print_label_input_block(
+    __('Manufacturer ID'),
+    html_print_select_from_sql(
+        'SELECT manufacturer as `id`, manufacturer FROM tpen GROUP BY manufacturer',
+        'manufacturer_id',
+        $manufacturer_id,
+        '',
+        'All',
+        '',
+        true,
+        false,
+        false,
+        false,
+        'width: 100%;'
+    )
 );
 
 push_table_row($data, 'manufacturer-nameOID-snmpRow-row');
 
 $data = [];
-
-$data[0] = __('Module type');
-$data[1] = html_print_select(
-    $module_type_list,
-    'module_type',
-    $module_type,
-    'changeModuleType()',
-    '',
-    '',
-    true,
-    false,
-    false,
-    ''
+$data[0] = html_print_label_input_block(
+    __('Module type'),
+    html_print_select(
+        $module_type_list,
+        'module_type',
+        $module_type,
+        'changeModuleType()',
+        '',
+        '',
+        true,
+        false,
+        false,
+        ''
+    )
 );
 
-$data[2] = __('Component Group');
-$data[3] = html_print_select(
-    $component_group_list,
-    'id_group',
-    $id_group,
-    '',
-    '',
-    '',
-    true,
-    false,
-    false,
-    ''
+$data[1] = html_print_label_input_block(
+    __('Component Group'),
+    html_print_select(
+        $component_group_list,
+        'id_group',
+        $id_group,
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        ''
+    )
 );
 
 push_table_row($data, 'moduleType-blockName-row');
 
 $data = [];
+$data[0] = html_print_label_input_block(
+    __('Module unit'),
+    html_print_extended_select_for_unit(
+        'unit',
+        $unit,
+        '',
+        '',
+        '0',
+        false,
+        true,
+        false,
+        false
+    )
+);
 
-$data[0] = __('Module unit');
-$data[1] = html_print_extended_select_for_unit(
-    'unit',
-    $unit,
+$data[1] = html_print_label_input_block(
     '',
-    '',
-    '0',
-    false,
-    true,
-    false,
-    false
+    ''
 );
 
 push_table_row($data, 'moduleUnit-blockName-row');
 
 $data = [];
-$data[0] = __('Warning');
-// Warning interval values.
-$data[1] = '<span class="minmax_values" id="warning_minmax_values">';
-$data[1] .= '<em>'.__('Min.').'</em>&nbsp;';
-$data[1] .= html_print_input_text('min_warning', $min_warning, '', 5, 15, true);
-$data[1] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
-$data[1] .= html_print_input_text('max_warning', $max_warning, '', 5, 15, true);
-$data[1] .= '</span>';
-// Warning string values.
-$data[1] .= '<span class="string_values" id="warning_string_values"><em>'.__('String').' </em>&nbsp;';
-$data[1] .= html_print_input_text('str_warning', $str_warning, '', 5, 1024, true).'</span>';
-// Warning inverse values.
-$data[1] .= '<div id="warning_inverse"><em>'.__('Inverse interval').'</em>&nbsp;';
-$data[1] .= html_print_checkbox('warning_inverse', 1, $warning_inverse, true);
-$data[1] .= '</div>';
+$data[0] = html_print_label_input_block(
+    __('Warning status'),
+    '<div class="inline_flex align-center mrgn_top_10px"><div id="warning_minmax_values" class="inline_flex align-center">'.html_print_label_input_block(
+        __('Min.'),
+        html_print_input_text(
+            'min_warning',
+            $min_warning,
+            '',
+            5,
+            15,
+            true
+        ),
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).html_print_label_input_block(
+        __('Max.'),
+        html_print_input_text(
+            'max_warning',
+            $max_warning,
+            '',
+            5,
+            15,
+            true
+        ).'</div>',
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).'<div id="string_warning" class="inline_flex align-center">'.html_print_label_input_block(
+        __('Str.'),
+        html_print_input_text(
+            'str_warning',
+            $str_warning,
+            '',
+            5,
+            1024,
+            true
+        ).'</div>',
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).'<div id="warning_inverse" class="inline_flex align-center">'.html_print_label_input_block(
+        __('Inverse interval'),
+        html_print_checkbox('warning_inverse', 1, $warning_inverse, true).'</div>',
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).'<div id="percentage_warning" class="inline_flex align-center">'.html_print_label_input_block(
+        __('Percentage').ui_print_help_tip(__('Defines threshold as a percentage of value decrease/increment'), true),
+        html_print_checkbox('percentage_warning', 1, $percentage_warning, true).'</div>',
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).'</div></div>',
+    ['label_class' => 'mrgn_btn_0']
+);
 
-$data[1] .= '<div id="percentage_warning"><em>'.__('Percentage').'</em>&nbsp;';
-$data[1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
-$data[1] .= html_print_checkbox('percentage_warning', 1, $percentage_warning, true);
-$data[1] .= '</div>';
-
-$data[2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
-$table->colspan['warning-svg-row'][2] = 2;
-$table->rowspan['warning-svg-row'][2] = 3;
+$data[1] = '<svg id="svg_dinamic" width="200" height="300"> </svg>';
+$table->rowspan['warning-svg-row'][1] = 3;
 
 push_table_row($data, 'warning-svg-row');
 
 $data = [];
-$data[0] .= __('Change to critical status after');
-$data[1] .= html_print_input_text('warning_time', $warning_time, '', 5, 15, true);
-$data[1] .= '&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>';
+$data[0] = html_print_label_input_block(
+    __('Change to critical status after'),
+    '<div class="inline_flex align-center w100p">'.html_print_input_text(
+        'warning_time',
+        $warning_time,
+        '',
+        5,
+        15,
+        true
+    ).'&nbsp;&nbsp;<b>'.__('intervals in warning status.').'</b>'.'</div>',
+    ['div_id' => 'warning_time']
+);
+$data[1] = '';
+
 push_table_row($data, 'title-warning-time');
 
 $data = [];
-$data[0] = __('Critical');
-// Critical interval values.
-$data[1] = '<span class="minmax_values" id="critical_minmax_values">';
-$data[1] .= '<em>'.__('Min.').'</em>&nbsp;';
-$data[1] .= html_print_input_text(
-    'min_critical',
-    $min_critical,
-    '',
-    5,
-    15,
-    true
+$data[0] = html_print_label_input_block(
+    __('Critical status'),
+    '<div class="inline_flex align-center mrgn_top_10px"><div id="minmax_critical" class="inline_flex align-center">'.html_print_label_input_block(
+        __('Min.'),
+        html_print_input_text(
+            'min_critical',
+            $min_critical,
+            '',
+            5,
+            15,
+            true
+        ),
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).html_print_label_input_block(
+        __('Max.'),
+        html_print_input_text(
+            'max_critical',
+            $max_critical,
+            '',
+            5,
+            15,
+            true
+        ).'</div>',
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).'<div id="string_critical" class="inline_flex align-center">'.html_print_label_input_block(
+        __('Str.'),
+        html_print_input_text(
+            'str_critical',
+            $str_critical,
+            '',
+            5,
+            1024,
+            true
+        ).'</div>',
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).'<div id="critical_inverse" class="inline_flex align-center">'.html_print_label_input_block(
+        __('Inverse interval'),
+        html_print_checkbox('critical_inverse', 1, $critical_inverse, true).'</div>',
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).'<div id="percentage_critical" class="inline_flex align-center">'.html_print_label_input_block(
+        __('Percentage'),
+        html_print_checkbox('percentage_critical', 1, $percentage_warning, true).'</div>',
+        [
+            'label_class' => 'font-title-font',
+            'div_class'   => 'mrgn_right_10px flex flex_column',
+        ]
+    ).'</div></div>',
+    ['label_class' => 'mrgn_btn_0']
 );
-$data[1] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
-$data[1] .= html_print_input_text(
-    'max_critical',
-    $max_critical,
-    '',
-    5,
-    15,
-    true
-);
-$data[1] .= '</span>';
-// Critical string values.
-$data[1] .= '<span class="string_values" id="critical_string_values"><em>'.__('String').' </em>&nbsp;';
-$data[1] .= html_print_input_text('str_critical', $str_critical, '', 5, 1024, true).'</span>';
-// Critical inverse values.
-$data[1] .= '<div id="critical_inverse"><em>'.__('Inverse interval').'</em>&nbsp;';
-$data[1] .= html_print_checkbox('critical_inverse', 1, $critical_inverse, true);
-$data[1] .= '</div>';
-
-$data[1] .= '<Ddiv id="percentage_critical"><em>'.__('Percentage').'</em>&nbsp;';
-$data[1] .= ui_print_help_tip('Defines threshold as a percentage of value decrease/increment', true);
-$data[1] .= html_print_checkbox('percentage_critical', 1, $percentage_critical, true);
-$data[1] .= '</div>';
 
 
 push_table_row($data, 'critical-row');
 
 $data = [];
-$data[0] = __('Description');
-$data[1] = html_print_textarea('description', 2, 65, $description, '', true);
-$table->colspan['module-description-row'][1] = 3;
+$data[0] = html_print_label_input_block(
+    __('Description'),
+    html_print_textarea('description', 2, 65, $description, '', true)
+);
+
+$data[1] = '';
 
 push_table_row($data, 'module-description-row');
 
 $data = [];
-$data[0] = __('Scan Type');
-$data[1] = html_print_select(
-    $scan_type_list,
-    'scan_type',
-    $scan_type,
-    '',
-    '',
-    '',
-    true,
-    false,
-    false,
-    ''
+$data[0] = html_print_label_input_block(
+    __('Scan Type'),
+    html_print_select(
+        $scan_type_list,
+        'scan_type',
+        $scan_type,
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        ''
+    )
 );
 
-$data[2] = __('Execution type');
-$data[3] = html_print_select(
-    $execution_type_list,
-    'execution_type',
-    $execution_type,
-    'manageVisibleFields()',
-    '',
-    '',
-    true,
-    false,
-    false,
-    ''
+$data[1] = html_print_label_input_block(
+    __('Execution type'),
+    html_print_select(
+        $execution_type_list,
+        'execution_type',
+        $execution_type,
+        'manageVisibleFields()',
+        '',
+        '',
+        true,
+        false,
+        false,
+        ''
+    )
 );
 
 push_table_row($data, 'scan-execution-row');
@@ -495,24 +601,28 @@ push_table_row($data, 'scan-execution-row');
 // SNMP rows.
 //
 $data = [];
-$data[0] = __('Value OID');
-$data[1] = html_print_input_text_extended(
-    'value_oid',
-    (string) $value,
-    'value_oid',
-    '',
-    100,
-    10000,
-    '',
-    '',
-    '',
-    true
+$data[0] = html_print_label_input_block(
+    __('Value OID'),
+    html_print_input_text_extended(
+        'value_oid',
+        (string) $value,
+        'value_oid',
+        '',
+        100,
+        10000,
+        '',
+        '',
+        'style="width: 100%; max-width: 100%;"',
+        true
+    )
 );
-$table->colspan['value-oid-networkRow-snmpRow'][1] = 3;
+
+$data[1] = '';
 push_table_row($data, 'value-oid-networkRow-snmpRow');
 
 $data = [];
 $data[0] = __('Macros OID');
+$data[1] = '';
 
 push_table_row($data, 'title-oid-macros-pluginRow-snmpRow');
 
@@ -520,53 +630,63 @@ push_table_row($data, 'title-oid-macros-pluginRow-snmpRow');
 generateExtraFields($macros, 'snmp');
 
 $data = [];
-$data[0] = __('Value operation');
-$data[1] = html_print_input_text_extended(
-    'value_operation_snmp',
-    $macros->value_operation,
-    'value_operation_snmp',
-    '',
-    100,
-    10000,
-    '',
-    '',
-    '',
-    true
+$data[0] = html_print_label_input_block(
+    __('Value operation'),
+    html_print_input_text_extended(
+        'value_operation_snmp',
+        $macros->value_operation,
+        'value_operation_snmp',
+        '',
+        100,
+        10000,
+        '',
+        '',
+        'style="width: 100%; max-width: 100%;"',
+        true
+    )
 );
-$table->colspan['value-operation-pluginRow-snmpRow'][1] = 3;
+$data[1] = '';
 push_table_row($data, 'value-operation-pluginRow-snmpRow');
 
 $data = [];
-$data[0] = __('Satellite execution');
-$data[1] = html_print_input_text_extended(
-    'satellite_execution_snmp',
-    $macros->satellite_execution,
-    'satellite_execution_snmp',
-    '',
-    100,
-    10000,
-    '',
-    '',
-    '',
-    true
+$data[0] = html_print_label_input_block(
+    __('Satellite execution'),
+    html_print_input_text_extended(
+        'satellite_execution_snmp',
+        $macros->satellite_execution,
+        'satellite_execution_snmp',
+        '',
+        100,
+        10000,
+        '',
+        '',
+        'style="width: 100%; max-width: 100%;"',
+        true
+    )
 );
-$table->colspan['satellite-execution-pluginRow-snmpRow'][1] = 3;
+$data[1] = '';
 push_table_row($data, 'satellite-execution-pluginRow-snmpRow');
 
 $data = [];
-$data[0] = __('Server plugin');
-$data[1] = html_print_select(
-    $server_plugin_list,
-    'server_plugin_snmp',
-    $macros->server_plugin,
-    'changePlugin()',
-    '',
-    '',
-    true,
-    false,
-    false,
-    ''
-).'&nbsp;&nbsp;&nbsp;<span id="selected_plugin_description_snmp"></span>';
+$data[0] = html_print_label_input_block(
+    __('Server plugin'),
+    html_print_select(
+        $server_plugin_list,
+        'server_plugin_snmp',
+        $macros->server_plugin,
+        'changePlugin()',
+        '',
+        '',
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width: 100%; max-width: 100%;'
+    ).'&nbsp;&nbsp;&nbsp;<span id="selected_plugin_description_snmp"></span>'
+);
+
+$data[1] = '';
 
 push_table_row($data, 'server-plugin-pluginRow-snmpRow');
 
@@ -592,41 +712,48 @@ push_table_row($data, 'plugin-snmp-fields-dynamicMacroRow-pluginRow-snmpRow-0');
 // WMI Fields.
 //
 $data = [];
-$data[0] = __('WMI class');
-$data[1] = html_print_input_text_extended(
-    'wmi_class',
-    $wmi_class,
-    'wmi_class',
-    '',
-    100,
-    10000,
-    '',
-    '',
-    '',
-    true
+$data[0] = html_print_label_input_block(
+    __('WMI class'),
+    html_print_input_text_extended(
+        'wmi_class',
+        $wmi_class,
+        'wmi_class',
+        '',
+        100,
+        10000,
+        '',
+        '',
+        '',
+        true
+    )
 );
-$table->colspan['wmi-class-wmiRow'][1] = 3;
+
+$data[1] = '';
 push_table_row($data, 'wmi-class-wmiRow');
 
 $data = [];
-$data[0] = __('Query key field').'&nbsp;(_field_wmi_0_)';
-$data[1] = html_print_input_text_extended(
-    'query_key_field',
-    $query_key_field,
-    'query_key_field',
-    '',
-    100,
-    10000,
-    '',
-    '',
-    '',
-    true
+$data[0] = html_print_label_input_block(
+    __('Query key field').'&nbsp;(_field_wmi_0_)',
+    html_print_input_text_extended(
+        'query_key_field',
+        $query_key_field,
+        'query_key_field',
+        '',
+        100,
+        10000,
+        '',
+        '',
+        '',
+        true
+    )
 );
-$table->colspan['query-key-field-wmiRow'][1] = 3;
+
+$data[1] = '';
 push_table_row($data, 'query-key-field-wmiRow');
 
 $data = [];
 $data[0] = __('Query extra fields');
+$data[1] = '';
 
 push_table_row($data, 'title-extra-field-wmiRow');
 
@@ -635,34 +762,18 @@ generateExtraFields($macros, 'wmi');
 
 $data = [];
 $data[0] = __('Query filters');
+$data[1] = '';
 $table->style[0] = 'font-weight: bold;';
 
 push_table_row($data, 'title-query-filters-wmiRow');
 
 $data = [];
-$data[0] = '<div class="right">'.__('Scan').'</div>';
-$data[1] = html_print_input_text_extended(
-    'query_filter_scan',
-    $query_filter['scan'],
-    'query_filter_scan',
-    '',
-    100,
-    10000,
-    '',
-    '',
-    '',
-    true
-);
-$table->colspan['query-filter-scan-wmiRow'][1] = 3;
-push_table_row($data, 'query-filter-scan-wmiRow');
-
-if ($execution_type == EXECUTION_TYPE_NETWORK) {
-    $data = [];
-    $data[0] = '<div class="right">'.__('Execution').'</div>';
-    $data[1] = html_print_input_text_extended(
-        'query_filter_execution',
-        $query_filter['execution'],
-        'query_filter_execution',
+$data[0] = html_print_label_input_block(
+    __('Scan'),
+    html_print_input_text_extended(
+        'query_filter_scan',
+        $query_filter['scan'],
+        'query_filter_scan',
         '',
         100,
         10000,
@@ -670,88 +781,122 @@ if ($execution_type == EXECUTION_TYPE_NETWORK) {
         '',
         '',
         true
+    )
+);
+
+$data[1] = '';
+push_table_row($data, 'query-filter-scan-wmiRow');
+
+if ($execution_type == EXECUTION_TYPE_NETWORK) {
+    $data = [];
+    $data[0] = html_print_label_input_block(
+        __('Execution'),
+        html_print_input_text_extended(
+            'query_filter_execution',
+            $query_filter['execution'],
+            'query_filter_execution',
+            '',
+            100,
+            10000,
+            '',
+            '',
+            '',
+            true
+        )
     );
-    $table->colspan['query-filter-execution-wmiRow'][1] = 3;
+
+    $data[1] = '';
     push_table_row($data, 'query-filter-execution-wmiRow');
 }
 
 
 $data = [];
-$data[0] = __('Field value');
-$data[1] = html_print_input_number(
-    [
-        'name'   => 'field_value_filter',
-        'value'  => $query_filter['field'],
-        'id'     => 'field_value_filter',
-        'min'    => 0,
-        'return' => true,
-    ]
+$data[0] = html_print_label_input_block(
+    __('Field value'),
+    html_print_input_number(
+        [
+            'name'   => 'field_value_filter',
+            'value'  => $query_filter['field'],
+            'id'     => 'field_value_filter',
+            'min'    => 0,
+            'return' => true,
+        ]
+    )
 );
 
-$data[2] = __('Key string');
-$data[3] = html_print_input_text_extended(
-    'key_string_filter',
-    $query_filter['key_string'],
-    'key_string_filter',
-    '',
-    30,
-    255,
-    '',
-    '',
-    '',
-    true
+$data[1] = html_print_label_input_block(
+    __('Key string'),
+    html_print_input_text_extended(
+        'key_string_filter',
+        $query_filter['key_string'],
+        'key_string_filter',
+        '',
+        30,
+        255,
+        '',
+        '',
+        '',
+        true
+    )
 );
 
 push_table_row($data, 'filters-list-fields-networkRow-wmiRow');
 
 $data = [];
-$data[0] = __('Value operation');
-$data[1] = html_print_input_text_extended(
-    'value_operation_wmi',
-    $macros->value_operation,
-    'value_operation_wmi',
-    '',
-    100,
-    10000,
-    '',
-    '',
-    '',
-    true
+$data[0] = html_print_label_input_block(
+    __('Value operation'),
+    html_print_input_text_extended(
+        'value_operation_wmi',
+        $macros->value_operation,
+        'value_operation_wmi',
+        '',
+        100,
+        10000,
+        '',
+        '',
+        '',
+        true
+    )
 );
-$table->colspan['value-operation-pluginRow-wmiRow'][1] = 3;
+$data[1] = '';
 push_table_row($data, 'value-operation-pluginRow-wmiRow');
 
 $data = [];
-$data[0] = __('Satellite execution');
-$data[1] = html_print_input_text_extended(
-    'satellite_execution_wmi',
-    $macros->satellite_execution,
-    'satellite_execution_wmi',
-    '',
-    100,
-    10000,
-    '',
-    '',
-    '',
-    true
+$data[0] = html_print_label_input_block(
+    __('Satellite execution'),
+    html_print_input_text_extended(
+        'satellite_execution_wmi',
+        $macros->satellite_execution,
+        'satellite_execution_wmi',
+        '',
+        100,
+        10000,
+        '',
+        '',
+        '',
+        true
+    )
 );
-$table->colspan['satellite-execution-pluginRow-wmiRow'][1] = 3;
+$data[1] = '';
 push_table_row($data, 'satellite-execution-pluginRow-wmiRow');
 
 $data = [];
-$data[0] = __('Server plugin');
-$data[1] = html_print_select(
-    $server_plugin_list,
-    'server_plugin_wmi',
-    $macros->server_plugin,
-    'changePlugin()',
-    '',
-    '',
-    true,
-    false,
-    false,
-    ''
-).'&nbsp;&nbsp;&nbsp;<span id="selected_plugin_description_wmi"></span>';
+$data[0] = html_print_label_input_block(
+    __('Server plugin'),
+    html_print_select(
+        $server_plugin_list,
+        'server_plugin_wmi',
+        $macros->server_plugin,
+        'changePlugin()',
+        '',
+        '',
+        true,
+        false,
+        false,
+        ''
+    ).'&nbsp;&nbsp;&nbsp;<span id="selected_plugin_description_wmi"></span>'
+);
+$data[1] = '';
 
 push_table_row($data, 'server-plugin-pluginRow-wmiRow');
 

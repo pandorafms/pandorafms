@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -258,6 +258,10 @@ class EventsListWidget extends Widget
             $values['tagsId'] = $decoder['tagsId'];
         }
 
+        if (isset($decoder['columns_events_widget']) === true) {
+            $values['columns_events_widget'] = $decoder['columns_events_widget'];
+        }
+
         return $values;
     }
 
@@ -269,7 +273,14 @@ class EventsListWidget extends Widget
      */
     public function getFormJS(): string
     {
-        return '$( document ).ready(function() {event_widget_options();});';
+        return '$( document ).ready(function() {
+            event_widget_options();
+            $(document).on("mousedown", ".ui-dialog-buttonset button", function(){
+                if($("#columns_events_widget").length > 0){
+                    $("#columns_events_widget option").prop("selected", true);
+                }
+            })
+        });';
     }
 
 
@@ -471,6 +482,35 @@ class EventsListWidget extends Widget
                 'nothing_value' => 0,
             ],
         ];
+        if (empty($values['columns_events_widget'][0]) === true) {
+            $columns_array = explode(',', $config['event_fields']);
+        } else {
+            $columns_array = explode(',', $values['columns_events_widget'][0]);
+        }
+
+        $selected = [];
+        foreach ($columns_array as $key => $value) {
+            if (empty($value) === false) {
+                $selected[$value] = $this->getColumnsAvailables()[$value];
+            }
+        }
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => \__('Columns'),
+            'arguments' => [
+                'type'     => 'select_add_elements',
+                'fields'   => $this->getColumnsAvailables(),
+                'class'    => 'event-widget-input force-all-values',
+                'name'     => 'columns_events_widget[]',
+                'selected' => (count($selected)  > 0) ? $selected : '',
+                'return'   => true,
+                'multiple' => true,
+                'order'    => true,
+                'nothing'  => false,
+                'sort'     => false,
+                'style'    => 'width: 93%;',
+            ],
+        ];
 
         return $inputs;
     }
@@ -488,13 +528,14 @@ class EventsListWidget extends Widget
 
         $values['eventType'] = \get_parameter('eventType', 0);
         $values['maxHours'] = \get_parameter('maxHours', 8);
-        $values['limit'] = \get_parameter('limit', 20);
+        $values['limit'] = (int) \get_parameter('limit', 20);
         $values['eventStatus'] = \get_parameter('eventStatus', -1);
         $values['severity'] = \get_parameter_switch('severity', -1);
         $values['groupId'] = \get_parameter_switch('groupId', []);
         $values['tagsId'] = \get_parameter_switch('tagsId', []);
         $values['groupRecursion'] = \get_parameter_switch('groupRecursion', 0);
         $values['customFilter'] = \get_parameter('customFilter', -1);
+        $values['columns_events_widget'] = \get_parameter('columns_events_widget', []);
 
         return $values;
     }
@@ -620,7 +661,12 @@ class EventsListWidget extends Widget
                 'class' => 'table_action_buttons w120px',
             ],
         ];
-        $fields = explode(',', $config['event_fields']);
+
+        if (empty($this->values['columns_events_widget'][0]) === true) {
+            $fields = explode(',', $config['event_fields']);
+        } else {
+            $fields = explode(',', $this->values['columns_events_widget'][0]);
+        }
 
         // Always check something is shown.
         if (empty($fields) === true) {
@@ -661,6 +707,10 @@ class EventsListWidget extends Widget
         // Public dashboard.
         $hash = get_parameter('auth_hash', '');
         $id_user = get_parameter('id_user', '');
+
+        if ($this->values['limit'] === 'null') {
+            $this->values['limit'] = $config['block_size'];
+        }
 
         // Print datatable.
         $output .= ui_print_datatable(
@@ -747,6 +797,45 @@ class EventsListWidget extends Widget
         ];
 
         return $size;
+    }
+
+
+    /**
+     * Return array with all columns availables for select.
+     *
+     * @return array All columns availables.
+     */
+    public function getColumnsAvailables()
+    {
+        return [
+            'id_evento'        => __('Event Id'),
+            'evento'           => __('Event Name'),
+            'id_agente'        => __('Agent ID'),
+            'agent_name'       => __('Agent Name'),
+            'direccion'        => __('Agent IP'),
+            'id_usuario'       => __('User'),
+            'id_grupo'         => __('Group'),
+            'estado'           => __('Status'),
+            'timestamp'        => __('Timestamp'),
+            'event_type'       => __('Event Type'),
+            'id_agentmodule'   => __('Module Name'),
+            'id_alert_am'      => __('Alert'),
+            'criticity'        => __('Severity'),
+            'user_comment'     => __('Comment'),
+            'tags'             => __('Tags'),
+            'source'           => __('Source'),
+            'id_extra'         => __('Extra Id'),
+            'owner_user'       => __('Owner'),
+            'ack_utimestamp'   => __('ACK Timestamp'),
+            'instructions'     => __('Instructions'),
+            'server_name'      => __('Server Name'),
+            'data'             => __('Data'),
+            'module_status'    => __('Module Status'),
+            'mini_severity'    => __('Severity mini'),
+            'module_custom_id' => __('Module custom ID'),
+            'custom_data'      => __('Custom data'),
+        ];
+
     }
 
 

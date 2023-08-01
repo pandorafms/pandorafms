@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -433,7 +433,14 @@ class ServiceMapWidget extends Widget
             );
         } else {
             include_once $config['homedir'].'/include/graphs/functions_d3.php';
-            servicemap_print_sunburst($this->values['serviceId'], $size['width'], $size['height'], false);
+            $id_container = '#container_servicemap_'.$this->values['serviceId'].'_'.$this->cellId.' #sunburst';
+            servicemap_print_sunburst(
+                $this->values['serviceId'],
+                $size['width'],
+                $size['height'],
+                false,
+                $id_container
+            );
         }
 
         $output .= ob_get_clean();

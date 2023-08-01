@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -768,7 +768,8 @@ function html_print_select(
     $select2_enable=true,
     $select2_multiple_enable=false,
     $select2_multiple_enable_all=false,
-    $form=''
+    $form='',
+    $order=false,
 ) {
     $output = "\n";
 
@@ -803,6 +804,10 @@ function html_print_select(
         } else {
             $attributes .= ' size="10"';
         }
+    }
+
+    if ($multiple === true && $order === true) {
+        $class .= ' order-arrows';
     }
 
     if (!empty($class)) {
@@ -1126,6 +1131,49 @@ function html_print_select(
             }';
         }
 
+        $output .= '</script>';
+    }
+
+    if ($multiple === true && $order === true) {
+        $output .= '<script>';
+        $output .= '
+                    if(typeof draggingOption === "undefined") {
+                        let draggingOption = null;
+                    } else {
+                        draggingOption = null;
+                    }
+                    document.getElementById("'.$id.'").addEventListener("mousedown", e => {
+                    if (e.target.tagName === "OPTION") {
+                        draggingOption = e.target;
+                        document.getElementById("'.$id.'").classList.add("dragging");
+                    }
+                    });
+    
+                    document.getElementById("'.$id.'").addEventListener("mousemove", e => {
+                    if (typeof draggingOption !== "undefined") {
+                        if(draggingOption) {
+                            e.preventDefault();
+                            const targetOption = document.elementFromPoint(e.clientX, e.clientY);
+                            if (targetOption && targetOption.tagName === "OPTION") {
+                            const boundingRect = targetOption.getBoundingClientRect();
+                            if (e.clientY < boundingRect.top + boundingRect.height / 2) {
+                                document.getElementById("'.$id.'").insertBefore(draggingOption, targetOption);
+                            } else {
+                                document.getElementById("'.$id.'").insertBefore(draggingOption, targetOption.nextSibling);
+                            }
+                            }
+                        }
+                    }
+                    });
+    
+                    document.getElementById("'.$id.'").addEventListener("mouseup", e => {
+                    if (typeof draggingOption !== "undefined") {
+                        if(draggingOption) {
+                            document.getElementById("'.$id.'").classList.remove("dragging");
+                            draggingOption = null;
+                        }
+                    }
+                    });';
         $output .= '</script>';
     }
 
@@ -1873,7 +1921,8 @@ function html_print_extended_select_for_unit(
     $select_style=false,
     $unique_name=true,
     $disabled=false,
-    $no_change=0
+    $no_change=0,
+    $class='w100p'
 ) {
     global $config;
 
@@ -1905,7 +1954,7 @@ function html_print_extended_select_for_unit(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" class="w100p inline_line">';
+    echo '<div id="'.$uniq_name.'_default" class="'.$class.' inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -2113,7 +2162,8 @@ function html_print_extended_select_for_time(
     $custom_fields=false,
     $style_icon='',
     $no_change=false,
-    $allow_zero=0
+    $allow_zero=0,
+    $units=null
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
@@ -2139,15 +2189,17 @@ function html_print_extended_select_for_time(
             $selected = 300;
     }
 
-    $units = [
-        1               => __('seconds'),
-        SECONDS_1MINUTE => __('minutes'),
-        SECONDS_1HOUR   => __('hours'),
-        SECONDS_1DAY    => __('days'),
-        SECONDS_1WEEK   => __('weeks'),
-        SECONDS_1MONTH  => __('months'),
-        SECONDS_1YEAR   => __('years'),
-    ];
+    if (empty($units) === true) {
+        $units = [
+            1               => __('seconds'),
+            SECONDS_1MINUTE => __('minutes'),
+            SECONDS_1HOUR   => __('hours'),
+            SECONDS_1DAY    => __('days'),
+            SECONDS_1WEEK   => __('weeks'),
+            SECONDS_1MONTH  => __('months'),
+            SECONDS_1YEAR   => __('years'),
+        ];
+    }
 
     if ($unique_name === true) {
         $uniq_name = uniqid($name);
@@ -3569,6 +3621,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     $classes = '';
     $fixedId = '';
     $iconStyle = '';
+    $minimize_arrow = false;
     // $spanStyle = 'margin-top: 4px;';
     $spanStyle = '';
     if (empty($name) === true) {
@@ -3606,6 +3659,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
                 $buttonType = ($attr_array['type'] ?? 'button');
                 $buttonAttributes = $value;
                 break;
+            } else if ($attribute === 'minimize-arrow') {
+                $minimize_arrow = true;
             } else {
                 $attributes .= $attribute.'="'.$value.'" ';
             }
@@ -3630,15 +3685,30 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $iconDiv = '';
     }
 
+    if ($minimize_arrow === true) {
+        $minimezeDiv = html_print_div(
+            [
+                'id'    => 'minimize_arrow_event_sound',
+                'style' => 'background-color:transparent; right: 1em; margin-left:0.5em; position:relative; display:none;',
+                'class' => 'arrow_menu_down w30p',
+            ],
+            true
+        );
+    } else {
+        $minimezeDiv = '';
+    }
+
     // Defined id. Is usable for span and button.
     // TODO. Check if will be proper use button or submit when where appropiate.
     $mainId = ((empty($fixedId) === false) ? $fixedId : 'button-'.$name);
 
     if ($imageButton === false) {
-        $content = '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
+        $content = $minimezeDiv;
+        $content .= '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
         $content .= $iconDiv;
     } else {
-        $content = $iconDiv;
+        $content = $minimezeDiv;
+        $content .= $iconDiv;
     }
 
     // In case of not selected button type, in this case, will be normal button.
@@ -3876,6 +3946,14 @@ function html_print_table(&$table, $return=false)
         }
     }
 
+    if (isset($table->tdid)) {
+        foreach ($table->tdid as $keyrow => $tid) {
+            foreach ($tid as $key => $id) {
+                $tdid[$keyrow][$key] = $id;
+            }
+        }
+    }
+
     if (isset($table->cellstyle)) {
         foreach ($table->cellstyle as $keyrow => $cstyle) {
             foreach ($cstyle as $key => $cst) {
@@ -4059,6 +4137,10 @@ function html_print_table(&$table, $return=false)
                     $colspan[$keyrow][$key] = '';
                 }
 
+                if (!isset($tdid[$keyrow][$key])) {
+                    $tdid[$keyrow][$key] = '';
+                }
+
                 if (!isset($rowspan[$keyrow][$key])) {
                     $rowspan[$keyrow][$key] = '';
                 }
@@ -4079,10 +4161,16 @@ function html_print_table(&$table, $return=false)
                     $style[$key] = '';
                 }
 
-                if ($class === 'datos5' && $key === 1) {
-                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                if ($tdid[$keyrow][$key] !== '') {
+                    $tid = $tdid[$keyrow][$key];
                 } else {
-                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                    $tid = $tableid.'-'.$keyrow.'-'.$key;
+                }
+
+                if ($class === 'datos5' && $key === 1) {
+                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                } else {
+                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
                 }
             }
 
@@ -4423,7 +4511,7 @@ function html_print_checkbox_switch_extended(
         $name.($idcounter[$name] ? $idcounter[$name] : '')
     );
 
-    $output = '<label class="p-switch pdd_0px'.$classParent.'">';
+    $output = '<label class="p-switch pdd_0px '.$classParent.'">';
     $output .= '<input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
@@ -4831,7 +4919,12 @@ function html_print_input_file($name, $return=false, $options=false)
                 let inputFilename = document.getElementById("span-'.$name.'");
                 inputElement.addEventListener("change", ()=>{
                     let inputImage = document.querySelector("input[type=file]").files[0];
-                inputFilename.innerText = inputImage.name;
+                    if (inputImage.name.length >= 45) {
+                        let name = inputImage.name.substring(0, 20) + "..." + inputImage.name.substring((inputImage.name.length-17), inputImage.name.length);
+                        inputFilename.innerText = name;
+                    } else {
+                        inputFilename.innerText = inputImage.name;
+                    }
                 });';
     $output .= '</script>';
 
@@ -5432,7 +5525,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : '')
+                ((isset($data['function']) === true) ? $data['function'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['hide_div_eye']) === true) ? $data['hide_div_eye'] : false),
             );
         break;
 
@@ -5523,7 +5619,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['truncate_size']) === true) ? $data['truncate_size'] : false),
                 ((isset($data['select2_enable']) === true) ? $data['select2_enable'] : true),
                 ((isset($data['select2_multiple_enable']) === true) ? $data['select2_multiple_enable'] : false),
-                ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false)
+                ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false),
+                ((isset($data['form']) === true) ? $data['form'] : ''),
+                ((isset($data['order']) === true) ? $data['order'] : false)
             );
         break;
 
@@ -6035,6 +6133,94 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             // 'module-multiple-text',
             // json_encode($agents_select)
             // );
+        break;
+
+        case 'select_add_elements':
+            if (empty($data['selected']) === false) {
+                foreach ($data['selected'] as $key => $value) {
+                     unset($data['fields'][$key]);
+                }
+            }
+
+            $output .= '<div>';
+            $output .= html_print_select(
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                $data['name'],
+                '',
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : ''),
+                ((isset($data['select_all']) === true) ? $data['select_all'] : false),
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['truncate_size']) === true) ? $data['truncate_size'] : false),
+                ((isset($data['select2_enable']) === true) ? $data['select2_enable'] : true),
+                ((isset($data['select2_multiple_enable']) === true) ? $data['select2_multiple_enable'] : false),
+                ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false),
+                ((isset($data['form']) === true) ? $data['form'] : ''),
+                ((isset($data['order']) === true) ? $data['order'] : false)
+            );
+            $output .= '<div class="flex justify-content-between mrgn_top_5px">';
+            $output .= html_print_button(
+                __('Add'),
+                'add_column',
+                false,
+                'addElement("'.$data['name'].'", "modal_'.$data['name'].'")',
+                [
+                    'style' => 'max-width: fit-content; min-width: auto; height: 30px; border: 0px;',
+                    'class' => 'sub',
+                    'icon'  => 'plus',
+                ],
+                true,
+                false,
+                false,
+                ''
+            );
+            $output .= html_print_button(
+                __('Remove'),
+                'remove_column',
+                false,
+                'removeElement("'.$data['name'].'", "modal_'.$data['name'].'")',
+                [
+                    'style' => 'max-width: fit-content; min-width: auto; height: 30px; border: 0px;',
+                    'class' => 'sub',
+                    'icon'  => 'delete',
+                ],
+                true,
+                false,
+                false,
+                ''
+            );
+            $output .= '<div id="modal_'.$data['name'].'" class="modal-select-add-elements" style="display: none;">';
+            $output .= html_print_select(
+                $data['fields'],
+                $data['name'].'_select_modal',
+                '',
+                '',
+                '',
+                0,
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width: 80%'
+            );
+            $output .= '</div>';
+            $output .= '</div>';
+            $output .= '</div>';
+            ?>
+            <?php
         break;
 
         default:
@@ -6975,6 +7161,47 @@ function html_print_code_picker(
     $output = '<div class="code-fragment '.$single_line_class.$classes.'">';
     $output .= '<pre style="margin: 0;"><code class="code-font" id="'.$id.'" style="display: block; white-space: pre-wrap;">'.$content.'</code></pre>';
     $output .= '</div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+function html_print_wizard_diagnosis(
+    $title,
+    $id_button,
+    $description='',
+    $status=true,
+    $return=false,
+) {
+    $button = '';
+    if ($status === true) {
+        $status = 'Connected';
+        $img = '/images/configuration@svg.svg';
+    } else {
+        $status = 'Disconnected';
+        $img = '/images/change-active.svg';
+    }
+
+    $button = html_print_image(
+        $img,
+        true,
+        [
+            'class' => 'main_menu_icon invert_filter float-right mrgn_right_10px',
+            'id'    => $id_button,
+        ]
+    );
+
+    $output = '<div class="rectangle rectangle_'.$status.'">
+                        <span class="status '.$status.'">'.__($status).$button.'</span>
+                        <div class="title">'.html_print_image('/images/circle_title.svg', true, ['class' => 'invert_filter']).'<span>'.$title.'</span></div>
+                        <div class="description">
+                            <span>'.$description.'</span>
+                        </div>
+                </div>';
 
     if ($return === true) {
         return $output;

@@ -3,7 +3,7 @@
 # Check LDAP query server plugin Pandora FMS
 #
 # Request an LDAP server and count entries returned
-# Artica ST 
+# Pandora FMS 
 # Copyright (C) 2013 mario.pulido@artica.es
 #
 # License: GPLv2+

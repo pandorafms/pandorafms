@@ -2,7 +2,7 @@
 
 #Pandora FMS - https://pandorafms.com
 # ==================================================
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+# Copyright (c) 2005-2023 Pandora FMS
 # Please see http:#pandorafms.org for full contribution list
 
 # This program is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.772-230621"
+pandora_version="7.0NG.772-230801"
 
 package_pear=0
 package_pandora=1
@@ -163,7 +163,7 @@ if [ $package_pear -eq 1 ]
 then
 	echo "Make the package \"php-xml-rpc\"."
 	cd temp_package
-	dh-make-pear --maintainer "ÁRTICA ST <info@artica.es>" XML_RPC
+	dh-make-pear --maintainer "Pandora FMS <info@pandorafms.com>" XML_RPC
 	cd php-xml-rpc-*
 	dpkg-buildpackage -rfakeroot
 	cd ..

@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -837,12 +837,6 @@ $buttons['wizard'] = [
     'active' => false,
     'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wizard@svg.svg', true, ['title' => __('Wizard'), 'class' => 'invert_filter']).'</a>',
 ];
-if ($config['legacy_vc']) {
-    $buttons['editor'] = [
-        'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder@svg.svg', true, ['title' => __('Builder'), 'class' => 'invert_filter']).'</a>',
-    ];
-}
 
 $buttons['view'] = [
     'active' => false,

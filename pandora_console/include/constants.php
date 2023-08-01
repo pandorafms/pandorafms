@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -648,6 +648,7 @@ define('DISCOVERY_APP_DB2', 11);
 define('DISCOVERY_APP_MICROSOFT_SQL_SERVER', 12);
 define('DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE', 13);
 define('DISCOVERY_CLOUD_AWS_S3', 14);
+define('DISCOVERY_EXTENSION', 15);
 
 // Force task build tmp results.
 define('DISCOVERY_REVIEW', 0);

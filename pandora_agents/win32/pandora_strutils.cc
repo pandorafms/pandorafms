@@ -1,5 +1,5 @@
 /* Misc utils for strings.
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
    
    This program is free software; you can redistribute it and/or modify

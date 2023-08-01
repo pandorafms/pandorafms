@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -907,7 +907,7 @@ function set_cookie($name, $value)
 {
     if (is_null($value)) {
         unset($_COOKIE[$value]);
-        setcookie($name, null, -1, '/');
+        setcookie($name, '', -1, '/');
     } else {
         setcookie($name, $value);
     }
@@ -4337,10 +4337,22 @@ function generator_chart_to_pdf(
 
         // Creates a new page.
         $page = $browser->createPage();
+        $curl = curl_init();
 
-        // Navigate to an URL.
-        $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
-        $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, ['data' => json_encode($data)]);
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $page->setHtml($response);
+        /*
+            //For debug url with parameters.
+            $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
+            $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
+        */
 
         // Dynamic.
         $dynamic_height = $page->evaluate('document.getElementById("container-chart-generator-item").clientHeight')->getReturnValue();
@@ -4415,8 +4427,8 @@ function get_product_name()
 /**
  * Get the copyright notice.
  *
- * @return string If the installation is open, it will be 'Artica ST'.
- *         If the product name stored is empty, it returns 'Artica ST' too.
+ * @return string If the installation is open, it will be 'Pandora FMS'.
+ *         If the product name stored is empty, it returns 'Pandora FMS' too.
  */
 function get_copyright_notice()
 {
@@ -6480,4 +6492,23 @@ function nms_check_api()
         returnError('license_error');
         return true;
     }
+}
+
+
+/**
+ * Simply return a string enclosed in quote delimiter to be used in csv exports.
+ *
+ * @param string $str String to be formatted.
+ *
+ * @return string Formatted string.
+ */
+function csv_format_delimiter(?string $str)
+{
+    if ($str === null) {
+        return $str;
+    }
+
+    // Due to the ticket requirements, double quote is used as fixed string delimiter.
+    // TODO: a setup option that enables user to choose a delimiter character would probably be desirable in the future.
+    return '"'.$str.'"';
 }

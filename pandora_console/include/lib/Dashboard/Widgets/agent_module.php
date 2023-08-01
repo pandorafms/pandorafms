@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -292,6 +292,10 @@ class AgentModuleWidget extends Widget
             }
         }
 
+        if (is_metaconsole() === true) {
+            $this->values['mAgents'] = $this->getIdCacheAgent($this->values['mAgents']);
+        }
+
         $inputs[] = [
             'class'     => 'flex flex-row',
             'id'        => 'select_multiple_modules_filtered',
@@ -312,6 +316,65 @@ class AgentModuleWidget extends Widget
         ];
 
         return $inputs;
+    }
+
+
+    /**
+     * Return array with the real id agent and server.
+     *
+     * @param string $id_agents_cache String with the agents cache id.
+     *
+     * @return string  $agents_servers with the real id agent and server.
+     */
+    public function getRealIdAgentNode($id_agents_cache)
+    {
+        $agents_servers = [];
+        $target_agents = explode(',', $id_agents_cache);
+        foreach ($target_agents as $agent_id) {
+            $id_agente = $agent_id;
+            $tmeta_agent = db_get_row_filter(
+                'tmetaconsole_agent',
+                ['id_agente' => $id_agente]
+            );
+
+            $id_agente = $tmeta_agent['id_tagente'];
+            $tserver = $tmeta_agent['id_tmetaconsole_setup'];
+            $agents_servers[] = $tserver.'|'.$id_agente;
+        }
+
+        return implode(',', $agents_servers);
+    }
+
+
+    /**
+     * Return string with the cache id agent in metaconsole.
+     *
+     * @param string $id_agents String with the agents and server id.
+     *
+     * @return string  $cache_id_agents with the cache id agent.
+     */
+    public function getIdCacheAgent($id_agents)
+    {
+        $target_agents = explode(',', $id_agents);
+        $cache_id_agents = [];
+        foreach ($target_agents as $agent_id) {
+            if (str_contains($agent_id, '|') === false) {
+                $cache_id_agents[] = $agent_id;
+                continue;
+            }
+
+            $server_agent = explode('|', $agent_id);
+            $tmeta_agent = db_get_row_filter(
+                'tmetaconsole_agent',
+                [
+                    'id_tagente'            => $server_agent[1],
+                    'id_tmetaconsole_setup' => $server_agent[0],
+                ]
+            );
+            $cache_id_agents[] = $tmeta_agent['id_agente'];
+        }
+
+        return implode(',', $cache_id_agents);
     }
 
 
@@ -341,6 +404,10 @@ class AgentModuleWidget extends Widget
         $values['mAgents'] = \get_parameter(
             'filtered-module-agents-'.$this->cellId
         );
+        if (is_metaconsole() === true) {
+            $values['mAgents'] = $this->getRealIdAgentNode($values['mAgents']);
+        }
+
         $values['mShowCommonModules'] = \get_parameter(
             'filtered-module-show-common-modules-'.$this->cellId
         );
@@ -697,15 +764,24 @@ class AgentModuleWidget extends Widget
         $target_agents = explode(',', $this->values['mAgents']);
         foreach ($target_agents as $agent_id) {
             try {
-                $id_agente = $agent_id;
-                if ((bool) is_metaconsole() === true) {
-                    $tmeta_agent = db_get_row_filter(
-                        'tmetaconsole_agent',
-                        [ 'id_agente' => $id_agente ]
-                    );
+                if (is_metaconsole() === true && str_contains($agent_id, '|') === true) {
+                    $server_agent = explode('|', $agent_id);
+                } else {
+                    $id_agente = $agent_id;
+                }
 
-                    $id_agente = $tmeta_agent['id_tagente'];
-                    $tserver = $tmeta_agent['id_tmetaconsole_setup'];
+                if ((bool) is_metaconsole() === true) {
+                    if (isset($server_agent) === true) {
+                        $id_agente = $server_agent[1];
+                        $tserver = $server_agent[0];
+                    } else {
+                        $tmeta_agent = db_get_row_filter(
+                            'tmetaconsole_agent',
+                            [ 'id_agente' => $id_agente ]
+                        );
+                        $id_agente = $tmeta_agent['id_tagente'];
+                        $tserver = $tmeta_agent['id_tmetaconsole_setup'];
+                    }
 
                     if (metaconsole_connect(null, $tserver) !== NOERR) {
                         continue;

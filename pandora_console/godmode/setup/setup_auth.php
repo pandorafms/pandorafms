@@ -9,12 +9,12 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2022 Artica Soluciones Tecnologicas, http://www.artica.es
+ * Copyright (c) 2007-2023 Pandora FMS, http://www.pandorafms.com
  * This code is NOT free software. This code is NOT licenced under GPL2 licence
  * You cannnot redistribute it without written permission of copyright holder.
  * ============================================================================
@@ -210,7 +210,7 @@ if (is_ajax() === true) {
 
                 // Ldapsearch timeout.
                 // Default Ldapsearch timeout.
-                set_when_empty($config['ldap_searh_timeout'], 5);
+                set_when_empty($config['ldap_search_timeout'], 5);
                 $row = [];
                 $row['name'] = __('Ldap search timeout (secs)');
                 $row['control'] = html_print_input_text(
@@ -418,7 +418,27 @@ if (is_ajax() === true) {
             $table->rowclass['2FA_all_users'] = '';
         }
 
-            $table->data['2FA_all_users'] = $row;
+        $table->data['2FA_all_users'] = $row;
+
+        // Session timeout behavior.
+        // Set default value.
+        $row = [];
+        $options = [
+            'check_activity'  => __('Check activity'),
+            'ignore_activity' => __('Ignore activity'),
+        ];
+
+        $row['name'] = __('Control of timeout session').ui_print_help_tip(__('Select \'ignore activity\' to ignore user activity when checking the session.'), true);
+        $row['control'] = html_print_select(
+            $options,
+            'control_session_timeout',
+            $config['control_session_timeout'],
+            '',
+            '',
+            0,
+            true
+        );
+        $table->data['session_timeouts'] = $row;
 
 
         // Session timeout.
@@ -538,7 +558,13 @@ echo '</form>';
         if ($('input[type=checkbox][name=secondary_ldap_enabled]:checked').val() == 1) {
             $("tr[id*='ldap_'][id$='_secondary']").show();
         } else {
-                $( "tr[id*='ldap_'][id$='_secondary']" ).hide();
+            $( "tr[id*='ldap_'][id$='_secondary']" ).hide();
+        }
+
+        if ($('input[type=checkbox][name=secondary_active_directory]:checked').val() == 1) {
+            $("tr[id*='ad_'][id$='_secondary']").show();
+        } else {
+            $( "tr[id*='ad_'][id$='_secondary']" ).hide();
         }
     }
     $( document ).ready(function() {   

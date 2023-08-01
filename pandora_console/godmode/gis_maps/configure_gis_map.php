@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -941,33 +941,66 @@ function newLayer () {
 }
 
 function saveNewLayer () {
-    var $layerFormNameInput = $("input#text-layer_name_form");
-    var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
-    var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
-    var $layerFormAgentsListItems = $("tr.agents_list_item > td > span.agent_alias");
-    var $layerFormGroupsListItems = $("tr.groups_list_item");
-    var newLayerId = "new_" + ($("tr.layer_row").length + 1);
+    if ($('#hidden-current_edit_layer_id').val()!=='0') {
+        updateLayer();
+    } else {
+        var $layerFormNameInput = $("input#text-layer_name_form");
+        var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
+        var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
+        var $layerFormAgentsListItems = $("tr.agents_list_item > td > span.agent_alias");
+        var $layerFormGroupsListItems = $("tr.groups_list_item");
+        var newLayerId = "new_" + ($("tr.layer_row").length + 1);
 
-    addLayerRow(newLayerId, {
-        id: newLayerId,
-        name: $layerFormNameInput.val(),
-        visible: $layerFormVisibleCheckbox.prop("checked"),
-        agentsFromGroup: $layerFormAgentsFromGroupSelect.val(),
-        agents: $layerFormAgentsListItems.map(function () {
-            return {
-                "id": $(this).data("agent-id"),
-                "alias": $(this).text()
-            };
-        }).get(),
-        groups: $layerFormGroupsListItems.map(function () {
-            return {
-                "id": $(this).data("group-id"),
-                "name": $(this).data("group-name"),
-                "agentId": $(this).data("agent-id"),
-                "agentAlias": $(this).data("agent-alias")
-            };
-        }).get()
-    });
+        addLayerRow(newLayerId, {
+            id: newLayerId,
+            name: $layerFormNameInput.val(),
+            visible: $layerFormVisibleCheckbox.prop("checked"),
+            agentsFromGroup: $layerFormAgentsFromGroupSelect.val(),
+            agents: $layerFormAgentsListItems.map(function () {
+                return {
+                    "id": $(this).data("agent-id"),
+                    "alias": $(this).text()
+                };
+            }).get(),
+            groups: $layerFormGroupsListItems.map(function () {
+                return {
+                    "id": $(this).data("group-id"),
+                    "name": $(this).data("group-name"),
+                    "agentId": $(this).data("agent-id"),
+                    "agentAlias": $(this).data("agent-alias")
+                };
+            }).get()
+        });
+    }
+}
+
+function updateLayer () {
+    var tr = $('#layer_row_'+$('#hidden-current_edit_layer_id').val());
+    var agent_alias = $("tr.agents_list_item > td > span.agent_alias").map(function () {
+        return {
+            "id": $(this).data("agent-id"),
+            "alias": $(this).text()
+        };
+    }).get();
+
+    var groups_list_item = $("tr.groups_list_item").map(function () {
+        return {
+            "id": $(this).data("group-id"),
+            "name": $(this).data("group-name"),
+            "agentId": $(this).data("agent-id"),
+            "agentAlias": $(this).data("agent-alias")
+        };
+    }).get();
+
+    tr.find('input.layer_name').val($("input#text-layer_name_form").val());
+    tr.find('input.layer_visible').val($("input#checkbox-layer_visible_form").prop("checked"));
+    tr.find('input.layer_agents_from_group').val($("select#layer_group_form").val());
+    tr.find('input.layer_agent_id').val(agent_alias[0]["id"]);
+    tr.find('input.layer_agent_alias').val(agent_alias[0]["alias"]);
+    tr.find('input.layer_group_id').val(groups_list_item[0]["id"]);
+    tr.find('input.layer_group_name').val(groups_list_item[0]["name"]);
+    tr.find('input.layer_agent_id_for_data').val(groups_list_item[0]["agentId"]);
+    tr.find('input.layer_agent_alias_for_data').val(groups_list_item[0]["agentAlias"]);
 }
 
 function cleanLayerEditor () {

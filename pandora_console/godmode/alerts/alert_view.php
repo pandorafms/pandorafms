@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -318,54 +318,59 @@ if (count($actions) == 1 && isset($actions[0])) {
 } else {
     foreach ($actions as $kaction => $action) {
         $table->data[$kaction][0] = $action['name'];
-        if ((int) $kaction === 0) {
-            $table->data[$kaction][0] .= ui_print_help_tip(
-                __('The default actions will be executed every time that the alert is fired and no other action is executed'),
-                true
-            );
-        }
-
-        foreach ($action['escalation'] as $k => $v) {
-            if ($v > 0) {
-                $table->data[$kaction][$k] = html_print_image(
-                    'images/tick.png',
-                    true,
-                    ['class' => 'invert_filter']
-                );
+        if (count($action['escalation']) > 1) {
+            foreach ($action['escalation'] as $k => $v) {
+                $table->head[$k] = '#'.$k;
+                if ($v > 0) {
+                    $table->data[$kaction][$k] .= html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    );
+                } else {
+                    $table->data[$kaction][$k] = html_print_image(
+                        'images/blade.png',
+                        true
+                    );
+                }
+            }
+        } else {
+            $table->head[1] = __('Every time that the alert is fired');
+            if (count($action['escalation']) > 0) {
+                if ($action['escalation'][0] > 0) {
+                    $table->data[$kaction][1] .= html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    );
+                } else {
+                    $table->data[$kaction][1] = html_print_image(
+                        'images/blade.png',
+                        true
+                    );
+                }
             } else {
-                $table->data[$kaction][$k] = html_print_image(
+                $table->data[$kaction][1] = html_print_image(
                     'images/blade.png',
                     true
                 );
-            }
-
-            if (count($table->head) <= count($action['escalation'])) {
-                if ($k == count($action['escalation'])) {
-                    if ($k == 1) {
-                        $table->head[$k] = __('Every time that the alert is fired');
-                    } else {
-                        $table->head[$k] = '>#'.($k - 1);
-                    }
-                } else {
-                    $table->head[$k] = '#'.$k;
-                }
             }
         }
 
         $action_threshold = ($action['module_action_threshold'] > 0) ? $action['module_action_threshold'] : $action['action_threshold'];
 
         if ($action_threshold == 0) {
-            $table->data[$kaction][($k + 1)] = __('No');
+            $table->data[$kaction][] = __('No');
         } else {
-            $table->data[$kaction][($k + 1)] = human_time_description_raw(
+            $table->data[$kaction][] = human_time_description_raw(
                 $action_threshold,
                 true,
                 'tiny'
             );
         }
-
-        $table->head[($k + 1)] = __('Threshold');
     }
+
+    $table->head[] = __('Threshold');
 }
 
 html_print_table($table);

@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -1274,52 +1274,50 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             );
             $form_items_advance['element_group_row']['html'] .= '</td>';
 
-    if (!$config['legacy_vc']) {
-        $intervals = [
-            10   => '10 '.__('seconds'),
-            30   => '30 '.__('seconds'),
-            60   => '1 '.__('minutes'),
-            300  => '5 '.__('minutes'),
-            900  => '15 '.__('minutes'),
-            1800 => '30 '.__('minutes'),
-            3600 => '1 '.__('hour'),
-        ];
+    $intervals = [
+        10   => '10 '.__('seconds'),
+        30   => '30 '.__('seconds'),
+        60   => '1 '.__('minutes'),
+        300  => '5 '.__('minutes'),
+        900  => '15 '.__('minutes'),
+        1800 => '30 '.__('minutes'),
+        3600 => '1 '.__('hour'),
+    ];
 
-        $form_items_advance['cache_expiration_row'] = [];
-        $form_items_advance['cache_expiration_row']['items'] = [
-            'static_graph',
-            'percentile_bar',
-            'percentile_item',
-            'module_graph',
-            'simple_value',
-            'datos',
-            'auto_sla_graph',
-            'group_item',
-            'bars_graph',
-            'donut_graph',
-            'color_cloud',
-            'service',
-        ];
-        $form_items_advance['cache_expiration_row']['html'] = '<td align="left">';
-        $form_items_advance['cache_expiration_row']['html'] .= __('Cache expiration');
-        $form_items_advance['cache_expiration_row']['html'] .= '</td>';
-        $form_items_advance['cache_expiration_row']['html'] .= '<td align="left">';
-        $form_items_advance['cache_expiration_row']['html'] .= html_print_extended_select_for_time(
-            'cache_expiration',
-            $config['vc_default_cache_expiration'],
-            '',
-            __('No cache'),
-            0,
-            false,
-            true,
-            false,
-            true,
-            '',
-            false,
-            $intervals
-        );
-        $form_items_advance['cache_expiration_row']['html'] .= '</td>';
-    }
+    $form_items_advance['cache_expiration_row'] = [];
+    $form_items_advance['cache_expiration_row']['items'] = [
+        'static_graph',
+        'percentile_bar',
+        'percentile_item',
+        'module_graph',
+        'simple_value',
+        'datos',
+        'auto_sla_graph',
+        'group_item',
+        'bars_graph',
+        'donut_graph',
+        'color_cloud',
+        'service',
+    ];
+    $form_items_advance['cache_expiration_row']['html'] = '<td align="left">';
+    $form_items_advance['cache_expiration_row']['html'] .= __('Cache expiration');
+    $form_items_advance['cache_expiration_row']['html'] .= '</td>';
+    $form_items_advance['cache_expiration_row']['html'] .= '<td align="left">';
+    $form_items_advance['cache_expiration_row']['html'] .= html_print_extended_select_for_time(
+        'cache_expiration',
+        $config['vc_default_cache_expiration'],
+        '',
+        __('No cache'),
+        0,
+        false,
+        true,
+        false,
+        true,
+        '',
+        false,
+        $intervals
+    );
+    $form_items_advance['cache_expiration_row']['html'] .= '</td>';
 
     // Insert and modify before the buttons to create or update.
     if (enterprise_installed()) {
@@ -1454,12 +1452,9 @@ function visual_map_editor_print_toolbox()
         visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item', true);
         visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item', true);
         visual_map_print_button_editor('color_cloud', __('Color cloud'), 'left', false, 'color_cloud_min', true);
-    if (isset($config['legacy_vc']) === false
-        || (bool) $config['legacy_vc'] === false
-    ) {
-        // Applies only on modern VC.
-        visual_map_print_button_editor('network_link', __('Network link'), 'left', false, 'network_link_min', true);
-    }
+
+    // Applies only on modern VC.
+    visual_map_print_button_editor('network_link', __('Network link'), 'left', false, 'network_link_min', true);
 
     if (defined('METACONSOLE')) {
         echo '<a href="javascript:" class="tip"><img src="'.$config['homeurl_static'].'/images/tip.png" data-title="The data displayed in editor mode is not real" data-use_title_for_force_title="1" 

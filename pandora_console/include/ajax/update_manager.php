@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -129,19 +129,67 @@ if ($method === 'draw') {
         $count = db_get_value('count(*)', '('.$sql.') t');
 
         if ($data) {
-            $data = array_reduce(
-                $data,
-                function ($carry, $item) {
-                    // Transforms array of arrays $data into an array
-                    // of objects, making a post-process of certain fields.
-                    $tmp = (object) $item;
+            if ($config['prominent_time'] === 'timestamp') {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+                        date_default_timezone_set($user_timezone);
+                        $title = human_time_comparation($tmp->utimestamp);
+                        $tmp->utimestamp = '<span title="'.$title.'">'.modules_format_timestamp($tmp->utimestamp).'</span>';
 
-                    $tmp->utimestamp = human_time_comparation($tmp->utimestamp);
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            } else if ($config['prominent_time'] === 'comparation') {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+                        date_default_timezone_set($user_timezone);
+                        $title = modules_format_timestamp($tmp->utimestamp);
+                        $tmp->utimestamp = '<span title="'.$title.'">'.human_time_comparation($tmp->utimestamp).'</span>';
 
-                    $carry[] = $tmp;
-                    return $carry;
-                }
-            );
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            } else if ($config['prominent_time'] === 'compact') {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+                        date_default_timezone_set($user_timezone);
+                        $title = modules_format_timestamp($tmp->utimestamp);
+                        $tmp->utimestamp = '<span title="'.$title.'">'.human_time_comparation($tmp->utimestamp, 'tiny').'</span>';
+
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            } else {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+                        date_default_timezone_set($user_timezone);
+                        $title = modules_format_timestamp($tmp->utimestamp);
+                        $tmp->utimestamp = '<span title="'.$title.'">'.human_time_comparation($tmp->utimestamp).'</span>';
+
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            }
         }
 
         // Datatables format: RecordsTotal && recordsfiltered.

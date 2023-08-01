@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -455,7 +455,7 @@ function alerts_delete_alert_action($id_alert_action)
  *
  * @return mixed Id of the cloned action or false in case of fail.
  */
-function alerts_clone_alert_action($id_alert_action, $id_group)
+function alerts_clone_alert_action($id_alert_action, $id_group, $copy_name='')
 {
     $id_alert_action = safe_int($id_alert_action, 1);
     if (empty($id_alert_action)) {
@@ -474,7 +474,13 @@ function alerts_clone_alert_action($id_alert_action, $id_group)
 
     unset($action['id']);
 
-    return alerts_create_alert_action($action['name'].' '.__('copy'), $action['id_alert_command'], $action);
+    if ($copy_name !== '') {
+        $copy_name = $copy_name;
+    } else {
+        $copy_name = $action['name'].' '.__('copy');
+    }
+
+    return alerts_create_alert_action($copy_name, $action['id_alert_command'], $action);
 }
 
 
@@ -1562,13 +1568,13 @@ function alerts_delete_alert_agent_module_action($id_alert_agent_module_action)
  *
  * @return mixed Actions associated or false if something goes wrong.
  */
-function alerts_get_alert_agent_module_actions($id_alert_agent_module, $fields=false, $server_id=-1)
+function alerts_get_alert_agent_module_actions($id_alert_agent_module, $fields=false, $server_id=-1, $ignore_metaconsole=false)
 {
     if (empty($id_alert_agent_module)) {
         return false;
     }
 
-    if (defined('METACONSOLE')) {
+    if (defined('METACONSOLE') && $ignore_metaconsole === false) {
         $server = db_get_row('tmetaconsole_setup', 'id', $server_id);
 
         if (metaconsole_connect($server) == NOERR) {
@@ -1602,6 +1608,7 @@ function alerts_get_alert_agent_module_actions($id_alert_agent_module, $fields=f
         $action['fires_min'] = $element['fires_min'];
         $action['fires_max'] = $element['fires_max'];
         $action['module_action_threshold'] = $element['module_action_threshold'];
+        $action['original_id'] = $element['id'];
 
         if (isset($element['id'])) {
             $retval[$element['id']] = $action;
@@ -3115,7 +3122,7 @@ function alerts_get_alert_fired($filters=[], $groupsBy=[])
                 $fields[] = $table.'.id_agente as agent';
                 $group_array[] = $table.'.id_agente';
                 $names_search = agents_get_alias_array(
-                    array_values($filters['agents'] ?? [])
+                    array_values(($filters['agents'] ?? []))
                 );
 
                 if (is_metaconsole() === true) {

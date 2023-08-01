@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 ################################################################################
 # Pandora FMS Performance Report Tool
-# Copyright (c) 2017-2021 Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2017-2023 Pandora FMS.
 ################################################################################
 use strict;
 use warnings;

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -485,22 +485,16 @@ class Events
                                 $event['tags'] = '<i>'.__('N/A').'</i>';
                             }
 
-                            $event_comments = db_get_value(
-                                'user_comment',
-                                'tevento',
-                                'id_evento',
-                                $id_event
+                            $event_comments_array = db_get_all_rows_sql(
+                                sprintf(
+                                    'SELECT * FROM tevent_comment where id_event = %d',
+                                    $id_event
+                                )
                             );
-                            $event_comments_array = [];
-                            $event_comments_array = json_decode(
-                                $event_comments,
-                                true
-                            );
-                            // Support for new format only.
                             if (empty($event_comments_array) === true) {
                                 $comment = '<i>'.__('N/A').'</i>';
                             } else {
-                                $comment = '';
+                                $comment = '<div>';
                                 $event_comments_array = array_reverse(
                                     $event_comments_array
                                 );
@@ -521,6 +515,8 @@ class Events
                                     );
                                     $comment .= '<br>'.$c['comment'].'<br>';
                                 }
+
+                                $comment .= '</div>';
                             }
 
                             $event['comments'] = $comment;

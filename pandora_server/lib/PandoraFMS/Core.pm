@@ -4098,16 +4098,11 @@ sub pandora_event {
 	$module_status = defined($module) ? $module->{'estado'} : 0 unless defined ($module_status);
 	
 	# If the event is created with validated status, assign ack_utimestamp
-	my $ack_utimestamp = $event_status == 1 ? time() : 0;
+	my $ack_utimestamp = ($event_status == 1 || $event_status == 2) ? time() : 0;
 	
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
-	
-	if($comment ne '') {
-		my @comment_data = ({ comment => $comment, action => "Added comment", id_user => $user_name, utimestamp => $utimestamp});
-		$comment = encode_json \@comment_data;
-	}
 	
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
@@ -4122,6 +4117,7 @@ sub pandora_event {
 			# Only when the event comes as New. Validated events are excluded
 			if (defined($id_extra_inprocess_count) && $id_extra_inprocess_count > 0 && $event_status == 0) {
 				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
+				$ack_utimestamp = get_db_value ($dbh, 'SELECT ack_utimestamp FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 				$event_status = 2;
 			}
 		}
@@ -4134,8 +4130,13 @@ sub pandora_event {
 
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
+	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
+	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
+
+	if(defined($event_id) && $comment ne '') {
+		my $comment_id = db_insert ($dbh, 'id','INSERT INTO tevent_comment (id_event, utimestamp, comment, id_user, action)
+											VALUES (?, ?, ?, ?, ?)', $event_id, $utimestamp, safe_input($comment), $user_name, "Added comment");
+	}
 
 	# Do not write to the event file
 	return $event_id if ($pa_config->{'event_file'} eq '');
@@ -4143,7 +4144,7 @@ sub pandora_event {
 	# Add a header when the event file is created
 	my $header = undef;
 	if (! -f $pa_config->{'event_file'}) {
-		$header = "agent_name,group_name,evento,timestamp,estado,utimestamp,event_type,module_name,alert_name,criticity,user_comment,tags,source,id_extra,id_usuario,critical_instructions,warning_instructions,unknown_instructions,ack_utimestamp";
+		$header = "agent_name,group_name,evento,timestamp,estado,utimestamp,event_type,module_name,alert_name,criticity,tags,source,id_extra,id_usuario,critical_instructions,warning_instructions,unknown_instructions,ack_utimestamp";
 	}
 	
 	# Open the event file for writing

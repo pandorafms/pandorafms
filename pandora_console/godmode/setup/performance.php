@@ -559,6 +559,18 @@ if (enterprise_installed()) {
     );
 }
 
+$table->data[7][1] = html_print_label_input_block(
+    __('Max. days before disabled agents are deleted'),
+    html_print_input_text(
+        'delete_disabled_agents',
+        $config['delete_disabled_agents'],
+        '',
+        false,
+        0,
+        true
+    )
+);
+
 $table_other = new stdClass();
 $table_other->width = '100%';
 $table_other->class = 'filter-table-adv';

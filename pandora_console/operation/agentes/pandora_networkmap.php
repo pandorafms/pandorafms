@@ -263,8 +263,7 @@ if ($new_networkmap || $save_networkmap) {
                 'id_group_map' => $id_group_map,
             ],
         );
-        hd('Entraaaa', true);
-        hd($exist, true);
+
         if ($exist !== false) {
             $result_txt = ui_print_error_message(__('Another network map already exists with this name and group.'));
         } else {

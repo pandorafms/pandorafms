@@ -706,7 +706,6 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `id_agentmodule` INT NOT NULL DEFAULT 0,
   `id_alert_am` INT NOT NULL DEFAULT 0,
   `criticity` INT UNSIGNED NOT NULL DEFAULT 0,
-  `user_comment` TEXT,
   `tags` TEXT,
   `source` TINYTEXT,
   `id_extra` TINYTEXT,
@@ -743,6 +742,20 @@ CREATE TABLE IF NOT EXISTS `tevent_extended` (
   ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
+-- Table `tevent_comment`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tevent_comment` (
+  `id` serial PRIMARY KEY,
+  `id_event` BIGINT UNSIGNED NOT NULL,
+  `utimestamp` BIGINT NOT NULL DEFAULT 0,
+  `comment` TEXT,
+  `id_user` VARCHAR(255) DEFAULT NULL,
+  `action` TEXT,
+  FOREIGN KEY (`id_event`) REFERENCES `tevento`(`id_evento`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+  
 -- ---------------------------------------------------------------------
 -- Table `tgrupo`
 -- ---------------------------------------------------------------------

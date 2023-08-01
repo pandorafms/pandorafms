@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.772 Build 230727";
+my $version = "7.0NG.772 Build 230801";
 
 # save program name for logging
 my $progname = basename($0);
@@ -4544,7 +4544,7 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, $comment, safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 
 	}
 }
@@ -4692,8 +4692,6 @@ sub cli_get_event_info () {
 		print $csv_separator;
 		print $event_data->{'criticity'};
 		print $csv_separator;
-		print $event_data->{'user_comment'};
-		print $csv_separator;
 		print $event_data->{'tags'};
 		print $csv_separator;
 		print $event_data->{'source'};
@@ -4723,27 +4721,18 @@ sub cli_add_event_comment() {
 	
 	my $event_name = pandora_get_event_name($dbh, $id_event);
 	exist_check($event_name,'event',$id_event);
-	
-	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
-	my $utimestamp = time ();
-	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp, event_id => $id_event});
-	
+
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	
-	my $decoded_comment;
-	my $update;
-	if ($current_comment eq '') {
-		$update->{'user_comment'} = encode_json \@additional_comment;
-	}
-	else {
-		$decoded_comment = decode_json($current_comment);
-		
-		push(@{$decoded_comment}, @additional_comment);
-		
-		$update->{'user_comment'} = encode_json($decoded_comment);
-	}
-	
-	pandora_update_event_from_hash ($update, 'id_evento', $id_event, $dbh);
+	my $parameters;
+	$parameters->{'id_event'} = $id_event;
+	$parameters->{'id_user'} = $user_name;
+	$parameters->{'utimestamp'} = time();
+	$parameters->{'action'} = "Added comment";
+	$parameters->{'comment'} = safe_input($comment);
+
+	my $comment_id = db_process_insert($dbh, 'id', 'tevent_comment', $parameters);
+	return $comment_id;
 }
 
 ##############################################################################
@@ -6708,12 +6697,12 @@ sub pandora_update_event_from_hash ($$$$) {
 # Return event comment given a event id
 ##############################################################################
 
-sub pandora_get_event_comment($$) {
+sub pandora_get_event_comments($$) {
 	my ($dbh,$id_event) = @_;
 
-	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM tevento WHERE id_evento = ?',$id_event);
+	my @comments = get_db_rows($dbh, 'SELECT * FROM tevent_comment WHERE id_evento = ?',$id_event);
 
-	return defined ($event_name) ? $event_name : -1;
+	return \@comments;
 }
 
 ##############################################################################

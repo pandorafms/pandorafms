@@ -70,9 +70,11 @@ if (is_ajax()) {
         $get_all_groups = get_parameter('get_all_groups', '0');
 
         if ($get_all_groups !== '0') {
-            $profile_data = db_get_all_rows_filter(
-                'tusuario_perfil',
-                ['id_perfil' => $id_profile[0]]
+            $profile_data = db_get_all_rows_sql(
+                'SELECT *
+                    FROM tusuario_perfil
+                    WHERE `id_perfil` = "'.$id_profile[0].'"
+                    GROUP BY id_usuario'
             );
         } else {
             if (strlen($id_profile[0]) > 0 && strlen($id_group[0]) > 0) {

@@ -193,7 +193,7 @@ def parse_csv_file(
 #########################################################################################
 
 def parse_int(
-        var=""
+        var = None
     ) -> int:
     """
     Parse given variable to integer.
@@ -214,7 +214,7 @@ def parse_int(
 #########################################################################################
 
 def parse_float(
-        var=""
+        var = None
     ) -> float:
     """
     Parse given variable to float.
@@ -235,7 +235,7 @@ def parse_float(
 #########################################################################################
 
 def parse_str(
-        var=""
+        var = None
     ) -> str:
     """
     Parse given variable to string.
@@ -256,7 +256,7 @@ def parse_str(
 #########################################################################################
 
 def parse_bool(
-        var=""
+        var = None
     ) -> bool:
     """
     Parse given variable to bool.

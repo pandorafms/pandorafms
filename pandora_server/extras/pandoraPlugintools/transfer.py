@@ -27,7 +27,7 @@ GLOBAL_VARIABLES = {
 #########################################################################################
 def set_global_variable(
         variable_name: str = "", 
-        value
+        value = None
     ):
     """
     Sets the value of a global variable in the 'GLOBAL_VARIABLES' dictionary.

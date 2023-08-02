@@ -30,7 +30,7 @@ def debug_dict(
 def set_dict_key_value(
         input_dict: dict = {},
         input_key: str = "",
-        input_value
+        input_value = None
     ):
     """
     Assign to a key in a dict a given value

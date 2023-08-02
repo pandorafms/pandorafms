@@ -31,7 +31,7 @@ def set_error_level(
 #########################################################################################
 def set_summary_value(
         key: str = "",
-        value = ""
+        value = None
     ):
     """
     Sets a fixed value for a key in the 'SUMMARY' dictionary.
@@ -49,7 +49,7 @@ def set_summary_value(
 #########################################################################################
 def add_summary_value(
         key: str = "",
-        value = ""
+        value = None
     ):
     """
     Adds a value to a key in the 'SUMMARY' dictionary.

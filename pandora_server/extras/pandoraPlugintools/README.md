@@ -59,9 +59,8 @@ xml_file = ppt.write_xml(xml_content, agent["agent_name"])
 ppt.transfer_xml(
     xml_file,
     transfer_mode="tentacle",
-    tentacle_address="192.168.1.20",
+    tentacle_ip="192.168.1.20",
     tentacle_port="41121",
-    temporal="/tmp"
 )
 ```
 

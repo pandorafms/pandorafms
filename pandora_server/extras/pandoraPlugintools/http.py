@@ -2,6 +2,7 @@ from requests_ntlm import HttpNtlmAuth
 from requests.auth import HTTPBasicAuth
 from requests.auth import HTTPDigestAuth
 from requests.sessions import Session
+from .general import debug_dict
 
 ####
 # Auth URL session

@@ -2,6 +2,7 @@ import sys
 from queue import Queue
 from threading import Thread
 from multiprocessing import Pool, Manager
+from .general import debug_dict
 
 ####
 # Define multi-processing internal global variables.

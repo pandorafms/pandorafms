@@ -4,7 +4,7 @@ import shutil
 import subprocess
 import os
 import sys
-from .general import generate_md5,set_dict_key_value
+from .general import debug_dict,generate_md5,set_dict_key_value
 
 ####
 # Define global variables dict, used in functions as default values.

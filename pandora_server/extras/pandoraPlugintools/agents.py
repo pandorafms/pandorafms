@@ -3,8 +3,8 @@ from subprocess import *
 import hashlib
 import sys
 import os
-from .general import now,set_dict_key_value
-from .modules import print_module,print_log_module
+from .general import debug_dict,now,set_dict_key_value,generate_md5
+from .modules import init_module,init_log_module,print_module,print_log_module
 
 ####
 # Define global variables dict, used in functions as default values.
@@ -60,7 +60,8 @@ class Agent:
     def __init__(
             self,
             config: dict = None,
-            modules_def: list = []
+            modules_def: list = [],
+            log_modules_def: list = []
         ):
 
         if config is None:
@@ -68,6 +69,137 @@ class Agent:
 
         self.config = config
         self.modules_def = modules_def
+        self.log_modules_def = log_modules_def
+        self.added_modules = []
+
+    '''
+    TODO: Add commnets
+    '''
+    def update_config(
+            self,
+            config: dict = {}
+        ):
+
+        for key, value in config.items():
+            if key in self.config:
+                self.config[key] = value
+
+    '''
+    TODO: Add commnets
+    '''
+    def get_config(
+            self
+        ) -> dict:
+
+        return self.config
+
+    '''
+    TODO: Add commnets
+    '''
+    def add_module(
+            self,
+            module: dict = {}
+        ):
+
+        if "name" in module and type(module["name"]) == str and len(module["name"].strip()) > 0:
+            self.modules_def.append(init_module(module))
+            self.added_modules.append(generate_md5(module["name"]))
+
+    '''
+    TODO: Add commnets
+    '''
+    def del_module(
+            self,
+            module_name: str = ""
+        ):
+
+        if len(module_name.strip()) > 0:
+            try:
+                module_id = self.added_modules.index(generate_md5(module_name))
+            except:
+                module_id = None
+
+            if module_id is not None:            
+                self.added_modules.pop(module_id)
+                self.modules_def.pop(module_id)
+
+    '''
+    TODO: Add commnets
+    '''
+    def update_module(
+            self,
+            module_name: str = "",
+            module: dict = {}
+        ):
+
+        module_def = self.get_module(module_name)
+        
+        if module_def:
+            if "name" not in module:
+                module["name"] = module_name
+
+            module_def.update(module)
+
+            self.del_module(module_name)
+            self.add_module(module_def)
+
+    '''
+    TODO: Add commnets
+    '''
+    def get_module(
+            self,
+            module_name: str = ""
+        ) -> dict:
+
+        if len(module_name.strip()) > 0:
+            try:
+                module_id = self.added_modules.index(generate_md5(module_name))
+            except:
+                module_id = None
+
+            if module_id is not None:            
+                return self.modules_def[module_id]
+            else:
+                return {}
+
+    '''
+    TODO: Add commnets
+    '''
+    def get_modules_def(
+            self
+        ) -> dict:
+
+        return self.modules_def
+
+    '''
+    TODO: Add commnets
+    '''
+    def add_log_module(
+            self,
+            log_module: dict = {}
+        ):
+
+        if "source" in module and type(module["source"]) == str and len(module["source"].strip()) > 0:
+            self.log_modules_def.append(init_log_module(log_module))
+
+    '''
+    TODO: Add commnets
+    '''
+    def get_log_modules_def(
+            self
+        ) -> dict:
+
+        return self.log_modules_def
+
+    '''
+    TODO: Add commnets
+    '''
+    def print_xml(
+            self,
+            print_flag: bool = False
+        ) -> str:
+
+        return print_agent(self.get_config(), self.get_modules_def(), self.get_log_modules_def(), print_flag)
 
 ####
 # Init agent template
@@ -93,7 +225,7 @@ def init_agent(
         "address"           : "",
         "group"             : GLOBAL_VARIABLES['agents_group_name'],
         "interval"          : GLOBAL_VARIABLES['interval'],
-        "agent_mode"        : "1",
+        "agent_mode"        : "1"
     }
 
     for key, value in default_values.items():

@@ -20651,6 +20651,7 @@ function TreeHorizontal(
     halo = "#fff", // color of label halo 
     haloWidth = 3, // padding around the labels
     curve = d3.curveBumpX, // curve for the link
+    leftalign = false, // left align svg
   } = {}
 ) {
   
@@ -20687,9 +20688,11 @@ function TreeHorizontal(
   
     // Use the required curve
     if (typeof curve !== "function") throw new Error(`Unsupported curve`);
-  
+    if (leftalign == false ) {
+      leftalign = -dy * padding / 2
+    }
     const svg = d3.create("svg")
-        .attr("viewBox", [-dy * padding / 2, x0 - dx, width, height])
+        .attr("viewBox", [leftalign, x0 - dx, width, height])
         .attr("width", width)
         .attr("height", height)
         .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
@@ -20717,11 +20720,10 @@ function TreeHorizontal(
         .attr("xlink:href", link == null ? null : d => link(d.data, d))
         .attr("target", link == null ? null : linkTarget)
         .attr("transform", d => `translate(${d.y},${d.x})`);
-  
+
     node.append("circle")
-        .attr("fill", d => d.children ? stroke : fill)
-        .attr("r", r);
-  
+        .attr("r", r)
+        .attr("fill", d => fill(d.data, d));
     if (title != null) node.append("title")
         .text(d => title(d.data, d));
   

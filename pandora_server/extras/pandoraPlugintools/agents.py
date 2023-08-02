@@ -5,7 +5,6 @@ import sys
 import os
 from .general import now,set_dict_key_value
 from .modules import print_module,print_log_module
-from .transfer import write_xml
 
 ####
 # Define global variables dict, used in functions as default values.

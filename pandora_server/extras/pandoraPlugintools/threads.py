@@ -7,9 +7,9 @@ from multiprocessing import Pool, Manager
 # Define multi-processing internal global variables.
 #########################################################################################
 
-_manager = Manager()
-_shared_dict = _manager.dict()
-_shared_dict_lock = _manager.Lock()
+_MANAGER = Manager()
+_SHARED_DICT = _MANAGER.dict()
+_SHARED_DICT_LOCK = _MANAGER.Lock()
 
 ####
 # Internal use only: Run a given function in a thread
@@ -110,11 +110,11 @@ def set_shared_dict_value(
     Set a given value to a key in the internal shared dict.
     Used by all parallel processes.
     """
-    global _shared_dict
+    global _SHARED_DICT
 
     if key is not None:
-        with _shared_dict_lock:
-            _shared_dict[key] = value
+        with _SHARED_DICT_LOCK:
+            _SHARED_DICT[key] = value
 
 ####
 # Add a given value to a key in the internal shared dict.
@@ -128,12 +128,12 @@ def add_shared_dict_value(
     Add a given value to a key in the internal shared dict.
     Used by all parallel processes.
     """
-    global _shared_dict
+    global _SHARED_DICT
 
     if key is not None:
-        with _shared_dict_lock:
-            if key in _shared_dict:
-                _shared_dict[key] += value
+        with _SHARED_DICT_LOCK:
+            if key in _SHARED_DICT:
+                _SHARED_DICT[key] += value
             else:
                 set_shared_dict_value(key, value)
 
@@ -148,11 +148,11 @@ def get_shared_dict_value(
     Get the value of a key in the internal shared dict.
     Used by all parallel processes.
     """
-    global _shared_dict
+    global _SHARED_DICT
 
-    with _shared_dict_lock:
-        if key in _shared_dict and key is not None:
-            return _shared_dict[key]
+    with _SHARED_DICT_LOCK:
+        if key in _SHARED_DICT and key is not None:
+            return _SHARED_DICT[key]
         else:
             return None
 

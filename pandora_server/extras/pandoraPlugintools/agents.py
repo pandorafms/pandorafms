@@ -12,7 +12,7 @@ from .transfer import write_xml
 # Its values can be changed.
 #########################################################################################
 
-global_variables = {
+GLOBAL_VARIABLES = {
     'agents_group_name' : '',
     'interval'          : 300
 }
@@ -41,13 +41,13 @@ def set_global_variable(
         value
     ):
     """
-    Sets the value of a global variable in the 'global_variables' dictionary.
+    Sets the value of a global variable in the 'GLOBAL_VARIABLES' dictionary.
 
     Args:
         variable_name (str): Name of the variable to set.
         value (any): Value to assign to the variable.
     """
-    set_dict_key_value(global_variables, variable_name, value)
+    set_dict_key_value(GLOBAL_VARIABLES, variable_name, value)
 
 ####
 # Agent class
@@ -92,8 +92,8 @@ def init_agent(
         "os_version"        : "",
         "timestamp"         : now(),
         "address"           : "",
-        "group"             : global_variables['agents_group_name'],
-        "interval"          : global_variables['interval'],
+        "group"             : GLOBAL_VARIABLES['agents_group_name'],
+        "interval"          : GLOBAL_VARIABLES['interval'],
         "agent_mode"        : "1",
     }
 

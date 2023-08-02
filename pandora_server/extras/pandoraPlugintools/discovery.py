@@ -5,52 +5,10 @@ import json
 # Define some global variables
 #########################################################################################
 
-output = {}
-error_level = 0
-summary = {}
-info = ""
-monitoring_data = []
-
-####
-# Set fixed value to summary key
-#########################################################################################
-def set_summary_value(
-        key: str = "",
-        value = ""
-    ):
-    """
-    Sets a fixed value for a key in the 'summary' dictionary.
-
-    Args:
-        key (str): Key to set the value for.
-        value (any): Value to assign to the key.
-    """
-    global summary
-
-    summary[key] = value
-
-####
-# Add value to summary key
-#########################################################################################
-def add_summary_value(
-        key: str = "",
-        value = ""
-    ):
-    """
-    Adds a value to a key in the 'summary' dictionary.
-
-    If the key already exists, the value will be incremented. Otherwise, a new key will be created.
-
-    Args:
-        key (str): Key to add the value to.
-        value (any): Value to add to the key.
-    """
-    global summary
-
-    if key in summary:
-        summary[key] += value
-    else:
-        set_summary_value(key, value)
+ERROR_LEVEL = 0
+SUMMARY = {}
+INFO = ""
+MONITORING_DATA = []
 
 ####
 # Set error level to value
@@ -64,44 +22,98 @@ def set_error_level(
     Args:
         value (int, optional): The error level value. Default is 0.
     """
-    global error_level
+    global ERROR_LEVEL
 
-    error_level = value
+    ERROR_LEVEL = value
 
 ####
-# Add data to info
+# Set fixed value to summary key
 #########################################################################################
-def add_info_value(
-        data: str = ""
+def set_summary_value(
+        key: str = "",
+        value = ""
     ):
     """
-    Adds data to the 'info' variable.
+    Sets a fixed value for a key in the 'SUMMARY' dictionary.
 
     Args:
-        data (str, optional): The data to add to the 'info' variable. Default is an empty string.
+        key (str): Key to set the value for.
+        value (any): Value to assign to the key.
     """
-    global info
+    global SUMMARY
 
-    info += data
+    SUMMARY[key] = value
+
+####
+# Add value to summary key
+#########################################################################################
+def add_summary_value(
+        key: str = "",
+        value = ""
+    ):
+    """
+    Adds a value to a key in the 'SUMMARY' dictionary.
+
+    If the key already exists, the value will be incremented. Otherwise, a new key will be created.
+
+    Args:
+        key (str): Key to add the value to.
+        value (any): Value to add to the key.
+    """
+    global SUMMARY
+
+    if key in SUMMARY:
+        SUMMARY[key] += value
+    else:
+        set_summary_value(key, value)
 
 ####
 # Set fixed value to info
 #########################################################################################
 def set_info_value(
-        data: str = ""
+        value: str = ""
     ):
     """
-    Sets a fixed value to the 'info' variable.
+    Sets a fixed value to the 'INFO' variable.
 
     Args:
-        data (str, optional): The value to set in the 'info' variable. Default is an empty string.
+        data (str, optional): The value to set in the 'INFO' variable. Default is an empty string.
     """
-    global info
+    global INFO
 
-    info = data
+    INFO = value
 
 ####
-# Set fixed value to info
+# Add data to info
+#########################################################################################
+def add_info_value(
+        value: str = ""
+    ):
+    """
+    Adds data to the 'INFO' variable.
+
+    Args:
+        data (str, optional): The data to add to the 'INFO' variable. Default is an empty string.
+    """
+    global INFO
+
+    INFO += value
+
+####
+# Set fixed value to monitoring data
+#########################################################################################
+def set_monitoring_data(
+        data: list = []
+    ):
+    """
+    TODO: Add comments
+    """
+    global MONITORING_DATA
+
+    MONITORING_DATA = data
+
+####
+# Add value to monitoring data
 #########################################################################################
 def add_monitoring_data(
         data: dict = {}
@@ -109,9 +121,9 @@ def add_monitoring_data(
     """
     TODO: Add comments
     """
-    global monitoring_data
+    global MONITORING_DATA
 
-    monitoring_data.append(data)
+    MONITORING_DATA.append(data)
 
 ####
 # Print JSON output and exit script
@@ -120,28 +132,27 @@ def print_output():
     """
     Prints the JSON output and exits the script.
 
-    The function uses the global variables 'output', 'error_level', 'summary', and 'info'
+    The function uses the global variables 'ERROR_LEVEL', 'SUMMARY', and 'info'
     to create the JSON output. It then prints the JSON string and exits the script with
-    the 'error_level' as the exit code.
+    the 'ERROR_LEVEL' as the exit code.
     """
 
-    global output
-    global error_level
-    global summary
-    global info
-    global monitoring_data
+    global ERROR_LEVEL
+    global SUMMARY
+    global INFO
+    global MONITORING_DATA
 
-    output={}
-    if summary:
-        output["summary"] = summary
+    OUTPUT={}
+    if SUMMARY:
+        OUTPUT["summary"] = SUMMARY
 
-    if info:
-        output["info"] = info
+    if INFO:
+        OUTPUT["info"] = INFO
 
-    if monitoring_data:
-        output["monitoring_data"] = monitoring_data
+    if MONITORING_DATA:
+        OUTPUT["monitoring_data"] = MONITORING_DATA
     
-    json_string = json.dumps(output)
+    json_string = json.dumps(OUTPUT)
 
     print(json_string)
-    sys.exit(error_level)
+    sys.exit(ERROR_LEVEL)

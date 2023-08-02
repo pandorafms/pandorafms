@@ -446,7 +446,7 @@ for ($month = 1; $month <= 12; $month++) {
                     $cal_table->data[$cal_line][$week] .= html_print_image(
                         'images/zoom.png',
                         true,
-                        ['class' => 'invert_filter']
+                        ['class' => 'invert_filter special_days']
                     ).'</a>';
 
                     if ($is_management_allowed === true) {
@@ -455,7 +455,7 @@ for ($month = 1; $month <= 12; $month++) {
                         $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
                             'images/edit.svg',
                             true,
-                            ['class' => 'invert_filter']
+                            ['class' => 'invert_filter main_menu_icon']
                         ).'</a> &nbsp;';
                         $url_delete = $url.'&op=delete&id='.$special_day['id'];
                         $script_delete = 'if (!confirm(\''.__('Are you sure?').'\')) return false;';
@@ -467,7 +467,7 @@ for ($month = 1; $month <= 12; $month++) {
                         $cal_table->data[$cal_line][$week] .= html_print_image(
                             'images/delete.svg',
                             true,
-                            ['class' => 'invert_filter']
+                            ['class' => 'invert_filter main_menu_icon']
                         ).'</a>';
                     }
                 }

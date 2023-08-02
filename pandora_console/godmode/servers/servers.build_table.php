@@ -28,6 +28,7 @@
 
 // Begin.
 require_once 'include/functions_clippy.php';
+require_once 'pending_alerts_list.php';
 
 global $config;
 
@@ -241,6 +242,19 @@ foreach ($servers as $server) {
                 true,
                 [
                     'title' => __('Claim back SNMP modules'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            );
+            $data[8] .= '</a>';
+        }
+
+        if ($server['type'] === 'event' && (bool) check_acl($config['id_user'], 0, 'LM') === true) {
+            $data[8] .= '<a class="open-alerts-list-modal" href="">';
+            $data[8] .= html_print_image(
+                'images/alert@svg.svg',
+                true,
+                [
+                    'title' => __('Pending alerts list'),
                     'class' => 'main_menu_icon invert_filter',
                 ]
             );

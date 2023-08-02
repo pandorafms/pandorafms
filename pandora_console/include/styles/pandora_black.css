@@ -20,6 +20,13 @@ Description: The default Pandora FMS theme layout
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+:root {
+  /* --primary-color: #14524f; */
+  --secondary-color: #222;
+  --text-color: #fff;
+  /* --input-border: #c0ccdc; */
+  --border-color: #484848;
+}
 
 /* General styles */
 body,

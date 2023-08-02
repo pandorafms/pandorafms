@@ -837,12 +837,6 @@ $buttons['wizard'] = [
     'active' => false,
     'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wizard@svg.svg', true, ['title' => __('Wizard'), 'class' => 'invert_filter']).'</a>',
 ];
-if ($config['legacy_vc']) {
-    $buttons['editor'] = [
-        'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder@svg.svg', true, ['title' => __('Builder'), 'class' => 'invert_filter']).'</a>',
-    ];
-}
 
 $buttons['view'] = [
     'active' => false,

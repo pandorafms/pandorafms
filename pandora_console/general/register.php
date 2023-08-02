@@ -100,21 +100,23 @@ if ($initial && users_is_admin()) {
     );
 }
 
-$welcome = !$initial;
-try {
-    $welcome_window = new WelcomeWindow($welcome);
-    if ($welcome_window !== null) {
-        $welcome_window->run();
+if (check_acl($config['id_user'], 0, 'AW')) {
+    $welcome = !$initial;
+    try {
+        $welcome_window = new WelcomeWindow($welcome);
+        if ($welcome_window !== null) {
+            $welcome_window->run();
+        }
+    } catch (Exception $e) {
+        $welcome = false;
     }
-} catch (Exception $e) {
-    $welcome = false;
 }
 
 try {
     if (isset($_SESSION['showed_tips_window']) === false) {
         $tips_window = new TipsWindow();
         if ($tips_window !== null) {
-              $tips_window->run();
+            $tips_window->run();
         }
     }
 } catch (Exception $e) {

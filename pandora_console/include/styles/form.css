@@ -365,3 +365,7 @@ form#modal_form_feedback > ul > li > textarea {
 form#modal_form_feedback > ul > li:not(:first-child) > label {
   margin-top: 20px !important;
 }
+
+table.dataTable {
+  box-sizing: border-box !important;
+}

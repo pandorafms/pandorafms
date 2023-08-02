@@ -1,6 +1,3 @@
-from datetime import datetime
-from subprocess import *
-import hashlib
 import sys
 import os
 from .general import now,set_dict_key_value

@@ -1459,7 +1459,7 @@ select[multiple] option:hover {
 }
 
 .select2-container .select2-selection--single .select2-selection__rendered {
-  color: var(--secondary-color) !important;
+  color: var(--secondary-color);
 }
 
 .filter_summary > div,

@@ -926,7 +926,7 @@ foreach ($simple_alerts as $alert) {
             'padding:0px; width: 22px; height: 22px;',
             true,
             [
-                'class' => 'main_menu_icon',
+                'class' => 'invert filter main_menu_icon',
                 'title' => __('Disable'),
             ]
         );
@@ -1151,8 +1151,7 @@ if (! $id_agente) {
         return false;
     });
     
-    $("input[name=disable]").attr ("title", "<?php echo __('Disable'); ?>")
-        .hover (function () {
+    $("input[name=disable]").hover (function () {
                 $(this).attr ("src", 
                 <?php
                 echo '"'.html_print_image(
@@ -1178,8 +1177,7 @@ if (! $id_agente) {
             }
         );
     
-    $("input[name=enable]").attr ("title", "<?php echo __('Enable'); ?>")
-        .hover (function () {
+    $("input[name=enable]").hover (function () {
                 $(this).attr ("src", 
                 <?php
                 echo '"'.html_print_image(
@@ -1205,8 +1203,7 @@ if (! $id_agente) {
             }
         );
     
-    $("input[name=standby_on]").attr ("title", "<?php echo __('Set off standby'); ?>")
-        .hover (function () {
+    $("input[name=standby_on]").hover (function () {
                 $(this).attr ("src", 
                 <?php
                 echo '"'.html_print_image(
@@ -1232,8 +1229,7 @@ if (! $id_agente) {
             }
         );
     
-    $("input[name=standby_off]").attr ("title", "<?php echo __('Set standby'); ?>")
-        .hover (function () {
+    $("input[name=standby_off]").hover (function () {
                 $(this).attr ("src", 
                 <?php
                 echo '"'.html_print_image(

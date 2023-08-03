@@ -1280,8 +1280,7 @@ switch ($action) {
 
         $discovery_tasklist = new DiscoveryTaskList();
         $report_task_data = $discovery_tasklist->showListConsoleTask(true);
-
-        if (is_array($report_task_data) === true || strpos($report_task_data, 'class="nf"') === false) {
+        if (is_array($report_task_data) === true || (strpos($report_task_data, 'class="nf"') === false && $report_task_data !== -1)) {
             $task_table = '<div class="mrgn_top_15px white_box">';
             $task_table .= '<span class="white_table_graph_header">'.__('Report tasks');
             $task_table .= ui_print_help_tip(__('To schedule a report, do it from the editing view of each report.'), true);

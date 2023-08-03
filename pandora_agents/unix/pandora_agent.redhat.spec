@@ -4,7 +4,7 @@
 %global __os_install_post %{nil}
 %define name        pandorafms_agent_linux
 %define version     7.0NG.772
-%define release     230627
+%define release     230803
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}

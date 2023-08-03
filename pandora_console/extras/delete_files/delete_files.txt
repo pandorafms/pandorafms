@@ -1692,3 +1692,14 @@ enterprise/godmode/modules/manage_inventory_modules_form.php
 enterprise/operation/inventory/inventory.php
 include/test.js
 include/web2image.js
+enterprise/meta/monitoring/wizard/wizard.agent.php
+enterprise/meta/monitoring/wizard/wizard.create_agent.php
+enterprise/meta/monitoring/wizard/wizard.create_module.php
+enterprise/meta/monitoring/wizard/wizard.main.php
+enterprise/meta/monitoring/wizard/wizard.manage_alert.php
+enterprise/meta/monitoring/wizard/wizard.module.local.php
+enterprise/meta/monitoring/wizard/wizard.module.network.php
+enterprise/meta/monitoring/wizard/wizard.module.web.php
+enterprise/meta/monitoring/wizard/wizard.php
+enterprise/meta/monitoring/wizard/wizard.update_agent.php
+enterprise/meta/monitoring/wizard/wizard.update_module.php

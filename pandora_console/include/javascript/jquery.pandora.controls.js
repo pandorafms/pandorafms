@@ -22,7 +22,9 @@
       privilege: "",
       serialized: false,
       serialized_separator: "",
-      nodes: []
+      nodes: [],
+      id_os: -1,
+      os_agent_version: ""
     };
 
     /* public methods */
@@ -53,7 +55,7 @@
           } else {
             recursion_value = config.recursion;
           }
-
+          
           var opts = {
             page: "godmode/groups/group_list",
             get_group_agents: 1,
@@ -74,7 +76,9 @@
             nodes:
               typeof config.nodes === "function"
                 ? config.nodes()
-                : config.disabled
+                : config.disabled,
+            os_agent: config.os_agent,
+            os_agent_version: config.os_agent_version
           };
 
           jQuery.post(
@@ -319,7 +323,6 @@
             let href = $("a", config.spanPreview).attr("href");
             let hrefPosition = href.search("group_id=");
             let hrefNew = href.slice(0, hrefPosition) + "group_id=" + id_group;
-
             jQuery.post(
               "ajax.php",
               {

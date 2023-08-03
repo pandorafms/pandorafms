@@ -1810,7 +1810,7 @@ a.pandora_pagination,
 }
 
 .tox .tox-statusbar__resize-handle > svg {
-  filter: invert(100%);
+  filter: invert(100%) !important;
 }
 
 .tox-dialog,
@@ -1838,4 +1838,9 @@ a.pandora_pagination,
 .tox .tox-listboxfield .tox-listbox--select {
   background-color: #111 !important;
   color: #fff !important;
+}
+
+.mce-content-body {
+  color: #fff !important;
+  background-color: #333 !important;
 }

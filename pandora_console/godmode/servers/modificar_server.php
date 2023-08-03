@@ -45,7 +45,7 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 if (isset($_GET['server']) === true) {
     $id_server = get_parameter_get('server');
-    $title = _('Update').' ';
+    $title = __('Update').' ';
     $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy, port FROM tserver WHERE id_server = %d', $id_server);
     $row = db_get_row_sql($sql);
 
@@ -152,7 +152,7 @@ if (isset($_GET['server']) === true) {
         break;
 
         default:
-            $title = _('Update server').' ID: '.$id_server;
+            $title = __('Update server').' ID: '.$id_server;
         break;
     }
 

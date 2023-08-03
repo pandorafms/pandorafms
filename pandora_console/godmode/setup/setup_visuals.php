@@ -1772,7 +1772,9 @@ $table_other->data[$row][] = html_print_label_input_block(
         100,
         true
     ).ui_print_input_placeholder(
-        __('Example').': '.date($config['date_format']),
+        __('Example').': '.date(
+            str_replace('&#x20;', ' ', $config['date_format'])
+        ),
         true
     )
 );

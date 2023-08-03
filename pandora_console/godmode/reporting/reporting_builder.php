@@ -1289,6 +1289,10 @@ switch ($action) {
             $task_table .= '</div></div>';
             echo $task_table;
         } else {
+            if ($report_task_data === -1) {
+                $report_task_data = '';
+            }
+
             ui_print_info_message($report_task_data.__('To schedule a report, do it from the editing view of each report.'));
         }
 

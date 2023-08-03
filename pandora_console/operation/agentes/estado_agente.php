@@ -1310,6 +1310,8 @@ if (empty($tableAgents->data) === false) {
         );
     }
 
+    $total_items = '<div class="total_pages">'.sprintf(__('Total items: %s'), $total_agents).'</div>';
+    echo $total_items;
     html_print_table($tableAgents);
 
     $tablePagination = ui_pagination(

@@ -578,6 +578,10 @@ function html_print_select_groups(
 
     if (empty($nothing) === false) {
         $fields[$nothing_value] = $nothing;
+        if ($include_groups === false) {
+            $include_groups = [];
+        }
+
         $include_groups[$nothing_value] = $nothing;
     }
 

@@ -1003,6 +1003,10 @@ function grafico_modulo_sparse($params)
         ];
     }
 
+    if ($data_module_graph === false) {
+        $data_module_graph = [];
+    }
+
     $data_module_graph['series_suffix'] = $series_suffix;
 
     // Check available data.

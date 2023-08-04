@@ -2128,6 +2128,12 @@ function config_process_config()
 
     if (!isset($config['date_format'])) {
         config_update_value('date_format', 'F j, Y, g:i a');
+    } else {
+        $config['date_format'] = str_replace(
+            '&#x20;',
+            ' ',
+            $config['date_format']
+        );
     }
 
     if (!isset($config['event_view_hr'])) {

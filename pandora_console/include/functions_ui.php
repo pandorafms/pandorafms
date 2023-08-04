@@ -884,7 +884,7 @@ function ui_print_os_icon(
     $networkmap=false,
     $only_src=false,
     $relative=false,
-    $options=false,
+    $options=[],
     $big_icons=false
 ) {
     $subfolder = '.';

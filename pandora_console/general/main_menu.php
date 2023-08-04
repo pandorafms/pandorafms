@@ -488,4 +488,10 @@ echo '</div>';
             return height_logo + height_tabs + padding_menu + height_position;
         }
     });
+
+    <?php
+    if (get_user_language($config['id_user']) == 'es') {
+        ?>
+    console.log($('#icon_god-extensions').find('span').attr('style', 'text-wrap: nowrap;'));
+    <?php } ?>
 </script>

@@ -725,10 +725,7 @@ if ($copy_command) {
 $is_management_allowed = is_management_allowed();
 if ($is_management_allowed === false) {
     ui_print_warning_message(
-        __(
-            'This node is configured with centralized mode. All alert commands information is read only. Go to %s to manage it.',
-            $url
-        )
+        __('This node is configured with centralized mode. All alert commands information is read only. Go to metaconsole to manage it.')
     );
 }
 

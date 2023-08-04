@@ -725,17 +725,17 @@ if ($copy_command) {
 $is_management_allowed = is_management_allowed();
 if ($is_management_allowed === false) {
     if (is_metaconsole() === false) {
-        $url = '<a target="_blank" href="'.ui_get_meta_url(
+        $url_redirect = '<a target="_blank" href="'.ui_get_meta_url(
             'index.php?sec=advanced&sec2=godmode/alerts/alert_commands&tab=command&pure=0'
         ).'">'.__('metaconsole').'</a>';
     } else {
-        $url = __('any node');
+        $url_redirect = __('any node');
     }
 
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All alert commands information is read only. Go to %s to manage it.',
-            $url
+            $url_redirect
         )
     );
 }

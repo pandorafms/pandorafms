@@ -100,6 +100,11 @@ if [ ! -e /etc/pandora/collections ]; then
 	ln -s /usr/share/pandora_agent/collections /etc/pandora
 fi
 
+if [ ! -e /etc/pandora/ref ]; then
+	mkdir -p /usr/share/pandora_agent/ref
+	ln -s /usr/share/pandora_agent/ref /etc/pandora
+fi
+
 if [ ! -e /etc/pandora/commands ]; then
 	mkdir -p /usr/share/pandora_agent/commands
 	ln -s /usr/share/pandora_agent/commands /etc/pandora
@@ -143,7 +148,7 @@ fi
 
 # Remove symbolic links
 pushd /etc/pandora
-for f in pandora_agent.conf plugins collections
+for f in pandora_agent.conf plugins collections ref
 do
 	[ -L $f ] && rm -f $f
 done

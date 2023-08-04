@@ -40,6 +40,8 @@ $table->size = [];
 $table->style[0] = 'width: 50%';
 $table->style[1] = 'width: 50%';
 
+$modules = [];
+
 if (is_metaconsole() === true) {
     $params = [];
     $params['return'] = true;
@@ -78,8 +80,6 @@ if (is_metaconsole() === true) {
         $modules = agents_get_modules($id_agente, false, ['delete_pending' => 0]);
     }
 }
-
-$modules = [];
 
 $table->data[0][1] = html_print_label_input_block(
     __('Module'),

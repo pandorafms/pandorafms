@@ -796,12 +796,12 @@ foreach ($commands as $command) {
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
     if ($is_management_allowed === true && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
         if (is_user_admin($config['id_user']) === true) {
-                    $data['action'] = '<span class="inline_flex">';
+            $data['action'] = '<span class="inline_flex">';
             $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'&offset='.$offset.'"
-            onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
+            onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.svg', true, ['class' => 'main_menu_icon invert_filter ', 'title' => 'Duplicate']).'</a>';
 
             $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'&offset='.$offset_delete.'"
-			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter', 'title' => 'Delete']).'</a>';
             $data['action'] .= '</span>';
         }
     }

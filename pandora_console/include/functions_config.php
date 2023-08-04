@@ -378,6 +378,10 @@ function config_update_config()
                         $error_update[] = __('keep_in_process_status_extra_id');
                     }
 
+                    if (config_update_value('show_experimental_features', get_parameter('show_experimental_features'), true) === false) {
+                        $error_update[] = __('show_experimental_features');
+                    }
+
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -396,6 +400,10 @@ function config_update_config()
 
                     if (config_update_value('check_conexion_interval', get_parameter('check_conexion_interval'), true) === false) {
                         $error_update[] = __('Check conexion interval');
+                    }
+
+                    if (config_update_value('max_hours_old_event_comment', get_parameter('max_hours_old_event_comment'), true) === false) {
+                        $error_update[] = __('Max hours old event comments');
                     }
 
                     if (config_update_value('unique_ip', get_parameter('unique_ip'), true) === false) {
@@ -625,6 +633,30 @@ function config_update_config()
 
                     if (config_update_value('ad_domain', get_parameter('ad_domain'), true) === false) {
                         $error_update[] = __('Domain');
+                    }
+
+                    if (config_update_value('secondary_active_directory', get_parameter('secondary_active_directory'), true) === false) {
+                        $error_update[] = __('Secondary active directory');
+                    }
+
+                    if (config_update_value('ad_server_secondary', get_parameter('ad_server_secondary'), true) === false) {
+                        $error_update[] = __('Secondary active directory server');
+                    }
+
+                    if (config_update_value('ad_port_secondary', get_parameter('ad_port_secondary'), true) === false) {
+                        $error_update[] = __('Secondary active directory port');
+                    }
+
+                    if (config_update_value('ad_start_tls_secondary', get_parameter('ad_start_tls_secondary'), true) === false) {
+                        $error_update[] = __('Secondary start TLS');
+                    }
+
+                    if (config_update_value('ad_search_timeout', get_parameter('ad_search_timeout'), true) === false) {
+                        $error_update[] = __('AD search timeout');
+                    }
+
+                    if (config_update_value('ad_domain_secondary', get_parameter('ad_domain_secondary'), true) === false) {
+                        $error_update[] = __('Secondary domain');
                     }
 
                     if (config_update_value('ad_adv_perms', get_parameter('ad_adv_perms'), true) === false) {
@@ -946,12 +978,12 @@ function config_update_config()
                         }
                     }
 
-                    if (config_update_value('delete_old_messages', get_parameter('delete_old_messages'), true) === false) {
-                        $error_update[] = __('Max. days before delete old messages');
+                    if (config_update_value('delete_disabled_agents', get_parameter('delete_disabled_agents'), true) === false) {
+                        $error_update[] = __('Max. days before disabled agents are deleted');
                     }
 
-                    if (config_update_value('delete_old_network_matrix', get_parameter('delete_old_network_matrix'), true) === false) {
-                        $error_update[] = __('Max. days before delete old network matrix data');
+                    if (config_update_value('delete_old_messages', get_parameter('delete_old_messages'), true) === false) {
+                        $error_update[] = __('Max. days before delete old messages');
                     }
 
                     if (config_update_value('max_graph_container', get_parameter('max_graph_container'), true) === false) {
@@ -2096,6 +2128,12 @@ function config_process_config()
 
     if (!isset($config['date_format'])) {
         config_update_value('date_format', 'F j, Y, g:i a');
+    } else {
+        $config['date_format'] = str_replace(
+            '&#x20;',
+            ' ',
+            $config['date_format']
+        );
     }
 
     if (!isset($config['event_view_hr'])) {
@@ -2207,12 +2245,12 @@ function config_process_config()
         }
     }
 
-    if (!isset($config['delete_old_messages'])) {
-        config_update_value('delete_old_messages', 21);
+    if (!isset($config['delete_disabled_agents'])) {
+        config_update_value('delete_disabled_agents', 0);
     }
 
-    if (!isset($config['delete_old_network_matrix'])) {
-        config_update_value('delete_old_network_matrix', 10);
+    if (!isset($config['delete_old_messages'])) {
+        config_update_value('delete_old_messages', 21);
     }
 
     if (!isset($config['max_graph_container'])) {
@@ -2377,6 +2415,10 @@ function config_process_config()
         config_update_value('keep_in_process_status_extra_id', 0);
     }
 
+    if (!isset($config['show_experimental_features'])) {
+        config_update_value('show_experimental_features', 0);
+    }
+
     if (!isset($config['console_log_enabled'])) {
         config_update_value('console_log_enabled', 0);
     }
@@ -2395,6 +2437,10 @@ function config_process_config()
 
     if (!isset($config['check_conexion_interval'])) {
         config_update_value('check_conexion_interval', 180);
+    }
+
+    if (!isset($config['max_hours_old_event_comment'])) {
+        config_update_value('max_hours_old_event_comment', 8);
     }
 
     if (!isset($config['elasticsearch_ip'])) {
@@ -2477,10 +2523,6 @@ function config_process_config()
                     'days_autodisable_deletion'        => [
                         'max' => 90,
                         'min' => 0,
-                    ],
-                    'delete_old_network_matrix'        => [
-                        'max' => 30,
-                        'min' => 1,
                     ],
                     'report_limit'                     => [
                         'max' => 500,
@@ -3100,6 +3142,14 @@ function config_process_config()
         config_update_value('ad_port', 389);
     }
 
+    if (!isset($config['ad_server_secondary'])) {
+        config_update_value('ad_server_secondary', 'localhost');
+    }
+
+    if (!isset($config['ad_port_secondary'])) {
+        config_update_value('ad_port_secondary', 389);
+    }
+
     if (!isset($config['ad_start_tls'])) {
         config_update_value('ad_start_tls', 0);
     }
@@ -3437,10 +3487,6 @@ function config_process_config()
 
     if (!isset($config['dbtype'])) {
         config_update_value('dbtype', 'mysql');
-    }
-
-    if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 0);
     }
 
     if (!isset($config['vc_default_cache_expiration'])) {

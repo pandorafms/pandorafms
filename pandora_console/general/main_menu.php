@@ -492,6 +492,6 @@ echo '</div>';
     <?php
     if (get_user_language($config['id_user']) == 'es') {
         ?>
-    $('#icon_god-extensions').find('span').attr('style', 'text-wrap: nowrap;');
+    $('#icon_god-extensions').find('span').attr('style', 'white-space: nowrap;');
     <?php } ?>
 </script>

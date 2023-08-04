@@ -323,7 +323,7 @@ input[type="radio"] {
 
 input[type="image"] {
   border: 0px;
-  background-color: transparent;
+  background-color: transparent !important;
   height: auto;
   padding: 0px;
 }
@@ -4750,7 +4750,7 @@ form ul.form_flex li ul li {
 .flex_center > form > input[type="image"] {
   margin: 0;
   padding: 0;
-  width: 14px;
+  width: 20px;
   padding-left: 5px;
 }
 

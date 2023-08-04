@@ -3336,9 +3336,23 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'disabled',
     ];
 
+    if (isset($options['title']) && $options['title'] != '') {
+        if (isset($options['class'])) {
+            $options['class'] .= ' forced_title';
+        } else {
+            $options['class'] = 'forced_title';
+        }
+
+        // New way to show the force_title (cleaner and better performance).
+        $output .= 'data-title="'.io_safe_input_html($options['title']).'" ';
+        $output .= 'data-use_title_for_force_title="1" ';
+    }
+
     foreach ($attrs as $attribute) {
-        if (isset($options[$attribute])) {
-            $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+        if ($attribute !== 'title') {
+            if (isset($options[$attribute])) {
+                $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+            }
         }
     }
 

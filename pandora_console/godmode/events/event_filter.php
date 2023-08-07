@@ -133,6 +133,18 @@ $filters = db_get_all_rows_sql($sql);
 
 if ($filters === false) {
     $filters = [];
+} else {
+    foreach ($filters as $key => $filter) {
+        $permission = check_acl($config['id_user'], 0, 'PM');
+        // Validate permission and private filter user.
+        if ($permission || $filter['private_filter_user'] === $config['id_user']) {
+            if ($filter['private_filter_user'] !== null) {
+                $filters[$key]['id_name'] = $filter['id_name'].' (P)';
+            }
+        } else if ($filter['private_filter_user'] !== null) {
+            unset($filters[$key]);
+        }
+    }
 }
 
 $table = new stdClass();

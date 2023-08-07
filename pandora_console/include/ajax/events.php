@@ -337,6 +337,14 @@ if ($save_event_filter) {
     $values['custom_data'] = get_parameter('custom_data');
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
+    // Get private filter from user.
+    $private_filter = get_parameter_switch('private_filter_user', 0);
+    if ((int) $private_filter === 1) {
+        $values['private_filter_user'] = $config['id_user'];
+    } else {
+        $values['private_filter_user'] = null;
+    }
+
     if (is_metaconsole() === true) {
         $values['server_id'] = implode(',', get_parameter('server_id'));
     }
@@ -396,6 +404,17 @@ if ($update_event_filter) {
     $values['id_source_event'] = get_parameter('id_source_event');
     $values['custom_data'] = get_parameter('custom_data');
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
+
+    // Get private filter from user.
+    $private_filter = get_parameter('private_filter_user', 0);
+    $user_private_filter = events_get_event_filter($id);
+    if ((int) $private_filter === 1 && $user_private_filter['private_filter_user'] === null) {
+        $values['private_filter_user'] = $config['id_user'];
+    } else if ($private_filter === $user_private_filter['private_filter_user'] && $user_private_filter['private_filter_user'] !== $config['id_user']) {
+        $values['private_filter_user'] = $user_private_filter['private_filter_user'];
+    } else {
+        $values['private_filter_user'] = null;
+    }
 
     if (is_metaconsole() === true) {
         $values['server_id'] = implode(',', get_parameter('server_id'));
@@ -936,7 +955,8 @@ function save_new_filter() {
             "id_source_event": $("#text-id_source_event").val(),
             "server_id": $("#server_id").val(),
             "custom_data": $("#text-custom_data").val(),
-            "custom_data_filter_type": $("#custom_data_filter_type").val()
+            "custom_data_filter_type": $("#custom_data_filter_type").val(),
+            "private_filter_user": $("#checkbox-private_filter_event").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -1015,7 +1035,8 @@ function save_update_filter() {
         "id_source_event": $("#text-id_source_event").val(),
         "server_id": $("#server_id").val(),
         "custom_data": $("#text-custom_data").val(),
-        "custom_data_filter_type": $("#custom_data_filter_type").val()
+        "custom_data_filter_type": $("#custom_data_filter_type").val(),
+        "private_filter_user": $("#checkbox-private_filter_event").val()
 
         },
         function (data) {

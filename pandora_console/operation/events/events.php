@@ -196,6 +196,10 @@ $search_recursive_groups = get_parameter(
     'filter[search_recursive_groups]',
     ($filter['search_recursive_groups'] ?? '')
 );
+$search_recursive_groups = get_parameter(
+    'filter[private_filter_event]',
+    ($filter['private_filter_event'] ?? '')
+);
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group'] ?? '')
@@ -1322,6 +1326,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
 
         $filter_only_alert = $filter['filter_only_alert'];
         $search_secondary_groups = ($filter['search_secondary_groups'] ?? 0);
+        $private_filter_event = ($filter['private_filter_user'] ?? 0);
         $search_recursive_groups = ($filter['search_recursive_groups'] ?? 0);
         $id_group_filter = $filter['id_group_filter'];
         $date_from = $filter['date_from'];
@@ -1937,6 +1942,25 @@ $in_sec_group .= ui_print_help_tip(
 $in_sec_group .= '</label>';
 $in_sec_group .= '</div>';
 $in .= $in_sec_group;
+
+// User private filter.
+$data = html_print_checkbox_switch(
+    'private_filter_event',
+    $private_filter_event,
+    $private_filter_event,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+
+$in_third_group = '<div class="display-initial">';
+$in_third_group .= $data;
+$in_third_group .= '<label class="vert-align-bottom">';
+$in_third_group .= __('Private event');
+$in_third_group .= '</label>';
+$in_third_group .= '</div>';
+$in .= $in_third_group;
 
 $in .= '</div>';
 $inputs[] = $in;

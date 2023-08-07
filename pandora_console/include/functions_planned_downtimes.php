@@ -701,18 +701,6 @@ function planned_downtimes_stop($downtime)
             break;
 
             case 'disable_agent_modules':
-                /*$update_sql = sprintf(
-                    'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
-                    SET tam.disabled = 0, ta.update_module_count = 1
-                    WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
-                    ta.id_agente = tam.id_agente AND
-                    tpdm.id_downtime = %d',
-                    $id_downtime
-                );
-
-                db_process_sql($update_sql);
-
-                $count = '';*/
                 $agents = db_get_all_rows_filter(
                     'tplanned_downtime_agents',
                     ['id_downtime' => $id_downtime]

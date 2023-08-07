@@ -583,12 +583,6 @@ function agents_get_agents(
                 $status_sql = '(
 					normal_count <> total_count
 					OR total_count = notinit_count)';
-                // The AGENT_STATUS_NOT_NORMAL filter must show all agents that are not in normal status
-                    /*
-                        "(
-                        normal_count <> total_count
-                        AND
-                        (normal_count + notinit_count) <> total_count)";*/
             break;
 
             case AGENT_STATUS_NOT_INIT:
@@ -605,32 +599,28 @@ function agents_get_agents(
 
     $filter_nogroup = $filter;
 
-    // Get user groups
+    // Get user groups.
     $groups = array_keys(users_get_groups($config['id_user'], $access, false));
 
-    // If no group specified, get all user groups
+    // If no group specified, get all user groups.
     if (empty($filter['id_grupo'])) {
         $all_groups = true;
         $filter['id_grupo'] = $groups;
     } else if (! is_array($filter['id_grupo'])) {
         $all_groups = false;
-        // If group is specified but not allowed, return false
+        // If group is specified but not allowed, return false.
         if (! in_array($filter['id_grupo'], $groups)) {
             return false;
         }
 
         $filter['id_grupo'] = (array) $filter['id_grupo'];
-        // Make an array
+        // Make an array.
     } else {
         $all_groups = true;
-        // Check each group specified to the user groups, remove unwanted groups
-        foreach ($filter['id_grupo'] as $key => $id_group) {
-            if (! in_array($id_group, $groups)) {
-                unset($filter['id_grupo'][$key]);
-            }
-        }
 
-        // If no allowed groups are specified return false
+        $filter['id_grupo'] = array_intersect($groups, $filter['id_grupo']);
+
+        // If no allowed groups are specified return false.
         if (count($filter['id_grupo']) == 0) {
             return false;
         }

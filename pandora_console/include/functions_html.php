@@ -5129,7 +5129,7 @@ function html_print_autocomplete_modules(
     ob_start();
 
     $text_color = '';
-    $module_icon = 'images/search_module.png';
+    $module_icon = is_metaconsole() === false ? 'images/search_module.png' : '../../images/search_module.png';
     if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
         $text_color = 'color: white';
         $module_icon = 'images/brick.menu.png';
@@ -5144,7 +5144,7 @@ function html_print_autocomplete_modules(
         100,
         false,
         '',
-        ['style' => 'background: url('.$module_icon.') 95% right; '.$text_color.'']
+        ['style' => 'background: url('.$module_icon.') no-repeat content-box; background-position: center right 5px; '.$text_color.'']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 

@@ -1029,12 +1029,15 @@ switch ($action) {
 
                 case 'top_n_agents_sh':
                     $group = $item['id_group'];
+                    $recursion = $item['recursion'];
                     $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
                 break;
 
                 case 'vul_by_cat':
                     $group = $item['id_group'];
+                    $recursion = $item['recursion'];
                     $cat_selected = $item['cat_security_hardening'];
+                    $ignore_skipped = ($item['ignore_skipped'] !== null) ? $item['ignore_skipped'] : true;
                 break;
 
                 default:
@@ -3703,6 +3706,24 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
+        <tr id="row_ignore_skipped" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Ignore skipped');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'ignore_skipped',
+                    1,
+                    $ignore_skipped,
+                );
+                ?>
+            </td>
+        </tr>
+
         <tr id="row_cat_security_hardening" class="datos">
             <td class="bolder">
                 <?php
@@ -3719,6 +3740,7 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
         <?php
         if ($is_enterprise) {
             ?>
@@ -6592,6 +6614,7 @@ function chooseType() {
     $("#row_type_show").hide();
     $("#row_use_prefix_notation").hide();
     $("#row_cat_security_hardening").hide();
+    $("#row_ignore_skipped").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -7455,6 +7478,7 @@ function chooseType() {
         case 'vul_by_cat':
             $("#row_group").show();
             $("#row_cat_security_hardening").show();
+            $("#row_ignore_skipped").show();
         break;
     }
 

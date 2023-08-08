@@ -682,6 +682,7 @@ class ManageExtensions extends HTML
                     [
                         'onclick' => 'if (!confirm(\''.__('Deleting this application will also delete all the discovery tasks using it. Do you want to delete it?').'\')) return false;',
                         'class'   => 'main_menu_icon invert_filter action_button_hidden',
+                        'title'   => 'Delete',
                     ]
                 );
                 $data[$key]['actions'] .= html_print_input_hidden('short_name', $row['short_name'], true);
@@ -697,6 +698,7 @@ class ManageExtensions extends HTML
                         [
                             'onclick' => 'if (!confirm(\''.__('Are you sure you want to reapply?').'\')) return false;',
                             'class'   => 'main_menu_icon invert_filter action_button_hidden',
+                            'title'   => 'Refresh',
                         ]
                     );
                     $data[$key]['actions'] .= html_print_input_hidden('sync_action', 'refresh', true);

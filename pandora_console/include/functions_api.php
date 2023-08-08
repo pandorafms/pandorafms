@@ -13102,9 +13102,14 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['custom_data'] = '';
         }
 
+        $ack_utimestamp = 0;
+
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento,estado FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario
+                FROM tevento
+                WHERE estado IN (0,2) AND id_extra ="'.$other['data'][18].'";';
+
             $validation = db_get_all_rows_sql($sql_validation);
 
             if ($validation) {
@@ -13114,8 +13119,10 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         && (int) $values['status'] === 0
                     ) {
                         $values['status'] = 2;
+                        $ack_utimestamp = $val['ack_utimestamp'];
+                        $values['id_usuario'] = $val['id_usuario'];
                     }
-
+                    
                     api_set_validate_event_by_id($val['id_evento']);
                 }
             }
@@ -13143,7 +13150,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['tags'],
             $custom_data,
             $values['server_id'],
-            $values['id_extra']
+            $values['id_extra'],
+            $ack_utimestamp
         );
 
         if ($other['data'][12] != '') {
@@ -15755,6 +15763,8 @@ function api_get_cluster_items($cluster_id)
  */
 function api_set_create_event_filter($name, $thrash1, $other, $thrash3)
 {
+    global $config;
+
     if ($name == '') {
         returnError(
             'The event filter could not be created. Event filter name cannot be left blank.'

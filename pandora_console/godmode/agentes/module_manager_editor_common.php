@@ -1847,6 +1847,22 @@ $(document).ready (function () {
         setModuleType(type_name_selected);
     });
 
+    $('#checkbox-warning_inverse_string').change( function () {
+        if ($(this).prop('checked') === true) {
+            $('input[name="warning_thresholds_checks"]').val('warning_inverse');
+        } else {
+            $('input[name="warning_thresholds_checks"]').val('normal_warning');
+        }
+    });
+
+    $('#checkbox-critical_inverse_string').change( function () {
+        if ($(this).prop('checked') === true) {
+            $('input[name="critical_thresholds_checks"]').val('critical_inverse');
+        } else {
+            $('input[name="critical_thresholds_checks"]').val('normal_critical');
+        }
+    });
+
     function setModuleType(type_name_selected) {
         if (type_name_selected.match(/_string$/) == null) {
             // Hide string fields.

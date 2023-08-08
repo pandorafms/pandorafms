@@ -747,6 +747,16 @@ $table->data[$i][] = html_print_label_input_block(
     )
 );
 
+$table->data[$i++][] = html_print_label_input_block(
+    __('Max. hours old events comments'),
+    html_print_input_number(
+        [
+            'name'  => 'max_hours_old_event_comment',
+            'min'   => 0,
+            'value' => $config['max_hours_old_event_comment'],
+        ]
+    )
+);
 $table->data[$i][] = html_print_label_input_block(
     __('Show experimental features'),
     html_print_checkbox_switch(

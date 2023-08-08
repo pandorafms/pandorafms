@@ -185,6 +185,10 @@ echo '</div>';
                     $(`#sub${this.id}`).hide();
                 })
             } else if ($('#menu_full').hasClass('menu_full_collapsed')) {
+                $(".arrow_menu_right").each(function() {
+                    $(this).removeClass('arrow_menu_right');
+                    $(this).addClass('arrow_menu_down');
+                });
                 localStorage.setItem("menuType", "classic");
                 $('ul.submenu').css('left', '280px');
                 var menuType_val = localStorage.getItem("menuType");
@@ -273,6 +277,14 @@ echo '</div>';
         $('.menu_icon').mouseenter(function() {
             var menuType_val = localStorage.getItem("menuType");
             if (!click_display && menuType_val === 'collapsed') {
+                $(".arrow_menu_down").each(function() {
+                    $(this).removeClass('arrow_menu_down');
+                    $(this).addClass('arrow_menu_right');
+                });
+                $(".arrow_menu_up").each(function() {
+                    $(this).removeClass('arrow_menu_up');
+                    $(this).addClass('arrow_menu_right');
+                });
                 table_hover = $(this);
                 handsIn = 1;
                 openTime = new Date().getTime();
@@ -305,6 +317,7 @@ echo '</div>';
                 table_hover2 = $(this);
                 handsIn2 = 1;
                 openTime2 = new Date().getTime();
+                $("#sub" + table_hover2[0].id).attr('style', 'display: none; position: fixed; left: 340px;');
                 $("#sub" + table_hover2[0].id).show();
                 if (typeof(table_noHover2) != 'undefined') {
                     if ("ul#sub" + table_hover2[0].id != "ul#sub" + table_noHover2[0].id) {
@@ -315,6 +328,7 @@ echo '</div>';
         }).mouseleave(function() {
             var menuType_val = localStorage.getItem("menuType");
             if (!click_display && menuType_val === 'collapsed') {
+                $("#sub" + $(this)[0].id).attr('style', 'display: none;');
                 table_noHover2 = table_hover2;
                 handsIn2 = 0;
                 setTimeout(function() {
@@ -474,4 +488,10 @@ echo '</div>';
             return height_logo + height_tabs + padding_menu + height_position;
         }
     });
+
+    <?php
+    if (get_user_language($config['id_user']) == 'es') {
+        ?>
+    $('#icon_god-extensions').find('span').attr('style', 'white-space: nowrap;');
+    <?php } ?>
 </script>

@@ -300,7 +300,7 @@ if (enterprise_installed() === true) {
 // Parent agents.
 $paramsParentAgent = [];
 $paramsParentAgent['return'] = true;
-$paramsParentAgent['show_helptip'] = false;
+$paramsParentAgent['show_helptip'] = true;
 $paramsParentAgent['input_name'] = 'id_parent';
 $paramsParentAgent['print_hidden_input_idagent'] = true;
 $paramsParentAgent['hidden_input_idagent_name'] = 'id_agent_parent';
@@ -646,7 +646,7 @@ if (enterprise_installed() === true) {
 
 // Parent agent.
 $tableAdvancedAgent->data['parent_agent'][] = html_print_label_input_block(
-    __('Parent'),
+    __('Agent parent'),
     ui_print_agent_autocomplete_input($paramsParentAgent)
 );
 
@@ -931,7 +931,7 @@ foreach ($fields as $field) {
     // Filling the data.
     $combo = [];
     $combo = $field['combo_values'];
-    $combo = explode(',', $combo);
+    $combo = explode(',', (empty($combo) === true) ? '' : $combo);
     $combo_values = [];
     foreach ($combo as $value) {
         $combo_values[$value] = $value;
@@ -1205,15 +1205,30 @@ ui_require_jquery_file('bgiframe');
             $("#cascade_protection_module").attr("disabled", 'disabled');
         }
 
-        $("#checkbox-cascade_protection").change(function () {
-            var checked = $("#checkbox-cascade_protection").is(":checked");
-    
-            if (checked) {
+        $("#text-id_parent").change(function(){
+            const parent = $("#text-id_parent").val();
+            if (parent != '') {
+                $("#checkbox-cascade_protection").prop('checked', true);
                 $("#cascade_protection_module").removeAttr("disabled");
             }
             else {
                 $("#cascade_protection_module").val(0);
                 $("#cascade_protection_module").attr("disabled", 'disabled');
+                $("#text-id_parent").removeAttr("required");
+                $("#cascade_protection_module").empty();
+                $("#checkbox-cascade_protection").prop('checked', false);
+            }
+        });
+
+        $("#checkbox-cascade_protection").change(function () {
+            var checked = $("#checkbox-cascade_protection").is(":checked");            if (checked) {
+                $("#cascade_protection_module").removeAttr("disabled");
+                $("#text-id_parent").attr("required", "required");
+            }
+            else {
+                $("#cascade_protection_module").val(0);
+                $("#cascade_protection_module").attr("disabled", 'disabled');
+                $("#text-id_parent").removeAttr("required");
             }
         });
         

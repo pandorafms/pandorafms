@@ -258,7 +258,7 @@ wmi_threads 1
 
 # WMI client binary (wmic by default).
 
-#wmi_client pandorawmic
+wmi_client pandorawmic
 
 # recon_threads. Each thread will scan a different scantask.
 

@@ -86,6 +86,14 @@ else
    echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
 fi
 
+# Delete old dprecated files
+if [ -f %{prefix}/pandora_console/extras/delete_files/delete_files.txt ] ; then
+   echo "Deleting old deprecated files"
+   cd %{prefix}/pandora_console/
+   rm -rf `cat extras/delete_files/delete_files.txt`
+   cd -
+fi
+
 %preun
 
 # Upgrading

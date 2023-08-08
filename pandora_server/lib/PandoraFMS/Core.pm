@@ -535,20 +535,22 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	
 	# Get current time
 	my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time());
-	
+
+	my @weeks = ( 'none', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday');
+	my $special_day;
+
 	# Check weekday
 	if ($alert->{'special_day'}) {
 		logger ($pa_config, "Checking special days '" . $alert->{'name'} . "'.", 10);
 		my $date = sprintf("%4d%02d%02d", $year + 1900, $mon + 1, $mday);
 		# '0001' means every year.
 		my $date_every_year = sprintf("0001%02d%02d", $mon + 1, $mday);
-		my $special_day = get_db_value ($dbh, 'SELECT day_code FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) AND (id_calendar = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'}, $alert->{'special_day'});
+		$special_day = get_db_value ($dbh, 'SELECT day_code FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) AND (id_calendar = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'}, $alert->{'special_day'});
 
 		if (!defined($special_day)) {
 			$special_day = 0;
 		}
 
-		my @weeks = ( 'none', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday');
 		if ($special_day != 0) {
 			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $weeks[$special_day] . ")", 10);
 			return $status if (!defined($alert->{$weeks[$special_day]}) || $alert->{$weeks[$special_day]} == 0);
@@ -565,6 +567,9 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	my $schedule;
 	if (defined($alert->{'schedule'}) && $alert->{'schedule'} ne '') {
 		$schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
+		if ($special_day != 0) {
+			return $status if (!defined($schedule->{$weeks[$special_day]}));
+		}
 	}
 
 	if (defined($schedule)) {
@@ -577,11 +582,18 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 
 		my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
 
+		my $schedule_day;
+		if ($special_day != 0 && defined($schedule->{$weeks[$special_day]})) {
+			$schedule_day = $weeks[$special_day];
+		} else {
+			$schedule_day = $DayNames[$wday];
+		}
+
 		#
 		# Check time slots
 		#
 		my $inSlot = 0;
-		foreach my $timeBlock (@{$schedule->{$DayNames[$wday]}}) {
+		foreach my $timeBlock (@{$schedule->{$schedule_day}}) {
 			if ($timeBlock->{'start'} eq $timeBlock->{'end'}) {
 				# All day.
 				$inSlot = 1;

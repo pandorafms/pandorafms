@@ -110,6 +110,15 @@
   align-items: flex-end;
 }
 
+.dt-buttons {
+  display: flex;
+  margin-top: 10px;
+}
+
+#date-result {
+  padding-left: 4px !important;
+}
+
 @media (max-width: 1500px) {
   .col-md-3 {
     width: 40%;

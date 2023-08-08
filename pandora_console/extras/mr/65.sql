@@ -70,6 +70,10 @@ ALTER TABLE `tlayout_template`
 ADD COLUMN `grid_color` VARCHAR(45) NOT NULL DEFAULT '#cccccc' AFTER `maintenance_mode`,
 ADD COLUMN `grid_size` VARCHAR(45) NOT NULL DEFAULT '10' AFTER `grid_color`;
 
+ALTER TABLE `tagente_modulo` ADD COLUMN `quiet_by_downtime` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tagente_modulo` ADD COLUMN `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `talert_template_modules` ADD COLUMN `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tagente` ADD COLUMN `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0;
 
 DELETE FROM tconfig WHERE token = 'refr';
 

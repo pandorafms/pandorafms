@@ -2543,6 +2543,12 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 	if ($only_alerts == 0) {
 		if ($downtime->{'type_downtime'} eq 'disable_agent_modules') {
 			db_do($dbh,'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
+				SET tam.disabled_by_downtime = 1
+				WHERE tam.disabled = 0 AND tpdm.id_agent_module = tam.id_agente_modulo AND
+				ta.id_agente = tam.id_agente AND
+				tpdm.id_downtime = ?', $downtime->{'id'});
+
+			db_do($dbh,'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
 				SET tam.disabled = 1, ta.update_module_count = 1
 				WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
 				ta.id_agente = tam.id_agente AND
@@ -2551,7 +2557,12 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 			db_do($dbh,'UPDATE tplanned_downtime_agents tp, tagente ta
 				SET tp.manually_disabled = ta.disabled
 				WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
-		
+
+			db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+				SET ta.disabled_by_downtime = 1
+				WHERE ta.disabled = 0 AND tpa.id_agent = ta.id_agente AND
+				tpa.id_downtime = ?',$downtime->{'id'});
+
 			db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
 				SET ta.disabled = 1, ta.update_module_count = 1
 				WHERE tpa.id_agent = ta.id_agente AND
@@ -2563,6 +2574,11 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 			WHERE id_downtime = ' . $downtime->{'id'});
 			
 		foreach my $downtime_agent (@downtime_agents) {
+			db_do ($dbh, 'UPDATE talert_template_modules tat, tagente_modulo tam
+				SET tat.disabled_by_downtime = 1
+				WHERE tat.disabled = 0 AND tat.id_agent_module = tam.id_agente_modulo 
+				AND tam.id_agente = ?', $downtime_agent->{'id_agent'});
+
 			db_do ($dbh, 'UPDATE talert_template_modules tat, tagente_modulo tam
 				SET tat.disabled = 1
 				WHERE tat.id_agent_module = tam.id_agente_modulo 
@@ -2643,6 +2659,13 @@ sub pandora_planned_downtime_set_quiet_elements($$$) {
 					AND id_downtime = ' . $downtime_id);
 			
 			foreach my $downtime_module (@downtime_modules) {
+				# If traversed module was already quiet, do not set quiet_by_downtime flag.
+				# quiet_by_downtime is used to avoid setting the module back to quiet=0 when downtime is over for those modules that were quiet before the downtime.
+				db_do ($dbh, 'UPDATE tagente_modulo
+					SET quiet_by_downtime = 1
+					WHERE quiet = 0 && id_agente_modulo = ?',
+					$downtime_module->{'id_agent_module'});
+
 				db_do ($dbh, 'UPDATE tagente_modulo
 					SET quiet = 1
 					WHERE id_agente_modulo = ?',
@@ -2665,7 +2688,7 @@ sub pandora_planned_downtime_unset_quiet_elements($$$) {
 	my @downtime_agents = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime_agents
 		WHERE id_downtime = ' . $downtime_id);
-	
+
 	foreach my $downtime_agent (@downtime_agents) {
 		if ($downtime_agent->{'all_modules'}) {
 			db_do ($dbh, 'UPDATE tagente

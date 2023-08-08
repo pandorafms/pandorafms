@@ -91,7 +91,9 @@ if [ -f %{prefix}/pandora_console/extras/delete_files/delete_files.txt ] ; then
    echo "Deleting old deprecated files"
    cd %{prefix}/pandora_console/
    rm -rf `cat extras/delete_files/delete_files.txt`
-   cd -
+   cd - > /dev/null
+   echo "Done deleting deprecated files"
+
 fi
 
 %preun

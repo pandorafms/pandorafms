@@ -664,20 +664,31 @@ if ($update_user) {
     $values['local_user'] = (bool) get_parameter('local_user', false);
     $values['strict_acl'] = (bool) get_parameter('strict_acl', false);
     $values['session_time'] = (int) get_parameter('session_time', 0);
+
+    $force_update_session_expire = false;
+    if ($values['session_time'] !== $user_info['session_time']) {
+        $force_update_session_expire = true;
+    }
+
     // Previously defined.
     $values['autorefresh_white_list'] = $autorefresh_white_list;
 
     $res1 = update_user($id, $values);
 
+    if ($force_update_session_expire === true) {
+        config_prepare_expire_time_session(true);
+    }
+
     if ($config['user_can_update_password']) {
         $password_new = (string) get_parameter('password_new', '');
         $password_confirm = (string) get_parameter('password_confirm', '');
         $own_password_confirm = (string) get_parameter('own_password_confirm', '');
+        $id_user = (string) get_parameter('id_user', '');
 
         if ($password_new != '') {
             $correct_password = false;
 
-            $user_credentials_check = process_user_login($config['id_user'], $own_password_confirm, true);
+            $user_credentials_check = process_user_login($id_user, $own_password_confirm, true);
 
             if ($user_credentials_check !== false) {
                 $correct_password = true;

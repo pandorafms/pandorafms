@@ -336,6 +336,10 @@ if (is_ajax() === true) {
         $config['block_size']
     );
 
+    if ($length === 'null') {
+        $length = $config['block_size'];
+    }
+
     if ($get_events !== 0) {
         try {
             ob_start();
@@ -2556,7 +2560,7 @@ try {
                 [
                     'id'                             => $table_id,
                     'class'                          => 'info_table events',
-                    'style'                          => 'width: 99%;',
+                    'style'                          => 'width: 100%;',
                     'ajax_url'                       => 'operation/events/events',
                     'ajax_data'                      => [
                         'get_events' => 1,

@@ -1916,7 +1916,7 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
  *
  * @param $thrash3 Don't use.
  */
-function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false)
+function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false, $message=false)
 {
     global $config;
 
@@ -2009,16 +2009,40 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false)
 
             // Check if agent exists (BUG WC-50518-2).
             if ($alias == '' && $alias_as_name === 0) {
+                if ($message === true) {
+                    return 'No agent alias specified';
+                }
+
                 returnError('No agent alias specified');
             } else if (agents_get_agent_id($nombre_agente)) {
+                if ($message === true) {
+                    return 'The agent name already exists in DB.';
+                }
+
                 returnError('The agent name already exists in DB.');
             } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
+                if ($message === true) {
+                    return 'The group does not exist.';
+                }
+
                 returnError('The group does not exist.');
             } else if (group_allow_more_agents($grupo, true, 'create') === false) {
+                if ($message === true) {
+                    return 'Agent cannot be created due to the maximum agent limit for this group';
+                }
+
                 returnError('Agent cannot be created due to the maximum agent limit for this group');
             } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
+                if ($message === true) {
+                    return 'The OS does not exist.';
+                }
+
                 returnError('The OS does not exist.');
             } else if ($server_name === false) {
+                if ($message === true) {
+                    return 'The '.get_product_name().' Server does not exist.';
+                }
+
                 returnError('The '.get_product_name().' Server does not exist.');
             } else {
                 if ($alias_as_name === 1) {
@@ -13122,7 +13146,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         $ack_utimestamp = $val['ack_utimestamp'];
                         $values['id_usuario'] = $val['id_usuario'];
                     }
-                    
+
                     api_set_validate_event_by_id($val['id_evento']);
                 }
             }

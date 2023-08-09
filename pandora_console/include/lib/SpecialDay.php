@@ -78,6 +78,17 @@ class SpecialDay extends Entity
             // Update.
             $updates = $this->fields;
 
+            $exist_special_days = $this->specialDays(
+                [ '`talert_special_days`.*' ],
+                ['date_match' => $updates['date']]
+            );
+
+            if (count($exist_special_days) > 0) {
+                throw new \Exception(
+                    __('Already exist special day in this day.'),
+                );
+            }
+
             $rs = \db_process_sql_update(
                 $this->table,
                 $updates,
@@ -93,6 +104,17 @@ class SpecialDay extends Entity
         } else {
             // Creation.
             $inserts = $this->fields;
+
+            $exist_special_days = $this->specialDays(
+                [ '`talert_special_days`.*' ],
+                ['date_match' => $inserts['date']]
+            );
+
+            if (count($exist_special_days) > 0) {
+                throw new \Exception(
+                    __('Already exist special day in this day.'),
+                );
+            }
 
             // Clean null fields.
             foreach ($inserts as $k => $v) {

@@ -89,7 +89,7 @@ class Cloud extends Wizard
         int $page=0,
         string $msg='Default message. Not set.',
         string $icon='images/wizard/cloud.png',
-        string $label='Cloud (legacy)'
+        string $label='Cloud'
     ) {
         $this->setBreadcrum([]);
 

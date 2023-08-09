@@ -1448,6 +1448,17 @@ function defineTinyMCE(selector) {
   });
 }
 
+function defineTinyMCEDark(selector) {
+  tinymce.init({
+    selector: selector,
+    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    promotion: false,
+    branding: false,
+    skin: "oxide-dark",
+    content_css: "dark"
+  });
+}
+
 function UndefineTinyMCE(textarea_id) {
   tinyMCE.remove(textarea_id);
   $(textarea_id).show("");

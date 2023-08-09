@@ -182,7 +182,7 @@ if ($layoutDatas === false) {
 $alternativeStyle = true;
 
 $parents = visual_map_get_items_parents($idVisualConsole);
-
+$x = 0;
 foreach ($layoutDatas as $layoutData) {
     $idLayoutData = $layoutData['id'];
 
@@ -537,7 +537,8 @@ foreach ($layoutDatas as $layoutData) {
 
     $table->data[($i + 1)][5] = '';
     $table->data[($i + 1)][5] .= html_print_checkbox('multiple_delete_items', $idLayoutData, false, true);
-    $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'" '.'onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
+    $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'"onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
+    $table->data[($i + 1)][5] .= html_print_input_hidden('updated_'.$idLayoutData, '0', true);
 
     // Second row
     $table->data[($i + 2)]['icon'] = '';
@@ -778,6 +779,12 @@ foreach ($layoutDatas as $layoutData) {
     $alternativeStyle = !$alternativeStyle;
 
     $i = ($i + 3);
+    $x++;
+}
+
+$x = (($x * 13) + 14);
+if ($x > ini_get('max_input_vars')) {
+    ui_print_warning_message(__('You have to change the <b>"max_input_vars"</b> and set bigger value on <b>php.ini</b> for update, there is too much elements to update'));
 }
 
 $pure = get_parameter('pure', 0);
@@ -886,6 +893,16 @@ ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
             });
 
             return false;
+        });
+
+        $('select[id^="image_"], input[name^="width_"], input[name^="height"], input[name^="left_"], input[name^="top_"], select[id^="parent_"], input[id^="agent_"], select[id^="module_"]').change(function(){
+            var id = $(this).attr('id').split('_')[1];
+            $('#hidden-updated_'+id).val('1');
+        });
+
+        $('select[id^="map_linked"]').change(function(){
+            var id = $(this).attr('id').split('_')[2];
+            $('#hidden-updated_'+id).val('1');
         });
 
         defineTinyMCE('#tinyMCE_editor');

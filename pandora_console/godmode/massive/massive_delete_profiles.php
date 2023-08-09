@@ -67,8 +67,27 @@ if (is_ajax()) {
     if ($get_users) {
         $id_group = get_parameter('id_group');
         $id_profile = get_parameter('id_profile');
+        $get_all_groups = get_parameter('get_all_groups', '0');
 
-        $profile_data = db_get_all_rows_filter('tusuario_perfil', ['id_perfil' => $id_profile[0], 'id_grupo' => $id_group[0]]);
+        if ($get_all_groups !== '0') {
+            $profile_data = db_get_all_rows_sql(
+                'SELECT *
+                    FROM tusuario_perfil
+                    WHERE `id_perfil` = "'.$id_profile[0].'"
+                    GROUP BY id_usuario'
+            );
+        } else {
+            if (strlen($id_profile[0]) > 0 && strlen($id_group[0]) > 0) {
+                $profile_data = db_get_all_rows_filter(
+                    'tusuario_perfil',
+                    [
+                        'id_perfil' => $id_profile[0],
+                        'id_grupo'  => $id_group[0],
+                    ]
+                );
+            }
+        }
+
         if (!users_is_admin()) {
             foreach ($profile_data as $user => $values) {
                 if (users_is_admin($values['id_usuario'])) {
@@ -243,6 +262,21 @@ $data[2] .= html_print_select(
 );
 
 array_push($table->data, $data);
+$table->data[1][0] = '';
+$table->data[1][1] = html_print_label_input_block(
+    __('Show all groups'),
+    html_print_checkbox_switch(
+        'get_all_groups',
+        1,
+        $get_all_groups,
+        true,
+        false,
+        '',
+        false,
+        ' float-right'
+    ),
+    ['div_class' => 'center_align']
+);
 
 html_print_table($table);
 
@@ -273,7 +307,8 @@ $(document).ready (function () {
             {"page" : "godmode/massive/massive_delete_profiles",
             "get_users" : 1,
             "id_group[]" : $("#groups_id").val(),
-            "id_profile[]" : $("#profiles_id").val()
+            "id_profile[]" : $("#profiles_id").val(),
+            "get_all_groups" : $('#checkbox-get_all_groups').is(':checked') ? 1 : 0
             },
             function (data, status) {
                 options = "";
@@ -293,6 +328,10 @@ $(document).ready (function () {
     });
 
     $("#profiles_id").change (function () {
+        update_users();
+    });
+
+    $("#checkbox-get_all_groups").change (function () {
         update_users();
     });
 });

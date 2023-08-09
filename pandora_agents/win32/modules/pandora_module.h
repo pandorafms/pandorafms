@@ -171,6 +171,7 @@ namespace Pandora_Modules {
 		Cron				  *cron;
 		list<Condition *>     *intensive_condition_list;
 		time_t                timestamp;
+		string                timestamp_file;
 		unsigned char         intensive_match;
 		int                   intensive_interval;
 		string                unit, custom_id, str_warning, str_critical;
@@ -238,6 +239,7 @@ namespace Pandora_Modules {
 		bool         getAsync ();
 		void         setExecutions(long executions=0);
 		long         getExecutions();
+		void         initExecutions ();
 
 		virtual string getXml      ();
 
@@ -303,6 +305,9 @@ namespace Pandora_Modules {
 		int         hasOutput ();
 		void        setTimestamp (time_t timestamp);
 		time_t      getTimestamp ();
+		void        setTimestampFile (string file_name);
+		string      getTimestampFile ();
+		void        updateTimestampFile ();
 		void        setIntensiveMatch (unsigned char intensive_match);
 		unsigned char getIntensiveMatch ();
 		bool        isIntensive ();

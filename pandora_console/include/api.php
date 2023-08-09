@@ -328,7 +328,6 @@ if ($correctLogin === true) {
                     break;
 
                     default:
-                    return false;
                         // Ignore.
                     break;
                 }

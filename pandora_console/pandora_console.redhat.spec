@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_console
 %define version     7.0NG.772
-%define release     230728
+%define release     230809
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -84,6 +84,16 @@ if [ -f %{prefix}/pandora_console/include/config.php ] ; then
 
 else
    echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
+fi
+
+# Delete old dprecated files
+if [ -f %{prefix}/pandora_console/extras/delete_files/delete_files.txt ] ; then
+   echo "Deleting old deprecated files"
+   cd %{prefix}/pandora_console/
+   rm -rf `cat extras/delete_files/delete_files.txt`
+   cd - > /dev/null
+   echo "Done deleting deprecated files"
+
 fi
 
 %preun

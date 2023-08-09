@@ -2227,7 +2227,7 @@ function html_print_extended_select_for_time(
         $nothing_value,
         false,
         false,
-        false,
+        true,
         $class,
         $readonly,
         'font-size: xx-small;'.$select_style

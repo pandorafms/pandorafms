@@ -292,7 +292,7 @@ enterprise_include_once('include/auth/saml.php');
 if (isset($config['id_user']) === false) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
-    setcookie('errormsg', null, -1);
+    setcookie('errormsg', '', -1);
 
     if (isset($_GET['login']) === true) {
         include_once 'include/functions_db.php';
@@ -1610,7 +1610,7 @@ require 'include/php_to_js_values.php';
 
                     $(".ui-widget-overlay").css("background", "#000");
                     $(".ui-widget-overlay").css("opacity", 0.6);
-                    $(".ui-draggable").css("cursor", "inherit");
+                    //$(".ui-draggable").css("cursor", "inherit");
 
                 } catch (error) {
                     console.log(error);

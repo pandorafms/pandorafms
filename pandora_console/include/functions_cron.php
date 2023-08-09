@@ -923,16 +923,15 @@ function cron_list_table()
                 }
 
                 if ($manage_pandora) {
-                    $data[7] .= '<a href="javascript:form_add_cron_task('.$task['id'].',1);">';
-                    $data[7] .= html_print_image(
-                        'images/delete.svg',
-                        true,
+                    $data[7] .= html_print_menu_button(
                         [
-                            'title' => __('Delete'),
-                            'class' => 'main_menu_icon invert_filter',
-                        ]
+                            'href'    => $url.'delete_task=1&id_user_task='.$task['id'],
+                            'image'   => 'images/delete.svg',
+                            'title'   => __('Delete'),
+                            'onClick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+                        ],
+                        true
                     );
-                    $data[7] .= '</a>';
                 }
             } else {
                 if ($write_perms || $manage_pandora) {
@@ -949,17 +948,15 @@ function cron_list_table()
                 }
 
                 if ($manage_perms || $manage_pandora) {
-                    $data[7] .= '<a href="'.$url;
-                    $data[7] .= 'delete_task=1&id_user_task='.$task['id'].'">';
-                    $data[7] .= html_print_image(
-                        'images/delete.svg',
-                        true,
+                    $data[7] .= html_print_menu_button(
                         [
-                            'title' => __('Delete'),
-                            'class' => 'main_menu_icon invert_filter',
-                        ]
+                            'href'    => $url.'delete_task=1&id_user_task='.$task['id'],
+                            'image'   => 'images/delete.svg',
+                            'title'   => __('Delete'),
+                            'onClick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+                        ],
+                        true
                     );
-                    $data[7] .= '</a>';
                 }
             }
 

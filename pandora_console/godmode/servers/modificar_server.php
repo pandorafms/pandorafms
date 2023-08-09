@@ -45,9 +45,120 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 
 if (isset($_GET['server']) === true) {
     $id_server = get_parameter_get('server');
+    $title = __('Update').' ';
+    $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy, port FROM tserver WHERE id_server = %d', $id_server);
+    $row = db_get_row_sql($sql);
+
+    switch ($row['server_type']) {
+        case SERVER_TYPE_DATA:
+            $title .= __('Data server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_NETWORK:
+            $title .= __('Network server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_SNMP:
+            $title .= __('SNMP Trap server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_DISCOVERY:
+            $title .= __('Discovery server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_PLUGIN:
+            $title .= __('Plugin server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_PREDICTION:
+            $title .= __('Prediction server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_WMI:
+            $title .= __('WMI server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_EXPORT:
+            $title .= __('Export server').' ID: '.$id_server;
+            $id_modulo = 0;
+        break;
+
+        case SERVER_TYPE_INVENTORY:
+            $title .= __('Inventory server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_WEB:
+            $title .= __('Web server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_EVENT:
+            $title .= __('Event server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_CORRELATION:
+            $title .= __('Correlation server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_ENTERPRISE_ICMP:
+            $title .= __('Enterprise ICMP server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_ENTERPRISE_SNMP:
+            $title .= __('Enterprise SNMP server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_ENTERPRISE_SATELLITE:
+            $title .= __('Enterprise Satellite server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_ENTERPRISE_TRANSACTIONAL:
+            $title .= __('Enterprise Transactional server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_MAINFRAME:
+            $title .= __('Mainframe server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_SYNC:
+            $title .= __('Sync server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_WUX:
+            $title .= __('Wux server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_SYSLOG:
+            $title .= __('Log server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_NCM:
+            $title .= __('NCM server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_AUTOPROVISION:
+            $title .= __('Autoprovision server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_MIGRATION:
+            $title .= __('Migration server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_ALERT:
+            $title .= __('Alert server').' ID: '.$id_server;
+        break;
+
+        case SERVER_TYPE_NETFLOW:
+            $title .= __('Netflow server').' ID: '.$id_server;
+        break;
+
+        default:
+            $title = __('Update server').' ID: '.$id_server;
+        break;
+    }
+
     // Headers.
     ui_print_standard_header(
-        __('Update Server'),
+        $title,
         'images/gm_servers.png',
         false,
         '',
@@ -65,8 +176,6 @@ if (isset($_GET['server']) === true) {
         ]
     );
 
-    $sql = sprintf('SELECT name, ip_address, description, server_type, exec_proxy, port FROM tserver WHERE id_server = %d', $id_server);
-    $row = db_get_row_sql($sql);
     echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
     html_print_input_hidden('server', $id_server);
 

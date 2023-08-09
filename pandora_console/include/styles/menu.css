@@ -636,6 +636,12 @@ ul li {
   z-index: 1;
 }
 
+.arrow_menu_right {
+  background: url(../../images/menu/arrow_down_grey.svg) no-repeat 50% 100%;
+  z-index: 1;
+  transform: rotate(-0.25turn);
+}
+
 .span_selected {
   color: #1d7874 !important;
   font-weight: bold !important;

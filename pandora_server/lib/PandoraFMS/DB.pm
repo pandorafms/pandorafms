@@ -62,6 +62,7 @@ our @EXPORT = qw(
 		set_update_agent
 		set_update_agentmodule
 		get_action_id
+		get_action_name
 		get_addr_id
 		get_agent_addr_id
 		get_agent_id
@@ -102,6 +103,8 @@ our @EXPORT = qw(
 		get_server_id
 		get_tag_id
 		get_tag_name
+		get_template_id
+		get_template_name
 		get_group_name
 		get_template_id
 		get_template_module_id
@@ -257,14 +260,27 @@ sub get_console_api_url ($$) {
 }
 
 ########################################################################
-## Return action ID given the action name.
+## Return the ID of an alert action given its name.
 ########################################################################
 sub get_action_id ($$) {
 	my ($dbh, $action_name) = @_;
 
-	my $rc = get_db_value ($dbh, "SELECT id FROM talert_actions WHERE name = ?", $action_name);
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_actions
+	                       WHERE name = ?", safe_input($action_name));
 	return defined ($rc) ? $rc : -1;
 }
+
+########################################################################
+## Return the name of an alert action given its ID.
+########################################################################
+sub get_action_name ($$) {
+	my ($dbh, $action_id) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT name FROM talert_actions
+	                       WHERE id = ?", safe_input($action_id));
+	return defined ($rc) ? $rc : -1;
+}
+
 
 ########################################################################
 ## Return command ID given the command name.
@@ -303,6 +319,29 @@ sub get_agent_ids_from_alias ($$) {
 
 	return @rc;
 }
+
+########################################################################
+## Return the ID of an alert template given its name.
+########################################################################
+sub get_template_id ($$) {
+	my ($dbh, $template_name) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_templates
+	                       WHERE name = ?", safe_input($template_name));
+	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return the name of an alert template given its ID.
+########################################################################
+sub get_template_name ($$) {
+	my ($dbh, $template_id) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT name FROM talert_templates
+	                       WHERE id = ?", safe_input($template_id));
+	return defined ($rc) ? $rc : -1;
+}
+
 
 ########################################################################
 ## Return server ID given the name of server.
@@ -695,24 +734,6 @@ sub get_agent_module_id ($$$) {
 	my ($dbh, $module_name, $agent_id) = @_;
 	
 	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 0 AND nombre = ? AND id_agente = ?", safe_input($module_name), $agent_id);
-	return defined ($rc) ? $rc : -1;
-}
-
-##########################################################################
-## Return template id given the template name.
-##########################################################################
-sub get_template_id ($$) {
-	my ($dbh, $template_name) = @_;
-	
-	my $field;
-	if ($RDBMS eq 'oracle') {
-		$field = "to_char(name)";
-	}
-	else {
-		$field = "name";
-	}
-	
-	my $rc = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE $field = ?", safe_input($template_name));
 	return defined ($rc) ? $rc : -1;
 }
 

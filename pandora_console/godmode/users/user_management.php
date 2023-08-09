@@ -840,10 +840,12 @@ if ($config['ITSM_enabled'] && $config['ITSM_user_level_conf']) {
 
 if (isset($CodeQRTable) === true || isset($apiTokenContent) === true) {
     // QR Code and API Token advice.
+    $titleQr = '<span class="font-title-font">'.__('Contact details (QR)').'</span>';
+    $titleApi = '<span class="font-title-font margin-top-10">'.__('API Token credentials').'</span>';
     html_print_div(
         [
             'id'      => 'api_qrcode_display',
-            'content' => $CodeQRTable.$apiTokenContent,
+            'content' => $titleQr.$CodeQRTable.$titleApi.$apiTokenContent,
         ]
     );
 }

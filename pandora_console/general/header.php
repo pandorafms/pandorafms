@@ -228,7 +228,9 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         );
 
         $autorefresh_list = json_decode(
-            $select[0]['autorefresh_white_list']
+            (empty($select[0]['autorefresh_white_list']) === false)
+            ? $select[0]['autorefresh_white_list']
+            : ''
         );
 
         $header_autorefresh = '';

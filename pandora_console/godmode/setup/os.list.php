@@ -132,7 +132,15 @@ foreach ($osList as $os) {
             $data[] = html_print_anchor(
                 [
                     'href'    => $hrefDelete,
-                    'content' => html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']),
+                    'content' => html_print_image(
+                        'images/delete.svg',
+                        true,
+                        [
+                            'alt'   => __('Delete'),
+                            'title' => __('Delete'),
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    ),
                 ],
                 true
             );

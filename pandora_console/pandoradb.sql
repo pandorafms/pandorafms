@@ -85,12 +85,12 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `update_alert_count` TINYINT NOT NULL DEFAULT 0,
   `update_secondary_groups` TINYINT NOT NULL DEFAULT 0,
   `alias` VARCHAR(600) NOT NULL DEFAULT '',
-  `transactional_agent` TINYINT NOT NULL DEFAULT 0,
   `alias_as_name` TINYINT NOT NULL DEFAULT 0,
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -274,6 +274,8 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `quiet_by_downtime` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -550,6 +552,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
   `standby` TINYINT DEFAULT 0,
   `priority` TINYINT DEFAULT 0,
   `force_execution` TINYINT DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `idx_template_module` (`id_agent_module`),
   FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
@@ -706,7 +709,6 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `id_agentmodule` INT NOT NULL DEFAULT 0,
   `id_alert_am` INT NOT NULL DEFAULT 0,
   `criticity` INT UNSIGNED NOT NULL DEFAULT 0,
-  `user_comment` TEXT,
   `tags` TEXT,
   `source` TINYTEXT,
   `id_extra` TINYTEXT,
@@ -743,6 +745,20 @@ CREATE TABLE IF NOT EXISTS `tevent_extended` (
   ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
+-- Table `tevent_comment`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tevent_comment` (
+  `id` serial PRIMARY KEY,
+  `id_event` BIGINT UNSIGNED NOT NULL,
+  `utimestamp` BIGINT NOT NULL DEFAULT 0,
+  `comment` TEXT,
+  `id_user` VARCHAR(255) DEFAULT NULL,
+  `action` TEXT,
+  FOREIGN KEY (`id_event`) REFERENCES `tevento`(`id_evento`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+  
 -- ---------------------------------------------------------------------
 -- Table `tgrupo`
 -- ---------------------------------------------------------------------
@@ -3452,7 +3468,6 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
   `update_module_count` TINYINT NOT NULL DEFAULT 0,
   `update_alert_count` TINYINT NOT NULL DEFAULT 0,
   `update_secondary_groups` TINYINT NOT NULL DEFAULT 0,
-  `transactional_agent` TINYINT NOT NULL DEFAULT 0,
   `alias` VARCHAR(600) NOT NULL DEFAULT '',
   `alias_as_name` TINYINT NOT NULL DEFAULT 0,
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,

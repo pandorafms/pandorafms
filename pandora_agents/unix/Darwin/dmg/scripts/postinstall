@@ -30,6 +30,7 @@ else
 	mkdir -p /usr/local/share/man/man1/
 	mkdir -p /usr/local/share/pandora_agent/collections/
 	mkdir -p /usr/local/share/pandora_agent/commands/
+	mkdir -p /usr/local/share/pandora_agent/ref/
 	mkdir -p /etc/pandora/
 	mkdir -p /var/spool/pandora/data_out/
 	mkdir -p /var/log/pandora/
@@ -39,6 +40,7 @@ else
 	# Setting permissions to directories and files
 	chmod -R 700 /usr/local/share/pandora_agent/collections
 	chmod -R 700 /usr/local/share/pandora_agent/commands
+	chmod -R 700 /usr/local/share/pandora_agent/ref
 	chmod -R 755 /etc/pandora/
 	chmod -R 700 /var/spool/pandora/data_out
 	chmod -R 711 /var/log/pandora
@@ -69,6 +71,7 @@ chown root:wheel /usr/local/bin/tentacle_client
 ln -s /usr/local/share/pandora_agent/plugins /etc/pandora/plugins
 ln -s /usr/local/share/pandora_agent/commands /etc/pandora/commands
 ln -s /usr/local/share/pandora_agent/collections /etc/pandora/collections
+ln -s /usr/local/share/pandora_agent/ref /etc/pandora/ref
 
 
 # Copy manuals

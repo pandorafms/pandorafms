@@ -3907,7 +3907,7 @@ if ($resultOperationDB !== null) {
         break;
 
         case 'SLA':
-            $err .= 'You must enter some character in SLA limit field';
+            $err .= 'No changes found.';
         default:
             $err .= '';
         break;
@@ -3916,7 +3916,7 @@ if ($resultOperationDB !== null) {
     ui_print_result_message(
         $resultOperationDB,
         __('Successfull action'),
-        __('Unsuccessful action<br><br>'.$err)
+        __($err)
     );
 }
 

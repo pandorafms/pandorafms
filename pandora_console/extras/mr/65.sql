@@ -83,4 +83,6 @@ INSERT INTO `tmodule_inventory` (`id_module_inventory`, `id_os`, `name`, `descri
 
 ALTER TABLE `treport_content`  ADD COLUMN `period_range` INT NULL DEFAULT 0 AFTER `period`;
 
+ALTER TABLE `tusuario`  ADD COLUMN `session_max_time_expire` INT NOT NULL DEFAULT 0 AFTER `auth_token_secret`;
+
 COMMIT;

@@ -32,6 +32,8 @@ require_once $config['homedir'].'/include/class/HTML.class.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_reports.php';
 require_once $config['homedir'].'/include/functions_cron.php';
+require_once $config['homedir'].'/godmode/wizards/Wizard.main.php';
+
 enterprise_include_once('include/functions_tasklist.php');
 enterprise_include_once('include/functions_cron.php');
 
@@ -215,7 +217,8 @@ class DiscoveryTaskList extends HTML
         }
 
         // Warning Message.
-        $this->getWarningMessage();
+        $wizar_main = new Wizard();
+        $wizar_main->printWarningMessage();
 
         return $ret;
     }
@@ -779,7 +782,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Cloud.Azure.Compute');
+                        $data[6] .= __('Cloud.Azure.Compute (legacy)');
                     break;
 
                     case DISCOVERY_CLOUD_AWS_EC2:
@@ -792,7 +795,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Cloud.AWS.EC2');
+                        $data[6] .= __('Cloud.AWS.EC2 (legacy)');
                     break;
 
                     case DISCOVERY_CLOUD_AWS_RDS:
@@ -805,7 +808,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.Cloud.Aws.RDS');
+                        $data[6] .= __('Discovery.Cloud.Aws.RDS (legacy)');
                     break;
 
                     case DISCOVERY_CLOUD_AWS_S3:
@@ -818,7 +821,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.Cloud.Aws.S3');
+                        $data[6] .= __('Discovery.Cloud.Aws.S3 (legacy)');
                     break;
 
                     case DISCOVERY_APP_MYSQL:
@@ -831,7 +834,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.App.MySQL');
+                        $data[6] .= __('Discovery.App.MySQL (legacy)');
                     break;
 
                     case DISCOVERY_APP_ORACLE:
@@ -844,7 +847,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.App.Oracle');
+                        $data[6] .= __('Discovery.App.Oracle (legacy)');
                     break;
 
                     case DISCOVERY_APP_DB2:
@@ -857,7 +860,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.App.DB2');
+                        $data[6] .= __('Discovery.App.DB2 (legacy)');
                     break;
 
                     case DISCOVERY_DEPLOY_AGENTS:
@@ -868,7 +871,7 @@ class DiscoveryTaskList extends HTML
                             true,
                             ['title' => __('Agent deployment')]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.Agent.Deployment');
+                        $data[6] .= __('Discovery.Agent.Deployment (legacy)');
                     break;
 
                     case DISCOVERY_APP_MICROSOFT_SQL_SERVER:
@@ -881,7 +884,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.App.Microsoft SQL Server');
+                        $data[6] .= __('Discovery.App.Microsoft SQL Server (legacy)');
                     break;
 
                     case DISCOVERY_EXTENSION:
@@ -909,7 +912,7 @@ class DiscoveryTaskList extends HTML
                                     'class' => 'main_menu_icon invert_filter',
                                 ]
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.NetScan');
+                            $data[6] .= __('Discovery.NetScan (legacy)');
                         } else {
                             // APP or external script recon task.
                             $data[6] = html_print_image(
@@ -917,7 +920,7 @@ class DiscoveryTaskList extends HTML
                                 true,
                                 ['class' => 'main_menu_icon invert_filter']
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= $recon_script_name;
+                            $data[6] .= $recon_script_name.' (legacy)';
                         }
                     break;
                 }
@@ -2025,13 +2028,13 @@ class DiscoveryTaskList extends HTML
     }
 
 
-    /**
+    /*
      * Generates warning message.
      *
      * @return void  Warning message.
-     */
-    public function getWarningMessage()
-    {
+
+        public function getWarningMessage()
+        {
         return ui_print_warning_message(
             __(
                 'Starting with version 773, the new modular system of discovery 2.0 has been implemented. The current
@@ -2046,7 +2049,7 @@ class DiscoveryTaskList extends HTML
                 model will be included.'
             )
         );
-    }
+    }*/
 
 
 }

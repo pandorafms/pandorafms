@@ -67,6 +67,9 @@ class Applications extends Wizard
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=app'
         );
 
+        // Print Warning Message.
+        $this->printWarningMessage();
+
         return $this;
     }
 

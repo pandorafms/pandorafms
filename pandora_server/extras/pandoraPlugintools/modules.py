@@ -1,5 +1,3 @@
-from .general import debug_dict
-
 ####
 # Init module template
 #########################################################################################
@@ -79,6 +77,8 @@ def print_module(
     - Module "value" field accepts str type or [list] for datalists.
     - Use print_flag to show modules' XML in STDOUT.
     """
+    from .output import print_stdout
+
     module_xml = ""
 
     if module is not None:
@@ -193,7 +193,7 @@ def print_module(
         module_xml += "</module>\n"
 
     if print_flag:
-        print(module_xml)
+        print_stdout(module_xml)
 
     return module_xml
 
@@ -234,6 +234,8 @@ def print_log_module(
     - Module "value" field accepts str type.
     - Use not_print_flag to avoid printing the XML (only populates variables).
     """
+    from .output import print_stdout
+
     module_xml = ""
 
     if module is not None:
@@ -246,6 +248,6 @@ def print_log_module(
         module_xml += "</log_module>\n"
 
     if print_flag:
-        print(module_xml)
+        print_stdout(module_xml)
 
     return module_xml

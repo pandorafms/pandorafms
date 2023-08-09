@@ -1,7 +1,5 @@
 import sys
 import os
-from .general import debug_dict,now,set_dict_key_value,generate_md5
-from .modules import init_module,init_log_module,print_module,print_log_module
 
 ####
 # Define global variables dict, used in functions as default values.
@@ -43,6 +41,8 @@ def set_global_variable(
         variable_name (str): Name of the variable to set.
         value (any): Value to assign to the variable.
     """
+    from .general import set_dict_key_value
+
     set_dict_key_value(GLOBAL_VARIABLES, variable_name, value)
 
 ####
@@ -69,46 +69,47 @@ class Agent:
         self.log_modules_def = log_modules_def
         self.added_modules = []
 
-    '''
-    TODO: Add commnets
-    '''
     def update_config(
             self,
             config: dict = {}
         ):
-
+        '''
+        TODO: Add commnets
+        '''
         for key, value in config.items():
             if key in self.config:
                 self.config[key] = value
 
-    '''
-    TODO: Add commnets
-    '''
     def get_config(
             self
         ) -> dict:
-
+        '''
+        TODO: Add commnets
+        '''
         return self.config
 
-    '''
-    TODO: Add commnets
-    '''
     def add_module(
             self,
             module: dict = {}
         ):
+        '''
+        TODO: Add commnets
+        '''
+        from .general import generate_md5
+        from .modules import init_module
 
         if "name" in module and type(module["name"]) == str and len(module["name"].strip()) > 0:
             self.modules_def.append(init_module(module))
             self.added_modules.append(generate_md5(module["name"]))
 
-    '''
-    TODO: Add commnets
-    '''
     def del_module(
             self,
             module_name: str = ""
         ):
+        '''
+        TODO: Add commnets
+        '''
+        from .general import generate_md5
 
         if len(module_name.strip()) > 0:
             try:
@@ -120,15 +121,14 @@ class Agent:
                 self.added_modules.pop(module_id)
                 self.modules_def.pop(module_id)
 
-    '''
-    TODO: Add commnets
-    '''
     def update_module(
             self,
             module_name: str = "",
             module: dict = {}
         ):
-
+        '''
+        TODO: Add commnets
+        '''
         module_def = self.get_module(module_name)
         
         if module_def:
@@ -140,13 +140,14 @@ class Agent:
             self.del_module(module_name)
             self.add_module(module_def)
 
-    '''
-    TODO: Add commnets
-    '''
     def get_module(
             self,
             module_name: str = ""
         ) -> dict:
+        '''
+        TODO: Add commnets
+        '''
+        from .general import generate_md5
 
         if len(module_name.strip()) > 0:
             try:
@@ -159,43 +160,41 @@ class Agent:
             else:
                 return {}
 
-    '''
-    TODO: Add commnets
-    '''
     def get_modules_def(
             self
         ) -> dict:
-
+        '''
+        TODO: Add commnets
+        '''
         return self.modules_def
 
-    '''
-    TODO: Add commnets
-    '''
     def add_log_module(
             self,
             log_module: dict = {}
         ):
+        '''
+        TODO: Add commnets
+        '''
+        from .modules import init_log_module
 
         if "source" in module and type(module["source"]) == str and len(module["source"].strip()) > 0:
             self.log_modules_def.append(init_log_module(log_module))
 
-    '''
-    TODO: Add commnets
-    '''
     def get_log_modules_def(
             self
         ) -> dict:
-
+        '''
+        TODO: Add commnets
+        '''
         return self.log_modules_def
 
-    '''
-    TODO: Add commnets
-    '''
     def print_xml(
             self,
             print_flag: bool = False
         ) -> str:
-
+        '''
+        TODO: Add commnets
+        '''
         return print_agent(self.get_config(), self.get_modules_def(), self.get_log_modules_def(), print_flag)
 
 ####
@@ -210,6 +209,8 @@ def init_agent(
     Returns:
         dict: Dictionary representing the agent template with default values.
     """
+    from .general import now
+
     agent = {
         "agent_name"        : "",
         "agent_alias"       : "",
@@ -245,6 +246,9 @@ def print_agent(
     - Use print_flag to show modules' XML in STDOUT.
     - Returns xml (str).
     """
+    from .output import print_stdout
+    from .modules import print_module,print_log_module
+
     xml = ""
     data_file = None
 
@@ -267,6 +271,6 @@ def print_agent(
         xml += "</agent_data>"
     
     if print_flag:
-        print(xml)
+        print_stdout(xml)
 
     return xml

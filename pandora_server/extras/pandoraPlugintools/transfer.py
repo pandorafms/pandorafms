@@ -4,7 +4,6 @@ import shutil
 import subprocess
 import os
 import sys
-from .general import debug_dict,generate_md5,set_dict_key_value
 
 ####
 # Define global variables dict, used in functions as default values.
@@ -35,6 +34,8 @@ def set_global_variable(
         variable_name (str): Name of the variable to set.
         value (any): Value to assign to the variable.
     """
+    from .general import set_dict_key_value
+
     set_dict_key_value(GLOBAL_VARIABLES, variable_name, value)
 
 ####
@@ -58,6 +59,7 @@ def tentacle_xml(
 
     Returns True for OK and False for errors.
     """
+    from .output import print_stderr
 
     if data_file is not None :
     
@@ -70,7 +72,7 @@ def tentacle_xml(
 
         if tentacle_ops['address'] is None :
             if print_errors:
-                sys.stderr.write("Tentacle error: No address defined")
+                print_stderr("Tentacle error: No address defined")
             return False
         
         try :
@@ -79,12 +81,12 @@ def tentacle_xml(
             data.close()
         except Exception as e :
             if print_errors:
-                sys.stderr.write(f"Tentacle error: {type(e).__name__} {e}")
+                print_stderr(f"Tentacle error: {type(e).__name__} {e}")
             return False
 
         tentacle_cmd = f"{tentacle_path} -v -a {tentacle_ops['address']} -p {tentacle_ops['port']} {tentacle_ops['extra_opts']} {data_file.strip()}"
 
-        tentacle_exe=Popen(tentacle_cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
+        tentacle_exe=subprocess.Popen(tentacle_cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
         rc=tentacle_exe.wait()
         
         if debug == 0 : 
@@ -94,12 +96,12 @@ def tentacle_xml(
             if print_errors:
                 stderr = tentacle_exe.stderr.read().decode()
                 msg="Tentacle error:" + str(stderr)
-                print(str(datetime.today().strftime('%Y-%m-%d %H:%M')) + msg , file=sys.stderr)
+                print_stderr(str(datetime.today().strftime('%Y-%m-%d %H:%M')) + msg)
             return False
     
     else:
         if print_errors:
-            sys.stderr.write("Tentacle error: file path is required.")
+            print_stderr("Tentacle error: file path is required.")
         return False
 
 ####
@@ -141,7 +143,8 @@ def transfer_xml(
 def write_xml(
         xml: str = "",
         agent_name: str = "",
-        data_dir: str = GLOBAL_VARIABLES['temporal']
+        data_dir: str = GLOBAL_VARIABLES['temporal'],
+        print_errors: bool = False
     ) -> str:
     """
     Creates a agent .data file in the specified data_dir folder
@@ -150,6 +153,9 @@ def write_xml(
     - agent_name (str): agent name for the xml and file name.
     - data_dir (str): folder in which the file will be created.
     """
+    from .general import generate_md5
+    from .output import print_stderr
+
     Utime = datetime.now().strftime('%s')
     agent_name_md5 = generate_md5(agent_name)
     data_file = "%s/%s.%s.data" %(str(data_dir),agent_name_md5,str(Utime))
@@ -158,8 +164,10 @@ def write_xml(
         with open(data_file, 'x') as data:
             data.write(xml)
     except OSError as o:
-        print(f"ERROR - Could not write file: {o}, please check directory permissions", file=sys.stderr)
+        if print_errors:
+            print_stderr(f"ERROR - Could not write file: {o}, please check directory permissions")
     except Exception as e:
-        print(f"{type(e).__name__}: {e}", file=sys.stderr)
+        if print_errors:
+            print_stderr(f"{type(e).__name__}: {e}")
     
     return data_file

@@ -2,7 +2,6 @@ from requests_ntlm import HttpNtlmAuth
 from requests.auth import HTTPBasicAuth
 from requests.auth import HTTPDigestAuth
 from requests.sessions import Session
-from .general import debug_dict
 
 ####
 # Auth URL session
@@ -40,7 +39,8 @@ def call_url(
         authtype: str = "basic",
         user: str = "",
         passw: str = "",
-        timeout: int = 1
+        timeout: int = 1,
+        print_errors: bool = False
     ) -> str:
     """
     Call URL. Uses request module to get url contents.
@@ -55,6 +55,8 @@ def call_url(
     Returns:
     - str: call output
     """
+    from .output import print_stderr
+
     # using with so we make sure the session is closed even when exceptions are encountered
     with Session() as session:
         if authtype != None:
@@ -65,8 +67,10 @@ def call_url(
         try:
             output = session.get(url, timeout=timeout, verify=False)
         except ValueError:
-            output = "Error: URL format not valid (example http://myserver/page.php)"
+            if print_errors:
+                print_stderr("Error: URL format not valid (example http://myserver/page.php)")
         except Exception as e:
-            output = f"{type(e).__name__}:\t{str(e)}"
+            if print_errors:
+                print_stderr(f"{type(e).__name__}:\t{str(e)}")
         
         return output

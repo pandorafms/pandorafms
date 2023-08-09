@@ -1,5 +1,4 @@
 import sys
-import json
 from datetime import datetime
 import hashlib
 
@@ -324,24 +323,6 @@ def safe_output(
     return input_string
 
 ####
-# Prints dictionary in formatted json string.
-#########################################################################################
-
-def debug_dict(
-        jsontxt = ""
-    ):
-    """
-    Prints any list, dict, string, float or integer as a json
-    """
-    try:
-        debug_json = json.dumps(jsontxt, indent=4)
-        print (debug_json)
-    except json.JSONDecodeError as e:
-        print(f"debug_dict: Failed to dump. Error: {e}")
-    except Exception as e:
-        print(f"debug_dict: Unexpected error: {e}")
-
-####
 # Assign to a key in a dict a given value.
 #########################################################################################
 
@@ -386,13 +367,15 @@ def generate_md5(
 #########################################################################################
 
 def now(
-        print_flag: int = 0,
-        utimestamp: int = 0
+        print_flag: bool = False,
+        utimestamp: bool = False
     ) -> str:
     """
     Returns time in yyyy/mm/dd HH:MM:SS format by default. Use 1 as an argument
     to get epoch time (utimestamp)
     """
+    from .output import print_stdout
+
     today = datetime.today()
     
     if utimestamp:
@@ -401,7 +384,7 @@ def now(
         time = today.strftime('%Y/%m/%d %H:%M:%S')
 
     if print_flag:
-        print(time)
+        print_stdout(time)
 
     return time
 
@@ -443,6 +426,8 @@ def parse_configuration(
     Returns:
     - dict: containing all keys and values from file.
     """
+    from .output import print_stderr
+
     config = {}
     
     try:
@@ -456,7 +441,7 @@ def parse_configuration(
                     config[option.strip()] = value.strip()
 
     except Exception as e:
-        print (f"{type(e).__name__}: {e}")
+        print_stderr(f"{type(e).__name__}: {e}")
     
     for option, value in default_values.items():
         if option.strip() not in config:
@@ -472,7 +457,7 @@ def parse_csv_file(
         file: str = "",
         separator: str = ';',
         count_parameters: int = 0,
-        debug: bool = False
+        print_errors: bool = False
     ) -> list:
     """
     Parse csv configuration. Reads configuration file and stores its data in a list.
@@ -481,11 +466,13 @@ def parse_csv_file(
     - file (str): configuration csv file path. \n
     - separator (str, optional): Separator for option and value. Defaults to ";".
     - coun_parameters (int): min number of parameters each line shold have. Default None
-    - debug (bool): print errors on lines
+    - print_errors (bool): print errors on lines
 
     Returns:
     - List: containing a list for of values for each csv line.
     """
+    from .output import print_stderr
+
     csv_arr = []
     
     try:
@@ -498,11 +485,11 @@ def parse_csv_file(
                     value = line.strip().split(separator)
                     if len(value) >= count_parameters:
                         csv_arr.append(value)
-                    elif debug==True: 
-                        print(f'Csv line: {line} does not match minimun parameter defined: {count_parameters}',file=sys.stderr)
+                    elif print_errors==True: 
+                        print_stderr(f'Csv line: {line} does not match minimun parameter defined: {count_parameters}')
 
     except Exception as e:
-        print (f"{type(e).__name__}: {e}")
+        print_stderr(f"{type(e).__name__}: {e}")
 
     return csv_arr
 

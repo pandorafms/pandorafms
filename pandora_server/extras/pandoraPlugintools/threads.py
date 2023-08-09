@@ -2,7 +2,6 @@ import sys
 from queue import Queue
 from threading import Thread
 from multiprocessing import Pool, Manager
-from .general import debug_dict
 
 ####
 # Define multi-processing internal global variables.
@@ -42,6 +41,7 @@ def run_threads(
     """
     Run a given function for given items list in a given number of threads
     """
+    from .output import print_stderr
 
     # Assign threads
     threads = max_threads
@@ -87,7 +87,7 @@ def run_threads(
 
         if print_errors:
             for error in errors:
-                print(error,file=sys.stderr)
+                print_stderr(str(error))
 
         if len(errors) > 0:
             return False
@@ -96,7 +96,7 @@ def run_threads(
 
     except Exception as e:
         if print_errors:
-            print("Error while running threads: "+str(e)+"\n",file=sys.stderr)
+            print_stderr("Error while running threads: "+str(e))
         return False
 
 ####
@@ -170,6 +170,7 @@ def run_processes(
     """
     Run a given function for given items list in a given number of processes
     """
+    from .output import print_stderr
 
     # Assign processes
     processes = max_processes
@@ -187,7 +188,7 @@ def run_processes(
             result = True
         except Exception as error:
             if print_errors:
-                print(error,file=sys.stderr)
+                print_stderr(str(error))
             result = False
 
     return result

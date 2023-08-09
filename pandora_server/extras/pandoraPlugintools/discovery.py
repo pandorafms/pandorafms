@@ -1,6 +1,5 @@
 import sys
 import json
-from .general import debug_dict
 
 ####
 # Define some global variables
@@ -137,6 +136,7 @@ def print_output():
     to create the JSON output. It then prints the JSON string and exits the script with
     the 'ERROR_LEVEL' as the exit code.
     """
+    from .output import print_stdout
 
     global ERROR_LEVEL
     global SUMMARY
@@ -155,5 +155,5 @@ def print_output():
     
     json_string = json.dumps(OUTPUT)
 
-    print(json_string)
+    print_stdout(json_string)
     sys.exit(ERROR_LEVEL)

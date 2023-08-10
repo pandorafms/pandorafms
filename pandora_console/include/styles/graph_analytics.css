@@ -1,0 +1,81 @@
+/* .options-graph-analytics {
+  position: sticky;
+  top: 110px;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  height: 18px;
+  margin: -25px -25px 25px -25px;
+  padding: 10px 20px;
+  z-index: 1;
+  font-weight: bold;
+  display: flex;
+  min-width: fit-content;
+  background-color: var(--secondary-color);
+  border: 1px solid #e5e9ed;
+} */
+
+div#menu_tab ul li,
+div#menu_tab ul li span {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+div#menu_tab ul.mn li.nomn.tab_operation img {
+  margin-right: 3px;
+}
+
+div#menu_tab ul li:hover,
+div#menu_tab ul li span:hover {
+  box-shadow: none;
+}
+
+div.main-div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+div.padding-div {
+  margin: 0;
+  padding: 10px;
+}
+
+div.filters-div {
+  min-width: 400px;
+  border-right: 1px solid var(--border-dark-color);
+}
+
+div.graphs-div {
+  width: 100%;
+}
+
+.handle-graph {
+  cursor: grab;
+}
+
+#sortable-graphs {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+
+#sortable-graphs .drop-zone-sortable {
+  background-color: (--primary-color);
+  width: 100%;
+  height: 20px;
+  border: 2px dashed var(--border-dark-color);
+  border-radius: 6px;
+}
+
+.interval-div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  margin-bottom: 10px;
+}

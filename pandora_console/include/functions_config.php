@@ -1491,10 +1491,13 @@ function config_update_config()
                                 $interval_values_array[] = $new_interval;
                                 // Get current periods.
                                 $current_period = get_periods(false, false, true);
-                                $new_current_period = array_keys($current_period);
-                                $new_current_period = implode(',', $new_current_period);
-                                // Add new periods to current.
-                                array_push($interval_values_array, $new_current_period);
+                                if (!isset($current_period[-1])) {
+                                    $new_current_period = array_keys($current_period);
+                                    $new_current_period = implode(',', $new_current_period);
+                                    // Add new periods to current.
+                                    array_push($interval_values_array, $new_current_period);
+                                }
+
                                 $interval_values = implode(',', $interval_values_array);
                             }
                         }

@@ -200,12 +200,10 @@ $text_agent_module = '';
 
 $only_data = false;
 
-$categories_security_hardening = [];
-if (security_hardening_installed() === true) {
-    $categories_security_hardening = categories_of_cis();
-    foreach ($categories_security_hardening as $key => $cat) {
-        $categories_security_hardening[$key] = implode(' ', $cat);
-    }
+
+$categories_security_hardening = categories_of_cis();
+foreach ($categories_security_hardening as $key => $cat) {
+    $categories_security_hardening[$key] = implode(' ', $cat);
 }
 
 // Users.
@@ -1037,7 +1035,7 @@ switch ($action) {
                     $group = $item['id_group'];
                     $recursion = $item['recursion'];
                     $cat_selected = $item['cat_security_hardening'];
-                    $ignore_skipped = ($item['ignore_skipped'] !== null) ? $item['ignore_skipped'] : true;
+                    $ignore_skipped = $item['ignore_skipped'];
                 break;
 
                 default:
@@ -3718,7 +3716,7 @@ $class = 'databox filters';
                 html_print_checkbox_switch(
                     'ignore_skipped',
                     1,
-                    $ignore_skipped,
+                    ($ignore_skipped !== null) ? $ignore_skipped : true,
                 );
                 ?>
             </td>

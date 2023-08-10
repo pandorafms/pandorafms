@@ -2636,3 +2636,79 @@ INSERT INTO `twelcome_tip_file` (`twelcome_tip_file`,`filename`,`path`) VALUES (
 INSERT INTO `twelcome_tip` (`id_lang`,`id_profile`,`title`,`text`,`url`,`enable`) VALUES ('en_GB',0,'Zoom&#x20;on&#x20;data&#x20;graphs','Do&#x20;you&#x20;know&#x20;that&#x20;Pandora&#x20;FMS&#x20;allows&#x20;you&#x20;to&#x20;zoom&#x20;in&#x20;on&#x20;a&#x20;part&#x20;of&#x20;the&#x20;graph.&#x20;With&#x20;that&#x20;you&#x20;will&#x20;expand&#x20;the&#x20;information&#x20;of&#x20;the&#x20;graph.&#x20;If&#x20;you&#x20;are&#x20;looking&#x20;at&#x20;a&#x20;graph&#x20;for&#x20;a&#x20;month&#x20;and&#x20;you&#x20;zoom&#x20;in,&#x20;you&#x20;will&#x20;be&#x20;able&#x20;to&#x20;see&#x20;the&#x20;data&#x20;for&#x20;that&#x20;interval.&#x20;If&#x20;you&#x20;use&#x20;a&#x20;graph&#x20;with&#x20;full&#x20;resolution&#x20;data&#x20;&#40;we&#x20;call&#x20;them&#x20;TIP&#x20;graphs&#41;&#x20;you&#x20;will&#x20;be&#x20;able&#x20;to&#x20;see&#x20;the&#x20;detail&#x20;of&#x20;each&#x20;piece&#x20;of&#x20;data,&#x20;even&#x20;if&#x20;your&#x20;graph&#x20;has&#x20;thousands&#x20;of&#x20;samples.','',1);
 SELECT @last_id := LAST_INSERT_ID();
 INSERT INTO `twelcome_tip_file` (`twelcome_tip_file`,`filename`,`path`) VALUES (@last_id,'zoom_en_graficas.png','images/tips/');
+
+-- Insert new VMware APP
+SET @short_name = 'pandorafms.vmware';
+SET @name = 'VMware';
+SET @section = 'app';
+SET @description = 'Monitor&#x20;ESXi&#x20;hosts,&#x20;datastores&#x20;and&#x20;VMs&#x20;from&#x20;a&#x20;specific&#x20;datacenter';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_vmware');
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec2_', 'bin/vmware_instances');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;&#039;_tempfileVMware_&#039;&#x20;--as_discovery_plugin&#x20;1');
+
+-- Insert new MySQL APP
+SET @short_name = 'pandorafms.mysql';
+SET @name = 'MySQL';
+SET @section = 'app';
+SET @description = 'Monitor&#x20;MySQL&#x20;databases';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_mysql');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileConf_&#039;&#x20;--target_databases&#x20;&#039;_tempfileTargetDatabases_&#039;&#x20;--target_agents&#x20;&#039;_tempfileTargetAgents_&#039;&#x20;--custom_queries&#x20;&#039;_tempfileCustomQueries_&#039;');
+
+-- Insert new MSSQL APP
+SET @short_name = 'pandorafms.mssql';
+SET @name = 'Microsoft&#x20;SQL&#x20;Server';
+SET @section = 'app';
+SET @description = 'Monitor&#x20;Microsoft&#x20;SQL&#x20;Server&#x20;databases';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_mssql');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileConf_&#039;&#x20;--target_databases&#x20;&#039;_tempfileTargetDatabases_&#039;&#x20;--target_agents&#x20;&#039;_tempfileTargetAgents_&#039;&#x20;--custom_queries&#x20;&#039;_tempfileCustomQueries_&#039;');
+
+-- Insert new Oracle APP
+SET @short_name = 'pandorafms.oracle';
+SET @name = 'Oracle';
+SET @section = 'app';
+SET @description = 'Monitor&#x20;Oracle&#x20;databases';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_oracle');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileConf_&#039;&#x20;--target_databases&#x20;&#039;_tempfileTargetDatabases_&#039;&#x20;--target_agents&#x20;&#039;_tempfileTargetAgents_&#039;&#x20;--custom_queries&#x20;&#039;_tempfileCustomQueries_&#039;');
+
+-- Insert new DB2 APP
+SET @short_name = 'pandorafms.db2';
+SET @name = 'DB2';
+SET @section = 'app';
+SET @description = 'Monitor&#x20;DB2&#x20;databases';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_db2');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileConf_&#039;&#x20;--target_databases&#x20;&#039;_tempfileTargetDatabases_&#039;&#x20;--target_agents&#x20;&#039;_tempfileTargetAgents_&#039;&#x20;--custom_queries&#x20;&#039;_tempfileCustomQueries_&#039;');

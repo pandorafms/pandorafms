@@ -331,7 +331,7 @@ for ($month = 1; $month <= 12; $month++) {
             }
         }
 
-        if ($week == 0 || $week == 6) {
+        if ($week == 0 || $week == 6 || isset($specialDays[$display_year][$display_month][$day]) === true) {
              $cal_table->cellstyle[$cal_line][$week] = 'color: red;';
         }
 
@@ -341,7 +341,7 @@ for ($month = 1; $month <= 12; $month++) {
         $cal_table->cellstyle[$cal_line][$week] .= 'font-size: 18px;';
         $cal_table->data[$cal_line][$week] = $day.'&nbsp;';
 
-        if ($is_management_allowed === true) {
+        if ($is_management_allowed === true && isset($specialDays[$display_year][$display_month][$day]) === false) {
             $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&date='.$date.'" title=';
             $cal_table->data[$cal_line][$week] .= __('Create');
             $cal_table->data[$cal_line][$week] .= '>'.html_print_image(

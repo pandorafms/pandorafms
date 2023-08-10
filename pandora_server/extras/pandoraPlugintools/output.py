@@ -3,6 +3,19 @@ import os
 import json
 
 ####
+# Internal: Alias for output.print_debug function
+#########################################################################################
+
+def _print_debug(
+        var = "",
+        print_errors: bool = False
+    ):
+    """
+    Prints any list, dict, string, float or integer as a json
+    """
+    print_debug(var, print_errors)
+
+####
 # Prints message in stdout
 #########################################################################################
 

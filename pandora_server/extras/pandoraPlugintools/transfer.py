@@ -21,6 +21,20 @@ GLOBAL_VARIABLES = {
 }
 
 ####
+# Internal: Alias for output.print_debug function
+#########################################################################################
+
+def _print_debug(
+        var = "",
+        print_errors: bool = False
+    ):
+    """
+    Prints any list, dict, string, float or integer as a json
+    """
+    from .output import print_debug
+    print_debug(var, print_errors)
+
+####
 # Set a global variable with the specified name and assigns a value to it.
 #########################################################################################
 def set_global_variable(

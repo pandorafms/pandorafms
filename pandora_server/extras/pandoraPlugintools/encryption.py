@@ -19,6 +19,20 @@ from binascii import unhexlify
 _PASSWORD = "default_salt"
 
 ####
+# Internal: Alias for output.print_debug function
+#########################################################################################
+
+def _print_debug(
+        var = "",
+        print_errors: bool = False
+    ):
+    """
+    Prints any list, dict, string, float or integer as a json
+    """
+    from .output import print_debug
+    print_debug(var, print_errors)
+
+####
 # Internal use only: Get AES cipher
 #########################################################################################
 def _get_cipher(

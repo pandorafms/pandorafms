@@ -11,9 +11,23 @@ INFO = ""
 MONITORING_DATA = []
 
 ####
+# Internal: Alias for output.print_debug function
+#########################################################################################
+
+def _print_debug(
+        var = "",
+        print_errors: bool = False
+    ):
+    """
+    Prints any list, dict, string, float or integer as a json
+    """
+    from .output import print_debug
+    print_debug(var, print_errors)
+
+####
 # Set error level to value
 #########################################################################################
-def set_error_level(
+def set_disco_error_level(
         value: int = 0
     ):
     """
@@ -29,7 +43,7 @@ def set_error_level(
 ####
 # Set fixed value to summary key
 #########################################################################################
-def set_summary_value(
+def set_disco_summary_value(
         key: str = "",
         value = None
     ):
@@ -47,7 +61,7 @@ def set_summary_value(
 ####
 # Add value to summary key
 #########################################################################################
-def add_summary_value(
+def add_disco_summary_value(
         key: str = "",
         value = None
     ):
@@ -70,7 +84,7 @@ def add_summary_value(
 ####
 # Set fixed value to info
 #########################################################################################
-def set_info_value(
+def set_disco_info_value(
         value: str = ""
     ):
     """
@@ -86,7 +100,7 @@ def set_info_value(
 ####
 # Add data to info
 #########################################################################################
-def add_info_value(
+def add_disco_info_value(
         value: str = ""
     ):
     """
@@ -102,7 +116,7 @@ def add_info_value(
 ####
 # Set fixed value to monitoring data
 #########################################################################################
-def set_monitoring_data(
+def set_disco_monitoring_data(
         data: list = []
     ):
     """
@@ -115,7 +129,7 @@ def set_monitoring_data(
 ####
 # Add value to monitoring data
 #########################################################################################
-def add_monitoring_data(
+def add_disco_monitoring_data(
         data: dict = {}
     ):
     """
@@ -128,7 +142,7 @@ def add_monitoring_data(
 ####
 # Print JSON output and exit script
 #########################################################################################
-def print_output():
+def disco_output():
     """
     Prints the JSON output and exits the script.
 

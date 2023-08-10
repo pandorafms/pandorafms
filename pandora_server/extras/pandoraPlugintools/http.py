@@ -4,6 +4,20 @@ from requests.auth import HTTPDigestAuth
 from requests.sessions import Session
 
 ####
+# Internal: Alias for output.print_debug function
+#########################################################################################
+
+def _print_debug(
+        var = "",
+        print_errors: bool = False
+    ):
+    """
+    Prints any list, dict, string, float or integer as a json
+    """
+    from .output import print_debug
+    print_debug(var, print_errors)
+
+####
 # Auth URL session
 #########################################################################################
 

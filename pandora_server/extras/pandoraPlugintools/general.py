@@ -292,6 +292,20 @@ _ENT2CHR = {
 _CHR2ENT = {v: "&" + k + ";" for k, v in _ENT2CHR.items()}
 
 ####
+# Internal: Alias for output.print_debug function
+#########################################################################################
+
+def _print_debug(
+        var = "",
+        print_errors: bool = False
+    ):
+    """
+    Prints any list, dict, string, float or integer as a json
+    """
+    from .output import print_debug
+    print_debug(var, print_errors)
+
+####
 # Convert the input_string encoded in html entity to clear char string.
 #########################################################################################
 def safe_input(
@@ -367,8 +381,8 @@ def generate_md5(
 #########################################################################################
 
 def now(
-        print_flag: bool = False,
-        utimestamp: bool = False
+        utimestamp: bool = False,
+        print_flag: bool = False
     ) -> str:
     """
     Returns time in yyyy/mm/dd HH:MM:SS format by default. Use 1 as an argument

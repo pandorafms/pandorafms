@@ -74,6 +74,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `quiet_by_downtime` TINYINT NOT NULL DEF
 ALTER TABLE `tagente_modulo` ADD COLUMN `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0;
 ALTER TABLE `talert_template_modules` ADD COLUMN `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0;
 ALTER TABLE `tagente` ADD COLUMN `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tmetaconsole_agent` ADD COLUMN `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0;
 
 DELETE FROM tconfig WHERE token = 'refr';
 

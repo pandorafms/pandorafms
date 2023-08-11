@@ -4988,9 +4988,6 @@ function events_page_general($event)
         }
 
         $data[1] = $user_ack.'&nbsp;(&nbsp;';
-        // hd($config['date_format'], true);
-        // hd($event['ack_utimestamp_raw'], true);
-        // TODO: mirar en el manage y en la api que este ack de venir vacio lo herede del anterior que hubiera.
         if ($event['ack_utimestamp_raw'] !== false
             && $event['ack_utimestamp_raw'] !== 'false'
             && empty($event['ack_utimestamp_raw']) === false

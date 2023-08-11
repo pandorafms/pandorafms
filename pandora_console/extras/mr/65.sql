@@ -87,8 +87,6 @@ INSERT INTO `tmodule_inventory` (`id_module_inventory`, `id_os`, `name`, `descri
 
 ALTER TABLE `treport_content`  ADD COLUMN `period_range` INT NULL DEFAULT 0 AFTER `period`;
 
-ALTER TABLE `tusuario` MODIFY COLUMN `integria_user_level_pass` TEXT;
-
 CREATE TABLE IF NOT EXISTS `tevent_comment` (
   `id` serial PRIMARY KEY,
   `id_event` BIGINT UNSIGNED NOT NULL,

@@ -274,7 +274,7 @@ ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 <script type="text/javascript">
     $(document).ready(function () {
         var ajax_url = '<?php echo ui_get_full_url('ajax.php'); ?>';
-        var fieldsData = '<?php echo json_encode($incidence['typeFieldData']); ?>';
+        var fieldsData = '<?php echo base64_encode(json_encode($incidence['typeFieldData'])); ?>';
 
         defineTinyMCE('#textarea_description');
 

@@ -67,10 +67,12 @@ if (empty($customFields) === true) {
             break;
 
             case 'CHECKBOX':
+                $options['checked'] = ($fieldsData[$field['idIncidenceTypeField']] ?? null);
                 $options['type'] = 'checkbox';
             break;
 
             case 'DATE':
+                $options['value'] = ($fieldsData[$field['idIncidenceTypeField']] ?? null);
                 $options['type'] = 'text';
             break;
 

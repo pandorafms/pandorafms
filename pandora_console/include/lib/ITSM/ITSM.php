@@ -255,14 +255,14 @@ class ITSM
         }
 
         if (empty($queryParams) === false) {
-            if (isset($queryParams['direction']) === true) {
-                $queryParams['sortDirection'] = $queryParams['direction'];
-                unset($queryParams['direction']);
-            }
-
             if (isset($queryParams['field']) === true) {
                 $queryParams['sortField'] = $queryParams['field'];
                 unset($queryParams['field']);
+            }
+
+            if (isset($queryParams['direction']) === true) {
+                $queryParams['sortDirection'] = $queryParams['direction'];
+                unset($queryParams['direction']);
             }
 
             $path .= '?';
@@ -369,8 +369,10 @@ class ITSM
         $result = $this->callApi(
             'incidenceTypeFields',
             [
-                'page'     => 0,
-                'sizePage' => 0,
+                'page'      => 0,
+                'sizePage'  => 0,
+                'field'     => 'idIncidenceTypeField',
+                'direction' => 'ascending',
             ],
             [],
             $idIncidenceType

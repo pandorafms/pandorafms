@@ -2683,6 +2683,11 @@ function alerts_ui_update_or_create_actions($update=true)
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $field_value = get_parameter('field'.$i.'_value');
+        if (empty(get_parameter('field'.$i.'_value_hidden')) === false) {
+            $field_value = get_parameter('field'.$i.'_value_hidden');
+        } else {
+            $field_value = get_parameter('field'.$i.'_value');
+        }
 
         if (is_array($field_value)) {
             $field_value = reset(array_filter($field_value));
@@ -2695,7 +2700,11 @@ function alerts_ui_update_or_create_actions($update=true)
         $values['field'.$i] = (string) $field_value;
         $info_fields .= ' Field'.$i.': '.$values['field'.$i];
 
-        $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+        if (empty(get_parameter('field'.$i.'_recovery_value_hidden')) === false) {
+            $field_recovery_value = get_parameter('field'.$i.'_recovery_value_hidden');
+        } else {
+            $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+        }
 
         if (is_array($field_recovery_value)) {
             $field_recovery_value = reset(array_filter($field_recovery_value));

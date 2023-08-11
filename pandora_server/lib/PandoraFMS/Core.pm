@@ -263,7 +263,6 @@ our @EXPORT = qw(
 	pandora_thread_monitoring
 	pandora_process_policy_queue
 	pandora_sync_agents_integria
-	pandora_get_integria_ticket_types
 	subst_alert_macros
 	subst_column_macros
 	locate_agent
@@ -1841,16 +1840,14 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 	
 	# Integria IMS Ticket
 	} elsif ($clean_name eq "Integria IMS Ticket") {
-		my $config_integria_enabled = pandora_get_tconfig_token ($dbh, 'integria_enabled', '');
-
-		if (!$config_integria_enabled) {
+		my $config_ITSM_enabled = pandora_get_tconfig_token ($dbh, 'ITSM_enabled', '');
+		if (!$config_ITSM_enabled) {
 			return;
 		}
 
-		my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
-		my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
-		my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
-		my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
+		my $ITSM_path = pandora_get_tconfig_token ($dbh, 'ITSM_hostname', '');
+		my $ITSM_token = pandora_get_tconfig_token ($dbh, 'ITSM_token', '');
+
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
@@ -1871,18 +1868,6 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$field18 = subst_alert_macros ($field18, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field19 = subst_alert_macros ($field19, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-
-		# Field 1 (Integria IMS API path)
-		my $api_path = $config_api_path . "/include/api.php";
-		
-		# Field 2 (Integria IMS API pass)
-		my $api_pass = $config_api_pass;
-		
-		# Field 3 (Integria IMS user)
-		my $integria_user = $config_integria_user;
-		
-		# Field 4 (Integria IMS user password)
-		my $integria_user_pass = $config_integria_user_pass;
 		
 		# Field 1 (Ticket name)
 		my $ticket_name = safe_output($field1);
@@ -1893,7 +1878,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		# Field 2 (Ticket group ID)
 		my $ticket_group_id = $field2;
 		if ($ticket_group_id eq '') {
-			$ticket_group_id = 0;
+			$ticket_group_id = 1;
 		}
 		
 		# Field 3 (Ticket priority);
@@ -1921,31 +1906,192 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		}
 
 		# Field 7 (Ticket description);
-		my $ticket_description = safe_output($field7);
+		my $ticket_description = subst_alert_macros(safe_output($field7), \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
-		my $create_wu_on_close_recovery = 0;
+		my $external_id = $agent->{'nombre'} . '-' . $module->{'id_agente'} . '-' . $module->{'id_agente_modulo'};
 
-		if ($alert_mode == RECOVERED_ALERT && $action->{'create_wu_integria'} == '1') {
-			$create_wu_on_close_recovery = 1;
+		# if recovered
+		if ($alert_mode == RECOVERED_ALERT) {
+			# Check exit incidence.
+			my %filter_incidence = ('externalId' => $external_id, 'blocked' => '0');
+			my $existIncidence = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/list', $ITSM_token, \%filter_incidence);
+			if (!defined($existIncidence)){
+				return;
+			}
+
+			my $id_incidence = 0;
+			my $incidence_data = p_decode_json($pa_config, $existIncidence);
+			# If exist update state and add new workunit if necessary.
+			if(!is_empty($incidence_data->{'data'})) {
+				my %data_incidence = (
+					'status' => $ticket_status
+				);
+
+				$id_incidence = $incidence_data->{'data'}[0]->{'idIncidence'};
+				my $updateIncidence = pandora_API_ITSM_call($pa_config, 'put', $ITSM_path . '/incidence/' . $id_incidence, $ITSM_token, \%data_incidence);
+				if (!defined($updateIncidence)){
+					return;
+				}
+				if ($action->{'create_wu_integria'} == '1') {
+					my %data_workunit = (
+						'description' => $ticket_description
+					);
+					my $createWorkunit = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/' . $id_incidence . '/workunit', $ITSM_token, \%data_workunit);
+					if (!defined($createWorkunit)){
+						return;
+					}
+				}
+			}
+			return;
 		}
 
 		# Ticket type custom fields
-		my $ticket_custom_field1 = $field8;
-		my $ticket_custom_field2 = $field9;
-		my $ticket_custom_field3 = $field10;
-		my $ticket_custom_field4 = $field11;
-		my $ticket_custom_field5 = $field12;
-		my $ticket_custom_field6 = $field13;
-		my $ticket_custom_field7 = $field14;
-		my $ticket_custom_field8 = $field15;
-		my $ticket_custom_field9 = $field16;
-		my $ticket_custom_field10 = $field17;
-		my $ticket_custom_field11 = $field18;
-		my $ticket_custom_field12 = $field19;
-		my $ticket_custom_field13 = $field20;
+		my %custom_fields = (
+			'field0' => subst_alert_macros(safe_output($field8), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field1' => subst_alert_macros(safe_output($field9), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field2' => subst_alert_macros(safe_output($field10), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field3' => subst_alert_macros(safe_output($field11), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field4' => subst_alert_macros(safe_output($field12), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field5' => subst_alert_macros(safe_output($field13), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field6' => subst_alert_macros(safe_output($field14), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field7' => subst_alert_macros(safe_output($field15), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field8' => subst_alert_macros(safe_output($field16), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field9' => subst_alert_macros(safe_output($field17), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field10' => subst_alert_macros(safe_output($field18), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field11' => subst_alert_macros(safe_output($field19), \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'field12' => subst_alert_macros(safe_output($field20), \%macros, $pa_config, $dbh, $agent, $module, $alert)
+		);
 
-		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $agent->{'nombre'}, $agent->{'alias'}, $agent->{'id_os'}, $agent->{'direccion'}, $agent->{'id_agente'}, $agent->{'id_grupo'}, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13);
+		# Check exit inventory object.
+		my %filter_inventory = ('idPandora' => $agent->{'nombre'});
+		my $existInventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/inventory/list', $ITSM_token, \%filter_inventory);
+		if (!defined($existInventory)){
+			return;
+		}
 
+		my $id_inventory = 0;
+		my $inventory_data = p_decode_json($pa_config, $existInventory);
+		my %data_inventory = (
+			"name" => $agent->{'alias'},
+			"isPublic" => \0,
+			"idObjectType" => 2,
+			"isShowInList" => \0,
+			"status" => "new",
+			"idPandora" => $agent->{'nombre'},
+			"typeFieldData" => [
+				{
+					"idInventoryField" => 12,
+					"data" => $agent->{'id_os'}
+				},
+				{
+					"idInventoryField" => 13,
+					"data" => $agent->{'direccion'}
+				},
+				{
+					"idInventoryField" => 15,
+					"data" => $agent->{'id_agente'}
+				},
+				{
+					"idInventoryField" => 46,
+					"data" => $agent->{'id_grupo'}
+				},
+			]
+		);
+
+		# If not exit inventory object create, if exist update.
+		if(is_empty($inventory_data->{'data'})) {
+			my $insertInventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/inventory', $ITSM_token, \%data_inventory);
+			if (!defined($insertInventory)){
+				return;
+			}
+			my $inventory = p_decode_json($pa_config, $insertInventory);
+			$id_inventory = $inventory->{'idInventory'};
+		} else {
+			$id_inventory = $inventory_data->{'data'}[0]->{'idInventory'};
+			my $updateInventory = pandora_API_ITSM_call($pa_config, 'put', $ITSM_path . '/inventory/' . $id_inventory, $ITSM_token, \%data_inventory);
+			if (!defined($updateInventory)){
+				return;
+			}
+		}
+		
+		# List field incidence type.
+		my @fields = ();
+		if($ticket_type ne '' && $ticket_type ne '0') {
+			my %filter_incidence_type = ();
+			my $path_list_fields = $ITSM_path . '/incidencetype/' . $ticket_type . '/field/list?sortField=idIncidenceTypeField&sortDirection=ascending';
+			my $listFields = pandora_API_ITSM_call($pa_config, 'post', $path_list_fields, $ITSM_token, \%filter_incidence_type);
+			if (!defined($listFields)){
+				return;
+			}
+
+			my $listFields_data = p_decode_json($pa_config, $listFields);
+			if(!is_empty($listFields_data->{'data'})) {
+				my $i = 0;
+				foreach my $field (@{$listFields_data->{'data'}}) {
+					$fields[$i] = {"idIncidenceTypeField" => $field->{'idIncidenceTypeField'}, "data" => $custom_fields{'field' . $i}};
+					$i++;
+				}
+			}
+		}
+
+		# Check exit incidence.
+		my %filter_incidence = ('externalId' => $external_id, 'blocked' => '0');
+		my $existIncidence = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/list', $ITSM_token, \%filter_incidence);
+		if (!defined($existIncidence)){
+			return;
+		}
+
+		my $id_incidence = 0;
+		my $incidence_data = p_decode_json($pa_config, $existIncidence);
+		my %data_incidence = (
+    	'title' => $ticket_name,
+		  'idGroup' => $ticket_group_id,
+		  'priority' => $ticket_priority,
+		  'owner' => $ticket_owner,
+		  'idIncidenceType' => $ticket_type,
+		  'status' => $ticket_status,
+		  'description' => $ticket_description,
+			'externalId' => $external_id,
+			'typeFieldData' => \@fields
+    );
+
+		# If not exit incidence create, if exist update and add new workunit.
+		if(is_empty($incidence_data->{'data'})) {
+			my $insertIncidence = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence', $ITSM_token, \%data_incidence);
+			if (!defined($insertIncidence)){
+				return;
+			}
+			my $incidence = p_decode_json($pa_config, $insertIncidence);
+			$id_incidence = $incidence->{'idIncidence'};
+		} else {
+			$id_incidence = $incidence_data->{'data'}[0]->{'idIncidence'};
+			my $updateIncidence = pandora_API_ITSM_call($pa_config, 'put', $ITSM_path . '/incidence/' . $id_incidence, $ITSM_token, \%data_incidence);
+			if (!defined($updateIncidence)){
+				return;
+			}
+			my %data_workunit = (
+				'description' => 'Incidence updated by ' . $pa_config->{'rb_product_name'}
+			);
+			my $createWorkunit = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/' . $id_incidence . '/workunit', $ITSM_token, \%data_workunit);
+			if (!defined($createWorkunit)){
+				return;
+			}
+		}
+
+		# Check exit relation incidence whit inventory, if not exist create.
+		my %filter_incidence_inventory = ('idInventory' => $id_inventory);
+		my $existIncidenceInventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/' . $id_incidence . '/inventory/list', $ITSM_token, \%filter_incidence_inventory);
+		if (!defined($existIncidenceInventory)){
+			return;
+		}
+		my $incidence_inventory_data = p_decode_json($pa_config, $existIncidenceInventory);	
+		if(is_empty($incidence_inventory_data->{'data'})) {
+			my %data_incidence_inventory = ();
+			my $result_incidence_inventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/' . $id_incidence . '/inventory/' . $id_inventory, $ITSM_token, \%data_incidence_inventory);
+			if (!defined($result_incidence_inventory)){
+				return;
+			}
+		}
 	# Generate notification
 	} elsif ($clean_name eq "Generate Notification") {
 
@@ -6955,89 +7101,33 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 	return $res;
 }
 
-sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$) {
-	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$agent_name,$agent_alias,$agent_os,$agent_addr,$agent_id,$agent_group,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13) = @_;
-
-	use URI::URL;
-	use URI::Escape;
-	use HTML::Entities;
-
-	my $data_ticket;
-	my $call_api;
-
-	my $uri = URI->new($api_path);
-
-	if ($uri->scheme eq "") {
-		$api_path = "http://" . $api_path;
-	}
-
-	my $ticket_create_wu = 0;
-
-	if ($create_wu_on_close_recovery == 1 && $ticket_status eq '7') {
-		$ticket_create_wu = 1;
-	}
-
-	$data_ticket = $agent_name .
-		"|;|" .	uri_escape(decode_entities($agent_alias)) .
-		"|;|" .	$agent_os .
-		"|;|" .	$agent_addr .
-		"|;|" .	$agent_id .
-		"|;|" .	$agent_group .
-		"|;|" .	$ticket_name .
-		"|;|" . $ticket_group_id .
-		"|;|" . $ticket_priority .
-		"|;|" . $ticket_description .
-		"|;|" . $ticket_type .
-		"|;|" . $ticket_owner .
-		"|;|" . $ticket_status .
-		"|;|" . $ticket_create_wu .
-		"|;|" . $ticket_custom_field1 .
-		"|;|" . $ticket_custom_field2 .
-		"|;|" . $ticket_custom_field3 .
-		"|;|" . $ticket_custom_field4 .
-		"|;|" . $ticket_custom_field5 .
-		"|;|" . $ticket_custom_field6 .
-		"|;|" . $ticket_custom_field7 .
-		"|;|" . $ticket_custom_field8 .
-		"|;|" . $ticket_custom_field9 .
-		"|;|" . $ticket_custom_field10 .
-		"|;|" . $ticket_custom_field11 .
-		"|;|" . $ticket_custom_field12 .
-		"|;|" . $ticket_custom_field13;
-
-	$call_api = $api_path . '?' .
-		'user=' . $integria_user . '&' .
-		'user_pass=' . $user_pass . '&' .
-		'pass=' . $api_pass . '&' .
-		'op=create_pandora_ticket&' .
-		'params=' . $data_ticket .'&' .
-		'token=|;|';
-
-	 my $content = get($call_api);
-
-	if (is_numeric($content) && $content ne "-1") {
-		return $content;
-	}
-	else {
-		return 0;
+sub pandora_API_ITSM_call ($$$$$) {
+	my ($pa_config, $method, $ITSM_path, $ITSM_token, $data) = @_;
+	my @headers = (
+    'accept' => 'application/json',
+    'Content-Type' => 'application/json; charset=utf-8',
+    'Authorization' => 'Bearer ' . $ITSM_token,
+	);
+	if($method =~/put/i) {
+		return api_call($pa_config, $method, $ITSM_path, encode_utf8(p_encode_json($pa_config, $data)), @headers);
+	} else {
+		return api_call($pa_config, $method, $ITSM_path, Content => encode_utf8(p_encode_json($pa_config, $data)), @headers);
 	}
 }
 
 sub pandora_sync_agents_integria ($) {
 	my ($dbh) = @_;
 
-	my $config_integria_enabled = pandora_get_tconfig_token ($dbh, 'integria_enabled', '');
+	my $config_ITSM_enabled = pandora_get_tconfig_token ($dbh, 'ITSM_enabled', '');
 
-	if (!$config_integria_enabled) {
+	if (!$config_ITSM_enabled) {
 		return;
 	}
 
-	my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
-	my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
-	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
-	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
+	my $config_api_path = pandora_get_tconfig_token ($dbh, 'ITSM_hostname', '');
+	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'ITSM_token', '');
 
-	my $api_path = $config_api_path . "/include/api.php";
+	my $api_path = $config_api_path;
 
 	my @agents_string = '';
 	my @agents = get_db_rows ($dbh, 'SELECT * FROM tagente');
@@ -7059,9 +7149,7 @@ sub pandora_sync_agents_integria ($) {
 
 	my $ua       = LWP::UserAgent->new();
 	my $response = $ua->post( $api_path, {
-			'user' 		=> $config_integria_user,
 			'user_pass' => $config_integria_user_pass,
-			'pass' 		=> $config_api_pass,
 			'op' 		=> 'sync_pandora_agents_inventory',
 			'params[]' 	=> [@agents_array],
 			'token' 	=> '|;|'
@@ -7075,32 +7163,6 @@ sub pandora_sync_agents_integria ($) {
 	else {
 		return 0;
 	}
-}
-
-sub pandora_get_integria_ticket_types($) {
-	my ($dbh) = @_;
-
-	my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
-	my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
-	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
-	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
-
-	my $api_path = $config_api_path . "/include/api.php";
-
-	my $call_api = $api_path . '?' .
-		'user=' . $config_integria_user . '&' .
-		'user_pass=' . $config_integria_user_pass . '&' .
-		'pass=' . $config_api_pass . '&' .
-		'op=get_types&' .
-		'return_type=json';
-
-	my $content = get($call_api);
-
-    my @decoded_json;
-    @decoded_json = @{decode_json($content)} if (defined $content && $content ne "");
-
-	return @decoded_json;
-
 }
 
 ##########################################################################

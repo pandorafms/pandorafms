@@ -170,8 +170,8 @@ if ($id) {
         $action['field3_recovery'] = ($action['field3'] ?? $config['default_criticity']);
         $action['field4_recovery'] = ($action['field4'] ?? $config['default_owner']);
         $action['field5_recovery'] = ($action['field5'] ?? $config['incident_type']);
-        $action['field6_recovery'] = ($action['field6'] ?? $config['incident_status']);
-        $action['field7_recovery'] = ($action['field7'] ?? $config['incident_content']);
+        $action['field6_recovery'] = ($action['field6_recovery'] ?? $config['incident_status']);
+        $action['field7_recovery'] = ($action['field7_recovery'] ?? $config['incident_content']);
     }
 
     $group = $action['id_group'];
@@ -378,24 +378,26 @@ $table_macros->data[1][2] = html_print_label_input_block(
     )
 );
 
-// Selector will work only with Integria activated.
-$integriaIdName = 'integria_wu';
-$table_macros->colspan[$integriaIdName][0] = 3;
-$table_macros->data[$integriaIdName][0] = html_print_label_input_block(
-    __('Create workunit on recovery').ui_print_help_tip(
-        __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
-        true
-    ),
-    html_print_checkbox_switch_extended(
-        'create_wu_integria',
-        1,
-        $create_wu_integria,
-        false,
-        '',
-        $disabled_attr,
-        true
-    )
-);
+if (empty($command) === false && $command['name'] === io_safe_input('Integria IMS Ticket')) {
+    // Selector will work only with Integria activated.
+    $integriaIdName = 'integria_wu';
+    $table_macros->colspan[$integriaIdName][0] = 3;
+    $table_macros->data[$integriaIdName][0] = html_print_label_input_block(
+        __('Create workunit on recovery').ui_print_help_tip(
+            __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
+            true
+        ),
+        html_print_checkbox_switch_extended(
+            'create_wu_integria',
+            1,
+            $create_wu_integria,
+            false,
+            '',
+            $disabled_attr,
+            true
+        )
+    );
+}
 
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table_macros->data['field'.$i][0] = html_print_image(
@@ -546,8 +548,8 @@ $(document).ready (function () {
 
                 switch (custom_field.type) {
                     case 'CHECKBOX':
-                        var checkbox_selector = $('input:not(.datepicker)[name=field'+custom_field_key+'_value\\[\\]]');
-                        var checkbox_recovery_selector = $('input:not(.datepicker)[name=field'+custom_field_key+'_recovery_value\\[\\]]');
+                        var checkbox_selector = $('input[type="checkbox"][name=field'+custom_field_key+'_value\\[\\]]');
+                        var checkbox_recovery_selector = $('input[type="checkbox"][name=field'+custom_field_key+'_recovery_value\\[\\]]');
 
                         checkbox_selector.on('change', function() {
                             if (checkbox_selector.prop('checked')) {
@@ -587,8 +589,8 @@ $(document).ready (function () {
 
                         $('[name=field'+custom_field_key+'_value_container]').show();
                         $('[name=field'+custom_field_key+'_recovery_value_container]').show();
-                        $('input:not(.datepicker)[name=field'+custom_field_key+'_value\\[\\]]').show();
-                        $('input:not(.datepicker)[name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
+                        $('input[type="checkbox"][name=field'+custom_field_key+'_value\\[\\]]').show();
+                        $('input[type="checkbox"][name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
                     break;
                     case 'COMBO':
                         var combo_input = $('select[name=field'+custom_field_key+'_value\\[\\]]');
@@ -627,11 +629,10 @@ $(document).ready (function () {
                         $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').removeClass("hasDatepicker");
                         $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').datepicker("destroy");
                         $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').datepicker("destroy");
-
                         $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').show();
                         $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').datepicker({dateFormat: "<?php echo 'yy-mm-dd 00:00:00'; ?>"});
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').datepicker({dateFormat: "<?php echo 'yy-mm-dd 00:00:00'; ?>"});
                         $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 
                         if (typeof values[key] !== "undefined") {
@@ -642,9 +643,31 @@ $(document).ready (function () {
                             $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').val(recovery_values[key]);
                         }
                     break;
-                    case 'TEXT':
-                    case 'TEXTAREA':
                     case 'NUMERIC':
+                        if (typeof values[key] !== "undefined") {
+                            $('input[type="number"][name=field'+custom_field_key+'_value\\[\\]]').val(values[key]);
+                        }
+
+                        if (typeof recovery_values[key] !== "undefined") {
+                            $('input[type="number"][name=field'+custom_field_key+'_recovery_value\\[\\]]').val(recovery_values[key]);
+                        }
+
+                        $('input[type="number"][name=field'+custom_field_key+'_value\\[\\]]').show();
+                        $('input[type="number"][name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
+                    break;
+                    case 'TEXT':
+                        if (typeof values[key] !== "undefined") {
+                            $('input.normal[type="text"][name=field'+custom_field_key+'_value\\[\\]]').val(values[key]);
+                        }
+
+                        if (typeof recovery_values[key] !== "undefined") {
+                            $('input.normal[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').val(recovery_values[key]);
+                        }
+
+                        $('input.normal[type="text"][name=field'+custom_field_key+'_value\\[\\]]').show();
+                        $('input.normal[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
+                    break;
+                    case 'TEXTAREA':
                     default:
                         if (typeof values[key] !== "undefined") {
                             $('textarea[name=field'+custom_field_key+'_value\\[\\]]').val(values[key]);
@@ -694,13 +717,6 @@ $(document).ready (function () {
                     render_command_description(command_description);
                 } else {
                     render_command_description('');
-                }
-                
-                // Allow create workunit if Integria IMS Ticket is selected.
-                if (data['id'] == '14') {
-                    $("#table_macros-"+integriaWorkUnitName).css('display', 'table-row');
-                } else {
-                    $("#table_macros-"+integriaWorkUnitName).css('display', 'none');
                 }
 
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');
@@ -831,7 +847,6 @@ $(document).ready (function () {
 
                             
                             $("[name=field" + i + "_recovery_value]").val(old_recovery_value);
-
                             if (is_element_select === true) {
                                 $("[name=field" + i + "_recovery_value]").trigger('change');
                             }

@@ -16,7 +16,7 @@ function getInputFieldsIncidenceType(idIncidenceType, fieldsData, ajaxUrl) {
 
   // Visual Console container request.
   jQuery
-    .get(
+    .post(
       ajaxUrl,
       {
         page: "operation/ITSM/itsm",

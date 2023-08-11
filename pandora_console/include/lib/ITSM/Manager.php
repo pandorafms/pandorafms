@@ -527,8 +527,10 @@ class Manager
         $result = $ITSM->callApi(
             'incidenceTypeFields',
             [
-                'page'     => 0,
-                'sizePage' => 0,
+                'page'      => 0,
+                'sizePage'  => 0,
+                'field'     => 'idIncidenceTypeField',
+                'direction' => 'ascending',
             ],
             [],
             $idIncidenceType
@@ -1125,7 +1127,7 @@ class Manager
     public function getInputFieldsIncidenceType()
     {
         $idIncidenceType = (int) get_parameter('idIncidenceType', true);
-        $fieldsData = json_decode(io_safe_output(get_parameter('fieldsData', [])), true);
+        $fieldsData = json_decode(base64_decode(get_parameter('fieldsData')), true);
         if (empty($fieldsData) === false) {
             $fieldsData = array_reduce(
                 $fieldsData,

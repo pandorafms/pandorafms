@@ -1703,6 +1703,11 @@ enterprise/meta/monitoring/wizard/wizard.module.web.php
 enterprise/meta/monitoring/wizard/wizard.php
 enterprise/meta/monitoring/wizard/wizard.update_agent.php
 enterprise/meta/monitoring/wizard/wizard.update_module.php
+enterprise/godmode/wizards/Applications.class.php
+enterprise/godmode/wizards/Cloud.class.php
+enterprise/images/wizard/applications.png
+enterprise/images/wizard/cloud.png
+enterprise/images/wizard/consoletasks.png
 operation/incidents/configure_integriaims_incident.php
 operation/incidents/dashboard_detail_integriaims_incident.php
 operation/incidents/incident_statistics.php

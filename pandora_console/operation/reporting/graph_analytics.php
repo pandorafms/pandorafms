@@ -145,28 +145,24 @@ $left_content = '';
 $right_content = '';
 
 $left_content .= '
-    <div class="sortable-graphs-connected">
-        <div data-id-module="6">
-            <span class="handle-graph">6 </span>
-            <img width="25" src="images/application_double.png">
-        </div>
+    <div class="filters-div-header">
+        <div></div>
+        <img src="images/menu/contraer.svg">
     </div>
-
-    <div class="sortable-graphs-connected">
-        <div data-id-module="7">
-            <span class="handle-graph">7 </span>
-            <img width="25" src="images/building.png">
-        </div>
+    <div class="filters-div">
+        <div class="draggable draggable1" data-id-module="1"></div>
+        <div class="draggable draggable2" data-id-module="2"></div>
+        <div class="draggable draggable3" data-id-module="3"></div>
     </div>
 ';
 
 $intervals = [];
-$intervals[SECONDS_1HOUR]  = human_time_description_raw(SECONDS_1HOUR, true, 'large');
-$intervals[SECONDS_6HOURS]  = human_time_description_raw(SECONDS_6HOURS, true, 'large');
-$intervals[SECONDS_12HOURS] = human_time_description_raw(SECONDS_12HOURS, true, 'large');
-$intervals[SECONDS_1DAY] = human_time_description_raw(SECONDS_1DAY, true, 'large');
-$intervals[SECONDS_2DAY] = human_time_description_raw(SECONDS_2DAY, true, 'large');
-$intervals[SECONDS_1WEEK] = human_time_description_raw(SECONDS_1WEEK, true, 'large');
+$intervals[SECONDS_1HOUR]  = _('Last ').human_time_description_raw(SECONDS_1HOUR, true, 'large');
+$intervals[SECONDS_6HOURS]  = _('Last ').human_time_description_raw(SECONDS_6HOURS, true, 'large');
+$intervals[SECONDS_12HOURS] = _('Last ').human_time_description_raw(SECONDS_12HOURS, true, 'large');
+$intervals[SECONDS_1DAY] = _('Last ').human_time_description_raw(SECONDS_1DAY, true, 'large');
+$intervals[SECONDS_2DAY] = _('Last ').human_time_description_raw(SECONDS_2DAY, true, 'large');
+$intervals[SECONDS_1WEEK] = _('Last ').human_time_description_raw(SECONDS_1WEEK, true, 'large');
 
 $right_content .= '<div class="interval-div">'.html_print_select(
     $intervals,
@@ -182,33 +178,16 @@ $right_content .= '<div class="interval-div">'.html_print_select(
 ).'</div>';
 
 $right_content .= '
-    <div id="sortable-graphs" class="sortable-graphs-connected">
-        <div data-id-module="1">
-            <span class="handle-graph">1 </span>
-            <img width="25" src="images/add.png">
-        </div>
-        <div data-id-module="2">
-            <span class="handle-graph">2 </span>
-            <img width="25" src="images/advanced.png">
-        </div>
-        <div data-id-module="3">
-            <span class="handle-graph">3 </span>
-            <img width="25" src="images/agent_notinit.png">
-        </div>
-        <div data-id-module="4">
-            <span class="handle-graph">4 </span>
-            <img width="25" src="images/alerts_command.png">
-        </div>
-        <div data-id-module="5">
-            <span class="handle-graph">5 </span>
-            <img width="25" src="images/alarm-off.png">
-        </div>
+    <div id="droppable-graphs">
+        <div class="droppable droppable-default-zone" data-modules="[]"><span class="drop-here">'.__('Drop here').'<span></div>
     </div>
 ';
-
+// <div class="droppable" data-id-zone="zone1"></div>
+// <div class="droppable" data-id-zone="zone2"></div>
+// <div class="droppable" data-id-zone="zone3"></div>
 $filters_div = html_print_div(
     [
-        'class'   => 'padding-div filters-div',
+        'class'   => 'padding-div filters-div-main',
         'content' => $left_content,
     ],
     true
@@ -216,7 +195,7 @@ $filters_div = html_print_div(
 
 $graphs_div = html_print_div(
     [
-        'class'   => 'padding-div graphs-div',
+        'class'   => 'padding-div graphs-div-main',
         'content' => $right_content,
     ],
     true
@@ -233,67 +212,113 @@ html_print_div(
 ?>
 
 <script>
-$(document).ready(function(){
-    $(".sortable-graphs-connected").sortable({
-        handle: '.handle-graph',
-        placeholder: 'drop-zone-sortable',
-        connectWith: ['.sortable-graphs-connected'],
-        containment: '#sortable-graphs',
-        opacity: 0.7,
-        cursor: 'move',
-        scrollSpeed: 10,
-        revert: 300,
-        start: function(event, ui) {
-            // console.log('start');
-            const divs = $('#sortable-graphs div');
-            const sort = $(this).sortable('instance');
-
-            ui.placeholder.height(ui.helper.height());
-
-            divs.each(function(i, v) {
-                sort.containment[i +1] += ui.helper.height() * 1 - sort.offset.click.bottom;
-            });
-
-            sort.containment[1] -= sort.offset.click.bottom;
-        },
-        stop: function(e, ui) {
-            // console.log('stop');
-            let data = [];
-            $('#sortable-graphs div').each(function(i, v) {
-                data.push($(this).data('id-module'));
-            });
-
-            console.log(data);
-
-            // $.ajax({
-                // method: "POST",
-                // url: '',
-                // data: {
-                //     page: '',
-                //     method: "updatePriorityNodes",
-                //     order: data
-                // },
-                // dataType: "json",
-                // success: function(data) {
-                //     if(data.result == 1){
-                //         confirmDialog({
-                //             title: "<?php echo __('Update priority nodes'); ?>",
-                //             message: "<?php echo __('Successfully updated priority order nodes'); ?>",
-                //             hideCancelButton: true
-                //         });
-                //     } else {
-                //         confirmDialog({
-                //             title: "<?php echo __('Update priority nodes'); ?>",
-                //             message: "<?php echo __('Could not be updated priority order nodes'); ?>",
-                //             hideCancelButton: true
-                //         });
-                //     }
-                // },
-                // error: function(data) {
-                //     console.error("Fatal error in AJAX call", data);
-                // }
-            // });
-        },
-    });
+// Interval change.
+$('#interval').change(function (e) { 
+    console.log(parseInt($(this).val()));
 });
+
+// Collapse filters.
+$('div.filters-div-main > .filters-div-header > img').click(function (e) {
+    if ($('.filters-div-main').hasClass('filters-div-main-collapsed') === true) {
+        $('.filters-div-header > img').attr('src', 'images/menu/contraer.svg');
+        $('.filters-div-main').removeClass('filters-div-main-collapsed');
+    } else {
+        $('.filters-div-header > img').attr('src', 'images/menu/expandir.svg');
+        $('.filters-div-main').addClass('filters-div-main-collapsed');
+    }
+});
+
+$(document).ready(function(){
+    // Draggable & Droppable graphs.
+    $('.draggable').draggable({
+        revert: "invalid",
+        stack: ".draggable",
+        helper: "clone",
+    });
+
+    var droppableOptions = {
+        accept: ".draggable",
+        hoverClass: "drops-hover",
+        activeClass: "droppable-zone",
+        drop: function(event, ui) {
+            // Add new module.
+            $(this).data('modules').push(ui.draggable.data('id-module'));
+
+            var modulesByGraphs = [];
+            $('#droppable-graphs > div').each(function (i, v) {
+                var modulesTmp = $(v).data('modules');
+                if (modulesTmp.length > 0) {
+                    modulesByGraphs.push(modulesTmp)
+                }
+            });
+
+            // Ajax.
+            // $.ajax({
+            //     method: "POST",
+            //     url: '',
+            //     data: {
+            //         page: '',
+            //         method: "updatePriorityNodes",
+            //         order: data
+            //     },
+            //     dataType: "json",
+            //     success: function(data) {
+            //         if(data.result == 1){
+            //             confirmDialog({
+            //                 title: "<?php echo __('Update priority nodes'); ?>",
+            //                 message: "<?php echo __('Successfully updated priority order nodes'); ?>",
+            //                 hideCancelButton: true
+            //             });
+            //         } else {
+            //             confirmDialog({
+            //                 title: "<?php echo __('Update priority nodes'); ?>",
+            //                 message: "<?php echo __('Could not be updated priority order nodes'); ?>",
+            //                 hideCancelButton: true
+            //             });
+            //         }
+            //     },
+            //     error: function(data) {
+            //         console.error("Fatal error in AJAX call", data);
+            //     }
+            // });
+
+            createDroppableZones(droppableOptions, modulesByGraphs);
+        },
+    };
+
+    // Set droppable zones.
+    $('.droppable').droppable(droppableOptions);
+});
+
+function createDroppableZones(droppableOptions, modulesByGraphs) {
+    // Translate.
+    const dropHere = '<?php echo __('Drop here'); ?>';
+
+    // Clear graph area.
+    $('#droppable-graphs').empty();
+
+    // example graph modules
+    modulesByGraphs.slice().reverse().forEach(graph => {
+        // Create graph div.
+        var graphDiv = $(`<div class="droppable" data-modules="[${graph}]"></div>`);
+        $("#droppable-graphs").prepend(graphDiv);
+
+        // todo: Print graph
+        graph.forEach(module => {
+            graphDiv.append($(`<div class="draggable draggable${module} ui-draggable ui-draggable-handle"></div>`));
+        });
+
+        // Create next droppable zone.
+        graphDiv.after($(`<div class="droppable droppable-default-zone droppable-new" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
+    
+    });
+
+    // Create first droppable zones and graphs.
+    $("#droppable-graphs").prepend($(`<div class="droppable droppable-default-zone droppable-new" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
+
+    // Set droppable zones.
+    $('.droppable').droppable(droppableOptions);
+
+    // todo: Create draggable graphs.
+}
 </script>

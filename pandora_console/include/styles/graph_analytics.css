@@ -44,12 +44,40 @@ div.padding-div {
   padding: 10px;
 }
 
-div.filters-div {
+div.filters-div-main {
   min-width: 400px;
   border-right: 1px solid var(--border-dark-color);
 }
 
-div.graphs-div {
+div.filters-div-main.filters-div-main-collapsed {
+  width: 20px;
+  min-width: 20px;
+}
+
+div.filters-div-main.filters-div-main-collapsed
+  *:not(.filters-div-header):not(.filters-div-header > img) {
+  display: none;
+}
+
+div.filters-div-main > .filters-div-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+div.filters-div-main > .filters-div-header > img {
+  width: 20px;
+  cursor: pointer;
+}
+
+div.filters-div {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+div.graphs-div-main {
   width: 100%;
 }
 
@@ -57,19 +85,11 @@ div.graphs-div {
   cursor: grab;
 }
 
-#sortable-graphs {
+#droppable-graphs {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: center;
-}
-
-#sortable-graphs .drop-zone-sortable {
-  background-color: (--primary-color);
-  width: 100%;
-  height: 20px;
-  border: 2px dashed var(--border-dark-color);
-  border-radius: 6px;
 }
 
 .interval-div {
@@ -78,4 +98,87 @@ div.graphs-div {
   flex-wrap: nowrap;
   justify-content: center;
   margin-bottom: 10px;
+}
+
+/* Draggable */
+.draggable.ui-draggable-dragging {
+  width: 100px;
+}
+
+.draggable {
+  width: 100px;
+  height: 20px;
+  background: red;
+}
+
+.draggable2 {
+  background: blue;
+}
+
+.draggable3 {
+  background: green;
+}
+
+.droppable {
+  width: 100%;
+  /* height: 20px; */
+  margin-bottom: 5px;
+  display: flex;
+}
+
+#droppable-graphs .droppable-zone {
+  background-color: #0077ff80;
+  border: 2px dashed #0077ff;
+  border-radius: 6px;
+  width: 100%;
+  height: 20px;
+}
+
+#droppable-graphs .drops-hover {
+  background-color: #82b92e80;
+  border: 2px dashed #82b92e;
+}
+
+#droppable-graphs .droppable.droppable-default-zone:not(.droppable-new) {
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+}
+
+#droppable-graphs .droppable.droppable-default-zone.droppable-new {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#droppable-graphs
+  .droppable.droppable-default-zone.droppable-new
+  > span.drop-here {
+  display: none;
+}
+
+#droppable-graphs .droppable.droppable-default-zone > span.drop-here {
+  font-size: 15pt;
+  font-weight: bold;
+  color: #0077ff;
+}
+
+#droppable-graphs
+  .droppable.droppable-default-zone.droppable-new.ui-droppable-active
+  > span.drop-here {
+  display: initial;
+}
+
+#droppable-graphs .droppable.droppable-default-zone.ui-droppable-active {
+  visibility: visible;
+}
+
+#droppable-graphs
+  .droppable.droppable-default-zone.ui-droppable-active.drops-hover
+  > span.drop-here {
+  color: #82b92e;
 }

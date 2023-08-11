@@ -108,6 +108,7 @@ $inputs[] = [
         'returnAllGroup' => $display_all_group,
         'name'           => 'id_group',
         'selected'       => $specialDay->id_group(),
+        'required'       => true,
     ],
 ];
 

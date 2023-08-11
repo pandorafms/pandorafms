@@ -13,9 +13,4 @@
 // GNU General Public License for more details.
 global $config;
 
-$legacy = (bool) get_parameter('legacy', $config['legacy_vc']);
-if ($legacy === false) {
-    include_once $config['homedir'].'/operation/visual_console/view.php';
-} else {
-    include_once $config['homedir'].'/operation/visual_console/legacy_view.php';
-}
+require_once $config['homedir'].'/operation/visual_console/view.php';

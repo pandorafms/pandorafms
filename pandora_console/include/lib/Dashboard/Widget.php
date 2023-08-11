@@ -420,6 +420,10 @@ class Widget
                     $className .= '\OsQuickReportWidget';
                 break;
 
+                case 'netflow':
+                    $className .= '\Netflow';
+                break;
+
                 case 'GroupedMeterGraphs':
                 case 'ColorModuleTabs':
                 case 'BlockHistogram':
@@ -428,6 +432,7 @@ class Widget
                 case 'ModulesByStatus':
                 case 'AvgSumMaxMinModule':
                 case 'BasicChart':
+                case 'AgentHive':
                     $className .= '\\'.$name;
                 break;
 

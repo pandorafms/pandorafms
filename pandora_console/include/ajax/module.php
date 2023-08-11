@@ -98,15 +98,18 @@ if (check_login()) {
     }
 
     $id_plugin = get_parameter('id_plugin', 0);
-    $id_module_plugin = db_get_value(
-        'id_plugin',
-        'tagente_modulo',
-        'id_agente_modulo',
-        $get_module_macros
-    );
-    if ($id_plugin !== $id_module_plugin) {
-        $get_plugin_macros = true;
-        $get_module_macros = 0;
+
+    if ($id_plugin !== 0) {
+        $id_module_plugin = db_get_value(
+            'id_plugin',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $get_module_macros
+        );
+        if ($id_plugin !== $id_module_plugin) {
+            $get_plugin_macros = true;
+            $get_module_macros = 0;
+        }
     }
 
     if ($get_plugin_macros) {
@@ -618,7 +621,7 @@ if (check_login()) {
         }
 
         if (empty($table->data)) {
-            ui_print_error_message(__('No available data to show'));
+            ui_print_empty_data(__('No available data to show'), '', false);
         } else {
             ui_pagination(
                 count($count),

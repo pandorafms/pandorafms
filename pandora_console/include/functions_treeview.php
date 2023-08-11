@@ -892,11 +892,13 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $table_advanced->head = [];
         $table_advanced->data = [];
 
-        // Agent version.
-        $row = [];
+    $row = [];
+         // Agent version.
+    if (!empty($agent['agent_version'])) {
         $row['title'] = __('Agent Version');
         $row['data'] = $agent['agent_version'];
         $table_advanced->data['agent_version'] = $row;
+    }
 
         // Position Information.
     if ($config['activate_gis']) {
@@ -976,7 +978,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         '',
         '',
         true,
-        false,
+        empty($table_advanced->data),
         '',
         'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
         'white_table_flex'

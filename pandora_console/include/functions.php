@@ -324,7 +324,7 @@ function human_milliseconds_to_string($seconds)
     }
 
     // get the seconds
-    $seconds = (intval($seconds / 100) % 60);
+    $seconds = ((intval($seconds) / 100) % 60);
     if ($seconds > 0) {
         $ret .= "$seconds seconds";
     }
@@ -907,7 +907,7 @@ function set_cookie($name, $value)
 {
     if (is_null($value)) {
         unset($_COOKIE[$value]);
-        setcookie($name, null, -1, '/');
+        setcookie($name, '', -1, '/');
     } else {
         setcookie($name, $value);
     }

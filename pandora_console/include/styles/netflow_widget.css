@@ -1,0 +1,13 @@
+.menu_graph {
+  display: none;
+}
+.parent_graph {
+  width: 97% !important;
+}
+#image_hide_show_labels {
+  display: none !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+  padding: 0px !important;
+}

@@ -1092,6 +1092,11 @@ function notifications_print_dropdown_element($message_info)
         $message_info['subject'] = io_safe_input($img);
     }
 
+    if (strlen($body_preview) >= 170) {
+        $body_preview = substr($body_preview, 0, 150);
+        $body_preview .= __('. Read More...');
+    }
+
     return sprintf(
         "<a
             class='notification-item'

@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tusuario` MODIFY COLUMN `integria_user_level_pass` TEXT;
+
+COMMIT;

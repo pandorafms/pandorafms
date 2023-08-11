@@ -6241,6 +6241,57 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             <?php
         break;
 
+        case 'datetime':
+            $date = (empty($data['value']) === true) ? '' : date('Y-m-d', $data['value']);
+            $time = (empty($data['value']) === true) ? '' : date('H:i:s', $data['value']);
+            ui_require_css_file('datepicker');
+            ui_include_time_picker();
+            ui_require_jquery_file(
+                'ui.datepicker-'.get_user_language(),
+                'include/javascript/i18n/'
+            );
+
+            $inputDate = html_print_input_text(
+                $data['name'].'_date',
+                $date,
+                '',
+                false,
+                10,
+                true,
+                false,
+                false,
+                '',
+                '',
+                '',
+                'off'
+            );
+
+            $inputTime = html_print_input_text(
+                $data['name'].'_time',
+                $time,
+                '',
+                false,
+                10,
+                true,
+                false,
+                false,
+                '',
+                '',
+                '',
+                'off'
+            );
+            $output .= html_print_div(
+                [
+                    'content' => sprintf(
+                        '<div class="datetime-adv-opt">%s<span>:</span>%s</div>',
+                        $inputDate,
+                        $inputTime
+                    ),
+                ],
+                true
+            );
+        break;
+
         default:
             // Ignore.
         break;

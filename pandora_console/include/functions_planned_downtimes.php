@@ -676,9 +676,7 @@ function planned_downtimes_stop($downtime)
                 foreach ($agents as $agent) {
                     $result = db_process_sql_update(
                         'tagente',
-                        [
-                            'update_module_count' => 1,
-                        ],
+                        ['update_module_count' => 1],
                         ['id_agente' => $agent['id_agent']]
                     );
 

@@ -2685,7 +2685,8 @@ function events_print_type_img(
         case 'going_up_normal':
         case 'going_down_normal':
             // This is to be backwards compatible.
-            $style .= ' event_module_background_state icon_background_normal';
+            // $style .= ' event_module_background_state icon_background_normal';
+            $icon = 'images/module_ok.png';
         break;
 
         case 'going_up_warning':
@@ -2697,7 +2698,8 @@ function events_print_type_img(
         break;
 
         case 'going_unknown':
-            $style .= ' event_module_background_state icon_background_unknown';
+            // $style .= ' event_module_background_state icon_background_unknown';
+            $icon = 'images/module_unknown.png';
         break;
 
         case 'alert_fired':
@@ -2855,11 +2857,10 @@ function events_print_type_img_pdf(
 
         case 'new_agent':
             $svg = html_print_image(
-                '/images/agents.svg',
+                '/images/agent_mc.png',
                 true,
                 [
                     'class' => 'image_status invert_filter',
-                    'width' => 16,
                     'title' => 'agents',
                 ]
             );

@@ -96,9 +96,7 @@ CREATE TABLE IF NOT EXISTS `tevent_comment` (
   `id_user` VARCHAR(255) DEFAULT NULL,
   `action` TEXT,
   FOREIGN KEY (`id_event`) REFERENCES `tevento`(`id_evento`)
-    ON UPDATE CASCADE ON DELETE CASCADE,
-  FOREIGN KEY (`id_user`) REFERENCES tusuario(`id_user`)
-    ON DELETE SET NULL
+    ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 INSERT INTO `tevent_comment` (`id_event`, `utimestamp`, `comment`, `id_user`, `action`)

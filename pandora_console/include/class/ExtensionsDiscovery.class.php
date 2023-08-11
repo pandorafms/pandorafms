@@ -210,18 +210,9 @@ class ExtensionsDiscovery extends Wizard
                 $logo = $this->defaultLogo;
             }
 
-            // Get type of task.
-            $task = db_get_row(
-                'trecon_task',
-                'id_app',
-                $extension['id_app']
-            );
-
-            $task_type = (integer) $task['type'];
-            $extension_name = ($task_type == DISCOVERY_EXTENSION) ? $extension['name'] : $extension['name'].' (legacy)';
             $extensions[] = [
                 'icon'  => $logo,
-                'label' => $extension_name,
+                'label' => $extension['name'],
                 'url'   => ui_get_full_url(
                     'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz='.$this->section.'&mode='.$extension['short_name']
                 ),

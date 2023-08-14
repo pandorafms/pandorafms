@@ -35,7 +35,87 @@ ui_require_css_file('graph_analytics');
 require_once 'include/functions_custom_graphs.php';
 
 // Get parameters.
-$x = (bool) get_parameter('x');
+$x = get_parameter('x');
+
+// Ajax.
+if (is_ajax()) {
+    $search_left = get_parameter('search_left');
+
+    if (empty($search_left) === false) {
+        $output = [];
+        $search = io_safe_input($search_left);
+
+        // Agents.
+        // Concatenate AW and AD permisions to get all the possible groups where the user can manage.
+        $user_groupsAW = users_get_groups($config['id_user'], 'AW');
+        $user_groupsAD = users_get_groups($config['id_user'], 'AD');
+
+        $user_groups = ($user_groupsAW + $user_groupsAD);
+        $user_groups_to_sql = implode(',', array_keys($user_groups));
+
+        $search_sql = ' AND (nombre LIKE "%%'.$search.'%%" OR alias LIKE "%%'.$search.'%%")';
+
+        $sql = sprintf(
+            'SELECT *
+            FROM tagente
+            LEFT JOIN tagent_secondary_group tasg
+                ON tagente.id_agente = tasg.id_agent
+            WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
+                %s
+            GROUP BY tagente.id_agente
+            ORDER BY tagente.nombre',
+            $user_groups_to_sql,
+            $user_groups_to_sql,
+            $search_sql
+        );
+
+        $output['agents'] = db_get_all_rows_sql($sql);
+
+        // Groups.
+        $search_sql = ' AND (nombre LIKE "%%'.$search.'%%" OR description LIKE "%%'.$search.'%%")';
+
+        $sql = sprintf(
+            'SELECT id_grupo, nombre, icon, description
+            FROM tgrupo
+            WHERE (id_grupo IN (%s))
+                %s
+            ORDER BY nombre',
+            $user_groups_to_sql,
+            $search_sql
+        );
+
+        $output['groups'] = db_get_all_rows_sql($sql);
+
+        // Modules.
+        $result_agents = [];
+        $sql_result = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN ('.$user_groups_to_sql.')');
+
+        foreach ($sql_result as $result) {
+            array_push($result_agents, $result['id_agente']);
+        }
+
+        $id_agents = implode(',', $result_agents);
+        $search_sql = ' AND (nombre LIKE "%%'.$search.'%%" OR descripcion LIKE "%%'.$search.'%%")';
+
+        $sql = sprintf(
+            'SELECT id_agente_modulo, nombre, descripcion
+            FROM tagente_modulo
+            WHERE (id_agente IN (%s))
+                %s
+            ORDER BY nombre',
+            $id_agents,
+            $search_sql
+        );
+
+        $output['modules'] = db_get_all_rows_sql($sql);
+
+        // Return.
+        echo json_encode($output);
+        return;
+    }
+
+    return;
+}
 
 // Header & Actions.
 $title_tab = __('Start realtime');
@@ -144,15 +224,26 @@ ui_print_standard_header(
 $left_content = '';
 $right_content = '';
 
+// $left_content .= '<input id="search" name="search" placeholder="Enter keywords to search" type="search" class="w100p">';
 $left_content .= '
     <div class="filters-div-header">
         <div></div>
         <img src="images/menu/contraer.svg">
     </div>
-    <div class="filters-div">
-        <div class="draggable draggable1" data-id-module="1"></div>
-        <div class="draggable draggable2" data-id-module="2"></div>
-        <div class="draggable draggable3" data-id-module="3"></div>
+    <div class="filters-div-submain">
+        <div class="filter-div filters-left-div">
+            <input id="search-left" name="search-left" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
+            <div class="draggable draggable1" data-id-module="1"></div>
+            <div class="draggable draggable2" data-id-module="2"></div>
+            <div class="draggable draggable3" data-id-module="3"></div>
+            <br>
+            '.ui_toggle('code', __('Agents'), 'agents-toggle', 'agents-toggle', true, true).'
+            '.ui_toggle('code', __('Groups'), 'groups-toggle', 'groups-toggle', true, true).'
+            '.ui_toggle('code', __('Modules'), 'modules-toggle', 'modules-toggle', true, true).'
+        </div>
+        <div class="filter-div filters-right-div ">
+            <input id="search-right" name="search-right" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
+        </div>
     </div>
 ';
 
@@ -187,7 +278,7 @@ $right_content .= '
 // <div class="droppable" data-id-zone="zone3"></div>
 $filters_div = html_print_div(
     [
-        'class'   => 'padding-div filters-div-main',
+        'class'   => 'filters-div-main',
         'content' => $left_content,
     ],
     true
@@ -228,7 +319,56 @@ $('div.filters-div-main > .filters-div-header > img').click(function (e) {
     }
 });
 
+// Search left.
+$('#search-left').keyup(function (e) { 
+    $.ajax({
+        method: "POST",
+        url: 'ajax.php',
+        dataType: "json",
+        data: {
+            page: 'operation/reporting/graph_analytics',
+            search_left: e.target.value,
+        },
+        success: function(data) {
+            if(data.agents || data.groups || data.modules){
+                console.log(data);
+                var agentsToggle = $('#agents-toggle > div[id^=tgl_div_] > div.white-box-content');
+                var groupsToggle = $('#groups-toggle > div[id^=tgl_div_] > div.white-box-content');
+                var modulesToggle = $('#modules-toggle > div[id^=tgl_div_] > div.white-box-content');
+                agentsToggle.empty();
+                groupsToggle.empty();
+                modulesToggle.empty();
+
+                data.agents.forEach(agent => {
+                    agentsToggle.append(`<div class="draggable draggable1" data-id-agent="${agent.id_agente}">${agent.alias}</div>`);
+                });
+
+                data.groups.forEach(group => {
+                    groupsToggle.append(`<div class="draggable draggable2" data-id-group="${group.id_grupo}">${group.nombre}</div>`);
+                });
+
+                data.modules.forEach(module => {
+                    modulesToggle.append(`<div class="draggable draggable3" data-id-module="${module.id_agente_modulo}">${module.nombre}</div>`);
+                });
+
+                // todo: position: static; div#tgl_div_...
+                $('.draggable').draggable({
+                    revert: "invalid",
+                    stack: ".draggable",
+                    helper: "clone",
+                });
+            } else {
+                console.error('NO DATA FOUND');
+            }
+        },
+        error: function(data) {
+            // console.error("Fatal error in AJAX call", data);
+        }
+    });
+});
+
 $(document).ready(function(){
+
     // Draggable & Droppable graphs.
     $('.draggable').draggable({
         revert: "invalid",
@@ -236,6 +376,7 @@ $(document).ready(function(){
         helper: "clone",
     });
 
+    // Droppable options.
     var droppableOptions = {
         accept: ".draggable",
         hoverClass: "drops-hover",
@@ -255,11 +396,10 @@ $(document).ready(function(){
             // Ajax.
             // $.ajax({
             //     method: "POST",
-            //     url: '',
+            //     url: 'ajax.php',
             //     data: {
             //         page: '',
-            //         method: "updatePriorityNodes",
-            //         order: data
+            //         method: "",
             //     },
             //     dataType: "json",
             //     success: function(data) {
@@ -282,6 +422,7 @@ $(document).ready(function(){
             //     }
             // });
 
+            // Create elements.
             createDroppableZones(droppableOptions, modulesByGraphs);
         },
     };

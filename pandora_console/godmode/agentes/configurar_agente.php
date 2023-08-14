@@ -1755,7 +1755,10 @@ if ($update_module) {
     ];
 
 
-    if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
+    if ($id_module_type === 30 || $id_module_type === 31
+        || $id_module_type === 32 || $id_module_type === 33
+        || $id_module_type === 38
+    ) {
         $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
         $values['plugin_parameter'] = '';
@@ -1951,7 +1954,10 @@ if ($create_module) {
         'warning_time'          => $warning_time,
     ];
 
-    if ($id_module_type === 30 || $id_module_type === 31 || $id_module_type === 32 || $id_module_type === 33) {
+    if ($id_module_type === 30 || $id_module_type === 31
+        || $id_module_type === 32 || $id_module_type === 33
+        || $id_module_type === 38
+    ) {
         $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
         $values['plugin_parameter'] = '';

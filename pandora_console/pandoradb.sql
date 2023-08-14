@@ -3472,6 +3472,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
   `cps` INT NOT NULL DEFAULT 0,
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -4407,3 +4408,17 @@ CREATE TABLE IF NOT EXISTS `tnetwork_explorer_filter` (
   `advanced_filter` TEXT NULL,
   PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tsca`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsca` (
+  `id` int NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `rationale` text DEFAULT NULL,
+  `impact` text DEFAULT NULL,
+  `remediation` text DEFAULT NULL,
+  `compliance` text DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

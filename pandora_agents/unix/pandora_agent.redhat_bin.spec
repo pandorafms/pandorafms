@@ -4,7 +4,7 @@
 %global __os_install_post %{nil}
 %define name        pandorafms_agent_linux_bin
 %define source_name pandorafms_agent_linux
-%define version     7.0NG.772
+%define version     7.0NG.773
 %define release     230725
 
 Summary:            Pandora FMS Linux agent, binary version
@@ -19,7 +19,7 @@ Group:              System/Monitoring
 Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
-BuildArch:          noarch
+BuildArch:          x86_64
 Requires(pre):      shadow-utils
 Requires(post):     chkconfig /bin/ln
 Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel

@@ -145,7 +145,7 @@ class Manager
         $groups = [];
         $status = [];
 
-        $headerTabs = $this->ITSM_tabs('list');
+        $headerTabs = $this->headersTabs('list');
 
         try {
             $ITSM = new ITSM();
@@ -184,6 +184,8 @@ class Manager
         $create_incidence = (bool) \get_parameter('create_incidence', 0);
         $update_incidence = (bool) \get_parameter('update_incidence', 0);
         $idIncidence      = \get_parameter('idIncidence', 0);
+
+        $headerTabs = $this->headersTabs('edit', (bool) $idIncidence);
 
         $error = '';
         try {
@@ -263,6 +265,7 @@ class Manager
                 'incidence'       => $incidence,
                 'idIncidence'     => $idIncidence,
                 'successfullyMsg' => $successfullyMsg,
+                'headerTabs'      => $headerTabs,
             ]
         );
     }
@@ -280,7 +283,7 @@ class Manager
         $idAttachment = (int) \get_parameter('idAttachment', 0);
         $addComment = (bool) \get_parameter('addComment', 0);
 
-        $headerTabs = $this->ITSM_tabs('');
+        $headerTabs = $this->headersTabs('detail', (bool) $idIncidence);
 
         $error = '';
         $successfullyMsg = null;
@@ -382,6 +385,7 @@ class Manager
                 'users'           => $users,
                 'priorities'      => $priorities,
                 'priorityDiv'     => $priorityDiv,
+                'headerTabs'      => $headerTabs,
             ]
         );
     }
@@ -395,6 +399,9 @@ class Manager
     private function showDashboard()
     {
         $error = '';
+
+        $headerTabs = $this->headersTabs('dashboard');
+
         try {
             $ITSM = new ITSM();
             $status = $ITSM->getStatus();
@@ -417,6 +424,7 @@ class Manager
                 'incidencesByGroups'     => $incidencesByGroups,
                 'incidencesByOwners'     => $incidencesByOwners,
                 'error'                  => $error,
+                'headerTabs'             => $headerTabs,
             ]
         );
     }
@@ -890,10 +898,16 @@ class Manager
     }
 
 
-    function ITSM_tabs($active_tab, $view=false)
+    /**
+     * Headers tabs
+     *
+     * @param string  $active_tab  Section.
+     * @param integer $idIncidence Id incidence.
+     *
+     * @return array Headers.
+     */
+    private function headersTabs(string $active_tab, int $idIncidence=0): array
     {
-        global $config;
-
         $url_tabs = ui_get_full_url('index.php?sec=ITSM&sec2=operation/ITSM/itsm');
         $url_setup = ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=ITSM');
 
@@ -913,7 +927,7 @@ class Manager
             'images/logs@svg.svg',
             true,
             [
-                'title' => __('Ticket list'),
+                'title' => __('List'),
                 'class' => 'main_menu_icon invert_filter',
             ]
         );
@@ -924,70 +938,111 @@ class Manager
             'images/edit.svg',
             true,
             [
-                'title' => __('New ticket'),
+                'title' => __('New'),
                 'class' => 'main_menu_icon invert_filter',
             ]
         );
         $create_tab['text'] .= '</a>';
+
+        $dashboard_tab['text'] = '<a href="'.$url_tabs.'&operation=dashboard">';
+        $dashboard_tab['text'] .= html_print_image(
+            'images/item-icon.svg',
+            true,
+            [
+                'title' => __('Dashboard'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        );
+        $dashboard_tab['text'] .= '</a>';
+
+        if ($idIncidence !== 0) {
+            $create_tab['text'] = '<a href="'.$url_tabs.'&operation=edit&idIncidence='.$idIncidence.'">';
+            $create_tab['text'] .= html_print_image(
+                'images/edit.svg',
+                true,
+                [
+                    'title' => __('Edit'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            );
+            $create_tab['text'] .= '</a>';
+
+            $view_tab['text'] = '<a href="'.$url_tabs.'&operation=detail&idIncidence='.$idIncidence.'">';
+            $view_tab['text'] .= html_print_image(
+                'images/enable.svg',
+                true,
+                [
+                    'title' => __('Detail'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            );
+            $view_tab['text'] .= '</a>';
+        }
 
         switch ($active_tab) {
             case 'setup':
                 $setup_tab['active'] = true;
                 $list_tab['active'] = false;
                 $create_tab['active'] = false;
+                $dashboard_tab['active'] = false;
+                if ($idIncidence !== 0) {
+                    $view_tab['active'] = false;
+                }
             break;
 
             case 'list':
                 $setup_tab['active'] = false;
                 $list_tab['active'] = true;
                 $create_tab['active'] = false;
+                $dashboard_tab['active'] = false;
+                if ($idIncidence !== 0) {
+                    $view_tab['active'] = false;
+                }
             break;
 
             case 'edit':
                 $setup_tab['active'] = false;
                 $list_tab['active'] = false;
                 $create_tab['active'] = true;
+                $dashboard_tab['active'] = false;
+                if ($idIncidence !== 0) {
+                    $view_tab['active'] = false;
+                }
             break;
 
-            default:
+            case 'detail':
                 $setup_tab['active'] = false;
                 $list_tab['active'] = false;
                 $create_tab['active'] = false;
+                $dashboard_tab['active'] = false;
+                if ($idIncidence !== 0) {
+                    $view_tab['active'] = true;
+                }
+            break;
+
+            case 'dashboard':
+                $setup_tab['active'] = false;
+                $list_tab['active'] = false;
+                $create_tab['active'] = false;
+                $dashboard_tab['active'] = true;
+                if ($idIncidence !== 0) {
+                    $view_tab['active'] = false;
+                }
+            break;
+
+            default:
+                // Not possible.
             break;
         }
 
-        if ($view) {
-            $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">';
-            $create_tab['text'] .= html_print_image(
-                'images/edit.svg',
-                true,
-                [
-                    'title' => __('Edit ticket'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            );
-            $create_tab['text'] .= '</a>';
-
-            $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">';
-            $view_tab['text'] .= html_print_image(
-                'images/details.svg',
-                true,
-                [
-                    'title' => __('View ticket'),
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            );
-            $view_tab['text'] .= '</a>';
-            // When the current page is the View page.
-            if (!$active_tab) {
-                $view_tab['active'] = true;
-            }
+        $onheader = [];
+        $onheader['configure'] = $setup_tab;
+        $onheader['dashboard'] = $dashboard_tab;
+        $onheader['list'] = $list_tab;
+        if ($idIncidence !== 0) {
+            $onheader['view'] = $view_tab;
         }
 
-        $onheader = [];
-        $onheader['view'] = $view_tab;
-        $onheader['configure'] = $setup_tab;
-        $onheader['list'] = $list_tab;
         $onheader['create'] = $create_tab;
 
         return $onheader;

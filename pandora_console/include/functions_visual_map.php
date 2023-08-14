@@ -2554,6 +2554,7 @@ function visual_map_process_wizard_add(
     $image,
     $id_layout,
     $range,
+    $range_vertical,
     $width=0,
     $height=0,
     $period='',
@@ -2562,7 +2563,10 @@ function visual_map_process_wizard_add(
     $max_value=0,
     $type_percentile='',
     $value_show='',
-    $type=''
+    $type='',
+    $pos_x=10,
+    $pos_y=10,
+    $max_elements_row=0
 ) {
     if (empty($id_agents)) {
         print_error_message(__('No agents selected'));
@@ -2572,14 +2576,11 @@ function visual_map_process_wizard_add(
     $id_agents = (array) $id_agents;
 
     $error = false;
-    $pos_y = 10;
-    $pos_x = 10;
+    $initial_x = $pos_x;
+    $initial_y = $pos_y;
+    $elements_row = 1;
+    $total_rows = 1;
     foreach ($id_agents as $id_agent) {
-        if ($pos_x > 600) {
-            $pos_x = 10;
-            $pos_y = ($pos_y + $range);
-        }
-
         $value_height = $height;
         $value_image = $image;
         $value_type = $type;
@@ -2628,7 +2629,16 @@ function visual_map_process_wizard_add(
 
         db_process_sql_insert('tlayout_data', $values);
 
-        $pos_x = ($pos_x + $range);
+        if (($max_elements_row === $elements_row) && $max_elements_row !== 0) {
+            $elements_row = 1;
+            $pos_x = ($initial_x + ($range * $total_rows));
+            $pos_y = ($initial_y + ($range_vertical * $total_rows));
+            $total_rows++;
+        } else {
+            $pos_x = ($pos_x + $range);
+            $pos_y = ($pos_y + $range_vertical);
+            $elements_row++;
+        }
     }
 
     $return = ui_print_success_message(__('Agent successfully added to layout'), '', true);
@@ -2654,6 +2664,7 @@ function visual_map_process_wizard_add_modules(
     $image,
     $id_layout,
     $range,
+    $range_vertical,
     $width,
     $height,
     $period,
@@ -2669,7 +2680,10 @@ function visual_map_process_wizard_add_modules(
     $kind_relationship=VISUAL_MAP_WIZARD_PARENTS_NONE,
     $item_in_the_map=0,
     $fontf='lato',
-    $fonts='12pt'
+    $fonts='12pt',
+    $pos_x=10,
+    $pos_y=10,
+    $max_elements_row=0
 ) {
     if (empty($width) === true) {
         $width = 0;
@@ -2691,15 +2705,11 @@ function visual_map_process_wizard_add_modules(
     $id_modules = (array) $id_modules;
 
     $error = false;
-    $pos_y = 10;
-    $pos_x = 10;
-
+    $initial_x = $pos_x;
+    $initial_y = $pos_y;
+    $elements_row = 1;
+    $total_rows = 1;
     foreach ($id_modules as $id_module) {
-        if ($pos_x > 600) {
-            $pos_x = 10;
-            $pos_y = ($pos_y + $range);
-        }
-
         if ($id_server != 0) {
             $connection = db_get_row_filter(
                 'tmetaconsole_setup',
@@ -2820,7 +2830,16 @@ function visual_map_process_wizard_add_modules(
 
         db_process_sql_insert('tlayout_data', $values);
 
-        $pos_x = ($pos_x + $range);
+        if (($max_elements_row === $elements_row) && $max_elements_row !== 0) {
+            $elements_row = 1;
+            $pos_x = ($initial_x + ($range * $total_rows));
+            $pos_y = ($initial_y + ($range_vertical * $total_rows));
+            $total_rows++;
+        } else {
+            $pos_x = ($pos_x + $range);
+            $pos_y = ($pos_y + $range_vertical);
+            $elements_row++;
+        }
     }
 
     $return = ui_print_success_message(__('Modules successfully added to layout'), '', true);
@@ -2885,6 +2904,7 @@ function visual_map_process_wizard_add_agents(
     $image,
     $id_layout,
     $range,
+    $range_vertical,
     $width,
     $height,
     $period,
@@ -2900,7 +2920,10 @@ function visual_map_process_wizard_add_agents(
     $kind_relationship=VISUAL_MAP_WIZARD_PARENTS_NONE,
     $item_in_the_map=0,
     $fontf='lato',
-    $fonts='12pt'
+    $fonts='12pt',
+    $pos_x=10,
+    $pos_y=10,
+    $max_elements_row=0
 ) {
     global $config;
 
@@ -2925,9 +2948,10 @@ function visual_map_process_wizard_add_agents(
     $id_agents = (array) $id_agents;
 
     $error = false;
-    $pos_y = 10;
-    $pos_x = 10;
-
+    $initial_x = $pos_x;
+    $initial_y = $pos_y;
+    $elements_row = 1;
+    $total_rows = 1;
     $relationship = true;
     $relationships_agents = [];
     // Check if the set a none relationship
@@ -2943,11 +2967,6 @@ function visual_map_process_wizard_add_agents(
             $id_a = $id_agent['id_agent'];
             $id_server = $id_agent['id_server'];
             $id_agent = $id_a;
-        }
-
-        if ($pos_x > 600) {
-            $pos_x = 10;
-            $pos_y = ($pos_y + $range);
         }
 
         $value_height = $height;
@@ -3061,6 +3080,17 @@ function visual_map_process_wizard_add_agents(
 
         $id_item = db_process_sql_insert('tlayout_data', $values);
 
+        if (($max_elements_row === $elements_row) && $max_elements_row !== 0) {
+            $elements_row = 1;
+            $pos_x = ($initial_x + ($range * $total_rows));
+            $pos_y = ($initial_y + ($range_vertical * $total_rows));
+            $total_rows++;
+        } else {
+            $pos_x = ($pos_x + $range);
+            $pos_y = ($pos_y + $range_vertical);
+            $elements_row++;
+        }
+
         if ($relationship) {
             switch ($kind_relationship) {
                 case VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP:
@@ -3093,8 +3123,6 @@ function visual_map_process_wizard_add_agents(
                 break;
             }
         }
-
-        $pos_x = ($pos_x + $range);
     }
 
     foreach ($relationships_agents as $relationship_item) {

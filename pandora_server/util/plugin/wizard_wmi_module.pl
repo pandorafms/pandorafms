@@ -172,6 +172,5 @@ foreach my $k (keys %{$fields_values}){
 # Get operation result
 my $result = eval $operation;
 if (defined($result)){
-	
 	print $result, "\n"; 
 }

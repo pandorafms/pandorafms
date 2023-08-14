@@ -88,7 +88,10 @@ class Agent:
             config: dict = {}
         ):
         '''
-        TODO: Add commnets
+        Update the configuration settings with new values.
+
+        Args:
+            config (dict): A dictionary containing configuration keys and their new values.
         '''
         for key, value in config.items():
             if key in self.config:
@@ -98,7 +101,10 @@ class Agent:
             self
         ) -> dict:
         '''
-        TODO: Add commnets
+        Retrieve the current configuration settings.
+
+        Returns:
+            dict: A dictionary containing the current configuration settings.
         '''
         return self.config
 
@@ -107,7 +113,10 @@ class Agent:
             module: dict = {}
         ):
         '''
-        TODO: Add commnets
+        Add a new module to the list of modules.
+
+        Args:
+            module (dict): A dictionary containing module information.
         '''
         from .general import generate_md5
         from .modules import init_module
@@ -121,7 +130,10 @@ class Agent:
             module_name: str = ""
         ):
         '''
-        TODO: Add commnets
+        Delete a module based on its name.
+
+        Args:
+            module_name (str): The name of the module to be deleted.
         '''
         from .general import generate_md5
 
@@ -141,7 +153,11 @@ class Agent:
             module: dict = {}
         ):
         '''
-        TODO: Add commnets
+        Update a module based on its name.
+
+        Args:
+            module_name (str): The name of the module to be updated.
+            module (dict): A dictionary containing updated module information.
         '''
         module_def = self.get_module(module_name)
         
@@ -159,7 +175,13 @@ class Agent:
             module_name: str = ""
         ) -> dict:
         '''
-        TODO: Add commnets
+        Retrieve module information based on its name.
+
+        Args:
+            module_name (str): The name of the module to retrieve.
+
+        Returns:
+            dict: A dictionary containing module information if found, otherwise an empty dictionary.
         '''
         from .general import generate_md5
 
@@ -178,7 +200,10 @@ class Agent:
             self
         ) -> dict:
         '''
-        TODO: Add commnets
+        Retrieve the definitions of all added modules.
+
+        Returns:
+            dict: A dictionary containing the definitions of all added modules.
         '''
         return self.modules_def
 
@@ -187,18 +212,24 @@ class Agent:
             log_module: dict = {}
         ):
         '''
-        TODO: Add commnets
+        Add a new log module to the list of log modules.
+
+        Args:
+            log_module (dict): A dictionary containing log module information.
         '''
         from .modules import init_log_module
 
-        if "source" in module and type(module["source"]) == str and len(module["source"].strip()) > 0:
+        if "source" in log_module and type(log_module["source"]) == str and len(log_module["source"].strip()) > 0:
             self.log_modules_def.append(init_log_module(log_module))
 
     def get_log_modules_def(
             self
         ) -> dict:
         '''
-        TODO: Add commnets
+        Retrieve the definitions of all added log modules.
+
+        Returns:
+            dict: A dictionary containing the definitions of all added log modules.
         '''
         return self.log_modules_def
 
@@ -207,7 +238,13 @@ class Agent:
             print_flag: bool = False
         ) -> str:
         '''
-        TODO: Add commnets
+        Generate and optionally print the XML representation of the agent.
+
+        Args:
+            print_flag (bool): A flag indicating whether to print the XML representation.
+
+        Returns:
+            str: The XML representation of the agent.
         '''
         return print_agent(self.get_config(), self.get_modules_def(), self.get_log_modules_def(), print_flag)
 
@@ -218,10 +255,13 @@ def init_agent(
         default_values: dict = {}
     ) -> dict:
     """
-    Initializes an agent template with default values.
+    Initialize an agent template with default values.
+
+    Args:
+        default_values (dict): A dictionary containing custom default values for the agent template.
 
     Returns:
-        dict: Dictionary representing the agent template with default values.
+        dict: A dictionary representing the agent template with default and custom values.
     """
     from .general import now
 
@@ -256,9 +296,16 @@ def print_agent(
         print_flag: bool = False
     ) -> str:
     """
-    Prints agent XML. Requires agent conf (dict) and modules (list) as arguments.
-    - Use print_flag to show modules' XML in STDOUT.
-    - Returns xml (str).
+    Print the XML representation of an agent.
+
+    Args:
+        agent (dict): A dictionary containing agent configuration.
+        modules (list): A list of dictionaries representing modules.
+        log_modules (list): A list of dictionaries representing log modules.
+        print_flag (bool): A flag indicating whether to print the XML representation.
+
+    Returns:
+        str: The XML representation of the agent.
     """
     from .output import print_stdout
     from .modules import print_module,print_log_module

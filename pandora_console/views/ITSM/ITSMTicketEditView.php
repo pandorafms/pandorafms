@@ -90,9 +90,9 @@ $table->data[0][0] = html_print_label_input_block(
     )
 );
 
-$ITSM_logo = 'images/integria_logo_gray.png';
+$ITSM_logo = 'images/pandoraITSM_logo_gray.png';
 if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
-    $ITSM_logo = 'images/integria_logo.svg';
+    $ITSM_logo = 'images/pandoraITSM_logo.png';
 }
 
 $table->data[0][2] = '<div style="max-width: 150px; float:right;">'.html_print_image(

@@ -511,9 +511,9 @@ $table_remote->data['ITSM_test'] = $row;
 echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
 echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/itsm/">';
 html_print_image(
-    'images/integria_logo.svg',
+    'images/pandoraITSM_logo.png',
     false,
-    ['class' => 'w400px mrgn_top_15px']
+    ['class' => 'w600px mrgn_top_15px']
 );
 echo '</a>';
 echo '<br />';

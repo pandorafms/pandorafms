@@ -38,7 +38,7 @@ ui_print_standard_header(
     false,
     'ITSM_tab',
     false,
-    [],
+    $headerTabs,
     [
         [
             'link'  => 'index.php?sec=ITSM&sec2=operation/ITSM/itsm',

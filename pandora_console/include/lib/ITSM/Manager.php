@@ -144,6 +144,9 @@ class Manager
         $successfullyMsg = '';
         $groups = [];
         $status = [];
+
+        $headerTabs = $this->ITSM_tabs('list');
+
         try {
             $ITSM = new ITSM();
             $groups = $ITSM->getGroups();
@@ -165,6 +168,7 @@ class Manager
                 'successfullyMsg' => $successfullyMsg,
                 'groups'          => $groups,
                 'status'          => $status,
+                'headerTabs'      => $headerTabs,
             ]
         );
     }
@@ -275,6 +279,8 @@ class Manager
         $uploadFile = (bool) \get_parameter('upload_file', 0);
         $idAttachment = (int) \get_parameter('idAttachment', 0);
         $addComment = (bool) \get_parameter('addComment', 0);
+
+        $headerTabs = $this->ITSM_tabs('');
 
         $error = '';
         $successfullyMsg = null;
@@ -881,6 +887,110 @@ class Manager
         $output .= '</div>';
 
         return $output;
+    }
+
+
+    function ITSM_tabs($active_tab, $view=false)
+    {
+        global $config;
+
+        $url_tabs = ui_get_full_url('index.php?sec=ITSM&sec2=operation/ITSM/itsm');
+        $url_setup = ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=ITSM');
+
+        $setup_tab['text'] = '<a href="'.$url_setup.'">';
+        $setup_tab['text'] .= html_print_image(
+            'images/configuration@svg.svg',
+            true,
+            [
+                'title' => __('Configure Pandora ITSM'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        );
+        $setup_tab['text'] .= '</a>';
+
+        $list_tab['text'] = '<a href="'.$url_tabs.'&operation=list">';
+        $list_tab['text'] .= html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'title' => __('Ticket list'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        );
+        $list_tab['text'] .= '</a>';
+
+        $create_tab['text'] = '<a href="'.$url_tabs.'&operation=edit">';
+        $create_tab['text'] .= html_print_image(
+            'images/edit.svg',
+            true,
+            [
+                'title' => __('New ticket'),
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        );
+        $create_tab['text'] .= '</a>';
+
+        switch ($active_tab) {
+            case 'setup':
+                $setup_tab['active'] = true;
+                $list_tab['active'] = false;
+                $create_tab['active'] = false;
+            break;
+
+            case 'list':
+                $setup_tab['active'] = false;
+                $list_tab['active'] = true;
+                $create_tab['active'] = false;
+            break;
+
+            case 'edit':
+                $setup_tab['active'] = false;
+                $list_tab['active'] = false;
+                $create_tab['active'] = true;
+            break;
+
+            default:
+                $setup_tab['active'] = false;
+                $list_tab['active'] = false;
+                $create_tab['active'] = false;
+            break;
+        }
+
+        if ($view) {
+            $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">';
+            $create_tab['text'] .= html_print_image(
+                'images/edit.svg',
+                true,
+                [
+                    'title' => __('Edit ticket'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            );
+            $create_tab['text'] .= '</a>';
+
+            $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">';
+            $view_tab['text'] .= html_print_image(
+                'images/details.svg',
+                true,
+                [
+                    'title' => __('View ticket'),
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            );
+            $view_tab['text'] .= '</a>';
+            // When the current page is the View page.
+            if (!$active_tab) {
+                $view_tab['active'] = true;
+            }
+        }
+
+        $onheader = [];
+        $onheader['view'] = $view_tab;
+        $onheader['configure'] = $setup_tab;
+        $onheader['list'] = $list_tab;
+        $onheader['create'] = $create_tab;
+
+        return $onheader;
     }
 
 

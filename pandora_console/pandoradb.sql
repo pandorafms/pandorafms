@@ -621,19 +621,6 @@ CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
--- Table `tattachment`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tattachment` (
-  `id_attachment` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_incidencia` INT UNSIGNED NOT NULL DEFAULT 0,
-  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '',
-  `filename` VARCHAR(255) NOT NULL DEFAULT '',
-  `description` VARCHAR(150) DEFAULT '',
-  `size` BIGINT UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY  (`id_attachment`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- -----------------------------------------------------
 -- Table `tconfig`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tconfig` (
@@ -794,30 +781,6 @@ CREATE TABLE IF NOT EXISTS `tcredential_store` (
   PRIMARY KEY (`identifier`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
--- ---------------------------------------------------------------------
--- Table `tincidencia`
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tincidencia` (
-  `id_incidencia` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `inicio` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `cierre` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `titulo` TEXT,
-  `descripcion` TEXT,
-  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '',
-  `origen` VARCHAR(100) NOT NULL DEFAULT '',
-  `estado` INT NOT NULL DEFAULT 0,
-  `prioridad` INT NOT NULL DEFAULT 0,
-  `id_grupo` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  `actualizacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `id_creator` VARCHAR(60) DEFAULT NULL,
-  `id_lastupdate` VARCHAR(60) DEFAULT NULL,
-  `id_agente_modulo` BIGINT NOT NULL,
-  `notify_email` TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  `id_agent` INT UNSIGNED NULL DEFAULT 0, 
-  PRIMARY KEY  (`id_incidencia`),
-  KEY `incident_index_1` (`id_usuario`,`id_incidencia`),
-  KEY `id_agente_modulo` (`id_agente_modulo`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tlanguage`
@@ -1094,19 +1057,6 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
   CONSTRAINT `fk_network_profile_pen_id_np` FOREIGN KEY (`id_np`)
   REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- ----------------------------------------------------------------------
--- Table `tnota`
--- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tnota` (
-  `id_nota` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_incident` BIGINT UNSIGNED NOT NULL,
-  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `nota` MEDIUMTEXT,
-  PRIMARY KEY  (`id_nota`),
-  KEY `id_incident` (`id_incident`)
-) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
 -- Table `torigen`

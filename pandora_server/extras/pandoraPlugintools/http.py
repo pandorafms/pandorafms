@@ -12,7 +12,11 @@ def _print_debug(
         print_errors: bool = False
     ):
     """
-    Prints any list, dict, string, float or integer as a json
+    Print the provided variable as JSON, supporting various data types.
+
+    Args:
+        var (any): The variable to be printed as JSON.
+        print_errors (bool): Set to True to print errors encountered during printing.
     """
     from .output import print_debug
     print_debug(var, print_errors)
@@ -28,13 +32,13 @@ def auth_call(
         passw: str = ""
     ):
     """
-    Authentication for url request. Requires request.sessions.Session() object.
+    Perform authentication for URL requests using various authentication types.
 
     Args:
-    - session (object): request Session() object.
-    - authtype (str): 'ntlm', 'basic' or 'digest'.
-    - user (str): auth user.
-    - passw (str): auth password.
+        session (object, optional): The request Session() object. Defaults to None.
+        authtype (str, optional): The authentication type. Supported values: 'ntlm', 'basic', or 'digest'. Defaults to 'basic'.
+        user (str, optional): The authentication user. Defaults to an empty string.
+        passw (str, optional): The authentication password. Defaults to an empty string.
     """
     if session is not None:
         if authtype == 'ntlm':
@@ -57,17 +61,18 @@ def call_url(
         print_errors: bool = False
     ) -> str:
     """
-    Call URL. Uses request module to get url contents.
+    Call a URL and return its contents.
 
     Args:
-    - url (str): URL
-    - authtype (str): ntlm', 'basic', 'digest'. Optional.
-    - user (str): auth user. Optional.
-    - passw (str): auth password. Optional.
-    - timeout (int): session timeout seconds. Optional.
+        url (str): The URL to call.
+        authtype (str, optional): The authentication type. Supported values: 'ntlm', 'basic', 'digest'. Defaults to 'basic'.
+        user (str, optional): The authentication user. Defaults to an empty string.
+        passw (str, optional): The authentication password. Defaults to an empty string.
+        timeout (int, optional): The session timeout in seconds. Defaults to 1.
+        print_errors (bool, optional): Set to True to print errors encountered during the call. Defaults to False.
 
     Returns:
-    - str: call output
+        str: The output from the URL call.
     """
     from .output import print_stderr
 

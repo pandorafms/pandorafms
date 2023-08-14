@@ -300,7 +300,11 @@ def _print_debug(
         print_errors: bool = False
     ):
     """
-    Prints any list, dict, string, float or integer as a json
+    Print the variable as a JSON-like representation for debugging purposes.
+
+    Args:
+        var (any): The variable to be printed.
+        print_errors (bool): A flag indicating whether to print errors during debugging.
     """
     from .output import print_debug
     print_debug(var, print_errors)
@@ -312,7 +316,13 @@ def safe_input(
         input_string: str = ""
     ) -> str:
     '''
-    Convert the input_string encoded in html entity to clear char string.
+    Convert an input string encoded in HTML entities to a clear character string.
+
+    Args:
+        input_string (str): The input string encoded in HTML entities.
+
+    Returns:
+        str: The decoded clear character string.
     '''
     if not input_string:
         return ""
@@ -326,7 +336,13 @@ def safe_output(
         input_string: str = ""
     ) -> str:
     '''
-    Convert the html entities to input_string encoded to rebuild char string.
+    Convert HTML entities back to their corresponding characters in the input string.
+
+    Args:
+        input_string (str): The input string containing HTML entities.
+
+    Returns:
+        str: The decoded clear character string.
     '''
     if not input_string:
         return ""
@@ -346,7 +362,12 @@ def set_dict_key_value(
         input_value = None
     ):
     """
-    Assign to a key in a dict a given value
+    Assign a given value to a specified key in a dictionary.
+
+    Args:
+        input_dict (dict): The dictionary to which the value will be assigned.
+        input_key (str): The key in the dictionary to which the value will be assigned.
+        input_value (any): The value to be assigned to the specified key.
     """
     key = input_key.strip()
 
@@ -385,8 +406,14 @@ def now(
         print_flag: bool = False
     ) -> str:
     """
-    Returns time in yyyy/mm/dd HH:MM:SS format by default. Use 1 as an argument
-    to get epoch time (utimestamp)
+    Get the current time in the specified format or as a Unix timestamp.
+
+    Args:
+        utimestamp (bool): Set to True to get the Unix timestamp (epoch time).
+        print_flag (bool): Set to True to print the time to standard output.
+
+    Returns:
+        str: The current time in the desired format or as a Unix timestamp.
     """
     from .output import print_stdout
 
@@ -410,10 +437,14 @@ def translate_macros(
         data: str = ""
     ) -> str:
     """
-    Expects a macro dictionary key:value (macro_name:macro_value) 
-    and a string to replace macro.
-    
-    It will replace the macro_name for the macro_value in any string.
+    Replace macros in the input string with their corresponding values.
+
+    Args:
+        macro_dic (dict): A dictionary containing macro names and their corresponding values.
+        data (str): The input string in which macros should be replaced.
+
+    Returns:
+        str: The input string with macros replaced by their values.
     """
     for macro_name, macro_value in macro_dic.items():
         data = data.replace(macro_name, macro_value) 
@@ -431,14 +462,15 @@ def parse_configuration(
         default_values: dict = {}
     ) -> dict:
     """
-    Parse configuration. Reads configuration file and stores its data as dict.
+    Parse a configuration file and return its data as a dictionary.
 
     Args:
-    - file (str): configuration file path. Defaults to "/etc/pandora/pandora_server.conf". \n
-    - separator (str, optional): Separator for option and value. Defaults to " ".
+        file (str): The path to the configuration file. Defaults to "/etc/pandora/pandora_server.conf".
+        separator (str, optional): The separator between option and value. Defaults to " ".
+        default_values (dict, optional): A dictionary of default values. Defaults to an empty dictionary.
 
     Returns:
-    - dict: containing all keys and values from file.
+        dict: A dictionary containing all keys and values from the configuration file.
     """
     from .output import print_stderr
 
@@ -474,16 +506,16 @@ def parse_csv_file(
         print_errors: bool = False
     ) -> list:
     """
-    Parse csv configuration. Reads configuration file and stores its data in a list.
+    Parse a CSV configuration file and return its data in a list.
 
     Args:
-    - file (str): configuration csv file path. \n
-    - separator (str, optional): Separator for option and value. Defaults to ";".
-    - coun_parameters (int): min number of parameters each line shold have. Default None
-    - print_errors (bool): print errors on lines
+        file (str): The path to the CSV configuration file.
+        separator (str, optional): The separator between values in the CSV. Defaults to ";".
+        count_parameters (int, optional): The minimum number of parameters each line should have. Defaults to 0.
+        print_errors (bool, optional): Set to True to print errors for lines with insufficient parameters. Defaults to False.
 
     Returns:
-    - List: containing a list for of values for each csv line.
+        list: A list containing lists of values for each line in the CSV.
     """
     from .output import print_stderr
 

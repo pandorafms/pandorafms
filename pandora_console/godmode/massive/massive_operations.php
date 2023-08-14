@@ -65,13 +65,13 @@ $options_alerts = [
 ];
 
 $options_alerts_policies = [
-    'add_policies_alerts'    => __('Bulk policie alert action add'),
-    'delete_policies_alerts' => __('Bulk policie alert action delete'),
+    'add_policies_alerts'    => __('Bulk policies alert action add'),
+    'delete_policies_alerts' => __('Bulk policies alert action delete'),
 ];
 
 $options_policies_alerts_externals = [
-    'add_policies_alerts_action_external'    => __('Bulk policie external alert action add'),
-    'delete_policies_alerts_action_external' => __('Bulk policie external alert action delete'),
+    'add_policies_alerts_action_external'    => __('Bulk policies external alert action add'),
+    'delete_policies_alerts_action_external' => __('Bulk policies external alert action delete'),
 ];
 
 $options_agents = [

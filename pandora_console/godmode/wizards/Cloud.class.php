@@ -220,6 +220,9 @@ class Cloud extends Wizard
             echo '<div class="app_mssg"><i>*'.__('All company names used here are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.').'</i></div>';
         }
 
+        // Print Warning Message.
+        $this->printWarningMessage();
+
         return $result;
     }
 

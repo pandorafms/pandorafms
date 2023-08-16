@@ -7,7 +7,11 @@ def _print_debug(
         print_errors: bool = False
     ):
     """
-    Prints any list, dict, string, float or integer as a json
+    Print the provided variable as JSON format, supporting various data types.
+
+    Args:
+        var (any, optional): The variable to be printed as JSON. Defaults to an empty string.
+        print_errors (bool, optional): Set to True to print errors encountered during printing. Defaults to False.
     """
     from .output import print_debug
     print_debug(var, print_errors)
@@ -20,6 +24,9 @@ def init_module(
     ) -> dict:
     """
     Initializes a module template with default values.
+
+    Args:
+        default_values (dict, optional): Dictionary containing default values to override template values. Defaults to an empty dictionary.
 
     Returns:
         dict: Dictionary representing the module template with default values.
@@ -87,9 +94,13 @@ def print_module(
     ) -> str:
     """
     Returns module in XML format. Accepts only {dict}.
-    - Only works with one module at a time: otherwise iteration is needed.
-    - Module "value" field accepts str type or [list] for datalists.
-    - Use print_flag to show modules' XML in STDOUT.
+    
+    Args:
+        module (dict, optional): Dictionary containing module data. Defaults to None.
+        print_flag (bool, optional): Flag to print the module XML to STDOUT. Defaults to False.
+    
+    Returns:
+        str: Module data in XML format.
     """
     from .output import print_stdout
 
@@ -261,6 +272,9 @@ def init_log_module(
     """
     Initializes a log module template with default values.
 
+    Args:
+        default_values (dict, optional): Default values to initialize the log module with. Defaults to an empty dictionary.
+
     Returns:
         dict: Dictionary representing the log module template with default values.
     """
@@ -288,7 +302,15 @@ def print_log_module(
     - Only works with one module at a time: otherwise iteration is needed.
     - Module "value" field accepts str type.
     - Use not_print_flag to avoid printing the XML (only populates variables).
+
+    Args:
+        module (dict, optional): Dictionary representing the log module. Defaults to None.
+        print_flag (bool, optional): Flag to indicate whether to print the XML. Defaults to False.
+
+    Returns:
+        str: XML representation of the log module.
     """
+
     from .output import print_stdout
 
     module_xml = ""

@@ -27,7 +27,11 @@ def _print_debug(
         print_errors: bool = False
     ):
     """
-    Prints any list, dict, string, float or integer as a json
+    Print the variable as a JSON-like representation for debugging purposes.
+
+    Args:
+        var (any): The variable to be printed.
+        print_errors (bool): A flag indicating whether to print errors during debugging.
     """
     from .output import print_debug
     print_debug(var, print_errors)
@@ -39,7 +43,13 @@ def _get_cipher(
         password: str = _PASSWORD
     ) -> AES:
     '''
-    Internal use only: Get AES cipher
+    Internal use only: Get AES cipher for encryption and decryption.
+
+    Args:
+        password (str): The password used to derive the encryption key.
+
+    Returns:
+        AES: An AES cipher instance for encryption and decryption.
     '''
     key = b''
     msg = password.encode('utf-8')
@@ -59,7 +69,14 @@ def encrypt_AES(
         password: str = _PASSWORD
     ) -> str:
     '''
-    Return encrypted string
+    Encrypt a string using AES encryption.
+
+    Args:
+        str_to_encrypt (str): The string to be encrypted.
+        password (str): The password used to derive the encryption key.
+
+    Returns:
+        str: The encrypted string in base64 encoding.
     '''
     cipher = _get_cipher(password)
     
@@ -80,7 +97,14 @@ def decrypt_AES(
         password: str = _PASSWORD
     ) -> str:
     '''
-    Return decrypted string
+    Decrypt an encrypted string using AES decryption.
+
+    Args:
+        str_to_decrypt (str): The encrypted string to be decrypted.
+        password (str): The password used to derive the encryption key.
+
+    Returns:
+        str: The decrypted string.
     '''
     cipher = _get_cipher(password)
     

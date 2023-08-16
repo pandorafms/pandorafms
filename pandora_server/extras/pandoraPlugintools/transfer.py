@@ -30,6 +30,10 @@ def _print_debug(
     ):
     """
     Prints any list, dict, string, float or integer as a json
+
+    Args:
+        var: The variable to be printed.
+        print_errors (bool): Whether to print errors.
     """
     from .output import print_debug
     print_debug(var, print_errors)
@@ -80,14 +84,16 @@ def tentacle_xml(
     ) -> bool:
     """
     Sends file using tentacle protocol
-    - Only works with one file at time.
-    - file variable needs full file path.
-    - tentacle_opts should be a dict with tentacle options (address [password] [port]).
-    - tentacle_path allows to define a custom path for tentacle client in case is not in sys path).
-    - if debug is enabled, the data file will not be removed after being sent.
-    - if print_errors is enabled, function will print all error messages
+    
+    Args:
+        data_file (str): Path to the data file to be sent.
+        tentacle_ops (dict): Tentacle options as a dictionary (address [password] [port]).
+        tentacle_path (str): Custom path for the tentacle client executable.
+        debug (int): Debug mode flag. If enabled (1), the data file will not be removed after sending.
+        print_errors (bool): Whether to print error messages.
 
-    Returns True for OK and False for errors.
+    Returns:
+        bool: True for success, False for errors.
     """
     from .output import print_stderr
 
@@ -177,11 +183,16 @@ def write_xml(
         print_errors: bool = False
     ) -> str:
     """
-    Creates a agent .data file in the specified data_dir folder
+    Creates an agent .data file in the specified data_dir folder
+
     Args:
-    - xml (str): XML string to be written in the file.
-    - agent_name (str): agent name for the xml and file name.
-    - data_dir (str): folder in which the file will be created.
+        xml (str): XML string to be written in the file.
+        agent_name (str): Agent name for the XML and file name.
+        data_dir (str): Folder in which the file will be created.
+        print_errors (bool): Whether to print error messages.
+
+    Returns:
+        str: Path to the created .data file.
     """
     from .general import generate_md5
     from .output import print_stderr

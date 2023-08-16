@@ -12,6 +12,10 @@ def _print_debug(
     ):
     """
     Prints any list, dict, string, float or integer as a json
+
+    Args:
+        var (any, optional): Variable to be printed. Defaults to "".
+        print_errors (bool, optional): Flag to indicate whether to print errors. Defaults to False.
     """
     print_debug(var, print_errors)
 
@@ -24,6 +28,9 @@ def print_stdout(
     ):
     """
     Prints message in stdout
+
+    Args:
+        message (str, optional): Message to be printed. Defaults to "".
     """
     print(message)
 
@@ -36,6 +43,9 @@ def print_stderr(
     ):
     """
     Prints message in stderr
+
+    Args:
+        message (str, optional): Message to be printed. Defaults to "".
     """
     print(message, file=sys.stderr)
 
@@ -49,6 +59,10 @@ def print_debug(
     ):
     """
     Prints any list, dict, string, float or integer as a json
+
+    Args:
+        var: Variable to be printed.
+        print_errors (bool, optional): Whether to print errors. Defaults to False.
     """
     try:
         debug_json = json.dumps(var, indent=4)
@@ -72,6 +86,16 @@ def logger(
     ) -> bool:
     '''
     Add new line to log file
+
+    Args:
+        log_file (str): Path to the log file.
+        message (str): Message to be added to the log.
+        log_level (str): Log level, if applicable. Defaults to an empty string.
+        add_date (bool): Whether to add the current date and time to the log entry. Defaults to True.
+        print_errors (bool): Whether to print errors. Defaults to False.
+
+    Returns:
+        bool: True if the log entry was successfully added, False otherwise.
     '''
     from .general import now
 

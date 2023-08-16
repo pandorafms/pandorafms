@@ -19,7 +19,11 @@ def _print_debug(
         print_errors: bool = False
     ):
     """
-    Prints any list, dict, string, float or integer as a json
+    Print the variable as a JSON-like representation for debugging purposes.
+
+    Args:
+        var (any): The variable to be printed.
+        print_errors (bool): A flag indicating whether to print errors during debugging.
     """
     from .output import print_debug
     print_debug(var, print_errors)
@@ -92,7 +96,7 @@ def add_disco_summary_value(
     if key in _SUMMARY:
         _SUMMARY[key] += value
     else:
-        set_summary_value(key, value)
+        set_disco_summary_value(key, value)
 
 ####
 # Set fixed value to info
@@ -133,7 +137,10 @@ def set_disco_monitoring_data(
         data: list = []
     ):
     """
-    TODO: Add comments
+    Set the monitoring data for disk usage.
+
+    Args:
+        data (list): A list containing disk monitoring data.
     """
     global _MONITORING_DATA
 
@@ -146,7 +153,10 @@ def add_disco_monitoring_data(
         data: dict = {}
     ):
     """
-    TODO: Add comments
+    Add disk monitoring data to the global monitoring dataset.
+
+    Args:
+        data (dict): A dictionary containing disk monitoring data.
     """
     global _MONITORING_DATA
 

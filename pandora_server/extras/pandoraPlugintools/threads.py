@@ -20,7 +20,11 @@ def _print_debug(
         print_errors: bool = False
     ):
     """
-    Prints any list, dict, string, float or integer as a json
+    Prints the provided variable in a JSON-like format.
+    
+    Args:
+        var: The variable (list, dict, string, float, integer) to be printed.
+        print_errors (bool): If True, prints any errors that occur during formatting.
     """
     from .output import print_debug
     print_debug(var, print_errors)
@@ -34,7 +38,12 @@ def _single_thread(
         errors: list = []
     ):
     """
-    Internal use only: Run a given function in a thread
+    Internal use only: Runs a given function in a thread.
+
+    Args:
+        q: A queue from which to get parameters for the function.
+        function (callable): The function to be executed in the thread.
+        errors (list): A list to store any errors encountered during execution.
     """
     params=q.get()
     q.task_done()
@@ -53,7 +62,16 @@ def run_threads(
         print_errors: bool = False
     ) -> bool:
     """
-    Run a given function for given items list in a given number of threads
+    Run a given function for a list of items in multiple threads.
+
+    Args:
+        max_threads (int): Maximum number of threads to use.
+        function (callable): The function to be executed in each thread.
+        items (list): List of items to process.
+        print_errors (bool): Whether to print errors encountered during execution.
+
+    Returns:
+        bool: True if all threads executed successfully, False otherwise.
     """
     from .output import print_stderr
 
@@ -122,8 +140,12 @@ def set_shared_dict_value(
         value = None
     ):
     """
-    Set a given value to a key in the internal shared dict.
-    Used by all parallel processes.
+    Set a value for a key in the internal shared dictionary.
+    This function is used by all parallel processes.
+
+    Args:
+        key (str): The key in the shared dictionary.
+        value: The value to be assigned to the key.
     """
     global _SHARED_DICT
 
@@ -140,8 +162,12 @@ def add_shared_dict_value(
         value = None
     ):
     """
-    Add a given value to a key in the internal shared dict.
-    Used by all parallel processes.
+    Add a value to a key in the internal shared dictionary.
+    This function is used by all parallel processes.
+
+    Args:
+        key (str): The key in the shared dictionary.
+        value: The value to be added to the key.
     """
     global _SHARED_DICT
 
@@ -160,8 +186,14 @@ def get_shared_dict_value(
         key: str = None
     ):
     """
-    Get the value of a key in the internal shared dict.
-    Used by all parallel processes.
+    Get the value of a key in the internal shared dictionary.
+    This function is used by all parallel processes.
+
+    Args:
+        key (str): The key in the shared dictionary.
+
+    Returns:
+        The value associated with the key, or None if the key does not exist.
     """
     global _SHARED_DICT
 
@@ -183,6 +215,15 @@ def run_processes(
     ) -> bool:
     """
     Run a given function for given items list in a given number of processes
+
+    Args:
+        max_processes (int): The maximum number of processes to run in parallel.
+        function (callable): The function to be executed for each item.
+        items (list): List of items to be processed.
+        print_errors (bool): Whether to print errors.
+
+    Returns:
+        bool: True if all processes completed successfully, False otherwise.
     """
     from .output import print_stderr
 

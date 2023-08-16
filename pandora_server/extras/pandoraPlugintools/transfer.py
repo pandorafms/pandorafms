@@ -10,7 +10,7 @@ import sys
 # Its values can be changed.
 #########################################################################################
 
-GLOBAL_VARIABLES = {
+_GLOBAL_VARIABLES = {
     'transfer_mode'       : 'tentacle',
     'temporal'            : '/tmp',
     'data_dir'            : '/var/spool/pandora/data_in/',
@@ -42,7 +42,7 @@ def set_global_variable(
         value = None
     ):
     """
-    Sets the value of a global variable in the 'GLOBAL_VARIABLES' dictionary.
+    Sets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
 
     Args:
         variable_name (str): Name of the variable to set.
@@ -50,7 +50,23 @@ def set_global_variable(
     """
     from .general import set_dict_key_value
 
-    set_dict_key_value(GLOBAL_VARIABLES, variable_name, value)
+    set_dict_key_value(_GLOBAL_VARIABLES, variable_name, value)
+
+####
+# Get a global variable with the specified name.
+#########################################################################################
+def get_global_variable(
+        variable_name: str = ""
+    ):
+    """
+    Gets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
+
+    Args:
+        variable_name (str): Name of the variable to set.
+    """
+    from .general import get_dict_key_value
+
+    get_dict_key_value(_GLOBAL_VARIABLES, variable_name)
 
 ####
 # Sends file using tentacle protocol
@@ -58,7 +74,7 @@ def set_global_variable(
 def tentacle_xml(
         data_file: str = "", 
         tentacle_ops: dict = {},
-        tentacle_path: str = GLOBAL_VARIABLES['tentacle_client'], 
+        tentacle_path: str = _GLOBAL_VARIABLES['tentacle_client'], 
         debug: int = 0,
         print_errors: bool = True
     ) -> bool:
@@ -78,11 +94,11 @@ def tentacle_xml(
     if data_file is not None :
     
         if not 'address' in tentacle_ops:
-            tentacle_ops['address'] = GLOBAL_VARIABLES['tentacle_ip']
+            tentacle_ops['address'] = _GLOBAL_VARIABLES['tentacle_ip']
         if not 'port' in tentacle_ops:
-            tentacle_ops['port'] = GLOBAL_VARIABLES['tentacle_port']
+            tentacle_ops['port'] = _GLOBAL_VARIABLES['tentacle_port']
         if not 'extra_opts' in tentacle_ops:
-            tentacle_ops['extra_opts'] = GLOBAL_VARIABLES['tentacle_extra_opts']            
+            tentacle_ops['extra_opts'] = _GLOBAL_VARIABLES['tentacle_extra_opts']            
 
         if tentacle_ops['address'] is None :
             if print_errors:
@@ -123,11 +139,11 @@ def tentacle_xml(
 #########################################################################################
 def transfer_xml(
         file: str = "",
-        transfer_mode: str = GLOBAL_VARIABLES['transfer_mode'],
-        tentacle_ip: str = GLOBAL_VARIABLES['tentacle_ip'],
-        tentacle_port: int = GLOBAL_VARIABLES['tentacle_port'],
-        tentacle_extra_opts: str = GLOBAL_VARIABLES['tentacle_extra_opts'],
-        data_dir: str = GLOBAL_VARIABLES['data_dir']
+        transfer_mode: str = _GLOBAL_VARIABLES['transfer_mode'],
+        tentacle_ip: str = _GLOBAL_VARIABLES['tentacle_ip'],
+        tentacle_port: int = _GLOBAL_VARIABLES['tentacle_port'],
+        tentacle_extra_opts: str = _GLOBAL_VARIABLES['tentacle_extra_opts'],
+        data_dir: str = _GLOBAL_VARIABLES['data_dir']
     ):
 
     """
@@ -135,10 +151,10 @@ def transfer_xml(
 
     Args:
         file (str): Path to file to send.
-        transfer_mode (str, optional): Transfer mode. Default is GLOBAL_VARIABLES['transfer_mode'].
-        tentacle_ip (str, optional): IP address for Tentacle. Default is GLOBAL_VARIABLES['tentacle_ip'].
-        tentacle_port (str, optional): Port for Tentacle. Default is GLOBAL_VARIABLES['tentacle_port'].
-        data_dir (str, optional): Path to data dir with local transfer mode. Default is GLOBAL_VARIABLES['data_dir'].
+        transfer_mode (str, optional): Transfer mode. Default is _GLOBAL_VARIABLES['transfer_mode'].
+        tentacle_ip (str, optional): IP address for Tentacle. Default is _GLOBAL_VARIABLES['tentacle_ip'].
+        tentacle_port (str, optional): Port for Tentacle. Default is _GLOBAL_VARIABLES['tentacle_port'].
+        data_dir (str, optional): Path to data dir with local transfer mode. Default is _GLOBAL_VARIABLES['data_dir'].
     """
     if file is not None:
         if transfer_mode != "local":
@@ -157,7 +173,7 @@ def transfer_xml(
 def write_xml(
         xml: str = "",
         agent_name: str = "",
-        data_dir: str = GLOBAL_VARIABLES['temporal'],
+        data_dir: str = _GLOBAL_VARIABLES['temporal'],
         print_errors: bool = False
     ) -> str:
     """

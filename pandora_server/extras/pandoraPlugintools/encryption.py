@@ -54,7 +54,7 @@ def _get_cipher(
 ####
 # Return encrypted string
 #########################################################################################
-def encrypt(
+def encrypt_AES(
         str_to_encrypt: str = "",
         password: str = _PASSWORD
     ) -> str:
@@ -75,7 +75,7 @@ def encrypt(
 ####
 # Return decrypted string
 #########################################################################################
-def decrypt(
+def decrypt_AES(
         str_to_decrypt: str = "",
         password: str = _PASSWORD
     ) -> str:

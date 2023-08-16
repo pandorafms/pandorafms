@@ -6,7 +6,7 @@ import os
 # Its values can be changed.
 #########################################################################################
 
-GLOBAL_VARIABLES = {
+_GLOBAL_VARIABLES = {
     'agents_group_name' : '',
     'interval'          : 300
 }
@@ -15,17 +15,16 @@ GLOBAL_VARIABLES = {
 # Define some global variables
 #########################################################################################
 
-POSIX = os.name == "posix"
-WINDOWS = os.name == "nt"
-LINUX = sys.platform.startswith("linux")
-MACOS = sys.platform.startswith("darwin")
-OSX = MACOS  # deprecated alias
-FREEBSD = sys.platform.startswith("freebsd")
-OPENBSD = sys.platform.startswith("openbsd")
-NETBSD = sys.platform.startswith("netbsd")
-BSD = FREEBSD or OPENBSD or NETBSD
-SUNOS = sys.platform.startswith(("sunos", "solaris"))
-AIX = sys.platform.startswith("aix")
+_WINDOWS = os.name == "nt" or os.name == "ce"
+_LINUX = sys.platform.startswith("linux")
+_MACOS = sys.platform.startswith("darwin")
+_OSX = _MACOS  # deprecated alias
+_FREEBSD = sys.platform.startswith("freebsd")
+_OPENBSD = sys.platform.startswith("openbsd")
+_NETBSD = sys.platform.startswith("netbsd")
+_BSD = _FREEBSD or _OPENBSD or _NETBSD
+_SUNOS = sys.platform.startswith(("sunos", "solaris"))
+_AIX = sys.platform.startswith("aix")
 
 ####
 # Internal: Alias for output.print_debug function
@@ -49,7 +48,7 @@ def set_global_variable(
         value = None
     ):
     """
-    Sets the value of a global variable in the 'GLOBAL_VARIABLES' dictionary.
+    Sets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
 
     Args:
         variable_name (str): Name of the variable to set.
@@ -57,7 +56,23 @@ def set_global_variable(
     """
     from .general import set_dict_key_value
 
-    set_dict_key_value(GLOBAL_VARIABLES, variable_name, value)
+    set_dict_key_value(_GLOBAL_VARIABLES, variable_name, value)
+
+####
+# Get a global variable with the specified name.
+#########################################################################################
+def get_global_variable(
+        variable_name: str = ""
+    ):
+    """
+    Gets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
+
+    Args:
+        variable_name (str): Name of the variable to set.
+    """
+    from .general import get_dict_key_value
+
+    get_dict_key_value(_GLOBAL_VARIABLES, variable_name)
 
 ####
 # Agent class
@@ -70,18 +85,22 @@ class Agent:
     """
     def __init__(
             self,
-            config: dict = None,
+            config: dict = {},
             modules_def: list = [],
             log_modules_def: list = []
         ):
 
-        if config is None:
-            config = init_agent()
-
-        self.config = config
-        self.modules_def = modules_def
-        self.log_modules_def = log_modules_def
+        self.modules_def = []
         self.added_modules = []
+        self.log_modules_def = []
+
+        self.config = init_agent(config)
+        
+        for module in modules_def:
+            self.add_module(module)
+
+        for log_module in log_modules_def:
+            self.add_log_module(log_module)
 
     def update_config(
             self,
@@ -212,6 +231,38 @@ class Agent:
         return print_agent(self.get_config(), self.get_modules_def(), self.get_log_modules_def(), print_flag)
 
 ####
+# Gets system OS name
+#########################################################################################
+def get_os() -> str:
+    """
+    Gets system OS name
+
+    Returns:
+        str: OS name.
+    """
+    os = "Other"
+
+    if _WINDOWS:
+        os = "Windows"
+
+    if _LINUX:
+        os = "Linux"
+
+    if _MACOS or _OSX:
+        os = "MacOS"
+
+    if _FREEBSD or _OPENBSD or _NETBSD or _BSD:
+        os = "BSD"
+
+    if _SUNOS:
+        os = "Solaris"
+
+    if _AIX:
+        os = "AIX"
+
+    return os
+
+####
 # Init agent template
 #########################################################################################
 def init_agent(
@@ -235,8 +286,8 @@ def init_agent(
         "os_version"        : "",
         "timestamp"         : now(),
         "address"           : "",
-        "group"             : GLOBAL_VARIABLES['agents_group_name'],
-        "interval"          : GLOBAL_VARIABLES['interval'],
+        "group"             : _GLOBAL_VARIABLES['agents_group_name'],
+        "interval"          : _GLOBAL_VARIABLES['interval'],
         "agent_mode"        : "1"
     }
 

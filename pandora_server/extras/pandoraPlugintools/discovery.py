@@ -5,10 +5,10 @@ import json
 # Define some global variables
 #########################################################################################
 
-ERROR_LEVEL = 0
-SUMMARY = {}
-INFO = ""
-MONITORING_DATA = []
+_ERROR_LEVEL = 0
+_SUMMARY = {}
+_INFO = ""
+_MONITORING_DATA = []
 
 ####
 # Internal: Alias for output.print_debug function
@@ -36,9 +36,22 @@ def set_disco_error_level(
     Args:
         value (int, optional): The error level value. Default is 0.
     """
-    global ERROR_LEVEL
+    global _ERROR_LEVEL
 
-    ERROR_LEVEL = value
+    _ERROR_LEVEL = value
+
+####
+# Set fixed value to summary dict
+#########################################################################################
+def set_disco_summary(
+        data: dict = {}
+    ):
+    """
+    TODO: Add comments
+    """
+    global _SUMMARY
+
+    _SUMMARY = {}
 
 ####
 # Set fixed value to summary key
@@ -48,15 +61,15 @@ def set_disco_summary_value(
         value = None
     ):
     """
-    Sets a fixed value for a key in the 'SUMMARY' dictionary.
+    Sets a fixed value for a key in the '_SUMMARY' dictionary.
 
     Args:
         key (str): Key to set the value for.
         value (any): Value to assign to the key.
     """
-    global SUMMARY
+    global _SUMMARY
 
-    SUMMARY[key] = value
+    _SUMMARY[key] = value
 
 ####
 # Add value to summary key
@@ -74,10 +87,10 @@ def add_disco_summary_value(
         key (str): Key to add the value to.
         value (any): Value to add to the key.
     """
-    global SUMMARY
+    global _SUMMARY
 
-    if key in SUMMARY:
-        SUMMARY[key] += value
+    if key in _SUMMARY:
+        _SUMMARY[key] += value
     else:
         set_summary_value(key, value)
 
@@ -88,14 +101,14 @@ def set_disco_info_value(
         value: str = ""
     ):
     """
-    Sets a fixed value to the 'INFO' variable.
+    Sets a fixed value to the '_INFO' variable.
 
     Args:
-        data (str, optional): The value to set in the 'INFO' variable. Default is an empty string.
+        data (str, optional): The value to set in the '_INFO' variable. Default is an empty string.
     """
-    global INFO
+    global _INFO
 
-    INFO = value
+    _INFO = value
 
 ####
 # Add data to info
@@ -104,14 +117,14 @@ def add_disco_info_value(
         value: str = ""
     ):
     """
-    Adds data to the 'INFO' variable.
+    Adds data to the '_INFO' variable.
 
     Args:
-        data (str, optional): The data to add to the 'INFO' variable. Default is an empty string.
+        data (str, optional): The data to add to the '_INFO' variable. Default is an empty string.
     """
-    global INFO
+    global _INFO
 
-    INFO += value
+    _INFO += value
 
 ####
 # Set fixed value to monitoring data
@@ -122,9 +135,9 @@ def set_disco_monitoring_data(
     """
     TODO: Add comments
     """
-    global MONITORING_DATA
+    global _MONITORING_DATA
 
-    MONITORING_DATA = data
+    _MONITORING_DATA = data
 
 ####
 # Add value to monitoring data
@@ -135,9 +148,9 @@ def add_disco_monitoring_data(
     """
     TODO: Add comments
     """
-    global MONITORING_DATA
+    global _MONITORING_DATA
 
-    MONITORING_DATA.append(data)
+    _MONITORING_DATA.append(data)
 
 ####
 # Print JSON output and exit script
@@ -146,28 +159,28 @@ def disco_output():
     """
     Prints the JSON output and exits the script.
 
-    The function uses the global variables 'ERROR_LEVEL', 'SUMMARY', and 'info'
+    The function uses the global variables '_ERROR_LEVEL', '_SUMMARY', '_INFO' and '_MONITORING_DATA'
     to create the JSON output. It then prints the JSON string and exits the script with
-    the 'ERROR_LEVEL' as the exit code.
+    the '_ERROR_LEVEL' as the exit code.
     """
     from .output import print_stdout
 
-    global ERROR_LEVEL
-    global SUMMARY
-    global INFO
-    global MONITORING_DATA
+    global _ERROR_LEVEL
+    global _SUMMARY
+    global _INFO
+    global _MONITORING_DATA
 
-    OUTPUT={}
-    if SUMMARY:
-        OUTPUT["summary"] = SUMMARY
+    output={}
+    if _SUMMARY:
+        output["summary"] = _SUMMARY
 
-    if INFO:
-        OUTPUT["info"] = INFO
+    if _INFO:
+        output["info"] = _INFO
 
-    if MONITORING_DATA:
-        OUTPUT["monitoring_data"] = MONITORING_DATA
+    if _MONITORING_DATA:
+        output["monitoring_data"] = _MONITORING_DATA
     
-    json_string = json.dumps(OUTPUT)
+    json_string = json.dumps(output)
 
     print_stdout(json_string)
-    sys.exit(ERROR_LEVEL)
+    sys.exit(_ERROR_LEVEL)

@@ -354,6 +354,24 @@ def set_dict_key_value(
         input_dict[key] = input_value
 
 ####
+# Return the value of a key in a given dict.
+#########################################################################################
+
+def get_dict_key_value(
+        input_dict: dict = {},
+        input_key: str = ""
+    ):
+    """
+    Return the value of a key in a given dict.
+    """
+    key = input_key.strip()
+
+    if key in input_dict:
+        return input_dict[key]
+    else:
+        return None
+
+####
 # Return MD5 hash string.
 #########################################################################################
 

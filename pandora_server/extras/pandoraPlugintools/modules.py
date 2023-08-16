@@ -120,86 +120,127 @@ def print_module(
         
         if "desc" in data and len(str(data["desc"]).strip()) > 0:
             module_xml += "\t<description><![CDATA[" + str(data["desc"]) + "]]></description>\n"
+        
         if "unit" in data and len(str(data["unit"]).strip()) > 0:
             module_xml += "\t<unit><![CDATA[" + str(data["unit"]) + "]]></unit>\n"
+        
         if "interval" in data and len(str(data["interval"]).strip()) > 0:
             module_xml += "\t<module_interval><![CDATA[" + str(data["interval"]) + "]]></module_interval>\n"
+        
         if "tags" in data and len(str(data["tags"]).strip()) > 0:
             module_xml += "\t<tags>" + str(data["tags"]) + "</tags>\n"
+        
         if "module_group" in data and len(str(data["module_group"]).strip()) > 0:
             module_xml += "\t<module_group>" + str(data["module_group"]) + "</module_group>\n"
+        
         if "module_parent" in data and len(str(data["module_parent"]).strip()) > 0:
             module_xml += "\t<module_parent>" + str(data["module_parent"]) + "</module_parent>\n"
+        
         if "min_warning" in data and len(str(data["min_warning"]).strip()) > 0:
             module_xml += "\t<min_warning><![CDATA[" + str(data["min_warning"]) + "]]></min_warning>\n"
+        
         if "min_warning_forced" in data and len(str(data["min_warning_forced"]).strip()) > 0:
             module_xml += "\t<min_warning_forced><![CDATA[" + str(data["min_warning_forced"]) + "]]></min_warning_forced>\n"
+        
         if "max_warning" in data and len(str(data["max_warning"]).strip()) > 0:
             module_xml += "\t<max_warning><![CDATA[" + str(data["max_warning"]) + "]]></max_warning>\n"
+        
         if "max_warning_forced" in data and len(str(data["max_warning_forced"]).strip()) > 0:
             module_xml += "\t<max_warning_forced><![CDATA[" + str(data["max_warning_forced"]) + "]]></max_warning_forced>\n"
+        
         if "min_critical" in data and len(str(data["min_critical"]).strip()) > 0:
             module_xml += "\t<min_critical><![CDATA[" + str(data["min_critical"]) + "]]></min_critical>\n"
+        
         if "min_critical_forced" in data and len(str(data["min_critical_forced"]).strip()) > 0:
             module_xml += "\t<min_critical_forced><![CDATA[" + str(data["min_critical_forced"]) + "]]></min_critical_forced>\n"
+        
         if "max_critical" in data and len(str(data["max_critical"]).strip()) > 0:
             module_xml += "\t<max_critical><![CDATA[" + str(data["max_critical"]) + "]]></max_critical>\n"
+        
         if "max_critical_forced" in data and len(str(data["max_critical_forced"]).strip()) > 0:
             module_xml += "\t<max_critical_forced><![CDATA[" + str(data["max_critical_forced"]) + "]]></max_critical_forced>\n"
+        
         if "str_warning" in data and len(str(data["str_warning"]).strip()) > 0:
             module_xml += "\t<str_warning><![CDATA[" + str(data["str_warning"]) + "]]></str_warning>\n"
+        
         if "str_warning_forced" in data and len(str(data["str_warning_forced"]).strip()) > 0:
             module_xml += "\t<str_warning_forced><![CDATA[" + str(data["str_warning_forced"]) + "]]></str_warning_forced>\n"
+        
         if "str_critical" in data and len(str(data["str_critical"]).strip()) > 0:
             module_xml += "\t<str_critical><![CDATA[" + str(data["str_critical"]) + "]]></str_critical>\n"
+        
         if "str_critical_forced" in data and len(str(data["str_critical_forced"]).strip()) > 0:
             module_xml += "\t<str_critical_forced><![CDATA[" + str(data["str_critical_forced"]) + "]]></str_critical_forced>\n"
+        
         if "critical_inverse" in data and len(str(data["critical_inverse"]).strip()) > 0:
             module_xml += "\t<critical_inverse><![CDATA[" + str(data["critical_inverse"]) + "]]></critical_inverse>\n"
+        
         if "warning_inverse" in data and len(str(data["warning_inverse"]).strip()) > 0:
             module_xml += "\t<warning_inverse><![CDATA[" + str(data["warning_inverse"]) + "]]></warning_inverse>\n"
+        
         if "max" in data and len(str(data["max"]).strip()) > 0:
             module_xml += "\t<max><![CDATA[" + str(data["max"]) + "]]></max>\n"
+        
         if "min" in data and len(str(data["min"]).strip()) > 0:
             module_xml += "\t<min><![CDATA[" + str(data["min"]) + "]]></min>\n"
+        
         if "post_process" in data and len(str(data["post_process"]).strip()) > 0:
             module_xml += "\t<post_process><![CDATA[" + str(data["post_process"]) + "]]></post_process>\n"
+        
         if "disabled" in data and len(str(data["disabled"]).strip()) > 0:
             module_xml += "\t<disabled><![CDATA[" + str(data["disabled"]) + "]]></disabled>\n"
+        
         if "min_ff_event" in data and len(str(data["min_ff_event"]).strip()) > 0:
             module_xml += "\t<min_ff_event><![CDATA[" + str(data["min_ff_event"]) + "]]></min_ff_event>\n"
+        
         if "status" in data and len(str(data["status"]).strip()) > 0:
             module_xml += "\t<status><![CDATA[" + str(data["status"]) + "]]></status>\n"
+        
         if "timestamp" in data and len(str(data["timestamp"]).strip()) > 0:
             module_xml += "\t<timestamp><![CDATA[" + str(data["timestamp"]) + "]]></timestamp>\n"
+        
         if "custom_id" in data and len(str(data["custom_id"]).strip()) > 0:
             module_xml += "\t<custom_id><![CDATA[" + str(data["custom_id"]) + "]]></custom_id>\n"
+        
         if "critical_instructions" in data and len(str(data["critical_instructions"]).strip()) > 0:
             module_xml += "\t<critical_instructions><![CDATA[" + str(data["critical_instructions"]) + "]]></critical_instructions>\n"
+        
         if "warning_instructions" in data and len(str(data["warning_instructions"]).strip()) > 0:
             module_xml += "\t<warning_instructions><![CDATA[" + str(data["warning_instructions"]) + "]]></warning_instructions>\n"
+        
         if "unknown_instructions" in data and len(str(data["unknown_instructions"]).strip()) > 0:
             module_xml += "\t<unknown_instructions><![CDATA[" + str(data["unknown_instructions"]) + "]]></unknown_instructions>\n"
+        
         if "quiet" in data and len(str(data["quiet"]).strip()) > 0:
             module_xml += "\t<quiet><![CDATA[" + str(data["quiet"]) + "]]></quiet>\n"
+        
         if "module_ff_interval" in data and len(str(data["module_ff_interval"]).strip()) > 0:
             module_xml += "\t<module_ff_interval><![CDATA[" + str(data["module_ff_interval"]) + "]]></module_ff_interval>\n"
+        
         if "crontab" in data and len(str(data["crontab"]).strip()) > 0:
             module_xml += "\t<crontab><![CDATA[" + str(data["crontab"]) + "]]></crontab>\n"
+        
         if "min_ff_event_normal" in data and len(str(data["min_ff_event_normal"]).strip()) > 0:
             module_xml += "\t<min_ff_event_normal><![CDATA[" + str(data["min_ff_event_normal"]) + "]]></min_ff_event_normal>\n"
+        
         if "min_ff_event_warning" in data and len(str(data["min_ff_event_warning"]).strip()) > 0:
             module_xml += "\t<min_ff_event_warning><![CDATA[" + str(data["min_ff_event_warning"]) + "]]></min_ff_event_warning>\n"
+        
         if "min_ff_event_critical" in data and len(str(data["min_ff_event_critical"]).strip()) > 0:
             module_xml += "\t<min_ff_event_critical><![CDATA[" + str(data["min_ff_event_critical"]) + "]]></min_ff_event_critical>\n"
+        
         if "ff_type" in data and len(str(data["ff_type"]).strip()) > 0:
             module_xml += "\t<ff_type><![CDATA[" + str(data["ff_type"]) + "]]></ff_type>\n"
+        
         if "ff_timeout" in data and len(str(data["ff_timeout"]).strip()) > 0:
             module_xml += "\t<ff_timeout><![CDATA[" + str(data["ff_timeout"]) + "]]></ff_timeout>\n"
+        
         if "each_ff" in data and len(str(data["each_ff"]).strip()) > 0:
             module_xml += "\t<each_ff><![CDATA[" + str(data["each_ff"]) + "]]></each_ff>\n"
+        
         if "module_parent_unlink" in data and len(str(data["module_parent_unlink"]).strip()) > 0:
             module_xml += "\t<module_parent_unlink><![CDATA[" + str(data["module_parent_unlink"]) + "]]></module_parent_unlink>\n"
+        
         if "alert" in data:
             for alert in data["alert"]:
                 if len(str(alert).strip()) > 0:

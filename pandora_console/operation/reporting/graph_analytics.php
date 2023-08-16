@@ -225,6 +225,9 @@ $left_content = '';
 $right_content = '';
 
 // $left_content .= '<input id="search" name="search" placeholder="Enter keywords to search" type="search" class="w100p">';
+// <div class="draggable draggable1" data-id-module="1"></div>
+// <div class="draggable draggable2" data-id-module="2"></div>
+// <div class="draggable draggable3" data-id-module="3"></div>
 $left_content .= '
     <div class="filters-div-header">
         <div></div>
@@ -233,13 +236,74 @@ $left_content .= '
     <div class="filters-div-submain">
         <div class="filter-div filters-left-div">
             <input id="search-left" name="search-left" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
-            <div class="draggable draggable1" data-id-module="1"></div>
-            <div class="draggable draggable2" data-id-module="2"></div>
-            <div class="draggable draggable3" data-id-module="3"></div>
             <br>
-            '.ui_toggle('code', __('Agents'), 'agents-toggle', 'agents-toggle', true, true).'
-            '.ui_toggle('code', __('Groups'), 'groups-toggle', 'groups-toggle', true, true).'
-            '.ui_toggle('code', __('Modules'), 'modules-toggle', 'modules-toggle', true, true).'
+'.ui_toggle(
+    '',
+    __('Agents'),
+    'agents-toggle',
+    'agents-toggle',
+    true,
+    true,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph',
+    'images/arrow@svg.svg',
+    'images/arrow@svg.svg',
+    false,
+    false,
+    false,
+    '',
+    '',
+    null,
+    null,
+    false,
+    false,
+    'static'
+).ui_toggle(
+    '',
+    __('Groups'),
+    'groups-toggle',
+    'groups-toggle',
+    true,
+    true,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph',
+    'images/arrow@svg.svg',
+    'images/arrow@svg.svg',
+    false,
+    false,
+    false,
+    '',
+    '',
+    null,
+    null,
+    false,
+    false,
+    'static'
+).ui_toggle(
+    '',
+    __('Modules'),
+    'modules-toggle',
+    'modules-toggle',
+    true,
+    true,
+    '',
+    'white-box-content',
+    'box-flat white_table_graph',
+    'images/arrow@svg.svg',
+    'images/arrow@svg.svg',
+    false,
+    false,
+    false,
+    '',
+    '',
+    null,
+    null,
+    false,
+    false,
+    'static'
+).'
         </div>
         <div class="filter-div filters-right-div ">
             <input id="search-right" name="search-right" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
@@ -300,6 +364,211 @@ html_print_div(
 );
 
 
+// Realtime graph.
+$table = new stdClass();
+$table->width = '100%';
+$table->id = 'table-form';
+$table->class = 'filter-table-adv';
+$table->style = [];
+$table->data = [];
+
+$graph_fields['cpu_load'] = __('%s Server CPU', get_product_name());
+$graph_fields['pending_packets'] = __(
+    'Pending packages from %s Server',
+    get_product_name()
+);
+$graph_fields['disk_io_wait'] = __(
+    '%s Server Disk IO Wait',
+    get_product_name()
+);
+$graph_fields['apache_load'] = __(
+    '%s Server Apache load',
+    get_product_name()
+);
+$graph_fields['mysql_load'] = __(
+    '%s Server MySQL load',
+    get_product_name()
+);
+$graph_fields['server_load'] = __(
+    '%s Server load',
+    get_product_name()
+);
+$graph_fields['snmp_interface'] = __('SNMP Interface throughput');
+
+$graph = get_parameter('graph', 'cpu_load');
+$refresh = get_parameter('refresh', '1000');
+
+if ($graph != 'snmp_module') {
+    $data['graph'] = html_print_label_input_block(
+        __('Graph'),
+        html_print_select(
+            $graph_fields,
+            'graph',
+            $graph,
+            '',
+            '',
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 100%'
+        )
+    );
+}
+
+$refresh_fields[1000]  = human_time_description_raw(1, true, 'large');
+$refresh_fields[5000]  = human_time_description_raw(5, true, 'large');
+$refresh_fields[10000] = human_time_description_raw(10, true, 'large');
+$refresh_fields[30000] = human_time_description_raw(30, true, 'large');
+
+if ($graph == 'snmp_module') {
+    $agent_alias = io_safe_output(get_parameter('agent_alias', ''));
+    $module_name = io_safe_output(get_parameter('module_name', ''));
+    $module_incremental = get_parameter('incremental', 0);
+    $data['module_info'] = html_print_label_input_block(
+        $agent_alias.': '.$module_name,
+        html_print_input_hidden(
+            'incremental',
+            $module_incremental,
+            true
+        ).html_print_select(
+            ['snmp_module' => '-'],
+            'graph',
+            'snmp_module',
+            '',
+            '',
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 100%; display: none;'
+        )
+    );
+}
+
+$data['refresh'] = html_print_label_input_block(
+    __('Refresh interval'),
+    html_print_select(
+        $refresh_fields,
+        'refresh',
+        $refresh,
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 100%'
+    )
+);
+
+if ($graph != 'snmp_module') {
+    $data['incremental'] = html_print_label_input_block(
+        __('Incremental'),
+        html_print_checkbox_switch('incremental', 1, 0, true)
+    );
+}
+
+$table->data[] = $data;
+
+// Print the relative path to AJAX calls.
+html_print_input_hidden('rel_path', get_parameter('rel_path', ''));
+
+// Print the form.
+$searchForm = '<form id="realgraph" method="post">';
+$searchForm .= html_print_table($table, true);
+$searchForm .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => html_print_submit_button(
+            __('Clear graph'),
+            'srcbutton',
+            false,
+            [
+                'icon'    => 'delete',
+                'mode'    => 'mini',
+                'onClick' => 'javascript:realtimeGraphs.clearGraph();',
+            ],
+            true
+        ),
+    ],
+    true
+);
+$searchForm .= '</form>';
+
+// echo $searchForm;
+echo '
+    <input type="hidden" id="refresh" value="1000">
+    <input type="hidden" id="hidden-incremental" value="0">
+';
+
+// Canvas realtime graph.
+$canvas = '<div id="graph_container" class="graph_container">';
+$canvas .= '<div id="chartLegend" class="chartLegend"></div>';
+
+$width = 800;
+$height = 300;
+
+$data_array['realtime']['data'][0][0] = (time() - 10);
+$data_array['realtime']['data'][0][1] = 0;
+$data_array['realtime']['data'][1][0] = time();
+$data_array['realtime']['data'][1][1] = 0;
+$data_array['realtime']['color'] = 'green';
+
+$params = [
+    'agent_module_id'   => false,
+    'period'            => 300,
+    'width'             => $width,
+    'height'            => $height,
+    'only_image'        => false,
+    'type_graph'        => 'area',
+    'font'              => $config['fontpath'],
+    'font-size'         => $config['font_size'],
+    'array_data_create' => $data_array,
+    'show_legend'       => false,
+    'show_menu'         => false,
+    'backgroundColor'   => 'transparent',
+];
+
+$canvas .= grafico_modulo_sparse($params);
+$canvas .= '</div>';
+echo $canvas;
+
+html_print_input_hidden(
+    'custom_action',
+    urlencode(
+        base64_encode(
+            '&nbsp;<a href="javascript:realtimeGraphs.setOID();"><img src="'.ui_get_full_url('images').'/input_filter.disabled.png" title="'.__('Use this OID').'" class="vertical_middle"></img></a>'
+        )
+    ),
+    false
+);
+html_print_input_hidden('incremental_base', '0');
+
+echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/pandora_snmp_browser.js').'?v='.$config['current_package'].'"></script>';
+echo '<script type="text/javascript" src="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.js').'?v='.$config['current_package'].'"></script>';
+
+if ($config['style'] !== 'pandora_black') {
+    echo '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.css').'?v='.$config['current_package'].'"></style>';
+}
+
+// Store servers timezone offset to be retrieved from js.
+set_js_value('timezone_offset', date('Z', time()));
+
+extensions_add_operation_menu_option(
+    __('Realtime graphs'),
+    'estado',
+    null,
+    'v1r1',
+    'view'
+);
+extensions_add_main_function('pandora_realtime_graphs');
 ?>
 
 <script>
@@ -339,19 +608,34 @@ $('#search-left').keyup(function (e) {
                 groupsToggle.empty();
                 modulesToggle.empty();
 
-                data.agents.forEach(agent => {
-                    agentsToggle.append(`<div class="draggable draggable1" data-id-agent="${agent.id_agente}">${agent.alias}</div>`);
-                });
+                if (data.agents) {
+                    $('#agents-toggle').show();
+                    data.agents.forEach(agent => {
+                        agentsToggle.append(`<div class="" data-id-agent="${agent.id_agente}" title="${agent.alias}">${agent.alias}</div>`);
+                    });
+                } else {
+                    $('#agents-toggle').hide();
+                }
 
-                data.groups.forEach(group => {
-                    groupsToggle.append(`<div class="draggable draggable2" data-id-group="${group.id_grupo}">${group.nombre}</div>`);
-                });
+                if (data.groups) {
+                    $('#groups-toggle').show();
+                    data.groups.forEach(group => {
+                        groupsToggle.append(`<div class="" data-id-group="${group.id_grupo}" title="${group.nombre}">${group.nombre}</div>`);
+                    });
+                } else {
+                    $('#groups-toggle').hide();
+                }
 
-                data.modules.forEach(module => {
-                    modulesToggle.append(`<div class="draggable draggable3" data-id-module="${module.id_agente_modulo}">${module.nombre}</div>`);
-                });
+                if (data.modules) {
+                    $('#modules-toggle').show();
+                    data.modules.forEach(module => {
+                        modulesToggle.append(`<div class="draggable" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">${module.nombre}</div>`);
+                    });
+                } else {
+                    $('#modules-toggle').hide();
+                }
 
-                // todo: position: static; div#tgl_div_...
+                // Create draggable elements.
                 $('.draggable').draggable({
                     revert: "invalid",
                     stack: ".draggable",
@@ -368,13 +652,18 @@ $('#search-left').keyup(function (e) {
 });
 
 $(document).ready(function(){
+    // Hide toggles.
+    $('#agents-toggle').hide();
+    $('#groups-toggle').hide();
+    $('#modules-toggle').hide();
 
-    // Draggable & Droppable graphs.
-    $('.draggable').draggable({
-        revert: "invalid",
-        stack: ".draggable",
-        helper: "clone",
-    });
+
+    // Create draggable elements.
+    // $('.draggable').draggable({
+    //     revert: "invalid",
+    //     stack: ".draggable",
+    //     helper: "clone",
+    // });
 
     // Droppable options.
     var droppableOptions = {
@@ -446,7 +735,7 @@ function createDroppableZones(droppableOptions, modulesByGraphs) {
 
         // todo: Print graph
         graph.forEach(module => {
-            graphDiv.append($(`<div class="draggable draggable${module} ui-draggable ui-draggable-handle"></div>`));
+            graphDiv.append($(`<div class="draggable ui-draggable ui-draggable-handle">${module}</div>`));
         });
 
         // Create next droppable zone.
@@ -462,4 +751,5 @@ function createDroppableZones(droppableOptions, modulesByGraphs) {
 
     // todo: Create draggable graphs.
 }
+
 </script>

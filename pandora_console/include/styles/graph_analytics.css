@@ -103,6 +103,7 @@ div.filters-div-submain {
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-items: flex-start;
+  height: calc(100% - 51px);
 }
 
 div.filter-div {
@@ -157,21 +158,21 @@ div.graphs-div-main {
 
 /* Draggable */
 .draggable.ui-draggable-dragging {
-  width: 100px;
+  width: 100%;
 }
 
 .draggable {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   width: 100px;
   height: 20px;
-  background: red;
+  background: #9efcab;
 }
-
-.draggable2 {
-  background: blue;
-}
-
-.draggable3 {
-  background: green;
+/* !Remove and set width 100% in .draggable */
+#droppable-graphs .draggable {
+  width: 20px;
 }
 
 .droppable {

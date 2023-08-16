@@ -2359,13 +2359,13 @@ sub api_call {
   # TODO: change to logger.
 	use Data::Dumper;
 	$Data::Dumper::SortKeys = 1;
-	print Dumper("------------------");
-	if ($@) { print Dumper($@); }
 	#print Dumper($response);
 	print Dumper($response->{'_rc'});
 	print Dumper($response->{'_content'});
 	print Dumper($response->{'_request'});
-	
+
+	logger($pa_config, 'Api response failure: ' . $response->{'_rc'} . '. Description error: ' . $response->{'_content'}, 3);
+	logger($pa_config, $response->{'_request'}, 3);
 	return undef;
 }
 

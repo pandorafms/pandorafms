@@ -159,19 +159,20 @@ if ($id) {
     $name = $action['name'];
     $id_command = $action['id_alert_command'];
     $command = alerts_get_alert_command($id_command);
-    if (empty($command) === false && $command['name'] === io_safe_input('Integria IMS Ticket')) {
-        $action['field2'] = ($action['field2'] ?? $config['default_group']);
-        $action['field3'] = ($action['field3'] ?? $config['default_criticity']);
-        $action['field4'] = ($action['field4'] ?? $config['default_owner']);
-        $action['field5'] = ($action['field5'] ?? $config['incident_type']);
-        $action['field6'] = ($action['field6'] ?? $config['incident_status']);
-        $action['field7'] = ($action['field7'] ?? $config['incident_content']);
-        $action['field2_recovery'] = ($action['field2'] ?? $config['default_group']);
-        $action['field3_recovery'] = ($action['field3'] ?? $config['default_criticity']);
-        $action['field4_recovery'] = ($action['field4'] ?? $config['default_owner']);
-        $action['field5_recovery'] = ($action['field5'] ?? $config['incident_type']);
-        $action['field6_recovery'] = ($action['field6_recovery'] ?? $config['incident_status']);
-        $action['field7_recovery'] = ($action['field7_recovery'] ?? $config['incident_content']);
+    if (empty($command) === false && $command['name'] === io_safe_input('Pandora ITSM Ticket')) {
+        $action['field1'] = io_safe_output(($action['field1'] ?? $config['incident_title']));
+        $action['field2'] = io_safe_output(($action['field2'] ?? $config['default_group']));
+        $action['field3'] = io_safe_output(($action['field3'] ?? $config['default_criticity']));
+        $action['field4'] = io_safe_output(($action['field4'] ?? $config['default_owner']));
+        $action['field5'] = io_safe_output(($action['field5'] ?? $config['incident_type']));
+        $action['field6'] = io_safe_output(($action['field6'] ?? $config['incident_status']));
+        $action['field7'] = io_safe_output(($action['field7'] ?? $config['incident_content']));
+        $action['field2_recovery'] = io_safe_output(($action['field2'] ?? $config['default_group']));
+        $action['field3_recovery'] = io_safe_output(($action['field3'] ?? $config['default_criticity']));
+        $action['field4_recovery'] = io_safe_output(($action['field4'] ?? $config['default_owner']));
+        $action['field5_recovery'] = io_safe_output(($action['field5'] ?? $config['incident_type']));
+        $action['field6_recovery'] = io_safe_output(($action['field6_recovery'] ?? $config['incident_status']));
+        $action['field7_recovery'] = io_safe_output(($action['field7_recovery'] ?? $config['incident_content']));
     }
 
     $group = $action['id_group'];
@@ -258,7 +259,7 @@ $table->data[0][1] = html_print_label_input_block(
     )
 );
 
-$create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_safe_input('Integria IMS Ticket'));
+$create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_safe_input('Pandora ITSM Ticket'));
 
 $sql_exclude_command_id = '';
 
@@ -378,13 +379,13 @@ $table_macros->data[1][2] = html_print_label_input_block(
     )
 );
 
-if (empty($command) === false && $command['name'] === io_safe_input('Integria IMS Ticket')) {
+if (empty($command) === false && $command['name'] === io_safe_input('Pandora ITSM Ticket')) {
     // Selector will work only with Integria activated.
     $integriaIdName = 'integria_wu';
     $table_macros->colspan[$integriaIdName][0] = 3;
     $table_macros->data[$integriaIdName][0] = html_print_label_input_block(
         __('Create workunit on recovery').ui_print_help_tip(
-            __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
+            __('If closed status is set on recovery, a workunit will be added to the ticket in Pandora ITSM rather that closing the ticket.'),
             true
         ),
         html_print_checkbox_switch_extended(
@@ -749,54 +750,62 @@ $(document).ready (function () {
                         disabled = $("[name=field" + i + "_value]").attr('disabled');
                     }
 
-                    if ($("#id_command option:selected").text() === "Integria IMS Ticket" && (!old_value || !old_recovery_value) ) {
-                        if (i === 2) {
+                    if ($("#id_command option:selected").text() === "Pandora ITSM Ticket" && (!old_value || !old_recovery_value) ) {
+                        if (i === 1) {
                             if(!old_value) {
-                                old_value = '<?php echo $config['default_group']; ?>';
+                                old_value = '<?php echo io_safe_output($config['incident_title']); ?>';
                             }
 
                             if(!old_recovery_value) {
-                                old_recovery_value = '<?php echo $config['default_group']; ?>';
+                                old_recovery_value = '<?php echo io_safe_output($config['incident_title']); ?>';
+                            }
+                        } else if (i === 2) {
+                            if(!old_value || old_value == 0) {
+                                old_value = '<?php echo io_safe_output($config['default_group']); ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo io_safe_output($config['default_group']); ?>';
                             }
                         } else if (i === 3) {
                             if(!old_value) {
-                                old_value = '<?php echo $config['default_criticity']; ?>';
+                                old_value = '<?php echo io_safe_output($config['default_criticity']); ?>';
                             }
 
                             if(!old_recovery_value) {
-                                old_recovery_value = '<?php echo $config['default_criticity']; ?>';
+                                old_recovery_value = '<?php echo io_safe_output($config['default_criticity']); ?>';
                             }
                         } else if (i === 4) {
                             if(!old_value) {
-                                old_value = '<?php echo $config['default_owner']; ?>';
+                                old_value = '<?php echo io_safe_output($config['default_owner']); ?>';
                             }
 
                             if(!old_recovery_value) {
-                                old_recovery_value = '<?php echo $config['default_owner']; ?>';
+                                old_recovery_value = '<?php echo io_safe_output($config['default_owner']); ?>';
                             }
                         } else if (i === 5) {
                             if(!old_value) {
-                                old_value = '<?php echo $config['incident_type']; ?>';
+                                old_value = '<?php echo io_safe_output($config['incident_type']); ?>';
                             }
 
                             if(!old_recovery_value) {
-                                old_recovery_value = '<?php echo $config['incident_type']; ?>';
+                                old_recovery_value = '<?php echo io_safe_output($config['incident_type']); ?>';
                             }
                         } else if (i === 6) {
                             if(!old_value) {
-                                old_value = '<?php echo $config['incident_status']; ?>';
+                                old_value = '<?php echo io_safe_output($config['incident_status']); ?>';
                             }
 
                             if(!old_recovery_value) {
-                                old_recovery_value = '<?php echo $config['incident_status']; ?>';
+                                old_recovery_value = '<?php echo io_safe_output($config['incident_status']); ?>';
                             }
                         } else if (i === 7) {
                             if(!old_value) {
-                                old_value = '<?php echo $config['incident_content']; ?>';
+                                old_value = '<?php echo io_safe_output($config['incident_content']); ?>';
                             }
 
                             if(!old_recovery_value) {
-                                old_recovery_value = '<?php echo $config['incident_content']; ?>';
+                                old_recovery_value = '<?php echo io_safe_output($config['incident_content']); ?>';
                             }
                         }
                     }
@@ -863,7 +872,7 @@ $(document).ready (function () {
                         }
                     }
 
-                    if ($("#id_command option:selected").text() === "Integria IMS Ticket" && i > 7) {
+                    if ($("#id_command option:selected").text() === "Pandora ITSM Ticket" && i > 7) {
                         integria_custom_fields_values.push(old_value);
                         integria_custom_fields_rvalues.push(old_recovery_value);
                     }
@@ -885,9 +894,9 @@ $(document).ready (function () {
                     $table_macros_field.show();
                 }
 
-                // Ad-hoc solution for Integria IMS command: get Integia IMS Ticket custom fields only when this command is selected and we selected a ticket type to retrieve fields from.
+                // Ad-hoc solution for Pandora ITSM command: get Integia IMS Ticket custom fields only when this command is selected and we selected a ticket type to retrieve fields from.
                 // Check command by name since it is unvariable in any case, unlike its ID.
-                if ($("#id_command option:selected").text() === "Integria IMS Ticket") {
+                if ($("#id_command option:selected").text() === "Pandora ITSM Ticket") {
                     var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
 
                     // At start hide all rows and inputs corresponding to custom fields, regardless of what its type is.

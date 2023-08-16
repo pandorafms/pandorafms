@@ -153,7 +153,7 @@ if (is_ajax()) {
             $style = ((int) $field_hidden === 1) ? '-webkit-text-security: disc; font-family: text-security-disc;' : '';
 
             $recovery_disabled = 0;
-            if (empty($command) === false && $command['name'] === io_safe_input('Integria IMS Ticket')) {
+            if (empty($command) === false && $command['name'] === io_safe_input('Pandora ITSM Ticket')) {
                 if ($management_is_not_allowed == 0) {
                     if (preg_match('/^_html_editor_$/i', $field_value) || $field_description === 'Ticket status') {
                         $recovery_disabled = 0;
@@ -1026,6 +1026,12 @@ $commands = array_slice($commands, $offset, $limit);
 
 foreach ($commands as $command) {
     $data = [];
+
+    if ((isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false)
+        && $command['name'] === 'Pandora&#x20;ITSM&#x20;Ticket'
+    ) {
+        continue;
+    }
 
     $data['name'] = '<span>';
 

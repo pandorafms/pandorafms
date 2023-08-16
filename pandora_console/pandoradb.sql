@@ -397,7 +397,8 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
   `fields_values` TEXT,
   `fields_hidden` TEXT,
   `previous_name` TEXT,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
@@ -405,7 +406,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 -- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS `talert_actions` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` TEXT,
+  `name` VARCHAR(500),
   `id_alert_command` INT UNSIGNED NULL DEFAULT 0,
   `field1` TEXT,
   `field2` TEXT,
@@ -452,6 +453,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
   `previous_name` TEXT,
   `create_wu_integria` TINYINT DEFAULT NULL,
   PRIMARY KEY  (`id`),
+  UNIQUE (`name`),
   FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

@@ -181,11 +181,13 @@ class Manager
      */
     private function showEdit()
     {
+        global $config;
         $create_incidence = (bool) \get_parameter('create_incidence', 0);
         $update_incidence = (bool) \get_parameter('update_incidence', 0);
-        $idIncidence      = \get_parameter('idIncidence', 0);
+        $idIncidence = (int) \get_parameter('idIncidence', 0);
+        $idEvent = (int) \get_parameter('from_event', 0);
 
-        $headerTabs = $this->headersTabs('edit', (bool) $idIncidence);
+        $headerTabs = $this->headersTabs('edit', $idIncidence);
 
         $error = '';
         try {
@@ -203,16 +205,42 @@ class Manager
             $error = $th->getMessage();
         }
 
+        $default_values = [
+            'title'           => '',
+            'idIncidenceType' => 0,
+            'idGroup'         => 0,
+            'priority'        => 'LOW',
+            'status'          => 'NEW',
+            'idCreator'       => '',
+            'owner'           => '',
+            'resolution'      => null,
+            'description'     => '',
+        ];
+
+        if (empty($idEvent) === false) {
+            $default_values = [
+                'title'           => $config['cr_incident_title'],
+                'idIncidenceType' => $config['cr_incident_type'],
+                'idGroup'         => $config['cr_default_group'],
+                'priority'        => $config['cr_default_criticity'],
+                'status'          => $config['cr_incident_status'],
+                'idCreator'       => '',
+                'owner'           => $config['cr_default_owner'],
+                'resolution'      => null,
+                'description'     => $config['cr_incident_content'],
+            ];
+        }
+
         $incidence = [
-            'title'           => \get_parameter('title', ($incidenceData['title'] ?? '')),
-            'idIncidenceType' => \get_parameter('idIncidenceType', ($incidenceData['idIncidenceType'] ?? 0)),
-            'idGroup'         => \get_parameter('idGroup', ($incidenceData['idGroup'] ?? 0)),
-            'priority'        => \get_parameter('priority', ($incidenceData['priority'] ?? 'LOW')),
-            'status'          => \get_parameter('status', ($incidenceData['status'] ?? 'NEW')),
-            'idCreator'       => \get_parameter('idCreator', ($incidenceData['idCreator'] ?? '')),
-            'owner'           => \get_parameter('owner_hidden', ($incidenceData['owner'] ?? '')),
-            'resolution'      => \get_parameter('resolution', ($incidenceData['resolution'] ?? null)),
-            'description'     => \get_parameter('description', ($incidenceData['description'] ?? '')),
+            'title'           => \get_parameter('title', ($incidenceData['title'] ?? $default_values['title'])),
+            'idIncidenceType' => \get_parameter('idIncidenceType', ($incidenceData['idIncidenceType'] ?? $default_values['idIncidenceType'])),
+            'idGroup'         => \get_parameter('idGroup', ($incidenceData['idGroup'] ?? $default_values['idGroup'])),
+            'priority'        => \get_parameter('priority', ($incidenceData['priority'] ?? $default_values['priority'])),
+            'status'          => \get_parameter('status', ($incidenceData['status'] ?? $default_values['status'])),
+            'idCreator'       => \get_parameter('idCreator', ($incidenceData['idCreator'] ?? $default_values['idCreator'])),
+            'owner'           => \get_parameter('owner_hidden', ($incidenceData['owner'] ?? $default_values['owner'])),
+            'resolution'      => \get_parameter('resolution', ($incidenceData['resolution'] ?? $default_values['resolution'])),
+            'description'     => \get_parameter('description', ($incidenceData['description'] ?? $default_values['description'])),
         ];
 
         $successfullyMsg = '';
@@ -283,7 +311,7 @@ class Manager
         $idAttachment = (int) \get_parameter('idAttachment', 0);
         $addComment = (bool) \get_parameter('addComment', 0);
 
-        $headerTabs = $this->headersTabs('detail', (bool) $idIncidence);
+        $headerTabs = $this->headersTabs('detail', $idIncidence);
 
         $error = '';
         $successfullyMsg = null;

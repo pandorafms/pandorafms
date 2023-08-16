@@ -1850,8 +1850,8 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			}
 		}
 	
-	# Integria IMS Ticket
-	} elsif ($clean_name eq "Integria IMS Ticket") {
+	# Pandora ITSM Ticket
+	} elsif ($clean_name eq "Pandora ITSM Ticket") {
 		my $config_ITSM_enabled = pandora_get_tconfig_token ($dbh, 'ITSM_enabled', '');
 		if (!$config_ITSM_enabled) {
 			return;
@@ -1867,19 +1867,6 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field9 = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field10 = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field11 = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field12 = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field13 = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field14 = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field15 = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field16 = subst_alert_macros ($field16, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field17 = subst_alert_macros ($field17, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field18 = subst_alert_macros ($field18, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field19 = subst_alert_macros ($field19, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		
 		# Field 1 (Ticket name)
 		my $ticket_name = safe_output($field1);
@@ -1913,12 +1900,15 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 
 		# Field 6 (Ticket status)
 		my $ticket_status = $field6;
-		if ($ticket_status eq '0') {
-			$ticket_status = 1;
+		if ($ticket_status eq '') {
+			$ticket_status = 'new';
 		}
 
 		# Field 7 (Ticket description);
-		my $ticket_description = subst_alert_macros(safe_output($field7), \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		my $ticket_description = $field7;
+		if ($ticket_description eq '') {
+			$ticket_description = '';
+		}
 
 		my $external_id = $agent->{'nombre'} . '-' . $module->{'id_agente'} . '-' . $module->{'id_agente_modulo'};
 
@@ -1959,19 +1949,19 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 
 		# Ticket type custom fields
 		my %custom_fields = (
-			'field0' => subst_alert_macros(safe_output($field8), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field1' => subst_alert_macros(safe_output($field9), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field2' => subst_alert_macros(safe_output($field10), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field3' => subst_alert_macros(safe_output($field11), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field4' => subst_alert_macros(safe_output($field12), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field5' => subst_alert_macros(safe_output($field13), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field6' => subst_alert_macros(safe_output($field14), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field7' => subst_alert_macros(safe_output($field15), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field8' => subst_alert_macros(safe_output($field16), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field9' => subst_alert_macros(safe_output($field17), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field10' => subst_alert_macros(safe_output($field18), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field11' => subst_alert_macros(safe_output($field19), \%macros, $pa_config, $dbh, $agent, $module, $alert),
-			'field12' => subst_alert_macros(safe_output($field20), \%macros, $pa_config, $dbh, $agent, $module, $alert)
+			'field0' => $field8 ne "" ? subst_alert_macros(safe_output($field8), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field1' => $field9 ne "" ? subst_alert_macros(safe_output($field9), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field2' => $field10 ne "" ? subst_alert_macros(safe_output($field10), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field3' => $field11 ne "" ? subst_alert_macros(safe_output($field11), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field4' => $field12 ne "" ? subst_alert_macros(safe_output($field12), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field5' => $field13 ne "" ? subst_alert_macros(safe_output($field13), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field6' => $field14 ne "" ? subst_alert_macros(safe_output($field14), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field7' => $field15 ne "" ? subst_alert_macros(safe_output($field15), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field8' => $field16 ne "" ? subst_alert_macros(safe_output($field16), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field9' => $field17 ne "" ? subst_alert_macros(safe_output($field17), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field10' => $field18 ne "" ? subst_alert_macros(safe_output($field18), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field11' => $field19 ne "" ? subst_alert_macros(safe_output($field19), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field12' => $field20 ne "" ? subst_alert_macros(safe_output($field20), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef
 		);
 
 		# Check exit inventory object.

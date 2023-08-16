@@ -1923,11 +1923,11 @@ function config_update_config()
                         $error_update[] = __('Pandora ITSM default creator');
                     }
 
-                    if (config_update_value('default_owner', (string) get_parameter('default_owner', $config['default_owner']), true) === false) {
+                    if (config_update_value('default_owner', (string) get_parameter('default_owner_hidden', $config['default_owner']), true) === false) {
                         $error_update[] = __('Pandora ITSM default owner');
                     }
 
-                    if (config_update_value('cr_default_owner', (string) get_parameter('cr_default_owner', $config['cr_default_owner']), true) === false) {
+                    if (config_update_value('cr_default_owner', (string) get_parameter('cr_default_owner_hidden', $config['cr_default_owner']), true) === false) {
                         $error_update[] = __('Pandora ITSM custom response default owner');
                     }
 

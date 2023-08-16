@@ -83,7 +83,7 @@ function d3_relationship_graph($elements, $matrix, $width=700, $return=false, $h
 }
 
 
-function d3_tree_map_graph($data, $width=700, $height=700, $return=false, $id_container='tree_map')
+function d3_tree_map_graph($data, $width=700, $height=700, $return=false, $id_container='tree_map', $child_links=false)
 {
     global $config;
 
@@ -139,8 +139,18 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false, $id_co
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					treeMap('#$id_container', $data, '$width', '$height');
+					treeMap('#$id_container', $data, '$width', '$height', $child_links);
 				</script>";
+    if ($child_links === true) {
+        $output .= html_print_input_image(
+            'resize_parent',
+            '/images/normal_screen.png',
+            1,
+            'background-color: white !important; padding: 4px !important;',
+            true,
+            ['class' => 'resize_button invisible']
+        );
+    }
 
     if (!$return) {
         echo $output;

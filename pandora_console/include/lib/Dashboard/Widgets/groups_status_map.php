@@ -278,25 +278,72 @@ class GroupsStatusMapWidget extends Widget
             }
         }
 
-        $where = '';
-        if (in_array('0', $groups_array) === false && count($groups_array) > 0) {
-            $where = ' WHERE g.id_grupo IN ('.implode(',', $groups_array).') ';
+        if (is_metaconsole() === true) {
+            $where = '';
+            if (in_array('0', $groups_array) === false && count($groups_array) > 0) {
+                // Names are used instead of ids because it can't be the same id as in node.
+                $names = [];
+                foreach ($groups_array as $key => $group) {
+                    $names[] = '\''.groups_get_name($group).'\'';
+                }
+
+                $where = ' WHERE g.nombre IN ('.implode(',', $names).') ';
+            }
+
+            $servers = metaconsole_get_servers();
+            $rows = [];
+            if (isset($servers) === true && is_array($servers) === true
+            ) {
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $sql = 'SELECT g.id_grupo, g.nombre, estado, count(*) AS total_modules
+                        FROM tagente a
+                        LEFT JOIN tgrupo g ON g.id_grupo = a.id_grupo
+                        LEFT JOIN tagente_modulo m ON a.id_agente = m.id_agente
+                        LEFT JOIN tagente_estado es ON es.id_agente_modulo = m.id_agente_modulo
+                        '.$where.'
+                        GROUP BY a.id_grupo, estado';
+                        $result = db_process_sql($sql);
+                        if ($result !== false) {
+                            $rows = array_merge_recursive($result, $rows);
+                        }
+                    }
+
+                    metaconsole_restore_db();
+                }
+            }
+        } else {
+            $where = '';
+            if (in_array('0', $groups_array) === false && count($groups_array) > 0) {
+                $where = ' WHERE g.id_grupo IN ('.implode(',', $groups_array).') ';
+            }
+
+            $sql = 'SELECT g.id_grupo, g.nombre, estado, count(*) AS total_modules
+            FROM tagente a
+            LEFT JOIN tgrupo g ON g.id_grupo = a.id_grupo
+            LEFT JOIN tagente_modulo m ON a.id_agente = m.id_agente
+            LEFT JOIN tagente_estado es ON es.id_agente_modulo = m.id_agente_modulo
+            '.$where.'
+            GROUP BY a.id_grupo, estado';
+
+            $rows = db_process_sql($sql);
         }
 
-        $sql = 'SELECT g.id_grupo, g.nombre, estado, count(*) AS total_modules
-                FROM tagente a
-                LEFT JOIN tgrupo g ON g.id_grupo = a.id_grupo
-                LEFT JOIN tagente_modulo m ON a.id_agente = m.id_agente
-                LEFT JOIN tagente_estado es ON es.id_agente_modulo = m.id_agente_modulo
-                '.$where.'
-                GROUP BY a.id_grupo, estado';
-        $rows = db_process_sql($sql);
+        if ($rows === false || (is_array($rows) === true && count($rows) === 0)) {
+            $output = ui_print_info_message(
+                [
+                    'no_close' => true,
+                    'message'  => __('No data found.'),
+                ]
+            );
+            return $output;
+        }
 
         $level1 = [
             'name'     => __('Module status map'),
             'children' => [],
         ];
-        $names = [];
+
         foreach ($rows as $key => $row) {
             $color = '';
             $name_status = '';
@@ -324,38 +371,46 @@ class GroupsStatusMapWidget extends Widget
                 case '4':
                     $color = '#4a83f3';
                     $name_status = __('No data');
+                    $row['estado'] = 6;
                 break;
 
                 default:
+                    $row['estado'] = 6;
                     $color = '#B2B2B2';
                     $name_status = __('Unknown');
                 continue;
             }
 
-            $level1['children'][$row['id_grupo']][] = [
+            if (empty($level1['children'][$row['nombre']][$row['estado']]['value']) === false) {
+                $total = ($row['total_modules'] + $level1['children'][$row['nombre']][$row['estado']]['value']);
+            } else {
+                $total = $row['total_modules'];
+            }
+
+            $level1['children'][$row['nombre']][$row['estado']] = [
                 'id'              => uniqid(),
                 'name'            => $row['estado'],
-                'value'           => $row['total_modules'],
+                'value'           => $total,
                 'color'           => $color,
-                'tooltip_content' => $row['total_modules'].__(' Modules(%s)', $name_status),
+                'tooltip_content' => $total.__(' Modules(%s)', $name_status),
+                'link'            => 'index.php?sec=view&sec2=operation/agentes/status_monitor&refr=0&ag_group='.$row['id_grupo'].'&ag_freestring=&module_option=1&ag_modulename=&moduletype=&datatype=&status='.$row['estado'].'&sort_field=&sort=none&pure=',
             ];
-            $names[$row['id_grupo']] = $row['nombre'];
         }
 
         $level2 = [
-            'name'     => __('Module status map'),
+            'name'     => __('Group status map'),
             'children' => [],
         ];
-        foreach ($level1['children'] as $key => $group) {
+        foreach ($level1['children'] as $name => $group) {
             $level2['children'][] = [
                 'id'       => uniqid(),
-                'name'     => $names[$key],
+                'name'     => $name,
                 'children' => $group,
             ];
         }
 
         $id_container = 'tree_map_'.uniqid();
-        $output = d3_tree_map_graph($level2, $size['width'], $size['height'], true, $id_container);
+        $output = d3_tree_map_graph($level2, $size['width'], $size['height'], true, $id_container, true);
         return $output;
     }
 

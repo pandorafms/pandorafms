@@ -402,7 +402,7 @@ function chordDiagram(recipient, elements, matrix, width, height) {
 //      }
 //  ]
 // };
-function treeMap(recipient, data, width, height) {
+function treeMap(recipient, data, width, height, childLinks = false) {
   //var isIE = BrowserDetect.browser == 'Explorer';
   var isIE = true;
   var chartWidth = width;
@@ -437,6 +437,9 @@ function treeMap(recipient, data, width, height) {
   var transitionDuration = 500;
   var root;
   var node;
+  var resize_button = $(recipient)
+    .parent()
+    .find(".resize_button");
 
   var treemap = d3.layout
     .treemap()
@@ -474,6 +477,7 @@ function treeMap(recipient, data, width, height) {
     .attr("class", "cell parent")
     .on("click", function(d) {
       zoom(d);
+      resize_button.show();
     })
     .append("svg")
     .attr("class", "clip")
@@ -527,6 +531,10 @@ function treeMap(recipient, data, width, height) {
   // remove transition
   parentCells.exit().remove();
 
+  $(resize_button).on("click", function() {
+    zoom(root);
+    $(this).hide();
+  });
   // create children cells
   var childrenCells = chart
     .selectAll("g.cell.child")
@@ -540,14 +548,22 @@ function treeMap(recipient, data, width, height) {
     .append("g")
     .attr("class", "cell child")
     .on("click", function(d) {
-      zoom(node === d.parent ? root : d.parent);
+      if (childLinks) {
+        if (node === d.parent) {
+          window.location.href = d.link;
+        } else {
+          resize_button.show();
+          zoom(d.parent);
+        }
+      } else {
+        zoom(node === d.parent ? root : d.parent);
+      }
     })
-    .on("mouseover", over_user)
-    .on("mouseout", out_user)
-    .on("mousemove", move_tooltip)
     .append("svg")
     .attr("class", "clip");
-
+  $(recipient).on("mouseover", over_user);
+  $(recipient).on("mouseout", out_user);
+  $(recipient).on("mousemove", move_tooltip);
   childEnterTransition
     .append("rect")
     .classed("background", true)
@@ -752,9 +768,8 @@ function treeMap(recipient, data, width, height) {
   }
 
   function move_tooltip(d) {
-    x = d3.event.layerX + 15;
-    y = d3.event.layerY + 15;
-
+    x = d.offsetX + 40;
+    y = d.offsetY + 40;
     $("#tooltip_" + uniqueId).css("left", x + "px");
     $("#tooltip_" + uniqueId).css("top", y + "px");
   }
@@ -782,10 +797,10 @@ function treeMap(recipient, data, width, height) {
       $(recipient).append(
         $("<div></div>")
           .attr("id", "tooltip_" + uniqueId)
-          .html(d.tooltip_content)
+          .html(d.target.__data__.tooltip_content)
       );
     } else {
-      $("#tooltip_" + uniqueId).html(d.tooltip_content);
+      $("#tooltip_" + uniqueId).html(d.target.__data__.tooltip_content);
     }
 
     $("#tooltip_" + uniqueId).attr(
@@ -811,10 +826,11 @@ function treeMap(recipient, data, width, height) {
   }
 
   function show_tooltip(d) {
-    x = d3.event.pageX + 10;
-    y = d3.event.pageY + 10;
-
-    create_tooltip(d, x, y);
+    x = d.offsetX + 10;
+    y = d.offsetY + 10;
+    if (d.target.__data__) {
+      create_tooltip(d, x, y);
+    }
   }
 
   function hide_tooltip() {

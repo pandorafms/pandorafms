@@ -4088,7 +4088,11 @@ function config_prepare_session()
         }
 
         if ($update_cookie === true) {
-            if ((int) $user['session_max_time_expire'] > 0 && time() < $user['session_max_time_expire']) {
+            if (isset($user) === true
+                && isset($user['session_max_time_expire']) === true
+                && (int) $user['session_max_time_expire'] > 0
+                && time() < $user['session_max_time_expire']
+            ) {
                 $sessionMaxTimeout = $user['session_max_time_expire'];
             } else {
                 $sessionMaxTimeout = (time() + $sessionCookieExpireTime);

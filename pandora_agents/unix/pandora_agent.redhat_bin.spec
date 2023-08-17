@@ -26,9 +26,7 @@ Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
 Requires:           coreutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk
-Requires:           perl(Sys::Syslog) perl(IO::Compress::Zip)
-# Required by plugins
-#Requires:           sh-utils sed passwd net-tools rpm
+Requires:           libnsl libxcrypt-compat
 AutoReq:            0
 Provides:           %{name}-%{version}
 

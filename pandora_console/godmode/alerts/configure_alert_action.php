@@ -848,16 +848,20 @@ $(document).ready (function () {
                         }
                         else {
                             var is_element_select = $("[name=field" + i + "_value]").is("select");
+                            var is_element_autocomplete_users_itsm = $("[name=field" + i + "_value]").hasClass("ITSM_users");
 
                             $("[name=field" + i + "_value]").val(old_value);
                             if (is_element_select === true) {
                                 $("[name=field" + i + "_value]").trigger('change');
+                            } else if (is_element_autocomplete_users_itsm === true) {
+                                $("[name=field" + i + "_value_hidden]").val(old_value);
                             }
 
-                            
                             $("[name=field" + i + "_recovery_value]").val(old_recovery_value);
                             if (is_element_select === true) {
                                 $("[name=field" + i + "_recovery_value]").trigger('change');
+                            } else if (is_element_autocomplete_users_itsm === true) {
+                                $("[name=field" + i + "_recovery_value_hidden]").val(old_recovery_value);
                             }
                         }
                     }

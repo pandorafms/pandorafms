@@ -1095,6 +1095,11 @@ class Manager
         $order = get_datatable_order(true);
         $filters = get_parameter('filter', []);
 
+        $externalIdLike = get_parameter('externalIdLike', '');
+        if (empty($externalIdLike) === false) {
+            $filters['externalIdLike'] = $externalIdLike;
+        }
+
         if (isset($filters['status']) === true && empty($filters['status']) === true) {
             unset($filters['status']);
         }

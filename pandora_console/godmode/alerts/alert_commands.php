@@ -592,7 +592,7 @@ if (is_ajax()) {
                             0,
                             $management_is_not_allowed,
                             false,
-                            ''
+                            'ITSM_users'
                         );
 
                         $rfield = html_print_autocomplete_users_from_pandora_itsm(
@@ -602,7 +602,7 @@ if (is_ajax()) {
                             0,
                             $management_is_not_allowed || $recovery_disabled,
                             false,
-                            ''
+                            'ITSM_users'
                         );
                     }
                 } else {

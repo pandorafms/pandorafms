@@ -1882,14 +1882,14 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		# Field 3 (Ticket priority);
 		my $ticket_priority = $field3;
-		if ($ticket_priority eq '0') {
-			$ticket_priority = 1;
+		if ($ticket_priority eq '') {
+			$ticket_priority = 'MEDIUM';
 		}
 
 		# Field 4 (Ticket owner)
 		my $ticket_owner = $field4;
 		if ($ticket_owner eq '') {
-			$ticket_owner = 'admin';
+			$ticket_owner = undef;
 		}
 		
 		# Field 5 (Ticket type)
@@ -1901,7 +1901,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		# Field 6 (Ticket status)
 		my $ticket_status = $field6;
 		if ($ticket_status eq '') {
-			$ticket_status = 'new';
+			$ticket_status = 'NEW';
 		}
 
 		# Field 7 (Ticket description);
@@ -1974,7 +1974,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		my $id_inventory = 0;
 		my $inventory_data = p_decode_json($pa_config, $existInventory);
 		my %data_inventory = (
-			"name" => $agent->{'alias'},
+			"name" => safe_output($agent->{'alias'}),
 			"isPublic" => \0,
 			"idObjectType" => 2,
 			"isShowInList" => \0,
@@ -1983,7 +1983,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			"typeFieldData" => [
 				{
 					"idInventoryField" => 12,
-					"data" => $agent->{'id_os'}
+					"data" => safe_output(get_db_value($dbh, 'select name from tconfig_os where id_os = ?', $agent->{'id_os'})) . ' (' . $agent->{'id_os'} . ')'
 				},
 				{
 					"idInventoryField" => 13,
@@ -1995,7 +1995,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 				},
 				{
 					"idInventoryField" => 46,
-					"data" => $agent->{'id_grupo'}
+					"data" => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'}) . ' (' . $agent->{'id_grupo'} . ')')
 				},
 			]
 		);

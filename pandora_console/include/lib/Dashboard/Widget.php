@@ -429,6 +429,7 @@ class Widget
                 case 'AvgSumMaxMinModule':
                 case 'BasicChart':
                 case 'AgentHive':
+                case 'ITSMIncidences':
                     $className .= '\\'.$name;
                 break;
 

@@ -124,50 +124,54 @@ def tentacle_xml(
             return False
 
         tentacle_cmd = f"{tentacle_path} -v -a {tentacle_ops['address']} -p {tentacle_ops['port']} {tentacle_ops['extra_opts']} {data_file.strip()}"
-
-        if retry:
-
-            retry_count = 0
-
-            while retry_count < _GLOBAL_VARIABLES['tentacle_retries']  :
-
-                tentacle_exe=subprocess.Popen(tentacle_cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
-                rc=tentacle_exe.wait()
-
-                if debug == 0 : 
-                    os.remove(data_file.strip())
-
-                if rc == 0:
-                    break  
-
-                if print_errors:
-                    stderr = tentacle_exe.stderr.read().decode()
-                    msg = f"Tentacle error (Retry {retry_count + 1}/{_GLOBAL_VARIABLES['tentacle_retries']}): {stderr}"
-                    print_stderr(str(datetime.today().strftime('%Y-%m-%d %H:%M')) + msg)
-                
-                retry_count += 1
-
-            if retry_count >= _GLOBAL_VARIABLES['tentacle_retries']:
-                if print_errors:
-                    stderr = tentacle_exe.stderr.read().decode()
-                    msg = f"Tentacle error (Final Retry): {stderr}"
-                    print_stderr(str(datetime.today().strftime('%Y-%m-%d %H:%M')) + msg)
-                return False
-
-        else:
-
-            tentacle_exe=subprocess.Popen(tentacle_cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
-            rc=tentacle_exe.wait()
+        tentacle_exe=subprocess.Popen(tentacle_cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
+        rc=tentacle_exe.wait()
             
-            if debug == 0 : 
-                os.remove(data_file.strip())
+        if debug == 0 : 
+            os.remove(data_file.strip())
 
-            if rc != 0 :
+        if rc != 0 :
+
+            if retry:
+
+                if _GLOBAL_VARIABLES['tentacle_retries'] > 1:
+                    _GLOBAL_VARIABLES['tentacle_retries'] = 1
+
+                retry_count = 0
+
+                while retry_count < _GLOBAL_VARIABLES['tentacle_retries']  :
+
+                    tentacle_exe=subprocess.Popen(tentacle_cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
+                    rc=tentacle_exe.wait()
+
+                    if debug == 0 : 
+                        os.remove(data_file.strip())
+
+                    if rc == 0:
+                        break  
+
+                    if print_errors:
+                        stderr = tentacle_exe.stderr.read().decode()
+                        msg = f"Tentacle error (Retry {retry_count + 1}/{_GLOBAL_VARIABLES['tentacle_retries']}): {stderr}"
+                        print_stderr(str(datetime.today().strftime('%Y-%m-%d %H:%M')) + msg)
+                    
+                    retry_count += 1
+
+                if retry_count >= _GLOBAL_VARIABLES['tentacle_retries']:
+                    if print_errors:
+                        stderr = tentacle_exe.stderr.read().decode()
+                        msg = f"Tentacle error (Final Retry): {stderr}"
+                        print_stderr(str(datetime.today().strftime('%Y-%m-%d %H:%M')) + msg)
+                    return False
+            else:
+                
                 if print_errors:
                     stderr = tentacle_exe.stderr.read().decode()
                     msg="Tentacle error:" + str(stderr)
                     print_stderr(str(datetime.today().strftime('%Y-%m-%d %H:%M')) + msg)
                 return False
+
+            
     
     else:
         if print_errors:

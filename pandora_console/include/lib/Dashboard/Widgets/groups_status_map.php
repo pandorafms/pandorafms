@@ -281,13 +281,7 @@ class GroupsStatusMapWidget extends Widget
         if (is_metaconsole() === true) {
             $where = '';
             if (in_array('0', $groups_array) === false && count($groups_array) > 0) {
-                // Names are used instead of ids because it can't be the same id as in node.
-                $names = [];
-                foreach ($groups_array as $key => $group) {
-                    $names[] = '\''.groups_get_name($group).'\'';
-                }
-
-                $where = ' WHERE g.nombre IN ('.implode(',', $names).') ';
+                $where = ' WHERE g.id_grupo IN ('.implode(',', $groups_array).') ';
             }
 
             $servers = metaconsole_get_servers();
@@ -344,6 +338,7 @@ class GroupsStatusMapWidget extends Widget
             'children' => [],
         ];
 
+        $names = [];
         foreach ($rows as $key => $row) {
             $color = '';
             $name_status = '';
@@ -381,13 +376,13 @@ class GroupsStatusMapWidget extends Widget
                 continue;
             }
 
-            if (empty($level1['children'][$row['nombre']][$row['estado']]['value']) === false) {
-                $total = ($row['total_modules'] + $level1['children'][$row['nombre']][$row['estado']]['value']);
+            if (empty($level1['children'][$row['id_grupo']][$row['estado']]['value']) === false) {
+                $total = ($row['total_modules'] + $level1['children'][$row['id_grupo']][$row['estado']]['value']);
             } else {
                 $total = $row['total_modules'];
             }
 
-            $level1['children'][$row['nombre']][$row['estado']] = [
+            $level1['children'][$row['id_grupo']][$row['estado']] = [
                 'id'              => uniqid(),
                 'name'            => $row['estado'],
                 'value'           => $total,
@@ -395,16 +390,17 @@ class GroupsStatusMapWidget extends Widget
                 'tooltip_content' => $total.__(' Modules(%s)', $name_status),
                 'link'            => 'index.php?sec=view&sec2=operation/agentes/status_monitor&refr=0&ag_group='.$row['id_grupo'].'&ag_freestring=&module_option=1&ag_modulename=&moduletype=&datatype=&status='.$row['estado'].'&sort_field=&sort=none&pure=',
             ];
+            $names[$row['id_grupo']] = $row['nombre'];
         }
 
         $level2 = [
             'name'     => __('Group status map'),
             'children' => [],
         ];
-        foreach ($level1['children'] as $name => $group) {
+        foreach ($level1['children'] as $id_grupo => $group) {
             $level2['children'][] = [
                 'id'       => uniqid(),
-                'name'     => $name,
+                'name'     => $names[$id_grupo],
                 'children' => $group,
             ];
         }

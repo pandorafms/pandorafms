@@ -1,4 +1,4 @@
-from easysnmp import Session
+from easysnmp import Session, TrapSender
 
 ####
 # Define global variables dict, used in functions as default values.
@@ -72,3 +72,13 @@ def snmp_get(session, oid):
 
 def snmp_walk(session, oid):
     return session.walk(oid)
+
+def send_trap(trap_oid, trap_value, destination_ip, community):
+    trap = TrapSender()
+
+    trap.trap_oid = trap_oid
+    trap.trap_value = trap_value
+    trap.destination_ip = destination_ip
+    trap.community = community
+
+    trap.send_trap()

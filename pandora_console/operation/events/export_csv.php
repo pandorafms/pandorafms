@@ -157,6 +157,10 @@ try {
         throw new Exception('Invalid filter. ['.$plain_filter.']');
     }
 
+    if (key_exists('server_id', $filter) === true && is_array($filter['server_id']) === false) {
+        $filter['server_id'] = explode(',', $filter['server_id']);
+    }
+
     $filter['csv_all'] = true;
 
     $names = events_get_column_names($column_names);

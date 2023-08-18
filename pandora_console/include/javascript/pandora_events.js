@@ -55,7 +55,7 @@ function show_event_dialog(event, dialog_page) {
           title: event.evento,
           resizable: true,
           draggable: true,
-          modal: true,
+          modal: false,
           minWidth: 875,
           minHeight: 600,
           close: function() {
@@ -484,7 +484,7 @@ function event_comment(current_event) {
     success: function() {
       $("#button-comment_button").removeAttr("disabled");
       $("#response_loading").hide();
-      $("#link_comments").click();
+      $("#button-filter_comments_button").click();
     }
   });
 
@@ -943,6 +943,185 @@ function process_buffers(buffers) {
   }
 }
 
+function openSoundEventsDialogModal(settings, dialog_parameters, reload) {
+  let mode = $("#hidden-mode_alert").val();
+  if (reload != false) {
+    if (mode == 0) {
+      let filter_id = $("#filter_id option:selected").val();
+      let interval = $("#interval option:selected").val();
+      let time_sound = $("#time_sound option:selected").val();
+      let sound_id = $("#sound_id option:selected").val();
+      let parameters = {
+        filter_id: filter_id,
+        interval: interval,
+        time_sound: time_sound,
+        sound_id: sound_id,
+        mode: mode
+      };
+      parameters = JSON.stringify(parameters);
+      parameters = btoa(parameters);
+      let url =
+        window.location + "&settings=" + settings + "&parameters=" + parameters;
+      $(location).attr("href", url);
+    } else {
+      let url = window.location + "&settings=" + settings;
+      $(location).attr("href", url);
+    }
+  } else {
+    openSoundEventsDialog(settings, dialog_parameters, reload);
+  }
+}
+
+function openSoundEventsDialog(settings, dialog_parameters, reload) {
+  let encode_settings = settings;
+  if (reload == undefined) {
+    reload = true;
+  }
+  if (dialog_parameters != undefined) {
+    dialog_parameters = JSON.parse(atob(dialog_parameters));
+  }
+  settings = JSON.parse(atob(settings));
+  // Check modal exists and is open.
+  if (
+    $("#modal-sound").hasClass("ui-dialog-content") &&
+    $("#modal-sound").dialog("isOpen")
+  ) {
+    $(".ui-dialog-titlebar-minimize").trigger("click");
+    return;
+  }
+  //Modify button
+  $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
+  $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
+  $("#minimize_arrow_event_sound").show();
+
+  // Initialize modal.
+  $("#modal-sound")
+    .empty()
+    .dialog({
+      title: settings.title,
+      resizable: false,
+      modal: false,
+      width: 600,
+      height: 600,
+      open: function() {
+        $.ajax({
+          method: "post",
+          url: settings.url,
+          data: {
+            page: settings.page,
+            drawConsoleSound: 1
+          },
+          dataType: "html",
+          success: function(data) {
+            $("#modal-sound").append(data);
+            $("#tabs-sound-modal").tabs({
+              disabled: [1]
+            });
+
+            // Test sound.
+            $("#button-melody_sound").click(function() {
+              var sound = false;
+              if ($("#id_sound_event").length == 0) {
+                sound = true;
+              }
+
+              test_sound_button(sound, settings.urlSound);
+            });
+
+            // Play Stop.
+            $("#button-start-search").click(function() {
+              if (reload == true) {
+                openSoundEventsDialogModal(encode_settings, 0, reload);
+              }
+              var mode = $("#hidden-mode_alert").val();
+              var action = false;
+              if (mode == 0) {
+                action = true;
+              }
+              if ($("#button-start-search").hasClass("play")) {
+                $("#modal-sound").css({
+                  height: "500px"
+                });
+                $("#modal-sound")
+                  .parent()
+                  .css({
+                    height: "550px"
+                  });
+              } else {
+                $("#modal-sound").css({
+                  height: "450px"
+                });
+                $("#modal-sound")
+                  .parent()
+                  .css({
+                    height: "500px"
+                  });
+              }
+
+              action_events_sound(action, settings);
+            });
+
+            if (reload == false && dialog_parameters != undefined) {
+              if ($("#button-start-search").hasClass("play")) {
+                $("#filter_id").val(dialog_parameters["filter_id"]);
+                $("#interval").val(dialog_parameters["interval"]);
+                $("#time_sound").val(dialog_parameters["time_sound"]);
+                $("#sound_id").val(dialog_parameters["sound_id"]);
+
+                $("#filter_id").trigger("change");
+                $("#interval").trigger("change");
+                $("#time_sound").trigger("change");
+                $("#sound_id").trigger("change");
+
+                $("#button-start-search").trigger("click");
+              }
+            }
+
+            // Silence Alert.
+            $("#button-no-alerts").click(function() {
+              if ($("#button-no-alerts").hasClass("silence-alerts") === true) {
+                // Remove audio.
+                remove_audio();
+
+                // Clean events.
+                $("#tabs-sound-modal .elements-discovered-alerts ul").empty();
+                $("#tabs-sound-modal .empty-discovered-alerts").removeClass(
+                  "invisible_important"
+                );
+
+                // Clean progress.
+                $("#progressbar_time").empty();
+
+                // Change img button.
+                $("#button-no-alerts")
+                  .removeClass("silence-alerts")
+                  .addClass("alerts");
+                // Change value button.
+                $("#button-no-alerts").val(settings.noAlert);
+                $("#button-no-alerts > span").text(settings.noAlert);
+
+                // Background button.
+                $(".container-button-alert").removeClass("fired");
+
+                // New progress.
+                listen_event_sound(settings);
+              }
+            });
+          },
+          error: function(error) {
+            console.error(error);
+          }
+        });
+      },
+      close: function() {
+        $("#minimize_arrow_event_sound").hide();
+        remove_audio();
+        $(this).dialog("destroy");
+      }
+    })
+    .show();
+}
+
 function openSoundEventModal(settings) {
   if ($("#hidden-metaconsole_activated").val() === "1") {
     var win = open(
@@ -966,6 +1145,7 @@ function openSoundEventModal(settings) {
   }
 
   settings = JSON.parse(atob(settings));
+
   // Check modal exists and is open.
   if (
     $("#modal-sound").hasClass("ui-dialog-content") &&
@@ -1045,10 +1225,12 @@ function add_audio(urlSound) {
       sound +
       "' autoplay='true' hidden='true' loop='false'>"
   );
+  $("#button-sound_events_button").addClass("animation-blink");
 }
 
 function remove_audio() {
   $(".actions-sound-modal audio").remove();
+  $("#button-sound_events_button").removeClass("animation-blink");
 }
 
 function listen_event_sound(settings) {
@@ -1064,6 +1246,37 @@ function listen_event_sound(settings) {
 }
 
 function check_event_sound(settings) {
+  // Update elements time.
+  $(".elements-discovered-alerts ul li").each(function() {
+    let element_time = $(this)
+      .children(".li-hidden")
+      .val();
+    let obj_time = new Date(element_time);
+    let current_dt = new Date();
+    let timestamp = current_dt.getTime() - obj_time.getTime();
+    timestamp = timestamp / 1000;
+    if (timestamp <= 60) {
+      timestamp = Math.round(timestamp) + " seconds";
+    } else if (timestamp <= 3600) {
+      let minute = Math.floor((timestamp / 60) % 60);
+      minute = minute < 10 ? "0" + minute : minute;
+      let second = Math.floor(timestamp % 60);
+      second = second < 10 ? "0" + second : second;
+      timestamp = minute + " minutes " + second + " seconds";
+    } else {
+      let hour = Math.floor(timestamp / 3600);
+      hour = hour < 10 ? "0" + hour : hour;
+      let minute = Math.floor((timestamp / 60) % 60);
+      minute = minute < 10 ? "0" + minute : minute;
+      let second = Math.round(timestamp % 60);
+      second = second < 10 ? "0" + second : second;
+      timestamp = hour + " hours " + minute + " minutes " + second + " seconds";
+    }
+    $(this)
+      .children(".li-time")
+      .children("span")
+      .html(timestamp);
+  });
   jQuery.post(
     settings.url,
     {
@@ -1117,7 +1330,13 @@ function check_event_sound(settings) {
             "beforeend",
             '<div class="li-time">' + element.timestamp + "</div>"
           );
-          $("#tabs-sound-modal .elements-discovered-alerts ul").append(li);
+          li.insertAdjacentHTML(
+            "beforeend",
+            '<input type="hidden" value="' +
+              element.event_timestamp +
+              '" class="li-hidden"/>'
+          );
+          $("#tabs-sound-modal .elements-discovered-alerts ul").prepend(li);
         });
 
         // -100 delay sound.
@@ -1229,3 +1448,285 @@ function removeElement(name_select, id_modal) {
       .append(option);
   });
 }
+
+function get_table_events_tabs(event, filter) {
+  var custom_event_view_hr = $("#hidden-comments_events_max_hours_old").val();
+  $.post({
+    url: "ajax.php",
+    data: {
+      page: "include/ajax/events",
+      get_comments: 1,
+      event: event,
+      filter: filter,
+      custom_event_view_hr: custom_event_view_hr
+    },
+    dataType: "html",
+    success: function(data) {
+      $("#extended_event_comments_page").empty();
+      $("#extended_event_comments_page").html(data);
+    }
+  });
+}
+// Define the minimize button functionality;
+function hidden_dialog(dialog) {
+  setTimeout(function() {
+    $("#modal-sound").css("visibility", "hidden");
+    dialog.css("z-index", "-1");
+  }, 200);
+}
+
+function show_dialog(dialog) {
+  setTimeout(function() {
+    $("#modal-sound").css("visibility", "visible");
+    dialog.css("z-index", "1115");
+  }, 50);
+}
+
+/*
+#############################################################################
+##
+## + Compacts the Modal Sound Dialog to a tiny toolbar
+## + Dynamically adds a button which can reduce/reapply the dialog size
+## + If alarm gets raised & minimized, the dialog window maximizes and the toolbar flashes red for 10 seconds. 
+## - Works fine until a link/action gets clicked. The Toolbar shifts to the bottom of the Modal-Sound Dialog.
+##
+#############################################################################
+*/
+
+$(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
+  const requestBody = ajaxOptions.data;
+  try {
+    if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+      console.log(
+        "AJAX request sent with drawConsoleSound=1:",
+        ajaxOptions.url
+      );
+
+      // Find the dialog element by the aria-describedby attribute
+      var dialog = $('[aria-describedby="modal-sound"]');
+
+      // Select the close button within the dialog
+      var closeButton = dialog.find(".ui-dialog-titlebar-close");
+
+      // Add the minimize button before the close button
+      var minimizeButton = $("<button>", {
+        class:
+          "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize",
+        type: "button",
+        title: "Minimize",
+        style: "float: right;margin-right: 1.5em;"
+      }).insertBefore(closeButton);
+
+      // Add the minimize icon to the minimize button
+      $("<span>", {
+        class: "ui-button-icon ui-icon ui-icon-minusthick",
+        style: "background-color: #fff;"
+      }).appendTo(minimizeButton);
+
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(minimizeButton);
+
+      // Add the disengage button before the minimize button
+      var disengageButton = $("<button>", {
+        class:
+          "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage",
+        type: "button",
+        title: "Disengage",
+        style: "float: right;margin-right: 0.5em; position:relative;"
+      }).insertBefore(minimizeButton);
+
+      // Add the disengage icon to the disengage button
+      $("<span>", {
+        class: "ui-button-icon ui-icon ui-icon-circle-triangle-n",
+        style: "background-color: #fff;"
+      }).appendTo(disengageButton);
+
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(disengageButton);
+
+      minimizeButton.click(function(e) {
+        console.log("here");
+        if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
+          console.log("arrow_menu_up");
+          $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
+          $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
+        } else if (
+          $("#minimize_arrow_event_sound").hasClass("arrow_menu_down")
+        ) {
+          console.log("arrow_menu_down");
+          $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
+          $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
+        }
+
+        if (!dialog.data("isMinimized")) {
+          $(".ui-widget-overlay").hide();
+          console.log("Minimize Window");
+          dialog.data("originalPos", dialog.position());
+          dialog.data("originalSize", {
+            width: dialog.width(),
+            height: dialog.height()
+          });
+          dialog.data("isMinimized", true);
+
+          dialog.animate(
+            {
+              height: "40px",
+              top: 0,
+              top: $(window).height() - 100
+            },
+            200,
+            "linear",
+            hidden_dialog(dialog)
+          );
+          dialog.css({ height: "" });
+          dialog.animate(
+            {
+              height: dialog.data("originalSize").height + "px",
+              top: dialog.data("originalPos").top + "px"
+            },
+            5
+          );
+          //dialog.find(".ui-dialog-content").hide();
+        } else {
+          console.log("Restore Window");
+          $(".ui-widget-overlay").show();
+          //dialog.find(".ui-dialog-content").show();
+          dialog.data("isMinimized", false);
+
+          dialog.animate(
+            {
+              height: "40px",
+              top: 0,
+              top: $(window).height() - 100
+            },
+            5
+          );
+          dialog.animate(
+            {
+              height: dialog.data("originalSize").height + "px",
+              top: dialog.data("originalPos").top + "px"
+            },
+            200,
+            "linear",
+            show_dialog(dialog)
+          );
+        }
+      });
+
+      disengageButton.click(function() {
+        $(".ui-dialog-titlebar-close").trigger("click");
+        $("#button-sound_events_button_hidden").trigger("click");
+      });
+
+      // Listener to check if the dialog content contains <li> elements
+      var dialogContent = dialog.find(".ui-dialog-content");
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          var addedNodes = mutation.addedNodes;
+          for (var i = 0; i < addedNodes.length; i++) {
+            if (addedNodes[i].nodeName.toLowerCase() === "li") {
+              console.log("The dialog content contains an <li> tag.");
+              break;
+            }
+          }
+        });
+      });
+
+      // Configure and start observing the dialog content for changes
+      var config = { childList: true, subtree: true };
+      observer.observe(dialogContent[0], config);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+/*
+#############################################################################
+##
+## + Compacts the Modal Sound Dialog popup and removes the widget-overlay 
+##
+##
+#############################################################################
+*/
+$(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
+  const requestBody = ajaxOptions.data;
+  try {
+    if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+      console.log(
+        "AJAX request sent with drawConsoleSound=1:",
+        ajaxOptions.url
+      );
+
+      // Find the dialog element by the aria-describedby attribute
+      var dialog = $('[aria-describedby="modal-sound"]');
+      dialog.css({
+        // "backgroundColor":"black",
+        // "color":"white"
+      });
+
+      // Set CSS properties for #modal-sound
+      $("#modal-sound").css({
+        height: "450px",
+        margin: "0px"
+      });
+
+      // Set CSS properties for #tabs-sound-modal
+      $("#tabs-sound-modal").css({
+        "margin-top": "0px",
+        padding: "0px",
+        "font-weight": "bolder"
+      });
+
+      // Set CSS properties for #actions-sound-modal
+      $("#actions-sound-modal").css({
+        "margin-bottom": "0px"
+      });
+
+      // Hide the overlay with specific class and z-index
+      $('.ui-widget-overlay.ui-front[style="z-index: 10000;"]').css(
+        "display",
+        "none"
+      );
+
+      // Handle the 'change' event for #modal-sound, simply to compact the size of the img "No alerts discovered"
+      // An image should always have a size assigned!!!
+      $("#modal-sound").on("change", function() {
+        // Find the image within the specific div
+        var image = $(this).find(
+          'img.invert_filter.forced_title[data-title="No alerts discovered"][alt="No alerts discovered"]'
+        );
+
+        // Set the desired width and height
+        var width = 48;
+        var height = 48;
+
+        // Resize the image
+        image.width(width);
+        image.height(height);
+      });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+function loadModal() {
+  const urlSearch = window.location.search;
+  const urlParams = new URLSearchParams(urlSearch);
+  if (urlParams.has("settings")) {
+    let modal_parameters = "";
+    if (urlParams.has("parameters")) {
+      modal_parameters = urlParams.get("parameters");
+    }
+    let settings = urlParams.get("settings");
+    openSoundEventsDialogModal(settings, modal_parameters, false);
+  }
+}
+window.onload = loadModal;

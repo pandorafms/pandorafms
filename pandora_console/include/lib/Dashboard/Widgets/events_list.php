@@ -528,7 +528,7 @@ class EventsListWidget extends Widget
 
         $values['eventType'] = \get_parameter('eventType', 0);
         $values['maxHours'] = \get_parameter('maxHours', 8);
-        $values['limit'] = \get_parameter('limit', 20);
+        $values['limit'] = (int) \get_parameter('limit', 20);
         $values['eventStatus'] = \get_parameter('eventStatus', -1);
         $values['severity'] = \get_parameter_switch('severity', -1);
         $values['groupId'] = \get_parameter_switch('groupId', []);
@@ -707,6 +707,10 @@ class EventsListWidget extends Widget
         // Public dashboard.
         $hash = get_parameter('auth_hash', '');
         $id_user = get_parameter('id_user', '');
+
+        if ($this->values['limit'] === 'null') {
+            $this->values['limit'] = $config['block_size'];
+        }
 
         // Print datatable.
         $output .= ui_print_datatable(

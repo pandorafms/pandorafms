@@ -453,7 +453,7 @@ function resource_exportation_extension_main()
             true
         )
     );
-    $table->data[0][] = html_print_button(__('Export'), '', false, 'export_to_ptr("report");', ['mode' => 'link'], true);
+    $table->data[0][] = html_print_button(__('Export'), '', false, 'export_to_ptr("report");', '', true);
 
     $table->data[1][] = html_print_label_input_block(
         __('Visual console'),
@@ -465,7 +465,7 @@ function resource_exportation_extension_main()
             true
         )
     );
-    $table->data[1][] = html_print_button(__('Export'), '', false, 'export_to_ptr("visual_console");', ['mode' => 'link'], true);
+    $table->data[1][] = html_print_button(__('Export'), '', false, 'export_to_ptr("visual_console");', '', true);
 
     if ($hook_enterprise === true) {
         add_rows_for_enterprise($table->data);

@@ -17,7 +17,7 @@ WriteMakefile(
 
 	NAME            => 'PandoraFMS',
 	VERSION_FROM    => 'lib/PandoraFMS/Config.pm',
-	AUTHOR 			=> 'Artica ST <info@artica.es>',
+	AUTHOR 			=> 'Pandora FMS <info@pandorafms.com>',
 	PREREQ_PM 	=> {
 		NetAddr::IP => 0,
 		DBI => 0,

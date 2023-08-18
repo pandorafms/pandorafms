@@ -223,6 +223,14 @@ if ($loaded_filter['id_filter'] > 0) {
     if (is_array($policies) === false) {
         $policies = json_decode(io_safe_output($policies), true);
     }
+
+    // Fav menu.
+    $fav_menu = [
+        'id_element' => $loaded_filter['id_filter'],
+        'url'        => 'operation/agentes/estado_agente&pure=&load_filter=1&filter_id='.$loaded_filter['id_filter'],
+        'label'      => $loaded_filter['id_name'],
+        'section'    => 'Agente',
+    ];
 }
 
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
@@ -267,7 +275,8 @@ ui_print_standard_header(
             'link'  => '',
             'label' => __('Views'),
         ],
-    ]
+    ],
+    (empty($fav_menu) === true) ? [] : $fav_menu
 );
 
 if ((bool) $strict_user === false) {

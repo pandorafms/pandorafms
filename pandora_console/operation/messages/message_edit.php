@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -226,29 +226,47 @@ if ($read_message) {
 }
 
 if ($send_mes === true) {
-    if (empty($dst_user) === true && empty($dst_group) === true) {
+    if (empty($dst_user) === true && empty($dst_group) === true && $dst_group !== '0') {
         // The user or group must be selected for send the message.
         ui_print_error_message(__('User or group must be selected.'));
     } else {
-        // Create message (destination user).
-        $return = messages_create_message(
-            $config['id_user'],
-            [$dst_user],
-            [],
-            $subject,
-            $message
-        );
+        if (empty($dst_user) === true) {
+            // Create message (destination user).
+            $return = messages_create_message(
+                $config['id_user'],
+                [],
+                [$dst_group],
+                $subject,
+                $message
+            );
 
-        $user_name = get_user_fullname($dst_user);
-        if (empty($user_name) === true) {
-            $user_name = $dst_user;
+            ui_print_result_message(
+                $return,
+                __('Message successfully sent to users'),
+                __('Error sending message to users')
+            );
+        } else {
+            // Create message (destination user).
+            $return = messages_create_message(
+                $config['id_user'],
+                [$dst_user],
+                [],
+                $subject,
+                $message
+            );
+
+            $user_name = get_user_fullname($dst_user);
+            if (empty($user_name) === true) {
+                $user_name = $dst_user;
+            }
+
+            ui_print_result_message(
+                $return,
+                __('Message successfully sent to user %s', $user_name),
+                __('Error sending message to user %s', $user_name)
+            );
         }
 
-        ui_print_result_message(
-            $return,
-            __('Message successfully sent to user %s', $user_name),
-            __('Error sending message to user %s', $user_name)
-        );
 
         // If is a reply, is not necessary do more.
         if ($replied === true) {

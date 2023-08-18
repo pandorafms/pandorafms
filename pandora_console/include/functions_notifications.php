@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -931,7 +931,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
             true,
             [
                 'title'   => __('Add elements'),
-                'style'   => 'rotate: 90deg',
+                'style'   => 'rotate: 180deg',
                 'onclick' => sprintf(
                     "notifications_modify_two_ways_element('%s', '%s', 'add')",
                     $users,
@@ -970,11 +970,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
             __('Add'),
             'Add',
             false,
-            sprintf(
-                "notifications_add_source_element_to_database('%s', '%s')",
-                $users,
-                $source_id
-            ),
+            'notifications_add_source_element_to_database("'.$users.'",'.$source_id.')',
             "class='sub add'",
             true
         )
@@ -1094,6 +1090,11 @@ function notifications_print_dropdown_element($message_info)
 
     if ($img !== '') {
         $message_info['subject'] = io_safe_input($img);
+    }
+
+    if (strlen($body_preview) >= 170) {
+        $body_preview = substr($body_preview, 0, 150);
+        $body_preview .= __('. Read More...');
     }
 
     return sprintf(

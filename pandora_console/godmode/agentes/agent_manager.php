@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -212,7 +212,7 @@ $groups = users_get_groups($config['id_user'], 'AR', false);
 // Get modules.
 $modules = db_get_all_rows_sql(
     'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
-								WHERE id_agente = '.$id_parent
+								WHERE id_agente = '.$id_agente
 );
 $modules_values = [];
 $modules_values[0] = __('Any');
@@ -300,7 +300,7 @@ if (enterprise_installed() === true) {
 // Parent agents.
 $paramsParentAgent = [];
 $paramsParentAgent['return'] = true;
-$paramsParentAgent['show_helptip'] = false;
+$paramsParentAgent['show_helptip'] = true;
 $paramsParentAgent['input_name'] = 'id_parent';
 $paramsParentAgent['print_hidden_input_idagent'] = true;
 $paramsParentAgent['hidden_input_idagent_name'] = 'id_agent_parent';
@@ -646,7 +646,7 @@ if (enterprise_installed() === true) {
 
 // Parent agent.
 $tableAdvancedAgent->data['parent_agent'][] = html_print_label_input_block(
-    __('Parent'),
+    __('Agent parent'),
     ui_print_agent_autocomplete_input($paramsParentAgent)
 );
 
@@ -931,7 +931,7 @@ foreach ($fields as $field) {
     // Filling the data.
     $combo = [];
     $combo = $field['combo_values'];
-    $combo = explode(',', $combo);
+    $combo = explode(',', (empty($combo) === true) ? '' : $combo);
     $combo_values = [];
     foreach ($combo as $value) {
         $combo_values[$value] = $value;
@@ -965,7 +965,7 @@ foreach ($fields as $field) {
             true
         );
     } else if ($field['is_link_enabled']) {
-        list($link_text, $link_url) = json_decode($custom_value, true);
+        list($link_text, $link_url) = json_decode(io_safe_output($custom_value), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $link_text = '';
@@ -1205,15 +1205,30 @@ ui_require_jquery_file('bgiframe');
             $("#cascade_protection_module").attr("disabled", 'disabled');
         }
 
-        $("#checkbox-cascade_protection").change(function () {
-            var checked = $("#checkbox-cascade_protection").is(":checked");
-    
-            if (checked) {
+        $("#text-id_parent").change(function(){
+            const parent = $("#text-id_parent").val();
+            if (parent != '') {
+                $("#checkbox-cascade_protection").prop('checked', true);
                 $("#cascade_protection_module").removeAttr("disabled");
             }
             else {
                 $("#cascade_protection_module").val(0);
                 $("#cascade_protection_module").attr("disabled", 'disabled');
+                $("#text-id_parent").removeAttr("required");
+                $("#cascade_protection_module").empty();
+                $("#checkbox-cascade_protection").prop('checked', false);
+            }
+        });
+
+        $("#checkbox-cascade_protection").change(function () {
+            var checked = $("#checkbox-cascade_protection").is(":checked");            if (checked) {
+                $("#cascade_protection_module").removeAttr("disabled");
+                $("#text-id_parent").attr("required", "required");
+            }
+            else {
+                $("#cascade_protection_module").val(0);
+                $("#cascade_protection_module").attr("disabled", 'disabled');
+                $("#text-id_parent").removeAttr("required");
             }
         });
         

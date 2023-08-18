@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2023 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/functions_categories.php';
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
 
 use PandoraFMS\Agent;
+use Psr\Log\NullLogger;
 
 include_javascript_d3();
 
@@ -406,8 +407,7 @@ if ($edit_module === true) {
         $help_header = 'local_module';
     }
 
-    if ($id_module_type === 6 || $id_module_type === 7
-    ) {
+    if ($id_module_type === 6 || $id_module_type === 7) {
         $help_header = 'icmp_module_tab';
     }
 
@@ -419,7 +419,7 @@ if ($edit_module === true) {
         $help_header = 'tcp_module_tab';
     }
 
-    if ($id_module_type >= 30 && $id_module_type <= 33) {
+    if (($id_module_type >= 30 && $id_module_type <= 33) || $id_module_type === 38) {
         $help_header = 'webserver_module_tab';
     }
 }
@@ -950,6 +950,15 @@ $table_advanced->data['tags_module_parent'][0] .= html_print_div(
 
 if ((bool) $in_policies_page === false) {
     // Cannot select the current module to be itself parent.
+    if ($id_agent_module !== 0) {
+        $module_parent_filter['tagente_modulo.id_agente_modulo'] = '<>'.$id_agent_module;
+        $array_parent_module_id = [];
+        get_agent_module_childs($array_parent_module_id, $id_agent_module, $id_agente);
+    } else {
+        $module_parent_filter = [];
+        $array_parent_module_id = [];
+    }
+
     $module_parent_filter = ($id_agent_module) ? ['tagente_modulo.id_agente_modulo' => '<>'.$id_agent_module] : [];
     $table_advanced->data['caption_tags_module_parent'][1] = __('Module parent');
     // TODO. Review cause dont know not works.
@@ -965,6 +974,13 @@ if ((bool) $in_policies_page === false) {
         false,
         $module_parent_filter
     );
+
+    if (empty($array_parent_module_id) === false) {
+        foreach ($array_parent_module_id as $key => $value) {
+            unset($modules_can_be_parent[$value]);
+        }
+    }
+
     // If the user cannot have access to parent module, only print the name.
     if ((int) $parent_module_id !== 0
         && in_array($parent_module_id, array_keys($modules_can_be_parent)) === true
@@ -1828,6 +1844,22 @@ $(document).ready (function () {
         }
 
         setModuleType(type_name_selected);
+    });
+
+    $('#checkbox-warning_inverse_string').change( function () {
+        if ($(this).prop('checked') === true) {
+            $('input[name="warning_thresholds_checks"]').val('warning_inverse');
+        } else {
+            $('input[name="warning_thresholds_checks"]').val('normal_warning');
+        }
+    });
+
+    $('#checkbox-critical_inverse_string').change( function () {
+        if ($(this).prop('checked') === true) {
+            $('input[name="critical_thresholds_checks"]').val('critical_inverse');
+        } else {
+            $('input[name="critical_thresholds_checks"]').val('normal_critical');
+        }
     });
 
     function setModuleType(type_name_selected) {

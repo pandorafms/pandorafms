@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -129,6 +129,14 @@ if (empty($apiPassword) === true
         // Compat.
         $config['id_user'] = 'admin';
         $correctLogin = true;
+        // Bypass credentials if server-auth and api-pass are correct.
+    } else if (($config['server_unique_identifier'] === get_parameter('server_auth'))
+        && ($api_password === $apiPassword)
+        && ((bool) isInACL($ipOrigin) === true)
+    ) {
+        $config['id_usuario'] = 'admin';
+        $config['id_user'] = 'admin';
+        $correctLogin = true;
     } else if ((bool) isInACL($ipOrigin) === true) {
         // External access.
         // Token is valid. Bypass the credentials.
@@ -203,9 +211,9 @@ if ($correctLogin === true) {
                         }
                     break;
 
-                    case 'create_network_module':
+                    // case 'create_network_module':
                     case 'create_plugin_module':
-                    case 'create_data_module':
+                        // case 'create_data_module':
                     case 'create_synthetic_module':
                     case 'create_snmp_module':
                     case 'delete_module':

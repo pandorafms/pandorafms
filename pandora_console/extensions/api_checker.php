@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -157,7 +157,6 @@ function extension_api_checker()
     }
 
     $url = io_safe_output(get_parameter('url', ''));
-
     $ip = io_safe_output(get_parameter('ip', '127.0.0.1'));
     $pandora_url = io_safe_output(get_parameter('pandora_url', $config['homeurl_static']));
     $apipass = io_safe_output(get_parameter('apipass', ''));
@@ -174,6 +173,17 @@ function extension_api_checker()
     $token = get_parameter('token');
 
     $api_execute = (bool) get_parameter('api_execute', false);
+
+    if ($url !== '') {
+        $validate_url = parse_url($url);
+        if ($validate_url['scheme'] === 'http' || $validate_url['scheme'] === 'https') {
+            ui_print_success_message(__('Request successfully processed'));
+        } else {
+            ui_print_error_message(__('Incorrect URL'));
+            $url = '';
+            $api_execute = false;
+        }
+    }
 
     $return_call_api = '';
     if ($api_execute === true) {

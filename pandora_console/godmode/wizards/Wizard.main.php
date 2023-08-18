@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -519,6 +519,30 @@ class Wizard
         echo '<ul class="bigbuttonlist">';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';
+    }
+
+
+    /**
+     * Generates warning message.
+     *
+     * @return void  Warning message.
+     */
+    public function printWarningMessage()
+    {
+        return ui_print_warning_message(
+            __(
+                'Starting with version 773, the new modular system of discovery 2.0 has been implemented. The current
+                discovery (1.0) and its defined tasks will continue to function normally until the next LTS version,
+                in which migration to the new system will be mandatory.
+                The tasks of the current discovery (1.0) will be marked as legacy although it will not affect their
+                operation, it will only be a visual indicator to identify and differentiate the tasks of discovery 1.0
+                from those of the new version 2.0.
+                In the intermediate versions between the 773 and the next LTS version, more applications of the new
+                discovery 2.0 will be added. Both new and those that will come to replace the applications of the
+                current discovery 1.0. In addition, an automatic migration tool for legacy (1.0) tasks to the new 2.0
+                model will be included.'
+            )
+        );
     }
 
 

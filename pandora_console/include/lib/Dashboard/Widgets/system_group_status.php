@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -395,7 +395,9 @@ class SystemGroupStatusWidget extends Widget
         $user_groups = users_get_groups(false, 'AR', $return_all_group);
 
         $selected_groups = explode(',', $this->values['groupId'][0]);
+        $all_group_selected = false;
         if (in_array(0, $selected_groups) === true) {
+            $all_group_selected = true;
             $selected_groups = [];
             foreach (groups_get_all() as $key => $name_group) {
                 $selected_groups[] = groups_get_id($name_group);
@@ -480,7 +482,12 @@ class SystemGroupStatusWidget extends Widget
             }
         }
 
-        $this->values['groupId'] = $selected_groups;
+        if ($all_group_selected === true && $this->values['groupRecursion'] === true) {
+            $this->values['groupId'] = array_keys($result_groups);
+        } else {
+            $this->values['groupId'] = $selected_groups;
+        }
+
         $this->values['status'] = explode(',', $this->values['status'][0]);
 
         $style = 'font-size: 1.5em; font-weight: bolder;text-align: center;';

@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -460,6 +460,18 @@ if ($id_agente) {
 
     $templatetab['active'] = ($tab === 'template');
 
+     // Policy tab.
+    $policyTab['text'] = html_print_menu_button(
+        [
+            'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=policy&amp;id_agente='.$id_agente,
+            'image' => 'images/policy@svg.svg',
+            'title' => __('Manage policy'),
+        ],
+        true
+    );
+
+    $policyTab['active'] = ($tab === 'policy');
+
     // Inventory.
     $inventorytab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'">'.html_print_image(
         'images/hardware-software-component@svg.svg',
@@ -638,6 +650,7 @@ if ($id_agente) {
                 'template'             => $templatetab,
                 'inventory'            => $inventorytab,
                 'pluginstab'           => $pluginstab,
+                'policy'               => (enterprise_installed() === true) ? $policyTab : '',
                 'collection'           => $collectiontab,
                 'group'                => $grouptab,
                 'gis'                  => $gistab,
@@ -654,11 +667,11 @@ if ($id_agente) {
                 'template'     => $templatetab,
                 'inventory'    => $inventorytab,
                 'pluginstab'   => $pluginstab,
+                'policy'       => (enterprise_installed() === true) ? $policyTab : '',
                 'collection'   => $collectiontab,
                 'group'        => $grouptab,
                 'gis'          => $gistab,
                 'agent_wizard' => $agent_wizard,
-
             ];
         }
 
@@ -723,6 +736,11 @@ if ($id_agente) {
         case 'inventory':
             $help_header = 'inventory_tab';
             $tab_name = __('Inventory');
+        break;
+
+        case 'policy':
+            $help_header = 'policy_tab';
+            $tab_name = __('Policies');
         break;
 
         case 'plugins':
@@ -1740,7 +1758,10 @@ if ($update_module) {
     ];
 
 
-    if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
+    if ($id_module_type === 30 || $id_module_type === 31
+        || $id_module_type === 32 || $id_module_type === 33
+        || $id_module_type === 38
+    ) {
         $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
         $values['plugin_parameter'] = '';
@@ -1936,7 +1957,10 @@ if ($create_module) {
         'warning_time'          => $warning_time,
     ];
 
-    if ($id_module_type === 30 || $id_module_type === 31 || $id_module_type === 32 || $id_module_type === 33) {
+    if ($id_module_type === 30 || $id_module_type === 31
+        || $id_module_type === 32 || $id_module_type === 33
+        || $id_module_type === 38
+    ) {
         $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
         $values['plugin_parameter'] = '';
@@ -2426,6 +2450,10 @@ switch ($tab) {
 
     case 'inventory':
         include 'inventory_manager.php';
+    break;
+
+    case 'policy':
+        enterprise_include('operation/agentes/policy_manager.php');
     break;
 
     default:

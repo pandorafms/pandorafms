@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -701,7 +701,7 @@ class CalendarManager
                                     true,
                                     [
                                         'title' => __('Edit'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -735,7 +735,7 @@ class CalendarManager
                                     true,
                                     [
                                         'title' => __('Delete'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -1040,7 +1040,7 @@ class CalendarManager
                     'id'                  => 'templates_alerts_special_days',
                     'return'              => true,
                     'class'               => 'info_table',
-                    'style'               => 'width: 99%',
+                    'style'               => 'width: 100%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => 'godmode/alerts/alert_special_days',

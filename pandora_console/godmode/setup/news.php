@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -419,6 +419,9 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
 // Include tiny for wysiwyg editor.
 ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
 ui_require_javascript_file('pandora');
+if ($config['style'] === 'pandora_black') {
+    html_print_input_hidden('selected_style_theme', 'pandora_black');
+}
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -443,8 +446,12 @@ ui_require_javascript_file('pandora');
             changeYear: true,
             showAnim: "slideDown"}
         );
-
-        defineTinyMCE('#textarea_text');
+        var consoleStyle = $("#hidden-selected_style_theme").val();
+        if (consoleStyle == "pandora_black") {
+            defineTinyMCEDark('#textarea_text');
+        } else {
+            defineTinyMCE('#textarea_text');
+        }
 
         $("#checkbox-expire").click(function() {
             check_expire();
@@ -462,5 +469,4 @@ ui_require_javascript_file('pandora');
             $('#news-0-4').css('visibility', 'hidden');
         }
     }
-
 </script>

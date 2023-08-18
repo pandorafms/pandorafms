@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -331,7 +331,7 @@ for ($month = 1; $month <= 12; $month++) {
             }
         }
 
-        if ($week == 0 || $week == 6) {
+        if ($week == 0 || $week == 6 || isset($specialDays[$display_year][$display_month][$day]) === true) {
              $cal_table->cellstyle[$cal_line][$week] = 'color: red;';
         }
 
@@ -341,7 +341,7 @@ for ($month = 1; $month <= 12; $month++) {
         $cal_table->cellstyle[$cal_line][$week] .= 'font-size: 18px;';
         $cal_table->data[$cal_line][$week] = $day.'&nbsp;';
 
-        if ($is_management_allowed === true) {
+        if ($is_management_allowed === true && isset($specialDays[$display_year][$display_month][$day]) === false) {
             $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&date='.$date.'" title=';
             $cal_table->data[$cal_line][$week] .= __('Create');
             $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
@@ -446,7 +446,7 @@ for ($month = 1; $month <= 12; $month++) {
                     $cal_table->data[$cal_line][$week] .= html_print_image(
                         'images/zoom.png',
                         true,
-                        ['class' => 'invert_filter']
+                        ['class' => 'invert_filter special_days']
                     ).'</a>';
 
                     if ($is_management_allowed === true) {
@@ -455,7 +455,7 @@ for ($month = 1; $month <= 12; $month++) {
                         $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
                             'images/edit.svg',
                             true,
-                            ['class' => 'invert_filter']
+                            ['class' => 'invert_filter main_menu_icon']
                         ).'</a> &nbsp;';
                         $url_delete = $url.'&op=delete&id='.$special_day['id'];
                         $script_delete = 'if (!confirm(\''.__('Are you sure?').'\')) return false;';
@@ -467,7 +467,7 @@ for ($month = 1; $month <= 12; $month++) {
                         $cal_table->data[$cal_line][$week] .= html_print_image(
                             'images/delete.svg',
                             true,
-                            ['class' => 'invert_filter']
+                            ['class' => 'invert_filter main_menu_icon']
                         ).'</a>';
                     }
                 }

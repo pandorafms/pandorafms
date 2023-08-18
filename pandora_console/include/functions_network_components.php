@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -593,4 +593,27 @@ function network_components_duplicate_network_component($id_local_component)
     unset($network['category_name']);
 
     return network_components_create_network_component($name, $network['type'], $network['id_group'], $network);
+}
+
+
+/**
+ * Return all children groups recursive include parent.
+ *
+ * @param integer $id_parent Id of parent.
+ * @param array   $groups    NO setting, array for recursive.
+ *
+ * @return array $groups All children ids include first parent.
+ */
+function network_component_get_groups_recursive($id_parent, $groups=[])
+{
+    $groups[] = $id_parent;
+    $ids = db_get_all_rows_filter('tnetwork_component_group', ['parent' => $id_parent], 'id_sg');
+
+    if ($ids !== false) {
+        foreach ($ids as $key => $id) {
+            $groups = network_component_get_groups_recursive($id['id_sg'], $groups);
+        }
+    }
+
+    return $groups;
 }

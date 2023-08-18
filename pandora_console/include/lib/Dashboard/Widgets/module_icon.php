@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -540,12 +540,6 @@ class ModuleIconWidget extends Widget
 
         $output = '';
 
-        $id_group = \agents_get_agent_group($this->values['agentId']);
-
-        $modulesAgent = \modules_get_agentmodule_agent(
-            $this->values['moduleId']
-        );
-
         $data_module = \modules_get_last_value(
             $this->values['moduleId']
         );
@@ -574,33 +568,37 @@ class ModuleIconWidget extends Widget
         // General div.
         $output .= '<div class="'.$orientation.'" id="general-'.$uuid.'">';
 
-        $sql = 'SELECT min_warning,
-        max_warning,
-        min_critical,
-        max_critical,
-        str_warning,
-        str_critical 
-        FROM tagente_modulo
-        WHERE id_agente_modulo = '.(int) $this->values['moduleId'];
-        $sql_data = db_get_row_sql($sql);
+        $status = \modules_get_agentmodule_status($this->values['moduleId']);
 
-        $last = modules_get_last_value($this->values['moduleId']);
+        switch ($status) {
+            case 1:
+            case 4:
+                // Critical or critical alert (BAD).
+                $color_icon .= '_bad.png';
+            break;
 
-        $color_icon = '_ok';
-        if (($last >= $sql_data['min_warning']) && ($last < $sql_data['max_warning'])) {
-            $color_icon = '_warning';
+            case 0:
+                // Normal (OK).
+                $color_icon .= '_ok.png';
+            break;
+
+            case 2:
+            case 10:
+                // Warning or warning alert.
+                $color_icon .= '_warning.png';
+            break;
+
+            case 3:
+                // Unknown.
+            default:
+                $color_icon .= '.png';
+                // Default is Grey (Other).
+            break;
         }
 
-        if ($last >= $sql_data['max_warning']) {
-            $color_icon = '_bad';
-        }
-
-        // Div image.
-        $style_icon = 'flex: 0 1 '.$sizeIcon.'px;';
-
-        $output .= '<div class="pdd_l_15px pdd_r_15px '.$margin_bottom.'" style="flex: 0 1 '.$sizeIcon.'px; height: '.$sizeIcon.'px;">';
+        $output .= '<div class="pdd_l_15px pdd_r_15px mrgn_btn_25px" style="flex: 0 1 '.$sizeIcon.'px; height: '.$sizeIcon.'px;">';
         $output .= html_print_image(
-            'images/console/icons/'.$icon.$color_icon.'.png',
+            'images/console/icons/'.$icon.$color_icon,
             true,
             ['width' => $sizeIcon]
         );

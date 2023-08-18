@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -333,7 +333,7 @@ $inventory_search_string = (string) get_parameter('search_string');
 $order_by_agent = (bool) get_parameter('order_by_agent');
 $export = (string) get_parameter('export');
 $utimestamp = (int) get_parameter('utimestamp');
-$submit_filter = (bool) get_parameter('submit_filter');
+$submit_filter = (bool) get_parameter('srcbutton');
 
 $pagination_url_parameters = [
     'inventory_id_agent' => $inventory_id_agent,
@@ -381,6 +381,7 @@ if ($is_metaconsole === true) {
             WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory';
         if ($inventory_id_agent > 0) {
             $sql .= ' AND id_agente = '.$inventory_id_agent;
+            $agents_node = [$inventory_id_agent => $inventory_id_agent];
         }
 
         $result_module = db_get_all_rows_sql($sql);
@@ -426,10 +427,10 @@ if ($is_metaconsole === true) {
                 WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory';
             if ($inventory_id_agent > 0) {
                 $sql .= ' AND id_agente = '.$inventory_id_agent;
+                $agents_node = [$inventory_id_agent => $inventory_id_agent];
             }
 
             $result = db_get_all_rows_sql($sql);
-
             if ($result !== false) {
                 $result_module = array_merge($result_module, $result);
                 if ($submit_filter === true) {
@@ -450,7 +451,6 @@ if ($is_metaconsole === true) {
                     $data_tmp['dbhost'] = $server['dbhost'];
                     $data_tmp['server_uid'] = $server['server_uid'];
                     $data_tmp['data'] = $rows_meta;
-
                     $nodos[$server['id']] = $data_tmp;
                     if ($result_data !== ERR_NODATA) {
                         $inventory_data .= $result_data;
@@ -732,8 +732,8 @@ ui_toggle(
     'white-box-content',
     'box-flat white_table_graph fixed_filter_bar'
 );
-
-if (is_metaconsole() === true) {
+/*
+    if (is_metaconsole() === true) {
     $filteringFunction = 'active_inventory_submit()';
     ui_print_info_message(['no_close' => true, 'message' => __('You must select at least one filter.'), 'force_class' => 'select_one_filter']);
     ?>
@@ -754,10 +754,11 @@ if (is_metaconsole() === true) {
         }
     </script>
     <?php
-} else {
+    } else {
     $filteringFunction = '';
-}
-
+    }
+*/
+$filteringFunction = '';
 if ($inventory_module !== 'basic') {
     if (is_metaconsole() === true) {
         if ($order_by_agent === true) {
@@ -770,14 +771,14 @@ if ($inventory_module !== 'basic') {
 
             foreach ($nodos as $nodo) {
                 $agents = '';
+
                 foreach ($nodo['data'] as $agent_rows) {
                     $modules = '';
-                    foreach ($agent_rows['row'] as $row) {
-                        $data = [];
 
+                    foreach ($agent_rows['row'] as $key => $row) {
                         $columns = explode(';', io_safe_output($row['data_format']));
                         array_push($columns, 'Timestamp');
-
+                        $data = [];
                         $data_rows = explode(PHP_EOL, $row['data']);
                         foreach ($data_rows as $data_row) {
                             // Exclude results don't match filter.
@@ -799,18 +800,17 @@ if ($inventory_module !== 'basic') {
                         }
 
                         $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
-
                         $table = ui_print_datatable(
                             [
                                 'id'                  => $id_table,
-                                'class'               => 'info_table',
-                                'style'               => 'width: 99%',
+                                'class'               => 'info_table w100p',
+                                'style'               => 'width: 100%',
                                 'columns'             => $columns,
                                 'column_names'        => $columns,
                                 'no_sortable_columns' => [],
                                 'data_element'        => $data,
                                 'searching'           => true,
-                                'dom_elements'        => 'lftipB',
+                                'dom_elements'        => 'ftip',
                                 'order'               => [
                                     'field'     => $columns[0],
                                     'direction' => 'asc',
@@ -853,7 +853,10 @@ if ($inventory_module !== 'basic') {
                         '',
                         '',
                         true,
-                        true
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
                     );
                 }
 
@@ -881,12 +884,13 @@ if ($inventory_module !== 'basic') {
 
             foreach ($nodos as $nodo_key => $nodo) {
                 $agents = '';
-                foreach ($nodo['data'] as $module_rows) {
+
+                foreach ($nodo['data'] as $module_key => $module_rows) {
                     $agent = '';
+                    $data = [];
                     foreach ($module_rows as $row) {
                         $columns = explode(';', io_safe_output($row['data_format']));
                         array_push($columns, 'Timestamp');
-                        $data = [];
 
                         $data_explode = explode(PHP_EOL, $row['data']);
                         foreach ($data_explode as $values) {
@@ -907,64 +911,67 @@ if ($inventory_module !== 'basic') {
                                 array_push($data, $data_tmp);
                             }
                         }
-
-
-                        $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
-
-                        $table = ui_print_datatable(
-                            [
-                                'id'                  => $id_table,
-                                'class'               => 'info_table',
-                                'style'               => 'width: 99%',
-                                'columns'             => $columns,
-                                'column_names'        => $columns,
-                                'no_sortable_columns' => [],
-                                'data_element'        => $data,
-                                'searching'           => true,
-                                'dom_elements'        => 'lftipB',
-                                'order'               => [
-                                    'field'     => $columns[0],
-                                    'direction' => 'asc',
-                                ],
-                                'zeroRecords'         => __('No inventory found'),
-                                'emptyTable'          => __('No inventory found'),
-                                'return'              => true,
-                                'default_pagination'  => 10,
-                                'no_sortable_columns' => [-1],
-                            ]
-                        );
-
-                        $agent .= ui_toggle(
-                            $table,
-                            '<span class="title-blue">'.$row['name_agent'].'</span>',
-                            '',
-                            '',
-                            true,
-                            true,
-                            '',
-                            'white-box-content w100p',
-                            'box-shadow white_table_graph w100p',
-                            'images/arrow_down_green.png',
-                            'images/arrow_right_green.png',
-                            false,
-                            false,
-                            false,
-                            '',
-                            '',
-                            null,
-                            null,
-                            false,
-                            $id_table
-                        );
                     }
 
-                    $agents .= ui_toggle(
-                        $agent,
-                        $module_rows[0]['name'],
+                    $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+
+                    $table = ui_print_datatable(
+                        [
+                            'id'                  => $id_table,
+                            'class'               => 'info_table w100p',
+                            'style'               => 'width: 100%',
+                            'columns'             => $columns,
+                            'column_names'        => $columns,
+                            'no_sortable_columns' => [],
+                            'data_element'        => $data,
+                            'searching'           => true,
+                            'dom_elements'        => 'ftip',
+                            'order'               => [
+                                'field'     => $columns[0],
+                                'direction' => 'asc',
+                            ],
+                            'zeroRecords'         => __('No inventory found'),
+                            'emptyTable'          => __('No inventory found'),
+                            'return'              => true,
+                            'default_pagination'  => 10,
+                            'no_sortable_columns' => [-1],
+                        ]
+                    );
+
+                    $agent .= ui_toggle(
+                        $table,
+                        '<span class="title-blue">'.$row['name_agent'].'</span>',
                         '',
                         '',
                         true,
-                        true
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
+                        'images/arrow_down_green.png',
+                        'images/arrow_right_green.png',
+                        false,
+                        false,
+                        false,
+                        '',
+                        '',
+                        null,
+                        null,
+                        false,
+                        $id_table
+                    );
+
+
+                    $agents .= ui_toggle(
+                        $agent,
+                        $module_key,
+                        '',
+                        '',
+                        true,
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
                     );
                 }
 
@@ -1076,7 +1083,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
@@ -1166,7 +1173,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
@@ -1181,6 +1188,8 @@ if ($inventory_module !== 'basic') {
                             'emptyTable'          => __('No inventory found'),
                             'return'              => true,
                             'no_sortable_columns' => [],
+                            'mini_search'         => true,
+                            'mini_pagination'     => true,
                         ]
                     );
 
@@ -1197,7 +1206,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                          => $id_table,
                             'class'                       => 'info_table w100p',
-                            'style'                       => 'width: 99%',
+                            'style'                       => 'width: 100%',
                             'columns'                     => $columns,
                             'column_names'                => $columns,
                             'no_sortable_columns'         => [],
@@ -1226,7 +1235,7 @@ if ($inventory_module !== 'basic') {
     $agentes = [];
     $data = [];
     $class = 'info_table';
-    $style = 'width: 99%';
+    $style = 'width: 100%';
     $ordering = true;
     $searching = false;
 

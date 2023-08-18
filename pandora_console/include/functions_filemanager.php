@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -766,7 +766,18 @@ function filemanager_file_explorer(
                 && ($readOnly === false)
             ) {
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
-                $data[4] .= '<input type="image" style="margin-top: 2px;height:21px" class="invert_filter main_menu_icon" src="images/delete.svg" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[4] .= html_print_input_image(
+                    'delete',
+                    'images/delete.svg',
+                    1,
+                    'margin-top: 2px;height:21px',
+                    true,
+                    [
+                        'title'   => __('Delete'),
+                        'class'   => 'invert_filter main_menu_icon',
+                        'onclick' => 'if (!confirm(\' '.__('Are you sure?').'\')) return false;',
+                    ]
+                );
                 $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
                 $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['server_unique_identifier']), true);
                 $data[4] .= html_print_input_hidden('delete_file', 1, true);
@@ -899,7 +910,19 @@ function filemanager_file_explorer(
             if ($allowZipFiles === true) {
                 $uploadFileElements .= ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true);
                 $uploadFileElements .= html_print_input_file('file', true, false);
-                $uploadFileElements .= html_print_checkbox('decompress', 1, false, true).__('Decompress');
+                $uploadFileElements .= html_print_div(
+                    [
+                        'id'      => 'checkbox-decompress',
+                        'content' => html_print_checkbox(
+                            'decompress',
+                            1,
+                            false,
+                            true,
+                        ).__('Decompress'),
+                        'style'   => 'margin-top:25px',
+                    ],
+                    true
+                );
                 $uploadFileElements .= html_print_input_hidden('upload_file_or_zip', 1, true);
             } else {
                 $uploadFileElements .= html_print_div(

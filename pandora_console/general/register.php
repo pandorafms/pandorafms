@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -100,21 +100,23 @@ if ($initial && users_is_admin()) {
     );
 }
 
-$welcome = !$initial;
-try {
-    $welcome_window = new WelcomeWindow($welcome);
-    if ($welcome_window !== null) {
-        $welcome_window->run();
+if (check_acl($config['id_user'], 0, 'AW')) {
+    $welcome = !$initial;
+    try {
+        $welcome_window = new WelcomeWindow($welcome);
+        if ($welcome_window !== null) {
+            $welcome_window->run();
+        }
+    } catch (Exception $e) {
+        $welcome = false;
     }
-} catch (Exception $e) {
-    $welcome = false;
 }
 
 try {
     if (isset($_SESSION['showed_tips_window']) === false) {
         $tips_window = new TipsWindow();
         if ($tips_window !== null) {
-              $tips_window->run();
+            $tips_window->run();
         }
     }
 } catch (Exception $e) {

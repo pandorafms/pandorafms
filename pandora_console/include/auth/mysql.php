@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -43,8 +43,8 @@ if (isset($config) === false) {
 		<meta http-equiv="content-type" content="text/html; charset=utf8">
 		<meta name="resource-type" content="document">
 		<meta name="distribution" content="global">
-		<meta name="author" content="Artica ST">
-		<meta name="copyright" content="(c) Artica ST">
+		<meta name="author" content="Pandora FMS">
+		<meta name="copyright" content="(c) Pandora FMS">
 		<meta name="robots" content="index, follow">
 		<link rel="icon" href="../../images/pandora.ico" type="image/ico">
 		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
@@ -237,8 +237,13 @@ function process_user_login_remote($login, $pass, $api=false)
 
         // Active Directory.
         case 'ad':
-            if (enterprise_hook('ad_process_user_login', [$login, $pass]) === false) {
-                $config['auth_error'] = 'User not found in database or incorrect password';
+            $sr = enterprise_hook('ad_process_user_login', [$login, $pass]);
+            // Try with secondary server.
+            if ($sr === false && (bool) $config['secondary_active_directory'] === true) {
+                $sr = enterprise_hook('ad_process_user_login', [$login, $pass, true]);
+            }
+
+            if ($sr === false) {
                 return false;
             }
         break;
@@ -813,10 +818,6 @@ function update_user(string $id_user, array $values)
             HOME_SCREEN_OTHER          => __('Other'),
             HOME_SCREEN_DASHBOARD      => __('Dashboard'),
         ];
-
-        if (array_key_exists($values['section'], $homeScreenValues) === true) {
-            $values['section'] = $homeScreenValues[$values['section']];
-        }
 
         if (is_metaconsole() === true) {
             $values['metaconsole_section'] = $values['section'];

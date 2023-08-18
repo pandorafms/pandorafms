@@ -1,9 +1,9 @@
 <?PHP
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -210,7 +210,10 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
             echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row['id_link'].'&borrar='.$row['id_link'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                 'images/delete.svg',
                 true,
-                ['class' => 'invert_filter']
+                [
+                    'class' => 'invert_filter main_menu_icon',
+                    'title' => __('Delete'),
+                ]
             ).'</a></td></tr>';
         }
 

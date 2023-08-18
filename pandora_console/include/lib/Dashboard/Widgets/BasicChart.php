@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -297,6 +297,14 @@ class BasicChart extends Widget
             $values['label'] = $decoder['label'];
         }
 
+        if (isset($decoder['type_graph']) === true) {
+            $values['type_graph'] = $decoder['type_graph'];
+        }
+
+        if (isset($decoder['line_width']) === true) {
+            $values['line_width'] = $decoder['line_width'];
+        }
+
         return $values;
     }
 
@@ -477,6 +485,22 @@ class BasicChart extends Widget
             ],
         ];
 
+        $types_graph = [
+            'area' => __('Area'),
+            'line' => __('Wire'),
+        ];
+
+        $inputs['inputs']['row1'][] = [
+            'label'     => __('Type graph'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $types_graph,
+                'name'     => 'type_graph',
+                'selected' => $values['type_graph'],
+                'return'   => true,
+            ],
+        ];
+
         $inputs['inputs']['row2'][] = [
             'label'     => __('Show Value'),
             'arguments' => [
@@ -520,6 +544,18 @@ class BasicChart extends Widget
             ],
         ];
 
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Graph line size'),
+            'arguments' => [
+                'name'   => 'line_width',
+                'type'   => 'number',
+                'value'  => (empty($values['line_width']) === true) ? 3 : $values['line_width'],
+                'return' => true,
+                'min'    => 2,
+                'max'    => 10,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -546,6 +582,8 @@ class BasicChart extends Widget
         $values['colorChart'] = \get_parameter('colorChart');
         $values['formatData'] = \get_parameter_switch('formatData');
         $values['label'] = \get_parameter('label');
+        $values['type_graph'] = \get_parameter('type_graph');
+        $values['line_width'] = \get_parameter('line_width');
 
         return $values;
     }
@@ -606,6 +644,8 @@ class BasicChart extends Widget
             'title'              => $module_name,
             'unit'               => $units_name,
             'only_image'         => false,
+            'type_graph'         => $this->values['type_graph'],
+            'line_width'         => (empty($this->values['line_width']) === true) ? 3 : $this->values['line_width'],
             'menu'               => false,
             'vconsole'           => true,
             'return_img_base_64' => false,

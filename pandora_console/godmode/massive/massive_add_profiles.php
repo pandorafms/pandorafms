@@ -9,13 +9,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -103,6 +103,7 @@ if ($create_profiles) {
     $groups_id = get_parameter('groups_id', -1);
     $users_id = get_parameter('users_id', -1);
     $n_added = 0;
+    $msg_error = __('Profiles cannot be added');
 
     if ($profiles_id == -1 || $groups_id == -1 || $users_id == -1) {
         $result = false;
@@ -155,6 +156,8 @@ if ($create_profiles) {
                         if ($return !== false) {
                             $n_added++;
                         }
+                    } else {
+                        $msg_error = __('The profile already exist on the user');
                     }
                 }
             }
@@ -182,7 +185,7 @@ if ($create_profiles) {
     ui_print_result_message(
         $n_added > 0,
         __('Profiles added successfully').'('.$n_added.')',
-        __('Profiles cannot be added')
+        $msg_error
     );
 }
 

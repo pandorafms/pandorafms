@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1001,6 +1001,10 @@ function grafico_modulo_sparse($params)
                 false
             ),
         ];
+    }
+
+    if ($data_module_graph === false) {
+        $data_module_graph = [];
     }
 
     $data_module_graph['series_suffix'] = $series_suffix;
@@ -4410,8 +4414,8 @@ function graph_netflow_aggregate_area($data, $period, $width, $height, $ttl=1, $
     foreach ($data['sources'] as $key => $value) {
         $i = 0;
         foreach ($data['data'] as $k => $v) {
-            $chart['netflow_'.$key]['data'][$i][0] = ($k * 1000);
-            $chart['netflow_'.$key]['data'][$i][1] = $v[$key];
+            $chart[$key]['data'][$i][0] = ($k * 1000);
+            $chart[$key]['data'][$i][1] = $v[$key];
             $i++;
         }
     }
@@ -4560,6 +4564,10 @@ function graph_netflow_aggregate_pie($data, $aggregate, $ttl=1, $only_image=fals
     }
 
     $labels = array_keys($values);
+    foreach ($labels as $key => $label) {
+        $labels[$key] = (string) $label;
+    }
+
     $values = array_values($values);
 
     if ($config['fixed_graph'] == false) {
@@ -4624,7 +4632,10 @@ function graph_netflow_circular_mesh($data)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], 900, true);
+    $width = (empty($data['width']) === false) ? $data['width'] : 900;
+    $height = (empty($data['height']) === false) ? $data['height'] : 900;
+
+    return d3_relationship_graph($data['elements'], $data['matrix'], $width, true, $height);
 }
 
 
@@ -4983,19 +4994,18 @@ function graph_monitor_wheel($width=550, $height=600, $filter=false)
     $filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
     if ($filter['group'] != 0) {
-        $filter_subgroups = '';
-        if (!$filter['dont_show_subgroups']) {
-            $filter_subgroups = ' || parent IN ('.$filter['group'].')';
+        if ($filter['dont_show_subgroups'] === false) {
+            $groups = groups_get_children($filter['group']);
+            $groups_ax = [];
+            foreach ($groups as $g) {
+                $groups_ax[$g['id_grupo']] = $g;
+            }
+
+            $groups = $groups_ax;
+        } else {
+            $groups = groups_get_group_by_id($filter['group']);
+            $groups[$group['id_grupo']] = $group;
         }
-
-        $groups = db_get_all_rows_sql('SELECT * FROM tgrupo where id_grupo IN ('.$filter['group'].') '.$filter_subgroups);
-
-        $groups_ax = [];
-        foreach ($groups as $g) {
-            $groups_ax[$g['id_grupo']] = $g;
-        }
-
-        $groups = $groups_ax;
     } else {
         $groups = users_get_groups(false, 'AR', false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
     }

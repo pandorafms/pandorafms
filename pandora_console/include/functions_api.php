@@ -10,13 +10,13 @@
  * @license    See below
  *
  *    ______                 ___                    _______ _______ ________
- *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
- *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- * Please see http://pandorafms.org for full contribution list
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -1916,7 +1916,7 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
  *
  * @param $thrash3 Don't use.
  */
-function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
+function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false, $message=false)
 {
     global $config;
 
@@ -2009,16 +2009,40 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
 
             // Check if agent exists (BUG WC-50518-2).
             if ($alias == '' && $alias_as_name === 0) {
+                if ($message === true) {
+                    return 'No agent alias specified';
+                }
+
                 returnError('No agent alias specified');
             } else if (agents_get_agent_id($nombre_agente)) {
+                if ($message === true) {
+                    return 'The agent name already exists in DB.';
+                }
+
                 returnError('The agent name already exists in DB.');
             } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
+                if ($message === true) {
+                    return 'The group does not exist.';
+                }
+
                 returnError('The group does not exist.');
             } else if (group_allow_more_agents($grupo, true, 'create') === false) {
+                if ($message === true) {
+                    return 'Agent cannot be created due to the maximum agent limit for this group';
+                }
+
                 returnError('Agent cannot be created due to the maximum agent limit for this group');
             } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
+                if ($message === true) {
+                    return 'The OS does not exist.';
+                }
+
                 returnError('The OS does not exist.');
             } else if ($server_name === false) {
+                if ($message === true) {
+                    return 'The '.get_product_name().' Server does not exist.';
+                }
+
                 returnError('The '.get_product_name().' Server does not exist.');
             } else {
                 if ($alias_as_name === 1) {
@@ -2038,13 +2062,17 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
             }
         }
 
-        returnData(
-            'string',
-            [
-                'type' => 'string',
-                'data' => $id_agente,
-            ]
-        );
+        if ($return === false) {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => $id_agente,
+                ]
+            );
+        } else {
+            return $id_agente;
+        }
     } catch (\Exception $e) {
         returnError($e->getMessage());
         return;
@@ -7833,24 +7861,26 @@ function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
     }
 
     if (!empty($other['data'][0])) {
-        $agents = $other['data'];
+        $agents = explode(';', $other['data'][0]);
         $results = false;
         foreach ($agents as $agent) {
-            if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
-                $res = db_process_sql_insert(
-                    'tplanned_downtime_agents',
-                    [
-                        'id_agent'          => $agent,
-                        'id_downtime'       => $id,
-                        'all_modules'       => 0,
-                        'manually_disabled' => 0,
-                    ]
-                );
-                if ($res) {
-                    $results = true;
+            if (!empty($agent)) {
+                if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
+                    $res = db_process_sql_insert(
+                        'tplanned_downtime_agents',
+                        [
+                            'id_agent'          => $agent,
+                            'id_downtime'       => $id,
+                            'all_modules'       => 0,
+                            'manually_disabled' => 0,
+                        ]
+                    );
+                    if ($res) {
+                        $results = true;
+                    }
+                } else {
+                    returnError(" Agent $agent is already at the planned downtime.");
                 }
-            } else {
-                returnError(" Agent $agent is already at the planned downtime.");
             }
         }
 
@@ -8610,7 +8640,7 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
         return;
     }
 
-    $new_configuration_data = io_safe_output(urldecode($configuration_data_serialized['data']));
+    $new_configuration_data = io_safe_output(base64_decode($configuration_data_serialized['data']));
 
     // Get current configuration.
     $old_configuration_data = config_agents_get_module_from_conf($id_agent, io_safe_output($module_name));
@@ -11544,6 +11574,11 @@ function api_get_events($node_id, $trash2, $other, $returnType)
                 }
             }
 
+            // Add agent name to nodo.
+            if (is_metaconsole() === false && empty($row['id_agente']) === false) {
+                $row['agent_name'] = agents_get_name($row['id_agente']);
+            }
+
             // FOR THE TEST THE API IN THE ANDROID.
             $row['description_event'] = events_print_type_description($row['event_type'], true);
             $row['img_description'] = events_print_type_img($row['event_type'], true, true);
@@ -11643,7 +11678,7 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11667,7 +11702,7 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], $group, 'PM')) {
+    if (!check_acl($config['id_user'], $group, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11702,7 +11737,7 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11726,7 +11761,7 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    if (!check_acl($config['id_user'], $group, 'PM')) {
+    if (!check_acl($config['id_user'], $group, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -11759,7 +11794,7 @@ function api_get_user_profiles_info($thrash1, $thrash2, $thrash3, $returnType)
 {
     global $config;
 
-    if (!check_acl($config['id_user'], 0, 'PM')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }
@@ -13091,9 +13126,14 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['custom_data'] = '';
         }
 
+        $ack_utimestamp = 0;
+
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento,estado FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario
+                FROM tevento
+                WHERE estado IN (0,2) AND id_extra ="'.$other['data'][18].'";';
+
             $validation = db_get_all_rows_sql($sql_validation);
 
             if ($validation) {
@@ -13103,6 +13143,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         && (int) $values['status'] === 0
                     ) {
                         $values['status'] = 2;
+                        $ack_utimestamp = $val['ack_utimestamp'];
+                        $values['id_usuario'] = $val['id_usuario'];
                     }
 
                     api_set_validate_event_by_id($val['id_evento']);
@@ -13132,7 +13174,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['tags'],
             $custom_data,
             $values['server_id'],
-            $values['id_extra']
+            $values['id_extra'],
+            $ack_utimestamp
         );
 
         if ($other['data'][12] != '') {
@@ -15744,6 +15787,8 @@ function api_get_cluster_items($cluster_id)
  */
 function api_set_create_event_filter($name, $thrash1, $other, $thrash3)
 {
+    global $config;
+
     if ($name == '') {
         returnError(
             'The event filter could not be created. Event filter name cannot be left blank.'
@@ -16972,7 +17017,7 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
 
-    if (!check_acl($config['id_user'], 0, 'AW')) {
+    if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
         return;
     }

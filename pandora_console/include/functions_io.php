@@ -1,9 +1,9 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Pandora FMS - https://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
+// Copyright (c) 2005-2023 Pandora FMS
+// Please see https://pandorafms.com/community/ for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
 // as published by the Free Software Foundation; version 2
@@ -221,6 +221,10 @@ function io_safe_output_array(&$item, $key=false, $utf8=true)
  */
 function io_safe_output($value, $utf8=true)
 {
+    if (empty($value) === true) {
+        return $value;
+    }
+
     if (is_numeric($value)) {
         return $value;
     }
@@ -235,16 +239,16 @@ function io_safe_output($value, $utf8=true)
         $value = utf8_encode($value);
     }
 
-    // Replace the html entitie of ( for the char
+    // Replace the html entitie of ( for the char.
     $value = str_replace('&#40;', '(', $value);
 
-    // Replace the html entitie of ) for the char
+    // Replace the html entitie of ) for the char.
     $value = str_replace('&#41;', ')', $value);
 
-    // Replace the html entitie of < for the char
+    // Replace the html entitie of < for the char.
     $value = str_replace('&lt;', '<', $value);
 
-    // Replace the html entitie of > for the char
+    // Replace the html entitie of > for the char.
     $value = str_replace('&gt;', '>', $value);
 
     if ($utf8) {

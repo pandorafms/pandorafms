@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.771
-%define release     230616
+%define version     7.0NG.773
+%define release     230818
 %define httpd_name      httpd
 # User and Group under which Apache is running
 %define httpd_name  apache2
@@ -18,7 +18,7 @@ Name:               %{name}
 Version:            %{version}
 Release:            %{release}
 License:            GPL
-Vendor:             Artica ST <info@artica.es>
+Vendor:             Pandora FMS <info@pandorafms.com>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.org
 Group:              System/Monitoring

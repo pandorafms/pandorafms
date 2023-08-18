@@ -104,6 +104,9 @@ if (isset($fb64) === true) {
     );
 }
 
+$settings_modal = get_parameter('settings', 0);
+$parameters_modal = get_parameter('parameters', 0);
+
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group_filter'] ?? '')
@@ -330,11 +333,15 @@ if (is_ajax() === true) {
     $groupRecursion = (bool) get_parameter('groupRecursion', false);
 
     // Datatables offset, limit.
-    $start = get_parameter('start', 0);
+    $start = (int) get_parameter('start', 0);
     $length = get_parameter(
         'length',
         $config['block_size']
     );
+
+    if ($length === 'null') {
+        $length = $config['block_size'];
+    }
 
     if ($get_events !== 0) {
         try {
@@ -367,13 +374,6 @@ if (is_ajax() === true) {
                 'tg.nombre as group_name',
                 'ta.direccion',
             ];
-
-            if (strpos($config['event_fields'], 'user_comment') !== false
-                || empty($user_comment) === false
-                || empty($search) === false
-            ) {
-                $fields[] = 'te.user_comment';
-            }
 
             $order = get_datatable_order(true);
 
@@ -458,9 +458,11 @@ if (is_ajax() === true) {
             }
 
             if (empty($events) === false) {
+                $redirection_form_id = 0;
+
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -487,23 +489,52 @@ if (is_ajax() === true) {
                             }
                         }
 
+                        if (strlen($tmp->server_name) >= 10) {
+                            $tmp->server_name = ui_print_truncate_text(
+                                $tmp->server_name,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
-                        if (strlen($tmp->evento) >= 255) {
+                        $event_text = $tmp->evento;
+                        if (strlen($tmp->evento) >= 40) {
                             $tmp->evento = ui_print_truncate_text(
                                 $tmp->evento,
-                                255,
-                                $tmp->evento,
+                                40,
+                                false,
                                 true,
-                                false
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
                             );
                         }
 
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = io_safe_output($tmp->module_name);
+                            if (strlen($tmp->module_name) >= 20) {
+                                $tmp->module_name = ui_print_truncate_text(
+                                    $tmp->module_name,
+                                    20,
+                                    false,
+                                    true,
+                                    false,
+                                    '&hellip;',
+                                    true,
+                                    true,
+                                );
+                            }
                         }
 
                         if (empty($tmp->comments) === false) {
-                            $tmp->comments = ui_print_comments($tmp->comments);
+                            $tmp->comments = ui_print_comments($tmp->comments, 20);
                         }
 
                         // Show last event.
@@ -529,6 +560,32 @@ if (is_ajax() === true) {
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
+                        if (strlen($tmp->agent_name) >= 10) {
+                            $tmp->agent_name = ui_print_truncate_text(
+                                $tmp->agent_name,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        $tmp->id_extra = io_safe_output($tmp->id_extra);
+                        if (strlen($tmp->id_extra) >= 10) {
+                            $tmp->id_extra = ui_print_truncate_text(
+                                $tmp->id_extra,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
 
                         $tmp->ack_utimestamp_raw = $tmp->ack_utimestamp;
 
@@ -551,7 +608,7 @@ if (is_ajax() === true) {
 
                                 $total_sec = strtotime($tmp->timestamp);
                                 $total_sec += $dif;
-                                $last_contact = date($config['date_format'], $total_sec);
+                                $last_contact = date($confb64ig['date_format'], $total_sec);
                                 $last_contact_value = ui_print_timestamp($last_contact, true);
                             } else {
                                 $title = date($config['date_format'], strtotime($tmp->timestamp));
@@ -577,28 +634,30 @@ if (is_ajax() === true) {
                         }
 
                         $tmp->instructions = events_get_instructions($item);
-
-                        $tmp->b64 = base64_encode(json_encode($tmp));
-
-                        // Show comments events.
-                        if (empty($tmp->comments) === false) {
-                            $tmp->user_comment = $tmp->comments;
-                            if ($tmp->comments !== 'undefined' && strlen($tmp->comments) > 80) {
-                                $tmp->user_comment .= '&nbsp;&nbsp;';
-                                $tmp->user_comment .= '<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
-                                $tmp->user_comment .= $tmp->b64;
-                                $tmp->user_comment .= '\',\'comments\')>;';
-                                $tmp->user_comment .= html_print_image(
-                                    'images/details.svg',
-                                    true,
-                                    [
-                                        'title' => __('Show more'),
-                                        'class' => 'invert_filter main_menu_icon',
-                                    ]
-                                );
-                                $tmp->user_comment .= '</a>';
-                            }
+                        if (strlen($tmp->instructions) >= 20) {
+                            $tmp->instructions = ui_print_truncate_text(
+                                $tmp->instructions,
+                                20,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
                         }
+
+                        $aux_event = $tmp->evento;
+                        $tmp->evento = $event_text;
+                        $tmp->b64 = base64_encode(json_encode($tmp));
+                        $tmp->evento = $aux_event;
+
+                        $tmp->user_comment = ui_print_comments(
+                            event_get_last_comment(
+                                $item,
+                                $filter
+                            )
+                        );
 
                         // Grouped events.
                         if (isset($tmp->max_id_evento) === true
@@ -669,8 +728,15 @@ if (is_ajax() === true) {
                         $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
 
                         // Grouped events.
-                        if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
-                            $evn .= '('.$tmp->event_rep.') ';
+                        if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
+                            $counter_extra_id = event_get_counter_extraId($item, $filter);
+                            if (empty($counter_extra_id) === false && $counter_extra_id > 1) {
+                                $evn .= '('.$counter_extra_id.') ';
+                            }
+                        } else {
+                            if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
+                                $evn .= '('.$tmp->event_rep.') ';
+                            }
                         }
 
                         $evn .= $tmp->evento.'</a>';
@@ -730,9 +796,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $event_type = '<div class="event_module_background_state forced_title" style="background: ';
-                        $event_type .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">&nbsp;</div>';
-                        $tmp->event_type = $event_type;
+                        $tmp->event_type = '<div class="mrgn_lft_25px">'.events_print_type_img($tmp->event_type, true).'</div>';
 
                         // Module status.
                         // Event severity prepared.
@@ -840,6 +904,19 @@ if (is_ajax() === true) {
                             $tmp->owner_user = get_user_fullname($tmp->owner_user).' ('.$tmp->owner_user.')';
                         }
 
+                        if (strlen($tmp->owner_user) >= 10) {
+                            $tmp->owner_user = ui_print_truncate_text(
+                                $tmp->owner_user,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         // Group name.
                         if (empty($tmp->id_grupo) === true) {
                             $tmp->id_grupo = __('All');
@@ -847,8 +924,33 @@ if (is_ajax() === true) {
                             $tmp->id_grupo = $tmp->group_name;
                         }
 
+                        if (strlen($tmp->id_grupo) >= 10) {
+                            $tmp->id_grupo = ui_print_truncate_text(
+                                $tmp->id_grupo,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         // Module name.
                         $tmp->id_agentmodule = $tmp->module_name;
+                        if (strlen($tmp->id_agentmodule) >= 10) {
+                            $tmp->id_agentmodule = ui_print_truncate_text(
+                                $tmp->id_agentmodule,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
 
                         // Options.
                         // Show more.
@@ -1015,11 +1117,37 @@ if (is_ajax() === true) {
                             $url_link = $server_url;
                             $url_link .= '/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=';
                             $url_link_hash = $hashdata;
+
+                            parse_str($url_link_hash, $url_hash_array);
+
+                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' method='POST' action='".$url_link.$tmp->id_agente."'>";
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash',
+                                $url_hash_array['loginhash'],
+                                true
+                            );
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash_data',
+                                $url_hash_array['loginhash_data'],
+                                true
+                            );
+                            $redirection_form .= html_print_input_hidden(
+                                'loginhash_user',
+                                $url_hash_array['loginhash_user'],
+                                true
+                            );
+                            $redirection_form .= '</form>';
                         }
 
                         // Agent name link.
                         if ($tmp->id_agente > 0) {
-                            $draw_agent_name = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            if ($tmp->meta === true) {
+                                $draw_agent_name = $redirection_form;
+                                $draw_agent_name .= "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-table-redirection-".$redirection_form_id."\").submit();' href='#'>";
+                            } else {
+                                $draw_agent_name = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            }
+
                             $draw_agent_name .= $tmp->agent_name;
                             $draw_agent_name .= '</a>';
                             $tmp->agent_name = $draw_agent_name;
@@ -1029,7 +1157,13 @@ if (is_ajax() === true) {
 
                         // Agent ID link.
                         if ($tmp->id_agente > 0) {
-                            $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            if ($tmp->meta === true) {
+                                $draw_agent_id = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-table-redirection-".$redirection_form_id."\").submit();' href='#'>";
+                                $redirection_form_id++;
+                            } else {
+                                $draw_agent_id = '<a href="'.$url_link.$tmp->id_agente.$url_link_hash.'">';
+                            }
+
                             $draw_agent_id .= $tmp->id_agente;
                             $draw_agent_id .= '</a>';
                             $tmp->id_agente = $draw_agent_id;
@@ -1047,6 +1181,18 @@ if (is_ajax() === true) {
                             }
 
                             $tmp->custom_data = $custom_data_str;
+                            if (strlen($tmp->custom_data) >= 20) {
+                                $tmp->custom_data = ui_print_truncate_text(
+                                    $tmp->custom_data,
+                                    20,
+                                    false,
+                                    true,
+                                    false,
+                                    '&hellip;',
+                                    true,
+                                    true,
+                                );
+                            }
                         }
 
                         $carry[] = $tmp;
@@ -1562,6 +1708,11 @@ if ($pure) {
 
     // Acoustic console.
     $sound_event['active'] = false;
+    if (is_metaconsole() === true) {
+        $urlSound = '../../include/sounds/';
+    } else {
+        $urlSound = 'include/sounds/';
+    }
 
     // Sound Events.
     $data_sound = base64_encode(
@@ -1574,7 +1725,7 @@ if ($pure) {
                 'silenceAlarm' => __('Silence alarm'),
                 'url'          => ui_get_full_url('ajax.php'),
                 'page'         => 'include/ajax/events',
-                'urlSound'     => 'include/sounds/',
+                'urlSound'     => $urlSound,
             ]
         )
     );
@@ -1587,6 +1738,8 @@ if ($pure) {
             'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
+
+    echo '<input type="hidden" id="open_sound_event_modal" value="0" /> ';
 
     // If the user has administrator permission display manage tab.
     if ($event_w === true || $event_m === true) {
@@ -2381,7 +2534,7 @@ try {
     if (in_array('instructions', $fields) > 0) {
         $fields[array_search('instructions', $fields)] = [
             'text'  => 'instructions',
-            'class' => 'column-instructions',
+            'class' => 'column-instructions mw60px',
         ];
     }
 
@@ -2391,6 +2544,21 @@ try {
             'text'  => 'evento',
             'class' => 'mw250px',
         ];
+    }
+
+    $comment_id = array_search('user_comment', $fields);
+    if ($comment_id !== false) {
+        $fields[$comment_id] = ['text' => 'user_comment'];
+    }
+
+
+    foreach ($fields as $key => $field) {
+        if (is_array($field) === false) {
+            $fields[$key] = [
+                'text'  => $field,
+                'class' => 'mw100px',
+            ];
+        }
     }
 
     // Always add options column.
@@ -2418,6 +2586,7 @@ try {
         }
     }
 
+    // mw60px
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
 
@@ -2516,7 +2685,7 @@ try {
                 [
                     'id'                             => $table_id,
                     'class'                          => 'info_table events',
-                    'style'                          => 'width: 99%;',
+                    'style'                          => 'width: 100%;',
                     'ajax_url'                       => 'operation/events/events',
                     'ajax_data'                      => [
                         'get_events' => 1,
@@ -2621,7 +2790,7 @@ if (check_acl(
         'submit_event_response',
         false,
         'execute_event_response(true);',
-        [ 'icon' => 'cog' ],
+        [ 'icon' => 'cog'],
         true
     );
 
@@ -2635,6 +2804,50 @@ if (check_acl(
         true,
         false,
         false
+    );
+    if (is_metaconsole() === true) {
+        $urlSound = '../../include/sounds/';
+    } else {
+        $urlSound = 'include/sounds/';
+    }
+
+    // Acoustic console.
+    $data_sound = base64_encode(
+        json_encode(
+            [
+                'title'        => __('Acoustic console'),
+                'start'        => __('Start'),
+                'stop'         => __('Stop'),
+                'noAlert'      => __('No alert'),
+                'silenceAlarm' => __('Silence alarm'),
+                'url'          => ui_get_full_url('ajax.php'),
+                'page'         => 'include/ajax/events',
+                'urlSound'     => $urlSound,
+            ]
+        )
+    );
+
+    $elements .= html_print_button(
+        __('Sound Events'),
+        'sound_events_button',
+        false,
+        'openSoundEventsDialog("'.$data_sound.'")',
+        [
+            'icon'           => 'sound',
+            'style'          => 'margin-right: 25% !important',
+            'minimize-arrow' => true,
+            'span_style'     => 'width: 100%',
+        ],
+        true
+    );
+
+    $elements .= html_print_button(
+        'hidden',
+        'sound_events_button_hidden',
+        false,
+        'openSoundEventModal("'.$data_sound.'")',
+        ['style' => 'display:none'],
+        true
     );
 
     html_print_action_buttons(
@@ -3110,7 +3323,9 @@ $(document).ready( function() {
                     url: '<?php echo ui_get_full_url('ajax.php'); ?>',
                     data: {
                         page: 'include/ajax/events',
-                        load_filter_modal: 1
+                        load_filter_modal: 1,
+                        settings: '<?php echo $settings_modal; ?>',
+                        parameters: '<?php echo $parameters_modal; ?>',
                     },
                     success: function (data){
                         $('#load-modal-filter')

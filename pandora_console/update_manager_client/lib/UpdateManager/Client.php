@@ -496,7 +496,7 @@ class Client
             throw new \Exception('Please provide homedir path to use UMC');
         }
 
-        if (is_dir($this->remoteConfig) === true
+        if (empty($this->remoteConfig) === false && is_dir($this->remoteConfig) === true
             && is_dir($this->remoteConfig.'/updates') === false
         ) {
             mkdir($this->remoteConfig.'/updates/');
@@ -2094,7 +2094,7 @@ class Client
                     sprintf(
                         'UPDATE `tconfig` SET `value` = \'%s\'
                          WHERE `token` = "progress_update"',
-                        $updates
+                        mysqli_real_escape_string($this->dbh, $updates)
                     )
                 );
             }

@@ -63,7 +63,12 @@ function inventory_get_data(
         array_push($where, 'id_agente IN ('.implode(',', $agents_ids).')');
     }
 
+    foreach ($inventory_module_name as $key => $module_name) {
+        $inventory_module_name[$key] = io_safe_output($module_name);
+    }
+
     if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name[0] !== 0
         && $inventory_module_name !== ''
         && $inventory_module_name !== 'all'
     ) {
@@ -733,6 +738,7 @@ function inventory_get_datatable(
     if ($inventory_module_name[0] !== '0'
         && $inventory_module_name !== ''
         && $inventory_module_name !== 'all'
+        && $inventory_module_name !== '0'
     ) {
         array_push($where, "tmodule_inventory.name IN ('".implode("','", (array) $inventory_module_name)."')");
     }
@@ -819,6 +825,8 @@ function inventory_get_datatable(
         }
 
         foreach ($agent_data as $id_agent => $data_agent) {
+            $rows_tmp['agent'] = $data_agent[0]['name_agent'];
+
             foreach ($data_agent as $key => $agent_row) {
                 if (isset($rows_tmp['agent']) === false) {
                     $rows_tmp['agent'] = $agent_row['name_agent'];

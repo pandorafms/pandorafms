@@ -3,7 +3,7 @@
 # Pandora FMS, the Flexible Monitoring System.
 # Version 7.0NG.769
 # Licensed under GPL license v2,
-# (c) 2003-2021 Artica Soluciones Tecnologicas
+# (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
 # Please change it for your setup needs
 #############################################################################
@@ -657,6 +657,12 @@ syslog_threads 2
 
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
+
+# Blacklist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+# syslog_blacklist [regex]
+
+# Whitelist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+# syslog_whitelist .*
 
 # Sync Server
 #syncserver

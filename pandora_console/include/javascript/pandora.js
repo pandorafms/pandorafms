@@ -232,6 +232,11 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
     }
   }
 
+  var exclude_policy_modules = 0;
+  if ($("#hidden-exclude_policy_modules").val() === "1") {
+    exclude_policy_modules = 1;
+  }
+
   jQuery.post(
     homedir + "/ajax.php",
     {
@@ -248,7 +253,8 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       status_module: module_status,
       id_group: id_group,
       pendingdelete:
-        event.target != undefined ? event.target.dataset.pendingdelete : 0 // Get pendingdelete attribute from target
+        event.target != undefined ? event.target.dataset.pendingdelete : 0, // Get pendingdelete attribute from target
+      exclude_policy_modules
     },
     function(data) {
       $("#module").empty();
@@ -1442,6 +1448,17 @@ function defineTinyMCE(selector) {
   });
 }
 
+function defineTinyMCEDark(selector) {
+  tinymce.init({
+    selector: selector,
+    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    promotion: false,
+    branding: false,
+    skin: "oxide-dark",
+    content_css: "dark"
+  });
+}
+
 function UndefineTinyMCE(textarea_id) {
   tinyMCE.remove(textarea_id);
   $(textarea_id).show("");
@@ -2302,16 +2319,21 @@ var formatterDataVerticalBar = function(value, ctx) {
 
 // Show about section
 $(document).ready(function() {
-  $("#icon_about").click(function() {
-    $("#icon_about").addClass("selected");
+  $("[id^='icon_about']").click(function() {
+    $("[id^='icon_about']").addClass("selected");
     // Hidden  tips modal.
     $(".window").css("display", "none");
+
+    var type_about = "about_operation";
+    if ($(this).attr("id") === "icon_about") {
+      type_about = "about";
+    }
 
     jQuery.post(
       "ajax.php",
       {
         page: "include/functions_menu",
-        about: "true"
+        [type_about]: "true"
       },
       function(data) {
         $("div.ui-dialog").remove();
@@ -2325,35 +2347,66 @@ $(document).ready(function() {
     );
   });
 
-  function openAbout() {
-    $("#about-tabs").dialog({
-      // title: "About",
-      resizable: false,
-      draggable: false,
-      modal: true,
-      show: {
-        effect: "fade",
-        duration: 200
-      },
-      hide: {
-        effect: "fade",
-        duration: 200
-      },
-      closeOnEscape: true,
-      width: 700,
-      height: 450,
+  function openAbout(section = "management") {
+    if (section === "management") {
+      $("#about-tabs").dialog({
+        // title: "About",
+        resizable: false,
+        draggable: false,
+        modal: true,
+        show: {
+          effect: "fade",
+          duration: 200
+        },
+        hide: {
+          effect: "fade",
+          duration: 200
+        },
+        closeOnEscape: true,
+        width: 700,
+        height: 450,
 
-      create: function() {
-        $("#about-tabs").tabs({});
-        $(".ui-dialog-titlebar").remove();
+        create: function() {
+          $("#about-tabs").tabs({});
+          $(".ui-dialog-titlebar").remove();
 
-        $("#about-close").click(function() {
-          $("#about-tabs").dialog("close");
-          $("div.ui-dialog").remove();
-          $("#icon_about").removeClass("selected");
-        });
-      }
-    });
+          $("#about-close").click(function() {
+            $("#about-tabs").dialog("close");
+            $("div.ui-dialog").remove();
+            $("#icon_about").removeClass("selected");
+          });
+        }
+      });
+    } else if (section === "operation") {
+      $("#about-tabs").dialog({
+        // title: "About",
+        resizable: false,
+        draggable: false,
+        modal: true,
+        show: {
+          effect: "fade",
+          duration: 200
+        },
+        hide: {
+          effect: "fade",
+          duration: 200
+        },
+        closeOnEscape: true,
+        width: 700,
+        height: 450,
+
+        create: function() {
+          $("#about-tabs").tabs({});
+          $(".ui-dialog-titlebar").remove();
+
+          $("#about-close").click(function() {
+            $("#about-tabs").dialog("close");
+            $("div.ui-dialog").remove();
+            $("#icon_about_operation").removeClass("selected");
+          });
+        }
+      });
+    }
   }
 });
 

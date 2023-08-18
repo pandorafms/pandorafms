@@ -214,10 +214,33 @@ function get_table_inputs_masive_agents($params)
         );
     }
 
-    $table->data[3][0] = __('Agents');
-    $table->data[3][0] .= '<span id="agent_loading" class="invisible">';
-    $table->data[3][0] .= html_print_image('images/spinner.png', true);
-    $table->data[3][0] .= '</span>';
+    $os_list = os_get_os(true);
+
+    $table->data[3][0] = __('OS');
+    $table->data[3][1] = html_print_select(
+        $os_list,
+        'os_agent',
+        'selected',
+        '',
+        __('All'),
+        '',
+        true
+    );
+
+    $table->data[3][2] = __('OS Version');
+    $table->data[3][3] = html_print_input_text(
+        'os_agent_version',
+        '',
+        __('Select OS version'),
+        35,
+        255,
+        true
+    );
+
+    $table->data[4][0] = __('Agents');
+    $table->data[4][0] .= '<span id="agent_loading" class="invisible">';
+    $table->data[4][0] .= html_print_image('images/spinner.png', true);
+    $table->data[4][0] .= '</span>';
 
     $agents = [];
     if (is_metaconsole() === false) {
@@ -228,7 +251,7 @@ function get_table_inputs_masive_agents($params)
         );
     }
 
-    $table->data[3][1] = html_print_select(
+    $table->data[4][1] = html_print_select(
         $agents,
         'id_agents[]',
         0,

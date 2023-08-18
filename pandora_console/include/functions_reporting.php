@@ -942,6 +942,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'top_n_checks_failed':
+                $report['contents'][] = reporting_top_n_checks_failed(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'vul_by_cat':
                 $report['contents'][] = reporting_vul_by_categories(
                     $report,

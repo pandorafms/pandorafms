@@ -468,6 +468,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_top_n_agents_sh($table, $item);
             break;
 
+            case 'top_n_checks_failed':
+                reporting_html_top_n_checks_failed($table, $item);
+            break;
+
             case 'vul_by_cat':
                 reporting_vul_by_cat_graph($table, $item);
             break;
@@ -486,18 +490,61 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 }
 
 
+/**
+ * Function to print HTML top checks failed.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_top_n_checks_failed($table, $item)
+{
+    global $config;
+    $table->rowclass[0] = '';
+    $table->data[1][0] = '<b>'.__('Id').'</b>';
+    $table->data[1][1] = '<b>'.__('Title').'</b>';
+    $table->data[1][2] = '<b>'.__('Total Failed').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table->data[$row][0] = $check['id'];
+        $table->data[$row][1] = $check['title'];
+        $table->data[$row][2] = $check['total'];
+        $row++;
+    }
+}
+
+
+/**
+ * Function to print HTML top categories in graph.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
 function reporting_vul_by_cat_graph($table, $item)
 {
+    $table->rowclass[0] = '';
     $table->colspan['chart']['cell'] = 3;
     $table->cellstyle['chart']['cell'] = 'text-align: center;';
     $table->data['chart']['cell'] = $item['chart'];
 }
 
 
+/**
+ * Function to print HTML top n agents from security hardening.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
 function reporting_html_top_n_agents_sh($table, $item)
 {
     global $config;
-
+    $table->rowclass[0] = '';
     $table->data[1][0] = '<b>'.__('Agent').'</b>';
     $table->data[1][1] = '<b>'.__('Last audit scan').'</b>';
     $table->data[1][2] = '<b>'.__('Score').'</b>';

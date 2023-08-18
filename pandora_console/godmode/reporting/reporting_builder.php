@@ -1993,6 +1993,12 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'top_n_checks_failed':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
                             case 'vul_by_cat':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
@@ -2877,6 +2883,12 @@ switch ($action) {
                             break;
 
                             case 'top_n_agents_sh':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_checks_failed':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $values['top_n_value'] = get_parameter('max_items');
                                 $good_format = true;

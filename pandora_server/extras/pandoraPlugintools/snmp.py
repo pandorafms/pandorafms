@@ -21,6 +21,46 @@ _GLOBAL_VARIABLES = {
 }
 
 ####
+# Set a global variable with the specified name and assigns a value to it.
+#########################################################################################
+def set_global_variable(
+        variable_name: str = "", 
+        value = None
+    )-> None:
+    """
+    Sets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
+
+    Args:
+        variable_name (str): Name of the variable to set.
+        value (any): Value to assign to the variable.
+    
+    Returns:
+        None
+    """
+    from .general import set_dict_key_value
+
+    set_dict_key_value(_GLOBAL_VARIABLES, variable_name, value)
+
+####
+# Get a global variable with the specified name.
+#########################################################################################
+def get_global_variable(
+        variable_name: str = ""
+    )-> None:
+    """
+    Gets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
+
+    Args:
+        variable_name (str): Name of the variable to set.
+
+    Returns:
+        None
+    """
+    from .general import get_dict_key_value
+
+    get_dict_key_value(_GLOBAL_VARIABLES, variable_name)
+
+####
 # Creates an SNMP session based on the global configuration variables.
 #########################################################################################
 def create_snmp_session():

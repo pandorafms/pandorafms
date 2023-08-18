@@ -3,7 +3,7 @@ package PandoraFMS::Config;
 # Configuration Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License 
@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.772";
-my $pandora_build = "230703";
+my $pandora_version = "7.0NG.773";
+my $pandora_build = "230818";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -515,6 +515,8 @@ sub pandora_load_config {
 	$pa_config->{"syslog_file"} = '/var/log/messages/'; # 7.0.716
 	$pa_config->{"syslog_max"} = 65535; # 7.0.716
 	$pa_config->{"syslog_threads"} = 4; # 7.0.716
+	$pa_config->{"syslog_blacklist"} = undef; # 7.0.773
+	$pa_config->{"syslog_whitelist"} = undef; # 7.0 773
 
 	# External .enc files for XML::Parser.
 	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
@@ -1254,6 +1256,12 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^syslog_threads\s+([0-9]*)/i) {
 			$pa_config->{'syslog_threads'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^syslog_blacklist\s+(.*)/i) {
+			$pa_config->{'syslog_blacklist'}= clean_blank($1);
+		}		
+		elsif ($parametro =~ m/^syslog_whitelist\s+(.*)/i) {
+			$pa_config->{'syslog_whitelist'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^thread_log\s+([0-1])/i) {
 			$pa_config->{'thread_log'}= clean_blank($1);
 		}
@@ -1527,7 +1535,7 @@ sub pandora_get_initial_product_name {
 sub pandora_get_initial_copyright_notice {
 	# PandoraFMS product name
 	my $name = $ENV{'PANDORA_RB_COPYRIGHT_NOTICE'};
-	return 'Artica ST' unless (defined ($name) && $name ne '');
+	return 'Pandora FMS' unless (defined ($name) && $name ne '');
 	return $name;
 }
 

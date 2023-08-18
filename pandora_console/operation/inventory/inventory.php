@@ -804,7 +804,7 @@ if ($inventory_module !== 'basic') {
                             [
                                 'id'                  => $id_table,
                                 'class'               => 'info_table w100p',
-                                'style'               => 'width: 99%',
+                                'style'               => 'width: 100%',
                                 'columns'             => $columns,
                                 'column_names'        => $columns,
                                 'no_sortable_columns' => [],
@@ -919,7 +919,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
@@ -1083,7 +1083,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
@@ -1173,7 +1173,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
@@ -1188,6 +1188,8 @@ if ($inventory_module !== 'basic') {
                             'emptyTable'          => __('No inventory found'),
                             'return'              => true,
                             'no_sortable_columns' => [],
+                            'mini_search'         => true,
+                            'mini_pagination'     => true,
                         ]
                     );
 
@@ -1204,7 +1206,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                          => $id_table,
                             'class'                       => 'info_table w100p',
-                            'style'                       => 'width: 99%',
+                            'style'                       => 'width: 100%',
                             'columns'                     => $columns,
                             'column_names'                => $columns,
                             'no_sortable_columns'         => [],
@@ -1233,7 +1235,7 @@ if ($inventory_module !== 'basic') {
     $agentes = [];
     $data = [];
     $class = 'info_table';
-    $style = 'width: 99%';
+    $style = 'width: 100%';
     $ordering = true;
     $searching = false;
 

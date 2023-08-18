@@ -35,6 +35,13 @@ if (is_ajax() === false) {
 }
 
 $ajaxPage = 'include/ajax/welcome_window';
+// Ajax controller.
+$method = get_parameter('method', '');
+
+if ($method === 'loadWelcomeWindow') {
+    unset($config['welcome_state']);
+}
+
 
 // Control call flow.
 try {
@@ -43,9 +50,6 @@ try {
 } catch (Exception $e) {
     exit;
 }
-
-// Ajax controller.
-$method = get_parameter('method', '');
 
 if (method_exists($welcome_actions, $method) === true) {
     if ($welcome_actions->ajaxMethod($method) === true) {

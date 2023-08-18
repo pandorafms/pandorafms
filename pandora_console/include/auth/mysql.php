@@ -43,8 +43,8 @@ if (isset($config) === false) {
 		<meta http-equiv="content-type" content="text/html; charset=utf8">
 		<meta name="resource-type" content="document">
 		<meta name="distribution" content="global">
-		<meta name="author" content="Artica ST">
-		<meta name="copyright" content="(c) Artica ST">
+		<meta name="author" content="Pandora FMS">
+		<meta name="copyright" content="(c) Pandora FMS">
 		<meta name="robots" content="index, follow">
 		<link rel="icon" href="../../images/pandora.ico" type="image/ico">
 		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
@@ -237,8 +237,13 @@ function process_user_login_remote($login, $pass, $api=false)
 
         // Active Directory.
         case 'ad':
-            if (enterprise_hook('ad_process_user_login', [$login, $pass]) === false) {
-                $config['auth_error'] = 'User not found in database or incorrect password';
+            $sr = enterprise_hook('ad_process_user_login', [$login, $pass]);
+            // Try with secondary server.
+            if ($sr === false && (bool) $config['secondary_active_directory'] === true) {
+                $sr = enterprise_hook('ad_process_user_login', [$login, $pass, true]);
+            }
+
+            if ($sr === false) {
                 return false;
             }
         break;

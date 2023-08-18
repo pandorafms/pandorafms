@@ -111,11 +111,11 @@ $options = [];
 
 $options['list_reports'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image(
+    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'&action=list">'.html_print_image(
         'images/report_list.png',
         true,
         [
-            'title' => __('Report list'),
+            'title' => __('Reports'),
             'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>',

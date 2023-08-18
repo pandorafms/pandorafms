@@ -1,0 +1,4649 @@
+RAPID-CITY DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Gauge32, Counter32, Integer32,
+    enterprises, IpAddress, TimeTicks
+        FROM SNMPv2-SMI
+    TEXTUAL-CONVENTION, RowStatus, TruthValue, MacAddress, DisplayString
+        FROM SNMPv2-TC
+    InterfaceIndex
+        FROM IF-MIB
+    SnmpAdminString,SnmpSecurityLevel,SnmpSecurityModel
+        FROM SNMP-FRAMEWORK-MIB
+    InetAddressType, InetAddress, InetPortNumber, InetAddressPrefixLength
+        FROM INET-ADDRESS-MIB
+    Ipv6Address
+        FROM IPV6-TC;
+
+rapidCity MODULE-IDENTITY
+       LAST-UPDATED "200510210000Z"
+       ORGANIZATION 	"Bay Networks, Rapid-City Group"
+       CONTACT-INFO 	"Yu-Ten Lee
+                	 Postal: 	Nortel Networks, Inc. 
+                       	4655 Great America Parkway 
+                     		Santa Clara, CA 95052-8185 
+
+                   	 Tel:	408-495-2560
+                   	 Fax:	408-495-6680 
+                	 E-mail:	ylee@baynetworks.com"
+
+       DESCRIPTION 	"Enterprise MIB for the Accelar product family."
+
+       REVISION "200510210000Z"
+       DESCRIPTION "Verion 46: Added new mibs rcFlowClassifier for 1600"
+	
+       REVISION "200509300000Z" -- 30 Sep 2005
+       DESCRIPTION "Version 45: Modified rcSysDnsServerListTable, sorted objects in rcChassis, & added rcChasSystemMonitorEnable"
+
+       REVISION "200509200000Z" -- 20 Sep 2005
+       DESCRIPTION "Version 44: Added Ipv6 attributes to various tables"
+
+       REVISION "200509090000Z" -- 09 Sep 2005
+       DESCRIPTION "Version 43: Added rcSysVirtualIpv6PrefixLength & rcSysVirtualIpv6Addr"
+
+       REVISION "200508290000Z" -- 29 Aug 2005
+       DESCRIPTION "Version 42: Added rcIsis & rcSlpp"
+
+       REVISION "200507270000Z" -- 27 July 2005
+       DESCRIPTION "Version 41. Increased range for rcCardIndex"
+
+       REVISION "200507190000Z" -- 19 Jul 2005
+       DESCRIPTION "Version 40. Added rcSysAccPolSnmpGrpTable.Included snmp-v3 under 
+       access policy service, removed the default value"
+
+       REVISION "200506020000Z" -- 02 Jun 2005
+       DESCRIPTION "Version 39. Added rcChasMcastCheckPktEnable."
+
+       REVISION "200505060000Z" -- 06 May 2005
+       DESCRIPTION "Version 39. Added rcSysFrcMsgControlTable."
+
+       REVISION "200504270000Z" -- 27 Apr 2005
+       DESCRIPTION "Version 38. Allow 0 length rsa and dsa key sizes."
+
+       REVISION "200504210000Z" -- 21 Apr 2005
+       DESCRIPTION "Version 37. Fixed typos, added rcIpfix."
+
+       REVISION "200504140000Z" -- 14 Apr 2005
+       DESCRIPTION "Version 36. Modified rcSysAccessPolicyService &
+                                rcSyslogHostSeverity mib objects."
+
+       REVISION "200503210000Z" -- 21 Mar 2005
+       DESCRIPTION "Version 35: added rcLacpGlobalVlacpMulticastMACAddress."
+
+       REVISION "200502220000Z" -- 22 Feb 2005
+       DESCRIPTION "Version 34: Changed PortSet definition"
+
+       REVISION "200502181200Z" -- 18 Feb 2005
+       DESCRIPTION "Version 33: Added support for Tacacs"
+
+       REVISION "200502171200Z" -- 17 Feb 2005
+       DESCRIPTION "Version 32: Updated teritory to tertiary"
+
+       REVISION "200502150000Z" -- 15 Feb 2005
+       DESCRIPTION "Version 31: Added rcEsu1800dc"
+
+       REVISION "200502110000Z" -- 11 Feb 2005
+       DESCRIPTION "Version 30: Added rcSystem 92 & 93"
+
+       REVISION "200502040000Z" -- 04 Feb 2005
+       DESCRIPTION "Version 29: Changed range of rcSysVersion, rcCardSerialNumber,
+                                rcChasPowerSupplyDetailSerialNumber,
+                                rcChasPowerSupplyDetailHardwareRevision,
+                                rcChasPowerSupplyDetailPartNumber,
+                                rcCardSerialNumber"
+
+       REVISION "200501160000Z" -- 16 January 2005
+       DESCRIPTION "Version 28: Added rcSysPowerUsage and rcSysPowerAvailable"
+
+       REVISION "200412210000Z" -- 21 December 2004
+       DESCRIPTION "Version 27: Deprecated rcSysAction. Added 
+                                rcSysExtCplimitSysOctapidCongested,
+                                rcSysExtCplimitPortsMonitored,
+                                rcSysExtCplimitPortsShutDown,
+                                rcSysActionL1, rcSysActionL2,
+                                rcSysActionL3, rcSysActionRwa "
+
+       REVISION "200411230000Z" -- 23 November 2004
+       DESCRIPTION "Version 26: Added rcEsu1850 and rcEsu1850dc for ESU device"
+
+       REVISION "200411110000Z" -- 11 November 2004
+       DESCRIPTION "Version 25: Cleaned up REVISIONs and fixed typo."
+
+       REVISION "200411040000Z" -- 04 November 2004
+       DESCRIPTION "Version 24: Added rcSysExtCplimitEnable,rcSysExtCplimitMinCongTime,
+                                rcSysExtCplimitMaxPorts, rcSysExtCplimitPortCongTime,
+                                rcSysExtCplimitTrapLevel."
+
+       REVISION "200409300000Z" -- 30 September 2004
+       DESCRIPTION "Version 22: Fixed type mismatch for mib
+                                rcSysDnsServerListRequestCount/SuccessCount"
+
+       REVISION "200409280000Z" -- 28 September 2004
+       DESCRIPTION "Version 21: Update enum value for mib rcSysDnsServerListType,
+                                update syntax type for RequestCount, SuccessCount,
+                                change rcRepeaterTable OID and add new mib
+                                rcChasNewGlobalFilterOrderingEnable."
+
+       REVISION "200409230000Z" -- 23 September 2004
+       DESCRIPTION "Version 20: Add range for rcAgentId."
+
+       REVISION "200409210000Z" -- 21 September 2004
+       DESCRIPTION "Version 19: Remove range for rcAgentId."  
+
+       REVISION "200409130001Z" -- 13 September 2004
+       DESCRIPTION "Version 18: Added rcCliRWEnable, rcCliRWL1Enable, rcCliRWL2Enable,
+                                rcCliRWL3Enable, rcCliROEnable."  
+
+       REVISION "200409130000Z" -- 13 September 2004
+       DESCRIPTION "Version 17: Added rcSysAutoRecoverDelay, rcSysMacFlapLimitTime,
+                                rcSysMacFlapLimitCount"  
+
+       REVISION "200408310000Z" -- 31 August 2004
+       DESCRIPTION "Version 16: Change rcVlacpPeerMacAddressMltIds to
+                                rcVlacpPeerMacAddressMltId with SYNTAX INTEGER and
+                                rcVlacpPeerMacAddressPort with SYNTAX InterfaceIndex"  
+
+       REVISION "200407070000Z" -- 07 July 2004
+       DESCRIPTION "Version 15: Added rcVlacpPeerMacAddressTable"  
+
+       REVISION "200407060000Z" -- 06 July 2004
+       DESCRIPTION "Version 14:  Added Poe card type poe1400WPS(0x109e3100)"
+
+       REVISION "200406240000Z" -- 24 June 2004
+       DESCRIPTION "Version 13:  Added rcSysSpanningTreeOperMode and
+                                 rcSysSpanningTreeAdminMode"
+
+       REVISION "200406110000Z" -- 11 June 2004
+       DESCRIPTION "Version 12:  Added rcChasRspMode, rcChasRspOperMode,
+                                 and rcChasRspModeError objects"
+
+       ::= { enterprises 2272 }
+
+-- 
+-- Textual Conventions
+--
+
+EnableValue ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION "Enable/Disable value."
+    SYNTAX      INTEGER { enable(1), disable(2) }
+
+PortSet         ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION
+        "The string is 88 octets long, for a total of 704 bits. Each bit
+         corresponds to a port, as represented by its ifIndex value . When a
+         bit has the value one(1), the corresponding port is a member of the
+         set. When a bit has the value zero(0), the corresponding port is not
+         a member of the set. The encoding is such that the most significant
+         bit of octet #1 corresponds to ifIndex 0, while the least significant
+         bit of octet #88 corresponds to ifIndex 703.  In order to accommodate
+         future uses of this the string has a max size of 255 bytes."
+    SYNTAX      OCTET STRING (SIZE (0..255))
+
+IdList ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION ""
+    SYNTAX      OCTET STRING (SIZE(0..8192))
+
+
+--
+-- Enterprise specific MIB groups
+--
+rcMgmt 			OBJECT IDENTIFIER ::= { rapidCity 1 }
+rcA1100			OBJECT IDENTIFIER ::= { rapidCity 2 }
+rcA1250    		OBJECT IDENTIFIER ::= { rapidCity 6 }
+rcA1150    		OBJECT IDENTIFIER ::= { rapidCity 7 }
+rcA1200    		OBJECT IDENTIFIER ::= { rapidCity 8 }
+rcA1050    		OBJECT IDENTIFIER ::= { rapidCity 9 }
+rcA740                  OBJECT IDENTIFIER ::= { rapidCity 20 }
+rcA750                  OBJECT IDENTIFIER ::= { rapidCity 21 }
+rcA790                  OBJECT IDENTIFIER ::= { rapidCity 22 }
+rcA750S                 OBJECT IDENTIFIER ::= { rapidCity 23 }
+rcA8003    		OBJECT IDENTIFIER ::= { rapidCity 280887555 }
+rcA8006    		OBJECT IDENTIFIER ::= { rapidCity 280887558 }
+rcA8010    		OBJECT IDENTIFIER ::= { rapidCity 280887562 }
+rcA8010co               OBJECT IDENTIFIER ::= { rapidCity 1623064842 }
+rcA8610    		OBJECT IDENTIFIER ::= { rapidCity 30 }
+rcA8606    		OBJECT IDENTIFIER ::= { rapidCity 31 }
+rcA8110    		OBJECT IDENTIFIER ::= { rapidCity 32 }
+rcA8106    		OBJECT IDENTIFIER ::= { rapidCity 33 }
+rcA8603    		OBJECT IDENTIFIER ::= { rapidCity 34 }
+rcA8103    		OBJECT IDENTIFIER ::= { rapidCity 35 }
+rcA8110co               OBJECT IDENTIFIER ::= { rapidCity 36 }
+rcA8610co               OBJECT IDENTIFIER ::= { rapidCity 37 }
+-- This is a place holder for OM 2.0 chassises
+-- NOTE that { rapidCity 40 } is also used for the rcBayStack branch,
+-- and so we must be sure that nothing ever gets defined under rcAom8003
+-- in order to avoid any conflicts.
+--rcAom8010                 OBJECT IDENTIFIER ::= { rapidCity 38 }
+--rcAom8010co               OBJECT IDENTIFIER ::= { rapidCity 39 }
+rcBayStack                   OBJECT IDENTIFIER ::= { rapidCity 40 }
+--rcAom8006                 OBJECT IDENTIFIER ::= { rapidCity 41 }
+rcA1424                 OBJECT IDENTIFIER ::= { rapidCity 42 }
+rcA1648                 OBJECT IDENTIFIER ::= { rapidCity 43 }
+rcA1612                 OBJECT IDENTIFIER ::= { rapidCity 44 }
+rcA1624                 OBJECT IDENTIFIER ::= { rapidCity 45 }
+rcRBS2402               OBJECT IDENTIFIER ::= { rapidCity 46 }
+rcAtr8310               OBJECT IDENTIFIER ::= { rapidCity 47 }
+rcAtr8306               OBJECT IDENTIFIER ::= { rapidCity 48 }
+rcAtr8010               OBJECT IDENTIFIER ::= { rapidCity 49 }
+rcAtr8006               OBJECT IDENTIFIER ::= { rapidCity 50 }
+rcEsu1850               OBJECT IDENTIFIER ::= { rapidCity 51 }   
+rcEsu1850dc             OBJECT IDENTIFIER ::= { rapidCity 52 }   
+rcEsu1800dc             OBJECT IDENTIFIER ::= { rapidCity 53 }   
+
+-- From rapidCity 100 to rapidCity 200 is reserved for OM chassises
+
+--
+-- MIB groups.  Note that the ones that are commented out are now defined in
+-- separate MIB files.  These are kept as placeholders here.
+--
+rcSystem  		OBJECT IDENTIFIER ::= { rcMgmt 1 }
+rcTftp 	  		OBJECT IDENTIFIER ::= { rcMgmt 2 }
+rcVlan 	  		OBJECT IDENTIFIER ::= { rcMgmt 3 }
+rcChassis 		OBJECT IDENTIFIER ::= { rcMgmt 4 }
+rcMirror		OBJECT IDENTIFIER ::= { rcMgmt 5 }
+rcDipSwitch		OBJECT IDENTIFIER ::= { rcMgmt 6 }
+rcTblSize		OBJECT IDENTIFIER ::= { rcMgmt 7 }
+rcIp			OBJECT IDENTIFIER ::= { rcMgmt 8 }
+rcArp			OBJECT IDENTIFIER ::= { rcMgmt 9 }
+rcRip			OBJECT IDENTIFIER ::= { rcMgmt 10 }
+rcTest			OBJECT IDENTIFIER ::= { rcMgmt 11 }
+rcStat			OBJECT IDENTIFIER ::= { rcMgmt 12 }
+rcStg			OBJECT IDENTIFIER ::= { rcMgmt 13 }
+rcBridge		OBJECT IDENTIFIER ::= { rcMgmt 14 }
+rcBoot			OBJECT IDENTIFIER ::= { rcMgmt 15 }
+rcDevice		OBJECT IDENTIFIER ::= { rcMgmt 16 }
+rcMlt			OBJECT IDENTIFIER ::= { rcMgmt 17 }
+rcWeb			OBJECT IDENTIFIER ::= { rcMgmt 18 }
+rcCli			OBJECT IDENTIFIER ::= { rcMgmt 19 }
+rcError			OBJECT IDENTIFIER ::= { rcMgmt 20 }
+rcTraps			OBJECT IDENTIFIER ::= { rcMgmt 21 }
+rcSyslog		OBJECT IDENTIFIER ::= { rcMgmt 22 }
+rcDiag          	OBJECT IDENTIFIER ::= { rcMgmt 23 }
+rcIpx 			OBJECT IDENTIFIER ::= { rcMgmt 24 }
+rcPos                   OBJECT IDENTIFIER ::= { rcMgmt 26 }
+rcLinkFlapDetect        OBJECT IDENTIFIER ::= { rcMgmt 27 }
+rcV1Traps               OBJECT IDENTIFIER ::= { rcMgmt 28 }
+rcRadius                OBJECT IDENTIFIER ::= { rcMgmt 29 }
+rcIgmp                  OBJECT IDENTIFIER ::= { rcMgmt 30 }
+rcUserSetTime           OBJECT IDENTIFIER ::= { rcMgmt 31 }
+rcL2Redundancy          OBJECT IDENTIFIER ::= { rcMgmt 32 }
+rcNtp        		OBJECT IDENTIFIER ::= { rcMgmt 33 }
+rcSsh        		OBJECT IDENTIFIER ::= { rcMgmt 34 }
+rcSvlan        		OBJECT IDENTIFIER ::= { rcMgmt 35 }
+rcOpm                   OBJECT IDENTIFIER ::= { rcMgmt 36 }
+rcVpn                   OBJECT IDENTIFIER ::= { rcMgmt 37 }
+rcOeAdm                 OBJECT IDENTIFIER ::= { rcMgmt 38 }
+rcTlsVpn                OBJECT IDENTIFIER ::= { rcMgmt 39 }
+rcTls                   OBJECT IDENTIFIER ::= { rcMgmt 40 }
+rcCos                   OBJECT IDENTIFIER ::= { rcMgmt 41 }
+rcBanRing               OBJECT IDENTIFIER ::= { rcMgmt 42 }
+rcTengEnet      	OBJECT IDENTIFIER ::= { rcMgmt 50 }
+rcRec                   OBJECT IDENTIFIER ::= { rcMgmt 51 }
+rcTdc                   OBJECT IDENTIFIER ::= { rcMgmt 52 }
+rcLacp                  OBJECT IDENTIFIER ::= { rcMgmt 53 }
+rcQos                   OBJECT IDENTIFIER ::= { rcMgmt 54 }
+rcFilter                OBJECT IDENTIFIER ::= { rcMgmt 55 }
+rcLicense               OBJECT IDENTIFIER ::= { rcMgmt 56 }
+rcEap                   OBJECT IDENTIFIER ::= { rcMgmt 57 }
+rcMcast                 OBJECT IDENTIFIER ::= { rcMgmt 58 }
+rcOspf                  OBJECT IDENTIFIER ::= { rcMgmt 59 }
+rcFdb                   OBJECT IDENTIFIER ::= { rcMgmt 60 }
+rcIgap                  OBJECT IDENTIFIER ::= { rcMgmt 61 }
+rcIpv6                  OBJECT IDENTIFIER ::= { rcMgmt 62 }
+rcIsis	                OBJECT IDENTIFIER ::= { rcMgmt 63 }
+rcSlpp	                OBJECT IDENTIFIER ::= { rcMgmt 64 }
+rcTacacs                OBJECT IDENTIFIER ::= { rcMgmt 65 }
+rcIpfix                 OBJECT IDENTIFIER ::= { rcMgmt 66 }
+rcOspfv3	       OBJECT IDENTIFIER ::= { rcMgmt 67 }
+rcFlowClassifier        OBJECT IDENTIFIER ::= { rcMgmt 68 }
+rc2k                    OBJECT IDENTIFIER ::= { rcMgmt 100 }
+rcOm8k                  OBJECT IDENTIFIER ::= { rcMgmt 200 }
+cobra                   OBJECT IDENTIFIER ::= { rcMgmt 201 }
+rcPowerRanger           OBJECT IDENTIFIER ::= { rcMgmt 202 }
+
+-- LOGICAL (System) Elements
+
+rcSysIpAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "This entity's IP address."
+        ::= { rcSystem 1 }
+
+rcSysNetMask OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "This entity's subnet mask."
+        ::= { rcSystem 2 }
+
+rcSysBroadcast OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "This entity's broadcast address."
+        ::= { rcSystem 3 }
+
+-- Community Strings
+
+rcSysCommReadWriteAll OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "When an SNMP message is received by this entity, the
+                      community string in the message is compared with this
+                      string first.  If it matches, read-write access is
+                      granted to all items in the MIB.  If it doesn't
+                      match, the rcSysCommReadWrite string is compared next."
+        ::= { rcSystem 4 }
+
+rcSysCommReadWrite OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "When an SNMP message is received by this entity, the
+                      community string in the message is compared with this
+                      string second.  If it matches, read-write access is
+                      granted to all items in the MIB except community
+                      strings.  (Community strings appear empty when read
+                      and return a no such name error when an attempt is
+                      made to write them.)  If it doesn't match, the
+                      rcSysCommReadWriteLayer3 string is compared next."
+        ::= { rcSystem 5 }
+
+rcSysCommReadOnly OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "When an SNMP message is received by this entity, the
+                      community string in the message is compared with this
+                      string third.  If it matches, read-only access is
+                      granted to all items in the MIB except community
+                      strings.  (Community strings appear empty when read.)
+                      If it doesn't match, no access is granted, no
+                      response is sent back to the SNMP requester, and
+                      SNMP traps are sent to the SNMP trap receiver(s) if
+                      configured."
+        ::= { rcSystem 6 }
+
+-- Other
+
+rcSysVersion OBJECT-TYPE
+	SYNTAX 		DisplayString (SIZE (0..80))
+	MAX-ACCESS 		read-only
+	STATUS 		current
+	DESCRIPTION	"Software version running on device"
+	::= { rcSystem 7 }
+
+rcSysAction OBJECT-TYPE
+        SYNTAX       INTEGER {
+                         none(1),               -- none of the following
+                         hardReset(2),          -- power on tests
+                         softReset(3),          -- reset w/o power on tests
+                         saveToNVRAM(4),        -- save current config to NVRAM
+                         resetCounters(5),      -- reset all statistic counters
+                         saveToStandbyNVRAM(6), -- save config to slave NVRAM
+                         cpuSwitchOver(7),      -- CPU board switch-over
+		         checkSwInFlash(8),       
+		         checkSwInPcmcia(9),
+			 resetConsole(10),
+			 resetModem(11),
+			 flushIpRouteTbl(12),
+			 saveRuntimeConfig(13),		-- 8k only
+			 saveRuntimeConfigToSlave(14),	-- 8k only
+			 saveBootConfig(15),		-- 8k only
+			 saveSlaveBootConfig(16), 	-- 8k only
+                         resetIstStatCounters(17),
+--			 being used in rel2.2(18)
+--			 being used in rel2.2(19)
+--			 reserve(20)
+--			 reserve(21)
+                         resetEsmPortStats(22)
+ 	              }
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+	DESCRIPTION   "Initiate a system action."
+	DEFVAL 	      { none }
+        ::= { rcSystem 8 }
+
+rcSysResult OBJECT-TYPE
+	SYNTAX       INTEGER {
+		         none(1),		-- none of the following
+		         inProgress(2),		-- in progress
+		         success(3),		-- success
+		         fail(4),		-- failure
+		         flashReadFailed(5),	-- could not read from flash
+		         pcmciaReadFailed(6),	-- could not read from pcmcia
+		         crcCheckFailed(7),
+                         noStandbyCpu(8)
+	              }
+        MAX-ACCESS    read-only
+        STATUS        current
+	DESCRIPTION   "Result from the last system action."
+	DEFVAL 	      { none }
+        ::= { rcSystem 9 }
+
+rcSysLastChange OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Last management initiated configuration 
+		      change since sysUpTime."
+        ::= { rcSystem 10 }
+
+rcSysLastVlanChange OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Last management initiated VLAN configuration 
+		      change since sysUpTime."
+        ::= { rcSystem 11 }
+
+rcSysLastStatisticsReset OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Last management initiated statistics reset 
+		      since sysUpTime."
+        ::= { rcSystem 12 }
+
+-- Global Statistics
+
+rcSysBufferUtil OBJECT-TYPE
+	SYNTAX        INTEGER (0..100)
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "Buffer utilization as a percentage of the
+                      total amount of buffer space in the system.  
+                      A high value indicates congestion."
+	::= { rcSystem 13 }
+
+rcSysBufferUtilPeak OBJECT-TYPE
+	SYNTAX        INTEGER (0..100)
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "The largest buffer utilization since sysUpTime"
+	::= { rcSystem 14 }
+
+rcSysBufferUtilPeakTime OBJECT-TYPE
+	SYNTAX        TimeTicks
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "Timestamp for rcSysPeakBandwidth"
+	::= { rcSystem 15 }
+
+rcSysNVRamSize OBJECT-TYPE
+	SYNTAX        Gauge32
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "Total Non-volatile RAM in Kbytes"
+	::= { rcSystem 16 }
+
+rcSysNVRamUsed OBJECT-TYPE
+	SYNTAX        Gauge32
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "Non-volatile RAM in use in Kbytes"
+	::= { rcSystem 17 }
+
+rcSysLastSaveToNVRam    OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "SysUpTime of the last time when NVRAM was
+                      written to.  This could be a save of the system
+                      configuration or via a file transfer of a
+                      configuration file."
+        ::= { rcSystem 18 }
+
+rcSysLastSaveToStandbyNVRam OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "SysUpTime of the last time when the standby NVRAM
+                      (on the back-up CPU board) was written to."
+        ::= { rcSystem 19 }
+
+rcSysCpuUtil OBJECT-TYPE
+        SYNTAX        Gauge32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Percentage of CPU utilization"
+        ::= { rcSystem 20 }
+
+rcSysSwitchFabricUtil OBJECT-TYPE
+        SYNTAX        Gauge32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Percentage of Switching Fabric utilization"
+        ::= { rcSystem 21 }
+
+rcSysRmonMemSize OBJECT-TYPE
+        SYNTAX        INTEGER (250000..4000000)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Amount of RAM in bytes to allocate for RMON
+                      to use when rcSysRmonEnable is TRUE."
+        ::= { rcSystem 22 }
+
+rcSysRmonEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Control whether the RMON feature should be
+                      enabled.
+
+		      To enable the RMON feature, set this variable to
+		      true.  The RMON agent in the device will get 
+                      started immediately if the amount of memory
+		      specified by rcSysRmonMemSize is currently
+		      available in the device.
+
+		      To disable the RMON feature, set this variable to
+		      false, save the new setting to NVRAM, and reboot
+		      the device.  After the device is rebooted the
+		      RMON agent will not be operational." 
+        ::= { rcSystem 23 }
+
+rcSysRmonSaveConfig OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Control whether RMON configuration information 
+                      should be saved to NVRAM so RMON settings can 
+                      be automatically reinstalled after a system
+                      reboot. 
+
+		      Setting rcSysRmonSaveConfig to true does not 
+		      immediately save the configuration information.
+		      The save happens when the rcSysAction variable 
+		      is set to 'saveToNVRAM(4)'.
+
+                      This option is only meaningful when the 
+                      rcSysRmonEnable variable is set to true."
+        ::= { rcSystem 24 }
+
+rcSysRmonTrapOption OBJECT-TYPE
+        SYNTAX        INTEGER {
+		 	 toOwner(1),
+			 toAll(2)
+		      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to indicate whether RMON traps should be
+		      sent to only the owner of the RMON alarm (i.e.,
+		      the manager that created the alarm entry) or 
+		      all trap recipients in the system trap receiver
+		      table."
+	DEFVAL	      { toOwner }
+        ::= { rcSystem 25 }
+
+rcSysSupportRouting OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate whether routing is supported
+                      in this product."
+        ::= { rcSystem 26 }
+
+rcSysSupportWebServer OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate whether WebServer is supported
+                      in this product."
+        ::= { rcSystem 27 }
+
+rcSysLastIpAddrChange OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Last management initiated IP address change 
+                       since sysUpTime.  Any addition or deletion of
+                       an IP address to a single routable port or
+                       a VLAN is time-stamped by this variable."
+        ::= { rcSystem 28 }
+
+rcSysCommReadWriteLayer3 OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "When an SNMP message is received by this entity, the
+                      community string in the message is compared with this
+                      string third.  If it matches, read-write access is 
+		      granted to all Layer-3 items in the MIB except community
+                      strings.  (Community strings appear empty when read
+                      and return a no such name error when an attempt is
+                      made to write them.)  If it doesn't match, the
+                      rcSysCommReadWriteLayer2 string is compared next."
+        ::= { rcSystem 29 }
+
+rcSysCommReadWriteLayer2 OBJECT-TYPE 
+        SYNTAX        DisplayString (SIZE (0..20)) 
+        MAX-ACCESS    read-write 
+        STATUS        current 
+        DESCRIPTION   "When an SNMP message is received by this entity, the 
+                      community string in the message is compared with this 
+                      string fourth.  If it matches, read-write access is 
+                      granted to all Layer-2 items in the MIB except community
+                      strings.  (Community strings appear empty when read 
+                      and return a no such name error when an attempt is
+                      made to write them.)  If it doesn't match, the
+                      rcSysCommReadOnly string is compared next." 
+        ::= { rcSystem 30 }
+
+rcSysAccessPolicyEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to configure the system access policy feature.
+		      if 'true', the rcSysAccessPolicyTable is examined to
+		      determine which packets should be allowed or denied
+                      access to this device." 
+	DEFVAL	      { false }
+        ::= { rcSystem 31 }
+
+rcSysDefaultRuntimeConfigFileName OBJECT-TYPE
+        SYNTAX        DisplayString
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "default config."
+        ::= { rcSystem 32 }
+ 
+rcSysDefaultBootConfigFileName OBJECT-TYPE
+        SYNTAX        DisplayString
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "default boot config."
+        ::= { rcSystem 33 }
+ 
+rcSysConfigFileName OBJECT-TYPE
+        SYNTAX        	DisplayString (SIZE(0..255))
+        MAX-ACCESS        	read-write
+        STATUS        	current
+        DESCRIPTION   	"File name used in conjunction with rcSysAction.
+
+			If rcSysAction is set to 'saveRuntimeConfig' or
+			'saveRuntimeConfigToSlave' then this file name
+			will be used instead of the file name specified
+			in rcSysDefaultRuntimeConfigFileName.  
+
+			If rcSysAction is set to 'saveBootConfig' or
+			'saveBootConfigToSlave' then this file name will
+			be used insteaad of the file name specified in
+			rcSysDefaultBootConfigFileName.
+
+			If the file name is blank (i.e., nothing is
+			entered) then the default file name will be
+			used."
+        ::= { rcSystem 34 }
+ 
+rcSysLastRunTimeConfigSave OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "SysUpTime of the last time when the run time
+                      configuration was written to."
+        ::= { rcSystem 35 }
+
+rcSysLastRunTimeConfigSaveToSlave OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "SysUpTime of the last time when the run time
+                      configuration was written to slave NVRAM."
+        ::= { rcSystem 36 }
+
+rcSysLastBootConfigSave OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "SysUpTime of the last time when the boot
+                      configuration was written to."
+        ::= { rcSystem 37 }
+
+rcSysLastBootConfigSaveOnSlave OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "SysUpTime of the last time when the boot
+                      configuration was written on the slave NVRAM."
+        ::= { rcSystem 38 }
+
+rcSysRmonUtilizationMethod OBJECT-TYPE	--excluded
+        SYNTAX        INTEGER {
+                         halfDuplex(1),
+                         fullDuplex(2)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to control whether RMON should use a half-duplex
+                       or full-duplex formula to calculate port utilization.
+                       When set to 'halfDuplex', RMON will use InOctets and
+                       the port's speed to calculate port utilization (this
+                       is the standard RMON rfc1271 convention).
+                       When set to 'fullDuplex', RMON will use InOctets and
+                       OutOctets and 2X the port's speed to calculate port
+                       utilization. Furthermore, if this variable is set to
+                       'fullDuplex', but the port is operating in a
+                       half-duplex mode, the calculation defaults back to
+                       the rfc1271 convention."
+        DEFVAL        { halfDuplex }
+        ::= { rcSystem 39 }
+ 
+rcSysCommReadWriteLayer1 OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "read-write L1 access"
+        ::= { rcSystem 40 }
+
+rcSysOtherBufferUtil OBJECT-TYPE
+        SYNTAX        Gauge32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "bw currently consumed"
+        ::= { rcSystem 41 }
+ 
+rcSysOtherBufferUtilPeak OBJECT-TYPE
+        SYNTAX        Gauge32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "peak bw since reset"
+        ::= { rcSystem 42 }
+
+rcSysOtherBufferUtilPeakTime OBJECT-TYPE
+        SYNTAX        TimeTicks
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "timestamp for rcSysPeakBw"
+        ::= { rcSystem 43 }
+ 
+rcSysOtherCpuUtil OBJECT-TYPE
+        SYNTAX        Gauge32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "% cpu utilization"
+        ::= { rcSystem 44 }
+
+rcSysOtherSwitchFabricUtil OBJECT-TYPE
+        SYNTAX        Gauge32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "% switch fabric util"
+        ::= { rcSystem 45 }
+
+rcSysDramSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Dram size in mega-bytes"
+        ::= { rcSystem 46 }
+ 
+rcSysDramUsed OBJECT-TYPE
+        SYNTAX        Gauge32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Dram used in percentage"
+        ::= { rcSystem 47 }
+ 
+rcSysDramFree OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Dram free size in kilo-bytes"
+        ::= { rcSystem 48 }
+ 
+rcSysDramMaxBlockFree OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Dram max block free size in kilo-bytes"
+        ::= { rcSystem 49 }
+ 
+rcSysVirtualIpAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Virtual IP is an IP address that owned and
+		       advertised only by the master CPU. So whichever 
+		       CPU is master registers this IP address. Unlike the
+		       management IP address, this address goes in the 
+		       switch config file and not the boot config"
+        ::= { rcSystem 51 }
+ 
+rcSysVirtualNetMask OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Net mask of the management virtual Ip address"
+        ::= { rcSystem 52 }
+ 
+rcSysReadWriteLevel OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The status of the read/write level"
+        ::= { rcSystem 53 }
+
+rcSysMTUSize OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         mtu1950(1),
+                         mtu9600(2),
+                         mtu1522(3)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "This is the maximum transmission size of frames that all
+                       the ports on the chassis support."
+        DEFVAL   { mtu1950 }
+        ::= { rcSystem 55 }
+
+rcSysClockSyncTime OBJECT-TYPE
+        SYNTAX        INTEGER (15..3600)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Time interval at which RTC and system clocks are
+                       synchronized."
+        DEFVAL   { 60 }
+        ::= { rcSystem 56 }
+
+rcSysForceTrapSender OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "This is a flag that if user wants to configured
+                       CLIP (Circuit Less IP) as trap originator."
+        ::= { rcSystem 57 }
+
+rcSysMrouteStrLimit OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "enable or disable mroute stream limit in system."
+        DEFVAL        { false }
+        ::= { rcSystem 58 }
+
+-- Trap Receiver Table
+ 
+rcSysTrapRecvTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcSysTrapRecvEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "The trap receiver table (0 to 25 entries).  This
+                      table lists the addresses of Network Management
+                      Stations that should receive trap messages from 
+                      this entity when an exception condition occurs."
+        ::= { rcSystem 60 }
+
+rcSysTrapRecvEntry OBJECT-TYPE
+        SYNTAX        RcSysTrapRecvEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "A trap receiver table entry."
+        INDEX         { rcSysTrapRecvAddress }
+        ::= { rcSysTrapRecvTable 1 }
+ 
+RcSysTrapRecvEntry ::=
+        SEQUENCE {
+                rcSysTrapRecvAddress IpAddress,
+                rcSysTrapRecvVersion INTEGER,
+                rcSysTrapRecvCommunity DisplayString,
+                rcSysTrapRecvSrcAddress IpAddress,
+                rcSysTrapRecvRowStatus RowStatus
+        }
+ 
+rcSysTrapRecvAddress OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "IP address for trap receiver."
+        ::= { rcSysTrapRecvEntry 1 }
+ 
+rcSysTrapRecvVersion OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         v1(1),          
+                         v2c(2)
+                      }
+        MAX-ACCESS    read-write
+        STATUS	      deprecated
+        DESCRIPTION   "The version of trap receiver."
+        DEFVAL 	      { v1 }
+	::= { rcSysTrapRecvEntry 2 }
+
+rcSysTrapRecvCommunity OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Community string used for trap messages to this
+                       trap receiver."
+        ::= { rcSysTrapRecvEntry 3 }
+
+rcSysTrapRecvSrcAddress OBJECT-TYPE 
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Source IP address to use when sending traps.
+		       This IP address will be inserted into the
+		       source IP address field in the UDP trap packet."
+        ::= { rcSysTrapRecvEntry 4 } 
+ 
+rcSysTrapRecvRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Used to create/delete entries"
+        ::= { rcSysTrapRecvEntry 5 }
+
+
+-- Access Policy Table
+ 
+rcSysAccessPolicyTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcSysAccesspolicyEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Management access policy table.  This table is 
+		       used to permit or deny access to this device via
+		       the specified source Id."
+        ::= { rcSystem 61 }
+
+rcSysAccessPolicyEntry OBJECT-TYPE
+        SYNTAX        RcSysAccesspolicyEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "An access policy table entry."
+        INDEX         { rcSysAccessPolicyId }
+        ::= { rcSysAccessPolicyTable 1 }
+ 
+RcSysAccesspolicyEntry ::=
+        SEQUENCE {
+                rcSysAccessPolicyId INTEGER,
+                rcSysAccessPolicyName DisplayString,
+                rcSysAccessPolicyPolicyEnable TruthValue,
+                rcSysAccessPolicyMode INTEGER,
+                rcSysAccessPolicyService INTEGER,
+                rcSysAccessPolicyPrecedence INTEGER,
+                rcSysAccessPolicyNetAddr IpAddress,
+                rcSysAccessPolicyNetMask IpAddress,
+                rcSysAccessPolicyTrustedHostAddr IpAddress,
+                rcSysAccessPolicyTrustedHostUserName DisplayString,
+                rcSysAccessPolicyAccessLevel INTEGER,
+                rcSysAccessPolicyLog TruthValue,
+                rcSysAccessPolicyUsage Counter32,
+                rcSysAccessPolicyRowStatus RowStatus,
+                rcSysAccessPolicyAccessStrict TruthValue,
+		rcSysAccessPolicyNetInetAddrType InetAddressType,
+                rcSysAccessPolicyNetInetAddress InetAddress,
+                rcSysAccessPolicyNetInetAddrPrefixLen InetAddressPrefixLength,
+                rcSysAccessPolicyTrustedHostInetAddress InetAddress
+        }
+ 
+rcSysAccessPolicyId OBJECT-TYPE 
+        SYNTAX        INTEGER (1..65535)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Policy Id."
+        ::= { rcSysAccessPolicyEntry 1 } 
+
+rcSysAccessPolicyName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..15))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Name of this policy."
+        ::= { rcSysAccessPolicyEntry 2 }
+
+rcSysAccessPolicyPolicyEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Indicate whether this policy is currently 
+                       active."
+	DEFVAL	      { true }
+        ::= { rcSysAccessPolicyEntry 3 }
+
+rcSysAccessPolicyMode OBJECT-TYPE
+        SYNTAX        INTEGER {
+                        allow(1), 
+                        deny(2)
+                      }          
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to indicate whether a packet having a
+		       source IP address that matches this entry
+		       should be permitted to enter the device or
+ 		       denied access." 
+	DEFVAL	      { allow }
+        ::= { rcSysAccessPolicyEntry 4 }
+
+rcSysAccessPolicyService OBJECT-TYPE
+        SYNTAX        INTEGER (0..255)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Is represented as bitset to indicate which protocol
+                      this entry should be applied to.
+                      Value is one of multiple(logical 'OR')
+                      of the following values: 
+                      telnet(1): enables telnet service
+                      snmp(2): enables snmp service
+                      tftp(4): enables tftp service
+                      ftp(8): enables ftp service
+                      http(16): enables http service
+                      rlogin(32): enables rlogin service
+                      ssh(64): enables ssh service
+                      snmp-v3(128): enables snmp service for v3 groups."
+        ::= { rcSysAccessPolicyEntry 5 }
+
+rcSysAccessPolicyPrecedence OBJECT-TYPE
+        SYNTAX        INTEGER (1..128)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to indicate the precedence of this policy.
+		       The Lower the number the higher the precedence."
+	DEFVAL	      { 10 }
+        ::= { rcSysAccessPolicyEntry 6 }
+
+rcSysAccessPolicyNetAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Source network IP address."
+        ::= { rcSysAccessPolicyEntry 7 }
+ 
+rcSysAccessPolicyNetMask OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Source network mask."
+        ::= { rcSysAccessPolicyEntry 8 }
+ 
+rcSysAccessPolicyTrustedHostAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Trusted IP address of host performing a rlogin
+		       into the device."
+        ::= { rcSysAccessPolicyEntry 9 }
+ 
+rcSysAccessPolicyTrustedHostUserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..30))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name on the trusted host performing a rlogin
+                       into the device."
+        ::= { rcSysAccessPolicyEntry 10 }
+
+rcSysAccessPolicyAccessLevel OBJECT-TYPE
+        SYNTAX        INTEGER {
+                        readOnly(1), 
+                        readWrite(2),
+                        readWriteAll(3)
+                      }          
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Access level of trusted host." 
+	DEFVAL	      { readOnly }
+        ::= { rcSysAccessPolicyEntry 11 }
+
+rcSysAccessPolicyLog OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to indicate whether logging should be 
+		       performed if this policy was applied."
+	DEFVAL	      { false }
+        ::= { rcSysAccessPolicyEntry 12 }
+
+rcSysAccessPolicyUsage OBJECT-TYPE
+        SYNTAX  	Counter32
+        MAX-ACCESS  	read-only
+        STATUS  	current
+        DESCRIPTION 	"Usage Counter"
+        ::= { rcSysAccessPolicyEntry 13 }
+
+rcSysAccessPolicyRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to create/delete an entry"
+        ::= { rcSysAccessPolicyEntry 14 }
+
+rcSysAccessPolicyAccessStrict OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to restrict the access level specified in
+                       the system access policy table to exactly the
+                       same access level as specified by user. If TRUE
+                       then only the access level in the policy table
+                       is allowed access. If FALSE, then the default
+                       behavior is to assume the access level specified
+                       in policy table as the floor."
+          DEFVAL        { false }
+        ::= { rcSysAccessPolicyEntry 15 }
+
+rcSysAccessPolicyNetInetAddrType OBJECT-TYPE
+        SYNTAX        InetAddressType
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Source network Inet Address Type."
+        ::= { rcSysAccessPolicyEntry 16 }
+
+rcSysAccessPolicyNetInetAddress OBJECT-TYPE
+        SYNTAX        InetAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Source network Inet Address (prefix/network)."
+        ::= { rcSysAccessPolicyEntry 17 }
+
+rcSysAccessPolicyNetInetAddrPrefixLen OBJECT-TYPE
+        SYNTAX        InetAddressPrefixLength
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Source network Inet Address Prefix-Length/Mask."
+        ::= { rcSysAccessPolicyEntry 18 }
+
+rcSysAccessPolicyTrustedHostInetAddress OBJECT-TYPE
+        SYNTAX        InetAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Trusted Inet address of host performing a rlogin
+                       into the device."
+        ::= { rcSysAccessPolicyEntry 19 }
+
+
+-- Trap Sender Address Table
+
+rcSysTrapSenderTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcSysTrapSenderEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "The trap sender table (0 to 25 entries).  This
+                      table lists the addresses of Network Management
+                      Stations and the Source Address that should receive
+                      trap messages from this entity when an exception
+                      condition occurs."
+        ::= { rcSystem 62 }
+
+rcSysTrapSenderEntry OBJECT-TYPE
+        SYNTAX        RcSysTrapSenderEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A trap sender table entry."
+        INDEX         { rcSysTrapSenderRecvAddress }
+        ::= { rcSysTrapSenderTable 1 }
+
+RcSysTrapSenderEntry ::=
+        SEQUENCE {
+                rcSysTrapSenderRecvAddress IpAddress,
+                rcSysTrapSenderSrcAddress  IpAddress
+        }
+
+rcSysTrapSenderRecvAddress OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "IP address for trap receiver."
+        ::= { rcSysTrapSenderEntry 1 }
+
+rcSysTrapSenderSrcAddress OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS       current
+        DESCRIPTION   "IP address for trap sender."
+          ::= { rcSysTrapSenderEntry 2 }
+
+
+-- DNS Server List Mibs
+
+rcSysDnsServerListTableSize OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Used to indicate the number of entries in the
+                         table."
+        ::= { rcSystem 63 }
+
+rcSysDnsServerListTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcSysDnsServerListEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "DNS serever list table used to store the
+                       details of the DNS server configured."
+        ::= { rcSystem 64 }
+
+rcSysDnsServerListEntry OBJECT-TYPE
+        SYNTAX        RcSysDnsServerListEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "table entry."
+        INDEX         {rcSysDnsServerListType}
+        ::= { rcSysDnsServerListTable 1 }
+
+RcSysDnsServerListEntry ::=
+        SEQUENCE {
+                rcSysDnsServerListType          INTEGER,
+                rcSysDnsServerListIp            IpAddress, -- deprecated
+                rcSysDnsServerListStatus        INTEGER,
+                rcSysDnsServerListRequestCount  Counter32,
+                rcSysDnsServerListSuccessCount  Counter32,
+                rcSysDnsServerListRowStatus     RowStatus,
+                rcSysDnsServerListAddressType     InetAddressType,
+                rcSysDnsServerListAddress     InetAddress
+        }
+
+rcSysDnsServerListType OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         primary(0),
+                         secondary(1),
+                         tertiary(2)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Type of the DNS server"
+        ::= { rcSysDnsServerListEntry 1 }
+
+rcSysDnsServerListIp OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "IP address of the DNS server"
+        ::= { rcSysDnsServerListEntry 2 }
+
+rcSysDnsServerListStatus OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         active(0),
+                         in-active(1)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Status of DNS server"
+        ::= { rcSysDnsServerListEntry 3 }
+
+rcSysDnsServerListRequestCount OBJECT-TYPE
+        SYNTAX        Counter32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Number of request send to this server"
+        ::= { rcSysDnsServerListEntry 4 }
+
+rcSysDnsServerListSuccessCount OBJECT-TYPE
+        SYNTAX        Counter32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Number of request send to this server which
+                       are successful"
+        ::= { rcSysDnsServerListEntry 5 }
+
+rcSysDnsServerListRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to create/delete DNS server entries
+                       in rcSysDnsServerListTable."
+        ::= { rcSysDnsServerListEntry 6 }
+
+rcSysDnsServerListAddressType  OBJECT-TYPE
+        SYNTAX        InetAddressType
+        MAX-ACCESS    read-create
+        STATUS        current
+        DESCRIPTION   "The type of ip address configured by the DNS server"
+        ::= { rcSysDnsServerListEntry 7 }
+
+rcSysDnsServerListAddress  OBJECT-TYPE
+        SYNTAX        InetAddress
+        MAX-ACCESS    read-create
+        STATUS        current
+        DESCRIPTION   "The ip address configured by the DNS server"
+        ::= { rcSysDnsServerListEntry 8 }
+
+-- DNS Host Table
+
+rcSysDnsHostTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcSysDnsHostEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "DNS Host table."
+        ::= { rcSystem 65 }
+
+rcSysDnsHostEntry OBJECT-TYPE
+        SYNTAX        RcSysDnsHostEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "table entry."
+        INDEX         { rcSysDnsHostData }
+        ::= { rcSysDnsHostTable 1 }
+
+RcSysDnsHostEntry ::=
+        SEQUENCE {
+                rcSysDnsHostData          OCTET STRING,
+                rcSysDnsHostName          OCTET STRING,
+                rcSysDnsHostIpAddress     IpAddress,  -- deprecated
+                rcSysDnsHostSource        OCTET STRING,
+                rcSysDnsHostAddressType    InetAddressType,
+                rcSysDnsHostAddress       InetAddress
+        }
+
+rcSysDnsHostData OBJECT-TYPE
+        SYNTAX        OCTET STRING (SIZE(0..256))
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Host Name or Host IP Address."
+        ::= { rcSysDnsHostEntry 1 }
+
+rcSysDnsHostName OBJECT-TYPE
+        SYNTAX        OCTET STRING (SIZE(0..256))
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Host Name."
+        ::= { rcSysDnsHostEntry 2 }
+
+rcSysDnsHostIpAddress OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "Host IP Address."
+        ::= { rcSysDnsHostEntry 3 }
+
+rcSysDnsHostSource OBJECT-TYPE
+        SYNTAX        OCTET STRING (SIZE(0..256))
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "DNS Server IP or /etc/host file."
+        ::= { rcSysDnsHostEntry 4 }
+
+rcSysDnsHostAddressType OBJECT-TYPE
+        SYNTAX        InetAddressType
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The type of ip address for the DNS host"
+        ::= { rcSysDnsHostEntry 5 }
+
+rcSysDnsHostAddress OBJECT-TYPE
+        SYNTAX        InetAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The ip address of the DNS host"
+        ::= { rcSysDnsHostEntry 6 }
+
+rcSysMsgLogFrequency OBJECT-TYPE
+        SYNTAX        INTEGER (2..500)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to specify the maximum frequency/count
+                       of the occurence of the Log Message."
+        ::= { rcSystem 66 }
+
+rcSysMsgLogText OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE(0..3))
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "A textual string containing the first four
+                       characters of the Log Message."
+        ::= { rcSystem 67 }
+
+rcSysForceIpHdrSender OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Flag to decide if IP header source address will
+                       be matched with SNMP header sender networks."
+        DEFVAL        { false }
+        ::= { rcSystem 68 }
+
+rcSysVlanMaxId OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         maxId2000(2000),
+                         maxId4000(4000)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The maximum vlan Id that supported"
+        DEFVAL        { maxId2000 }
+        ::= { rcSystem 69 }
+
+rcSysDnsDomainName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..255))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Default domain used for querying the DNS Server."
+        ::= { rcSystem 70 }
+
+
+rcSysDnsServerListIpAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "DNS server's IP address "
+        ::= { rcSystem 71 }
+
+rcSysDnsRequestType OBJECT-TYPE
+        SYNTAX        INTEGER {
+                      request (0),
+                      response (1)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "DNS Type: Whether it was Dns Request or a Response"
+        ::= { rcSystem 72 }
+
+
+rcSysSpanningTreeOperMode OBJECT-TYPE
+        SYNTAX        INTEGER {
+                     nortelStpg(1), 
+                     pvst(2), 
+                     rstp(3), 
+                     mstp(4) 
+                    } 
+          MAX-ACCESS   read-only 
+          STATUS    current 
+          DESCRIPTION  "This object indicates the current spanning-tree mode of the system. . 
+                 The meaning of specific values is: 
+                  nortelStpg(1) .. The older proprietary mode which supports multiple spanning tree groups. 
+                  pvst(2) ........ Emulation of C***O spanning tree mode 
+                  rstp(3) ........ IEEE 802.1w mode 
+                  mstp(4) ........ IEEE 802.1s mode ." 
+          DEFVAL        { nortelStpg }
+            ::= { rcSystem 73} 
+
+rcSysSpanningTreeAdminMode OBJECT-TYPE 
+        SYNTAX        INTEGER {
+                     nortelStpg(1), 
+                     pvst(2), 
+                     rstp(3), 
+                     mstp(4) 
+                    } 
+          MAX-ACCESS   read-write 
+          STATUS    current 
+          DESCRIPTION  "This object indicates the desired spanning-tree mode of the system. 
+                 The meaning of specific values is: 
+                  nortelStpg(1) .. The older proprietary mode which supports multiple spanning tree groups. 
+                  pvst(2) ........ Emulation of C***O spanning tree mode 
+                  rstp(3) ........ IEEE 802.1w mode 
+                  mstp(4) ........ IEEE 802.1s mode 
+
+                Note that depending on the current value of rcSysSpanningTreeOperMode and 
+                the value to which this object is set, the operational mode may be immediately changed, 
+                or the change may not take effect until the next system reboot." 
+           DEFVAL        { nortelStpg }
+            ::= { rcSystem 74} 
+
+rcSysAutoRecoverDelay  OBJECT-TYPE
+        SYNTAX        INTEGER (5..3600)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION  "Time interval in seconds after which auto-recovery
+                      runs on ports to clear action taken by cp-limit, 
+                      link flap or loop detect"
+        ::= { rcSystem 75 }
+
+rcSysMacFlapLimitTime  OBJECT-TYPE
+        SYNTAX        INTEGER (10..5000)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION  "Time limit in milliseconds for MAC flapping for
+                      loop-detect feature"
+        ::= { rcSystem 76 }
+
+rcSysMacFlapLimitCount  OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION  "Number of times mac flapping can happen for loop-detect
+                      feature"
+        ::= { rcSystem 77 }
+
+rcSysExtCplimitEnable  OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "enable or disable extended CP-LIMIT in system."
+        DEFVAL        { false } 
+        ::= { rcSystem 78 }
+
+rcSysExtCplimitMinCongTime  OBJECT-TYPE
+        SYNTAX        INTEGER (100..6000)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Minimum time for which System octapid should be
+                      congested to trigger congestion algorithm for extended 
+                      CP-LIMIT in mSecs"
+        DEFVAL        { 3000 } 
+        ::= { rcSystem 79 } 
+
+rcSysExtCplimitMaxPorts  OBJECT-TYPE
+        SYNTAX        INTEGER (0..512)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Maximum number of ports which need to be monitored
+                      for congestion in Extended CP-LIMIT"
+        DEFVAL        { 0 } 
+        ::= { rcSystem 80 }
+
+rcSysExtCplimitPortCongTime  OBJECT-TYPE
+        SYNTAX        INTEGER (1..600)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Minimum time for which ingress traffic utilization rate 
+                      of a monitored port should stay more than the allowed limits 
+                      in order to disable the port for extended CP-LIMIT in Secs"
+        DEFVAL        { 300 } 
+        ::= { rcSystem 81 }
+
+rcSysExtCplimitTrapLevel  OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         none(1),
+                         normal(2),
+                         verbose(3)
+                      }        
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Indicates the trap level for extended CP-LIMIT"
+        DEFVAL        { none }
+        ::= { rcSystem 82 }
+
+rcSysExtCplimitSysOctapidCongested OBJECT-TYPE
+         SYNTAX        TruthValue
+         MAX-ACCESS    read-only
+         STATUS        current
+         DESCRIPTION   "Indicates whether system octapid congestion detected for
+                       extended cp-limit"
+         DEFVAL        { false }
+         ::= {rcSystem 83 }
+ 
+ rcSysExtCplimitPortsMonitored OBJECT-TYPE
+         SYNTAX        TruthValue
+         MAX-ACCESS    read-only
+         STATUS        current
+         DESCRIPTION   "Indicates whether ports has been shutdown due to extended
+                       cp-limit"
+         DEFVAL        { false }
+         ::= {rcSystem 84 }
+ 
+ rcSysExtCplimitPortsShutDown OBJECT-TYPE
+         SYNTAX        TruthValue
+         MAX-ACCESS    read-only
+         STATUS        current
+         DESCRIPTION   "Indicates whether ports has been shutdown due to
+                       extended Cp-limit"
+         DEFVAL        { false }
+         ::= {rcSystem 85 }
+
+rcSysActionL1 OBJECT-TYPE
+        SYNTAX       INTEGER {
+                         none(1),
+                         resetCounters(2),      -- reset all statistic counters
+                         saveToNVRAM(3),
+                         saveToStandbyNVRAM(4), -- save config to slave NVRAM
+                         checkSwInFlash(5),
+                         checkSwInPcmcia(6),
+                         saveRuntimeConfig(7),     -- 8k only
+                         saveRuntimeConfigToSlave(8),  -- 8k only
+                         saveBootConfig(9),        -- 8k only
+                         saveSlaveBootConfig(10)   -- 8k only
+                     }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Initiate a system action for layer1 user"
+        DEFVAL        { none }
+        ::= { rcSystem 86 }
+
+rcSysActionL2 OBJECT-TYPE
+        SYNTAX       INTEGER {
+                         none(1),
+                         resetIstStatCounters(2)
+                     }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Initiate a system action for layer2 user"
+        DEFVAL        { none }
+        ::= { rcSystem 87 }
+
+rcSysActionL3 OBJECT-TYPE
+        SYNTAX       INTEGER {
+                         none(1),
+                         flushIpRouteTbl(2)
+                     }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Initiate a system action for layer2 user"
+        DEFVAL        { none }
+        ::= { rcSystem 88 }
+
+rcSysActionRwa OBJECT-TYPE
+        SYNTAX       INTEGER {
+                         none(1),               -- none of the following
+                         hardReset(2),          -- power on tests
+                         softReset(3),          -- reset w/o power on tests
+                         cpuSwitchOver(4),      -- CPU board switch-over
+                         resetConsole(5),
+                         resetModem(6)
+--   			being used in rel2.2(7)
+--        		being used in rel2.2(8)
+--         		reserve(9)
+--         		reserve(10)
+                     }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Initiate a system action."
+        DEFVAL        { none }
+        ::= { rcSystem 89 }
+
+rcSysPowerUsage  OBJECT-TYPE
+        SYNTAX              Integer32
+        MAX-ACCESS   read-only
+        STATUS             current
+        DESCRIPTION "The current power usage for the whole chassis."
+        ::= { rcSystem 90 }
+
+rcSysPowerAvailable  OBJECT-TYPE
+        SYNTAX              Integer32
+        MAX-ACCESS   read-only
+        STATUS             current
+        DESCRIPTION "The current power available for the whole chassis."
+        ::= { rcSystem 91 }
+
+rcSysBpduStartMacAddress OBJECT-TYPE
+        SYNTAX              MacAddress
+        MAX-ACCESS   read-write
+        STATUS             current
+        DESCRIPTION "Starting Multicast MAC address for BPDUs"
+        ::= { rcSystem 92 }
+
+rcSysBpduMacAddressMask OBJECT-TYPE
+        SYNTAX              INTEGER (1..48)
+        MAX-ACCESS   read-write
+        STATUS             current
+        DESCRIPTION "BPDU MAC address Mask"
+        ::= { rcSystem 93 }
+
+rcSysFrcMsgControlTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcSysFrcMsgControlEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Management Force-msg Control table. This table is used to 
+                       specify the pattern for Force-msg Control"
+        ::= { rcSystem 94 }
+ 
+rcSysFrcMsgControlEntry OBJECT-TYPE
+        SYNTAX        RcSysFrcMsgControlEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A  Force-msg Control table entry."
+        INDEX         { rcSysFrcMsgControlPatternId }
+        ::= { rcSysFrcMsgControlTable 1 }
+ 
+RcSysFrcMsgControlEntry ::=
+        SEQUENCE {
+                rcSysFrcMsgControlPatternId Integer32,
+                rcSysFrcMsgControlPattern DisplayString,
+                rcSysFrcMsgControlRowStatus RowStatus    
+        }
+ 
+rcSysFrcMsgControlPatternId OBJECT-TYPE
+        SYNTAX        Integer32 (1..32)
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Pattern Id."
+        ::= { rcSysFrcMsgControlEntry 1 }
+     
+         
+rcSysFrcMsgControlPattern OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (4))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Pattern for filtering the force-msg for msg control"
+        ::= { rcSysFrcMsgControlEntry 2 }
+         
+rcSysFrcMsgControlRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to create/delete an entry"
+        ::= { rcSysFrcMsgControlEntry 3 }
+
+rcSysAccPolSnmpGrpTable OBJECT-TYPE 
+        SYNTAX        SEQUENCE OF RcSysAccPolSnmpGrpEntry 
+        MAX-ACCESS    not-accessible 
+        STATUS        current 
+        DESCRIPTION   "SNMP group list for access policy" 
+        ::= { rcSystem 95 } 
+
+rcSysAccPolSnmpGrpEntry OBJECT-TYPE 
+        SYNTAX        RcSysAccPolSnmpGrpEntry 
+        MAX-ACCESS    not-accessible 
+        STATUS        current 
+        DESCRIPTION   "The  table entry which covers the groups under snmp service." 
+        INDEX         { rcSysAccessPolicyId, rcSysAccPolSnmpGrpName,                         rcSysAccPolSnmpGrpModel} 
+        ::= { rcSysAccPolSnmpGrpTable 1 } 
+
+RcSysAccPolSnmpGrpEntry ::= 
+        SEQUENCE { 
+                rcSysAccPolSnmpGrpName SnmpAdminString, 
+                rcSysAccPolSnmpGrpModel SnmpSecurityModel, 
+                rcSysAccPolSnmpGrpRowStatus RowStatus 
+        } 
+
+rcSysAccPolSnmpGrpName  OBJECT-TYPE 
+        SYNTAX       SnmpAdminString (SIZE(1..32))
+        MAX-ACCESS   not-accessible 
+        STATUS       current 
+        DESCRIPTION "The snmp-v3 group name" 
+        ::= { rcSysAccPolSnmpGrpEntry 1 } 
+
+rcSysAccPolSnmpGrpModel OBJECT-TYPE 
+        SYNTAX       SnmpSecurityModel 
+        MAX-ACCESS   not-accessible 
+        STATUS       current 
+        DESCRIPTION "The snmp model" 
+        ::= { rcSysAccPolSnmpGrpEntry 2 } 
+
+rcSysAccPolSnmpGrpRowStatus OBJECT-TYPE 
+        SYNTAX       RowStatus 
+        MAX-ACCESS   read-write 
+        STATUS       current 
+        DESCRIPTION "Row status" 
+        ::= { rcSysAccPolSnmpGrpEntry 3 }
+
+rcSysVirtualIpv6Addr OBJECT-TYPE
+        SYNTAX        Ipv6Address
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The virtual ipv6 address that is owned, advertised, and registered by the master CPU only.  Unlike the net management IP address this address is configured in the switch config file as opposed to the boot config."
+        ::= { rcSystem 96 }
+
+rcSysVirtualIpv6PrefixLength OBJECT-TYPE
+        SYNTAX         INTEGER (0..128)
+        MAX-ACCESS     read-write
+        STATUS         current
+        DESCRIPTION    "The length of the virtual ipv6 addr prefix (in bits)."
+        ::= { rcSystem 97 }
+
+-- TFTP Upload/Download
+
+rcTftpHost OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Name of source/destination host for the TFTP
+                      transfer."
+        ::= { rcTftp 1 }
+
+rcTftpFile OBJECT-TYPE
+        SYNTAX      DisplayString (SIZE (0..255))
+        MAX-ACCESS  read-write
+        STATUS      current
+        DESCRIPTION "Name of file for the TFTP transfer."
+        ::= { rcTftp 2 }
+
+rcTftpAction OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          none(1),          -- none of the following
+                          downloadConfig(2),
+                          uploadConfig(3),
+                          downloadSwToFlash(4),
+                          downloadSwToPcmcia(5),
+                          uploadSw(6),
+                          downloadSwToDram(7)
+                      }
+        MAX-ACCESS	  read-write
+        STATUS	      current
+        DESCRIPTION   "The action for the TFTP transfer."
+        DEFVAL        { none }
+	::= { rcTftp 3 }
+
+rcTftpResult OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          none(1),
+                          inProgress(2),
+                          noResponse(3),
+                          fileAccessError(4),
+                          badFlash(5),
+                          flashEraseFailed(6),
+                          pcmciaEraseFailed(7),
+                          success(8),
+                          fail(9),
+                          writeToNvramFailed(10),
+                          flashWriteFailed(11),
+                          pcmciaWriteFailed(12),
+                          configFileTooBig(13),
+                          imageFileTooBig(14),
+                          noPcmciaDetect(15),
+                          pcmciaNotSupported(16),
+                          invalidFile(17),
+                          noMemory(18),
+                          xferError(19),
+                          crcError(20),
+                          readNvramFailed(21),
+                          pcmciaWriteProtect(22)
+	              }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Contains result of the last Tftp action request."
+        ::= { rcTftp 4 }
+
+
+-- PHYSICAL Elements
+
+rcChasType OBJECT-TYPE
+	SYNTAX	      INTEGER {
+		         unknown(1),   -- unknown chassis
+ 		         a1100(2),     -- 3  slot chassis (1/2, 1/2, full)
+ 		         a1250(6),     -- 4  slot chassis (full, ... , full)
+ 		         a1150(7),     -- 3  slot chassis (1/2, 1/2, full)
+ 		         a1200(8),     -- 8  slot chassis (full, ... , full)
+ 			 a1050(9),            -- 2  slot chassis (seahawk)
+ 			 a8006(280887558),    -- 6  slot chassis (raptillion)
+       			 a8010(280887562),    -- 10 slot chassis (raptillion)
+       			 a8010co(1623064842), -- 10 slot Central Office Chassis
+                         a8003(280887555),    -- 3  slot chassis (raptillion)
+                         a1612G(1086197761),  --  1 slot 12 port cobra (0x40be1001)
+                         a1624G(1086201857),  --  1 slot 24 port cobra (0x40be2001)
+                         a1648T(1086210049),  -- 1 slot 52 port cobra (0x40be4001)
+                         a8306(1354629382),   -- 6  slot 8300 POE chassis (0x50be0106)
+                         a8310(1354629386)    -- 10 slot 8300 POE chassis (0x50be010a)
+
+	              }
+	MAX-ACCESS 	  read-only
+	STATUS 	      current
+	DESCRIPTION   "Chassis Type"
+        ::= { rcChassis 1 }
+
+rcChasSerialNumber OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..16))
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Unique serial number for this chassis."
+        ::= { rcChassis 2 }
+
+rcChasHardwareRevision OBJECT-TYPE
+	SYNTAX 	      DisplayString (SIZE (0..20))
+	MAX-ACCESS 	  read-only
+	STATUS 	      current
+	DESCRIPTION   "Device hardware revision level"
+	::= { rcChassis 3 }
+	
+rcChasNumSlots OBJECT-TYPE
+        SYNTAX        INTEGER (1..16)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The number of slots in the chassis available for
+                      plug-in cards."
+        ::= { rcChassis 4 }
+
+rcChasNumPorts OBJECT-TYPE
+        SYNTAX        INTEGER (0..255) 
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The total number of ports currently installed in
+		      the chassis."
+        ::= { rcChassis 5 }
+
+-- TBD FIXME : We need to get the final list from Hardware
+rcChasTestResult OBJECT-TYPE
+	SYNTAX        INTEGER {
+			 other(1),
+			 ok(2),
+			 crceeprom(3),
+			 timer(4),
+			 procdram(5),
+			 led(6),
+       	         	 formaccpuaccess(7),
+       	         	 asiccpuaccess(8),
+                	 memory(9),
+                	 loopback(10)
+		      }
+	MAX-ACCESS 	  read-only
+	STATUS 	      current
+	DESCRIPTION   "Chassis start-up diagnostic tests."
+	::= { rcChassis 6 }
+
+rcChasFan OBJECT IDENTIFIER ::= { rcChassis 7 }
+
+rcChasFanTable OBJECT-TYPE
+	SYNTAX        SEQUENCE OF RcChasFanEntry
+	MAX-ACCESS    not-accessible
+	STATUS        current
+	DESCRIPTION   "This table contains information about Fans"
+	::= { rcChasFan 1 }
+
+rcChasFanEntry OBJECT-TYPE
+	SYNTAX        RcChasFanEntry
+	MAX-ACCESS    not-accessible
+	STATUS        current
+	DESCRIPTION   "Contains information regarding a Fan Unit"
+	INDEX         { rcChasFanId }
+	::= { rcChasFanTable 1 }
+
+RcChasFanEntry ::=
+	SEQUENCE {
+		rcChasFanId INTEGER,
+		rcChasFanOperStatus INTEGER,
+		rcChasFanAmbientTemperature Gauge32
+	}
+
+rcChasFanId OBJECT-TYPE
+	SYNTAX        INTEGER(1..4)
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "The chassis fan Id."
+	::= { rcChasFanEntry 1 }
+
+rcChasFanOperStatus OBJECT-TYPE
+	SYNTAX        INTEGER {
+		         unknown(1),
+		         up(2),
+		         down(3)
+	              }
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "Actual status of the Fan:
+	              - unknown(1) - status can not be determined.
+	              - up(2) - present and supplying power.
+	              - down(3) - present, but failure indicated."
+	::= { rcChasFanEntry 2 }
+
+rcChasFanAmbientTemperature OBJECT-TYPE
+        SYNTAX          Gauge32
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Used to indicate the temperature of the air
+                        entering the fan."
+        ::= { rcChasFanEntry 3 }
+
+rcChasPowerSupply OBJECT IDENTIFIER ::= { rcChassis 8 }
+
+rcChasPowerSupplyTable OBJECT-TYPE
+	SYNTAX        	SEQUENCE OF RcChasPowerSupplyEntry
+	MAX-ACCESS        	not-accessible
+	STATUS        	current
+	DESCRIPTION   	"This table contains information about power 
+		      	supplies."
+	::= { rcChasPowerSupply 1 }
+
+rcChasPowerSupplyEntry OBJECT-TYPE
+	SYNTAX        	RcChasPowerSupplyEntry
+	MAX-ACCESS        	not-accessible
+	STATUS        	current
+	DESCRIPTION   	"Contains information regarding a power supply
+		      	unit."
+	INDEX  { rcChasPowerSupplyId }
+	::= { rcChasPowerSupplyTable 1 }
+
+RcChasPowerSupplyEntry ::=
+	SEQUENCE {
+		rcChasPowerSupplyId INTEGER,
+		rcChasPowerSupplyOperStatus INTEGER
+	}
+
+rcChasPowerSupplyId OBJECT-TYPE
+	SYNTAX        	INTEGER(1..3)
+	MAX-ACCESS        	read-only
+	STATUS        	current
+	DESCRIPTION    "The power supply Id."
+	::= { rcChasPowerSupplyEntry 1 }
+
+
+rcChasPowerSupplyOperStatus OBJECT-TYPE
+	SYNTAX         INTEGER {
+		          unknown(1),
+		          empty(2),
+		          up(3),
+	     	          down(4)
+	               }
+	MAX-ACCESS     read-only
+	STATUS         current
+	DESCRIPTION   "Actual status of the power supply:
+	              - unknown(1) - status can not be determined.
+	              - empty(2) - power supply not installed.
+	              - up(3) - present and supplying power.
+	              - down(4) - present, but failure indicated."
+	::= { rcChasPowerSupplyEntry 2 }
+
+
+rcChasPowerSupplyDetailTable OBJECT-TYPE
+	SYNTAX        	SEQUENCE OF RcChasPowerSupplyDetailEntry
+	MAX-ACCESS        	not-accessible
+	STATUS        	current
+	DESCRIPTION   	"This table contains detailed information about
+    	                 power supplies."
+	::= { rcChasPowerSupply 2 }
+
+rcChasPowerSupplyDetailEntry OBJECT-TYPE
+	SYNTAX        	RcChasPowerSupplyDetailEntry
+	MAX-ACCESS        	not-accessible
+	STATUS        	current
+	DESCRIPTION   	"Contains detailed info regarding a power supply
+		      	unit."
+	INDEX  { rcChasPowerSupplyDetailId }
+	::= { rcChasPowerSupplyDetailTable 1 }
+
+RcChasPowerSupplyDetailEntry ::=
+	SEQUENCE {
+		rcChasPowerSupplyDetailId INTEGER,
+		rcChasPowerSupplyDetailType INTEGER,
+		rcChasPowerSupplyDetailSerialNumber DisplayString,
+		rcChasPowerSupplyDetailHardwareRevision DisplayString,
+		rcChasPowerSupplyDetailPartNumber DisplayString,
+		rcChasPowerSupplyDetailDescription DisplayString,
+		rcChasPowerSupplyDetailPsePower    INTEGER
+	}
+
+rcChasPowerSupplyDetailId OBJECT-TYPE
+      SYNTAX   	  INTEGER(1..3)
+      MAX-ACCESS   	  read-only
+      STATUS   	  current
+      DESCRIPTION "The power supply Id."
+      ::= { rcChasPowerSupplyDetailEntry 1 }
+
+rcChasPowerSupplyDetailType OBJECT-TYPE
+      SYNTAX   	   INTEGER {
+                       unknown(0),
+                       ac(1),
+                       dc(2),
+                       poe(278798592) , -- 8300 110/200 V AC/DC PoE(0x109e2100)
+	 poe1400WPS(278802688) -- 8300 110/200 V 850W/1400W AC/DC PoE(0x109e3100)
+
+
+                   }
+      MAX-ACCESS   	   read-only
+      STATUS   	   current
+      DESCRIPTION  "The power supply type."
+      ::= { rcChasPowerSupplyDetailEntry 2 }
+
+rcChasPowerSupplyDetailSerialNumber OBJECT-TYPE
+      SYNTAX      DisplayString (SIZE (0..16))
+      MAX-ACCESS  read-only
+      STATUS      current
+      DESCRIPTION "The power supply serial number."
+      ::= { rcChasPowerSupplyDetailEntry 3 }
+
+rcChasPowerSupplyDetailHardwareRevision OBJECT-TYPE
+      SYNTAX      DisplayString (SIZE (0..16))
+      MAX-ACCESS  read-only
+      STATUS      current
+      DESCRIPTION "The hardware revision of the power supply."
+      ::= { rcChasPowerSupplyDetailEntry 4 }
+
+rcChasPowerSupplyDetailPartNumber OBJECT-TYPE
+      SYNTAX      DisplayString (SIZE (0..16))
+      MAX-ACCESS  read-only
+      STATUS      current
+      DESCRIPTION "The power supply part number."
+      ::= { rcChasPowerSupplyDetailEntry 5 }
+
+rcChasPowerSupplyDetailDescription OBJECT-TYPE
+      SYNTAX      DisplayString (SIZE (0..64))
+      MAX-ACCESS  read-only
+      STATUS      current
+      DESCRIPTION "The detail description of power supply."
+      ::= { rcChasPowerSupplyDetailEntry 6 }
+
+rcChasPowerSupplyDetailPsePower OBJECT-TYPE
+        SYNTAX        INTEGER (1..65535)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The nominal power of the PSE expressed in Watts."
+        ::= { rcChasPowerSupplyDetailEntry 7 }
+
+rcCard OBJECT IDENTIFIER ::= { rcChassis 9 }
+
+rcCardTable OBJECT-TYPE
+	SYNTAX        SEQUENCE OF RcCardEntry
+	MAX-ACCESS    not-accessible
+	STATUS        current
+	DESCRIPTION   "A table that contains information about the 
+                      cards in this chassis.  For those slots that 
+                      do not contain a physical card, the table may 
+		      be implemented to contain a conceptual row 
+                      with the type of physical module set to 
+ 		      'chasCardEmpty', or it may be implemented to 
+		      have no conceptual row instance."
+	::= { rcCard 1 }
+
+rcCardEntry OBJECT-TYPE
+	SYNTAX        RcCardEntry
+	MAX-ACCESS    not-accessible
+	STATUS        current
+	DESCRIPTION   "Card attributes"
+	INDEX         { rcCardIndex }
+	::= { rcCardTable 1 }
+
+RcCardEntry ::=
+	SEQUENCE {
+		rcCardIndex INTEGER,
+		rcCardType INTEGER,
+		rcCardSerialNumber DisplayString,
+		rcCardHardwareRevision DisplayString,
+		rcCardAdminStatus INTEGER,
+		rcCardOperStatus INTEGER,
+		rcCardPCMCIAType INTEGER,
+		rcCardPartNumber DisplayString
+	}
+
+rcCardIndex OBJECT-TYPE
+        SYNTAX        	INTEGER (1..10)
+        MAX-ACCESS        	read-only
+        STATUS       	current
+        DESCRIPTION   	"A unique value for each module within the chassis.
+                      	This value is determined by the chassis slot number
+                      	where the module is inserted.  Valid entries are 1
+                      	to the value of rcChasNumSlots"
+        ::= { rcCardEntry 1 }
+
+rcCardType OBJECT-TYPE
+        SYNTAX INTEGER 
+	{
+	other(1),                        -- no card installed
+        rcCPU(2),                        -- [1200] CPU Card (A1200)
+        rc8x100BaseTX(3),                -- [1208TX] 8 port (cat 5) (A1200)
+        rc8x100BaseT2(4),                -- [] 8 port (cat 3) (A1200)
+        rc8x100BaseF(5),                 -- [1208FX] 8 port fiber (A1200)
+        rc16x100BaseTX(6),               -- [1216TX] 16 port (cat 5) (A1200)
+        rc8x100BaseTXWG(12),             -- [1108TX] 8 port (half width) (A1100)
+        rc16x100BaseTXWG(13),            -- [1100] 16 port + CPU (A1100)
+        rc4x100BaseFWG(14),              -- [1104FX] 4 port (half width) (A1100)
+        rc12x100BaseTXWG(15),            -- [1050] 12 port + CPU (A1050)
+        rc12x100BaseFBB(16),             -- [] 12 port (A1200)
+        rc8x100BaseFWG(17),              -- [1108FX] 8 port (A1100)
+        rc12x100BaseTX-2x100BaseFBB(18), -- [] 12 port + 2 port (A1200)
+        rc2x155BaseFBB(19),              -- [] 2 sonet port (A1200)
+        rc4x155BaseFBB(20),              -- [] 4 sonet port (A1200)
+        rc16x100BaseFBB(21),             -- [1216FX] 16 port fiber (A1200)
+        rc14x100BaseTX-2x100BaseFBB(22), -- [1216TF] 14 port + 2 port (A1200)
+        rc8x10BaseFBB(23),               -- [1208FL] 8 port fiber low-speed (A1200)
+	rc4xOC3(24),			 -- [1200xx] 4 port OC3 (A1200)
+	rc1xOC12(25),			 -- [1200xx] 1 port OC12 (A1200)
+        rcRMON(26),			 -- [1200xx] RMON (A1200) 
+        rc1xOC12POSBaseMMF(27),          -- [1200xx] 1 port OC12 POS (A1200)
+        rc1xOC12POSBaseSMF(28),          -- [1200xx] 1 port OC12 POS (A1200)
+        rc4x1000BaseSXWG(1028),          -- [1150] 1 0 00 000 0100 + CPU (A1150)
+        rc1x1000BaseSXWG(1025),          -- [1101SX] 1 0 00 000 0001
+        rc2x1000BaseSXWG(1026),          -- [1102SX] 1 0 00 000 0010
+        rc1x1000BaseSXRWG(1537),         -- [1101SR] 1 1 00 000 0001
+        rc2x1000BaseSXRWG(1538),         -- [1102SR] 1 1 00 000 0010
+        rc1x1000BaseLXWG(1153),          -- [1101LX] 1 0 01 000 0001
+        rc2x1000BaseLXWG(1154),          -- [1102LX] 1 0 01 000 0010
+        rc2x1000BaseXDWG(1282),          -- [1102XD] 1 0 10 000 0010
+        rc1x1000BaseLXRWG(1665),         -- [1101LR] 1 1 01 000 0001
+        rc2x1000BaseLXRWG(1666),         -- [1102LR] 1 1 01 000 0010
+        rc1x1000BaseSXBB(1041),          -- [1201SX] 1 0 00 001 0001
+        rc2x1000BaseSXBB(1042),          -- [1202SX] 1 0 00 001 0010
+        rc1x1000BaseSXRBB(1553),         -- [1201SR] 1 1 00 001 0001
+        rc2x1000BaseSXRBB(1554),         -- [1202SR] 1 1 00 001 0010
+        rc1x1000BaseLXBB(1169),          -- [1201LX] 1 0 01 001 0001
+        rc2x1000BaseLXBB(1170),          -- [1202LX] 1 0 01 001 0010
+        rc2x1000BaseXDBB(1298),          -- [1202XD] 1 0 10 001 0010
+        rc1x1000BaseLXRBB(1681),         -- [1201LR] 1 1 01 001 0001
+        rc2x1000BaseLXRBB(1682)          -- [1202LR] 1 1 01 001 0010
+	}
+	MAX-ACCESS 	      	read-only
+	STATUS 	      	current
+	DESCRIPTION   	"Used to indicate a card types in the Accelar
+			1000 product families.  
+
+			For Accelar 1000 devices, gigabit cards use
+		      	an encoded value according to the following rule:
+
+                                +-----+--+-+---+---+---+
+                      	bits  : |31-11|10|9|8-7|6-4|3-0|
+                                +-----+--+-+---+---+---+
+                      	field : |  a  | b|c| d | e | f |
+                                +-----+--+-+---+---+---+
+
+                             a : not-used
+                             b : 1=gigabit
+                             c : 0=non-redundant, 
+                                 1=redundant
+                             d : 0=short-haul, 
+                                 1=long-haul, 
+                                 2=extra-distance,
+                             e : 0=work-group(a1100 and a1150)
+                                 1=back-bone(a1200, f1250, and f2000), 
+                             f : 1=1-port, 2=2-port, 4=4-port, 8=8-port
+                      "
+	::= { rcCardEntry 2 }
+
+rcCardSerialNumber OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..16))
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "Unique serial number for this card."
+	::= { rcCardEntry 3 }
+
+rcCardHardwareRevision OBJECT-TYPE
+	SYNTAX        DisplayString (SIZE (0..8))
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "Hardware Version"
+	::= { rcCardEntry 4 }
+
+rcCardAdminStatus OBJECT-TYPE
+        SYNTAX       INTEGER { 
+			 up(1),
+         		 down(2),
+			 testing(3)
+                      }
+        MAX-ACCESS    read-write 
+        STATUS        current
+        DESCRIPTION   "Used to indicate the administrative status of this
+                       card"
+        ::= { rcCardEntry 5 }
+
+rcCardOperStatus OBJECT-TYPE
+	SYNTAX        INTEGER { 
+			 up(1),
+         		 down(2),
+			 testing(3),
+			 unknown(4),
+		 	 dormant(5)
+                      }
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "Used to indicate the operational status of this card."
+	::= { rcCardEntry 6 }
+
+rcCardPCMCIAType OBJECT-TYPE
+        SYNTAX        INTEGER {
+			 none(1),
+			 modem28kbs(2),
+			 flash2meg(3),
+			 flash4meg(4)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the type of PCMCIA card currently
+                      installed in this CPU card, if any.
+
+                      For non-CPU cards, this variable has no meaning and
+                      will always be set to none."
+	DEFVAL        { none }
+        ::= { rcCardEntry 7 }
+
+rcCardPartNumber OBJECT-TYPE
+        SYNTAX        	DisplayString (SIZE (0..6))
+        MAX-ACCESS        	read-only
+        STATUS        	current
+        DESCRIPTION   	"Card Part Number"
+        ::= { rcCardEntry 8 }
+
+rcPort OBJECT IDENTIFIER ::= { rcChassis 10 } -- defined in rcPortXXX.mib
+
+-- Additional Chassis Group Variables
+
+rcChasAruMode OBJECT-TYPE
+        SYNTAX        	INTEGER 
+			{
+				aruOne(1),
+				aruTwo(2),
+				aruThree(3)
+			}
+        MAX-ACCESS        	read-only
+        STATUS        	current
+        DESCRIPTION   	"The ARU mode the chassis is operating in."
+        ::= { rcChassis 12 }
+
+rcChasQuidMode OBJECT-TYPE
+        SYNTAX        	INTEGER 
+			{
+				quidMixed(1),
+				quidTwo(2),
+				quidThree(3),
+				quidFour(4),
+				quidFive(5)
+			}
+        MAX-ACCESS        	read-only
+        STATUS        	current
+        DESCRIPTION   	"The Quid mode the chassis is operating in."
+        ::= { rcChassis 13 }
+
+rcChasEocModeAdminStatus OBJECT-TYPE
+        SYNTAX        	INTEGER 
+			{
+				default(0),
+				aru1Quid4(1),
+				aru2Quid4(2),
+				aru2Quid5(3),
+				aru3Quid4(4),
+				aru3Quid5(5)
+			}
+        MAX-ACCESS        	read-write
+        STATUS        	current
+        DESCRIPTION     "Used to specify the Enforce Operational
+                        Configuration Mode(EOC) of the system.  When a
+                        device is configured with hardware of different
+                        revisions, the system will initialize in some
+                        deterministic manner (e.g., the lowest common
+                        denominator that makes sense based on the hardware
+                        configuration).  This is the 'default(0)' mode.
+                        The user can override this behavior by manually
+                        specifying the EOC Mode they would like."
+        ::= { rcChassis 14 }
+
+-- Agent Table
+ 
+rcAgentTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcAgentEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Agents in a chassis table"
+        ::= { rcChassis 16 }
+ 
+rcAgentEntry OBJECT-TYPE
+        SYNTAX        RcAgentEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Entry containing info. for a particular agent"
+        INDEX         { rcAgentId }
+        ::= { rcAgentTable 1 }
+ 
+RcAgentEntry ::= SEQUENCE {
+                rcAgentId       Integer32,
+                rcAgentSlot     Integer32,
+                rcAgentIpAddr   IpAddress
+        }
+ 
+rcAgentId OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "entry id"
+        ::= { rcAgentEntry 1 }
+ 
+rcAgentSlot OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "slot agent is in."
+        ::= { rcAgentEntry 2 }
+ 
+rcAgentIpAddr OBJECT-TYPE
+         SYNTAX        IpAddress
+         MAX-ACCESS    read-only
+         STATUS        current
+         DESCRIPTION   "agent's ip address."
+         ::= { rcAgentEntry 3 }
+
+rcChasEocModeOperStatus OBJECT-TYPE
+        SYNTAX        	INTEGER 
+			{
+				default(0),
+				aru1Quid4(1),
+				aru2Quid4(2),
+				aru2Quid5(3),
+				aru3Quid4(4),
+				aru3Quid5(5)
+			}
+        MAX-ACCESS        	read-only
+        STATUS        	current
+        DESCRIPTION     "Used to indicate the Enforce Operational
+                        Configuration Mode(EOC) of the system."
+        ::= { rcChassis 15 }
+
+rcChasBrouterPorts OBJECT-TYPE
+        SYNTAX        	PortSet 
+        MAX-ACCESS        	read-only
+        STATUS        	current
+        DESCRIPTION   	"Used to indicate which ports in the system are
+			configured as Brouter ports."
+        ::= { rcChassis 17 }
+
+rcChasGlobalFilterEnable OBJECT-TYPE
+        SYNTAX        	TruthValue 
+        MAX-ACCESS        	read-write
+        STATUS        	current
+        DESCRIPTION   	"Used to enable/disable global filters in the
+			system.  This variable is currently not supported."
+	DEFVAL		{ false }
+        ::= { rcChassis 18 }
+
+rcChasVlanBySrcMacEnable OBJECT-TYPE
+        SYNTAX        	TruthValue 
+        MAX-ACCESS        	read-write
+        STATUS        	current
+        DESCRIPTION   	"Used to enable/disable source MAC based VLANs
+			in the system."
+	DEFVAL		{ false }
+        ::= { rcChassis 19 }
+
+rcChasDiffServEcnCompatibilityEnable OBJECT-TYPE
+        SYNTAX          TruthValue
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "Used to enable/disable the Explicit Congestion
+                        Notification(ECN) compatibility feature.
+                        When set to FALSE , the system will mask the ECN bits
+                        in the DS field while re-marking DSCP and will not match
+                        on ECN capable flows if filter is set on DSmatch.
+                        When set to TRUE, it will preserve the ECN bits in the DS
+                        field while re-marking and will match on full 8-bit DS field."
+        DEFVAL          { false }
+        ::= { rcChassis 20 }
+
+
+rcChasNewEnhancedOperMode OBJECT-TYPE
+        SYNTAX        TruthValue  
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enhanced operational mode."
+        ::= { rcChassis 21 } 
+
+rcChasNewEMMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "This configuration is for enabling/disabling 128K
+                       mode.  The change will take effect upon reboot."
+        ::= { rcChassis 22 }
+
+rcChasEmModeError OBJECT-TYPE
+        SYNTAX       INTEGER {
+                         none(1),
+                         non128KCardOffLine(2),
+                         checkSlaveConfigNResetForEmMMode(3),
+                         mismatchResetForEmMode(4),
+                         mismatchEmModeMasterSlave(5),
+                         incompatMasterResetForEmMode(6),
+                         putSlaveOffEmImcompat(7),
+                         slave8690EmIncompatGoingOffline(8),
+                         cpu8690DisableEm(9)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the Em-mode error status"
+        ::= { rcChassis 23 }
+
+rcChasEnhancedOperMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Enhanced Operational mode the switch currently has 
+                       booted and will remain the same unitl the next reboot."
+        ::= { rcChassis 24 }
+
+rcChasEMMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "EM mode the switch currently has booted and 
+                       will remain the same unitl the next reboot."
+        ::= { rcChassis 25 }
+ 
+rcChasFtpDaemonInSecondaryCpu OBJECT-TYPE
+        SYNTAX          TruthValue
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "Used to enable/disable FTP daemon in 2nd cpu."
+               DEFVAL           { false }
+        ::= { rcChassis 26 }
+
+rcChasSmltOnSingleCpEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable SMLT on single CP feature in the switch"
+        ::= { rcChassis 27 }
+
+rcChasNewVlanOptmMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Vlan Optimization mode."
+        ::= { rcChassis 28 }   
+ 
+rcChasVlanOptmMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Vlan Optimization mode the switch currently has
+                       booted and will remain the same unitl the next 
+                       reboot."
+        ::= { rcChassis 29 }  
+
+-- defined in rcLaunchPadXXX.mib
+rcLaunchPad OBJECT IDENTIFIER ::= { rcChassis 30 }
+rcChasNaapEnable OBJECT-TYPE
+        SYNTAX        EnableValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "To enable/disbale to napp feature."
+        ::= { rcChassis 31 }
+
+rcChasGlobalFilterOrderingEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to enable/disable global filter ordering
+                       in the system."
+        DEFVAL        { false }
+        ::= { rcChassis 32 }
+
+rcChasNewGlobalFilterOrderingEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "This configuration is for enabling/disabling
+                       global filter ordering. The change will take
+                       effect upon reboot."
+        DEFVAL        { false }
+        ::= { rcChassis 33 }  
+
+rcChasWsmDirectMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "This is for enabling/disabling configuration of same 
+	              community strings on the WSM and 8600.  This if for 
+		      allowing users to connect directly via SNMP to the WSM 
+		      blade."           
+        DEFVAL        { false }
+        ::= { rcChassis 34 }
+
+rcChasRspMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "This configuration is for enabling/disabling 256K
+                       mode. The change will take effect upon reboot."
+        ::= { rcChassis 35 }
+
+rcChasRspOperMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "R-mode the switch currently has booted and 
+                       will remain the same until the next reboot."
+        ::= { rcChassis 36 }
+
+rcChasRspModeError OBJECT-TYPE
+        SYNTAX       INTEGER {
+                         none(1),
+                         non256KCardOffLine(2)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the r-mode error status"
+        ::= { rcChassis 37 }
+
+rcChasPOE OBJECT IDENTIFIER ::=  { rcChassis 38 }
+
+rcChasPOEPower OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The total PoE power which this chassis 
+                         supports (Unit in Watts)."
+        ::= { rcChasPOE 1 }
+
+rcChasPOEAllocatedPower OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The total PoE power allocated for PoE modules
+                         installed in this chassis (Unit in Watts)."
+        ::= { rcChasPOE 2 }
+
+rcChasPOEAvailablePower OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The total PoE power available for any
+                         additional PoE power request or allocation
+                         (Unit in Watts)."
+        ::= { rcChasPOE 3 }
+
+rcChasPOEBackUpPower OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The total PoE power reserved for backup or
+                         redundancy (Unit in Watts)."
+        ::= { rcChasPOE 4 }
+
+-- rcRepeater 
+
+rcRepeater OBJECT IDENTIFIER ::= { rcChassis 39 }
+
+rcRepeaterTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcRepeaterEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Port repeater table"
+        ::= { rcRepeater 1 }
+
+rcRepeaterEntry OBJECT-TYPE
+        SYNTAX        RcRepeaterEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Entry containing info. for a particular repeater"
+        INDEX         { rcRepeaterId }
+        ::= { rcRepeaterTable 1 }
+
+RcRepeaterEntry ::= SEQUENCE {
+    	rcRepeaterId          	 INTEGER,
+    	rcRepeaterFirstPort      InterfaceIndex,
+	rcRepeaterSecondPort     InterfaceIndex,
+	rcRepeaterVlanId         INTEGER,
+	rcRepeaterName           DisplayString,              
+	rcRepeaterRowStatus      RowStatus
+    	}
+
+rcRepeaterId OBJECT-TYPE
+        SYNTAX        INTEGER(1..32)	 
+        MAX-ACCESS    read-only	
+        STATUS        current
+        DESCRIPTION   "A value that uniquely identifies the repeater."
+        ::= { rcRepeaterEntry 1 }
+
+rcRepeaterFirstPort OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "First port member of the Repeater"
+        ::= { rcRepeaterEntry 2 }
+
+rcRepeaterSecondPort OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Second port member of the Repeater"
+        ::= { rcRepeaterEntry 3 }	
+
+rcRepeaterVlanId OBJECT-TYPE
+        SYNTAX        INTEGER (0..4094)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "A value that uniquely identifies the Virtual LAN 
+                      associated with first port"
+        ::= { rcRepeaterEntry 4 }
+
+rcRepeaterName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "An administratively-assigned name for this repeater."
+        ::= { rcRepeaterEntry 5 }
+
+rcRepeaterRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to create/delete entries in the rcRepeater."
+        ::= { rcRepeaterEntry 6 }
+
+rcChasMcastCheckPktEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to enable/disable Multicast check packet in the
+            	       system. This change will take effect upon reboot. "
+   	DEFVAL	      { true }
+        ::= { rcChassis 40 }
+
+rcChasSystemMonitorEnable OBJECT-TYPE 
+        SYNTAX        TruthValue 
+        MAX-ACCESS    read-write 
+        STATUS        current 
+        DESCRIPTION   "Enable/Disable System monitoring in the switch" 
+        DEFVAL        { true } 
+        ::= { rcChassis 41 } 
+
+-- Dip-Switch Group
+
+rcIsolateUnconfigPorts OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "Used to indicate whether ports that are unconfigured
+                      should be assigned to the 'isolated' VLAN.  Ports
+                      assigned to the 'isolated' VLAN can only communicate
+                      with the CP port.   If this option is not specified,
+                      unconfigured ports will be assigned to the 'default'
+                      VLAN"
+        ::= { rcDipSwitch 1 }
+
+rcUseFactorySettings OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "Used to indicate whether the system should ignore
+                      the configuration information stored in NVRAM when
+                      the system is booted."   
+        ::= { rcDipSwitch 2 }
+
+rcHighPriorityMode OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "Used to indicate whether the system is configured
+                      to operate in a high priority mode.  The switch can  
+                      operate in either a 'best effort' or 'high priority' 
+                      mode.  In the 'best effort' setting, the maximum 
+                      queue thresholds for the QUIDs are set to 768/768 
+                      buffers.  In the 'high priority' mode the setting
+                      is 512/768.  This means that in 'high priority' mode
+                      the normal priority queue can't have more than 512 
+                      buffers, while the high priority queue can have up 
+                      to 768." 
+        ::= { rcDipSwitch 3 }
+
+-- Table Size Group
+
+rcTblRmonStatSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the current size of the RMON
+                      Statistic table."
+        ::= { rcTblSize 1 }
+
+rcTblRmonHistoryControlSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the current size of the RMON  
+                      History Control table." 
+        ::= { rcTblSize 2 }
+
+rcTblRmonHistoryEnetSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the current size of the RMON  
+                      History Ethernet table." 
+        ::= { rcTblSize 3 }
+
+rcTblRmonAlarmSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the current size of the RMON  
+                      Alarm table." 
+        ::= { rcTblSize 4 }
+
+rcTblRmonEventSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the current size of the RMON  
+                      Event table." 
+        ::= { rcTblSize 5 }
+
+rcTblRmonLogSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the current size of the RMON  
+                      Log table." 
+        ::= { rcTblSize 6 }
+
+rcTblArTblSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the size of the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 7 }
+
+
+rcTblArFree OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of free
+                      entries that are available in the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 8 }
+
+rcTblArNoSpace OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of entries that could
+                      not be added to the Address Translation (AR) table
+                      due to lack of space."  
+        ::= { rcTblSize 9 }
+
+rcTblArAdded OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the number of entries added to
+                      the Address Translation (AR) table." 
+        ::= { rcTblSize 10 }
+
+rcTblArDeleted OBJECT-TYPE 
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Used to indicate the number of entries deleted to
+                      the Address Translation (AR) table."
+        ::= { rcTblSize 11 }
+
+rcTblArMacAdded OBJECT-TYPE 
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Used to indicate the number of MAC entries added to
+                      the Address Translation (AR) table."
+        ::= { rcTblSize 12 }
+
+rcTblArMacDeleted OBJECT-TYPE 
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Used to indicate the number of MAC entries deleted to
+                      the Address Translation (AR) table."
+        ::= { rcTblSize 13 }
+
+rcTblArMacMoved OBJECT-TYPE 
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Used to indicate the number of MAC entries moved in 
+                      the Address Translation (AR) table."
+        ::= { rcTblSize 14 }
+
+rcTblArIpAdded OBJECT-TYPE 
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Used to indicate the number of IP entries added to
+                      the Address Translation (AR) table."
+        ::= { rcTblSize 15 }
+
+rcTblArIpDeleted OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of IP entries deleted to 
+                      the Address Translation (AR) table."    
+        ::= { rcTblSize 16 }
+
+rcTblArMcastTblSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the size of the Multicast 
+                      Address Translation (AR) table."
+        ::= { rcTblSize 17 }
+
+
+rcTblArFreeMcastGroups OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of free multicast
+                      groups availabe in the Address Translation (AR) 
+                      table."
+        ::= { rcTblSize 18 }
+
+rcTblArIpMcastAdded OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of Ip multicast
+                      entries that are added to the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 19 }
+
+rcTblArIpMcastDeleted OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of Ip multicast
+                      entries that are deleted from the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 20 }
+
+rcTblArVlanByPortAdded OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of VLAN by port
+                      entries that are added to the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 21 }
+
+rcTblArVlanByPortDeleted OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of VLAN by port
+                      entries that are deleted from the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 22 }
+
+rcTblArVlanByProtocolAdded OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of Vlans by 
+                      Protocol Type entries that are added to 
+                      the Address Translation (AR) table."
+        ::= { rcTblSize 23 }
+
+rcTblArVlanByProtocolDeleted OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of Vlans by 
+                      Protocol Type entries that are deleted from 
+                      the Address Translation (AR) table."
+        ::= { rcTblSize 24 }
+
+rcTblArVlanByIpSubnetAdded OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of VLAN by Ip 
+                      entries that are added to the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 25 }
+
+rcTblArVlanByIpSubnetDeleted OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of VLAN by Ip 
+                      entries that are deleted from the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 26 }
+
+rcTblArIpSubnetsAdded OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of Ip subnet
+                      entries that are added to the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 27 }
+
+rcTblArIpSubnetsDeleted OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of Ip subnet 
+                      entries that are deleted from the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 28 }
+
+rcTblArRsvpsAdded OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of RSVP
+                      entries that are added to the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 29 }
+
+rcTblArRsvpsDeleted OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of RSVP
+                      entries that are deleted from the Address 
+                      Translation (AR) table."
+        ::= { rcTblSize 30 }
+
+
+rcTblBrdgFdbSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of entries in the 
+                      dot1d forwarding database table."    
+        ::= { rcTblSize 31 }
+
+rcTblBrdgStaticSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of entries in the 
+                      dot1d Static Address Filtering table."    
+        ::= { rcTblSize 32 }
+
+rcTblIpAddrSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   "Used to indicate the number of entries in the 
+                      IP Address table."    
+        ::= { rcTblSize 33 }
+
+rcTblIpForwardingSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only   
+        STATUS        current   
+        DESCRIPTION   "Used to indicate the number of entries in the 
+                       IP Forwarding/Best Route table."        
+        ::= { rcTblSize 34 }
+
+rcTblIpNetToMediaSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only   
+        STATUS        current   
+        DESCRIPTION   "Used to indicate the number of entries in the 
+                      IP Net-to-media table."        
+        ::= { rcTblSize 35 }
+
+rcTblIpBestPlusAltRouteSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   ""    
+        ::= { rcTblSize 36 }
+
+rcTblIpBestPathSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only  
+        STATUS        current  
+        DESCRIPTION   ""    
+        ::= { rcTblSize 37 }
+
+rcTblIpBestPlusAltPathSize OBJECT-TYPE  
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only   
+        STATUS        current   
+        DESCRIPTION   ""        
+        ::= { rcTblSize 38 }
+
+
+-- rcBoot Group
+
+rcBootFlashSwVersion OBJECT-TYPE
+        SYNTAX        DisplayString
+        MAX-ACCESS    read-only
+        STATUS        obsolete
+        DESCRIPTION   "BootFlashSwVersion indicates the software
+                      version in the Flash."
+        ::= { rcBoot 1 }
+
+rcBootPcmciaSwVersion OBJECT-TYPE
+        SYNTAX        DisplayString
+        MAX-ACCESS    read-only
+        STATUS        obsolete
+        DESCRIPTION   "BootPcmciaSwVersion indicate the software
+                      version in the Pcmcia card."
+        ::= { rcBoot 2 }
+
+
+rcBootLastBootSource OBJECT-TYPE
+        SYNTAX        DisplayString
+        MAX-ACCESS    read-only
+        STATUS        obsolete
+        DESCRIPTION   "Indicates the boot source of the last
+                      the system boot."
+        ::= { rcBoot 3 } 
+ 
+rcBootPrimary OBJECT-TYPE
+        SYNTAX          INTEGER {
+                           flash(1),
+                           pcmcia(2),
+                           net(3),
+                           skip(4)
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	obsolete
+        DESCRIPTION   	"BootPrimary is indicator for the
+                     	primary source to boot the system."
+	DEFVAL 		{ flash }
+        ::= { rcBoot 4 } 
+ 
+rcBootSecondary OBJECT-TYPE
+        SYNTAX          INTEGER {
+                           flash(1),
+                           pcmcia(2),
+                           net(3),
+                           skip(4)
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	obsolete
+        DESCRIPTION   	"BootSecondary indicates the second choice
+                        of the boot source."
+	DEFVAL 		{ pcmcia }
+        ::= { rcBoot 5 } 
+ 
+rcBootTertiary OBJECT-TYPE
+        SYNTAX          INTEGER {
+                           flash(1),
+                           pcmcia(2),
+                           net(3),
+                           skip(4)
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	obsolete
+        DESCRIPTION   	"BootTertiary indicates the third choice 
+                        of boot source."
+	DEFVAL 		{ net }
+        ::= { rcBoot 6 } 
+ 
+
+-- rcDevice Group
+rcDeviceLastBootSource OBJECT-TYPE
+        SYNTAX          DisplayString
+        MAX-ACCESS      read-only
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate the source of the software
+                         image the system was last booted with."
+        ::= { rcDevice 1 } 
+ 
+rcDevicePrimarySource OBJECT-TYPE
+        SYNTAX          INTEGER {
+                           flash(1),
+                           pcmcia(2),
+                           net(3),
+                           skip(4)
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	deprecated
+        DESCRIPTION   	"Used to indicate the primary choice to get
+                         a system software image."
+        ::= { rcDevice 2 } 
+ 
+rcDevicePrimarySourceFileName OBJECT-TYPE
+        SYNTAX          DisplayString (SIZE(0..255))
+        MAX-ACCESS      read-write
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate a file number, if applicable."
+        ::= { rcDevice 3 } 
+
+rcDeviceSecondarySource OBJECT-TYPE
+        SYNTAX          INTEGER {
+                           flash(1),
+                           pcmcia(2),
+                           net(3),
+                           skip(4)
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	deprecated
+        DESCRIPTION   	"Used to indicate the secondary choice to get
+                         a system software image."
+        ::= { rcDevice 4 } 
+ 
+rcDeviceSecondarySourceFileName OBJECT-TYPE
+        SYNTAX          DisplayString (SIZE(0..255))
+        MAX-ACCESS      read-write
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate a file name, if applicable."
+        ::= { rcDevice 5 } 
+
+rcDeviceTertiarySource OBJECT-TYPE
+        SYNTAX          INTEGER {
+                           flash(1),
+                           pcmcia(2),
+                           net(3),
+                           skip(4)
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	deprecated
+        DESCRIPTION   	"Used to indicate the tertiary choice to get
+                         a system software image."
+        ::= { rcDevice 6 } 
+ 
+rcDeviceTertiarySourceFileName OBJECT-TYPE
+        SYNTAX          DisplayString (SIZE(0..255))
+        MAX-ACCESS      read-write
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate a file name, if applicable."
+        ::= { rcDevice 7 } 
+
+rcDeviceConfigSource OBJECT-TYPE
+        SYNTAX          INTEGER {
+                           flash(1),
+                           pcmcia(2),
+			   nvram(5)
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	deprecated
+        DESCRIPTION   	"Used to indicate the location to get a system 
+			configuration file during system boot."
+        ::= { rcDevice 8 } 
+ 
+rcDeviceConfigSourceFileName OBJECT-TYPE
+        SYNTAX          DisplayString (SIZE(0..255))
+        MAX-ACCESS      read-write
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate a file name, if applicable."
+        ::= { rcDevice 9 } 
+
+rcDeviceFlashBytesUsed OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate the number of bytes used in the
+                         system's configuration flash device."
+        ::= { rcDevice 10 } 
+
+rcDeviceFlashBytesFree OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate the number of bytes available in
+                         the system's configuration flash device."
+        ::= { rcDevice 11 } 
+
+rcDevicePcmciaBytesUsed OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate the number of bytes used in the
+                         system's PCMCIA device."
+        ::= { rcDevice 12 } 
+
+rcDevicePcmciaBytesFree OBJECT-TYPE
+        SYNTAX          Integer32
+        MAX-ACCESS      read-only
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate the number of bytes available in 
+                         the system's PCMCIA device."
+        ::= { rcDevice 13 } 
+
+rcDeviceAction OBJECT-TYPE
+        SYNTAX          INTEGER {
+			    none(1),
+                            squeezeFlash(2),
+                            squeezePcmcia(3),
+                            formatFlash(4),
+                            formatPcmcia(5),
+                            recoverFlash(6), 
+                            recoverPcmcia(7) 
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	deprecated
+        DESCRIPTION   	"Used to specify a particular action to perform on
+                         one of the system's device."
+        ::= { rcDevice 14 } 
+ 
+rcDeviceResult OBJECT-TYPE
+        SYNTAX          INTEGER {
+                            none(1),
+                            inProgress(2),
+                            success(3),
+                            fail(4)
+                        }
+        MAX-ACCESS        	read-only
+        STATUS        	deprecated
+        DESCRIPTION   	"Used to indicate the result of the last action
+                         performed on one of the system's device."
+        ::= { rcDevice 15 } 
+ 
+rcDeviceFlashNumFiles OBJECT-TYPE
+        SYNTAX          INTEGER (0..128)
+        MAX-ACCESS      read-only
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate the number of files available in
+                         the system's configuration flash device."
+        ::= { rcDevice 16 }
+ 
+rcDevicePcmciaNumFiles OBJECT-TYPE
+        SYNTAX          INTEGER (0..128)
+        MAX-ACCESS      read-only
+        STATUS          deprecated
+        DESCRIPTION     "Used to indicate the number of files available in
+                         the system's PCMCIA device."
+        ::= { rcDevice 17 }
+ 
+
+-- The Device Flash Table
+
+rcDeviceFlashTable OBJECT-TYPE
+	SYNTAX  	SEQUENCE OF RcDeviceFlashEntry
+	MAX-ACCESS  	not-accessible
+	STATUS  	deprecated
+	DESCRIPTION 	"Flash table."
+	::= { rcDevice 25 }
+ 
+rcDeviceFlashEntry OBJECT-TYPE
+	SYNTAX  	RcDeviceFlashEntry
+	MAX-ACCESS  	not-accessible
+	STATUS  	deprecated
+	DESCRIPTION 	"An entry in the system's flash table."
+	INDEX   { rcDeviceFlashFileNum }
+        ::= { rcDeviceFlashTable 1 }
+ 
+RcDeviceFlashEntry ::=
+        SEQUENCE {
+	     rcDeviceFlashFileNum     INTEGER,
+	     rcDeviceFlashFileName    DisplayString,
+	     rcDeviceFlashFileVersion DisplayString,
+	     rcDeviceFlashFileType    INTEGER,
+	     rcDeviceFlashFileMode    INTEGER,
+	     rcDeviceFlashFileSize    Integer32,
+	     rcDeviceFlashFileCrc     Integer32,
+	     rcDeviceFlashFileStatus  INTEGER,
+	     rcDeviceFlashRowStatus   RowStatus
+        }
+
+rcDeviceFlashFileNum OBJECT-TYPE
+        SYNTAX  	INTEGER (0..128)
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION 	"Used to indicate a particular file in flash."
+        ::= { rcDeviceFlashEntry 1 }
+ 
+rcDeviceFlashFileName OBJECT-TYPE
+        SYNTAX  	DisplayString
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION 	"Used to indicate a flash file's name."
+        ::= { rcDeviceFlashEntry 2 }
+ 
+rcDeviceFlashFileVersion OBJECT-TYPE
+        SYNTAX  	DisplayString
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION 	"Used to indicate the flash file's version."
+        ::= { rcDeviceFlashEntry 3 }
+ 
+rcDeviceFlashFileType OBJECT-TYPE
+        SYNTAX  	INTEGER {
+                           config(1),
+                           log(2),
+                           trace(3),
+                           executable(4)
+                        }
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the flash file's type."
+        ::= { rcDeviceFlashEntry 4 }
+ 
+rcDeviceFlashFileMode OBJECT-TYPE
+        SYNTAX  	INTEGER {
+                           compressed(1),
+                           uncompressed(2)
+                        }
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the flash file's mode."
+        ::= { rcDeviceFlashEntry 5 }
+ 
+rcDeviceFlashFileSize OBJECT-TYPE
+        SYNTAX  	Integer32
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the flash file's size."
+        ::= { rcDeviceFlashEntry 6 }
+ 
+rcDeviceFlashFileCrc OBJECT-TYPE
+        SYNTAX  	Integer32
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the flash file's CRC."
+        ::= { rcDeviceFlashEntry 7 }
+ 
+rcDeviceFlashFileStatus OBJECT-TYPE
+        SYNTAX  	INTEGER {
+                           active(1),
+                           deleted(2)
+                        }
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the flash file's status.
+                         A file that has been marked for deletion, but  
+                         who's space has not been reclaimed yet is marked
+                         as 'deleted'."
+        ::= { rcDeviceFlashEntry 8 }
+ 
+rcDeviceFlashRowStatus OBJECT-TYPE
+        SYNTAX  	RowStatus
+        MAX-ACCESS  	read-write
+        STATUS  	deprecated
+        DESCRIPTION 	"Row status."
+        ::= { rcDeviceFlashEntry 9 }
+
+
+-- The Device Pcmcia Table
+
+rcDevicePcmciaTable OBJECT-TYPE
+	SYNTAX  	SEQUENCE OF RcDevicePcmciaEntry
+	MAX-ACCESS  	not-accessible
+	STATUS  	deprecated
+	DESCRIPTION 	"PCMCIA table."
+	::= { rcDevice 26 }
+ 
+rcDevicePcmciaEntry OBJECT-TYPE
+	SYNTAX  	RcDevicePcmciaEntry
+	MAX-ACCESS  	not-accessible
+	STATUS  	deprecated
+        DESCRIPTION     "An entry in the system's PCMCIA table."
+	INDEX   { rcDevicePcmciaFileNum }
+        ::= { rcDevicePcmciaTable 1 }
+ 
+RcDevicePcmciaEntry ::=
+        SEQUENCE {
+	     rcDevicePcmciaFileNum     INTEGER,
+	     rcDevicePcmciaFileName    DisplayString,
+	     rcDevicePcmciaFileVersion DisplayString,
+	     rcDevicePcmciaFileType    INTEGER,
+	     rcDevicePcmciaFileMode     INTEGER,
+	     rcDevicePcmciaFileSize    Integer32,
+	     rcDevicePcmciaFileCrc     Integer32,
+	     rcDevicePcmciaFileStatus  INTEGER,
+	     rcDevicePcmciaRowStatus   RowStatus
+        }
+
+rcDevicePcmciaFileNum OBJECT-TYPE
+        SYNTAX  	INTEGER (0..128)
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate a particular file in PCMCIA."
+        ::= { rcDevicePcmciaEntry 1 }
+ 
+rcDevicePcmciaFileName OBJECT-TYPE
+        SYNTAX  	DisplayString
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the PCMCIA file's name."
+        ::= { rcDevicePcmciaEntry 2 }
+ 
+rcDevicePcmciaFileVersion OBJECT-TYPE
+        SYNTAX  	DisplayString
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the PCMCIA file's version."
+        ::= { rcDevicePcmciaEntry 3 }
+ 
+rcDevicePcmciaFileType OBJECT-TYPE
+        SYNTAX  	INTEGER {
+                           config(1),
+                           log(2),
+                           trace(3),
+                           executable(4)
+                        }
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the PCMCIA file's type."
+        ::= { rcDevicePcmciaEntry 4 }
+ 
+rcDevicePcmciaFileMode OBJECT-TYPE
+        SYNTAX  	INTEGER {
+                           compressed(1),
+                           uncompressed(2)
+                        }
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate a particular file in mode."
+        ::= { rcDevicePcmciaEntry 5 }
+ 
+rcDevicePcmciaFileSize OBJECT-TYPE
+        SYNTAX  	Integer32
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the PCMCIA file's size."
+        ::= { rcDevicePcmciaEntry 6 }
+ 
+rcDevicePcmciaFileCrc OBJECT-TYPE
+        SYNTAX  	Integer32
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the PCMCIA file's CRC."
+        ::= { rcDevicePcmciaEntry 7 }
+ 
+rcDevicePcmciaFileStatus OBJECT-TYPE
+        SYNTAX  	INTEGER {
+                           active(1),
+                           deleted(2)
+                        }
+        MAX-ACCESS  	read-only
+        STATUS  	deprecated
+        DESCRIPTION     "Used to indicate the PCMCIA file's status.
+                         A file that has been marked for deletion, but
+                         who's space has not been reclaimed yet is marked
+                         as 'deleted'."
+        ::= { rcDevicePcmciaEntry 8 }
+ 
+rcDevicePcmciaRowStatus OBJECT-TYPE
+        SYNTAX  	RowStatus
+        MAX-ACCESS  	read-write
+        STATUS  	deprecated
+        DESCRIPTION 	"Row status."
+        ::= { rcDevicePcmciaEntry 9 }
+
+-- rcWeb related information
+
+rcWebEnableServer OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Control whether the web server should be enabled.
+                      Setting this variable to true will make the server
+                      operational.  Setting this variable to false will
+                      disable server."
+        DEFVAL        { false }
+        ::= { rcWeb 1 }
+
+rcWebRWAUserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-write-all web-server account."
+        ::= { rcWeb 2 }
+
+rcWebRWAPassword OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Password for the read-write-all web-server account."
+        ::= { rcWeb 3 }
+
+rcWebRWUserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-write web-server account."
+        ::= { rcWeb 4 }
+ 
+rcWebRWPassword OBJECT-TYPE 
+        SYNTAX        DisplayString (SIZE (1..20)) 
+        MAX-ACCESS    read-write 
+        STATUS        current 
+        DESCRIPTION   "Password for the read-write web-server account." 
+        ::= { rcWeb 5 } 
+
+rcWebROUserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-only web-server account."
+        ::= { rcWeb 6 }
+ 
+rcWebROPassword OBJECT-TYPE 
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write 
+        STATUS        current 
+        DESCRIPTION   "Password for the read-only web-server account." 
+        ::= { rcWeb 7 } 
+
+rcWebLastChange OBJECT-TYPE 
+        SYNTAX        TimeTicks 
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Last web-browser initiated configuration
+                      change since sysUpTime."
+        ::= { rcWeb 8 }
+ 
+rcWebNumHits OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Number of hits to the web-server"
+	::= { rcWeb 9 } 
+
+rcWebNumAccessChecks OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Number of access checks performed by the web-server"
+        ::= { rcWeb 10 }
+
+rcWebNumAccessBlocks OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Number of accesses blocked by the web-server"
+        ::= { rcWeb 11 }
+
+rcWebNumRxErrors OBJECT-TYPE 
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Number of receive errors encountered by the web-server" 
+        ::= { rcWeb 12 }
+
+rcWebNumTxErrors OBJECT-TYPE 
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Number of transmit errors encountered by the web-server" 
+        ::= { rcWeb 13 }
+
+rcWebNumSetRequest OBJECT-TYPE 
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only 
+        STATUS        current 
+        DESCRIPTION   "Number of set-request to the web-server" 
+        ::= { rcWeb 14 }
+
+rcWebPrimaryHtmlSourceDir OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE(0..64))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "primary html source directory"
+	DEFVAL	      { "local" }
+        ::= { rcWeb 15 }
+ 
+rcWebSecondaryHtmlSourceDir OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE(0..64))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "secondary html source directory"
+	DEFVAL	      { "pcmcia" }
+        ::= { rcWeb 16 }
+ 
+rcWebTertiaryHtmlSourceDir OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE(0..64))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "tertiary html source directory"
+        ::= { rcWeb 17 }
+ 
+rcWebRWL3UserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "user name for the L3 web server account"
+        ::= { rcWeb 18 }
+ 
+rcWebRWL3Password OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "password for the L3 web server account"
+        ::= { rcWeb 19 }
+
+rcWebRWL2UserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "user name for the L2 web server account"
+        ::= { rcWeb 20 }
+ 
+rcWebRWL2Password OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "password for the L2 web server account"
+        ::= { rcWeb 21 }
+ 
+rcWebDefaultDisplayRows OBJECT-TYPE
+        SYNTAX        INTEGER (10..100)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "default display rows in html page."
+	DEFVAL	      { 48 }
+        ::= { rcWeb 22 }
+
+rcWebLastHostAccessBlocked OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "last host access blocked"
+        ::= { rcWeb 23 }
+ 
+rcWebHelpTftpSourceDir OBJECT-TYPE
+        SYNTAX        OCTET STRING (SIZE (0..256))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "tftp source directory for help files"
+        ::= { rcWeb 24 }
+
+rcWebHttpPort OBJECT-TYPE
+        SYNTAX        INTEGER (1..49151)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "the HTTP port for web access"
+	DEFVAL	      { 80 }
+        ::= { rcWeb 25 }
+ 
+
+-- rcCli related information
+
+rcCliRWAUserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-write-all CLI account."
+        ::= { rcCli 1 }
+
+rcCliRWAPassword OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Password for the read-write-all CLI account."
+        ::= { rcCli 2 }
+
+rcCliRWUserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-write CLI account."
+        ::= { rcCli 3 }
+ 
+rcCliRWPassword OBJECT-TYPE 
+        SYNTAX        DisplayString (SIZE (0..20)) 
+        MAX-ACCESS    read-write 
+        STATUS        current 
+        DESCRIPTION   "Password for the read-write CLI account." 
+        ::= { rcCli 4 } 
+
+rcCliRWL3UserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-write layer-3 CLI account."
+        ::= { rcCli 5 }
+
+rcCliRWL3Password OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Password for the read-write layer-3 CLI account."
+        ::= { rcCli 6 }
+
+rcCliRWL2UserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-write layer-2 CLI account."   
+        ::= { rcCli 7 }  
+ 
+rcCliRWL2Password OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Password for the read-write layer-2 CLI account."
+        ::= { rcCli 8 }
+
+rcCliROUserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-only CLI account."
+        ::= { rcCli 9 }
+ 
+rcCliROPassword OBJECT-TYPE 
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write 
+        STATUS        current 
+        DESCRIPTION   "Password for the read-only CLI account." 
+        ::= { rcCli 10 } 
+
+rcCliMaxTelnetSessions OBJECT-TYPE 
+        SYNTAX        INTEGER (0..8)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to indicate the maximum number of telnet
+		      sessions the system will support."
+	DEFVAL	      { 8 }
+	::= { rcCli 11 } 
+
+rcCliMaxRloginSessions OBJECT-TYPE
+        SYNTAX        INTEGER (0..8)
+        MAX-ACCESS    read-write  
+        STATUS        current
+        DESCRIPTION   "Used to indicate the maximum number of rlogin
+                      sessions the system will support."
+	DEFVAL	      { 8 }
+        ::= { rcCli 12 }
+
+rcCliTimeout OBJECT-TYPE
+        SYNTAX        INTEGER (30..65535)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to indicate the amount of idle time, in
+     		      seconds to wait before timing out telnet and 
+		      rlogin sessions."
+	DEFVAL        { 900 }
+        ::= { rcCli 13 }
+
+rcCliNumAccessViolations OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the number of CLI access
+		      violations detected by the system."
+        ::= { rcCli 14 }
+
+rcCliRWL1UserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (1..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "User name for the read-write layer-1 CLI account."
+        ::= { rcCli 15 }
+ 
+rcCliRWL1Password OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..20))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Password for the read-write layer-1 CLI account."
+        ::= { rcCli 16 }
+
+rcCliPasswordChange OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         ro(1),
+                         l1(2),
+                         l2(3),
+                         l3(4),
+                         rw(5),
+                         rwa(6),
+                         slboper(7),
+                         l4oper(8),
+                         oper(9),
+                         slbadmin(10),
+                         l4admin(11),
+                         ssladmin(12),
+                         commStrRo(13),
+                         commStrRw(14),
+                         commStrl3(15),
+                         commStrl2(16),
+                         commStrl1(17),
+                         webPassWdRo(18)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indication which password is changed when
+                       sending a rcCliPasswordChange trap."
+        ::= { rcCli 17 }
+
+rcCliPassChangeResult OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         success(1),
+                         fail(2)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indication the result of changing password when
+                       sending a rcPasswordChange trap."
+        ::= { rcCli 18 }
+
+rcCliRWEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable for the read-write CLI account."
+        DEFVAL        { true }
+        ::= { rcCli 19 }
+ 
+rcCliRWL1Enable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable for the read-write-layer1 CLI
+                       account."
+        DEFVAL        { true }
+        ::= { rcCli 20 }
+ 
+rcCliRWL2Enable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable for the read-write-layer2 CLI
+                       account."
+        DEFVAL        { true }
+        ::= { rcCli 21 }
+ 
+rcCliRWL3Enable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable for the read-write-layer3 CLI
+                       account."
+        DEFVAL          { true }
+        ::= { rcCli 22 }
+ 
+rcCliROEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable for the read-only CLI account."
+        DEFVAL          { true }
+        ::= { rcCli 23 }        
+
+
+-- Syslog Group
+ 
+rcSyslogGlobal      OBJECT IDENTIFIER ::= { rcSyslog 1 }
+
+rcSyslogGlobalEnable OBJECT-TYPE
+        SYNTAX        	TruthValue
+        MAX-ACCESS        	read-write
+        STATUS        	current
+        DESCRIPTION   	"Used to enable/disable the SysLog feature.  When
+			enabled this feature will send a message to a server 
+			on a network that this configured to receive and
+			store diagnostic messages from this device.  The
+			type of messages sent is user configurable."
+	DEFVAL	      	{ true }
+        ::= { rcSyslogGlobal 1 }
+
+rcSyslogGlobalMaxHosts OBJECT-TYPE
+        SYNTAX        INTEGER (0..10)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Maximun number of remote hosts considered 'active'
+                       and able to receive messages from the Syslog service
+                       on the router."
+        DEFVAL        { 5 }
+        ::= { rcSyslogGlobal 2 }
+
+rcSyslogGlobalOperState OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         active(1),
+                         inactive(2),
+                         emptyHostTbl(3),
+                         allHostDisabled(4)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The operational state of the syslog service
+                       on the router."
+        DEFVAL        { active }
+        ::= { rcSyslogGlobal 3 }
+
+rcSyslogHostTbl OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcSyslogHostEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Table of remote host destinations for syslog."
+        ::= { rcSyslog 2 }
+
+rcSyslogHostEntry OBJECT-TYPE
+        SYNTAX        RcSyslogHostEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Entry containing information for a particular
+                       entry in rcSyslogHostTable."
+        INDEX         { rcSyslogHostId }
+        ::= { rcSyslogHostTbl 1 }
+
+RcSyslogHostEntry ::= SEQUENCE {
+                rcSyslogHostId                  INTEGER,
+                rcSyslogHostIpAddr              IpAddress,
+                rcSyslogHostUdpPort             INTEGER,
+		rcSyslogHostFacility            INTEGER,	
+		rcSyslogHostModuleId            INTEGER,
+		rcSyslogHostModuleId2           Integer32,
+		rcSyslogHostSeverity            INTEGER,
+		rcSyslogHostMapInfoSeverity     INTEGER,
+		rcSyslogHostMapWarningSeverity  INTEGER,
+		rcSyslogHostMapErrorSeverity    INTEGER,
+		rcSyslogHostMapMfgSeverity      INTEGER,
+		rcSyslogHostMapFatalSeverity    INTEGER,
+		rcSyslogHostMapTraceMsg         INTEGER,
+		rcSyslogHostMapTrapMsg          INTEGER,
+		rcSyslogHostLogTraceMsgs        TruthValue,
+		rcSyslogHostLogTrapMsgs         TruthValue,
+		rcSyslogHostEnable              TruthValue,
+                rcSyslogHostRowStatus           RowStatus
+        }
+
+rcSyslogHostId OBJECT-TYPE
+        SYNTAX        INTEGER (1..10)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Host Id."
+        ::= { rcSyslogHostEntry 1 }
+
+rcSyslogHostIpAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Host Ip Address"
+        ::= { rcSyslogHostEntry 2 }
+
+rcSyslogHostUdpPort OBJECT-TYPE
+        SYNTAX        INTEGER (514..530)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the UDP port to use to send syslog 
+                      messages to the host." 
+        DEFVAL        { 514 }
+        ::= { rcSyslogHostEntry 3 }
+
+rcSyslogHostFacility OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         local0(128),
+                         local1(136),
+                         local2(144),
+                         local3(152),
+                         local4(160),
+                         local5(168),
+                         local6(176),
+                         local7(184)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the UNIX facility used in messages
+ 		      to the syslog host.  Default is LOCAL7."
+        DEFVAL        { local7 }
+        ::= { rcSyslogHostEntry 4 }
+ 
+rcSyslogHostModuleId OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         common         (1),      -- '00000001'H
+                         snmp           (2),      -- '00000002'H
+                         rmon           (4),      -- '00000004'H
+                         portmgr        (8),      -- '00000008'H
+                         chasmgr       (16),      -- '00000010'H
+                         bridge        (32),      -- '00000020'H
+                         ospf          (64),      -- '00000040'H
+                         hwif         (128),      -- '00000080'H
+                         sim          (256),      -- '00000100'H
+                         cpp          (512),      -- '00000200'H
+                         netdrv      (1024),      -- '00000400'H
+                         vlanmgr     (2048),      -- '00000800'H
+                         cli         (4096),      -- '00001000'H
+                         main        (8192),      -- '00002000'H
+                         p2ip       (16384),      -- '00004000'H
+                         rcip       (32768),      -- '00008000'H
+                         rompager   (65536),      -- '00010000'H
+                         acif      (131072),      -- '00020000'H
+                         gbip      (262144),      -- '00040000'H
+                         wdt       (524288),      -- '00080000'H
+                         tdp      (1048576),      -- '00100000'H
+                         mandiag  (2097152),      -- '00200000'H
+                         mantest  (4194304),      -- '00400000'H
+                         igmp     (8388608),      -- '00800000'H
+                         ipfil   (16777216),      -- '01000000'H
+                         mlt     (33554432),      -- '02000000'H
+                         ippolicy(67108864),      -- '04000000'H
+                         ipmc   (134217728),      -- '08000000'H
+                         syslog (268435456)       -- '10000000'H
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies for which modules/tasks syslog messages
+		       should be sent.  Default is all modules/tasks."
+        ::= { rcSyslogHostEntry 5 }
+
+rcSyslogHostModuleId2 OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies for which modules/tasks syslog messages
+                       should be sent.  Default is all modules/tasks."
+        ::= { rcSyslogHostEntry 6 }
+
+rcSyslogHostSeverity OBJECT-TYPE
+        SYNTAX        INTEGER (1..31)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the severity level for which syslog messages
+		       should be sent for the modules specifies in 
+                       'SyslogHostModule'.
+                       Value is one of multiple (logical 'OR') of the following:
+                         info(1),
+                         warning(2),
+                         error(4),
+                         mfg(8),
+                         fatal(16)."
+        DEFVAL        { 1 }
+        ::= { rcSyslogHostEntry 7 }
+
+rcSyslogHostMapInfoSeverity OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         emergency(1),
+                         alert(2),
+                         critical(3),
+                         error(4),
+                         warning(5),
+                         notice(6),
+                         info(7),
+                         debug(8)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the syslog severity to use for Accelar
+		       INFO messages.  Default is INFO."
+        DEFVAL        { info }
+        ::= { rcSyslogHostEntry 8 }
+
+rcSyslogHostMapWarningSeverity OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         emergency(1),
+                         alert(2),
+                         critical(3),
+                         error(4),
+                         warning(5),
+                         notice(6),
+                         info(7),
+                         debug(8)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the syslog severity to use for Accelar
+                       WARNING messages.  Default is WARNING.  Should be
+                       less than or equal to INFO."
+        DEFVAL        { warning }
+        ::= { rcSyslogHostEntry 9 }
+
+rcSyslogHostMapErrorSeverity OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         emergency(1),
+                         alert(2),
+                         critical(3),
+                         error(4),
+                         warning(5),
+                         notice(6),
+                         info(7),
+                         debug(8)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the syslog severity to use for Accelar
+                       ERROR messages.  Default is ERROR.  Should be
+		           less than or equal to WARNING."
+        DEFVAL        { error }
+        ::= { rcSyslogHostEntry 10 }
+
+rcSyslogHostMapMfgSeverity OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         emergency(1),
+                         alert(2),
+                         critical(3),
+                         error(4),
+                         warning(5),
+                         notice(6),
+                         info(7),
+                         debug(8)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the syslog severity to use for Accelar
+                       Manufactoring messages.  Dafault is ERROR."
+        DEFVAL        { error }
+        ::= { rcSyslogHostEntry 11 }
+
+rcSyslogHostMapFatalSeverity OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         emergency(1),
+                         alert(2),
+                         critical(3),
+                         error(4),
+                         warning(5),
+                         notice(6),
+                         info(7),
+                         debug(8)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the syslog severity to use for Accelar
+                       FATAL messages.  Default is EMERGENCY.  Should be
+		           less than or equal to ERROR."
+        DEFVAL        { emergency }
+        ::= { rcSyslogHostEntry 12 }
+
+rcSyslogHostMapTraceMsg OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         emergency(1),
+                         alert(2),
+                         critical(3),
+                         error(4),
+                         warning(5),
+                         notice(6),
+                         info(7),
+                         debug(8)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the syslog severity to use for syslog
+		       trace messages.  Default is DEBUG."
+        ::= { rcSyslogHostEntry 13 }
+
+rcSyslogHostMapTrapMsg OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         emergency(1),
+                         alert(2),
+                         critical(3),
+                         error(4),
+                         warning(5),
+                         notice(6),
+                         info(7),
+                         debug(8)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the UNIX severity code to use for syslog
+		       messages for SNMP traps sent to the syslog host.
+                       Default is INFO."
+        ::= { rcSyslogHostEntry 14 }
+
+rcSyslogHostLogTraceMsgs OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Indicate whether to activate the host to log the 
+                       syslog trace messages."
+        ::= { rcSyslogHostEntry 15 }
+
+rcSyslogHostLogTrapMsgs OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Indicate whether to activate the host to log the
+	               syslog messages for SNMP traps."
+        ::= { rcSyslogHostEntry 16 }
+
+rcSyslogHostEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable messages to be sent to syslog host."
+        DEFVAL        { false }
+        ::= { rcSyslogHostEntry 17 }
+
+rcSyslogHostRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to create/delete entries in the rcSyslogTable."
+        ::= { rcSyslogHostEntry 18 }
+
+-- System Time Grp
+
+rcUserSetTimeYear OBJECT-TYPE
+        SYNTAX        INTEGER (1998..2097)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Year of the time."
+        DEFVAL {1998}
+        ::= { rcUserSetTime 1 }
+
+rcUserSetTimeMonth OBJECT-TYPE
+        SYNTAX        INTEGER (1..12)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Month of the time."
+        DEFVAL {1}
+        ::= { rcUserSetTime 2 }
+
+rcUserSetTimeDate OBJECT-TYPE
+        SYNTAX        INTEGER (1..31)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Date of the time."
+        DEFVAL {1}
+        ::= { rcUserSetTime 3 }
+
+rcUserSetTimeHour OBJECT-TYPE
+        SYNTAX        INTEGER (0..23)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Hour of the time."
+        DEFVAL {0}
+        ::= { rcUserSetTime 4 }
+
+rcUserSetTimeMinute OBJECT-TYPE
+        SYNTAX        INTEGER (0..59)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Minute of the time."
+        DEFVAL {0}
+        ::= { rcUserSetTime 5 }
+
+rcUserSetTimeSecond OBJECT-TYPE
+        SYNTAX        INTEGER (0..59)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Second of the time."
+        DEFVAL {0}
+        ::= { rcUserSetTime 6 }
+
+
+-- RecRecord
+
+rcRecReservTable OBJECT-TYPE
+     SYNTAX       SEQUENCE OF RcRecReservEntry
+     MAX-ACCESS   not-accessible
+     STATUS       current
+     DESCRIPTION  "This table would display the statistics of several HW
+                   record type used.  This will also let the user reserve
+                   certain number of records for each type."
+     ::= { rcRec 1 }
+
+rcRecReservTablEntry OBJECT-TYPE
+        SYNTAX        RcRecReservEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   ""
+        INDEX         { rcRecReservRecordType }
+        ::= { rcRecReservTable 1 }
+
+RcRecReservEntry ::=
+     SEQUENCE {
+             rcRecReservRecordType      INTEGER,
+             rcRecReservUsed            Integer32,
+             rcRecReservReserved        Integer32,
+             rcRecReservNewReserved     Integer32,
+             rcRecReservDefReserved     Integer32
+     }
+
+rcRecReservRecordType OBJECT-TYPE
+     SYNTAX         INTEGER  {
+                          filter(1),
+                          ipmc(2),
+                          local(3),
+                          mac(4),
+                          static(5),
+                          vrrp(6)
+                      }
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "."
+     ::= { rcRecReservTablEntry 1 }
+
+rcRecReservUsed OBJECT-TYPE
+     SYNTAX         Integer32
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "Displayes the number of HW records actually usee
+                     by the recordType."
+     ::= { rcRecReservTablEntry 2 }
+
+rcRecReservReserved OBJECT-TYPE
+     SYNTAX         Integer32
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "Displayes the number of HW records reserved for
+                     the recordType."
+     ::= { rcRecReservTablEntry 3 }
+
+rcRecReservNewReserved OBJECT-TYPE
+     SYNTAX         Integer32
+     MAX-ACCESS     read-write
+     STATUS         current
+     DESCRIPTION    "Displayes the number of HW records that w ill
+                     be reserved for this recordType after reset if the
+                     configuration is saved."
+     ::= { rcRecReservTablEntry 4 }
+
+rcRecReservDefReserved OBJECT-TYPE
+     SYNTAX         Integer32
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "Number of records reserved for this recordType
+                     if loaded with factory default."
+     ::= { rcRecReservTablEntry 5 }
+
+-- SSH Group
+-- SSH Global Information. All requires RWA access.
+
+rcSshGlobal   OBJECT IDENTIFIER        ::= { rcSsh 1 }
+
+rcSshGlobalVersion OBJECT-TYPE
+     SYNTAX       INTEGER {
+                         v2only(1),
+                         both(2)
+                      }
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "SSH version"
+     DEFVAL       { v2only }
+     ::= { rcSshGlobal 1 }
+
+rcSshGlobalPort OBJECT-TYPE
+     SYNTAX       Integer32
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "SSH connection port."
+     DEFVAL       { 22 }
+     ::= { rcSshGlobal 2 }
+
+rcSshGlobalMaxSession OBJECT-TYPE
+     SYNTAX       INTEGER (0..8)
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Number of session allowed."
+     DEFVAL       { 4 }
+     ::= { rcSshGlobal 3 }
+
+rcSshGlobalTimeout OBJECT-TYPE
+     SYNTAX       INTEGER (1..120)
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "SSH connection timeout in seconds."
+     DEFVAL       { 60 }
+     ::= { rcSshGlobal 4 }
+
+rcSshGlobalRsaKeySize OBJECT-TYPE
+     SYNTAX       INTEGER (0|512..1024)
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "SSH Rsa key size."
+     DEFVAL       { 1024 }
+     ::= { rcSshGlobal 5 }
+
+rcSshGlobalDsaKeySize OBJECT-TYPE
+     SYNTAX       INTEGER (0|512..1024)
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "SSH Dsa key size."
+     DEFVAL       { 1024 }
+     ::= { rcSshGlobal 6 }
+
+rcSshGlobalRsaAuth OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Enable/disable SSH RSA authentication"
+     DEFVAL       { true }
+     ::= { rcSshGlobal 7 }
+
+rcSshGlobalDsaAuth OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Enable/disable SSH DSA authentication"
+     DEFVAL       { true }
+     ::= { rcSshGlobal 8 }
+
+rcSshGlobalPassAuth OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Enable/disable SSH RSA authentication"
+     DEFVAL       { true }
+     ::= { rcSshGlobal 9 }
+
+rcSshGlobalKeyAction OBJECT-TYPE
+     SYNTAX       INTEGER  {
+                         none(0),
+                         generateDsa(1),
+                         generateRsa(2),
+                         deleteDsa(3),
+                         deleteRsa(4)
+                      }
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "SSH key action."
+     ::= { rcSshGlobal 10 }
+
+rcSshGlobalEnable OBJECT-TYPE
+     SYNTAX       INTEGER {
+                         false(0),
+                         true(1),
+                         secure(2)
+                      }
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Enable/disable, or securely enable SSH. Securely enable
+                   turns off other daemon flag, and it takes ffect afte reboot"
+     DEFVAL       { false }
+     ::= { rcSshGlobal 11 }
+
+rcSshGlobalHostIpAddr OBJECT-TYPE
+     SYNTAX       IpAddress
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "current remote ip addr"
+     ::= { rcSshGlobal 12 }
+
+rcSslMipTable OBJECT-TYPE
+     SYNTAX       SEQUENCE OF RcSslMipEntry
+     MAX-ACCESS   not-accessible
+     STATUS       current
+     DESCRIPTION  "This table would display the MIP of the SSL blade
+                   according to the slot number."
+     ::= { rcSsh 2 }
+
+rcSslMipTableEntry OBJECT-TYPE
+        SYNTAX        RcSslMipEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "This table get the MIP of the SSL blade on which
+                       the blade is in different cluster."
+        INDEX         { rcSslMipSlot }
+        ::= { rcSslMipTable 1 }
+
+RcSslMipEntry ::=
+     SEQUENCE {
+             rcSslMipSlot      Integer32,
+             rcSslMipMip       DisplayString
+     }
+
+rcSslMipSlot OBJECT-TYPE
+     SYNTAX         Integer32 (0..2147483647)
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "Used as an index to find out the MIP of SSL blade."
+     ::= { rcSslMipTableEntry 1 }
+
+rcSslMipMip OBJECT-TYPE
+     SYNTAX         DisplayString
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "Master IP of the SSL blade."
+     ::= { rcSslMipTableEntry 2 }
+
+-- LACP Group
+-- LACP Global Information. 
+
+rcLacpGlobal   OBJECT IDENTIFIER        ::= { rcLacp 1 }
+
+rcLacpGlobalEnable OBJECT-TYPE
+     SYNTAX       TruthValue 
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "globally enable/disable LACP"
+     DEFVAL       { false }
+     ::= { rcLacpGlobal 1 }
+
+rcLacpGlobalSystemPriority OBJECT-TYPE
+     SYNTAX       Integer32
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "set system priority to all the LACP enabled aggregators 
+                   and prots"
+     DEFVAL       { 32768 }
+     ::= { rcLacpGlobal 2 }
+
+rcLacpGlobalFastPeriodicTime OBJECT-TYPE
+     SYNTAX       Integer32
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "The number of miliseconds between periodic
+                   transmissions using Short Timeouts. Set this
+                   value to all LACP enabled ports."
+     DEFVAL       { 1000 }
+     ::= { rcLacpGlobal 3 }
+
+rcLacpGlobalSlowPeriodicTime OBJECT-TYPE
+     SYNTAX       Integer32
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "The number of miliseconds between periodic
+                   transmissions using LONG Timeouts. Set this
+                   value to all LACP enabled ports."
+     DEFVAL       { 30000 }
+     ::= { rcLacpGlobal 4 }
+
+rcLacpGlobalTimeoutScale OBJECT-TYPE
+     SYNTAX       Integer32
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Scalar value used to calculate timeout time from
+                   periodic time. Set this value to all LACP enabled ports."
+     DEFVAL       { 3 }
+     ::= { rcLacpGlobal 5 }
+
+rcLacpGlobalAggrWaitTime OBJECT-TYPE
+        SYNTAX        INTEGER (200..2000)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The number of mili seconds to delay aggregation
+                       to allow multiple links to aggregate simultaneously."
+        DEFVAL        { 2000 }
+        ::= { rcLacpGlobal 6 }
+
+rcLacpGlobalVlacpEnable OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "globally enable/disable Virtual LACP"
+     DEFVAL       { false }
+     ::= { rcLacpGlobal 7 }
+
+rcLacpGlobalVlacpMulticastMACAddress OBJECT-TYPE
+     SYNTAX       MacAddress
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Virtual LACP multicast MAC address"
+     ::= { rcLacpGlobal 8 }
+
+-- rcVlacpPeerMacAddressTable  
+
+rcVlacpPeerMacAddressTable  OBJECT-TYPE
+	SYNTAX        SEQUENCE OF RcVlacpPeerMacAddressEntry
+    	MAX-ACCESS    not-accessible
+	STATUS        current
+    	DESCRIPTION   " Virtual LACP Peer Mac Address table"
+        ::= { rcLacp 2 }
+
+rcVlacpPeerMacAddressEntry OBJECT-TYPE
+    	SYNTAX        RcVlacpPeerMacAddressEntry
+	MAX-ACCESS    not-accessible
+    	STATUS        current
+    	DESCRIPTION   "Entry containing info. for a particular peer"
+    	INDEX         { rcVlacpPeerMacAddressMAC }
+       	::= { rcVlacpPeerMacAddressTable 1 }
+
+RcVlacpPeerMacAddressEntry ::= SEQUENCE {
+     	rcVlacpPeerMacAddressMAC               MacAddress,
+     	rcVlacpPeerMacAddressMltId             INTEGER,
+     	rcVlacpPeerMacAddressPort              InterfaceIndex,
+	rcVlacpPeerMacAddressIpAddr            IpAddress,
+     	rcVlacpPeerMacAddressRowStatus         RowStatus
+     	}
+
+rcVlacpPeerMacAddressMAC OBJECT-TYPE
+    	SYNTAX        MacAddress
+	MAX-ACCESS    not-accessible
+    	STATUS        current
+    	DESCRIPTION   "Virtual LACP peer mac address on a port/MLT"
+     	::= { rcVlacpPeerMacAddressEntry 1 }
+
+rcVlacpPeerMacAddressMltId OBJECT-TYPE
+    	SYNTAX        INTEGER(1..32)
+    	MAX-ACCESS    read-create
+    	STATUS        current
+    	DESCRIPTION   "MLT Id on which Virtual LACP peer mac address is 
+  	               directly or indirectly connected"
+     	::= { rcVlacpPeerMacAddressEntry 2 }
+
+rcVlacpPeerMacAddressPort OBJECT-TYPE
+    	SYNTAX        InterfaceIndex
+    	MAX-ACCESS    read-create
+    	STATUS        current
+    	DESCRIPTION   "Ports on which Virtual LACP peer mac address is 
+                       directly or indirectly connected"
+        ::= { rcVlacpPeerMacAddressEntry 3 }
+
+rcVlacpPeerMacAddressIpAddr OBJECT-TYPE
+    	SYNTAX        IpAddress
+    	MAX-ACCESS    read-create
+    	STATUS        current
+    	DESCRIPTION   "Virtual LACP peer Ip Address on port/MLT"
+       	::= { rcVlacpPeerMacAddressEntry 4 }
+
+rcVlacpPeerMacAddressRowStatus OBJECT-TYPE
+    	SYNTAX        RowStatus
+    	MAX-ACCESS    read-create
+    	STATUS        current
+    	DESCRIPTION   "Used to create/delete entries in the peer address table"
+        ::= { rcVlacpPeerMacAddressEntry 5 }
+
+END
+

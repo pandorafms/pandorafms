@@ -351,7 +351,7 @@ span.span1 {
   font-family: "lato-bolder";
   color: #fff;
   margin-right: 30px;
-  text-shadow: 20px 15px 7px rgba(9, 9, 9, 0.8);
+  text-shadow: 2px 2px #000;
 }
 
 span.span2 {
@@ -362,6 +362,7 @@ span.span2 {
   font-family: "lato-bolder";
   color: #fff;
   margin-right: 30px;
+  text-shadow: 2px 2px #000;
 }
 
 div.img_banner_login img {

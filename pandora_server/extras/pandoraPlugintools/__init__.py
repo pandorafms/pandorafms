@@ -7,3 +7,4 @@ from .modules import *
 from .transfer import *
 from .discovery import *
 from .http import *
+from .snmp import *

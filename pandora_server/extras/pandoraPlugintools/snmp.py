@@ -20,7 +20,16 @@ _GLOBAL_VARIABLES = {
     'remote_port'       : 161,
 }
 
+####
+# Creates an SNMP session based on the global configuration variables.
+#########################################################################################
 def create_snmp_session():
+    """
+    Creates an SNMP session based on the global configuration variables.
+
+    Returns:
+        Session: An SNMP session configured based on the global variables.
+    """
     host = _GLOBAL_VARIABLES['hostname']
     version = _GLOBAL_VARIABLES['version']
     community = _GLOBAL_VARIABLES['community']
@@ -67,6 +76,10 @@ def create_snmp_session():
 
     return Session(**session_kwargs)
 
+
+####
+# Performs an SNMP GET operation to retrieve the value of a specified OID.
+#########################################################################################
 def snmp_get(
         session: Session,
         oid: str
@@ -83,6 +96,9 @@ def snmp_get(
     """
     return session.get(oid)
 
+####
+# Performs an SNMP WALK operation to retrieve a list of values from a subtree of the MIB.
+#########################################################################################
 def snmp_walk(
         session: Session,
         oid: str
@@ -99,6 +115,9 @@ def snmp_walk(
     """
     return session.walk(oid)
 
+####
+# Sends an SNMP trap to the specified destination IP using the given OID, value, and community.
+#########################################################################################
 def send_trap(
         trap_oid: str,
         trap_value: str,

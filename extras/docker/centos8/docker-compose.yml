@@ -32,6 +32,7 @@ services:
       PUBLICURL: ""
       SLEEP: 5
       RETRIES: 10
+      TZ: 'Europe/Madrid'
     networks:
      - pandora
     ports:

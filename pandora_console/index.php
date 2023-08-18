@@ -1042,6 +1042,33 @@ if (isset($config['id_user']) === false) {
     }
 }
 
+if ((bool) ($config['maintenance_mode'] ?? false) === true
+    && is_user_admin($config['id_user']) === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include $config['homedir'].'/general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
+if ((bool) ($config['maintenance_mode'] ?? false) === true
+    && $page !== 'advanced/command_center'
+    && is_user_admin($config['id_user']) === true
+) {
+    // Prevent access to metaconsole if not merged.
+    include 'general/admin_maintenance_mode.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
 // Enterprise support.
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     include_once ENTERPRISE_DIR.'/load_enterprise.php';

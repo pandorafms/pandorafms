@@ -575,7 +575,7 @@ class DiscoveryTaskList extends HTML
                 $recon_tasks = db_get_all_rows_sql(
                     sprintf(
                         'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
-                        FROM trecon_task
+                        FROM trecon_task tasks
                         LEFT JOIN tdiscovery_apps apps ON tasks.id_app = apps.id_app
                         WHERE id_group IN (%s) AND
                         (type IN (%s) OR section = "%s")',

@@ -56,7 +56,7 @@ class JavaScript extends Renderer
                 var innerRadius = outerRadius - padding;
 
                 ctx.font = "30px ";
-                var sidePaddingCalculated = (92/100) * (innerRadius * 2)
+                var sidePaddingCalculated = (93/100) * (innerRadius * 2)
 
                 var stringWidth = ctx.measureText(txt).width;
                 var elementWidth = (innerRadius * 2) - sidePaddingCalculated;

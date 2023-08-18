@@ -23,6 +23,8 @@ class Defaults implements ChartOwnedInterface, ArraySerializableInterface, JsonS
      */
     private $font;
 
+    protected $watermark;
+
 
     /**
      * Return Font.
@@ -57,7 +59,7 @@ class Defaults implements ChartOwnedInterface, ArraySerializableInterface, JsonS
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize():mixed
     {
         return $this->getArrayCopy();
     }

@@ -171,6 +171,8 @@ foreach ($password_fields as $k => $p) {
     }
 
     $(document).ready(function () {
-        changePluginSelect();
+        if ($("#id_plugin").val() === 0) {
+            changePluginSelect();
+        }
     });
 </script>

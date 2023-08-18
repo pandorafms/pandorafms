@@ -1,6 +1,6 @@
 /* Defines a factory of Pandora modules based on the module definition
 
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,10 @@
 #include "pandora_module_snmpget.h"
 #include "../windows/pandora_wmi.h"
 #include "../pandora_strutils.h"
+#include "../misc/pandora_file.h"
+#include "../pandora.h"
 #include <list>
+#include <cmath>
 
 using namespace Pandora;
 using namespace Pandora_Modules;
@@ -50,6 +53,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_NAME          ("module_name ")
 #define TOKEN_TYPE          ("module_type ")
 #define TOKEN_INTERVAL      ("module_interval ")
+#define TOKEN_ABSOLUTEINTERVAL ("module_absoluteinterval ")
 #define TOKEN_EXEC          ("module_exec ")
 #define TOKEN_PROC          ("module_proc ")
 #define TOKEN_SERVICE       ("module_service ")
@@ -156,7 +160,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	list<string>::iterator iter;
 	string                 module_name, module_type, module_exec;
 	string                 module_min, module_max, module_description;
-	string                 module_interval, module_proc, module_service;
+	string                 module_interval, module_absoluteinterval;
+	string                 module_proc, module_service;
 	string                 module_freedisk, module_cpuusage, module_inventory;
 	string                 module_freedisk_percent, module_freememory_percent;
 	string                 module_dsn, module_freememory;
@@ -196,6 +201,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_max           = "";
 	module_description   = "";
 	module_interval      = "";
+	module_absoluteinterval = "";
 	module_exec          = "";
 	module_proc          = "";
 	module_service       = "";
@@ -289,6 +295,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_interval == "") {
 			module_interval = parseLine (line, TOKEN_INTERVAL);
+		}
+		if (module_absoluteinterval == "") {
+			module_absoluteinterval = parseLine (line, TOKEN_ABSOLUTEINTERVAL);
 		}
 		if (module_exec == "") {
 			module_exec = parseLine (line, TOKEN_EXEC);
@@ -600,6 +609,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 					pos_macro = module_interval.find(macro_name);
 					if (pos_macro != string::npos){
 						module_interval.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_absoluteinterval != "") {
+					pos_macro = module_absoluteinterval.find(macro_name);
+					if (pos_macro != string::npos){
+						module_absoluteinterval.replace(pos_macro, macro_name.size(), macro_value);
 					}
 				}
 
@@ -1323,6 +1339,61 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 	}
 
+	/* Set the module absolute interval */
+	if (module_absoluteinterval != "") {
+		int interval;
+		
+		try {
+			service = Pandora_Windows_Service::getInstance();
+
+			// Run once.
+			if (module_absoluteinterval == "once") {
+				interval = 0;
+			}
+			// Seconds.
+			else if (module_absoluteinterval.back() == 's') {
+				interval = strtoint (module_absoluteinterval.substr(0, module_absoluteinterval.size() - 1));
+			}
+			// Minutes.
+			else if (module_absoluteinterval.back() == 'm') {
+				interval = strtoint (module_absoluteinterval.substr(0, module_absoluteinterval.size() - 1)) * 60;
+			}
+			// Hours.
+			else if (module_absoluteinterval.back() == 'h') {
+				interval = strtoint (module_absoluteinterval.substr(0, module_absoluteinterval.size() - 1)) * 3600;
+			}
+			// Days.
+			else if (module_absoluteinterval.back() == 'd') {
+				interval = strtoint (module_absoluteinterval.substr(0, module_absoluteinterval.size() - 1)) * 86400;
+			}
+			// Number of agent intervals.
+			else {
+				interval = strtoint(module_absoluteinterval) * (service->getIntervalSec());
+			}
+
+			// Convert from seconds to agent executions.
+			interval = ceil(interval / double(service->getIntervalSec()));
+
+			// Set the module interval.
+			module->setInterval (interval);
+			module->setIntensiveInterval (interval);
+
+			// Compute the MD5 hash of the module's name.
+			char module_name_md5[Pandora_File::MD5_BUF_SIZE];
+			Pandora_File::md5(module_name.c_str(), module_name.size(), module_name_md5);
+
+			// Set the timestamp file.
+			module->setTimestampFile(Pandora::getPandoraInstallDir().append("/ref/").append(module_name_md5).append(".ref"));
+		} catch (Invalid_Conversion e) {
+			pandoraLog ("Invalid absolute interval value \"%s\" for module %s",
+			module_absoluteinterval.c_str (),
+			module_name.c_str ());
+		}
+		catch (...) {
+			// Should not happen. Ignore errors.
+		}
+	}
+
 	/* Module intensive condition */
 	if (intensive_condition_list.size () > 0) {
 		intensive_condition_iter = intensive_condition_list.begin ();
@@ -1336,6 +1407,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		service = Pandora_Windows_Service::getInstance ();
 		module->setIntensiveInterval (module->getInterval () * (service->getInterval () / service->getIntensiveInterval ()));
 	}
+
+	/* Initialize the module's execution counter. */
+	module->initExecutions ();
 
 	/* Module cron */
 	module->setCron (module_crontab);
@@ -1372,6 +1446,18 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else {
 		module->setType	("generic_data_string");
 		numeric = false;
+	}
+
+	// Make sure modules that run once are asynchronous.
+	if (module->getInterval() == 0) {
+		type = module->getTypeInt();
+		if (type == TYPE_GENERIC_DATA) {
+			module->setType("async_data");
+		} else if (type == TYPE_GENERIC_PROC) {
+			module->setType("async_proc");
+		} else if (type == TYPE_GENERIC_DATA_STRING) {
+			module->setType("async_string");
+		}
 	}
 
 	if (numeric) {

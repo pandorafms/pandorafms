@@ -230,7 +230,7 @@ div.tree-node span {
 }
 
 .node-content.module:not(.module-only-caption) .module-name {
-  margin-left: 1.5em;
+  margin-left: 2.5em;
   font-weight: normal;
 }
 

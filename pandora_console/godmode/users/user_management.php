@@ -143,7 +143,7 @@ if ($new_user === true) {
     $userManagementTable->data['captions_iduser'][0] = __('User ID');
     $userManagementTable->data['fields_iduser'][0] = html_print_input_text_extended(
         'id_user',
-        $id,
+        '',
         '',
         '',
         20,
@@ -302,25 +302,45 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     true
 );
 
-if ($new_user === false) {
+if ($new_user === false && users_is_admin() === false) {
     $passwordManageTable->data['captions_currentpassword'][0] = __('Current password');
     $passwordManageTable->rowclass['fields_currentpassword'] = 'w540px';
-    $passwordManageTable->data['fields_currentpassword'][0] = html_print_input_text_extended(
-        'own_password_confirm',
-        '',
-        'own_password_confirm',
-        '',
-        '20',
-        '150',
-        $view_mode,
-        '',
-        [
-            'class'       => 'input w100p',
-            'placeholder' => __('Own password confirmation'),
-        ],
-        true,
-        true
-    );
+
+    if ($user_info['id_user'] === $config['id_user']) {
+        $passwordManageTable->data['fields_currentpassword'][0] = html_print_input_text_extended(
+            'own_password_confirm',
+            '',
+            'own_password_confirm',
+            '',
+            '20',
+            '45',
+            $view_mode,
+            '',
+            [
+                'class'       => 'input w100p',
+                'placeholder' => __('Own password confirmation'),
+            ],
+            true,
+            true
+        );
+    } else {
+        $passwordManageTable->data['fields_currentpassword'][0] = html_print_input_text_extended(
+            'own_password_confirm',
+            '',
+            'own_password_confirm',
+            '',
+            '20',
+            '45',
+            $view_mode,
+            '',
+            [
+                'class'       => 'input w100p',
+                'placeholder' => __('Third user password confirmation'),
+            ],
+            true,
+            true
+        );
+    }
 }
 
 $userManagementTable->data['passwordManage_table'] = html_print_table($passwordManageTable, true);
@@ -633,7 +653,7 @@ $homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
 $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
     $homeScreenValues,
     'section',
-    array_search($user_info['section'], $homeScreenValues),
+    $user_info['section'],
     'show_data_section();',
     '',
     -1,
@@ -764,10 +784,12 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
 
 if (isset($CodeQRTable) === true || isset($apiTokenContent) === true) {
     // QR Code and API Token advice.
+    $titleQr = '<span class="font-title-font">'.__('Contact details (QR)').'</span>';
+    $titleApi = '<span class="font-title-font margin-top-10">'.__('API Token credentials').'</span>';
     html_print_div(
         [
             'id'      => 'api_qrcode_display',
-            'content' => $CodeQRTable.$apiTokenContent,
+            'content' => $titleQr.$CodeQRTable.$titleApi.$apiTokenContent,
         ]
     );
 }

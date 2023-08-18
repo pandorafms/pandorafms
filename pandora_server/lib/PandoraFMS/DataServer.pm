@@ -3,7 +3,7 @@ package PandoraFMS::DataServer;
 # Pandora FMS Data Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -313,8 +313,6 @@ sub data_consumer ($$) {
 				enterprise_hook('process_xml_connections', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
 			} elsif (defined($xml_data->{'ipam_source'})) {
 				enterprise_hook('process_xml_ipam', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
-			} elsif (defined($xml_data->{'network_matrix'})){
-				process_xml_matrix_network( $self->getConfig(), $xml_data, $self->getDBH());
 			} else {
 				process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
 			}
@@ -324,8 +322,8 @@ sub data_consumer ($$) {
 		return;	
 	}
 
-	rename($file_name, $file_name . '_BADXML');
-	pandora_event ($pa_config, "Unable to process XML data file '$file_name': $xml_err", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+	rename($file_name, $file_name.'_BADXML');
+	pandora_event ($pa_config, "Unable to process XML data file '$task'.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 	agent_unlock($pa_config, $agent_name);
 }
 
@@ -759,13 +757,8 @@ sub process_module_data ($$$$$$$$$$) {
 	# Name XML tag and column name don't match
 	$module_conf->{'nombre'} = safe_input($module_name);
 
-	# Check if module is 'Transactional subsystem status'
-	my $enable_transactional_subsystem = 0;
-	if ($module_conf->{'name'} eq "Transactional subsystem status") {
-		$enable_transactional_subsystem = 1;
-	}
 	delete $module_conf->{'name'};
-	
+
 	# Calculate the module interval in seconds
 	if (defined($module_conf->{'cron_interval'})) {
 		$module_conf->{'module_interval'} = $module_conf->{'cron_interval'};
@@ -826,11 +819,6 @@ sub process_module_data ($$$$$$$$$$) {
 			delete $module_conf->{'module_group'};
 		}
 
-		if ($enable_transactional_subsystem == 1) {
-			# Defines current agent as transactional agent
-			pandora_mark_transactional_agent($dbh, $agent->{'id_agente'});
-		}
-		
 		$module_conf->{'id_modulo'} = 1;
 		$module_conf->{'id_agente'} = $agent->{'id_agente'};
 		
@@ -1125,45 +1113,6 @@ sub process_events_dataserver {
 			0,
 			$dbh
 		);
-	}
-
-	return;
-}
-
-
-##########################################################################
-# Process events in the XML.
-##########################################################################
-sub process_xml_matrix_network {
-	my ($pa_config, $data, $dbh)  = @_;
-
-	my $utimestamp = $data->{'network_matrix'}->[0]->{'utimestamp'};
-	my $content = $data->{'network_matrix'}->[0]->{'content'};
-	return unless defined($utimestamp) && defined($content);
-
-	# Try to decode the base64 inside
-	my $matrix_info;
-	eval {
-		$matrix_info = decode_json(decode_base64($content));
-	};
-
-	if ($@) {
-		logger($pa_config, "Error processing base64 matrix data '$content'.", 5);
-		return;
-	}
-	foreach my $source (keys %$matrix_info) {
-		foreach my $destination (keys %{$matrix_info->{$source}}) {
-			my $matrix_single_data = $matrix_info->{$source}->{$destination};
-			$matrix_single_data->{'source'} = $source;
-			$matrix_single_data->{'destination'} = $destination;
-			$matrix_single_data->{'utimestamp'} = $utimestamp;
-			eval {
-				db_process_insert($dbh, 'id', 'tnetwork_matrix', $matrix_single_data);
-			};
-			if ($@) {
-				logger($pa_config, "Error inserted matrix data. Source: $source, destination: $destination, utimestamp: $utimestamp.", 5);
-			}
-		}
 	}
 
 	return;

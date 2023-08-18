@@ -795,8 +795,14 @@ function tags_get_acl_tags(
 
     $acltags = [];
     foreach ($raw_acltags as $group => $taglist) {
-        if (empty($id_group) === false && array_key_exists($group, $id_group) === false) {
-            continue;
+        if ($return_mode === 'module_condition') {
+            if (!empty($id_group) && !in_array($group, $id_group)) {
+                continue;
+            }
+        } else {
+            if (empty($id_group) === false && array_key_exists($group, $id_group) === false) {
+                continue;
+            }
         }
 
         if (!empty($taglist)) {

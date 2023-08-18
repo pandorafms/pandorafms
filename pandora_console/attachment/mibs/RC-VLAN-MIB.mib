@@ -1,0 +1,1477 @@
+RC-VLAN-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, IpAddress
+        FROM SNMPv2-SMI
+    DisplayString, TruthValue, MacAddress, RowStatus
+        FROM SNMPv2-TC
+    InterfaceIndex, InterfaceIndexOrZero
+        FROM IF-MIB
+    rcVlan, rcSvlan, IdList, PortSet, EnableValue
+        FROM RAPID-CITY;
+
+rcVlanMib MODULE-IDENTITY
+       LAST-UPDATED     "200511220000Z"
+       ORGANIZATION     "Bay Networks, Rapid-City Group"
+       CONTACT-INFO     "
+                                        Edwin Tsang
+                         Postal:        Bay Networks, Inc.
+                                        4401 Great America Parkway
+                                        Santa Clara, CA 95052-8185
+
+                         Tel:           408-495-6159
+                         Fax:           408-495-5215
+                         E-mail:        edwin_tsang@baynetworks.com
+                        "
+       DESCRIPTION      "Enterprise MIB for the Accelar product family."
+
+       REVISION "200511220000Z" -- 22 Nov 2005
+       DESCRIPTION "Version 24: Updated rcVlanPortPerformTagging to match
+                                existing implementations.  Restored lost
+                                revision history."
+
+       REVISION "200508150000Z" -- 15 Aug 2005
+       DESCRIPTION "Version 23: Added rcVlanOspfPassivePortMember to rcVlanEntry."
+
+       REVISION "200508100000Z" -- 10 Aug 2005
+       DESCRIPTION "Version 22: Added rcVlanUnkDstMacDiscard to rcVlanTable."
+
+       REVISION "200504270000Z" -- 27 Apr 2005
+       DESCRIPTION "Version 21: Allow rcVlanIgmpSnoopQuerierPort to have value 0."
+
+       REVISION "200503140000Z" -- 14 Mar 2005
+       DESCRIPTION "Version 20: Added rcVlanPortSpoofDetect"
+
+       REVISION "200502040000Z" -- 04 Feb 2005
+       DESCRIPTION "Version 19: changed ranges of rcVlanAgingTime, rcVlanPortVlanIds"
+
+       REVISION "200501040000Z" -- 04 January 2005
+       DESCRIPTION "Version 18: added new mib rcVlanPortArpDetect"
+
+       REVISION "200412030000Z" -- 03 December 2004
+       DESCRIPTION "Version 17: increased the range of rcVlanName to (0..64) characters"
+
+       REVISION "200411290000Z" -- 29 November 2004
+       DESCRIPTION "Version 16: Cleaned up REVISION info."
+
+       REVISION "200411240000Z" -- 24 November 2004
+       DESCRIPTION "Version 15: removed rcVlanNewName & changed the range
+                                for rcVlanName."
+
+       REVISION "200411200000Z" -- 20 November 2004
+       DESCRIPTION "Version 14: added new mib rcVlanNewName & made
+                                rcVlanName obsolete."
+
+       REVISION "200410040000Z" -- 04 October 2004
+       DESCRIPTION "Version 13: add the range for
+                                rcVlanNewLoopDetectedVlanId."
+
+       REVISION "200409280000Z" -- 28 September 2004
+       DESCRIPTION "Version 12: Increase the range for
+                                rvVlanFirwallClusterId."
+
+       REVISION "200409230000Z" -- 23 September 2004
+       DESCRIPTION "Version 11: Add range for mib rcVlanPortIndex,
+                                rcVlanMacVlanId, rcVlanLoopDetectedPortIndex,
+                                rcVlanLoopDetectedVlanId."
+
+       REVISION "200409210000Z" -- 21 September 2004
+       DESCRIPTION "Version 10: Remove range for mib rcVlanPortIndex,
+                               rcVlanMacVlanId, rcVlanLoopDetectedPortIndex,
+                               rcVlanLoopDetectedVlanId."
+
+       REVISION "200409080000Z" -- 08 September 2004
+       DESCRIPTION "Version 9: Added rcVlanNewLoopDetectedTable. Changed
+                               rcVlanPortLoopDetectAction."
+
+       REVISION "200408250000Z" -- 25 August 2004
+       DESCRIPTION "Version 8:  Added rcVlanFirewallClusterId in rcVlanTable"
+
+       REVISION "200407130000Z" -- 13 July 2004
+       DESCRIPTION "Version 7:  Added rcVlanTlsIpmc"
+
+       REVISION "200406220000Z" -- 22 June 2004
+       DESCRIPTION "Version 6:  Added rcVlanPortLoopDetectAction"
+
+       REVISION "200406160000Z" -- 16 June 2004
+       DESCRIPTION "Version 5:  Added rcVlanIgmpVer1SnoopMRouterPorts and
+                                rcVlanIgmpVer2SnoopMRouterPorts"
+
+       ::= { rcVlan 0 }
+
+-- VLAN Table
+
+rcVlanNumVlans OBJECT-TYPE
+        SYNTAX        INTEGER (1..128)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The number of VLANs currently defined in the switch."
+        ::= { rcVlan 1 }
+
+rcVlanTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcVlanEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A list of Virtual LAN entries. The number of entries
+                      is given by rcVlanNumVlans."
+        ::= { rcVlan 2 }
+
+rcVlanEntry OBJECT-TYPE
+        SYNTAX        RcVlanEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Entry containing configuration information for a 
+                      particular Virtual LAN.
+
+                      The relationship between the various port sets in a 
+                      VLAN Entry are :
+
+                      o The set of ports defined by PortMembers must be a 
+                        subset of the set of ports in the underlying STG of 
+                        the VLAN.
+
+                      o The bitwise AND of PortMembers and NotAllowToJoin must 
+                        be the empty set.
+
+                      o The bitwise OR of PortMembers and NotAllowToJoin must 
+                        be the set of ports in the underlying STG of the VLAN.
+
+                      o The set of ports defined by StaticMembers must be a 
+                        subset of the set of ports defined by PortMembers.
+
+                      o The bitwise XOR of PortMembers and StaticMembers defines 
+                        the set of dynamic (potential) members of the VLAN.
+
+                      o The set of ports defined by ActiveMembers must be a subset 
+                        of the set of ports defined by PortMembers.
+                      "
+        INDEX         { rcVlanId }
+        ::= { rcVlanTable 1 }
+
+RcVlanEntry ::= SEQUENCE {
+                rcVlanId INTEGER,
+                rcVlanName DisplayString,
+                rcVlanColor INTEGER,
+                rcVlanHighPriority TruthValue,	--excluded
+                rcVlanRoutingEnable TruthValue,	--excluded
+                rcVlanIfIndex InterfaceIndex,
+                rcVlanAction INTEGER,
+                rcVlanResult INTEGER,
+                rcVlanStgId INTEGER,
+                rcVlanType INTEGER,
+                rcVlanPortMembers PortSet,
+                rcVlanActiveMembers PortSet,
+                rcVlanStaticMembers PortSet,
+                rcVlanNotAllowToJoin PortSet,
+                rcVlanProtocolId INTEGER,
+                rcVlanSubnetAddr IpAddress,
+                rcVlanSubnetMask IpAddress,
+                rcVlanAgingTime  INTEGER,
+                rcVlanMacAddress MacAddress,
+                rcVlanRowStatus RowStatus,
+                rcVlanIgmpSnoopEnable TruthValue,
+                rcVlanIgmpSnoopReportProxyEnable TruthValue,
+                rcVlanIgmpSnoopRobustness INTEGER,
+                rcVlanIgmpSnoopQueryInterval INTEGER,
+                rcVlanIgmpSnoopMRouterPorts PortSet,
+		rcVlanUserDefinedPid Integer32,
+		rcVlanIgmpSnoopActiveMRouterPorts PortSet,
+		rcVlanProtocolIds Integer32,
+		rcVlanIgmpSnoopActiveQuerier IpAddress,
+		rcVlanIgmpSnoopMRouterExpiration Integer32,
+		rcVlanIgmpSnoopQuerierPort InterfaceIndexOrZero,
+		rcVlanUserPriority INTEGER,
+		rcVlanQosLevel INTEGER,
+		rcVlanTosValue INTEGER,
+                rcVlanEncap INTEGER,
+                rcVlanFirewallVlanType INTEGER,
+                rcVlanFdbAging INTEGER,
+                rcVlanUpdateDynamicMacQosLevel EnableValue,
+                rcVlanUserDefinedPidList  OCTET STRING,
+                rcVlanIgmpVer1SnoopMRouterPorts PortSet,
+                rcVlanIgmpVer2SnoopMRouterPorts PortSet,
+                rcVlanTlsIpmc   EnableValue,
+                rcVlanFirewallClusterId INTEGER,
+                rcVlanOspfPassivePortMember PortSet
+        }
+
+rcVlanId OBJECT-TYPE
+        SYNTAX        INTEGER (1..4094)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "A value that uniquely identifies the Virtual LAN 
+                      associated with this entry. This value corresponds
+                      to the lower 12 bits in the IEEE 802.1Q VLAN Tag."
+        ::= { rcVlanEntry 1 }
+
+rcVlanName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..64))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "An administratively-assigned name for this VLAN."
+        ::= { rcVlanEntry 2 }
+
+rcVlanColor OBJECT-TYPE
+        SYNTAX        INTEGER (0..32)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "An administratively-assigned color code for this
+                      VLAN. The value of this object is used by the VLAN
+                      Manager GUI tool to select a color when it draws
+                      this VLAN on the screen."
+        ::= { rcVlanEntry 3 }
+
+rcVlanHighPriority OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "A flag to note whether frames in this VLAN should 
+                      be assigned a high switching priority."
+        DEFVAL        { false }
+        ::= { rcVlanEntry 4 }
+
+rcVlanRoutingEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "A flag to note whether IP routing is enabled in
+                      this VLAN." 
+        DEFVAL        { false }
+        ::= { rcVlanEntry 5 }
+
+rcVlanIfIndex OBJECT-TYPE
+        SYNTAX        InterfaceIndex 
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "When rcVlanRoutingEnable is set to true(1), this 
+                      value indicates the 'logical' ifIndex assigned to
+                      this VLAN.  Otherwise, this value is meaningless
+                      and should be set to zero."
+        ::= { rcVlanEntry 6 }
+
+rcVlanAction OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         none(1),             -- none of the following
+                         flushMacFdb(2),      -- flush MAC forwarding table
+                         flushArp(3),         -- flush ARP table
+                         flushIp(4),          -- flush IP route table
+                         flushDynMemb(5),     -- flush Dynamic Members
+                         all(6),              -- flush all tables 
+			 flushSnoopMemb(7),   -- flush IGMP Snoop Members
+                         triggerRipUpdate(8), -- manually trigger rip update
+			 flushSnoopMRtr(9)    -- flush snoop multicast router
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "VLAN related actions."
+        DEFVAL        { none }
+        ::= { rcVlanEntry 7 }
+
+rcVlanResult OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         none(1),        -- none of the following
+                         inProgress(2),  -- in progress
+                         success(3),     -- success
+                         fail(4)         -- failure
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The result from the last VLAN action."
+        DEFVAL        { none }
+        ::= { rcVlanEntry 8 }
+
+rcVlanStgId OBJECT-TYPE
+        SYNTAX        INTEGER (0..128)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Indicates the Spanning Tree Group (STG) used by
+                      this VLAN to determine the state of its ports.
+                      If this VLAN is not associated with any STG, this
+                      value should be set to zero."
+        DEFVAL        { 1 }
+        ::= { rcVlanEntry 9 }
+
+rcVlanType OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         byPort(1),       -- VLAN by Port 
+                         byIpSubnet(2),   -- VLAN by IP subnet 
+                         byProtocolId(3), -- VLAN by Protocol Id
+                         bySrcMac(4),     -- VLAN by Src MAC address
+                         byDstMcast(5),   -- VLAN by Dst MultiCast
+                         bySvlan(6),      -- VLAN by Stacked Vlan 
+                         byIds(7)         -- VLAN by IDS Vlan
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The type of VLAN, distinguished according to the
+                      policy used to define its port membership."
+        ::= { rcVlanEntry 10 }
+
+rcVlanPortMembers OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The set of ports that are members (static or 
+                      dynamic) of this VLAN."
+        ::= { rcVlanEntry 11 }
+ 
+rcVlanActiveMembers OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The set of ports that are currently active in 
+                      this VLAN. Active ports include all static ports
+                      and any dynamic ports where the VLAN policy was
+                      met."
+        ::= { rcVlanEntry 12 }
+ 
+rcVlanStaticMembers OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The set of ports that are static members of this
+                      VLAN. A static member of a VLAN is always active 
+                      and is never aged out."
+        ::= { rcVlanEntry 13 }
+
+rcVlanNotAllowToJoin OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The set of ports that are not allowed to become
+                      members of this VLAN."
+        ::= { rcVlanEntry 14 }
+
+rcVlanProtocolId OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         none(0),
+                         ip(1),
+                         ipx802dot3(2),
+                         ipx802dot2(3),
+                         ipxSnap(4),
+                         ipxEthernet2(5),
+                         appleTalk(6),
+                         decLat(7),
+                         decOther(8),
+                         sna802dot2(9),
+                         snaEthernet2(10),
+                         netBios(11),
+                         xns(12),
+                         vines(13),
+                         ipV6(14), 
+                         usrDefined(15),
+                         rarp(16),
+                         pPPoE(17)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The protocol identifier of this VLAN. This value 
+                      is meaningful only if rcVlanType is equal to 
+                      byProtocolId(3). For other VLAN types it should
+                      have the value none(0)."
+        ::= { rcVlanEntry 15 }
+
+rcVlanSubnetAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The IP subnet address of this VLAN. This value 
+                      is meaningful only if rcVlanType is equal to 
+                      byIpSubnet(2). For other VLAN types it should
+                      have the value 0.0.0.0."
+        ::= { rcVlanEntry 16 }
+
+rcVlanSubnetMask OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The IP subnet mask of this VLAN. This value
+                      is meaningful only if rcVlanType is equal to 
+                      byIpSubnet(2). For other VLAN types it should
+                      have the value 0.0.0.0."
+        ::= { rcVlanEntry 17 }
+
+rcVlanAgingTime OBJECT-TYPE
+        SYNTAX        INTEGER (0 | 10..1000000)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The timeout period (in seconds) used for aging
+                      out dynamic members of this VLAN. This field is
+                      only relevant for policy-based VLANs."
+        DEFVAL        { 600 }
+        ::= { rcVlanEntry 18 }
+
+rcVlanMacAddress OBJECT-TYPE
+        SYNTAX        MacAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The MAC address assigned to the virtual router
+                      interface of this VLAN. This field is meaningful 
+                      only if rcVlanRoutingEnable is equal to true(1)."
+        ::= { rcVlanEntry 19 }
+
+rcVlanRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to create/delete entries in the rcVlanTable."
+        ::= { rcVlanEntry 20 }
+
+rcVlanIgmpSnoopEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "A flag to note whether IGMP Snooping is enabled
+                      on this VLAN."
+        DEFVAL        { false }
+        ::= { rcVlanEntry 21 }
+ 
+rcVlanIgmpSnoopReportProxyEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "A flag to note whether IGMP Report Proxy is
+                      enabled on this VLAN."
+        DEFVAL        { true }
+        ::= { rcVlanEntry 22 }
+ 
+rcVlanIgmpSnoopRobustness OBJECT-TYPE
+        SYNTAX        INTEGER (1..255)
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "This variable allows tuning for the expected
+                      packet loss on a subnet. If a subnet is expected
+                      to be lossy, the Robustness variable may be
+                      increased. IGMP is robust to (Robustness - 1)
+                      packet losses."
+        DEFVAL        { 2 }
+        ::= { rcVlanEntry 23 }
+ 
+rcVlanIgmpSnoopQueryInterval OBJECT-TYPE
+        SYNTAX        INTEGER (1..65535)
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "The interval (in seconds) between IGMP Host-Query
+                      packets transmitted on this interface."
+        DEFVAL        { 125 }
+        ::= { rcVlanEntry 24 }
+ 
+rcVlanIgmpSnoopMRouterPorts OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "The set of ports in this VLAN that provide
+                      connectivity to an IP Multicast router."
+        ::= { rcVlanEntry 25 }
+
+rcVlanUserDefinedPid OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "When rcVlanProtocolId is set to usrDefined(15)
+                       in a protocol-based VLAN, this field represents
+                       the 16-bit user defined protocol identifier."
+        ::= { rcVlanEntry 26 }
+ 
+rcVlanIgmpSnoopActiveMRouterPorts OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "Active ports."
+        ::= { rcVlanEntry 27 }
+
+rcVlanProtocolIds OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Bitfield of protocol ids."
+        ::= { rcVlanEntry 28 }
+
+rcVlanIgmpSnoopActiveQuerier OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "IP address of multicast querier router."
+        ::= { rcVlanEntry 29 }
+
+rcVlanIgmpSnoopMRouterExpiration OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "Multicast querier router aging time out."
+        ::= { rcVlanEntry 30 }
+
+rcVlanIgmpSnoopQuerierPort OBJECT-TYPE
+        SYNTAX        InterfaceIndexOrZero
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The port on which the multicast querier router
+		       was heard."
+        ::= { rcVlanEntry 31 }
+
+rcVlanUserPriority OBJECT-TYPE
+        SYNTAX  	INTEGER {
+                            level0(0),
+                            level1(1),
+                            level2(2),
+                            level3(3),
+                            level4(4),
+                            level5(5),
+                            level6(6),
+                            level7(7)
+                        }
+        MAX-ACCESS        	read-only
+        STATUS        	current
+        DESCRIPTION   	"User priority level."
+        ::= { rcVlanEntry 32 }
+
+rcVlanQosLevel OBJECT-TYPE
+        SYNTAX  	INTEGER {
+                            level0(0),
+                            level1(1),
+                            level2(2),
+                            level3(3),
+                            level4(4),
+                            level5(5),
+                            level6(6),
+			    level7(7)
+                        }
+        MAX-ACCESS        	read-write
+        STATUS        	current
+    	DESCRIPTION   	"Used to specify the Qos level packets, carried in this
+			VLAN, should be processed with."
+        DEFVAL        	{ level1 }
+        ::= { rcVlanEntry 33 }
+
+rcVlanTosValue OBJECT-TYPE
+        SYNTAX        	INTEGER (1..64)
+        MAX-ACCESS        	read-write 
+        STATUS        	current
+        DESCRIPTION   	"Tos value."
+	DEFVAL		{ 1 }
+        ::= { rcVlanEntry 34 } 
+
+rcVlanEncap OBJECT-TYPE
+        SYNTAX          INTEGER {
+                            ethernet2(1),
+                            llc(2),
+                            snap(3),
+                            all(4),
+                            notapplicable(5)
+                        }
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "This is the encapsulation type for userdefined protocol
+                        based vlans. This is not meaningful for other types of
+                        vlan. The default value is null."
+        DEFVAL          { notapplicable }
+        ::= { rcVlanEntry 35 }
+
+rcVlanFirewallVlanType OBJECT-TYPE
+        SYNTAX          INTEGER {
+                            none(1),
+                            naap(2),
+                            enforceable(3),
+                            peering(4)
+                        }
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "This is the firewall vlan type for port based
+                         vlans."
+        DEFVAL          { none }
+        ::= { rcVlanEntry 36 }
+
+rcVlanFdbAging OBJECT-TYPE
+        SYNTAX          INTEGER (10..1000000)
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "The timeout required to."
+          DEFVAL     { 300 }
+        ::= { rcVlanEntry 37 }
+
+rcVlanUpdateDynamicMacQosLevel OBJECT-TYPE
+      SYNTAX        EnableValue
+      MAX-ACCESS    read-write
+      STATUS        current
+      DESCRIPTION   "It is used to indicate whether to update qos
+                     level for dynamic learned mac add resses
+                     associated with a subnet-based or protocol-based
+                     vlan when vlan qos level changes.  If it is set
+                     to TRUE, qos level for all dynamic learned mac
+                     addresses will be changed upon changing vlan qos
+                     level.  If it is set to DISABLE, once a mac address
+                     is learned, qos level will not updated when vlan
+                     qos level changes."
+      DEFVAL         { disable }
+        ::= { rcVlanEntry 38 }
+
+rcVlanUserDefinedPidList OBJECT-TYPE
+        SYNTAX          OCTET STRING (SIZE(0..16))
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "A list of Protocol Id to usrDefined in a protocol-based
+                       VLAN, this field represents the list user defined protocol identifier."
+        ::= { rcVlanEntry 39 }
+
+rcVlanIgmpVer1SnoopMRouterPorts OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The set of ports in this VLAN that provide connectivity
+                      to an IP Multicast router using IGMP Version 1."
+        ::= { rcVlanEntry 40 }
+
+rcVlanIgmpVer2SnoopMRouterPorts OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The set of ports in this VLAN that provide connectivity
+                      to an IP Multicast router using IGMP version 2."
+        ::= { rcVlanEntry 41 }
+
+rcVlanTlsIpmc OBJECT-TYPE
+	SYNTAX        EnableValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/disable the IP Mcast for this SP IP service Vlan for 
+                       TLS OE feature"
+	DEFVAL        { disable }
+        ::= { rcVlanEntry 42 }
+
+rcVlanFirewallClusterId OBJECT-TYPE
+        SYNTAX          INTEGER (0..64)
+        MAX-ACCESS      read-write 
+        STATUS          current
+        DESCRIPTION     "Firewall cluster Id"
+        DEFVAL           { 1 }
+        ::= { rcVlanEntry 43 }
+
+rcVlanOspfPassivePortMember OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The set of ports in the vlan that are designated as ospf passive."
+        ::= { rcVlanEntry 44 }
+
+-- VLAN Port Table
+
+rcVlanPortTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcVlanPortEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A table used to maintain VLAN port related 
+                      information." 
+        ::= { rcVlan 3 }
+
+rcVlanPortEntry OBJECT-TYPE
+        SYNTAX        RcVlanPortEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Entry containing VLAN information regarding a 
+                      particular port."
+        INDEX         { rcVlanPortIndex }
+        ::= { rcVlanPortTable 1 }
+
+RcVlanPortEntry ::= SEQUENCE {
+                rcVlanPortIndex Integer32,
+                rcVlanPortNumVlanIds Integer32,
+                rcVlanPortVlanIds IdList,
+                rcVlanPortType INTEGER,
+                rcVlanPortDiscardTaggedFrames TruthValue,
+                rcVlanPortDiscardUntaggedFrames TruthValue,
+                rcVlanPortDefaultVlanId INTEGER,
+                rcVlanPortPerformTagging INTEGER,
+                rcVlanPortSVlanPortType INTEGER,
+		rcVlanPortLoopDetect TruthValue,
+		rcVlanPortFirstPortInOpid InterfaceIndex,
+		rcVlanPortLastPortInOpid InterfaceIndex,
+		rcVlanPortUntagDefaultVlan TruthValue,
+                 rcVlanPortLoopDetectAction INTEGER,
+                rcVlanPortArpDetect TruthValue,
+                rcVlanPortSpoofDetect TruthValue
+                        
+        }
+
+rcVlanPortIndex OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "An unique index used to identify a particular 
+                      port in the system. This index is equal to the
+                      ifIndex of the port."
+        ::= { rcVlanPortEntry 1 }
+
+rcVlanPortNumVlanIds OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the number of VLAN IDs that
+                      are stored in the rcVlanPortVlanIds variable."
+        ::= { rcVlanPortEntry 2 }
+
+rcVlanPortVlanIds OBJECT-TYPE
+        SYNTAX        IdList (SIZE (0..4096))
+        MAX-ACCESS    read-write  
+        STATUS        current
+        DESCRIPTION   "An array used to identify which VLANs this port 
+                      is assigned to.  Each VLAN ID is stored as a two
+                      octet value. The first octet in the pair holds
+                      bits 15-8 of the VLAN ID, while the second octet
+                      holds bits 7-0 of the VLAN ID."
+        ::= { rcVlanPortEntry 3 }
+
+rcVlanPortType OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         access(1),     -- access port type
+                         trunk(2)       -- trunk port type
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The type of port: access(1) or trunk(2)."
+        DEFVAL        { access }
+        ::= { rcVlanPortEntry 4 }
+
+rcVlanPortDiscardTaggedFrames OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "A flag used to determine how to process tagged
+                      frames received on this access port. When the 
+                      flag is set, these frames are discarded by the
+                      forwarding process. When the flag is reset, these
+                      frames are processed normally.
+
+		      This field is meaningless when the port is not
+		      an access port and should be set to false(2)."
+        DEFVAL        { false }
+        ::= { rcVlanPortEntry 5 }
+
+rcVlanPortDiscardUntaggedFrames OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "A flag used to determine how to process untagged
+                      frames received on this trunk port. When the flag 
+                      is set, these frames are discarded by the 
+                      forwarding process. When the flag is reset, these
+                      frames are assigned to the VLAN specified by 
+                      rcVlanPortDefaultVlanId.
+
+		      This field is meaningless when the port is not
+		      a trunk port and should be set to false(2)."
+        DEFVAL        { false }
+        ::= { rcVlanPortEntry 6 }
+
+rcVlanPortDefaultVlanId OBJECT-TYPE
+        SYNTAX        INTEGER (0..4094)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The VLAN ID assigned to untagged frames received
+                      on this trunk port.
+
+		      This field is meaningless when the port is not
+		      a trunk port."
+        DEFVAL        { 1 }
+        ::= { rcVlanPortEntry 7 } 
+
+rcVlanPortPerformTagging OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         true(1),
+                         false(2),
+                         tagPvidOnly(3),
+                         untagPvidOnly(4)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/disable the port on the current vlan to 
+                       perform tagging on the incoming and outgoing traffic."
+        DEFVAL        { false }
+        ::= { rcVlanPortEntry 8 }
+
+rcVlanPortSVlanPortType OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         normal(1),    
+                         uni(2),
+                         nni(3)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The type of port."
+        DEFVAL        { normal } 
+        ::= { rcVlanPortEntry 9 }
+
+rcVlanPortLoopDetect OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/disable loop detection on this port"
+        DEFVAL        { false }
+        ::= { rcVlanPortEntry 10 }
+
+rcVlanPortFirstPortInOpid OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "This value gives the IfIndex of the first port in the
+	               octapid. This value is used to generate an error message
+		       when changing port type from normal to uni/nni and
+		       viceversa"
+        ::= { rcVlanPortEntry 11 }
+
+rcVlanPortLastPortInOpid OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+	MAX-ACCESS    read-only
+	STATUS        current
+	DESCRIPTION   "This value gives the IfIndex of the first port in the
+	               octapid. This value is used to generate an error message
+		       when changing port type from normal to uni/nni and
+		       viceversa"
+        ::= { rcVlanPortEntry 12 }
+
+rcVlanPortUntagDefaultVlan OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "enable/disable Egress Tagging on the Default Vlan 
+                       of the port."
+        DEFVAL        { false }
+        ::= { rcVlanPortEntry 13 }
+
+
+rcVlanPortLoopDetectAction OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         portDown(1), 
+                         vlanBlock(2),
+                         macDiscard(3)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "This value is used to specify the action which needs to be
+                                            taken once a loop is detected on a specific port."
+        DEFVAL        { portDown }
+        ::= { rcVlanPortEntry 14 }
+
+rcVlanPortArpDetect OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/disable Arp detection on this port"
+        DEFVAL        { false }
+        ::= { rcVlanPortEntry 15 }
+
+rcVlanPortSpoofDetect OBJECT-TYPE 
+        SYNTAX        TruthValue 
+        MAX-ACCESS    read-write 
+        STATUS        current 
+        DESCRIPTION   "Enable/disable spoof detection on this port" 
+        DEFVAL        { false } 
+        ::= { rcVlanPortEntry 16 } 
+        
+
+
+-- VLAN MAC Table
+
+rcVlanMacTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcVlanMacEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A table used to maintain MAC addresses assigned 
+                      to a particular VLAN by MAC address."
+        ::= { rcVlan 4 }
+ 
+rcVlanMacEntry OBJECT-TYPE
+        SYNTAX        RcVlanMacEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Entry containing VLAN information regarding a
+                      particular port."
+        INDEX         { rcVlanMacVlanId, rcVlanMacAddr }
+        ::= { rcVlanMacTable 1 }
+ 
+RcVlanMacEntry ::= SEQUENCE {
+                rcVlanMacVlanId Integer32,
+                rcVlanMacAddr MacAddress,
+                rcVlanMacRowStatus RowStatus
+        }
+ 
+rcVlanMacVlanId OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "An unique index used to identify a VLAN (by MAC 
+                      address) in the system."
+        ::= { rcVlanMacEntry 1 }
+
+rcVlanMacAddr OBJECT-TYPE
+        SYNTAX        MacAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "An unique index used to identify a MAC address
+                      assigned to a particular VLAN."
+        ::= { rcVlanMacEntry 2 }
+
+rcVlanMacRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Row status for this entry."
+        ::= { rcVlanMacEntry 3 }
+
+
+-- VLAN IGMP Snoop Table
+
+rcVlanIgmpSnoopNumGroups OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The number of entries (rows) in the
+                      rcVlanIgmpSnoopTable."
+        ::= { rcVlan 5 }
+
+rcVlanIgmpSnoopTable OBJECT-TYPE	--excluded
+        SYNTAX        SEQUENCE OF RcVlanIgmpSnoopEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "The (conceptual) table listing the IP multicast
+                      groups for which there are members on a particular
+                      interface on a particular VLAN (i.e., a list 
+		      known multicast receivers).
+
+		      A row is created by the system when it receives
+		      an IGMP Join messages on a port."
+    ::= { rcVlan 6 }
+ 
+rcVlanIgmpSnoopEntry OBJECT-TYPE
+        SYNTAX        RcVlanIgmpSnoopEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "An entry (row) in the rcVlanIgmpSnoopTable."
+        INDEX         { rcVlanIgmpSnoopVlanId, rcVlanIgmpSnoopIpAddress,
+                        rcVlanIgmpSnoopIfIndex, rcVlanIgmpSnoopMember }
+        ::= { rcVlanIgmpSnoopTable 1 }
+ 
+RcVlanIgmpSnoopEntry ::= SEQUENCE {
+            rcVlanIgmpSnoopVlanId     INTEGER,
+            rcVlanIgmpSnoopIpAddress  IpAddress,
+            rcVlanIgmpSnoopIfIndex    InterfaceIndex,
+            rcVlanIgmpSnoopMember     IpAddress,
+            rcVlanIgmpSnoopExpiration Integer32,
+            rcVlanIgmpSnoopType       INTEGER
+        }
+
+rcVlanIgmpSnoopVlanId OBJECT-TYPE
+        SYNTAX        INTEGER (1..4094)
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The VLAN for which this entry contains
+                      information."
+        ::= { rcVlanIgmpSnoopEntry 1 } 
+
+rcVlanIgmpSnoopIpAddress OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The IP multicast group address for which this 
+                      entry contains information."
+        ::= { rcVlanIgmpSnoopEntry 2 }
+ 
+rcVlanIgmpSnoopIfIndex OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The interface for which this entry contains 
+                      information for this IP multicast group address
+                      (i.e., the port the Join message was received)."
+        ::= { rcVlanIgmpSnoopEntry 3 }
+ 
+rcVlanIgmpSnoopMember OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The IP Address of the source of the membership
+                      report received for this IP Multicast group address
+                      on this interface (i.e., the address of the host
+                      sending the Join message)."
+        ::= { rcVlanIgmpSnoopEntry 4 }
+ 
+rcVlanIgmpSnoopExpiration OBJECT-TYPE
+         SYNTAX       Integer32
+         MAX-ACCESS   read-only
+         STATUS       deprecated
+         DESCRIPTION  "The minimum amount of time remaining before this 
+                      entry will be aged out."
+         ::= { rcVlanIgmpSnoopEntry 5 }
+
+rcVlanIgmpSnoopType OBJECT-TYPE
+         SYNTAX       INTEGER {
+                         dynamic(1),    -- created via IGMP
+                         static(2),     -- created via management
+                         blocked(3)
+                      }
+         MAX-ACCESS   read-only
+         STATUS       deprecated
+         DESCRIPTION  "The type of entry: dynamic(1) entries are
+                      created by snooping IGMP messages, static(2)
+                      entries are created via management."
+         ::= { rcVlanIgmpSnoopEntry 6 }
+
+
+-- VLAN IGMP Snoop Static Table
+
+rcVlanIgmpSnoopStaticTable OBJECT-TYPE	--excluded
+        SYNTAX        SEQUENCE OF RcVlanIgmpSnoopStaticEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "The (conceptual) table listing the statically-
+                      defined IP multicast groups for which there are
+                      members on a particular interface on a particular
+                      VLAN."
+    	::= { rcVlan 7 }
+ 
+rcVlanIgmpSnoopStaticEntry OBJECT-TYPE
+        SYNTAX        RcVlanIgmpSnoopStaticEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "An entry (row) in the rcVlanIgmpSnoopStaticTable."
+        INDEX         { rcVlanIgmpSnoopStaticVlanId, rcVlanIgmpSnoopStaticIpAddress }
+        ::= { rcVlanIgmpSnoopStaticTable 1 }
+ 
+RcVlanIgmpSnoopStaticEntry ::= SEQUENCE {
+            rcVlanIgmpSnoopStaticVlanId           INTEGER,
+            rcVlanIgmpSnoopStaticIpAddress        IpAddress,
+            rcVlanIgmpSnoopStaticMemberPorts      PortSet,
+            rcVlanIgmpSnoopStaticRowStatus        RowStatus,
+            rcVlanIgmpSnoopStaticNotAllowedToJoin PortSet
+        }
+
+rcVlanIgmpSnoopStaticVlanId OBJECT-TYPE
+        SYNTAX        INTEGER (1..4094)
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The VLAN for which this entry contains information."
+        ::= { rcVlanIgmpSnoopStaticEntry 1 } 
+
+rcVlanIgmpSnoopStaticIpAddress OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The IP multicast group address for which this 
+                      entry contains information.  The address must
+		      fall within 224.0.1.0 to 239.255.255.255."
+        ::= { rcVlanIgmpSnoopStaticEntry 2 }
+
+rcVlanIgmpSnoopStaticMemberPorts OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "The set of ports in this VLAN multicast traffic
+		      for the rcVlanIgmpSnoopStaticIpAddress is to be
+		      forwarded to."
+        ::= { rcVlanIgmpSnoopStaticEntry 3 }
+
+rcVlanIgmpSnoopStaticRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Used to create/delete entries in the 
+                      rcVlanIgmpSnoopStaticTable."
+        ::= { rcVlanIgmpSnoopStaticEntry 4 }
+
+rcVlanIgmpSnoopStaticNotAllowedToJoin OBJECT-TYPE
+        SYNTAX        PortSet
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Not allowed to join"
+        ::= { rcVlanIgmpSnoopStaticEntry 5 }
+
+
+-- VLAN IGMP Snoop Access Table
+
+rcVlanIgmpSnoopAccessTable OBJECT-TYPE	--excluded
+        SYNTAX        SEQUENCE OF RcVlanIgmpSnoopAccessEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "Table used to specify which host(s) can send
+		      and/or receive IP Multicast traffic."
+    	::= { rcVlan 8 }
+ 
+rcVlanIgmpSnoopAccessEntry OBJECT-TYPE
+        SYNTAX        RcVlanIgmpSnoopAccessEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "An entry (row) in the rcVlanIgmpSnoopAccessTable."
+        INDEX         { rcVlanIgmpSnoopAccessVlanId, 
+			rcVlanIgmpSnoopAccessGrpAddr, 
+                        rcVlanIgmpSnoopAccessHostAddr, 
+			rcVlanIgmpSnoopAccessHostMask }
+        ::= { rcVlanIgmpSnoopAccessTable 1 }
+ 
+
+RcVlanIgmpSnoopAccessEntry ::= SEQUENCE {
+            rcVlanIgmpSnoopAccessVlanId        INTEGER,
+            rcVlanIgmpSnoopAccessGrpAddr       IpAddress,
+            rcVlanIgmpSnoopAccessHostAddr      IpAddress,
+            rcVlanIgmpSnoopAccessHostMask      IpAddress,
+            rcVlanIgmpSnoopAccessMode          INTEGER,
+            rcVlanIgmpSnoopAccessRowStatus     RowStatus
+        }
+
+rcVlanIgmpSnoopAccessVlanId OBJECT-TYPE
+        SYNTAX        INTEGER (1..4094)
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The VLAN for which this entry contains information."
+        ::= { rcVlanIgmpSnoopAccessEntry 1 } 
+
+rcVlanIgmpSnoopAccessGrpAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The IP multicast group address for which this
+                      entry contains information."
+        ::= { rcVlanIgmpSnoopAccessEntry 2 } 
+
+rcVlanIgmpSnoopAccessHostAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The IP address of a host for which this
+                      entry contains information."
+        ::= { rcVlanIgmpSnoopAccessEntry 3 }
+
+rcVlanIgmpSnoopAccessHostMask OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The IP netmask of a host for which this
+                      entry contains information."
+        ::= { rcVlanIgmpSnoopAccessEntry 4 }
+
+rcVlanIgmpSnoopAccessMode OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          denyTx(1),
+                          denyRx(2),
+                          denyBoth(3)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Used to specify whether the host identified by
+		      rcVlanIgmpSnoopAccessHostAddr should be denied
+		      IP multicast transmit, receive, or both." 
+        ::= { rcVlanIgmpSnoopAccessEntry 5 }
+
+rcVlanIgmpSnoopAccessRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Row status"
+        ::= { rcVlanIgmpSnoopAccessEntry 6 }
+
+
+-- VLAN IGMP Snoop Sender Table
+
+rcVlanIgmpSnoopSenderTable OBJECT-TYPE	--excluded
+        SYNTAX        SEQUENCE OF RcVlanIgmpSnoopSenderEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "The (conceptual) table listing the IP multicast 
+                      groups for which there are members on a particular
+                      interface on a particular VLAN (i.e., a list  
+                      known multicast senders).  
+  
+                      A row is created by the system when it receives 
+                      an IGMP Join messages on a port."
+    	::= { rcVlan 9 }
+ 
+rcVlanIgmpSnoopSenderEntry OBJECT-TYPE
+        SYNTAX        RcVlanIgmpSnoopSenderEntry
+        MAX-ACCESS    not-accessible
+        STATUS        deprecated
+        DESCRIPTION   "An entry (row) in the rcVlanIgmpSnoopSenderTable."
+        INDEX         { rcVlanIgmpSnoopSenderVlanId,
+                        rcVlanIgmpSnoopSenderIpAddress,
+                        rcVlanIgmpSnoopSenderIfIndex,
+                        rcVlanIgmpSnoopSenderMember }
+        ::= { rcVlanIgmpSnoopSenderTable 1 }
+ 
+
+RcVlanIgmpSnoopSenderEntry ::= SEQUENCE {
+            rcVlanIgmpSnoopSenderVlanId        INTEGER,
+            rcVlanIgmpSnoopSenderIpAddress     IpAddress,
+            rcVlanIgmpSnoopSenderIfIndex       InterfaceIndex,
+            rcVlanIgmpSnoopSenderMember        IpAddress,
+            rcVlanIgmpSnoopSenderAction        INTEGER
+        }
+
+rcVlanIgmpSnoopSenderVlanId OBJECT-TYPE
+        SYNTAX        INTEGER (1..4094)
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The VLAN for which this entry contains information."
+        ::= { rcVlanIgmpSnoopSenderEntry 1 } 
+
+rcVlanIgmpSnoopSenderIpAddress OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The IP multicast group address for which this
+                      entry contains information."
+        ::= { rcVlanIgmpSnoopSenderEntry 2 } 
+
+rcVlanIgmpSnoopSenderIfIndex OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The interface for which this entry contains
+                      information for this IP multicast group address
+                      (i.e., the port the multicast traffic was received)."
+        ::= { rcVlanIgmpSnoopSenderEntry 3 }
+ 
+rcVlanIgmpSnoopSenderMember OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        deprecated
+        DESCRIPTION   "The IP Address of the host sending the multicast
+		      traffic." 
+        ::= { rcVlanIgmpSnoopSenderEntry 4 } 
+
+rcVlanIgmpSnoopSenderAction OBJECT-TYPE
+	SYNTAX        INTEGER {
+		         none(0),
+		         flushEntry(1),
+	     	         flushGrp(2)
+	              }
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Used to specify an action to perform on this group."
+        ::= { rcVlanIgmpSnoopSenderEntry 5 } 
+
+-- Vlan Loop Detected Table     
+
+rcVlanLoopDetectedTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcVlanLoopDetectedEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A list of Vlans the port belongs to
+and the 
+                      corresponding loop detected status."
+        ::= { rcVlan 10 }
+
+rcVlanLoopDetectedEntry OBJECT-TYPE
+        SYNTAX        RcVlanLoopDetectedEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Loop-Detected Entry."
+        INDEX         { rcVlanLoopDetectedPortIndex, rcVlanLoopDetectedVlanId }
+        ::= { rcVlanLoopDetectedTable 1 }
+
+RcVlanLoopDetectedEntry ::= SEQUENCE {
+                    rcVlanLoopDetectedPortIndex Integer32,
+                    rcVlanLoopDetectedVlanId Integer32,
+                    rcVlanLoopDetectedValue INTEGER
+                    }
+
+rcVlanLoopDetectedPortIndex OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Port Number."
+        ::= { rcVlanLoopDetectedEntry 1 }
+
+rcVlanLoopDetectedVlanId OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Gives the VlanId to which the port belongs."
+        ::= { rcVlanLoopDetectedEntry 2 }
+
+rcVlanLoopDetectedValue OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         no(0),      -- loop not detected
+                         yes(1)     -- loop detected
+                      }
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION    "Gives the Loop Detected status of the port
+                       in a vlan."
+        DEFVAL        { no }
+        ::= { rcVlanLoopDetectedEntry 3 }
+
+-- Vlan Dsap Ssap Table
+
+rcVlanDsapSsapTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcVlanDsapSsapEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A table used to maintain DSAP/SSAP values
+                       assigned to a sna802dot2 or userdefined vlan."
+        ::= { rcVlan 11 }
+
+rcVlanDsapSsapEntry OBJECT-TYPE
+        SYNTAX        RcVlanDsapSsapEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "An entry in the rcVlanDsapSsap table."
+        INDEX         { rcVlanDsapSsapVlanId, rcVlanDsapSsapPid }
+        ::= { rcVlanDsapSsapTable 1 }
+
+RcVlanDsapSsapEntry ::= SEQUENCE {
+        rcVlanDsapSsapVlanId    INTEGER,
+        rcVlanDsapSsapPid       INTEGER,
+        rcVlanDsapSsapRowStatus RowStatus
+        }
+
+rcVlanDsapSsapVlanId OBJECT-TYPE
+        SYNTAX        INTEGER (0..2147483647)
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A unique index to identify a vlan."
+        ::= { rcVlanDsapSsapEntry 1 }
+
+rcVlanDsapSsapPid OBJECT-TYPE
+        SYNTAX        INTEGER (0..'ffff'h)
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Values of DSAP/SSAP assigned to a particular
+                       vlan."
+        ::= { rcVlanDsapSsapEntry 2 }
+
+rcVlanDsapSsapRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Row Status."
+        ::= { rcVlanDsapSsapEntry 3 }
+
+-- Vlan New Loop Detect
+
+rcVlanNewLoopDetectedTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcVlanNewLoopDetectedEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A list of Vlans the port belongs to and the 
+                       corresponding loop detected status."
+        ::= { rcVlan 12 }
+
+rcVlanNewLoopDetectedEntry OBJECT-TYPE
+        SYNTAX        RcVlanNewLoopDetectedEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Loop-Detected Entry."
+        INDEX         { rcVlanNewLoopDetectedPortIndex,
+                        rcVlanNewLoopDetectedVlanId,
+                        rcVlanNewLoopDetectedMac }
+        ::= { rcVlanNewLoopDetectedTable 1 }
+
+RcVlanNewLoopDetectedEntry ::= SEQUENCE {
+                    rcVlanNewLoopDetectedPortIndex InterfaceIndex,
+                    rcVlanNewLoopDetectedVlanId Integer32,
+                    rcVlanNewLoopDetectedMac     MacAddress,
+                    rcVlanNewLoopDetectedAction  INTEGER,
+                    rcVlanNewLoopDetectedSmltRemote TruthValue
+                   }
+
+rcVlanNewLoopDetectedPortIndex OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Port Number."
+        ::= { rcVlanNewLoopDetectedEntry 1 }
+
+rcVlanNewLoopDetectedVlanId OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Gives the VlanId to which the port belongs."
+        ::= { rcVlanNewLoopDetectedEntry 2 }
+
+rcVlanNewLoopDetectedMac     OBJECT-TYPE
+        SYNTAX        MacAddress
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Mac address"
+        ::= {rcVlanNewLoopDetectedEntry 3}
+
+rcVlanNewLoopDetectedAction OBJECT-TYPE
+        SYNTAX        INTEGER {
+                               portDown(1),
+                               vlanBlock(2),
+                               macDiscard(3)
+                              }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "This value is used to specify the action which
+                       needs to be taken once a loop is detected on a 
+                       specific port."
+        DEFVAL        { portDown }
+        ::= { rcVlanNewLoopDetectedEntry 4 }
+
+rcVlanNewLoopDetectedSmltRemote OBJECT-TYPE
+        SYNTAX      TruthValue 
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION  "A MAC address indicate for remote learnt,
+                      either local or remote."
+        ::= { rcVlanNewLoopDetectedEntry 5 }
+
+-- Stack Vlan Group Information
+
+rcSvlanGlobal   OBJECT IDENTIFIER        ::= { rcSvlan 1 }
+
+rcSvlanActiveLevel OBJECT-TYPE
+     SYNTAX       INTEGER (0..7)
+     MAX-ACCESS  read-write
+     STATUS       current
+     DESCRIPTION  "Stacked Vlan active level."
+     DEFVAL  { 0 }
+     ::= { rcSvlanGlobal 1 }
+
+-- Stacked Vlan Table Information
+
+rcSvlanTable OBJECT-TYPE
+     SYNTAX       SEQUENCE OF RcSvlanEntry
+     MAX-ACCESS   not-accessible
+     STATUS       current
+     DESCRIPTION  "A list of possible levels and their corresponding ether type.
+                   The number of entries is eight."
+     ::= { rcSvlan 2 }
+
+rcSvlanEntry OBJECT-TYPE
+        SYNTAX        RcSvlanEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A Stacked Vlan table entry."
+        INDEX         { rcSvlanId }
+        ::= { rcSvlanTable 1 }
+
+RcSvlanEntry ::=
+     SEQUENCE {
+             rcSvlanId         INTEGER,
+             rcSvlanLevel      Integer32,
+             rcSvlanEtherType  Integer32
+     }
+
+rcSvlanId OBJECT-TYPE
+     SYNTAX         INTEGER (1..8)
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "Row Index."
+     ::= { rcSvlanEntry 1 }
+
+rcSvlanLevel OBJECT-TYPE
+     SYNTAX         Integer32
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "A value that identifies the switch level associated
+                     with this entry."
+     ::= { rcSvlanEntry 2 }
+
+rcSvlanEtherType OBJECT-TYPE
+     SYNTAX         Integer32
+     MAX-ACCESS     read-write
+     STATUS         current
+     DESCRIPTION    "The ether type value is used for svlan tagging."
+     ::= { rcSvlanEntry 3 }
+
+
+END

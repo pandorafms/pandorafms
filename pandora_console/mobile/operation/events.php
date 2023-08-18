@@ -485,22 +485,16 @@ class Events
                                 $event['tags'] = '<i>'.__('N/A').'</i>';
                             }
 
-                            $event_comments = db_get_value(
-                                'user_comment',
-                                'tevento',
-                                'id_evento',
-                                $id_event
+                            $event_comments_array = db_get_all_rows_sql(
+                                sprintf(
+                                    'SELECT * FROM tevent_comment where id_event = %d',
+                                    $id_event
+                                )
                             );
-                            $event_comments_array = [];
-                            $event_comments_array = json_decode(
-                                $event_comments,
-                                true
-                            );
-                            // Support for new format only.
                             if (empty($event_comments_array) === true) {
                                 $comment = '<i>'.__('N/A').'</i>';
                             } else {
-                                $comment = '';
+                                $comment = '<div>';
                                 $event_comments_array = array_reverse(
                                     $event_comments_array
                                 );
@@ -521,6 +515,8 @@ class Events
                                     );
                                     $comment .= '<br>'.$c['comment'].'<br>';
                                 }
+
+                                $comment .= '</div>';
                             }
 
                             $event['comments'] = $comment;

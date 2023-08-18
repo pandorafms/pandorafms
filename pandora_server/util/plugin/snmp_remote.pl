@@ -7,7 +7,7 @@
 # - % Disk Use
 # - Show if a process is running or not
 #
-# Artica ST 
+# Pandora FMS 
 # Copyright (C) 2013 mario.pulido@artica.es
 #
 # License: GPLv2+

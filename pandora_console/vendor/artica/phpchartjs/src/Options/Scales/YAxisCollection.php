@@ -30,7 +30,7 @@ class YAxisCollection extends ArrayAccess implements ArraySerializableInterface,
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize():mixed
     {
         return $this->getArrayCopy();
     }

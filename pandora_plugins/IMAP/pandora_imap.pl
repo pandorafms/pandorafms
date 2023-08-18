@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Pandora FMS Agent Plugin for Monitoring IMAP mails
-# Mario Pulido (c) Artica Soluciones Tecnologicas  <info@artica.es> 2013
+# Mario Pulido (c) Pandora FMS  <info@pandorafms.com> 2013
 # v1.0,  03 Jul 2013
 # ------------------------------------------------------------------------
 use strict;

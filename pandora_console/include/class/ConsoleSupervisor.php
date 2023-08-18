@@ -278,6 +278,12 @@ class ConsoleSupervisor
         if ((bool) enterprise_installed() === true) {
             $this->checkLibaryError();
         }
+
+        /*
+         * Check MYSQL Support Version
+         */
+
+        $this->checkMYSQLSettings();
     }
 
 
@@ -560,6 +566,12 @@ class ConsoleSupervisor
             $this->checkLibaryError();
         }
 
+        /*
+         * Check MYSQL Support Version
+         *
+         */
+        $this->checkMYSQLSettings();
+
     }
 
 
@@ -583,7 +595,6 @@ class ConsoleSupervisor
             'days_delete_unknown'              => 'Max. days before unknown modules are deleted',
             'days_delete_not_initialized'      => 'Max. days before delete not initialized modules',
             'days_autodisable_deletion'        => 'Max. days before autodisabled agents are deleted',
-            'delete_old_network_matrix'        => 'Max. days before delete old network matrix data',
             'report_limit'                     => 'Item limit for real-time reports',
             'event_view_hr'                    => 'Default hours for event view',
             'big_operation_step_datos_purge'   => 'Big Operation Step to purge old data',
@@ -667,20 +678,24 @@ class ConsoleSupervisor
      */
     public function checkAccessStatisticsPerformance()
     {
+        global $config;
+
         $total_agents = db_get_value('count(*)', 'tagente');
 
         if ($total_agents >= 200) {
-            db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
-            $this->notify(
-                [
-                    'type'    => 'NOTIF.ACCESSSTASTICS.PERFORMANCE',
-                    'title'   => __('Access statistics performance'),
-                    'message' => __(
-                        'Usage of agent access statistics IS NOT RECOMMENDED on systems with more than 200 agents due performance penalty'
-                    ),
-                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
-                ]
-            );
+            if ($config['agentaccess'] !== 0) {
+                db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.ACCESSSTASTICS.PERFORMANCE',
+                        'title'   => __('Access statistics performance'),
+                        'message' => __(
+                            'Usage of agent access statistics IS NOT RECOMMENDED on systems with more than 200 agents due performance penalty'
+                        ),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    ]
+                );
+            }
         } else {
             $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
         }
@@ -860,6 +875,7 @@ class ConsoleSupervisor
             case 'NOTIF.CRON.CONFIGURED':
             case 'NOTIF.ALLOWOVERRIDE.MESSAGE':
             case 'NOTIF.HAMASTER.MESSAGE':
+            case 'NOTIF.MYSQL.VERSION':
 
             default:
                 // NOTIF.SERVER.STATUS.
@@ -1790,6 +1806,46 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.SERIALIZE_PRECISION');
         }
 
+        // If PHP_VERSION is lower than 8.0.27 version_compare() returns 1.
+        if (version_compare('8.0.27', PHP_VERSION) === 1) {
+            $url = 'https://www.php.net/supported-versions.php';
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.PHP.VERSION',
+                    'title'   => __('PHP UPDATE REQUIRED'),
+                    'message' => __('You should update your PHP version because it will be out of official support').'<br>'.__('Current PHP version: ').PHP_VERSION,
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PHP.VERSION');
+        }
+    }
+
+
+    /**
+     * Checks if MYSQL version is supported.
+     *
+     * @return void
+     */
+    public function checkMYSQLSettings()
+    {
+        global $config;
+
+        $mysql_version = $config['dbconnection']->server_info;
+        if (version_compare('8.0', $mysql_version) >= 0) {
+            $url = 'https://www.mysql.com/support/eol-notice.html';
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.MYSQL.VERSION',
+                    'title'   => __('MYSQL UPDATE REQUIRED'),
+                    'message' => __('You should update your MYSQL version because it will be out of official support').'<br>'.__('Current MYSQL version: ').$mysql_version,
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.MYSQL.VERSION');
+        }
     }
 
 
@@ -2323,7 +2379,8 @@ class ConsoleSupervisor
             'SELECT count(*) FROM tusuario
             WHERE
                 id_user="admin"
-                AND password="1da7ee7d45b96d0e1f45ee4ee23da560"
+                AND (password="1da7ee7d45b96d0e1f45ee4ee23da560" OR
+                     password="$2y$10$Wv/xoxjI2VAkthJhk/PzeeGIhBKYU/K.TMgUdmW7fEP2NQkdWlB9K")
                 AND is_admin=1
                 and disabled!=1'
         );

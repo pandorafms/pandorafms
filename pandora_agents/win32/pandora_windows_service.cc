@@ -1,6 +1,6 @@
 /* Pandora agents service for Win32.
    
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez, Ramon Novoa.
   
    This program is free software; you can redistribute it and/or modify
@@ -2195,6 +2195,11 @@ Pandora_Windows_Service::getEHKey (string ehorus_conf) {
 long
 Pandora_Windows_Service::getInterval () {
 	return this->interval;
+}
+
+long
+Pandora_Windows_Service::getIntervalSec () {
+	return this->interval_sec;
 }
 
 long

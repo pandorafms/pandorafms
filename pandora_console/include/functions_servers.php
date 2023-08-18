@@ -155,9 +155,15 @@ function servers_get_total_modules()
  *
  * @return array with several data.
  */
-function servers_get_performance()
+function servers_get_performance($filter=[])
 {
     global $config;
+
+    if (empty($filter) === false && empty($filter['groups']) === false && $filter['groups'] !== 0) {
+        $filter_group = 'AND tagente.id_grupo IN ('.$filter['groups'].')';
+    } else {
+        $filter_group = '';
+    }
 
     $data = [];
     $data['total_modules'] = 0;
@@ -170,18 +176,58 @@ function servers_get_performance()
     $data['network_modules_rate'] = 0;
 
     if ($config['realtimestats'] == 1) {
-        $counts = db_get_all_rows_sql(
-            'SELECT tagente_modulo.id_modulo,
-				COUNT(tagente_modulo.id_agente_modulo) modules
-			FROM tagente_modulo, tagente_estado, tagente
-			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND tagente.id_agente = tagente_estado.id_agente
-				AND tagente_modulo.disabled = 0
-                		AND tagente_modulo.id_modulo <> 0
-				AND delete_pending = 0
-				AND tagente.disabled = 0
-			GROUP BY tagente_modulo.id_modulo'
-        );
+        if (is_metaconsole() === true) {
+            $counts = [];
+            $servers = metaconsole_get_servers();
+
+            // Check if the group can be deleted or not.
+            if (isset($servers) === true
+                && is_array($servers) === true
+            ) {
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $meta_counts = db_get_all_rows_sql(
+                            'SELECT tagente_modulo.id_modulo,
+                                COUNT(tagente_modulo.id_agente_modulo) modules
+                            FROM tagente_modulo, tagente_estado, tagente
+                            WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                                AND tagente.id_agente = tagente_estado.id_agente
+                                AND tagente_modulo.disabled = 0
+                                        AND tagente_modulo.id_modulo <> 0
+                                AND delete_pending = 0
+                                AND tagente.disabled = 0 
+                                '.$filter_group.' 
+                                GROUP BY tagente_modulo.id_modulo'
+                        );
+                        foreach ($meta_counts as $key => $val) {
+                            if (array_key_exists($key, $counts)) {
+                                if ($meta_counts[$key]['id_modulo'] == $counts[$key]['id_modulo']) {
+                                    $counts[$key]['modules'] += $meta_counts[$key]['modules'];
+                                }
+                            } else {
+                                $counts[$key] = $meta_counts[$key];
+                            }
+                        }
+                    }
+
+                    metaconsole_restore_db();
+                }
+            }
+        } else {
+            $counts = db_get_all_rows_sql(
+                'SELECT tagente_modulo.id_modulo,
+                    COUNT(tagente_modulo.id_agente_modulo) modules
+                FROM tagente_modulo, tagente_estado, tagente
+                WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                    AND tagente.id_agente = tagente_estado.id_agente
+                    AND tagente_modulo.disabled = 0
+                            AND tagente_modulo.id_modulo <> 0
+                    AND delete_pending = 0
+                    AND tagente.disabled = 0 
+                    '.$filter_group.' 
+                    GROUP BY tagente_modulo.id_modulo'
+            );
+        }
 
         if (empty($counts)) {
             $counts = [];
@@ -284,28 +330,76 @@ function servers_get_performance()
     }
 
     $interval_avgs = [];
+    if (is_metaconsole() === true) {
+        $interval_avgs_modules = [];
+        $servers = metaconsole_get_servers();
 
-    // Avg of modules interval when modules have module_interval > 0.
-    $interval_avgs_modules = db_get_all_rows_sql(
-        'SELECT count(tagente_modulo.id_modulo) modules ,
-			tagente_modulo.id_modulo,
-			AVG(tagente_modulo.module_interval) avg_interval
-		FROM tagente_modulo, tagente_estado, tagente
-		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.disabled = 0
-			AND module_interval > 0
-			AND (utimestamp > 0 OR (
-                    id_tipo_modulo = 100
-                    OR (id_tipo_modulo > 21
-                        AND id_tipo_modulo < 23
+        // Check if the group can be deleted or not.
+        if (isset($servers) === true
+            && is_array($servers) === true
+        ) {
+            foreach ($servers as $server) {
+                if (metaconsole_connect($server) == NOERR) {
+                    // Avg of modules interval when modules have module_interval > 0.
+                    $meta_interval_avgs_modules = db_get_all_rows_sql(
+                        'SELECT count(tagente_modulo.id_modulo) modules ,
+                            tagente_modulo.id_modulo,
+                            AVG(tagente_modulo.module_interval) avg_interval
+                        FROM tagente_modulo, tagente_estado, tagente
+                        WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                            AND tagente_modulo.disabled = 0
+                            AND module_interval > 0
+                            AND (utimestamp > 0 OR (
+                                    id_tipo_modulo = 100
+                                    OR (id_tipo_modulo > 21
+                                        AND id_tipo_modulo < 23
+                                    )
+                                )
+                            )
+                            AND delete_pending = 0
+                            AND tagente.disabled = 0
+                            AND tagente.id_agente = tagente_estado.id_agente
+                        GROUP BY tagente_modulo.id_modulo'
+                    );
+
+                    foreach ($meta_interval_avgs_modules as $key => $val) {
+                        if (array_key_exists($key, $interval_avgs_modules)) {
+                            if ($meta_interval_avgs_modules[$key]['id_modulo'] == $interval_avgs_modules[$key]['id_modulo']) {
+                                $interval_avgs_modules[$key]['modules'] += $meta_interval_avgs_modules[$key]['modules'];
+                                $interval_avgs_modules[$key]['avg_interval'] += $meta_interval_avgs_modules[$key]['avg_interval'];
+                            }
+                        } else {
+                            $interval_avgs_modules[$key] = $meta_interval_avgs_modules[$key];
+                        }
+                    }
+                }
+
+                metaconsole_restore_db();
+            }
+        }
+    } else {
+        // Avg of modules interval when modules have module_interval > 0.
+        $interval_avgs_modules = db_get_all_rows_sql(
+            'SELECT count(tagente_modulo.id_modulo) modules ,
+                tagente_modulo.id_modulo,
+                AVG(tagente_modulo.module_interval) avg_interval
+            FROM tagente_modulo, tagente_estado, tagente
+            WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+                AND tagente_modulo.disabled = 0
+                AND module_interval > 0
+                AND (utimestamp > 0 OR (
+                        id_tipo_modulo = 100
+                        OR (id_tipo_modulo > 21
+                            AND id_tipo_modulo < 23
+                        )
                     )
                 )
-            )
-			AND delete_pending = 0
-			AND tagente.disabled = 0
-			AND tagente.id_agente = tagente_estado.id_agente
-		GROUP BY tagente_modulo.id_modulo'
-    );
+                AND delete_pending = 0
+                AND tagente.disabled = 0
+                AND tagente.id_agente = tagente_estado.id_agente
+            GROUP BY tagente_modulo.id_modulo'
+        );
+    }
 
     if (empty($interval_avgs_modules)) {
         $interval_avgs_modules = [];
@@ -870,7 +964,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
 
             case SERVER_TYPE_NETFLOW:
                 $server['img'] = html_print_image(
-                    'images/netflow@svg.svg',
+                    'images/Netflow2@svg.svg',
                     true,
                     [
                         'title' => __('Netflow server'),
@@ -1316,4 +1410,25 @@ function servers_get_master()
     }
 
     return $result;
+}
+
+
+/**
+ * Return true if all servers are up.
+ *
+ * @return boolean
+ */
+function check_all_servers_up()
+{
+    $status = true;
+
+    $servers = servers_get_info();
+
+    foreach ($servers as $server) {
+        if ($server['status'] !== '1') {
+            return false;
+        }
+    }
+
+    return $status;
 }

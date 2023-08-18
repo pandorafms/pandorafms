@@ -11,7 +11,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2023050901'
+S_VERSION='2023062901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -82,7 +82,7 @@ check_pre_pandora () {
     export MYSQL_PWD=$DBPASS
     
     echo -en "${cyan}Checking environment ... ${reset}"
-    rpm -qa | grep 'pandorafms_' &>> /dev/null && local fail=true
+    rpm -qa | grep 'pandorafms_' | grep -v pandorafms_agent_* | grep -v "pandorawmic"  &>> /dev/null && local fail=true
     [ -d "$PANDORA_CONSOLE" ] && local fail=true
     [ -f /usr/bin/pandora_server ] && local fail=true
     echo "use $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST &>> /dev/null && local fail=true
@@ -285,8 +285,7 @@ console_dependencies=" \
     mod_ssl \
     libzstd \
     openldap-clients \
-    chromium \
-    http://firefly.pandorafms.com/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
+    chromium"
 execute_cmd "yum install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
 # Server dependencies
@@ -313,7 +312,6 @@ server_dependencies=" \
     bind-utils \
     whois \
     cpanminus \
-    http://firefly.pandorafms.com/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.pandorafms.com/centos7/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "yum install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -341,7 +339,6 @@ execute_cmd "yum install -y $oracle_dependencies || yum reinstall -y $oracle_dep
 
 #ipam dependencies
 ipam_dependencies=" \
-    http://firefly.pandorafms.com/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     perl(NetAddr::IP) \
     perl(Sys::Syslog) \
     perl(DBI) \
@@ -718,6 +715,9 @@ echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cro
 ## Enabling agent
 systemctl enable pandora_agent_daemon &>> $LOGFILE
 execute_cmd "systemctl start pandora_agent_daemon" "Starting Pandora FMS Agent"
+
+# Enable postrix
+systemctl enable postfix --now &>> "$LOGFILE"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

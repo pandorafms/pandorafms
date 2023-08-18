@@ -4,7 +4,9 @@ namespace Artica\PHPChartJS\Options;
 
 use Artica\PHPChartJS\ArraySerializableInterface;
 use Artica\PHPChartJS\Delegate\ArraySerializable;
+use Artica\PHPChartJS\Options\Scales\AngleLines;
 use Artica\PHPChartJS\Options\Scales\GridLines;
+use Artica\PHPChartJS\Options\Scales\PointLabels;
 use Artica\PHPChartJS\Options\Scales\ScaleLabel;
 use Artica\PHPChartJS\Options\Scales\Ticks;
 use JsonSerializable;
@@ -129,6 +131,13 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
     protected $grid;
 
     /**
+     * AngleLines
+     *
+     * @var AngleLines
+     */
+    protected $angleLines;
+
+    /**
      * @var ScaleLabel
      */
     protected $scaleLabel;
@@ -137,6 +146,11 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
      * @var Ticks
      */
     protected $ticks;
+
+    /**
+     * @var PointLabels
+     */
+    protected $pointLabels;
 
     /**
      * @return string
@@ -158,7 +172,7 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
         return $this;
     }
 
-    
+
     /**
      * @return string
      */
@@ -580,6 +594,26 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
     }
 
     /**
+     * @return AngleLines
+     */
+    public function getAngleLines()
+    {
+        return $this->angleLines;
+    }
+
+    /**
+     * @return AngleLines
+     */
+    public function angleLines()
+    {
+        if (is_null($this->angleLines)) {
+            $this->angleLines = new AngleLines();
+        }
+
+        return $this->angleLines;
+    }
+
+    /**
      * @return ScaleLabel
      */
     public function getScaleLabel()
@@ -619,10 +653,35 @@ abstract class Scale implements ArraySerializableInterface, JsonSerializable
         return $this->ticks;
     }
 
+
+    /**
+     *
+     * @return  PointLabels
+     */
+    public function getPointLabels()
+    {
+        return $this->pointLabels;
+    }
+
+    /**
+     *
+     * @param  PointLabels  $pointLabels
+     *
+     * @return  self
+     */
+    public function pointLabels()
+    {
+        if (is_null($this->pointLabels)) {
+            $this->pointLabels = new PointLabels();
+        }
+
+        return $this->pointLabels;
+    }
+
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize():mixed
     {
         return $this->getArrayCopy();
     }

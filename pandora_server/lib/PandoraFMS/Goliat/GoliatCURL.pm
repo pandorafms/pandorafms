@@ -1,7 +1,7 @@
 ##################################################################################
 # Goliath Tools CURL Module
 ##################################################################################
-# Copyright (c) 2013-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2013-2023 Pandora FMS
 # This code is not free or OpenSource. Please don't redistribute.
 ##################################################################################
 

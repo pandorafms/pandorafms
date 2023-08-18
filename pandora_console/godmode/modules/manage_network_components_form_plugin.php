@@ -32,41 +32,49 @@ global $config;
 check_login();
 
 $data = [];
-$data[0] = __('Plugin');
-$data[1] = html_print_select_from_sql(
-    'SELECT id, name FROM tplugin ORDER BY name',
-    'id_plugin',
-    $id_plugin,
-    'javascript: load_plugin_macros_fields(\'network_component-macro\')',
-    __('None'),
-    0,
-    true,
-    false,
-    false
+$data[0] = html_print_label_input_block(
+    __('Plugin'),
+    html_print_select_from_sql(
+        'SELECT id, name FROM tplugin ORDER BY name',
+        'id_plugin',
+        $id_plugin,
+        'javascript: load_plugin_macros_fields(\'network_component-macro\')',
+        __('None'),
+        0,
+        true,
+        false,
+        false,
+        false,
+        'width: 100%;'
+    ).html_print_input_hidden('macros', base64_encode($macros), true)
+    // Store the macros in base64 into a hidden control to move between pages.
 );
-// Store the macros in base64 into a hidden control to move between pages.
-$data[1] .= html_print_input_hidden('macros', base64_encode($macros), true);
-$data[2] = __('Post process');
-$data[3] = html_print_extended_select_for_post_process(
-    'post_process',
-    $post_process,
-    '',
-    __('Empty'),
-    '0',
-    false,
-    true,
-    false,
-    true
+
+$data[1] = html_print_label_input_block(
+    __('Post process'),
+    html_print_extended_select_for_post_process(
+        'post_process',
+        $post_process,
+        '',
+        __('Empty'),
+        '0',
+        false,
+        true,
+        false,
+        true
+    )
 );
 
 push_table_row($data, 'plugin_1');
 
 // A hidden "model row" to clone it from javascript to add fields dynamicly.
 $data = [];
-$data[0] = 'macro_desc';
-$data[0] .= ui_print_help_tip('macro_help', true);
-$data[1] = html_print_input_text('macro_name', 'macro_value', '', 100, 1024, true);
-$table->colspan['macro_field'][1] = 3;
+$data[0] = html_print_label_input_block(
+    __('macro_desc').ui_print_help_tip('macro_help', true),
+    html_print_input_text('macro_name', 'macro_value', '', 100, 1024, true)
+);
+
+$table->colspan['macro_field'][0] = 2;
 $table->rowstyle['macro_field'] = 'display:none';
 
 push_table_row($data, 'macro_field');
@@ -77,32 +85,44 @@ if (!empty($macros)) {
 
     foreach ($macros as $k => $m) {
         $data = [];
-        $data[0] = $m['desc'];
+        $macro_label = $m['desc'];
         if (!empty($m['help'])) {
-            $data[0] .= ui_print_help_tip($m['help'], true);
+            $macro_label .= ui_print_help_tip($m['help'], true);
         }
 
         if ($m['hide'] == 1) {
-            $data[1] = html_print_input_text(
+            $macro_input = html_print_input_text(
                 $m['macro'],
                 io_output_password($m['value']),
                 '',
                 100,
                 1024,
-                true
+                true,
+                false,
+                '',
+                'w50p'
             );
         } else {
-            $data[1] = html_print_input_text(
+            $macro_input = html_print_input_text(
                 $m['macro'],
                 $m['value'],
                 '',
                 100,
                 1024,
-                true
+                true,
+                false,
+                false,
+                '',
+                'w50p'
             );
         }
 
-        $table->colspan['macro'.$m['macro']][1] = 3;
+        $data[0] = html_print_label_input_block(
+            $macro_label,
+            $macro_input
+        );
+
+        $table->colspan['macro'.$m['macro']][0] = 2;
         $table->rowclass['macro'.$m['macro']] = 'macro_field';
 
         push_table_row($data, 'macro'.$m['macro']);

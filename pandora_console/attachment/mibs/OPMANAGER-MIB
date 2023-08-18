@@ -1,0 +1,367 @@
+
+-- File Name : OPMANAGER-MIB
+-- This is used for Trap Notification in OpManager
+
+
+ADVENTNET-OPMANAGER-MIB	DEFINITIONS ::= BEGIN
+	IMPORTS
+		DisplayString
+			FROM SNMPv2-TC
+		DisplayString
+			FROM RFC1213-MIB
+		org, MODULE-IDENTITY, OBJECT-TYPE, IpAddress, NOTIFICATION-TYPE
+			FROM SNMPv2-SMI;
+
+	org	OBJECT IDENTIFIER
+		::=  {  iso  3  }
+
+	dod	OBJECT IDENTIFIER
+		::=  {  org  6  }
+
+	internet	OBJECT IDENTIFIER
+		::=  {  dod  1  }
+
+	private	OBJECT IDENTIFIER
+		::=  {  internet  4  }
+
+	enterprises	OBJECT IDENTIFIER
+		::=  {  private  1  }
+
+	adventnet	OBJECT IDENTIFIER
+		::=  {  enterprises  2162  }
+
+	adventnetMibs	OBJECT IDENTIFIER
+		::=  {  adventnet  100  }
+
+	adventnetOpManagerMIB	OBJECT IDENTIFIER
+		::=  {  adventnetMibs  5  }
+
+	adventnetOpManagerMIBObjects	OBJECT IDENTIFIER
+		::=  {  adventnetOpManagerMIB  1  }
+		
+	opManagerNotifications	OBJECT IDENTIFIER
+		::=  {  adventnetOpManagerMIBObjects  1  }
+		
+	alertInfo	OBJECT IDENTIFIER
+		::=  {  opManagerNotifications  1  }
+		
+	deviceInfo	OBJECT IDENTIFIER
+		::=  {  opManagerNotifications  2  }
+		
+	intfInfo	OBJECT IDENTIFIER
+		::=  {  opManagerNotifications  3  }
+	
+	customInfo	OBJECT IDENTIFIER
+		::=  {  opManagerNotifications  4  }
+	
+	customIntfInfo	OBJECT IDENTIFIER
+		::=  {  opManagerNotifications  5  }
+		
+	monitorInfo	OBJECT IDENTIFIER
+		::=  {  opManagerNotifications  6  }
+		
+	nfaAlertInfo	OBJECT IDENTIFIER
+		::=  {  opManagerNotifications  7  }
+		
+	fwaAlertInfo	OBJECT IDENTIFIER
+		::=  {  opManagerNotifications  8  }
+	
+	message		OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"message of the alarm generated in OpManager"
+		::=  {  alertInfo  1  }
+
+	deviceName		OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"name of device in which alarm generated"
+		::=  {  alertInfo  2  }
+	
+	category		OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"category name of the device"
+		::=  {  alertInfo  3  }
+	
+	stringseverity		OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"severity of the alarm as a string value"
+		::=  {  alertInfo  4  }
+	
+	strModTime	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"time when the alarm was generated"
+		::=  {  alertInfo  5  }
+		
+	alarmid	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"alarm id in Alert Table"
+		::=  {  alertInfo  6  }
+	
+	eventType	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"eventType of generated alarm"
+		::=  {  alertInfo  7  }
+
+	entity	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"entity of generated alarm"
+		::=  {  alertInfo  8  }
+
+	lastPolledValue	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"lastPolledValue of generated alarm for threshold violated monitors"
+		::=  {  alertInfo  9  }
+	
+	type	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"device type"
+		::=  {  deviceInfo  1  }
+	
+	ipAddress	OBJECT-TYPE
+		SYNTAX			IpAddress
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"ipAddress of the device"
+		::=  {  deviceInfo  2  }
+	
+	isSNMP	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"device supports snmp protocol or not"
+		::=  {  deviceInfo  3  }
+	
+	dependent	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"dependency on other devices"
+		::=  {  deviceInfo  4  }
+	
+	hardDiskSiz	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"hard Disk Size of the device"
+		::=  {  deviceInfo  5  }
+	
+	ramSize	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"RAM memory of the device"
+		::=  {  deviceInfo  6  }
+
+	probeName OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Probe name to which the device belongs"
+		::=  {  deviceInfo  7  }
+	
+	ifDescr	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"descriptor of the interface as reported by the SNMP agent"
+		::=  {  intfInfo  1  }
+	
+	displayName	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"displayName of the interface"
+		::=  {  intfInfo  2  }
+	
+	ifAlias	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"alias name of the interface"
+		::=  {  intfInfo  3  }
+	
+	ifName	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"name of the interface"
+		::=  {  intfInfo  4  }
+	
+	ifIpAddress	OBJECT-TYPE
+		SYNTAX			IpAddress
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"ipAddress of the interface"
+		::=  {  intfInfo  5  }
+	
+	physMedia	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"physical media of the interface"
+		::=  {  intfInfo  6  }
+	
+	ifIndex	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"interface index reported by the SNMP agent"
+		::=  {  intfInfo  7  }
+	
+	ifCircuitID	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"interface circiutID"
+		::=  {  intfInfo  8  }
+	
+	ifSpeedIn	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"In speed of the interface as reported by the SNMP agent"
+		::=  {  intfInfo  9  }
+	
+	ifSpeedOut	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Out speed of the interface as reported by the SNMP agent"
+		::=  {  intfInfo  10  }
+		
+	customField	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"custom fields for devices in OpManager"
+		::=  {  customInfo  1  }
+	
+	customIntfField 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"custom fields for interfaces in OpManager"
+		::=  {  customIntfInfo  1  }
+		
+	monitorName 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Name of the Monitor in which the alarm generated"
+		::=  {  monitorInfo  1  }
+		
+	instance 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Instance of the Monitor in which the alarm generated"
+		::=  {  monitorInfo  2  }
+		
+	protocol 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Protocol of the Monitor in which the alarm generated"
+		::=  {  monitorInfo  3  }
+		
+	sourceType 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Source Type in NetFlow"
+		::=  {  nfaAlertInfo  1  }
+		
+	sourceName 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Source Name in NetFlow"
+		::=  {  nfaAlertInfo  2  }
+		
+	alertName 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Alert Profile Name in NetFlow"
+		::=  {  nfaAlertInfo  3  }
+		
+	alertType 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Alert Profile Type in NetFlow"
+		::=  {  nfaAlertInfo  4  }
+		
+	criteria 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Alert criteria in NetFlow"
+		::=  {  nfaAlertInfo  5  }
+		
+	profileName 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Name of the Profile created in Firewall Module"
+		::=  {  fwaAlertInfo  1  }
+
+	criteria 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Profile criteria specified in Firewall Module"
+		::=  {  fwaAlertInfo  2  }
+
+	alertMsg 	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Details of Alert in Firewall Module"
+		::=  {  fwaAlertInfo  3  }
+		
+	
+
+
+-- Trap Definitions
+
+opmAlertNotifications    OBJECT IDENTIFIER ::= { adventnetOpManagerMIBObjects 2 }
+ 
+trapNotifications NOTIFICATION-GROUP
+   NOTIFICATIONS { opManagerTrapNotification }
+   STATUS        current
+   DESCRIPTION
+      "The basic notifications implemented by an SNMP entity
+       supporting command responder applications."
+   ::= { adventnetOpManagerMIBObjects 2 }
+
+
+-- Notification types:
+ 
+opManagerTrapNotification NOTIFICATION-TYPE
+     OBJECTS { message, deviceName, category, stringseverity, strModTime,alarmid, eventType, entity, lastPolledValue, type, ipAddress, isSNMP, dependent, hardDiskSiz, ramSize, ifDescr, displayName, ifAlias, ifName, ifIpAddress, physMedia, ifIndex, ifCircuitID, ifSpeedIn, ifSpeedOut, customField, customIntfField}
+     STATUS       current
+     DESCRIPTION
+         "A notification about a change in the alert of OpManager."
+     ::= { opmAlertNotifications 1 }
+
+END

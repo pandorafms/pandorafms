@@ -351,10 +351,12 @@ if ($id_component_type == COMPONENT_TYPE_WMI) {
     return;
 }
 
-echo '<form name="component" method="post">';
+echo '<form name="component" method="post" class="max_floating_element_size">';
 
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
+$table->style[0] = 'width: 50%; max-width: 50%; font-weight: bold;';
+$table->style[2] = 'width: 50%; max-width: 50%; font-weight: bold;';
 
 if (is_metaconsole() === true) {
     if ($id) {

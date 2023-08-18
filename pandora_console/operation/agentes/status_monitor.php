@@ -976,7 +976,7 @@ $tableAdvancedFilter->data['advancedField_1'][2] = html_print_label_input_block(
 
 $tableAdvancedFilter->data['advancedField_2'][0] = html_print_label_input_block(
     __('Data type'),
-    html_print_select_from_sql($sqlModuleType, 'datatype', '', '', __('All'), 0, true)
+    html_print_select_from_sql($sqlModuleType, 'datatype', $datatype, '', __('All'), 0, true)
 );
 
 $tableAdvancedFilter->data['advancedField_2'][1] = html_print_label_input_block(
@@ -1107,6 +1107,8 @@ $selectIntervalUp = false;
 $selectIntervalDown = false;
 $selectStatusUp = false;
 $selectStatusDown = false;
+$selectStatusChangeUp = false;
+$selectStatusChangeDown = false;
 $selectDataUp = false;
 $selectDataDown = false;
 $selectTimestampUp = false;
@@ -1244,7 +1246,7 @@ switch ($sortField) {
         $fieldForSorting = 'last_status_change';
         switch ($sort) {
             case 'up':
-                $selectStatusUp = $selected;
+                $selectStatusChangeUp = $selected;
                 $order = [
                     'field' => 'tagente_estado.last_status_change',
                     'order' => 'ASC',
@@ -1252,7 +1254,7 @@ switch ($sortField) {
             break;
 
             case 'down':
-                $selectStatusDown = $selected;
+                $selectStatusChangeDown = $selected;
                 $order = [
                     'field' => 'tagente_estado.last_status_change',
                     'order' => 'DESC',
@@ -1317,6 +1319,8 @@ switch ($sortField) {
         $selectIntervalDown = false;
         $selectStatusUp = false;
         $selectStatusDown = false;
+        $selectStatusChangeUp = false;
+        $selectStatusChangeDown = false;
         $selectDataUp = false;
         $selectDataDown = false;
         $selectTimestampUp = false;
@@ -1373,7 +1377,6 @@ $sql = 'SELECT
 	GROUP BY tagente_modulo.id_agente_modulo
 	ORDER BY '.$order['field'].' '.$order['order'].'
 	LIMIT '.$offset.','.$limit_sql;
-
 
 // We do not show the modules until the user searches with the filter.
 if ($autosearch) {
@@ -1464,7 +1467,7 @@ $url_module_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_mon
 $url_server_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_interval = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
-$url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_status_change = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_data = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_timestamp_up = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 $url_timestamp_down = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
@@ -1475,7 +1478,7 @@ $url_module_name .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$
 $url_server_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_interval .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
-$url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_status_change .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_data .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_timestamp_up .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_timestamp_down .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
@@ -1487,7 +1490,7 @@ $url_module_name .= '&recursion='.$recursion;
 $url_server_type .= '&recursion='.$recursion;
 $url_interval .= '&recursion='.$recursion;
 $url_status .= '&recursion='.$recursion;
-$url_status .= '&recursion='.$recursion;
+$url_status_change .= '&recursion='.$recursion;
 $url_data .= '&recursion='.$recursion;
 $url_timestamp_up .= '&recursion='.$recursion;
 $url_timestamp_down .= '&recursion='.$recursion;
@@ -1498,7 +1501,7 @@ $url_module_name .= '&sort_field=module_name&sort=';
 $url_server_type .= '&sort_field=moduletype&sort=';
 $url_interval .= '&sort_field=interval&sort=';
 $url_status .= '&sort_field=status&sort=';
-$url_status .= '&sort_field=last_status_change&sort=';
+$url_status_change .= '&sort_field=last_status_change&sort=';
 $url_data .= '&sort_field=data&sort=';
 $url_timestamp_up .= '&sort_field=timestamp&sort=up';
 $url_timestamp_down .= '&sort_field=timestamp&sort=down';
@@ -1572,7 +1575,7 @@ if (empty($result) === false) {
 
     if (in_array('last_status_change', $show_fields)) {
         $table->head[7] = '<span>'.__('Last status change').'</span>';
-        $table->head[7] .= ui_get_sorting_arrows($url_status.'up', $url_status.'down', $selectStatusUp, $selectStatusDown);
+        $table->head[7] .= ui_get_sorting_arrows($url_status_change.'up', $url_status_change.'down', $selectStatusChangeUp, $selectStatusChangeDown);
         $table->headstyle[7] = 'text-align: center';
         $table->align[7] = 'center';
     }
@@ -1614,6 +1617,8 @@ if (empty($result) === false) {
         'nombre',
         'web_content_string'
     );
+
+    $inc_id = 0;
 
     foreach ($result as $row) {
         // Avoid unset, null and false value.
@@ -1702,8 +1707,26 @@ if (empty($result) === false) {
             $agent_alias = !empty($row['agent_alias']) ? $row['agent_alias'] : $row['agent_name'];
 
             // TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
-            if (defined('METACONSOLE')) {
-                $agent_link = '<a href="'.$row['server_url'].'index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$row['id_agent'].'&'.'loginhash=auto&'.'loginhash_data='.$row['hashdata'].'&'.'loginhash_user='.str_rot13($row['user']).'">';
+            if (is_metaconsole() === true) {
+                echo "<form id='agent-redirection-".$inc_id."' method='POST' action='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agent']."'>";
+                html_print_input_hidden(
+                    'loginhash',
+                    'auto',
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash_data',
+                    $row['hashdata'],
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash_user',
+                    str_rot13($row['user']),
+                    false
+                );
+                echo '</form>';
+                $agent_link = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-redirection-".$inc_id."\").submit();' href='#'>";
+
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,
                     'agent_small',
@@ -2231,27 +2254,77 @@ if (empty($result) === false) {
         }
 
         if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
-            $url_edit_module = $row['server_url'];
-            $url_edit_module .= 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&';
-            $url_edit_module .= '&id_agente='.$row['id_agent'];
-            $url_edit_module .= '&tab=module&id_agent_module='.$row['id_agente_modulo'].'&edit_module=1';
+            $table->cellclass[][2] = 'action_buttons';
+
             if (is_metaconsole() === true) {
-                $url_edit_module .= '&loginhash=auto';
-                $url_edit_module .= '&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']);
+                echo "<form id='agent-edit-redirection-".$inc_id."' method='POST' action='".$row['server_url']."index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&edit_module=1'>";
+                html_print_input_hidden(
+                    'id_agente',
+                    $row['id_agent'],
+                    false
+                );
+                html_print_input_hidden(
+                    'id_agent_module',
+                    $row['id_agente_modulo'],
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash',
+                    'auto',
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash_data',
+                    $row['hashdata'],
+                    false
+                );
+                html_print_input_hidden(
+                    'loginhash_user',
+                    str_rot13($row['user']),
+                    false
+                );
+
+                echo '</form>';
+                $agent_link = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-edit-redirection-".$inc_id."\").submit();' href='#'>";
+
+                $agent_alias = ui_print_truncate_text(
+                    $agent_alias,
+                    'agent_small',
+                    false,
+                    true,
+                    true,
+                    '[&hellip;]',
+                    'font-size:7.5pt;'
+                );
+
+                $data[12] .= $agent_link.html_print_image(
+                    'images/edit.svg',
+                    true,
+                    [
+                        'alt'    => '0',
+                        'border' => '',
+                        'title'  => __('Edit'),
+                        'class'  => 'main_menu_icon invert_filter',
+                    ]
+                ).'</a>';
+            } else {
+                $url_edit_module = $row['server_url'];
+                $url_edit_module .= 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&';
+                $url_edit_module .= '&id_agente='.$row['id_agent'];
+                $url_edit_module .= '&tab=module&id_agent_module='.$row['id_agente_modulo'].'&edit_module=1';
+                $data[12] .= '<a href="'.$url_edit_module.'">'.html_print_image(
+                    'images/edit.svg',
+                    true,
+                    [
+                        'alt'    => '0',
+                        'border' => '',
+                        'title'  => __('Edit'),
+                        'class'  => 'main_menu_icon invert_filter',
+                    ]
+                ).'</a>';
             }
 
-            $table->cellclass[][2] = 'action_buttons';
-            $data[12] .= '<a href="'.$url_edit_module.'">'.html_print_image(
-                'images/edit.svg',
-                true,
-                [
-                    'alt'    => '0',
-                    'border' => '',
-                    'title'  => __('Edit'),
-                    'class'  => 'main_menu_icon invert_filter',
-                ]
-            ).'</a>';
-
+            // Delete.
             if (is_metaconsole() === false) {
                 $url_delete_module = $row['server_url'].'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente';
                 $url_delete_module .= '&id_agente='.$row['id_agent'].'&delete_module='.$row['id_agente_modulo'];
@@ -2269,6 +2342,8 @@ if (empty($result) === false) {
                 ).'</a>';
             }
         }
+
+        $inc_id++;
 
         array_push($table->data, $data);
     }

@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.772 Build 230807";
+my $version = "7.0NG.773 Build 230818";
 
 # save program name for logging
 my $progname = basename($0);
@@ -5411,7 +5411,7 @@ sub cli_create_synthetic() {
 
 	my @module_data;
 
-	if (@ARGV[$#ARGV] == "use_alias") {
+	if (@ARGV[$#ARGV] eq "use_alias") {
 		@module_data = @ARGV[5..$#ARGV-1];
 	} else {
 		@module_data = @ARGV[5..$#ARGV];
@@ -5531,7 +5531,7 @@ sub cli_create_synthetic() {
 		}
 	} else {
 		my $id_agent = int(get_agent_id($dbh,$agent_name));
-		
+
 		if ($id_agent > 0) {
 			foreach my $i (0 .. $#module_data) {
 				my @split_data = split(',',$module_data[$i]);

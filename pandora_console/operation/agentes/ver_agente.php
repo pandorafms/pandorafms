@@ -42,6 +42,7 @@ ui_require_javascript_file('openlayers.pandora');
 ui_require_css_file('agent_view');
 
 enterprise_include_once('operation/agentes/ver_agente.php');
+enterprise_include_once('include/functions_security_hardening.php');
 
 check_login();
 if (is_ajax()) {
@@ -1744,6 +1745,20 @@ $external_tools['text'] = html_print_menu_button(
 
 $external_tools['active'] = ($tab === 'external_tools');
 
+if (enterprise_installed() === true && security_hardening_installed() === true) {
+    // External Tools tab.
+    $security_hardening['text'] = html_print_menu_button(
+        [
+            'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=security_hardening&id_agente='.$id_agente,
+            'image' => 'images/security_scan@svg.svg',
+            'title' => __('Security hardening'),
+        ],
+        true
+    );
+
+    $security_hardening['active'] = ($tab === 'security_hardening');
+}
+
 $onheader = [
     'manage'             => ($managetab ?? null),
     'main'               => ($maintab ?? null),
@@ -1761,6 +1776,7 @@ $onheader = [
     'sap_view'           => ($saptab ?? null),
     'ncm_view'           => ($ncm_tab ?? null),
     'external_tools'     => ($external_tools ?? null),
+    'security_hardening' => ($security_hardening ?? null),
     'incident'           => ($incidenttab ?? null),
     'omnishell'          => ($omnishellTab ?? null),
 ];
@@ -1941,6 +1957,10 @@ switch ($tab) {
         $tab_name = __('External Tools');
     break;
 
+    case 'security_hardening':
+        $tab_name = __('Security hardening');
+    break;
+
     default:
         $tab_name = '';
         $help_header = '';
@@ -2084,6 +2104,10 @@ switch ($tab) {
 
     case 'external_tools':
         include 'external_tools.php';
+    break;
+
+    case 'security_hardening':
+        enterprise_include('operation/agentes/security_hardening.php');
     break;
 
     case 'extension':

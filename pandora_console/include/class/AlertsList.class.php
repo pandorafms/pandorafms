@@ -53,7 +53,10 @@ class AlertsList
      *
      * @var array
      */
-    public $AJAXMethods = ['loadModal', 'drawTable'];
+    public $AJAXMethods = [
+        'loadModal',
+        'drawTable',
+    ];
 
 
     /**

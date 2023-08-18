@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.772 Build 230807";
+my $version = "7.0NG.773 Build 230818";
 
 # Pandora server configuration
 my %conf;
@@ -146,7 +146,10 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete old data
-	if ($conf->{'_days_purge'} > 0) {
+	if (!defined($conf->{'_days_purge'})){
+		log_message ('PURGE', 'days_purge is not defined. Old data will not be deleted.');
+	}
+	elsif ($conf->{'_days_purge'} > 0) {
 
 		# Delete old numeric data
 		pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
@@ -164,9 +167,7 @@ sub pandora_purgedb ($$$) {
 	pandora_delete_old_tplanned_downtime(\%conf, $dbh, $h_conf);
 
 	# String data deletion
-	if (!defined($conf->{'_string_purge'})){
-		$conf->{'_string_purge'} = 7;
-	}
+	$conf->{'_string_purge'} //= 7;
 
 	if ($conf->{'_string_purge'} > 0) {
 		$ulimit_access_timestamp = time() - 86400;
@@ -178,9 +179,8 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete event data
-	if (!defined($conf->{'_event_purge'})){
-		$conf->{'_event_purge'}= 10;
-	}
+	$conf->{'_event_purge'} //= 10;
+
 	if ($conf->{'_event_purge'} > 0) {
 		my $event_limit = time() - 86400 * $conf->{'_event_purge'};
 		
@@ -205,7 +205,7 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete audit data
-	$conf->{'_audit_purge'}= 7 if (!defined($conf->{'_audit_purge'}));
+	$conf->{'_audit_purge'} //= 7;
 	if ($conf->{'_audit_purge'} > 0) {
 		log_message ('PURGE', "Deleting old audit data (More than " . $conf->{'_audit_purge'} . " days).");
 		my $audit_limit = time() - 86400 * $conf->{'_audit_purge'};
@@ -216,7 +216,8 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete SNMP trap data
-	$conf->{'_trap_purge'}= 7 if (!defined($conf->{'_trap_purge'}));
+	$conf->{'_trap_purge'} //= 7;
+	
 	if ($conf->{'_trap_purge'} > 0) {
 		log_message ('PURGE', "Deleting old SNMP traps (More than " . $conf->{'_trap_purge'} . " days).");
 
@@ -237,7 +238,8 @@ sub pandora_purgedb ($$$) {
 	enterprise_hook("pandora_purge_service_elements", [$dbh, $conf]);
 
 	# Delete GIS  data
-	$conf->{'_gis_purge'}= 15 if (!defined($conf->{'_gis_purge'}));
+	$conf->{'_gis_purge'} //= 15;
+	
 	if ($conf->{'_gis_purge'} > 0) {
 		log_message ('PURGE', "Deleting old GIS data (More than " . $conf->{'_gis_purge'} . " days).");
 		my $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_gis_purge'}));
@@ -293,8 +295,6 @@ sub pandora_purgedb ($$$) {
 		log_message ('PURGE', "No agent access data.");
 	}
 	
-	
-	
 	# Purge the reports
    	if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
 		defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
@@ -347,7 +347,10 @@ sub pandora_purgedb ($$$) {
 	
 	
 	# Delete old netflow data
-	if ($conf->{'_netflow_max_lifetime'} > 0) {
+	if (!defined($conf->{'_netflow_max_lifetime'})){
+		log_message ('PURGE', 'netflow_max_lifetime is not defined. Old netflow data will not be deleted.');
+	}
+	elsif ($conf->{'_netflow_max_lifetime'} > 0) {
 		log_message ('PURGE', "Deleting old netflow data.");
 		if (! defined ($conf->{'_netflow_path'}) || ! -d $conf->{'_netflow_path'}) {
 			log_message ('!', "Netflow data directory does not exist, skipping.");
@@ -364,7 +367,10 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete old sflow data
-	if ($conf->{'_sflow_max_lifetime'} > 0) {
+	if (!defined($conf->{'_sflow_max_lifetime'})){
+		log_message ('PURGE', 'sflow_max_lifetime is not defined. Old sflow data will not be deleted.');
+	}
+	elsif ($conf->{'_sflow_max_lifetime'} > 0) {
 		log_message ('PURGE', "Deleting old sflow data.");
 		if (! defined ($conf->{'_sflow_path'}) || ! -d $conf->{'_sflow_path'}) {
 			log_message ('!', "sflow data directory does not exist, skipping.");
@@ -384,7 +390,7 @@ sub pandora_purgedb ($$$) {
 	log_message ('PURGE', "Deleting old log data.");
 	if (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
 		log_message ('PURGE', 'Deleting log data older than ' . $conf->{'_days_purge_old_information'} . ' days.');
-    enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
+    	enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
 	}
 	else {
 		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');
@@ -401,7 +407,7 @@ sub pandora_purgedb ($$$) {
 
 	# Delete old special days
 	log_message ('PURGE', "Deleting old special days.");
-	if ($conf->{'_num_past_special_days'} > 0) {
+	if (defined($conf->{'_num_past_special_days'}) && $conf->{'_num_past_special_days'} > 0) {
 		log_message ('PURGE', 'Deleting special days older than ' . $conf->{'_num_past_special_days'} . ' days.');
 		if (${RDBMS} eq 'oracle') {
 			db_do ($dbh, "DELETE FROM talert_special_days
@@ -419,7 +425,7 @@ sub pandora_purgedb ($$$) {
 
 	# Delete old messages
 	log_message ('PURGE', "Deleting old messages.");
-	if ($conf->{'_delete_old_messages'} > 0) {
+	if (defined($conf->{'_delete_old_messages'}) && $conf->{'_delete_old_messages'} > 0) {
 		my $message_limit = time() - 86400 * $conf->{'_delete_old_messages'};
 		db_do ($dbh, "DELETE FROM tmensajes WHERE timestamp < ?", $message_limit);
 	}

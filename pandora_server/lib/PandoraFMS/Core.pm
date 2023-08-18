@@ -535,20 +535,22 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	
 	# Get current time
 	my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time());
-	
+
+	my @weeks = ( 'none', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday');
+	my $special_day;
+
 	# Check weekday
 	if ($alert->{'special_day'}) {
 		logger ($pa_config, "Checking special days '" . $alert->{'name'} . "'.", 10);
 		my $date = sprintf("%4d%02d%02d", $year + 1900, $mon + 1, $mday);
 		# '0001' means every year.
 		my $date_every_year = sprintf("0001%02d%02d", $mon + 1, $mday);
-		my $special_day = get_db_value ($dbh, 'SELECT day_code FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) AND (id_calendar = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'}, $alert->{'special_day'});
+		$special_day = get_db_value ($dbh, 'SELECT day_code FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) AND (id_calendar = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'}, $alert->{'special_day'});
 
 		if (!defined($special_day)) {
 			$special_day = 0;
 		}
 
-		my @weeks = ( 'none', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday');
 		if ($special_day != 0) {
 			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $weeks[$special_day] . ")", 10);
 			return $status if (!defined($alert->{$weeks[$special_day]}) || $alert->{$weeks[$special_day]} == 0);
@@ -565,6 +567,9 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	my $schedule;
 	if (defined($alert->{'schedule'}) && $alert->{'schedule'} ne '') {
 		$schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
+		if ($special_day != 0) {
+			return $status if (!defined($schedule->{$weeks[$special_day]}));
+		}
 	}
 
 	if (defined($schedule)) {
@@ -577,11 +582,18 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 
 		my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
 
+		my $schedule_day;
+		if ($special_day != 0 && defined($schedule->{$weeks[$special_day]})) {
+			$schedule_day = $weeks[$special_day];
+		} else {
+			$schedule_day = $DayNames[$wday];
+		}
+
 		#
 		# Check time slots
 		#
 		my $inSlot = 0;
-		foreach my $timeBlock (@{$schedule->{$DayNames[$wday]}}) {
+		foreach my $timeBlock (@{$schedule->{$schedule_day}}) {
 			if ($timeBlock->{'start'} eq $timeBlock->{'end'}) {
 				# All day.
 				$inSlot = 1;
@@ -2543,6 +2555,12 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 	if ($only_alerts == 0) {
 		if ($downtime->{'type_downtime'} eq 'disable_agent_modules') {
 			db_do($dbh,'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
+				SET tam.disabled_by_downtime = 1
+				WHERE tam.disabled = 0 AND tpdm.id_agent_module = tam.id_agente_modulo AND
+				ta.id_agente = tam.id_agente AND
+				tpdm.id_downtime = ?', $downtime->{'id'});
+
+			db_do($dbh,'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
 				SET tam.disabled = 1, ta.update_module_count = 1
 				WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
 				ta.id_agente = tam.id_agente AND
@@ -2551,7 +2569,12 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 			db_do($dbh,'UPDATE tplanned_downtime_agents tp, tagente ta
 				SET tp.manually_disabled = ta.disabled
 				WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
-		
+
+			db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+				SET ta.disabled_by_downtime = 1
+				WHERE ta.disabled = 0 AND tpa.id_agent = ta.id_agente AND
+				tpa.id_downtime = ?',$downtime->{'id'});
+
 			db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
 				SET ta.disabled = 1, ta.update_module_count = 1
 				WHERE tpa.id_agent = ta.id_agente AND
@@ -2563,6 +2586,11 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 			WHERE id_downtime = ' . $downtime->{'id'});
 			
 		foreach my $downtime_agent (@downtime_agents) {
+			db_do ($dbh, 'UPDATE talert_template_modules tat, tagente_modulo tam
+				SET tat.disabled_by_downtime = 1
+				WHERE tat.disabled = 0 AND tat.id_agent_module = tam.id_agente_modulo 
+				AND tam.id_agente = ?', $downtime_agent->{'id_agent'});
+
 			db_do ($dbh, 'UPDATE talert_template_modules tat, tagente_modulo tam
 				SET tat.disabled = 1
 				WHERE tat.id_agent_module = tam.id_agente_modulo 
@@ -2643,6 +2671,13 @@ sub pandora_planned_downtime_set_quiet_elements($$$) {
 					AND id_downtime = ' . $downtime_id);
 			
 			foreach my $downtime_module (@downtime_modules) {
+				# If traversed module was already quiet, do not set quiet_by_downtime flag.
+				# quiet_by_downtime is used to avoid setting the module back to quiet=0 when downtime is over for those modules that were quiet before the downtime.
+				db_do ($dbh, 'UPDATE tagente_modulo
+					SET quiet_by_downtime = 1
+					WHERE quiet = 0 && id_agente_modulo = ?',
+					$downtime_module->{'id_agent_module'});
+
 				db_do ($dbh, 'UPDATE tagente_modulo
 					SET quiet = 1
 					WHERE id_agente_modulo = ?',
@@ -2665,7 +2700,7 @@ sub pandora_planned_downtime_unset_quiet_elements($$$) {
 	my @downtime_agents = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime_agents
 		WHERE id_downtime = ' . $downtime_id);
-	
+
 	foreach my $downtime_agent (@downtime_agents) {
 		if ($downtime_agent->{'all_modules'}) {
 			db_do ($dbh, 'UPDATE tagente

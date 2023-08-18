@@ -1489,6 +1489,15 @@ function config_update_config()
                             $interval_values_array = explode(',', $interval_values);
                             if (in_array($new_interval, $interval_values_array) === false) {
                                 $interval_values_array[] = $new_interval;
+                                // Get current periods.
+                                $current_period = get_periods(false, false, true);
+                                if (!isset($current_period[-1])) {
+                                    $new_current_period = array_keys($current_period);
+                                    $new_current_period = implode(',', $new_current_period);
+                                    // Add new periods to current.
+                                    array_push($interval_values_array, $new_current_period);
+                                }
+
                                 $interval_values = implode(',', $interval_values_array);
                             }
                         }
@@ -4079,7 +4088,11 @@ function config_prepare_session()
         }
 
         if ($update_cookie === true) {
-            if ((int) $user['session_max_time_expire'] > 0 && time() < $user['session_max_time_expire']) {
+            if (isset($user) === true
+                && isset($user['session_max_time_expire']) === true
+                && (int) $user['session_max_time_expire'] > 0
+                && time() < $user['session_max_time_expire']
+            ) {
                 $sessionMaxTimeout = $user['session_max_time_expire'];
             } else {
                 $sessionMaxTimeout = (time() + $sessionCookieExpireTime);

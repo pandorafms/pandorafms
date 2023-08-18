@@ -250,6 +250,17 @@ try {
                         echo csv_format_delimiter(io_safe_output($custom_data));
                     break;
 
+                    case 'timestamp':
+                        $target_timezone = date_default_timezone_get();
+                        $utimestamp = $row['utimestamp'];
+                        $datetime = new DateTime("@{$utimestamp}");
+                        $new_datetime_zone = new DateTimeZone($target_timezone);
+                        $datetime->setTimezone($new_datetime_zone);
+                        $formatted_date = $datetime->format('Y-m-d H:i:s');
+
+                        echo csv_format_delimiter($formatted_date);
+                    break;
+
                     default:
                         echo csv_format_delimiter(io_safe_output($row[$key]));
                     break;

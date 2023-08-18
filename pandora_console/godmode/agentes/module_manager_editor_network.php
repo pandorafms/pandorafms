@@ -233,7 +233,6 @@ if ($adopt === false) {
 }
 
 $snmp_versions['1'] = 'v. 1';
-$snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 

@@ -407,8 +407,7 @@ if ($edit_module === true) {
         $help_header = 'local_module';
     }
 
-    if ($id_module_type === 6 || $id_module_type === 7
-    ) {
+    if ($id_module_type === 6 || $id_module_type === 7) {
         $help_header = 'icmp_module_tab';
     }
 
@@ -420,7 +419,7 @@ if ($edit_module === true) {
         $help_header = 'tcp_module_tab';
     }
 
-    if ($id_module_type >= 30 && $id_module_type <= 33) {
+    if (($id_module_type >= 30 && $id_module_type <= 33) || $id_module_type === 38) {
         $help_header = 'webserver_module_tab';
     }
 }

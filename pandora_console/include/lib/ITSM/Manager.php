@@ -1095,6 +1095,19 @@ class Manager
         $order = get_datatable_order(true);
         $filters = get_parameter('filter', []);
 
+        $customSearch = (int) get_parameter('customSearch', 0);
+        if (empty($customSearch) === false) {
+            try {
+                $ITSM = new ITSM();
+                $customSearchData = ($ITSM->getCustomSearch($customSearch)['formValues'] ?? []);
+            } catch (\Throwable $th) {
+                $error = $th->getMessage();
+                $customSearchData = [];
+            }
+
+            $filters = $customSearchData;
+        }
+
         $externalIdLike = get_parameter('externalIdLike', '');
         if (empty($externalIdLike) === false) {
             $filters['externalIdLike'] = $externalIdLike;
@@ -1104,7 +1117,11 @@ class Manager
             unset($filters['status']);
         }
 
-        if (isset($filters['idGroup']) === true && empty($filters['idGroup']) === true) {
+        if (isset($filters['priority']) === true && empty($filters['priority']) === true) {
+            unset($filters['priority']);
+        }
+
+        if (isset($filters['idGroup']) === true && (empty($filters['idGroup']) === true || $filters['idGroup'] < 0)) {
             unset($filters['idGroup']);
         }
 

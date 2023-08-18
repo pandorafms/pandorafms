@@ -29,6 +29,7 @@
 namespace PandoraFMS\Dashboard;
 
 use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\ITSM\ITSM;
 
 global $config;
 
@@ -178,8 +179,12 @@ class ITSMIncidences extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
-        if (empty($this->values['fields']) === true) {
+        if (isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false) {
             $this->configurationRequired = true;
+        } else {
+            if (empty($this->values['customSearch']) === true || empty($this->values['fields']) === true) {
+                $this->configurationRequired = true;
+            }
         }
 
         $this->overflow_scrollbars = false;
@@ -213,6 +218,10 @@ class ITSMIncidences extends Widget
 
         if (isset($decoder['limit']) === true) {
             $values['limit'] = $decoder['limit'];
+        }
+
+        if (isset($decoder['customSearch']) === true) {
+            $values['customSearch'] = $decoder['customSearch'];
         }
 
         return $values;
@@ -263,6 +272,28 @@ class ITSMIncidences extends Widget
             ],
         ];
 
+        $customSearches = [];
+        if (isset($config['ITSM_enabled']) === true && (bool) $config['ITSM_enabled'] === true) {
+            try {
+                $ITSM = new ITSM();
+                $customSearches = $ITSM->listCustomSearch();
+            } catch (\Throwable $th) {
+                $error = $th->getMessage();
+            }
+        }
+
+        $inputs[] = [
+            'label'     => __('Custom search'),
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $customSearches,
+                'name'     => 'customSearch',
+                'selected' => $values['customSearch'],
+                'return'   => true,
+                'sort'     => false,
+            ],
+        ];
+
         $fields = [
             'idIncidence'      => __('ID'),
             'title'            => __('Title'),
@@ -304,6 +335,7 @@ class ITSMIncidences extends Widget
 
         $values['fields'] = \get_parameter('fields', []);
         $values['limit'] = \get_parameter('limit', 20);
+        $values['customSearch'] = \get_parameter('customSearch', 20);
 
         return $values;
     }
@@ -361,7 +393,10 @@ class ITSMIncidences extends Widget
                     'columns'            => $columns,
                     'column_names'       => $column_names,
                     'ajax_url'           => 'operation/ITSM/itsm',
-                    'ajax_data'          => ['method' => 'getListTickets'],
+                    'ajax_data'          => [
+                        'method'       => 'getListTickets',
+                        'customSearch' => $this->values['customSearch'],
+                    ],
                     'order'              => [
                         'field'     => 'updateDate',
                         'direction' => 'desc',

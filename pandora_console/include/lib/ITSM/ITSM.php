@@ -249,6 +249,14 @@ class ITSM
                 $path = '/incidence/statistic/groupedByOwners';
             break;
 
+            case 'listCustomSearch':
+                $path = '/customSearch/list';
+            break;
+
+            case 'customSearch':
+                $path = '/customSearch/'.$id;
+            break;
+
             default:
                 // Not posible.
             break;
@@ -379,6 +387,52 @@ class ITSM
         );
 
         return $result['data'];
+    }
+
+
+    /**
+     * List custom search.
+     *
+     * @return array Result.
+     */
+    public function listCustomSearch(): array
+    {
+        $listCustomSearch = $this->callApi(
+            'listCustomSearch',
+            [
+                'page'     => 0,
+                'sizePage' => 0,
+            ],
+            ['section' => 'incidences']
+        );
+
+        $result = [];
+        foreach ($listCustomSearch['data'] as $customSearch) {
+            $result[$customSearch['idCustomSearch']] = $customSearch['name'];
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Get Custom search.
+     *
+     * @param integer $idCustomSearch Custom search ID.
+     *
+     * @return array Data custom search.
+     */
+    public function getCustomSearch(int $idCustomSearch): array
+    {
+        $result = $this->callApi(
+            'customSearch',
+            [],
+            [],
+            $idCustomSearch,
+            'GET'
+        );
+
+        return $result;
     }
 
 

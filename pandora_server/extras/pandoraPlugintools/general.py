@@ -360,7 +360,7 @@ def set_dict_key_value(
         input_dict: dict = {},
         input_key: str = "",
         input_value = None
-    ):
+    )-> None:
     """
     Assign a given value to a specified key in a dictionary.
 
@@ -368,6 +368,9 @@ def set_dict_key_value(
         input_dict (dict): The dictionary to which the value will be assigned.
         input_key (str): The key in the dictionary to which the value will be assigned.
         input_value (any): The value to be assigned to the specified key.
+
+    Returns:
+        None
     """
     key = input_key.strip()
 
@@ -381,9 +384,16 @@ def set_dict_key_value(
 def get_dict_key_value(
         input_dict: dict = {},
         input_key: str = ""
-    ):
+    )-> None:
     """
-    Return the value of a key in a given dict.
+    Return the value associated with a given key in a provided dictionary.
+
+    Args:
+        input_dict (dict): The dictionary to search for the key-value pair.
+        input_key (str): The key to look up in the dictionary.
+
+    Returns:
+        The value associated with the specified key, or None if the key is not found.
     """
     key = input_key.strip()
 

@@ -32,7 +32,7 @@ def _auth_call(
         authtype: str = "basic",
         user: str = "",
         passw: str = ""
-    ):
+    )-> None:
     """
     Perform authentication for URL requests using various authentication types.
 
@@ -41,6 +41,9 @@ def _auth_call(
         authtype (str, optional): The authentication type. Supported values: 'ntlm', 'basic', or 'digest'. Defaults to 'basic'.
         user (str, optional): The authentication user. Defaults to an empty string.
         passw (str, optional): The authentication password. Defaults to an empty string.
+
+    Returns:
+        None
     """
     if session is not None:
         if authtype == 'ntlm':

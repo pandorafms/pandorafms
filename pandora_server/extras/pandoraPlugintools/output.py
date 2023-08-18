@@ -25,12 +25,15 @@ def _print_debug(
 
 def print_stdout(
         message: str = ""
-    ):
+    )-> None:
     """
     Prints message in stdout
 
     Args:
         message (str, optional): Message to be printed. Defaults to "".
+
+    Returns:
+        None
     """
     print(message)
 
@@ -40,12 +43,15 @@ def print_stdout(
 
 def print_stderr(
         message: str = ""
-    ):
+    )-> None:
     """
     Prints message in stderr
 
     Args:
         message (str, optional): Message to be printed. Defaults to "".
+
+    Returns:
+        None
     """
     print(message, file=sys.stderr)
 
@@ -56,13 +62,16 @@ def print_stderr(
 def print_debug(
         var = "",
         print_errors: bool = False
-    ):
+    )-> None:
     """
     Prints any list, dict, string, float or integer as a json
 
     Args:
         var: Variable to be printed.
         print_errors (bool, optional): Whether to print errors. Defaults to False.
+
+    Returns:
+        None
     """
     try:
         debug_json = json.dumps(var, indent=4)

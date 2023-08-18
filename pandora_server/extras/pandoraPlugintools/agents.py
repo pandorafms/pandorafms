@@ -46,13 +46,16 @@ def _print_debug(
 def set_global_variable(
         variable_name: str = "", 
         value = None
-    ):
+    )-> None:
     """
     Sets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
 
     Args:
         variable_name (str): Name of the variable to set.
         value (any): Value to assign to the variable.
+    
+    Returns:
+        None
     """
     from .general import set_dict_key_value
 
@@ -63,12 +66,15 @@ def set_global_variable(
 #########################################################################################
 def get_global_variable(
         variable_name: str = ""
-    ):
+    )-> None:
     """
     Gets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
 
     Args:
         variable_name (str): Name of the variable to set.
+
+    Returns:
+        None
     """
     from .general import get_dict_key_value
 
@@ -105,12 +111,15 @@ class Agent:
     def update_config(
             self,
             config: dict = {}
-        ):
+        )-> None:
         '''
         Update the configuration settings with new values.
 
         Args:
             config (dict): A dictionary containing configuration keys and their new values.
+
+        Returns:
+            None
         '''
         for key, value in config.items():
             if key in self.config:
@@ -130,12 +139,15 @@ class Agent:
     def add_module(
             self,
             module: dict = {}
-        ):
+        )-> None:
         '''
         Add a new module to the list of modules.
 
         Args:
             module (dict): A dictionary containing module information.
+
+        Returns:
+            None
         '''
         from .general import generate_md5
         from .modules import init_module
@@ -147,12 +159,15 @@ class Agent:
     def del_module(
             self,
             module_name: str = ""
-        ):
+        )-> None:
         '''
         Delete a module based on its name.
 
         Args:
             module_name (str): The name of the module to be deleted.
+
+        Returns:
+            None
         '''
         from .general import generate_md5
 
@@ -170,13 +185,16 @@ class Agent:
             self,
             module_name: str = "",
             module: dict = {}
-        ):
+        )-> None:
         '''
         Update a module based on its name.
 
         Args:
             module_name (str): The name of the module to be updated.
             module (dict): A dictionary containing updated module information.
+        
+        Returns:
+            None
         '''
         module_def = self.get_module(module_name)
         
@@ -229,12 +247,15 @@ class Agent:
     def add_log_module(
             self,
             log_module: dict = {}
-        ):
+        )-> None:
         '''
         Add a new log module to the list of log modules.
 
         Args:
             log_module (dict): A dictionary containing log module information.
+
+        Returns:
+            None
         '''
         from .modules import init_log_module
 

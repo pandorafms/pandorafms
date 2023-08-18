@@ -33,7 +33,7 @@ def _print_debug(
 #########################################################################################
 def set_disco_error_level(
         value: int = 0
-    ):
+    )-> None:
     """
     Sets the error level to the specified value.
 
@@ -49,9 +49,17 @@ def set_disco_error_level(
 #########################################################################################
 def set_disco_summary(
         data: dict = {}
-    ):
+    )-> None:
     """
-    TODO: Add comments
+    Sets the disk summary data in the internal summary dictionary.
+
+    This function updates the summary dictionary with the provided disk summary data.
+    
+    Args:
+        data (dict): A dictionary containing disk summary data.
+
+    Returns:
+        None
     """
     global _SUMMARY
 
@@ -63,13 +71,16 @@ def set_disco_summary(
 def set_disco_summary_value(
         key: str = "",
         value = None
-    ):
+    )-> None:
     """
     Sets a fixed value for a key in the '_SUMMARY' dictionary.
 
     Args:
         key (str): Key to set the value for.
         value (any): Value to assign to the key.
+
+    Returns:
+        None
     """
     global _SUMMARY
 
@@ -81,7 +92,7 @@ def set_disco_summary_value(
 def add_disco_summary_value(
         key: str = "",
         value = None
-    ):
+    )-> None:
     """
     Adds a value to a key in the 'SUMMARY' dictionary.
 
@@ -90,6 +101,9 @@ def add_disco_summary_value(
     Args:
         key (str): Key to add the value to.
         value (any): Value to add to the key.
+
+    Returns:
+        None
     """
     global _SUMMARY
 
@@ -103,12 +117,15 @@ def add_disco_summary_value(
 #########################################################################################
 def set_disco_info_value(
         value: str = ""
-    ):
+    )-> None:
     """
     Sets a fixed value to the '_INFO' variable.
 
     Args:
         data (str, optional): The value to set in the '_INFO' variable. Default is an empty string.
+
+    Returns:
+        None
     """
     global _INFO
 
@@ -119,12 +136,15 @@ def set_disco_info_value(
 #########################################################################################
 def add_disco_info_value(
         value: str = ""
-    ):
+    )-> None:
     """
     Adds data to the '_INFO' variable.
 
     Args:
         data (str, optional): The data to add to the '_INFO' variable. Default is an empty string.
+    
+    Returns:
+        None
     """
     global _INFO
 
@@ -135,12 +155,15 @@ def add_disco_info_value(
 #########################################################################################
 def set_disco_monitoring_data(
         data: list = []
-    ):
+    )-> None:
     """
     Set the monitoring data for disk usage.
 
     Args:
         data (list): A list containing disk monitoring data.
+
+    Returns:
+        None
     """
     global _MONITORING_DATA
 
@@ -151,12 +174,15 @@ def set_disco_monitoring_data(
 #########################################################################################
 def add_disco_monitoring_data(
         data: dict = {}
-    ):
+    )-> None:
     """
     Add disk monitoring data to the global monitoring dataset.
 
     Args:
         data (dict): A dictionary containing disk monitoring data.
+
+    Returns:
+        None
     """
     global _MONITORING_DATA
 
@@ -165,13 +191,16 @@ def add_disco_monitoring_data(
 ####
 # Print JSON output and exit script
 #########################################################################################
-def disco_output():
+def disco_output()-> None:
     """
     Prints the JSON output and exits the script.
 
     The function uses the global variables '_ERROR_LEVEL', '_SUMMARY', '_INFO' and '_MONITORING_DATA'
     to create the JSON output. It then prints the JSON string and exits the script with
     the '_ERROR_LEVEL' as the exit code.
+
+    Returns:
+        None
     """
     from .output import print_stdout
 

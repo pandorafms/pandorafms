@@ -138,7 +138,7 @@ def run_threads(
 def set_shared_dict_value(
         key: str = None,
         value = None
-    ):
+    )-> None:
     """
     Set a value for a key in the internal shared dictionary.
     This function is used by all parallel processes.
@@ -160,7 +160,7 @@ def set_shared_dict_value(
 def add_shared_dict_value(
         key: str = None,
         value = None
-    ):
+    )-> None:
     """
     Add a value to a key in the internal shared dictionary.
     This function is used by all parallel processes.

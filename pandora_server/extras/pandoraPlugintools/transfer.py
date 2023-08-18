@@ -45,13 +45,16 @@ def _print_debug(
 def set_global_variable(
         variable_name: str = "", 
         value = None
-    ):
+    )-> None:
     """
     Sets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
 
     Args:
         variable_name (str): Name of the variable to set.
         value (any): Value to assign to the variable.
+
+    Returns:
+        None
     """
     from .general import set_dict_key_value
 
@@ -62,12 +65,15 @@ def set_global_variable(
 #########################################################################################
 def get_global_variable(
         variable_name: str = ""
-    ):
+    )-> None:
     """
     Gets the value of a global variable in the '_GLOBAL_VARIABLES' dictionary.
 
     Args:
         variable_name (str): Name of the variable to set.
+
+    Returns:
+        None
     """
     from .general import get_dict_key_value
 
@@ -185,7 +191,7 @@ def transfer_xml(
         tentacle_port: int = _GLOBAL_VARIABLES['tentacle_port'],
         tentacle_extra_opts: str = _GLOBAL_VARIABLES['tentacle_extra_opts'],
         data_dir: str = _GLOBAL_VARIABLES['data_dir']
-    ):
+    )-> None:
 
     """
     Detects the transfer mode and calls the agentplugin() function to perform the transfer.
@@ -196,6 +202,9 @@ def transfer_xml(
         tentacle_ip (str, optional): IP address for Tentacle. Default is _GLOBAL_VARIABLES['tentacle_ip'].
         tentacle_port (str, optional): Port for Tentacle. Default is _GLOBAL_VARIABLES['tentacle_port'].
         data_dir (str, optional): Path to data dir with local transfer mode. Default is _GLOBAL_VARIABLES['data_dir'].
+
+    Returns:
+        None
     """
     if file is not None:
         if transfer_mode != "local":

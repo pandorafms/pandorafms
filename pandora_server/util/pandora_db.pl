@@ -769,8 +769,8 @@ sub pandora_checkdb_integrity {
 
 		# Delete orphan data from visual console.
 		log_message ('INTEGRITY', "Deleting orphan visual console items.");
-		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agent NOT IN (SELECT id_agente FROM tagente)');
-		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
+		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agent <> 0 AND id_agent NOT IN (SELECT id_agente FROM tagente)');
+		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo <> 0 AND id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
 
 		# Delete orphan data form deleted agents.
 		# Clearl orphan data from dashboards

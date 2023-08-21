@@ -145,6 +145,7 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.METACONSOLE.DB_CONNECTION',
             'NOTIF.DOWNTIME',
             'NOTIF.UPDATEMANAGER.REGISTRATION',
+            'NOTIF.API.ACCESS',
             'NOTIF.MISC.EVENTSTORMPROTECTION',
             'NOTIF.MISC.DEVELOPBYPASS',
             'NOTIF.MISC.FONTPATH',
@@ -1090,6 +1091,11 @@ function notifications_print_dropdown_element($message_info)
 
     if ($img !== '') {
         $message_info['subject'] = io_safe_input($img);
+    }
+
+    if (strlen($body_preview) >= 170) {
+        $body_preview = substr($body_preview, 0, 150);
+        $body_preview .= __('. Read More...');
     }
 
     return sprintf(

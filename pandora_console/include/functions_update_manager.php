@@ -54,6 +54,17 @@ function update_manager_verify_registration()
     return false;
 }
 
+/**
+ * Verifies api state.
+ *
+ * @return boolean Status.
+ */
+function update_manager_verify_api()
+{
+    global $config;
+    return (isset($config['has_api_access']) === true && $config['has_api_access'] == '1');
+}
+
 
 /**
  * Retrieves current update from DB.

@@ -34,6 +34,22 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $notifications_numbers['notifications'],
             $notifications_numbers['last_id']
         ).'</div>';
+        $header_welcome = '';
+        if (check_acl($config['id_user'], $group, 'AW')) {
+            $header_welcome .= '<div id="welcome-icon-header">';
+            $header_welcome .= html_print_image(
+                'images/wizard@svg.svg',
+                true,
+                [
+                    'class' => 'main_menu_icon invert_filter',
+                    'title' => __('Welcome dialog'),
+                    'id'    => 'Welcome-dialog',
+                    'alt'   => __('Welcome dialog'),
+                    'style' => 'cursor: pointer;',
+                ]
+            );
+            $header_welcome .= '</div>';
+        }
 
         // ======= Servers List ===============================================
         if ((bool) check_acl($config['id_user'], 0, 'AW') !== false) {
@@ -212,16 +228,15 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         );
 
         $autorefresh_list = json_decode(
-            $select[0]['autorefresh_white_list']
+            (empty($select[0]['autorefresh_white_list']) === false)
+            ? $select[0]['autorefresh_white_list']
+            : ''
         );
 
         $header_autorefresh = '';
         $header_autorefresh_counter = '';
-        if ($config['legacy_vc']
-            || ($_GET['sec2'] !== 'operation/visual_console/render_view')
-            || (($_GET['sec2'] !== 'operation/visual_console/render_view')
-            && $config['legacy_vc'])
-        ) {
+
+        if (($_GET['sec2'] !== 'operation/visual_console/render_view')) {
             if ($autorefresh_list !== null
                 && array_search($_GET['sec2'], $autorefresh_list) !== false
             ) {
@@ -351,59 +366,37 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $header_autorefresh_counter .= '</div>';
         }
 
-        // Button for feedback pandora.
-        if (enterprise_installed() && $config['activate_feedback']) {
-            $header_feedback = '<div id="feedback-icon-header">';
-            $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
-            $header_feedback .= '<div id="msg-header" class="invisible"></div>';
-            $header_feedback .= html_print_image(
-                'images/send_feedback@header.svg',
-                true,
-                [
-                    'class' => 'main_menu_icon invert_filter',
-                    'title' => __('Feedback'),
-                    'id'    => 'feedback-header',
-                    'alt'   => __('Feedback'),
-                    'style' => 'cursor: pointer;',
-                ]
-            );
-            $header_feedback .= '</div>';
-        }
-
-
-        // Support.
-        if (enterprise_installed()) {
-            $header_support_link = $config['custom_support_url'];
+        $modal_box = '<div id="modal_help" class="invisible">
+        <div id="modal-feedback-form" class="invisible"></div>
+        <div id="msg-header" class="invisible"></div>
+            <a href="https://pandorafms.com/manual" target="_blank">'.__('Pandora documentation').'</a>';
+        if (enterprise_installed() === true) {
+            $modal_box .= '<a href="https://support.pandorafms.com/" target="_blank">'.__('Enterprise support ').'</a>';
+            $modal_box .= '<a href="#" id="feedback-header">'.__('Give us feedback').'</a>';
         } else {
-            $header_support_link = 'https://pandorafms.com/forums/';
+            $modal_box .= '<a href="https://pandorafms.com/community/forums/" target="_blank">'.__('Community Support').'</a>';
         }
 
-        $header_support = '<div id="header_support">';
-        $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
-        $header_support .= html_print_image(
-            'images/support@header.svg',
-            true,
-            [
-                'title' => __('Go to support'),
-                'class' => 'main_menu_icon bot invert_filter',
-                'alt'   => 'user',
-            ]
-        );
-        $header_support .= '</a></div>';
+        $modal_box .= '<hr class="separator" />';
+        $modal_box .= '<a href="https://github.com/pandorafms/pandorafms/issues" target="_blank">'.__('Open an issue in Github').'</a>';
+        $modal_box .= '<a href="https://discord.com/invite/xVt2ruSxmr" target="_blank">'.__('Join discord community').'</a>';
+        $modal_box .= '</div>';
 
-        // Documentation.
-        $header_docu = '<div id="header_docu">';
-        $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
-        $header_docu .= html_print_image(
-            'images/documentation@header.svg',
-            true,
+        $modal_help = html_print_div(
             [
-                'title' => __('Go to documentation'),
-                'class' => 'main_menu_icon bot invert_filter',
-                'alt'   => 'user',
-            ]
+                'id'      => 'modal-help-content',
+                'content' => html_print_image(
+                    'images/help@header.svg',
+                    true,
+                    [
+                        'title' => __('Help'),
+                        'class' => 'main_menu_icon bot invert_filter',
+                        'alt'   => 'user',
+                    ]
+                ).$modal_box,
+            ],
+            true,
         );
-        $header_docu .= '</a></div>';
 
 
         // User.
@@ -457,11 +450,11 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 echo '</span>';
             echo '</div>';
             echo '<div class="header_center"></div>';
-            echo '<div class="header_right">'.$header_support, $header_docu, $header_user, $header_logout.'</div>';
+            echo '<div class="header_right">'.$modal_help, $header_user, $header_logout.'</div>';
         } else {
             echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $modal_help, $header_user, $header_logout.'</div>';
         }
         ?>
     </div>    <!-- Closes #table_header_inner -->
@@ -904,11 +897,47 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $("#agent_access").css("display","");
         });
 
+        $("#welcome-icon-header").click(function () {
+            if (!$('#welcome_modal_window').length){
+                $(document.body).append('<div id="welcome_modal_window"></div>');
+                $(document.body).append( $('<link rel="stylesheet" type="text/css" />').attr('href', 'include/styles/new_installation_welcome_window.css') );
+            }
+            // Clean DOM.
+            load_modal({
+                target: $('#welcome_modal_window'),
+                url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                modal: {
+                    title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
+                    cancel: '<?php echo __('Do not show anymore'); ?>',
+                    ok: '<?php echo __('Close'); ?>'
+                },
+                onshow: {
+                    page: 'include/ajax/welcome_window',
+                    method: 'loadWelcomeWindow',
+                },
+                oncancel: {
+                    page: 'include/ajax/welcome_window',
+                    title: "<?php echo __('Cancel Configuration Window'); ?>",
+                    method: 'cancelWelcome',
+                    confirm: function (fn) {
+                        confirmDialog({
+                            title: '<?php echo __('Are you sure?'); ?>',
+                            message: '<?php echo __('Are you sure you want to cancel this tutorial?'); ?>',
+                            ok: '<?php echo __('OK'); ?>',
+                            cancel: '<?php echo __('Cancel'); ?>',
+                            onAccept: function() {
+                                // Continue execution.
+                                fn();
+                            }
+                        })
+                    }
+                }
+            });
+        });
+
         <?php if (enterprise_installed()) { ?>
             // Feedback.
             $("#feedback-header").click(function () {
-                // Clean DOM.
-                $("#feedback-header").empty();
                 // Function charge Modal.
                 show_feedback();
             });
@@ -1013,6 +1042,22 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         });
 
             return false;
+        });
+
+
+        $(document).click(function(event) {
+            if (!$(event.target).closest('#modal-help-content').length &&
+                $('#modal_help').hasClass('invisible') === false) {
+                $('#modal_help').addClass('invisible');
+            }
+        });
+
+        $('#modal-help-content').on('click', (e) => {
+            if($(e.target).prop('tagName') === 'A') {
+                $('#modal_help').addClass('invisible');
+            } else {
+                $('#modal_help').removeClass('invisible');
+            }
         });
     });
 /* ]]> */

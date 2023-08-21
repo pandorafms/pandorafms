@@ -205,9 +205,15 @@ if ($edit_networkmap) {
 
 $button = [];
 if ($edit_networkmap === true) {
+    if (empty($method) === false && $method === 'radial_dinamic') {
+        $url = 'index.php?sec=network&sec2=operation/agentes/networkmap.dinamic&activeTab=radial_dynamic&id_networkmap='.$id;
+    } else {
+        $url = 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$id;
+    }
+
     $button['map'] = [
         'active' => false,
-        'text'   => '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$id.'">'.html_print_image(
+        'text'   => '<a href="'.$url.'">'.html_print_image(
             'images/network@svg.svg',
             true,
             [

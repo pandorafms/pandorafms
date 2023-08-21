@@ -129,6 +129,14 @@ if (empty($apiPassword) === true
         // Compat.
         $config['id_user'] = 'admin';
         $correctLogin = true;
+        // Bypass credentials if server-auth and api-pass are correct.
+    } else if (($config['server_unique_identifier'] === get_parameter('server_auth'))
+        && ($api_password === $apiPassword)
+        && ((bool) isInACL($ipOrigin) === true)
+    ) {
+        $config['id_usuario'] = 'admin';
+        $config['id_user'] = 'admin';
+        $correctLogin = true;
     } else if ((bool) isInACL($ipOrigin) === true) {
         // External access.
         // Token is valid. Bypass the credentials.
@@ -320,7 +328,6 @@ if ($correctLogin === true) {
                     break;
 
                     default:
-                    return false;
                         // Ignore.
                     break;
                 }

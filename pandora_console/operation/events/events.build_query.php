@@ -223,10 +223,6 @@ if ($id_extra != '') {
     $sql_post .= " AND id_extra LIKE '%$id_extra%'";
 }
 
-if ($user_comment != '') {
-    $sql_post .= " AND user_comment LIKE '%$user_comment%'";
-}
-
 if ($source != '') {
     $sql_post .= " AND source LIKE '%$source%'";
 }

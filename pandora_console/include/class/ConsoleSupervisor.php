@@ -212,6 +212,12 @@ class ConsoleSupervisor
         $this->checkUpdateManagerRegistration();
 
         /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
+
+        /*
          * Check if there're new messages in UM.
          *  NOTIF.UPDATEMANAGER.MESSAGES
          */
@@ -437,6 +443,12 @@ class ConsoleSupervisor
         $this->checkUpdateManagerRegistration();
 
         /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
+
+        /*
          * Check if event storm protection is activated.
          *  NOTIF.MISC.EVENTSTORMPROTECTION
          */
@@ -499,6 +511,12 @@ class ConsoleSupervisor
          */
 
         $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
 
         /*
          * Check if there're new messages in UM.
@@ -867,6 +885,7 @@ class ConsoleSupervisor
             case 'NOTIF.METACONSOLE.DB_CONNECTION':
             case 'NOTIF.DOWNTIME':
             case 'NOTIF.UPDATEMANAGER.REGISTRATION':
+            case 'NOTIF.API.ACCESS':
             case 'NOTIF.MISC.EVENTSTORMPROTECTION':
             case 'NOTIF.MISC.DEVELOPBYPASS':
             case 'NOTIF.MISC.FONTPATH':
@@ -2365,6 +2384,30 @@ class ConsoleSupervisor
             );
         } else {
             $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
+        }
+    }
+
+
+    /**
+     * Check if has access to the API
+     *
+     * @return void
+     */
+    public function checkApiAccess()
+    {
+        global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
+
+        if (update_manager_verify_api() === false) {
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.API.ACCESS',
+                    'title'   => __('Cannot access the Pandora FMS API '),
+                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration.'),
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.API.ACCESS');
         }
     }
 

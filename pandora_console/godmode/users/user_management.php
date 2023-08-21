@@ -592,6 +592,9 @@ $userManagementTable->data['line2_looknfeel'][0] = html_print_select_from_sql(
     true
 );
 
+// Hidden hint to change theme.
+$hin_change_theme = ui_print_help_tip(__('When changing the theme, the login screen logo will be restricted to the default for that color scheme, if you have a custom logo, adjust it after changing the theme.'), true, '', '', 'display: none;');
+
 if (is_metaconsole() === true) {
     if (users_is_admin() === true) {
         $userManagementTable->data['line1_looknfeel'][1] = $outputMetaAccess[0];
@@ -599,7 +602,7 @@ if (is_metaconsole() === true) {
     }
 } else {
     if (function_exists('skins_print_select')) {
-        $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme');
+        $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme').$hin_change_theme;
         $userManagementTable->data['line2_looknfeel'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
     }
 }
@@ -817,5 +820,10 @@ $(document).ready(function () {
                 128,
                 128
             );
+
+    //Hint to change theme.
+    $('#skin1').on("change", () => {
+        $('#advanced-line1_looknfeel-1 > a').css('display', 'block');
+    })
 });
 </script>

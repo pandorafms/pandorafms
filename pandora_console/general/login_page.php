@@ -30,7 +30,7 @@ require_once __DIR__.'/../include/functions_html.php';
 echo '<style>
         :root {';
 if ($config['style'] === 'pandora') {
-    echo '--login-background-color: rgba(255, 255, 255, 0.4);';
+    echo '--login-background-color: rgba(255, 255, 255, 0.50);';
     echo '--login-label-color: #545454;';
     echo '--login-text-color: #000;';
     $style_theme = 'white-theme';
@@ -237,16 +237,18 @@ if (is_metaconsole() === true) {
         );
     }
 } else if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+    $theme_logo = ($config['style'] === 'pandora') ? 'images/custom_logo_login/Pandora FMS alt black.png' : 'enterprise/images/custom_logo_login/'.$config['custom_logo_login'];
     if (!isset($config['custom_logo_login'])) {
-        html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/Pandora-FMS-1.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url($theme_logo), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
-        html_print_image(ui_get_full_url('enterprise/images/custom_logo_login/'.$config['custom_logo_login']), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url($theme_logo), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 } else {
+    $theme_logo = ($config['style'] === 'pandora') ? 'images/custom_logo_login/Pandora FMS alt black.png' : 'images/custom_logo_login/'.$config['custom_logo_login'];
     if (empty($config['custom_logo_login']) === true) {
-        html_print_image(ui_get_full_url('images/custom_logo_login/Pandora-FMS-1.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url($theme_logo), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     } else {
-        html_print_image(ui_get_full_url('images/custom_logo_login/').$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(ui_get_full_url($theme_logo), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
 }
 

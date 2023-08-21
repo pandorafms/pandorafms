@@ -2576,10 +2576,8 @@ function visual_map_process_wizard_add(
     $id_agents = (array) $id_agents;
 
     $error = false;
-    $initial_x = $pos_x;
-    $initial_y = $pos_y;
     $elements_row = 1;
-    $total_rows = 1;
+    $initial_x = $pos_x;
     foreach ($id_agents as $id_agent) {
         $value_height = $height;
         $value_image = $image;
@@ -2631,12 +2629,10 @@ function visual_map_process_wizard_add(
 
         if (($max_elements_row === $elements_row) && $max_elements_row !== 0) {
             $elements_row = 1;
-            $pos_x = ($initial_x + ($range * $total_rows));
-            $pos_y = ($initial_y + ($range_vertical * $total_rows));
-            $total_rows++;
+            $pos_x = $initial_x;
+            $pos_y = ($range_vertical + $pos_y);
         } else {
             $pos_x = ($pos_x + $range);
-            $pos_y = ($pos_y + $range_vertical);
             $elements_row++;
         }
     }
@@ -2705,10 +2701,8 @@ function visual_map_process_wizard_add_modules(
     $id_modules = (array) $id_modules;
 
     $error = false;
-    $initial_x = $pos_x;
-    $initial_y = $pos_y;
     $elements_row = 1;
-    $total_rows = 1;
+    $initial_x = $pos_x;
     foreach ($id_modules as $id_module) {
         if ($id_server != 0) {
             $connection = db_get_row_filter(
@@ -2832,12 +2826,10 @@ function visual_map_process_wizard_add_modules(
 
         if (($max_elements_row === $elements_row) && $max_elements_row !== 0) {
             $elements_row = 1;
-            $pos_x = ($initial_x + ($range * $total_rows));
-            $pos_y = ($initial_y + ($range_vertical * $total_rows));
-            $total_rows++;
+            $pos_x = $initial_x;
+            $pos_y = ($range_vertical + $pos_y);
         } else {
             $pos_x = ($pos_x + $range);
-            $pos_y = ($pos_y + $range_vertical);
             $elements_row++;
         }
     }
@@ -2948,10 +2940,8 @@ function visual_map_process_wizard_add_agents(
     $id_agents = (array) $id_agents;
 
     $error = false;
-    $initial_x = $pos_x;
-    $initial_y = $pos_y;
     $elements_row = 1;
-    $total_rows = 1;
+    $initial_x = $pos_x;
     $relationship = true;
     $relationships_agents = [];
     // Check if the set a none relationship
@@ -3082,12 +3072,10 @@ function visual_map_process_wizard_add_agents(
 
         if (($max_elements_row === $elements_row) && $max_elements_row !== 0) {
             $elements_row = 1;
-            $pos_x = ($initial_x + ($range * $total_rows));
-            $pos_y = ($initial_y + ($range_vertical * $total_rows));
-            $total_rows++;
+            $pos_x = $initial_x;
+            $pos_y = ($range_vertical + $pos_y);
         } else {
             $pos_x = ($pos_x + $range);
-            $pos_y = ($pos_y + $range_vertical);
             $elements_row++;
         }
 

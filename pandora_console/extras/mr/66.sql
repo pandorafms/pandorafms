@@ -1,6 +1,6 @@
 START TRANSACTION;
 
-ALTER TABLE tevent_filter ADD private_filter_user text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL;
+ALTER TABLE tevent_filter ADD private_filter_user text NULL;
 
 UPDATE `twelcome_tip`
 	SET title = 'Scheduled&#x20;downtimes',

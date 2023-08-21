@@ -566,6 +566,10 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	my $schedule;
 	if (defined($alert->{'schedule'}) && $alert->{'schedule'} ne '') {
 		$schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
+		if (!defined($special_day)) {
+			$special_day = 0;
+		}
+
 		if ($special_day != 0) {
 			return $status if (!defined($schedule->{$weeks[$special_day]}));
 		}
@@ -582,6 +586,10 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 		my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
 
 		my $schedule_day;
+		if (!defined($special_day)) {
+			$special_day = 0;
+		}
+
 		if ($special_day != 0 && defined($schedule->{$weeks[$special_day]})) {
 			$schedule_day = $weeks[$special_day];
 		} else {
@@ -1314,6 +1322,27 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$field20 = defined($action->{'field20_recovery'}) && $action->{'field20_recovery'} ne "" ? $action->{'field20_recovery'} : $field20;
 	}
 
+	if ($clean_name eq "Pandora ITSM Ticket") {
+		# if action not defined, get values for config setup pandora ITSM.
+		if ($alert_mode == RECOVERED_ALERT) {
+			$field1  = defined($action->{'field1_recovery'})  && $action->{'field1_recovery'}  ne ""  ? $action->{'field1_recovery'}  : pandora_get_tconfig_token($dbh, 'incident_title', '');
+			$field2  = defined($action->{'field2_recovery'})  && $action->{'field2_recovery'}  ne ""  ? $action->{'field2_recovery'}  : pandora_get_tconfig_token($dbh, 'default_group', '2');
+			$field3  = defined($action->{'field3_recovery'})  && $action->{'field3_recovery'}  ne ""  ? $action->{'field3_recovery'}  : pandora_get_tconfig_token($dbh, 'default_criticity', 'MEDIUM');
+			$field4  = defined($action->{'field4_recovery'})  && $action->{'field4_recovery'}  ne ""  ? $action->{'field4_recovery'}  : pandora_get_tconfig_token($dbh, 'default_owner', undef);
+			$field5  = defined($action->{'field5_recovery'})  && $action->{'field5_recovery'}  ne ""  ? $action->{'field5_recovery'}  : pandora_get_tconfig_token($dbh, 'incident_type', undef);
+			$field6  = defined($action->{'field6_recovery'})  && $action->{'field6_recovery'}  ne ""  ? $action->{'field6_recovery'}  : pandora_get_tconfig_token($dbh, 'incident_status', 'CLOSED');
+			$field7  = defined($action->{'field7_recovery'})  && $action->{'field7_recovery'}  ne ""  ? $action->{'field7_recovery'}  : pandora_get_tconfig_token($dbh, 'incident_content', '');
+		} else {
+			$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne ""  ? $action->{'field1'}  : pandora_get_tconfig_token($dbh, 'incident_title', '');
+			$field2  = defined($action->{'field2'})  && $action->{'field2'}  ne ""  ? $action->{'field2'}  : pandora_get_tconfig_token($dbh, 'default_group', '2');
+			$field3  = defined($action->{'field3'})  && $action->{'field3'}  ne ""  ? $action->{'field3'}  : pandora_get_tconfig_token($dbh, 'default_criticity', 'MEDIUM');
+			$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne ""  ? $action->{'field4'}  : pandora_get_tconfig_token($dbh, 'default_owner', undef);
+			$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne ""  ? $action->{'field5'}  : pandora_get_tconfig_token($dbh, 'incident_type', undef);
+			$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne ""  ? $action->{'field6'}  : pandora_get_tconfig_token($dbh, 'incident_status', 'NEW');
+			$field7  = defined($action->{'field7'})  && $action->{'field7'}  ne ""  ? $action->{'field7'}  : pandora_get_tconfig_token($dbh, 'incident_content', '');
+		}
+	}
+
 	$field1  = defined($field1)  && $field1  ne "" ? decode_entities($field1)  : "";
 	$field2  = defined($field2)  && $field2  ne "" ? decode_entities($field2)  : "";
 	$field3  = defined($field3)  && $field3  ne "" ? decode_entities($field3)  : "";
@@ -1877,13 +1906,13 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		# Field 2 (Ticket group ID)
 		my $ticket_group_id = $field2;
-		if ($ticket_group_id eq '') {
-			$ticket_group_id = 1;
+		if ($ticket_group_id eq '0') {
+			$ticket_group_id = 2;
 		}
 		
 		# Field 3 (Ticket priority);
 		my $ticket_priority = $field3;
-		if ($ticket_priority eq '') {
+		if ($ticket_priority eq '0') {
 			$ticket_priority = 'MEDIUM';
 		}
 
@@ -1895,13 +1924,13 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		
 		# Field 5 (Ticket type)
 		my $ticket_type = $field5;
-		if ($ticket_type eq '') {
+		if ($ticket_type eq '0') {
 			$ticket_type = 0;
 		}
 
 		# Field 6 (Ticket status)
 		my $ticket_status = $field6;
-		if ($ticket_status eq '') {
+		if ($ticket_status eq '0') {
 			$ticket_status = 'NEW';
 		}
 
@@ -1966,7 +1995,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		);
 
 		# Check exit inventory object.
-		my %filter_inventory = ('idPandora' => $agent->{'nombre'});
+		my %filter_inventory = ('idPandora' => $agent->{'id_agente'});
 		my $existInventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/inventory/list', $ITSM_token, \%filter_inventory);
 		if (!defined($existInventory)){
 			return;
@@ -1980,11 +2009,11 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			"idObjectType" => 2,
 			"isShowInList" => \0,
 			"status" => "new",
-			"idPandora" => $agent->{'nombre'},
+			"idPandora" => $agent->{'id_agente'},
 			"typeFieldData" => [
 				{
 					"idInventoryField" => 12,
-					"data" => safe_output(get_db_value($dbh, 'select name from tconfig_os where id_os = ?', $agent->{'id_os'})) . ' (' . $agent->{'id_os'} . ')'
+					"data" => safe_output(get_db_value($dbh, 'select name from tconfig_os where id_os = ?', $agent->{'id_os'}))
 				},
 				{
 					"idInventoryField" => 13,
@@ -1996,7 +2025,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 				},
 				{
 					"idInventoryField" => 46,
-					"data" => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'}) . ' (' . $agent->{'id_grupo'} . ')')
+					"data" => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'}))
 				},
 			]
 		);

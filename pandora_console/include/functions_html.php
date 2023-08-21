@@ -2166,7 +2166,8 @@ function html_print_extended_select_for_time(
     $style_icon='',
     $no_change=false,
     $allow_zero=0,
-    $units=null
+    $units=null,
+    $script_input=''
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
@@ -2256,7 +2257,7 @@ function html_print_extended_select_for_time(
     echo '</div>';
 
     echo '<div id="'.$uniq_name.'_manual" class="w100p inline_flex">';
-        html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
+        html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class, $script_input);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
         html_print_select(
@@ -5771,7 +5772,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['readonly']) === true) ? $data['readonly'] : false),
                 ((isset($data['custom_fields']) === true) ? $data['custom_fields'] : false),
-                ((isset($data['style_icon']) === true) ? $data['style_icon'] : '')
+                ((isset($data['style_icon']) === true) ? $data['style_icon'] : ''),
+                ((isset($data['no_change']) === true) ? $data['no_change'] : ''),
+                ((isset($data['allow_zero']) === true) ? $data['allow_zero'] : ''),
+                ((isset($data['units']) === true) ? $data['units'] : null),
+                ((isset($data['script_input']) === true) ? $data['script_input'] : '')
             );
         break;
 

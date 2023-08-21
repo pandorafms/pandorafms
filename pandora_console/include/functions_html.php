@@ -578,6 +578,10 @@ function html_print_select_groups(
 
     if (empty($nothing) === false) {
         $fields[$nothing_value] = $nothing;
+        if ($include_groups === false) {
+            $include_groups = [];
+        }
+
         $include_groups[$nothing_value] = $nothing;
     }
 
@@ -671,6 +675,7 @@ function html_print_select_groups(
                                     step: params.page || 1,
                                     strict: "<?php echo $strict_user; ?>",
                                     not_condition: $('#not_condition_switch').prop('checked'),
+                                    returnAllGroup: <?php echo (int) $returnAllGroup; ?>
                                 }
 
                                 return query;
@@ -2161,7 +2166,8 @@ function html_print_extended_select_for_time(
     $custom_fields=false,
     $style_icon='',
     $no_change=false,
-    $allow_zero=0
+    $allow_zero=0,
+    $units=null
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
@@ -2187,15 +2193,17 @@ function html_print_extended_select_for_time(
             $selected = 300;
     }
 
-    $units = [
-        1               => __('seconds'),
-        SECONDS_1MINUTE => __('minutes'),
-        SECONDS_1HOUR   => __('hours'),
-        SECONDS_1DAY    => __('days'),
-        SECONDS_1WEEK   => __('weeks'),
-        SECONDS_1MONTH  => __('months'),
-        SECONDS_1YEAR   => __('years'),
-    ];
+    if (empty($units) === true) {
+        $units = [
+            1               => __('seconds'),
+            SECONDS_1MINUTE => __('minutes'),
+            SECONDS_1HOUR   => __('hours'),
+            SECONDS_1DAY    => __('days'),
+            SECONDS_1WEEK   => __('weeks'),
+            SECONDS_1MONTH  => __('months'),
+            SECONDS_1YEAR   => __('years'),
+        ];
+    }
 
     if ($unique_name === true) {
         $uniq_name = uniqid($name);
@@ -2219,7 +2227,7 @@ function html_print_extended_select_for_time(
         $nothing_value,
         false,
         false,
-        false,
+        true,
         $class,
         $readonly,
         'font-size: xx-small;'.$select_style
@@ -3328,9 +3336,23 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'disabled',
     ];
 
+    if (isset($options['title']) && $options['title'] != '') {
+        if (isset($options['class'])) {
+            $options['class'] .= ' forced_title';
+        } else {
+            $options['class'] = 'forced_title';
+        }
+
+        // New way to show the force_title (cleaner and better performance).
+        $output .= 'data-title="'.io_safe_input_html($options['title']).'" ';
+        $output .= 'data-use_title_for_force_title="1" ';
+    }
+
     foreach ($attrs as $attribute) {
-        if (isset($options[$attribute])) {
-            $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+        if ($attribute !== 'title') {
+            if (isset($options[$attribute])) {
+                $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+            }
         }
     }
 
@@ -3617,6 +3639,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     $classes = '';
     $fixedId = '';
     $iconStyle = '';
+    $minimize_arrow = false;
     // $spanStyle = 'margin-top: 4px;';
     $spanStyle = '';
     if (empty($name) === true) {
@@ -3654,6 +3677,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
                 $buttonType = ($attr_array['type'] ?? 'button');
                 $buttonAttributes = $value;
                 break;
+            } else if ($attribute === 'minimize-arrow') {
+                $minimize_arrow = true;
             } else {
                 $attributes .= $attribute.'="'.$value.'" ';
             }
@@ -3678,15 +3703,30 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $iconDiv = '';
     }
 
+    if ($minimize_arrow === true) {
+        $minimezeDiv = html_print_div(
+            [
+                'id'    => 'minimize_arrow_event_sound',
+                'style' => 'background-color:transparent; right: 1em; margin-left:0.5em; position:relative; display:none;',
+                'class' => 'arrow_menu_down w30p',
+            ],
+            true
+        );
+    } else {
+        $minimezeDiv = '';
+    }
+
     // Defined id. Is usable for span and button.
     // TODO. Check if will be proper use button or submit when where appropiate.
     $mainId = ((empty($fixedId) === false) ? $fixedId : 'button-'.$name);
 
     if ($imageButton === false) {
-        $content = '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
+        $content = $minimezeDiv;
+        $content .= '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
         $content .= $iconDiv;
     } else {
-        $content = $iconDiv;
+        $content = $minimezeDiv;
+        $content .= $iconDiv;
     }
 
     // In case of not selected button type, in this case, will be normal button.
@@ -4530,9 +4570,9 @@ function html_print_checkbox_switch_extended(
  */
 
 
-function html_print_checkbox_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false)
+function html_print_checkbox_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false, $class='')
 {
-    $output = html_print_checkbox_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true);
+    $output = html_print_checkbox_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true, '', $class);
     if (!$disabled_hidden) {
         $output .= html_print_input_hidden($name.'_sent', 1, true);
     }
@@ -5089,7 +5129,7 @@ function html_print_autocomplete_modules(
     ob_start();
 
     $text_color = '';
-    $module_icon = 'images/search_module.png';
+    $module_icon = is_metaconsole() === false ? 'images/search_module.png' : '../../images/search_module.png';
     if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
         $text_color = 'color: white';
         $module_icon = 'images/brick.menu.png';
@@ -5104,7 +5144,7 @@ function html_print_autocomplete_modules(
         100,
         false,
         '',
-        ['style' => 'background: url('.$module_icon.') 95% right; '.$text_color.'']
+        ['style' => 'background: url('.$module_icon.') no-repeat content-box; background-position: center right 5px; '.$text_color.'']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 
@@ -5503,7 +5543,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : '')
+                ((isset($data['function']) === true) ? $data['function'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['hide_div_eye']) === true) ? $data['hide_div_eye'] : false),
             );
         break;
 
@@ -6196,6 +6239,57 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= '</div>';
             ?>
             <?php
+        break;
+
+        case 'datetime':
+            $date = (empty($data['value']) === true) ? '' : date('Y-m-d', $data['value']);
+            $time = (empty($data['value']) === true) ? '' : date('H:i:s', $data['value']);
+            ui_require_css_file('datepicker');
+            ui_include_time_picker();
+            ui_require_jquery_file(
+                'ui.datepicker-'.get_user_language(),
+                'include/javascript/i18n/'
+            );
+
+            $inputDate = html_print_input_text(
+                $data['name'].'_date',
+                $date,
+                '',
+                false,
+                10,
+                true,
+                false,
+                false,
+                '',
+                '',
+                '',
+                'off'
+            );
+
+            $inputTime = html_print_input_text(
+                $data['name'].'_time',
+                $time,
+                '',
+                false,
+                10,
+                true,
+                false,
+                false,
+                '',
+                '',
+                '',
+                'off'
+            );
+            $output .= html_print_div(
+                [
+                    'content' => sprintf(
+                        '<div class="datetime-adv-opt">%s<span>:</span>%s</div>',
+                        $inputDate,
+                        $inputTime
+                    ),
+                ],
+                true
+            );
         break;
 
         default:
@@ -7136,6 +7230,47 @@ function html_print_code_picker(
     $output = '<div class="code-fragment '.$single_line_class.$classes.'">';
     $output .= '<pre style="margin: 0;"><code class="code-font" id="'.$id.'" style="display: block; white-space: pre-wrap;">'.$content.'</code></pre>';
     $output .= '</div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+function html_print_wizard_diagnosis(
+    $title,
+    $id_button,
+    $description='',
+    $status=true,
+    $return=false,
+) {
+    $button = '';
+    if ($status === true) {
+        $status = 'Connected';
+        $img = '/images/configuration@svg.svg';
+    } else {
+        $status = 'Disconnected';
+        $img = '/images/change-active.svg';
+    }
+
+    $button = html_print_image(
+        $img,
+        true,
+        [
+            'class' => 'main_menu_icon invert_filter float-right mrgn_right_10px',
+            'id'    => $id_button,
+        ]
+    );
+
+    $output = '<div class="rectangle rectangle_'.$status.'">
+                        <span class="status '.$status.'">'.__($status).$button.'</span>
+                        <div class="title">'.html_print_image('/images/circle_title.svg', true, ['class' => 'invert_filter']).'<span>'.$title.'</span></div>
+                        <div class="description">
+                            <span>'.$description.'</span>
+                        </div>
+                </div>';
 
     if ($return === true) {
         return $output;

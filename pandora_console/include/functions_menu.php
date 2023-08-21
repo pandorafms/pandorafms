@@ -324,6 +324,8 @@ function menu_print_menu(&$menu)
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
                     $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p arrow_menu_down"></div></div>';
+                } else if (isset($sub['subtype']) && $sub['subtype'] == 'nolink_no_arrow') {
+                    $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p"></div></div>';
                 } else if (isset($sub['subtype']) && $sub['subtype'] == 'new_blank') {
                     $submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="'.$sub_tree_class.'">'.$sub['text'].'</div></a>';
                 } else {
@@ -351,7 +353,7 @@ function menu_print_menu(&$menu)
                 $secExtensionBool = false;
 
                 if ($secExtensionBool) {
-                    if (strlen($sub['icon']) > 0) {
+                    if (empty($sub['icon']) === false && strlen($sub['icon']) > 0) {
                         $icon_enterprise = false;
                         if (isset($sub['enterprise'])) {
                             $icon_enterprise = (bool) $sub['enterprise'];
@@ -378,7 +380,7 @@ function menu_print_menu(&$menu)
                     $secExtension = $sub['sec'];
                 }
 
-                if (strlen($secExtension) > 0) {
+                if (empty($secExtension) === false && strlen($secExtension) > 0) {
                     $secUrl = $secExtension;
                     $extensionInMenu = 'extension_in_menu='.$mainsec.'&amp;';
                 } else {

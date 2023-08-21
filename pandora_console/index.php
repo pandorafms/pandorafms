@@ -292,7 +292,7 @@ enterprise_include_once('include/auth/saml.php');
 if (isset($config['id_user']) === false) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
-    setcookie('errormsg', null, -1);
+    setcookie('errormsg', '', -1);
 
     if (isset($_GET['login']) === true) {
         include_once 'include/functions_db.php';
@@ -712,7 +712,6 @@ if (isset($config['id_user']) === false) {
                     login_check_failed($nick);
                 }
 
-                $config['auth_error'] = __('User is blocked');
                 $login_failed = true;
             }
 
@@ -1041,6 +1040,33 @@ if (isset($config['id_user']) === false) {
             }
         }
     }
+}
+
+if ((bool) ($config['maintenance_mode'] ?? false) === true
+    && is_user_admin($config['id_user']) === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include $config['homedir'].'/general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
+if ((bool) ($config['maintenance_mode'] ?? false) === true
+    && $page !== 'advanced/command_center'
+    && is_user_admin($config['id_user']) === true
+) {
+    // Prevent access to metaconsole if not merged.
+    include 'general/admin_maintenance_mode.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
 }
 
 // Enterprise support.
@@ -1611,7 +1637,7 @@ require 'include/php_to_js_values.php';
 
                     $(".ui-widget-overlay").css("background", "#000");
                     $(".ui-widget-overlay").css("opacity", 0.6);
-                    $(".ui-draggable").css("cursor", "inherit");
+                    //$(".ui-draggable").css("cursor", "inherit");
 
                 } catch (error) {
                     console.log(error);

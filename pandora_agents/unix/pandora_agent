@@ -1003,7 +1003,7 @@ use strict;
 use warnings;
 
 use Scalar::Util qw(looks_like_number);
-use POSIX qw(strftime floor);
+use POSIX qw(ceil floor strftime);
 use Sys::Hostname;
 use File::Basename;
 use File::Copy;
@@ -1030,8 +1030,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.772';
-use constant AGENT_BUILD => '230711';
+use constant AGENT_VERSION => '7.0NG.773';
+use constant AGENT_BUILD => '230821';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1121,6 +1121,7 @@ my %DefaultConf = (
 	'server_path_md5' => 'md5', #undocumented
 	'server_path_conf' => 'conf', #undocumented
 	'server_path_zip' => 'collections', #undocumented
+	'server_path_ref' => 'ref', #undocumented
 	'logfile' =>'/var/log/pandora/pandora_agent.log',
 	'logsize' => DEFAULT_MAX_LOG_SIZE,
 	'logrotate' => DEFAULT_LOG_ROTATE,
@@ -1569,6 +1570,34 @@ sub parse_conf_modules($) {
 			$module->{'post_process'} = $1;
 		} elsif ($line =~ /^\s*module_interval\s+(\d+)\s*$/) {
 			$module->{'interval'} = $1;
+		} elsif ($line =~ /^\s*module_absoluteinterval\s+(.*)$/) {
+			my $absolute_interval = $1;
+			if ($absolute_interval eq 'once') {
+					$module->{'absoluteinterval'} = 0;
+			} elsif ($absolute_interval =~ /^(\d+)([smhd])?\s*$/) {
+				if (defined($2)) {
+					# Seconds.
+					if ($2 eq 's') {
+						$module->{'absoluteinterval'} = int($1);
+					}
+					# Minutes (convert to seconds).
+					elsif ($2 eq 'm') {
+						$module->{'absoluteinterval'} = int($1) * 60;
+					}
+					# Hours (convert to seconds).
+					elsif ($2 eq 'h') {
+						$module->{'absoluteinterval'} = int($1) * 3600;
+					}
+					# Days (convert to seconds).
+					elsif ($2 eq 'd') {
+						$module->{'absoluteinterval'} = int($1) * 86400;
+					}
+				} else {
+					$module->{'absoluteinterval'} = int($1) * $Conf{'interval'};
+				}
+			} else {
+				log_message ('setup', "Invalid value for module_absoluteinterval: $absolute_interval");
+			}
 		} elsif ($line =~ /^\s*module_timeout\s+(\d+)\s*$/) {
 			$module->{'timeout'} = $1;
 		} elsif ($line =~ /^\s*module_save\s+(\w+)$/) {
@@ -1636,6 +1665,27 @@ sub parse_conf_modules($) {
 				next;
 			}
 
+			# Configure modules with an absolute interval.
+			if (defined($module->{'absoluteinterval'})) {
+
+				# Convert from seconds to actual agent intervals.
+				$module->{'interval'} = ceil($module->{'absoluteinterval'} / $Conf{'interval'});
+
+				# Make sure modules that run once are asynchronous.
+				if ($module->{'interval'} == 0) {
+					if ($module->{'type'} eq 'generic_data') {
+						$module->{'type'} = 'async_data';
+					} elsif ($module->{'type'} eq 'generic_proc') {
+						$module->{'type'} = 'async_proc';
+					} elsif ($module->{'type'} eq 'generic_data_string') {
+						$module->{'type'} = 'async_string';
+					}
+				}
+
+				# This file will be used for persistence.
+				$module->{'timestamp_file'} = $ConfDir . '/' . $Conf{'server_path_ref'} . '/' . md5($module->{'name'}) . '.ref';
+			}
+
 			# Set the intensive interval
 			if ($module->{'is_intensive'} == 1) {				
 				$module->{'intensive_interval'} = $module->{'interval'};
@@ -1643,9 +1693,9 @@ sub parse_conf_modules($) {
 				$module->{'intensive_interval'} = $module->{'interval'} * ($Conf{'interval'} / $Conf{'intensive_interval'});
 			}
 
-			# Make the module run the first time
-			$module->{'counter'} = $module->{'intensive_interval'};
-			
+			# Initialize the module's execution counter.
+			init_counter($module);
+
 			# Replace macros
 			replace_macros ($module);
 
@@ -2805,7 +2855,15 @@ sub exec_module {
 		}
 	}
 
-	if (++($module->{'counter'}) < $module->{'intensive_interval'}) {
+	# Modules that will run once.
+	if ($module->{'interval'} == 0) {
+		if ($module->{'counter'} == 0) {
+			$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+			return;
+		}
+	}
+	# Modules that will run periodically.
+	elsif (++($module->{'counter'}) < $module->{'intensive_interval'}) {
 		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 		return;
 	}
@@ -2862,6 +2920,9 @@ sub exec_module {
 		}
 	}
 	
+	# Save the module's timestamp to disk.
+	save_module_timestamp($module);
+
 	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 }
 
@@ -3545,6 +3606,44 @@ sub check_module_cron {
 	);
 	return 1 if (time() + $next_execution == $now);
 	return 0;
+}
+
+################################################################################
+# Initialize a module's internal execution counter.
+################################################################################
+sub init_counter($) {
+	my ($module) = @_;
+	
+	# Open the timestamp file if available.
+	my $fh;
+	if (!defined($module->{'timestamp_file'}) || 
+	    !open($fh, '<', $module->{'timestamp_file'})) {
+		# If intensive_interval is 0, setting counter to any value != 0 will make the module run.
+		$module->{'counter'} = $module->{'intensive_interval'} == 0 ? 1 : $module->{'intensive_interval'};
+		return;
+	}
+
+	# Read the timestamp from disk.
+	my $timestamp = int(<$fh>);
+	close($fh);
+
+	# Update the module's execution counter.
+	# If intensive_interval is 0, setting counter to 0 will prevent the module from running again.
+	$module->{'counter'} = $module->{'intensive_interval'} == 0 ? 0 : floor((time() - $timestamp) / $Conf{'interval'});
+}
+
+################################################################################
+# Save a module's execution timestamp to disk for persistence.
+################################################################################
+sub save_module_timestamp($) {
+	my ($module) = @_;
+
+	return if (!defined($module->{'timestamp_file'}));
+
+	# Update the time reference.
+	open(my $fh, '>', $module->{'timestamp_file'}) or return;
+	print $fh time();
+	close($fh);
 }
 
 ################################################################################

@@ -230,6 +230,10 @@ fi
 echo "" > /opt/pandora/crontasks || touch /opt/pandora/crontasks
 
 
+#set localtime
+rm -rf /etc/localtime
+ln -s /usr/share/zoneinfo/$TZ /etc/localtime
+
 #install pandora packages
 echo "-> Istalling pandorafms"
 cd /opt/pandora

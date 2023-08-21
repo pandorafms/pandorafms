@@ -9412,7 +9412,8 @@ div.stat-win-spinner img {
   .select2-selection--multiple
   .select2-selection__rendered {
   padding: 5px 10px 10px !important;
-  max-height: 120px;
+  min-height: 100px;
+  max-height: 250px;
   overflow: auto !important;
 }
 
@@ -10790,10 +10791,6 @@ button.ui-button.ui-widget.submit-cancel:active {
   color: #fff;
   background-color: #96a2bf;
   border-color: #96a2bf;
-}
-
-.cursor-default {
-  cursor: default;
 }
 
 .hasColorPicker {
@@ -12288,14 +12285,6 @@ div.parent_graph > p.legend_background > table > tbody > tr {
   margin: 0px !important;
 }
 
-form.max_floating_element_size > ul#ul_tree_azure {
-  background-color: #fff;
-  border-spacing: 0px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  border: 1px solid #e2e2e2;
-}
-
 #grid_img {
   position: absolute;
   margin-top: -2px;
@@ -12329,6 +12318,10 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"]
 tr[id^="network_component-plugin-wmi-fields-dynamicMacroRow-"] input,
 tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
+}
+
+.label_agent_service > label {
+  margin-top: 15px;
 }
 
 .animation-blink {

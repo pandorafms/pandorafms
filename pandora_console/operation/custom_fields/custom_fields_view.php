@@ -1000,7 +1000,7 @@ function table_datatables(filters, indexed_descriptions, processing){
             [ 1, "desc" ]
         ]
     });
-    console.log(table);
+    
     $.ajax ({
         url : "ajax.php",
         data : {

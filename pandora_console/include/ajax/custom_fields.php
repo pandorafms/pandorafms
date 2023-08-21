@@ -682,7 +682,6 @@ if (check_login()) {
             ),
             true
         );
-
         $table = new StdClass;
         $table->id = 'save_filter_form';
         $table->width = '100%';
@@ -724,6 +723,7 @@ if (check_login()) {
             );
 
             $table->rowspan[0][2] = 2;
+
             $table->data[0][2] = html_print_submit_button(
                 __('Create filter'),
                 'create_filter',
@@ -788,7 +788,9 @@ if (check_login()) {
             );
         }
 
+        echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
         html_print_table($table);
+        echo '</form>';
         return;
     }
 

@@ -1019,7 +1019,7 @@ function notifications_print_user_switch($source, $user, $label)
 function notification_filter()
 {
     $types_list[] = 'All';
-    $notification_types = db_get_all_rows_sql('SELECT DISTINCT subtype FROM tmensajes');
+    $notification_types = db_get_all_rows_sql('SELECT DISTINCT tm.subtype FROM tmensajes as tm INNER JOIN tnotification_user as tnu ON tm.id_mensaje = tnu.id_mensaje WHERE tnu.utimestamp_read IS NULL');
     if ($notification_types !== false) {
         foreach ($notification_types as $notification_type) {
             $type = explode('.', $notification_type['subtype'])[1];
@@ -1027,6 +1027,7 @@ function notification_filter()
         }
     }
 
+    $types_list = array_unique($types_list);
     $notification_filter = "<ul id='menu-filter_notification'>";
 
     $notification_filter .= "<li>
@@ -1056,6 +1057,10 @@ function notification_filter()
 
             case 'ALLOWOVERRIDE':
                 $type_name = 'ALLOW OVERRIDE';
+            break;
+
+            case '':
+                $type_name = 'DISCOVERY TASK';
             break;
 
             default:

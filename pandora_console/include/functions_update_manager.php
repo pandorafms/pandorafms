@@ -54,6 +54,7 @@ function update_manager_verify_registration()
     return false;
 }
 
+
 /**
  * Verifies api state.
  *

@@ -2384,6 +2384,7 @@ class ConsoleSupervisor
         }
     }
 
+
     /**
      * Check if has access to the API
      *
@@ -2393,7 +2394,6 @@ class ConsoleSupervisor
     {
         global $config;
         include_once $config['homedir'].'/include/functions_update_manager.php';
-      
 
         if (update_manager_verify_api() === false) {
             $this->notify(
@@ -2407,6 +2407,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.API.ACCESS');
         }
     }
+
 
     /**
      * Check if user 'admin' is enabled and using default password.

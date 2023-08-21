@@ -1059,7 +1059,7 @@ function notification_filter()
                 $type_name = 'ALLOW OVERRIDE';
             break;
 
-            case '':
+            case 'DISCOVERYTASK':
                 $type_name = 'DISCOVERY TASK';
             break;
 

@@ -691,6 +691,17 @@ function get_build_setup_charts($type, $options, $data)
     }
 
     $chart->options()->setMaintainAspectRatio($maintainAspectRatio);
+    if (isset($options['elements']) === true) {
+        if (isset($options['elements']['center']) === true) {
+            if (isset($options['elements']['center']['text']) === true) {
+                $chart->options()->getElements()->center()->setText($options['elements']['center']['text']);
+            }
+
+            if (isset($options['elements']['center']['color']) === true) {
+                $chart->options()->getElements()->center()->setColor($options['elements']['center']['color']);
+            }
+        }
+    }
 
     // Set Responsive for responsive charts.
     $responsive = true;

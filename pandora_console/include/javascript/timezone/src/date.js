@@ -893,6 +893,17 @@
       var utcMillis = typeof dt === "number" ? dt : new Date(dt).getTime();
       var t = tz;
       var zoneList = _this.zones[t];
+
+      if (typeof zoneList === "undefined") {
+        zoneList = [
+          [-53.46666666666666, "-", "LMT", -2422051200000],
+          [-60, "C-Eur", "CE%sT", -776556000000],
+          [-60, "SovietZone", "CE%sT", -725932800000],
+          [-60, "Germany", "CE%sT", 347068800000],
+          [-60, "EU", "CE%sT", null]
+        ];
+      }
+
       // Follow links to get to an actual zone
       while (typeof zoneList === "string") {
         t = zoneList;

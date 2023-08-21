@@ -88,8 +88,16 @@ function ui_bbcode_to_html($text, $allowed_tags=['[url]'])
  *
  * @return string Truncated text.
  */
-function ui_print_truncate_text($text, $numChars=GENERIC_SIZE_TEXT, $showTextInAToopTip=true, $return=true, $showTextInTitle=true, $suffix='&hellip;', $style=false)
-{
+function ui_print_truncate_text(
+    $text,
+    $numChars=GENERIC_SIZE_TEXT,
+    $showTextInAToopTip=true,
+    $return=true,
+    $showTextInTitle=true,
+    $suffix='&hellip;',
+    $style=false,
+    $forced_title=false
+) {
     global $config;
 
     if (is_string($numChars)) {
@@ -188,6 +196,10 @@ function ui_print_truncate_text($text, $numChars=GENERIC_SIZE_TEXT, $showTextInA
         } else {
             $truncateText = $text;
         }
+    }
+
+    if ($forced_title === true) {
+        $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text.'" data-use_title_for_force_title="1>'.$truncateText.'</span>';
     }
 
     if ($return == true) {
@@ -872,7 +884,7 @@ function ui_print_os_icon(
     $networkmap=false,
     $only_src=false,
     $relative=false,
-    $options=false,
+    $options=[],
     $big_icons=false
 ) {
     $subfolder = '.';
@@ -4054,7 +4066,7 @@ function ui_print_datatable(array $parameters)
                 '',
                 '',
                 $parameters['toggle_collapsed'],
-                false,
+                (isset($parameters['form']['return_filter']) === false) ? false : $parameters['form']['return_filter'],
                 '',
                 'no-border filter-datatable-submain',
                 'filter-datatable-main '.$parameters['filter_main_class']
@@ -4181,6 +4193,7 @@ function ui_print_datatable(array $parameters)
 
     $spinner = '<div id="'.$table_id.'-spinner" class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
+    // TODO This widget should take a return: ui_print_info_message($info_msg_arr, '', true)
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
 
     $err_msg = '<div id="error-'.$table_id.'"></div>';
@@ -4788,7 +4801,10 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
                 $url .= $key.'['.$k.']='.$v.'&';
             }
         } else {
-            $url .= $key.'='.io_safe_input(rawurlencode($value)).'&';
+            $aux = (empty($value) === false)
+                ? io_safe_input(rawurlencode($value))
+                : '';
+            $url .= $key.'='.$aux.'&';
         }
     }
 
@@ -7072,68 +7088,55 @@ function ui_print_breadcrums($tab_name)
  *
  * @return string  HTML string with the last comment of the events.
  */
-function ui_print_comments($comments)
+function ui_print_comments($comments, $truncate_limit=255)
 {
     global $config;
 
-    $comments = explode('<br>', $comments);
-    $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
-    if (is_array($comments)) {
-        foreach ($comments as $comm) {
-            if (empty($comm)) {
-                continue;
-            }
-
-            $comments_array[] = io_safe_output(json_decode($comm, true));
-        }
-    }
-
-    $order_utimestamp = array_reduce(
-        $comments_array,
-        function ($carry, $item) {
-            foreach ($item as $k => $v) {
-                $carry[$v['utimestamp']] = $v;
-            }
-
-            return $carry;
-        }
-    );
-
-    $key_max_utimestamp = max(array_keys($order_utimestamp));
-
-    $last_comment = $order_utimestamp[$key_max_utimestamp];
-
-    if (empty($last_comment) === true) {
+    if (empty($comment) === true) {
         return '';
     }
 
     // Only show the last comment. If commment its too long,the comment will short with ...
     // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
     // Else show comments hours ago
-    if ($last_comment['action'] != 'Added comment') {
-        $last_comment['comment'] = $last_comment['action'];
+    if ($comment['action'] != 'Added comment') {
+        $comment['comment'] = $comment['action'];
     }
 
-    $short_comment = substr($last_comment['comment'], 0, 20);
+    $short_comment = substr($comment['comment'], 0, 20);
     if ($config['prominent_time'] == 'timestamp') {
-        $comentario = '<i>'.date($config['date_format'], $last_comment['utimestamp']).'&nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
+        $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
 
-        if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.date($config['date_format'], $last_comment['utimestamp']).'&nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
+        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
+            $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     } else {
-        $rest_time = (time() - $last_comment['utimestamp']);
+        $rest_time = (time() - $comment['utimestamp']);
         $time_last = (($rest_time / 60) / 60);
 
-        $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$last_comment['comment'].'';
+        $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
 
-        if (strlen($comentario) > '200px') {
-            $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$last_comment['id_user'].'):&nbsp;'.$short_comment.'...';
+        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
+            $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
         }
     }
 
-    return io_safe_output($comentario);
+    $comentario = io_safe_output($comentario);
 
+    if (strlen($comentario) >= $truncate_limit) {
+        $comentario = ui_print_truncate_text(
+            $comentario,
+            $truncate_limit,
+            false,
+            true,
+            false,
+            '&hellip;',
+            true,
+            true,
+        );
+    }
+
+    return $comentario;
 }
 
 
@@ -7971,6 +7974,133 @@ function ui_print_fav_menu($id_element, $url, $label, $section)
     $output .= '<p><b>'.__('Title').'</b></p>';
     $output .= html_print_input_text('label_fav_menu', '', '', 25, 255, true, false, true);
     $output .= '</div>';
+    return $output;
+}
+
+
+function ui_print_tree(
+    $tree,
+    $id=0,
+    $depth=0,
+    $last=0,
+    $last_array=[],
+    $sufix=false,
+    $descriptive_ids=false,
+    $previous_id=''
+) {
+    static $url = false;
+    $output = '';
+
+    // Get the base URL for images.
+    if ($url === false) {
+        $url = ui_get_full_url('operation/tree', false, false, false);
+    }
+
+    // Leaf.
+    if (empty($tree['__LEAVES__'])) {
+        return '';
+    }
+
+    $count = 0;
+    $total = (count(array_keys($tree['__LEAVES__'])) - 1);
+    $last_array[$depth] = $last;
+    $class = 'item_'.$depth;
+
+    if ($depth > 0) {
+        $output .= '<ul id="ul_'.$id.'" class="mrgn_0px pdd_0px invisible">';
+    } else {
+        $output .= '<ul id="ul_'.$id.'" class="mrgn_0px pdd_0px">';
+    }
+
+    foreach ($tree['__LEAVES__'] as $level => $sub_level) {
+        // Id used to expand leafs.
+        $sub_id = time().rand(0, getrandmax());
+        // Display the branch.
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.' mrgn_0px pdd_0px">';
+
+        // Indent sub branches.
+        for ($i = 1; $i <= $depth; $i++) {
+            if ($last_array[$i] == 1) {
+                $output .= '<img src="'.$url.'/no_branch.png" class="vertical_middle">';
+            } else {
+                $output .= '<img src="'.$url.'/branch.png" class="vertical_middle">';
+            }
+        }
+
+        // Branch.
+        if (! empty($sub_level['sublevel']['__LEAVES__'])) {
+            $output .= "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
+            if ($depth == 0 && $count == 0) {
+                if ($count == $total) {
+                    $output .= '<img src="'.$url.'/one_closed.png" class="vertical_middle">';
+                } else {
+                    $output .= '<img src="'.$url.'/first_closed.png" class="vertical_middle">';
+                }
+            } else if ($count == $total) {
+                $output .= '<img src="'.$url.'/last_closed.png" class="vertical_middle">';
+            } else {
+                $output .= '<img src="'.$url.'/closed.png" class="vertical_middle">';
+            }
+
+            $output .= '</a>';
+        }
+
+        // Leave.
+        else {
+            if ($depth == 0 && $count == 0) {
+                if ($count == $total) {
+                    $output .= '<img src="'.$url.'/no_branch.png" class="vertical_middle">';
+                } else {
+                    $output .= '<img src="'.$url.'/first_leaf.png" class="vertical_middle">';
+                }
+            } else if ($count == $total) {
+                $output .= '<img src="'.$url.'/last_leaf.png" class="vertical_middle">';
+            } else {
+                $output .= '<img src="'.$url.'/leaf.png" class="vertical_middle">';
+            }
+        }
+
+        $checkbox_name_sufix = ($sufix === true) ? '_'.$level : '';
+        if ($descriptive_ids === true) {
+            $checkbox_name = 'create_'.$sub_id.$previous_id.$checkbox_name_sufix;
+        } else {
+            $checkbox_name = 'create_'.$sub_id.$checkbox_name_sufix;
+        }
+
+        $previous_id = $checkbox_name_sufix;
+        if ($sub_level['selectable'] === true) {
+            $output .= html_print_checkbox(
+                $sub_level['name'],
+                $sub_level['value'],
+                $sub_level['checked'],
+                true,
+                false,
+                '',
+                true
+            );
+        }
+
+        $output .= '&nbsp;<span>'.$sub_level['label'].'</span>';
+
+        $output .= '</li>';
+
+        // Recursively print sub levels.
+        $output .= ui_print_tree(
+            $sub_level['sublevel'],
+            $sub_id,
+            ($depth + 1),
+            (($count == $total) ? 1 : 0),
+            $last_array,
+            $sufix,
+            $descriptive_ids,
+            $previous_id
+        );
+
+        $count++;
+    }
+
+    $output .= '</ul>';
+
     return $output;
 }
 

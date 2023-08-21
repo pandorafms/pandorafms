@@ -645,9 +645,13 @@ function planned_downtimes_stop($downtime)
                         foreach ($modules as $module) {
                             $result = db_process_sql_update(
                                 'tagente_modulo',
-                                ['quiet' => 0],
                                 [
-                                    'id_agente_modulo' => $module['id_agent_module'],
+                                    'quiet'             => 0,
+                                    'quiet_by_downtime' => 0,
+                                ],
+                                [
+                                    'quiet_by_downtime' => 1,
+                                    'id_agente_modulo'  => $module['id_agent_module'],
                                 ]
                             );
 
@@ -672,32 +676,68 @@ function planned_downtimes_stop($downtime)
                 foreach ($agents as $agent) {
                     $result = db_process_sql_update(
                         'tagente',
-                        [
-                            'disabled'            => 0,
-                            'update_module_count' => 1,
-                        ],
+                        ['update_module_count' => 1],
                         ['id_agente' => $agent['id_agent']]
                     );
 
-                    if ($result) {
+                    $result_disabled = db_process_sql_update(
+                        'tagente',
+                        [
+                            'disabled'             => 0,
+                            'disabled_by_downtime' => 0,
+                        ],
+                        [
+                            'disabled_by_downtime' => 1,
+                            'id_agente'            => $agent['id_agent'],
+                        ]
+                    );
+
+                    if ($result !== false && $result_disabled !== false) {
                         $count++;
                     }
                 }
             break;
 
             case 'disable_agent_modules':
-                $update_sql = sprintf(
-                    'UPDATE tagente_modulo tam, tagente ta, tplanned_downtime_modules tpdm
-                    SET tam.disabled = 0, ta.update_module_count = 1
-                    WHERE tpdm.id_agent_module = tam.id_agente_modulo AND
-                    ta.id_agente = tam.id_agente AND
-                    tpdm.id_downtime = %d',
-                    $id_downtime
+                $agents = db_get_all_rows_filter(
+                    'tplanned_downtime_agents',
+                    ['id_downtime' => $id_downtime]
                 );
+                if (empty($agents)) {
+                    $agents = [];
+                }
 
-                db_process_sql($update_sql);
+                $count = 0;
+                foreach ($agents as $agent) {
+                    $modules = db_get_all_rows_filter(
+                        'tplanned_downtime_modules',
+                        [
+                            'id_agent'    => $agent['id_agent'],
+                            'id_downtime' => $id_downtime,
+                        ]
+                    );
+                    if (empty($modules)) {
+                        $modules = [];
+                    }
 
-                $count = '';
+                    foreach ($modules as $module) {
+                        $result = db_process_sql_update(
+                            'tagente_modulo',
+                            [
+                                'disabled'             => 0,
+                                'disabled_by_downtime' => 0,
+                            ],
+                            [
+                                'disabled_by_downtime' => 1,
+                                'id_agente_modulo'     => $module['id_agent_module'],
+                            ]
+                        );
+
+                        if ($result !== false) {
+                            $count++;
+                        }
+                    }
+                }
             break;
 
             case 'disable_agents_alerts':
@@ -722,13 +762,17 @@ function planned_downtimes_stop($downtime)
                     foreach ($modules as $module) {
                         $result = db_process_sql_update(
                             'talert_template_modules',
-                            ['disabled' => 0],
                             [
-                                'id_agent_module' => $module['id_agente_modulo'],
+                                'disabled'             => 0,
+                                'disabled_by_downtime' => 0,
+                            ],
+                            [
+                                'disabled_by_downtime' => 1,
+                                'id_agent_module'      => $module['id_agente_modulo'],
                             ]
                         );
 
-                        if ($result) {
+                        if ($result !== false) {
                             $count++;
                         }
                     }

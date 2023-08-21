@@ -402,6 +402,10 @@ function config_update_config()
                         $error_update[] = __('Check conexion interval');
                     }
 
+                    if (config_update_value('max_hours_old_event_comment', get_parameter('max_hours_old_event_comment'), true) === false) {
+                        $error_update[] = __('Max hours old event comments');
+                    }
+
                     if (config_update_value('unique_ip', get_parameter('unique_ip'), true) === false) {
                         $error_update[] = __('Unique IP');
                     }
@@ -974,12 +978,12 @@ function config_update_config()
                         }
                     }
 
-                    if (config_update_value('delete_old_messages', get_parameter('delete_old_messages'), true) === false) {
-                        $error_update[] = __('Max. days before delete old messages');
+                    if (config_update_value('delete_disabled_agents', get_parameter('delete_disabled_agents'), true) === false) {
+                        $error_update[] = __('Max. days before disabled agents are deleted');
                     }
 
-                    if (config_update_value('delete_old_network_matrix', get_parameter('delete_old_network_matrix'), true) === false) {
-                        $error_update[] = __('Max. days before delete old network matrix data');
+                    if (config_update_value('delete_old_messages', get_parameter('delete_old_messages'), true) === false) {
+                        $error_update[] = __('Max. days before delete old messages');
                     }
 
                     if (config_update_value('max_graph_container', get_parameter('max_graph_container'), true) === false) {
@@ -1485,6 +1489,15 @@ function config_update_config()
                             $interval_values_array = explode(',', $interval_values);
                             if (in_array($new_interval, $interval_values_array) === false) {
                                 $interval_values_array[] = $new_interval;
+                                // Get current periods.
+                                $current_period = get_periods(false, false, true);
+                                if (!isset($current_period[-1])) {
+                                    $new_current_period = array_keys($current_period);
+                                    $new_current_period = implode(',', $new_current_period);
+                                    // Add new periods to current.
+                                    array_push($interval_values_array, $new_current_period);
+                                }
+
                                 $interval_values = implode(',', $interval_values_array);
                             }
                         }
@@ -2124,6 +2137,12 @@ function config_process_config()
 
     if (!isset($config['date_format'])) {
         config_update_value('date_format', 'F j, Y, g:i a');
+    } else {
+        $config['date_format'] = str_replace(
+            '&#x20;',
+            ' ',
+            $config['date_format']
+        );
     }
 
     if (!isset($config['event_view_hr'])) {
@@ -2235,12 +2254,12 @@ function config_process_config()
         }
     }
 
-    if (!isset($config['delete_old_messages'])) {
-        config_update_value('delete_old_messages', 21);
+    if (!isset($config['delete_disabled_agents'])) {
+        config_update_value('delete_disabled_agents', 0);
     }
 
-    if (!isset($config['delete_old_network_matrix'])) {
-        config_update_value('delete_old_network_matrix', 10);
+    if (!isset($config['delete_old_messages'])) {
+        config_update_value('delete_old_messages', 21);
     }
 
     if (!isset($config['max_graph_container'])) {
@@ -2429,6 +2448,10 @@ function config_process_config()
         config_update_value('check_conexion_interval', 180);
     }
 
+    if (!isset($config['max_hours_old_event_comment'])) {
+        config_update_value('max_hours_old_event_comment', 8);
+    }
+
     if (!isset($config['elasticsearch_ip'])) {
         config_update_value('elasticsearch_ip', '');
     }
@@ -2509,10 +2532,6 @@ function config_process_config()
                     'days_autodisable_deletion'        => [
                         'max' => 90,
                         'min' => 0,
-                    ],
-                    'delete_old_network_matrix'        => [
-                        'max' => 30,
-                        'min' => 1,
                     ],
                     'report_limit'                     => [
                         'max' => 500,
@@ -3479,10 +3498,6 @@ function config_process_config()
         config_update_value('dbtype', 'mysql');
     }
 
-    if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 0);
-    }
-
     if (!isset($config['vc_default_cache_expiration'])) {
         config_update_value('vc_default_cache_expiration', 60);
     }
@@ -4073,7 +4088,11 @@ function config_prepare_session()
         }
 
         if ($update_cookie === true) {
-            if ((int) $user['session_max_time_expire'] > 0 && time() < $user['session_max_time_expire']) {
+            if (isset($user) === true
+                && isset($user['session_max_time_expire']) === true
+                && (int) $user['session_max_time_expire'] > 0
+                && time() < $user['session_max_time_expire']
+            ) {
                 $sessionMaxTimeout = $user['session_max_time_expire'];
             } else {
                 $sessionMaxTimeout = (time() + $sessionCookieExpireTime);

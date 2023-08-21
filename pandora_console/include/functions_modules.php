@@ -793,7 +793,7 @@ function modules_create_agent_module(
     // Encrypt passwords.
     if (isset($values['plugin_pass']) === true) {
         // Avoid two times encryption.
-        $plugin_pass = io_safe_output($values['plugin_pass']);
+        $plugin_pass = io_output_password($values['plugin_pass']);
 
         $values['plugin_pass'] = io_input_password($plugin_pass);
     }

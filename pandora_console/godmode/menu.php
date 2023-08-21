@@ -30,6 +30,7 @@
 // Begin.
 require_once 'include/config.php';
 require_once 'include/functions_menu.php';
+require_once $config['homedir'].'/godmode/wizards/ManageExtensions.class.php';
 
 check_login();
 
@@ -78,15 +79,97 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
         }
 
         if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
-            enterprise_hook('applications_menu');
-            enterprise_hook('cloud_menu');
-        }
+            // Applications.
+            $sub2 = [];
+            if (enterprise_installed() === true) {
+                $sub2['godmode/servers/discovery&wiz=app&mode=MicrosoftSQLServer']['text'] = __('Microsoft SQL Server (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=mysql']['text'] = __('Mysql (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=oracle']['text'] = __('Oracle (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=vmware']['text'] = __('VMware (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=SAP']['text'] = __('SAP (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=DB2']['text'] = __('DB2 (legacy)');
+            }
 
-        if ((bool) check_acl($config['id_user'], 0, 'RW') === true
-            || (bool) check_acl($config['id_user'], 0, 'RM') === true
-            || (bool) check_acl($config['id_user'], 0, 'PM') === true
-        ) {
-            enterprise_hook('console_task_menu');
+            $extensions = ManageExtensions::getExtensionBySection('app');
+            if ($extensions !== false) {
+                foreach ($extensions as $key => $extension) {
+                    $url = sprintf(
+                        'godmode/servers/discovery&wiz=app&mode=%s',
+                        $extension['short_name']
+                    );
+                    $sub2[$url]['text'] = __($extension['name']);
+                }
+            }
+
+            if ($extensions !== false || enterprise_installed() === true) {
+                $sub['godmode/servers/discovery&wiz=app']['text'] = __('Applications');
+                $sub['godmode/servers/discovery&wiz=app']['id'] = 'app';
+                $sub['godmode/servers/discovery&wiz=app']['type'] = 'direct';
+                $sub['godmode/servers/discovery&wiz=app']['subtype'] = 'nolink';
+                $sub['godmode/servers/discovery&wiz=app']['sub2'] = $sub2;
+            }
+
+            // Cloud.
+            $sub2 = [];
+            if (enterprise_installed() === true) {
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=amazonws']['text'] = __('Amazon Web Services (legacy)');
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=azure']['text'] = __('Microsoft Azure (legacy)');
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=gcp']['text'] = __('Google Compute Platform (legacy)');
+            }
+
+
+            $extensions = ManageExtensions::getExtensionBySection('cloud');
+            if ($extensions !== false) {
+                foreach ($extensions as $key => $extension) {
+                    $url = sprintf(
+                        'godmode/servers/discovery&wiz=cloud&mode=%s',
+                        $extension['short_name']
+                    );
+                    $sub2[$url]['text'] = __($extension['name']);
+                }
+            }
+
+            if ($extensions !== false || enterprise_installed() === true) {
+                $sub['godmode/servers/discovery&wiz=cloud']['text'] = __('Cloud');
+                $sub['godmode/servers/discovery&wiz=cloud']['id'] = 'cloud';
+                $sub['godmode/servers/discovery&wiz=cloud']['type'] = 'direct';
+                $sub['godmode/servers/discovery&wiz=cloud']['subtype'] = 'nolink';
+                $sub['godmode/servers/discovery&wiz=cloud']['sub2'] = $sub2;
+            }
+
+            // Custom.
+            $sub2 = [];
+            $extensions = ManageExtensions::getExtensionBySection('custom');
+            if ($extensions !== false) {
+                foreach ($extensions as $key => $extension) {
+                    $url = sprintf(
+                        'godmode/servers/discovery&wiz=custom&mode=%s',
+                        $extension['short_name']
+                    );
+                    $sub2[$url]['text'] = __($extension['name']);
+                }
+
+                $sub['godmode/servers/discovery&wiz=custom']['text'] = __('Custom');
+                $sub['godmode/servers/discovery&wiz=custom']['id'] = 'customExt';
+                $sub['godmode/servers/discovery&wiz=custom']['type'] = 'direct';
+                $sub['godmode/servers/discovery&wiz=custom']['subtype'] = 'nolink';
+                $sub['godmode/servers/discovery&wiz=custom']['sub2'] = $sub2;
+            }
+
+            if (check_acl($config['id_user'], 0, 'RW')
+                || check_acl($config['id_user'], 0, 'RM')
+                || check_acl($config['id_user'], 0, 'PM')
+            ) {
+                $sub['godmode/servers/discovery&wiz=magextensions']['text'] = __('Manage disco packages');
+                $sub['godmode/servers/discovery&wiz=magextensions']['id'] = 'mextensions';
+            }
+
+            if ((bool) check_acl($config['id_user'], 0, 'RW') === true
+                || (bool) check_acl($config['id_user'], 0, 'RM') === true
+                || (bool) check_acl($config['id_user'], 0, 'PM') === true
+            ) {
+                enterprise_hook('console_task_menu');
+            }
         }
     }
 
@@ -502,9 +585,13 @@ if ($access_console_node === true) {
                 $sub2[$extmenu['sec2']]['refr'] = 0;
             } else {
                 if (is_array($extmenu) === true && array_key_exists('fatherId', $extmenu) === true) {
-                    if (strlen($extmenu['fatherId']) > 0) {
+                    if (empty($extmenu['fatherId']) === false
+                        && strlen($extmenu['fatherId']) > 0
+                    ) {
                         if (array_key_exists('subfatherId', $extmenu) === true) {
-                            if (strlen($extmenu['subfatherId']) > 0) {
+                            if (empty($extmenu['subfatherId']) === false
+                                && strlen($extmenu['subfatherId']) > 0
+                            ) {
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['text'] = __($extmenu['name']);
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['id'] = str_replace(' ', '_', $extmenu['name']);
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['refr'] = 0;

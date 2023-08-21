@@ -32,6 +32,8 @@ require_once $config['homedir'].'/include/class/HTML.class.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_reports.php';
 require_once $config['homedir'].'/include/functions_cron.php';
+require_once $config['homedir'].'/godmode/wizards/Wizard.main.php';
+
 enterprise_include_once('include/functions_tasklist.php');
 enterprise_include_once('include/functions_cron.php');
 
@@ -168,7 +170,10 @@ class DiscoveryTaskList extends HTML
         }
 
         if (is_reporting_console_node() === false) {
-            $ret2 = $this->showList();
+            $ret2 = $this->showList(__('Host & devices tasks'), [0, 1]);
+            $ret2 .= $this->showList(__('Applications tasks'), [3, 4, 5, 10, 11, 12], 'app');
+            $ret2 .= $this->showList(__('Cloud tasks'), [6, 7, 8, 13, 14], 'cloud');
+            $ret2 .= $this->showList(__('Custom tasks'), [-1], 'custom');
         }
 
         if ($ret === false && $ret2 === false) {
@@ -210,6 +215,10 @@ class DiscoveryTaskList extends HTML
 
             html_print_action_buttons($this->printForm($form, true));
         }
+
+        // Warning Message.
+        $wizar_main = new Wizard();
+        $wizar_main->printWarningMessage();
 
         return $ret;
     }
@@ -518,9 +527,13 @@ class DiscoveryTaskList extends HTML
     /**
      * Show complete list of running tasks.
      *
+     * @param string  $titleTable        Title of section.
+     * @param array   $filter            Ids array from apps for filter.
+     * @param boolean $extension_section Extension to add in table.
+     *
      * @return boolean Success or not.
      */
-    public function showList()
+    public function showList($titleTable, $filter, $extension_section=false)
     {
         global $config;
 
@@ -544,7 +557,16 @@ class DiscoveryTaskList extends HTML
             include_once $config['homedir'].'/include/functions_network_profiles.php';
 
             if (users_is_admin()) {
-                $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
+                $recon_tasks = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
+                        FROM trecon_task tasks
+                        LEFT JOIN tdiscovery_apps apps ON tasks.id_app = apps.id_app
+                        WHERE type IN (%s) OR section = "%s"',
+                        implode(',', $filter),
+                        $extension_section
+                    )
+                );
             } else {
                 $user_groups = implode(
                     ',',
@@ -552,9 +574,14 @@ class DiscoveryTaskList extends HTML
                 );
                 $recon_tasks = db_get_all_rows_sql(
                     sprintf(
-                        'SELECT * FROM trecon_task
-                        WHERE id_group IN (%s)',
-                        $user_groups
+                        'SELECT tasks.*, apps.section AS section, apps.short_name AS short_name
+                        FROM trecon_task tasks
+                        LEFT JOIN tdiscovery_apps apps ON tasks.id_app = apps.id_app
+                        WHERE id_group IN (%s) AND
+                        (type IN (%s) OR section = "%s")',
+                        $user_groups,
+                        implode(',', $filter),
+                        $extension_section
                     )
                 );
             }
@@ -671,7 +698,9 @@ class DiscoveryTaskList extends HTML
                     $recon_script_name = false;
                 }
 
-                if ($task['disabled'] == 0 && $server_name !== '') {
+                if (($task['disabled'] == 0 && $server_name !== '' && (int) $task['type'] !== DISCOVERY_EXTENSION)
+                    || ((int) $task['type'] === DISCOVERY_EXTENSION && (int) $task['setup_complete'] === 1)
+                ) {
                     if (check_acl($config['id_user'], 0, 'AW')) {
                         $data[0] = '<span class="link" onclick="force_task(\'';
                         $data[0] .= ui_get_full_url(
@@ -695,7 +724,9 @@ class DiscoveryTaskList extends HTML
                         );
                         $data[0] .= '</span>';
                     }
-                } else if ($task['disabled'] == 2) {
+                } else if ($task['disabled'] == 2
+                    || ((int) $task['type'] === DISCOVERY_EXTENSION && (int) $task['setup_complete'] === 0)
+                ) {
                     $data[0] = ui_print_help_tip(
                         __('This task has not been completely defined, please edit it'),
                         true
@@ -751,7 +782,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Cloud.Azure.Compute');
+                        $data[6] .= __('Cloud.Azure.Compute (legacy)');
                     break;
 
                     case DISCOVERY_CLOUD_AWS_EC2:
@@ -764,7 +795,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Cloud.AWS.EC2');
+                        $data[6] .= __('Cloud.AWS.EC2 (legacy)');
                     break;
 
                     case DISCOVERY_CLOUD_AWS_RDS:
@@ -777,7 +808,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.Cloud.Aws.RDS');
+                        $data[6] .= __('Discovery.Cloud.Aws.RDS (legacy)');
                     break;
 
                     case DISCOVERY_CLOUD_AWS_S3:
@@ -790,7 +821,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.Cloud.Aws.S3');
+                        $data[6] .= __('Discovery.Cloud.Aws.S3 (legacy)');
                     break;
 
                     case DISCOVERY_APP_MYSQL:
@@ -803,7 +834,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.App.MySQL');
+                        $data[6] .= __('Discovery.App.MySQL (legacy)');
                     break;
 
                     case DISCOVERY_APP_ORACLE:
@@ -816,7 +847,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.App.Oracle');
+                        $data[6] .= __('Discovery.App.Oracle (legacy)');
                     break;
 
                     case DISCOVERY_APP_DB2:
@@ -829,7 +860,7 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.App.DB2');
+                        $data[6] .= __('Discovery.App.DB2 (legacy)');
                     break;
 
                     case DISCOVERY_DEPLOY_AGENTS:
@@ -840,7 +871,7 @@ class DiscoveryTaskList extends HTML
                             true,
                             ['title' => __('Agent deployment')]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.Agent.Deployment');
+                        $data[6] .= __('Discovery.Agent.Deployment (legacy)');
                     break;
 
                     case DISCOVERY_APP_MICROSOFT_SQL_SERVER:
@@ -853,7 +884,20 @@ class DiscoveryTaskList extends HTML
                                 'class' => 'main_menu_icon invert_filter',
                             ]
                         ).'&nbsp;&nbsp;';
-                        $data[6] .= __('Discovery.App.Microsoft SQL Server');
+                        $data[6] .= __('Discovery.App.Microsoft SQL Server (legacy)');
+                    break;
+
+                    case DISCOVERY_EXTENSION:
+                        // Discovery NetScan.
+                        $data[6] = html_print_image(
+                            'images/cluster@os.svg',
+                            true,
+                            [
+                                'title' => $task['short_name'],
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= $task['short_name'];
                     break;
 
                     case DISCOVERY_HOSTDEVICES:
@@ -868,7 +912,7 @@ class DiscoveryTaskList extends HTML
                                     'class' => 'main_menu_icon invert_filter',
                                 ]
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.NetScan');
+                            $data[6] .= __('Discovery.NetScan (legacy)');
                         } else {
                             // APP or external script recon task.
                             $data[6] = html_print_image(
@@ -876,7 +920,7 @@ class DiscoveryTaskList extends HTML
                                 true,
                                 ['class' => 'main_menu_icon invert_filter']
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= $recon_script_name;
+                            $data[6] .= $recon_script_name.' (legacy)';
                         }
                     break;
                 }
@@ -954,7 +998,7 @@ class DiscoveryTaskList extends HTML
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
                         && $task['type'] != DISCOVERY_CLOUD_AWS_S3
                     ) {
-                        if (check_acl($config['id_user'], 0, 'MR')) {
+                        if (check_acl($config['id_user'], 0, 'MR') && (int) $task['type'] !== 15) {
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                             $data[9] .= html_print_image(
                                 'images/web@groups.svg',
@@ -1012,13 +1056,24 @@ class DiscoveryTaskList extends HTML
                                 ).'</a>';
                             }
                         } else {
+                            $url_edit = sprintf(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
+                                $this->getTargetWiz($task, $recon_script_data),
+                                $task['id_rt']
+                            );
+
+                            if ((int) $task['type'] === DISCOVERY_EXTENSION) {
+                                $url_edit = sprintf(
+                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=%s&mode=%s&id_task=%s',
+                                    $task['section'],
+                                    $task['short_name'],
+                                    $task['id_rt'],
+                                );
+                            }
+
                             // Check if is a H&D, Cloud or Application or IPAM.
                             $data[9] .= '<a href="'.ui_get_full_url(
-                                sprintf(
-                                    'index.php?sec=gservers&sec2=godmode/servers/discovery&%s&task=%d',
-                                    $this->getTargetWiz($task, $recon_script_data),
-                                    $task['id_rt']
-                                )
+                                $url_edit
                             ).'">'.html_print_image(
                                 'images/edit.svg',
                                 true,
@@ -1082,7 +1137,7 @@ class DiscoveryTaskList extends HTML
                 $return = true;
             }
 
-            ui_toggle($content, __('Server Tasks'), '', '', false);
+            ui_toggle($content, $titleTable, '', '', false);
 
             // Div neccesary for modal map task.
             echo '<div id="map_task" class="invisible"></div>';
@@ -1240,7 +1295,7 @@ class DiscoveryTaskList extends HTML
             ($task['status'] < 0) ? 100 : $task['status'],
             150,
             150,
-            '#3A3A3A',
+            '#14524f',
             '%',
             '',
             '#ececec',
@@ -1310,7 +1365,7 @@ class DiscoveryTaskList extends HTML
                 $task['stats']['c_network_percent'],
                 150,
                 150,
-                '#3A3A3A',
+                '#14524f',
                 '%',
                 '',
                 '#ececec',
@@ -1353,14 +1408,14 @@ class DiscoveryTaskList extends HTML
 
         $output = '';
 
-        if (is_array($task['stats']) === false) {
-            $task['stats'] = json_decode($task['summary'], true);
+        if (is_array($task['stats']) === false && (int) $task['type'] !== DISCOVERY_EXTENSION) {
+            $task['stats'] = json_decode(io_safe_output($task['summary']), true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return $task['summary'];
             }
         }
 
-        if (is_array($task['stats'])) {
+        if (is_array($task['stats']) || (int) $task['type'] === DISCOVERY_EXTENSION) {
             $i = 0;
             $table = new StdClasS();
             $table->class = 'databox data';
@@ -1418,6 +1473,65 @@ class DiscoveryTaskList extends HTML
                 $table->data[$i][1] = '<span id="alive">';
                 $table->data[$i][1] .= ($total - $agents);
                 $table->data[$i++][1] .= '</span>';
+            } else if ((int) $task['type'] === DISCOVERY_EXTENSION) {
+                // Content.
+                $countSummary = 1;
+                if (is_array($task['stats']) === true && count(array_filter(array_keys($task['stats']), 'is_numeric')) === count($task['stats'])) {
+                    foreach ($task['stats'] as $key => $summary) {
+                        $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
+                        $table->data[$i][1] = '';
+                        $countSummary++;
+                        $i++;
+                        if (is_array($summary) === true) {
+                            if (empty($summary['summary']) === true && empty($summary['info']) === true) {
+                                $table->data[$i][0] = json_encode($summary, JSON_PRETTY_PRINT);
+                                $table->data[$i][1] = '';
+                                $i++;
+                                continue;
+                            }
+
+                            $unknownJson = $summary;
+                            foreach ($summary as $k2 => $v) {
+                                if (is_array($v) === true) {
+                                    if ($k2 === 'summary') {
+                                        foreach ($v as $k3 => $v2) {
+                                            $table->data[$i][0] = $k3;
+                                            $table->data[$i][1] = $v2;
+                                            $i++;
+                                        }
+
+                                        unset($unknownJson[$k2]);
+                                    }
+                                } else {
+                                    if ($k2 === 'info') {
+                                        $table->data[$i][0] = $v;
+                                        $table->data[$i][1] = '';
+                                        $i++;
+
+                                        unset($unknownJson[$k2]);
+                                    }
+                                }
+                            }
+
+                            if (empty($unknownJson) === false) {
+                                $table->data[$i][0] = json_encode($unknownJson, JSON_PRETTY_PRINT);
+                                $table->data[$i][1] = '';
+                                $i++;
+                            }
+                        } else {
+                            $table->data[$i][0] = $summary;
+                            $table->data[$i][1] = '';
+                            $i++;
+                        }
+                    }
+                } else {
+                    $table->data[$i][0] = '<b>'.__('Summary').'</b>';
+                    $table->data[$i][1] = '';
+                    $i++;
+                    $table->data[$i][0] = $task['summary'];
+                    $table->data[$i][1] = '';
+                    $i++;
+                }
             } else {
                 // Content.
                 if (is_array($task['stats']['summary']) === true) {
@@ -1479,7 +1593,7 @@ class DiscoveryTaskList extends HTML
         }
 
         $task = db_get_row('trecon_task', 'id_rt', $id_task);
-        $task['stats'] = json_decode($task['summary'], true);
+        $task['stats'] = json_decode(io_safe_output($task['summary']), true);
         $summary = $this->progressTaskSummary($task);
 
         $output = '';
@@ -1872,7 +1986,11 @@ class DiscoveryTaskList extends HTML
             if ($task['status'] <= 0
                 && empty($task['summary']) === false
             ) {
-                $status = __('Done');
+                if ($task['status'] == -2) {
+                    $status = __('Failed');
+                } else {
+                    $status = __('Done');
+                }
             } else if ($task['utimestamp'] == 0
                 && empty($task['summary'])
             ) {
@@ -1908,6 +2026,30 @@ class DiscoveryTaskList extends HTML
             'can_be_reviewed' => $can_be_reviewed,
         ];
     }
+
+
+    /*
+     * Generates warning message.
+     *
+     * @return void  Warning message.
+
+        public function getWarningMessage()
+        {
+        return ui_print_warning_message(
+            __(
+                'Starting with version 773, the new modular system of discovery 2.0 has been implemented. The current
+                discovery (1.0) and its defined tasks will continue to function normally until the next LTS version,
+                in which migration to the new system will be mandatory.
+                The tasks of the current discovery (1.0) will be marked as legacy although it will not affect their
+                operation, it will only be a visual indicator to identify and differentiate the tasks of discovery 1.0
+                from those of the new version 2.0.
+                In the intermediate versions between the 773 and the next LTS version, more applications of the new
+                discovery 2.0 will be added. Both new and those that will come to replace the applications of the
+                current discovery 1.0. In addition, an automatic migration tool for legacy (1.0) tasks to the new 2.0
+                model will be included.'
+            )
+        );
+    }*/
 
 
 }

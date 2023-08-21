@@ -266,19 +266,31 @@ if ($save_filter_modal) {
 
         $data = [];
         $table->rowid[0] = 'update_save_selector';
-        $data[0] = html_print_radio_button(
-            'filter_mode',
-            'new',
-            __('New filter'),
-            true,
+        $data[0] = html_print_div(
+            [
+                'style'   => 'display: flex;',
+                'content' => html_print_radio_button(
+                    'filter_mode',
+                    'new',
+                    __('New filter'),
+                    true,
+                    true
+                ),
+            ],
             true
         );
 
-        $data[1] = html_print_radio_button(
-            'filter_mode',
-            'update',
-            __('Update filter'),
-            false,
+        $data[1] = html_print_div(
+            [
+                'style'   => 'display: flex;',
+                'content' => html_print_radio_button(
+                    'filter_mode',
+                    'update',
+                    __('Update filter'),
+                    false,
+                    true
+                ),
+            ],
             true
         );
 

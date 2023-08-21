@@ -782,7 +782,6 @@ function snmp_browser_print_container(
         html_print_select(
             [
                 '1'  => 'v. 1',
-                '2'  => 'v. 2',
                 '2c' => 'v. 2c',
                 '3'  => 'v. 3',
             ],
